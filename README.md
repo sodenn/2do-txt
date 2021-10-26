@@ -26,7 +26,7 @@
 - Responsive Design
 
 ## Supported Platforms
-- Webbrowser
+- [Webbrowser](https://sodenn.github.io/2do-txt/)
 - Desktop (Electron): macOS, Windows, Linux
 
 ## Known Issues
