@@ -1,0 +1,35 @@
+{
+  "productName": "2do.txt",
+  "appId": "dev.sodenn.todotxt",
+  "directories": {
+    "buildResources": "resources"
+  },
+  "files": [
+    "assets/**/*",
+    "build/**/*",
+    "capacitor.config.*",
+    "app/**/*"
+  ],
+  "publish": {
+    "provider": "github"
+  },
+  "nsis": {
+    "allowElevation": true,
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
+  },
+  "linux": {
+    "category": "Utility",
+    "target": ["deb", "rpm", "tar.gz"],
+    "icon": "assets/appIcon.png"
+  },
+  "win": {
+    "target": "nsis",
+    "icon": "assets/appIcon.png"
+  },
+  "mac": {
+    "category": "public.app-category.productivity",
+    "target": "dmg",
+    "icon": "assets/appIcon.png"
+  }
+}
