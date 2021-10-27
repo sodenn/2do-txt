@@ -51,8 +51,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "yarn build",
-    "deploy": "gh-pages -d build",
     "electron:sync": "npx cap sync @capacitor-community/electron",
     "electron:start": "yarn build && yarn electron:sync && npx cap open @capacitor-community/electron"
   },
@@ -80,7 +78,6 @@
     "@types/draft-js": "^0.11.5",
     "@types/file-saver": "^2.0.3",
     "@types/react-router-dom": "^5.3.0",
-    "gh-pages": "^3.2.3",
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.4.1",
     "prettier-plugin-organize-imports": "^2.3.4"
