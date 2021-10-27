@@ -3,6 +3,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
+import logo from "../images/logo.png";
 import TodoFilePicker from "./TodoFilePicker";
 
 const Onboarding = () => {
@@ -37,12 +38,7 @@ const Onboarding = () => {
         >
           <Stack spacing={2}>
             <Box sx={{ py: 1, textAlign: "center" }}>
-              <img
-                src="logo512.png"
-                alt="Logo"
-                height={96}
-                style={{ opacity: 0.2 }}
-              />
+              <img src={logo} alt="Logo" height={96} style={{ opacity: 0.2 }} />
             </Box>
             <Typography sx={{ textAlign: "center" }} gutterBottom variant="h4">
               {t("Get Started")}
