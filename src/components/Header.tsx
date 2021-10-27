@@ -7,6 +7,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React from "react";
+import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
 import AddTaskButton from "./AddTaskButton";
 import SearchBar from "./SearchBar";
@@ -36,7 +37,7 @@ const Header = ({ divider = false }: HeaderProps) => {
               alignItems: "center",
             }}
           >
-            <img src="logo512.png" alt="Logo" height={24} />
+            <img src={logo} alt="Logo" height={24} />
             <Typography variant="h6" noWrap component="div" sx={{ ml: 1 }}>
               2do.txt
             </Typography>
