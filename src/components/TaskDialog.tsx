@@ -66,9 +66,9 @@ const TaskDialog = () => {
 
   return (
     <Dialog
-      aria-label="task"
+      aria-label="Task dialog"
       fullWidth
-      maxWidth={"sm"}
+      maxWidth="sm"
       open={taskDialogOpen}
       onClose={(event, reason) =>
         reason !== "backdropClick" ? handleClose() : undefined

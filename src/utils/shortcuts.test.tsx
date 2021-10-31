@@ -46,13 +46,13 @@ describe("shortcuts", () => {
     const { container } = render(<TestContext />);
 
     await expect(() =>
-      screen.findByRole("presentation", { name: "task" })
+      screen.findByRole("presentation", { name: "Task dialog" })
     ).rejects.toThrow('Unable to find role="presentation"');
 
     fireEvent.keyDown(container, { key: "n", code: "KeyN" });
 
-    expect(
-      screen.getByRole("presentation", { name: "task" })
+    await expect(
+      screen.getByRole("presentation", { name: "Task dialog" })
     ).toBeInTheDocument();
   });
 
@@ -60,7 +60,7 @@ describe("shortcuts", () => {
     const { container } = render(<TestContext />);
 
     await expect(() =>
-      screen.findByRole("presentation", { name: "task" })
+      screen.findByRole("presentation", { name: "Task dialog" })
     ).rejects.toThrow('Unable to find role="presentation"');
 
     fireEvent.keyDown(container, { key: "m", code: "KeyM" });
@@ -72,7 +72,7 @@ describe("shortcuts", () => {
     fireEvent.keyDown(container, { key: "n", code: "KeyN" });
 
     await expect(() =>
-      screen.findByRole("presentation", { name: "task" })
+      screen.findByRole("presentation", { name: "Task dialog" })
     ).rejects.toThrow('Unable to find role="presentation"');
   });
 });
