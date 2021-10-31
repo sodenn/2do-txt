@@ -40,11 +40,9 @@ const setupMock = {
   },
 };
 
-export const todoTxt = `
-First task @Test
+export const todoTxt = `First task @Test
 X 2012-01-01 Second task
-(A) x Third task @Test
-`;
+(A) x Third task @Test`;
 
 export const TestContext = (props: TestContextProps) => {
   const { text } = props;
