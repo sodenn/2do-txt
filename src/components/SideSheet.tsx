@@ -54,7 +54,7 @@ const SideSheet = () => {
 
   return (
     <Drawer
-      aria-label="sidesheet"
+      aria-label="Menu"
       anchor="left"
       open={sideSheetOpen}
       onClose={() => setSideSheetOpen(false)}

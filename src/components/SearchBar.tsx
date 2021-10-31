@@ -83,6 +83,7 @@ const SearchBar = () => {
         <SearchIcon color="action" />
       </SearchIconWrapper>
       <StyledInputBase
+        role="search"
         endAdornment={
           searchTerm && (
             <IconButton
