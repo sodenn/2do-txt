@@ -10,7 +10,7 @@ describe("shortcuts", () => {
       screen.findByRole("presentation", { name: "sidesheet" })
     ).rejects.toThrow('Unable to find role="presentation"');
 
-    fireEvent.keyDown(container, { key: "t", code: "KeyT" });
+    fireEvent.keyDown(container, { key: "m", code: "KeyM" });
 
     expect(
       screen.getByRole("presentation", { name: "sidesheet" })
@@ -24,7 +24,7 @@ describe("shortcuts", () => {
       screen.findByRole("presentation", { name: "sidesheet" })
     ).rejects.toThrow('Unable to find role="presentation"');
 
-    fireEvent.keyDown(container, { key: "t", code: "KeyT" });
+    fireEvent.keyDown(container, { key: "m", code: "KeyM" });
 
     expect(
       screen.getByRole("presentation", { name: "sidesheet" })
@@ -49,7 +49,7 @@ describe("shortcuts", () => {
       screen.findByRole("presentation", { name: "task" })
     ).rejects.toThrow('Unable to find role="presentation"');
 
-    fireEvent.keyDown(container, { key: "c", code: "KeyC" });
+    fireEvent.keyDown(container, { key: "n", code: "KeyN" });
 
     expect(
       screen.getByRole("presentation", { name: "task" })
@@ -63,13 +63,13 @@ describe("shortcuts", () => {
       screen.findByRole("presentation", { name: "task" })
     ).rejects.toThrow('Unable to find role="presentation"');
 
-    fireEvent.keyDown(container, { key: "t", code: "KeyT" });
+    fireEvent.keyDown(container, { key: "m", code: "KeyM" });
 
     expect(
       screen.getByRole("presentation", { name: "sidesheet" })
     ).toBeInTheDocument();
 
-    fireEvent.keyDown(container, { key: "c", code: "KeyC" });
+    fireEvent.keyDown(container, { key: "n", code: "KeyN" });
 
     await expect(() =>
       screen.findByRole("presentation", { name: "task" })
