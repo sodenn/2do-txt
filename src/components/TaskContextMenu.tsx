@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import { Task } from "../utils/task";
+import { Kbd } from "./Kbd";
 
 const TaskContextMenu: React.FC<{ task: Task }> = ({ task }) => {
   const { t } = useTranslation();
@@ -90,9 +91,11 @@ const TaskContextMenu: React.FC<{ task: Task }> = ({ task }) => {
                   onKeyDown={handleListKeyDown}
                 >
                   <MenuItem role="menuitem" onClick={handleEdit}>
-                    {t("Edit")}
+                    {t("Edit")} <Kbd>E</Kbd>
                   </MenuItem>
-                  <MenuItem onClick={handleDelete}>{t("Delete")}</MenuItem>
+                  <MenuItem onClick={handleDelete}>
+                    {t("Delete")} <Kbd>D</Kbd>
+                  </MenuItem>
                 </MenuList>
               </ClickAwayListener>
             </Paper>

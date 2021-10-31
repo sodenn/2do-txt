@@ -1,7 +1,5 @@
 import { Box, Container, useMediaQuery, useTheme } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import { useTask } from "../data/TaskContext";
-import { useAddShortcutListener } from "../utils/shortcuts";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
@@ -13,7 +11,6 @@ const Page = () => {
   const xs = useMediaQuery(theme.breakpoints.only("xs"));
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
-  const { openTaskDialog } = useTask();
 
   useEffect(() => {
     const element = scrollContainer?.current;
@@ -27,10 +24,6 @@ const Page = () => {
       };
     }
   }, [scrollContainer]);
-
-  useAddShortcutListener(() => {
-    openTaskDialog(true);
-  }, ["c", "n"]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>

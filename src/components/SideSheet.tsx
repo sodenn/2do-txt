@@ -18,7 +18,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
 import { useTask } from "../data/TaskContext";
-import { useAddShortcutListener } from "../utils/shortcuts";
 import { Dictionary } from "../utils/types";
 import ChipList from "./ChipList";
 import Settings from "./Settings";
@@ -42,10 +41,6 @@ const SideSheet = () => {
     setHideCompletedTasks,
   } = useAppContext();
   const { priorities, projects, contexts, fields, taskList } = useTask();
-
-  useAddShortcutListener(() => {
-    setSideSheetOpen((value) => !value);
-  }, "t");
 
   const hideSettings =
     (taskList.filter((t) => t.completed).length > 0 &&

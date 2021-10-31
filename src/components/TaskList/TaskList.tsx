@@ -34,7 +34,8 @@ const TaskItemButton = styled(ListItemButton)`
 
 const TaskList = () => {
   const ref = createRef<HTMLDivElement>();
-  const { filteredTaskList, completeTask, openTaskDialog } = useTask();
+  const { filteredTaskList, completeTask, openTaskDialog, deleteTask } =
+    useTask();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
 
   useAddShortcutListener(
@@ -53,6 +54,17 @@ const TaskList = () => {
       }
     },
     "e",
+    [ref]
+  );
+
+  useAddShortcutListener(
+    () => {
+      if (focusedTaskIndex !== -1) {
+        const focusedTask = filteredTaskList[focusedTaskIndex];
+        deleteTask(focusedTask);
+      }
+    },
+    "d",
     [ref]
   );
 
