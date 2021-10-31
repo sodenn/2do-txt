@@ -176,12 +176,7 @@ export function useFormatBody() {
           </React.Fragment>
         );
       } else {
-        return (
-          <React.Fragment key={index}>
-            {token}
-            {space}
-          </React.Fragment>
-        );
+        return `${token} `;
       }
     });
 
