@@ -21,7 +21,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - run: yarn test
       - run: yarn build
       - run: yarn electron:sync
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: electron
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - run: yarn electron:make
         env:
           GH_TOKEN: '${{ secrets.github_token }}'
