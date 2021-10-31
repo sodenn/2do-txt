@@ -88,7 +88,7 @@ describe("TaskList", () => {
     expect(listItems.indexOf(document.activeElement as HTMLElement)).toBe(1);
   });
 
-  it("should complete a task", async () => {
+  it("should complete a task by clicking the checkbox", async () => {
     const todoTxt = "First task";
     render(
       <EmptyTestContext text={todoTxt}>
@@ -104,5 +104,27 @@ describe("TaskList", () => {
     await screen.findByRole("checkbox", { name: "completed" });
 
     expect(checkbox.getAttribute("aria-checked")).toBe("true");
+  });
+
+  it("should complete a task by pressing enter", async () => {
+    const todoTxt = "First task";
+    const { container } = render(
+      <EmptyTestContext text={todoTxt}>
+        <TaskList />
+      </EmptyTestContext>
+    );
+
+    await expect(() =>
+      screen.findByRole("checkbox", { name: "completed", checked: true })
+    ).rejects.toThrow('Unable to find role="checkbox"');
+
+    fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
+    fireEvent.keyDown(document.activeElement!, {
+      key: "Enter",
+      code: "Enter",
+      charCode: 13,
+    });
+
+    await screen.findByRole("checkbox", { name: "completed", checked: true });
   });
 });
