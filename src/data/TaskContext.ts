@@ -350,7 +350,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const downloadTodoFile = () => {
     const content = stringifyTaskList(taskList, lineEnding);
     const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    FileSaver.saveAs(blob, "todo1.txt");
+    FileSaver.saveAs(blob, "todo.txt");
   };
 
   const setTodoFilePath = async () => {
