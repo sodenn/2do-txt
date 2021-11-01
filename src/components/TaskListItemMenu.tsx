@@ -85,6 +85,7 @@ const TaskListItemMenu: React.FC<{ task: Task }> = ({ task }) => {
         role={undefined}
         placement="bottom-end"
         transition
+        style={{ zIndex: 1 }}
       >
         {({ TransitionProps, placement }) => (
           <Grow {...TransitionProps}>
