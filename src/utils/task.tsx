@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useAppContext } from "../data/AppContext";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import {
   taskCompletedStyle,
@@ -24,6 +25,7 @@ export interface Task {
   creationDate?: Date;
   priority?: Priority;
   fields: Dictionary<string[]>;
+  dueDate?: Date;
   body: string;
   raw: string;
   _id: string;
@@ -97,7 +99,7 @@ export function parseTask(text: string, order: number) {
 
 export function parseTaskBody(
   body: string
-): Pick<Task, "contexts" | "projects" | "fields"> {
+): Pick<Task, "contexts" | "projects" | "fields" | "dueDate"> {
   const tokens = body
     .trim()
     .split(/\s+/)
@@ -121,10 +123,16 @@ export function parseTaskBody(
     }
   });
 
+  const dueDate =
+    fields["due"]?.length > 0
+      ? parseDate(fields["due"][fields["due"].length - 1])
+      : undefined;
+
   return {
     contexts,
     projects,
     fields,
+    dueDate,
   };
 }
 
@@ -133,6 +141,7 @@ export function useFormatBody() {
     t,
     i18n: { language },
   } = useTranslation();
+  const { sortBy } = useAppContext();
   return (task: Task) => {
     const tokens = task.body
       .trim()
@@ -180,7 +189,7 @@ export function useFormatBody() {
       }
     });
 
-    if (task.priority) {
+    if (task.priority && sortBy !== "priority") {
       const priorityElement = (
         <React.Fragment key={task._id}>
           <span className={clsx(taskTagStyle, taskPriorityStyle)}>

@@ -45,7 +45,7 @@
   "Due Date": "Fälligkeit",
   "No sorting": "Keine Sortierung",
   "Close": "Schließen",
-  "Current file": "Current file: {{filePath}}",
+  "Current file": "Aktuelle Datei: {{filePath}}",
   "Open todo.txt": "todo.txt öffnen",
   "Open": "Öffnen",
   "File not found": "Datei nicht gefunden",
@@ -54,5 +54,7 @@
   "Due tasks": "Fällige Aufgaben",
   "Download todo.txt": "Download todo.txt",
   "Menu": "Menü",
-  "Add task": "Aufgabe hinzufügen"
+  "Add task": "Aufgabe hinzufügen",
+  "Without priority": "Ohne Priorität",
+  "Without due date": "Ohne Fälligkeit"
 }

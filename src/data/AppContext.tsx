@@ -5,13 +5,15 @@ import { useStorage } from "../utils/storage";
 
 export type Language = "de" | "en";
 
+export type SortKey = "priority" | "dueDate" | "";
+
 const [AppContextProvider, useAppContext] = createContext(() => {
   const { i18n } = useTranslation();
   const { getStorageItem, setStorageItem } = useStorage();
   const [sideSheetOpen, setSideSheetOpen] = useState(false);
   const [language, setLanguage] = useState(i18n.resolvedLanguage);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("");
+  const [sortBy, setSortBy] = useState<SortKey>("");
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedContexts, setSelectedContexts] = useState<string[]>([]);

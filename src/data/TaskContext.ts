@@ -3,8 +3,9 @@ import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { groupBy } from "../utils/array";
 import { createContext } from "../utils/Context";
-import { isDate, parseDate, today } from "../utils/date";
+import { formatDate, formatLocaleDate, parseDate, today } from "../utils/date";
 import { useFilesystem } from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
 import { useNotifications } from "../utils/notifications";
@@ -51,7 +52,10 @@ const [TaskProvider, useTask] = createContext(() => {
   const { getStorageItem, setStorageItem, removeStorageItem } = useStorage();
   const { enqueueSnackbar } = useSnackbar();
   const { schedule, cancel } = useNotifications();
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
   const platform = usePlatform();
 
   const [state, setState] = useState<State>({
@@ -144,16 +148,9 @@ const [TaskProvider, useTask] = createContext(() => {
         : true;
     });
 
-    if (sortBy === "priority") {
-      return filteredList.sort(sortByPriority);
-    } else if (sortBy === "dueDate") {
-      return filteredList.sort(sortByDueDate);
-    } else {
-      return filteredList.sort(sortByOriginalOrder);
-    }
+    return filteredList.sort(sortByOriginalOrder);
   }, [
     taskList,
-    sortBy,
     searchTerm,
     selectedPriorities,
     selectedProjects,
@@ -161,6 +158,52 @@ const [TaskProvider, useTask] = createContext(() => {
     selectedFields,
     hideCompletedTasks,
   ]);
+
+  const groupedTaskList = useMemo(() => {
+    const getKey = (task: Task) => {
+      if (sortBy === "dueDate") {
+        return task.dueDate ? formatDate(task.dueDate) : "";
+      } else if (sortBy === "priority") {
+        return task.priority || "";
+      } else {
+        return "";
+      }
+    };
+
+    const taskListGroupObject = groupBy(filteredTaskList, getKey);
+
+    return Object.entries(taskListGroupObject)
+      .map(([groupKey, items]) => ({
+        groupKey,
+        items,
+      }))
+      .sort((a, b) => {
+        if (sortBy === "priority") {
+          return sortByPriority(a.groupKey, b.groupKey);
+        } else if (sortBy === "dueDate") {
+          return sortByDueDate(a.groupKey, b.groupKey);
+        } else {
+          return -1;
+        }
+      })
+      .map((item) => {
+        if (sortBy === "priority" && !item.groupKey) {
+          const groupKey = t("Without priority");
+          return { ...item, groupKey };
+        } else if (sortBy === "dueDate" && !item.groupKey) {
+          const groupKey = t("Without due date");
+          return { ...item, groupKey };
+        } else if (sortBy === "dueDate" && item.groupKey) {
+          const date = parseDate(item.groupKey);
+          const groupKey = date
+            ? formatLocaleDate(date, language)
+            : item.groupKey;
+          return { ...item, groupKey };
+        } else {
+          return item;
+        }
+      });
+  }, [filteredTaskList, sortBy, t, language]);
 
   const openTaskDialog = (open: boolean, selectedTask?: Task) => {
     setState((state) => {
@@ -383,13 +426,8 @@ const [TaskProvider, useTask] = createContext(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const dueDates = (task.fields["due"] ?? [])
-      .map((str) => parseDate(str))
-      .filter(isDate)
-      .filter((date) => date.getTime() >= today.getTime());
-
-    if (dueDates.length > 0) {
-      const at = dueDates[0];
+    if (task.dueDate && task.dueDate.getTime() >= today.getTime()) {
+      const at = task.dueDate;
       at.setHours(at.getHours() - 12);
       schedule({
         notifications: [
@@ -473,6 +511,7 @@ const [TaskProvider, useTask] = createContext(() => {
     fields,
     taskList,
     filteredTaskList,
+    groupedTaskList,
     tasksLoaded,
     createCreationDate,
     createCompletionDate,

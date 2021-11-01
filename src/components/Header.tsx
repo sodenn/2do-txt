@@ -24,7 +24,7 @@ const Header = ({ divider = false }: HeaderProps) => {
   const sm = useMediaQuery(theme.breakpoints.up("sm"));
   const showTodoFileDownloadButton = platform === "web" && sm;
   return (
-    <Box sx={{ flex: "none" }}>
+    <Box style={{ flex: "none", marginBottom: 2 }}>
       <AppBar position="static" color="transparent" elevation={divider ? 1 : 0}>
         <Toolbar>
           <Box sx={{ mr: 1 }}>
