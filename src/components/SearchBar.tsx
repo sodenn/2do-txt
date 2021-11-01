@@ -83,10 +83,11 @@ const SearchBar = () => {
         <SearchIcon color="action" />
       </SearchIconWrapper>
       <StyledInputBase
-        role="search"
         endAdornment={
           searchTerm && (
             <IconButton
+              role="button"
+              aria-label="Clear search term"
               size="small"
               sx={{ mr: 1 }}
               onClick={() => setSearchTerm("")}
@@ -100,7 +101,11 @@ const SearchBar = () => {
         onKeyDown={handleKeyDown}
         onChange={(event) => setSearchTerm(event.target.value)}
         placeholder={t("Search…")}
-        inputProps={{ "aria-label": "search", tabIndex: -1 }}
+        inputProps={{
+          "aria-label": "Search for tasks",
+          tabIndex: -1,
+          role: "search",
+        }}
       />
     </Search>
   );

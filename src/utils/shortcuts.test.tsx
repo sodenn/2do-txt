@@ -81,7 +81,9 @@ describe("shortcuts", () => {
 
     fireEvent.keyDown(container, { key: "f", code: "KeyF" });
 
-    await screen.findByRole("search");
+    await screen.findByRole("search", {
+      name: "Search for tasks",
+    });
 
     await expect(document.activeElement!.tagName).toBe("INPUT");
   });

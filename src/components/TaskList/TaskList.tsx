@@ -113,7 +113,7 @@ const TaskList = () => {
   return (
     <Box ref={ref}>
       {filteredTaskList.length > 0 && (
-        <List sx={{ mt: 1 }} role="list">
+        <List sx={{ mt: 1 }} role="list" aria-label="Task list">
           {filteredTaskList.map((task, index) => (
             <ListItem role="listitem" key={index} disablePadding>
               <TaskItemButton
