@@ -480,7 +480,7 @@ const [TaskProvider, useTask] = createContext(() => {
           contexts: parseResult.contexts,
           fields: parseResult.fields,
           tasksLoaded: true,
-          todoFilePath: todoFilePath ?? undefined,
+          todoFilePath: platform === "electron" && path ? path : undefined,
         }));
         scheduleDueTaskNotifications(parseResult.taskList);
       } else {
