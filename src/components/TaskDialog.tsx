@@ -40,6 +40,7 @@ const TaskDialog = () => {
         priority: selectedTask.priority,
         creationDate: selectedTask.creationDate,
         completionDate: selectedTask.completionDate,
+        dueDate: selectedTask.dueDate,
       });
     } else if (taskDialogOpen) {
       const creationDate = createCreationDate ? new Date() : undefined;
