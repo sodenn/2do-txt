@@ -76,36 +76,34 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
     .join(lineEnding);
 }
 
-export function sortByPriority(a: Task, b: Task) {
-  if (a.priority && !b.priority) {
+export function sortByPriority(a?: string, b?: string) {
+  if (a && !b) {
     return -1;
-  } else if (!a.priority && b.priority) {
+  } else if (!a && b) {
     return 1;
-  } else if (!a.priority && !b.priority) {
+  } else if (!a && !b) {
     return 0;
-  } else if (a.priority && b.priority && a.priority > b.priority) {
+  } else if (a && b && a > b) {
     return 1;
-  } else if (a.priority && b.priority && a.priority < b.priority) {
+  } else if (a && b && a < b) {
     return -1;
   } else {
     return 0;
   }
 }
 
-export function sortByDueDate(a: Task, b: Task) {
-  const dueDateA =
-    a.fields["due"]?.length > 0 ? parseDate(a.fields["due"][0]) : undefined;
-  const dueDateB =
-    b.fields["due"]?.length > 0 ? parseDate(b.fields["due"][0]) : undefined;
-  if (dueDateA && !dueDateB) {
+export function sortByDueDate(a?: string, b?: string) {
+  const aDate = a ? parseDate(a) : undefined;
+  const bDate = b ? parseDate(b) : undefined;
+  if (aDate && !bDate) {
     return -1;
-  } else if (!dueDateA && dueDateB) {
+  } else if (!aDate && bDate) {
     return 1;
-  } else if (!dueDateA && !dueDateB) {
+  } else if (!aDate && !bDate) {
     return 0;
-  } else if (dueDateA && dueDateB && dueDateA.getTime() > dueDateB.getTime()) {
+  } else if (aDate && bDate && aDate.getTime() > bDate.getTime()) {
     return 1;
-  } else if (dueDateA && dueDateB && dueDateA.getTime() < dueDateB.getTime()) {
+  } else if (aDate && bDate && aDate.getTime() < bDate.getTime()) {
     return -1;
   } else {
     return 0;

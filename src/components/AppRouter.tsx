@@ -6,7 +6,7 @@ import {
   useHistory,
   useLocation,
 } from "react-router-dom";
-import { useAppContext } from "../data/AppContext";
+import { SortKey, useAppContext } from "../data/AppContext";
 import Page from "./Page";
 
 interface SearchParams {
@@ -54,7 +54,7 @@ export const AppRouterSwitch = () => {
       setSearchTerm(term);
     }
 
-    const sortBy = params.get("sort");
+    const sortBy = params.get("sort") as SortKey;
     if (sortBy) {
       setSortBy(sortBy);
     }

@@ -29,14 +29,12 @@ const Page = () => {
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Header divider={scrollTop > 12} />
       <SideSheet />
-      <Container
-        disableGutters={xs}
-        ref={scrollContainer}
-        sx={{ overflowY: "auto", flex: "auto" }}
-      >
-        <TaskList />
-        <Onboarding />
-      </Container>
+      <Box ref={scrollContainer} sx={{ overflowY: "auto", flex: "auto" }}>
+        <Container disableGutters={xs}>
+          <TaskList />
+          <Onboarding />
+        </Container>
+      </Box>
       <TaskDialog />
     </Box>
   );

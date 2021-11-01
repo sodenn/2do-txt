@@ -8,7 +8,7 @@
   "Appearance": "Appearance",
   "Import": "Import",
   "Delete": "Delete",
-  "due": "Fällig",
+  "due": "Due",
   "Created": "Created: {{creationDate, date}}",
   "Completed": "Completed: {{completionDate, date}}",
   "Creation Date": "Creation Date",
@@ -47,5 +47,7 @@
   "Due tasks": "Due tasks",
   "Download todo.txt": "Download todo.txt",
   "Menu": "Menu",
-  "Add task": "Add task"
+  "Add task": "Add task",
+  "Without priority": "Without priority",
+  "Without due date": "Without due date"
 }

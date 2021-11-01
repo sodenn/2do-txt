@@ -7,6 +7,7 @@ import {
   MenuList,
   Paper,
   Popper,
+  styled,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,7 +15,11 @@ import { useTask } from "../data/TaskContext";
 import { Task } from "../utils/task";
 import { Kbd } from "./Kbd";
 
-const TaskContextMenu: React.FC<{ task: Task }> = ({ task }) => {
+const ListIconButton = styled(IconButton)`
+  padding: 9px;
+`;
+
+const TaskListItemMenu: React.FC<{ task: Task }> = ({ task }) => {
   const { t } = useTranslation();
   const { openTaskDialog, deleteTask } = useTask();
   const [open, setOpen] = useState(false);
@@ -65,7 +70,7 @@ const TaskContextMenu: React.FC<{ task: Task }> = ({ task }) => {
 
   return (
     <>
-      <IconButton
+      <ListIconButton
         role="menu"
         ref={anchorRef}
         onClick={handleToggle}
@@ -73,7 +78,7 @@ const TaskContextMenu: React.FC<{ task: Task }> = ({ task }) => {
         edge="end"
       >
         <MoreHorizIcon />
-      </IconButton>
+      </ListIconButton>
       <Popper
         open={open}
         anchorEl={anchorRef.current}
@@ -106,4 +111,4 @@ const TaskContextMenu: React.FC<{ task: Task }> = ({ task }) => {
   );
 };
 
-export default TaskContextMenu;
+export default TaskListItemMenu;

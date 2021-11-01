@@ -1,41 +1,19 @@
-import {
-  Box,
-  Checkbox,
-  List,
-  ListItem,
-  ListItemButton,
-  Stack,
-  styled,
-} from "@mui/material";
+import { Box, Chip, List, ListSubheader } from "@mui/material";
 import React, { createRef, useState } from "react";
 import { useTask } from "../../data/TaskContext";
 import { useAddShortcutListener } from "../../utils/shortcuts";
 import { Task } from "../../utils/task";
-import TaskBody from "../TaskBody";
-import TaskContextMenu from "../TaskContextMenu";
-import TaskDates from "../TaskDates";
-
-const TaskItemButton = styled(ListItemButton)`
-  border-radius: ${({ theme }: any) => theme.shape.borderRadius};
-  .MuiIconButton-root {
-    visibility: hidden;
-  }
-  @media (pointer: coarse) {
-    .MuiIconButton-root {
-      visibility: visible;
-    }
-  }
-  &:hover {
-    .MuiIconButton-root {
-      visibility: visible;
-    }
-  }
-`;
+import TaskListItem from "../TaskListItem";
 
 const TaskList = () => {
   const ref = createRef<HTMLDivElement>();
-  const { filteredTaskList, completeTask, openTaskDialog, deleteTask } =
-    useTask();
+  const {
+    filteredTaskList,
+    groupedTaskList,
+    completeTask,
+    openTaskDialog,
+    deleteTask,
+  } = useTask();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
 
   useAddShortcutListener(
@@ -113,43 +91,33 @@ const TaskList = () => {
   return (
     <Box ref={ref}>
       {filteredTaskList.length > 0 && (
-        <List sx={{ mt: 1 }} role="list" aria-label="Task list">
-          {filteredTaskList.map((task, index) => (
-            <ListItem role="listitem" key={index} disablePadding>
-              <TaskItemButton
-                aria-label="task"
-                aria-current={focusedTaskIndex === index}
-                onClick={(event) => handleClick(event, task)}
-                onFocus={() => setFocusedTaskIndex(index)}
-                onBlur={() => setFocusedTaskIndex(-1)}
-                dense
-              >
-                <Stack
-                  px={{ xs: 0.5, sm: 0 }}
-                  direction="row"
-                  spacing={1}
-                  sx={{ width: "100%" }}
-                >
-                  <div>
-                    <Checkbox
-                      role="checkbox"
-                      aria-label="completed"
-                      aria-checked={task.completed}
-                      edge="start"
-                      checked={task.completed}
-                      tabIndex={-1}
+        <List role="list" aria-label="Task list" subheader={<li />}>
+          {groupedTaskList.map((group, groupIndex) => (
+            <li key={group.groupKey}>
+              <ul style={{ padding: 0 }}>
+                <ListSubheader>
+                  <Chip
+                    label={group.groupKey}
+                    variant="outlined"
+                    color="secondary"
+                  />
+                </ListSubheader>
+                {group.items.map((task, itemIndex) => {
+                  const index = groupIndex + itemIndex;
+                  return (
+                    <TaskListItem
+                      key={index}
+                      task={task}
+                      index={index}
+                      focused={focusedTaskIndex === index}
+                      onClick={(event) => handleClick(event, task)}
+                      onFocus={() => setFocusedTaskIndex(index)}
+                      onBlur={() => setFocusedTaskIndex(-1)}
                     />
-                  </div>
-                  <Stack py={1} direction="column" sx={{ flex: "auto" }}>
-                    <TaskBody task={task} />
-                    <TaskDates task={task} />
-                  </Stack>
-                  <div>
-                    <TaskContextMenu task={task} />
-                  </div>
-                </Stack>
-              </TaskItemButton>
-            </ListItem>
+                  );
+                })}
+              </ul>
+            </li>
           ))}
         </List>
       )}

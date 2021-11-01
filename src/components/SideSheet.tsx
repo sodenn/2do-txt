@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../data/AppContext";
+import { SortKey, useAppContext } from "../data/AppContext";
 import { useTask } from "../data/TaskContext";
 import { Dictionary } from "../utils/types";
 import ChipList from "./ChipList";
@@ -203,7 +203,7 @@ const SideSheet = () => {
                 aria-label="sortby"
                 defaultValue=""
                 value={sortBy}
-                onChange={(event) => setSortBy(event.target.value)}
+                onChange={(event) => setSortBy(event.target.value as SortKey)}
               >
                 <FormControlLabel
                   value="priority"
