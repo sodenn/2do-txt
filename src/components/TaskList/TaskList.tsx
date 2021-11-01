@@ -95,13 +95,15 @@ const TaskList = () => {
           {groupedTaskList.map((group, groupIndex) => (
             <li key={group.groupKey}>
               <ul style={{ padding: 0 }}>
-                <ListSubheader>
-                  <Chip
-                    label={group.groupKey}
-                    variant="outlined"
-                    color="secondary"
-                  />
-                </ListSubheader>
+                {group.groupKey && (
+                  <ListSubheader>
+                    <Chip
+                      label={group.groupKey}
+                      variant="outlined"
+                      color="secondary"
+                    />
+                  </ListSubheader>
+                )}
                 {group.items.map((task, itemIndex) => {
                   const index = groupIndex + itemIndex;
                   return (

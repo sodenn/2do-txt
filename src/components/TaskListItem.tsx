@@ -12,7 +12,7 @@ import TaskDates from "./TaskDates";
 import TaskListItemMenu from "./TaskListItemMenu";
 
 const TaskItemButton = styled(ListItemButton)`
-  border-radius: ${({ theme }: any) => theme.shape.borderRadius};
+  border-radius: ${({ theme }: any) => theme.shape.borderRadius}px;
   .MuiIconButton-root {
     visibility: hidden;
   }
