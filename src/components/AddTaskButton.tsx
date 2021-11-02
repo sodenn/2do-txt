@@ -4,7 +4,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
-import { Kbd } from "./Kbd";
+import Kbd from "./Kbd";
 
 interface AddTaskButtonProps {
   edgeEnd: boolean;
