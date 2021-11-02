@@ -101,7 +101,16 @@ export const [AppThemeProvider, useAppTheme] = createContext(() => {
     if (init.current) {
       setStorageItem("theme-mode", selectedMode);
     }
-  }, [setStorageItem, selectedMode]);
+    const themeColorMetaTag = document.querySelector(
+      'meta[name="theme-color"]'
+    );
+    if (themeColorMetaTag) {
+      themeColorMetaTag.setAttribute(
+        "content",
+        theme.palette.background.default
+      );
+    }
+  }, [setStorageItem, selectedMode, theme]);
 
   return {
     mode,
