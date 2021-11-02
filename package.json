@@ -11,6 +11,7 @@
     "@capacitor-community/electron": "^4.0.3",
     "@capacitor/core": "^3.2.3",
     "@capacitor/filesystem": "^1.0.3",
+    "@capacitor/ios": "^3.2.5",
     "@capacitor/local-notifications": "^1.0.8",
     "@capacitor/share": "^1.0.6",
     "@capacitor/status-bar": "^1.0.5",
@@ -53,6 +54,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "resources": "capacitor-resources -p ios",
+    "cap:sync": "npx cap sync && yarn electron:sync",
+    "ios:sync": "npx cap sync ios",
+    "ios:start": "yarn build && yarn ios:sync && npx cap open ios",
     "electron:sync": "npx cap sync @capacitor-community/electron",
     "electron:start": "yarn build && yarn electron:sync && npx cap open @capacitor-community/electron"
   },
@@ -80,6 +85,7 @@
     "@types/draft-js": "^0.11.5",
     "@types/file-saver": "^2.0.3",
     "@types/react-router-dom": "^5.3.0",
+    "capacitor-resources": "^2.0.5",
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.4.1",
     "prettier-plugin-organize-imports": "^2.3.4"
