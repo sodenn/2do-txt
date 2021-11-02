@@ -14,12 +14,12 @@ const Onboarding = () => {
     saveTodoFile,
     tasksLoaded,
     openTaskDialog,
-    setTodoFilePath,
+    selectTodoFile,
   } = useTask();
 
   const handleCreateTaskClick = async () => {
     if (!tasksLoaded) {
-      await setTodoFilePath();
+      await selectTodoFile();
       await saveTodoFile();
     }
     openTaskDialog(true);

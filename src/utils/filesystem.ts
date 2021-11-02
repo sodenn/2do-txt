@@ -1,5 +1,7 @@
 import {
   Filesystem,
+  GetUriOptions,
+  GetUriResult,
   ReadFileResult,
   WriteFileResult,
 } from "@capacitor/filesystem";
@@ -34,6 +36,10 @@ export function useFilesystem() {
   const platform = usePlatform();
   const electronFilesystem = useElectronFilesystem();
 
+  const getUri = useCallback(async (options: GetUriOptions) => {
+    return Filesystem.getUri(options);
+  }, []);
+
   const readFile = useCallback(async (options: ReadFileOptions) => {
     return Filesystem.readFile(options);
   }, []);
@@ -49,11 +55,18 @@ export function useFilesystem() {
   if (platform === "electron") {
     return electronFilesystem;
   } else {
-    return { readFile, writeFile, deleteFile };
+    return { getUri, readFile, writeFile, deleteFile };
   }
 }
 
 function useElectronFilesystem() {
+  const getUri = useCallback(
+    async (options: GetUriOptions): Promise<GetUriResult> => {
+      throw new Error("Not implemented");
+    },
+    []
+  );
+
   const readFile = useCallback(
     async ({ path, encoding }: ReadFileOptions): Promise<ReadFileResult> => {
       const { readFile } = window.electron;
@@ -92,5 +105,5 @@ function useElectronFilesystem() {
     []
   );
 
-  return { readFile, writeFile, deleteFile };
+  return { getUri, readFile, writeFile, deleteFile };
 }
