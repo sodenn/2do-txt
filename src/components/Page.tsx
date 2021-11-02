@@ -1,10 +1,16 @@
-import { Box, Container, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Container, styled, useMediaQuery, useTheme } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
 import TaskDialog from "./TaskDialog";
 import TaskList from "./TaskList/TaskList";
+
+export const StyledContainer = styled(Container)`
+  padding-right: env(safe-area-inset-right);
+  padding-left: env(safe-area-inset-left);
+  padding-bottom: env(safe-area-inset-bottom);
+`;
 
 const Page = () => {
   const theme = useTheme();
@@ -29,11 +35,14 @@ const Page = () => {
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Header divider={scrollTop > 12} />
       <SideSheet />
-      <Box ref={scrollContainer} sx={{ overflowY: "auto", flex: "auto" }}>
-        <Container disableGutters={xs}>
+      <Box
+        ref={scrollContainer}
+        sx={{ overflowY: "auto", flex: "auto", px: xs ? 0 : 1 }}
+      >
+        <StyledContainer disableGutters>
           <TaskList />
           <Onboarding />
-        </Container>
+        </StyledContainer>
       </Box>
       <TaskDialog />
     </Box>
