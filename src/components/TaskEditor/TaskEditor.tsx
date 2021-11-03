@@ -11,6 +11,7 @@ interface TodoEditorProps {
   onEnterPress?: () => void;
   placeholder?: string;
   suggestions: SuggestionData[];
+  paperBackground: boolean;
 }
 
 const StyledBox = styled(Box)(({ theme }) => {
@@ -53,6 +54,7 @@ const TaskEditor = (props: TodoEditorProps) => {
     onChange,
     onEnterPress,
     suggestions = [],
+    paperBackground,
   } = props;
 
   const {
@@ -90,6 +92,7 @@ const TaskEditor = (props: TodoEditorProps) => {
             sx={{
               px: 0.6,
               color: focus ? "primary.main" : "text.secondary",
+              backgroundImage: paperBackground ? "auto" : "unset",
               boxShadow: "none",
             }}
           >

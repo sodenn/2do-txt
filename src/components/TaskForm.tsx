@@ -21,12 +21,20 @@ interface TaskDialogForm {
   fields: Dictionary<string[]>;
   onChange: (value: TaskFormData) => void;
   onEnterPress: () => void;
+  paperBackground: boolean;
 }
 
 const TaskForm = (props: TaskDialogForm) => {
   const platform = usePlatform();
-  const { formData, projects, fields, contexts, onChange, onEnterPress } =
-    props;
+  const {
+    formData,
+    projects,
+    fields,
+    contexts,
+    onChange,
+    onEnterPress,
+    paperBackground,
+  } = props;
   const { t } = useTranslation();
   const [state, setState] = useState({
     key: 0,
@@ -82,6 +90,7 @@ const TaskForm = (props: TaskDialogForm) => {
       <Box sx={{ mb: 2 }}>
         <TaskEditor
           key={state.key}
+          paperBackground={paperBackground}
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           value={formData.body}
