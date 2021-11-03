@@ -1,11 +1,4 @@
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { AppBar, Box, styled, Toolbar, Typography } from "@mui/material";
 import React from "react";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
@@ -18,14 +11,22 @@ interface HeaderProps {
   divider?: boolean;
 }
 
+export const StyledAppBar = styled(AppBar)`
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+`;
+
 const Header = ({ divider = false }: HeaderProps) => {
-  const theme = useTheme();
   const platform = usePlatform();
-  const sm = useMediaQuery(theme.breakpoints.up("sm"));
-  const showTodoFileDownloadButton = platform === "web" && sm;
+  const showTodoFileDownloadButton = platform !== "electron";
   return (
     <Box style={{ flex: "none", marginBottom: 2 }}>
-      <AppBar position="static" color="transparent" elevation={divider ? 1 : 0}>
+      <StyledAppBar
+        position="static"
+        color="transparent"
+        elevation={divider ? 1 : 0}
+      >
         <Toolbar>
           <Box sx={{ mr: 1 }}>
             <SideSheetButton />
@@ -43,16 +44,16 @@ const Header = ({ divider = false }: HeaderProps) => {
             </Typography>
           </Box>
           <SearchBar />
-          <Box sx={{ ml: 1 }}>
+          <Box sx={{ ml: 1, flexGrow: 0 }}>
             <AddTaskButton edgeEnd={!showTodoFileDownloadButton} />
           </Box>
           {showTodoFileDownloadButton && (
-            <Box sx={{ ml: 1 }}>
+            <Box sx={{ ml: 0.5, flexGrow: 0 }}>
               <TodoFileDownloadButton />
             </Box>
           )}
         </Toolbar>
-      </AppBar>
+      </StyledAppBar>
     </Box>
   );
 };

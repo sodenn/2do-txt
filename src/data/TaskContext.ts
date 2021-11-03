@@ -1,4 +1,5 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
+import { Share } from "@capacitor/share";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
 import { useEffect, useMemo, useState } from "react";
@@ -48,7 +49,7 @@ interface State {
 }
 
 const [TaskProvider, useTask] = createContext(() => {
-  const { readFile, writeFile, deleteFile } = useFilesystem();
+  const { getUri, readFile, writeFile, deleteFile } = useFilesystem();
   const { getStorageItem, setStorageItem, removeStorageItem } = useStorage();
   const { enqueueSnackbar } = useSnackbar();
   const { schedule, cancel } = useNotifications();
@@ -233,9 +234,10 @@ const [TaskProvider, useTask] = createContext(() => {
   };
 
   const addTask = ({
+    priority,
     completionDate,
     creationDate,
-    priority,
+    dueDate,
     ...rest
   }: TaskFormData) => {
     const { projects, contexts, fields } = parseTaskBody(rest.body);
@@ -259,6 +261,9 @@ const [TaskProvider, useTask] = createContext(() => {
     if (creationDate) {
       newTask.creationDate = creationDate;
     }
+    if (dueDate) {
+      newTask.dueDate = dueDate;
+    }
     newTask.raw = stringifyTask(newTask);
 
     scheduleDueTaskNotification(newTask);
@@ -270,9 +275,10 @@ const [TaskProvider, useTask] = createContext(() => {
   };
 
   const editTask = ({
+    priority,
     completionDate,
     creationDate,
-    priority,
+    dueDate,
     ...rest
   }: TaskFormData) => {
     const newTaskList = taskList.map((t) => {
@@ -290,6 +296,9 @@ const [TaskProvider, useTask] = createContext(() => {
         }
         if (creationDate) {
           updatedTask.creationDate = creationDate;
+        }
+        if (dueDate) {
+          updatedTask.dueDate = dueDate;
         }
         scheduleDueTaskNotification(updatedTask);
         return updatedTask;
@@ -370,20 +379,16 @@ const [TaskProvider, useTask] = createContext(() => {
         delete newValue.selectedTask;
         if (path) {
           newValue.todoFilePath = path;
-        } else {
-          delete newValue.todoFilePath;
         }
         return newValue;
       });
     }
   };
 
-  const saveTodoFile = async (text?: string) => {
-    const pathFromStorage = await getStorageItem("todo-txt-path");
-    const todoFilePath = pathFromStorage ?? defaultPath;
+  const saveTodoFile = async (text = "") => {
     await writeFile({
-      path: todoFilePath,
-      data: text ?? "",
+      path: state.todoFilePath || defaultPath,
+      data: text,
       directory: Directory.Documents,
       encoding: Encoding.UTF8,
     });
@@ -396,7 +401,17 @@ const [TaskProvider, useTask] = createContext(() => {
     FileSaver.saveAs(blob, "todo.txt");
   };
 
-  const setTodoFilePath = async () => {
+  const shareTodoFile = async () => {
+    if (state.todoFilePath) {
+      const { uri } = await getUri({
+        directory: Directory.Documents,
+        path: state.todoFilePath,
+      });
+      await Share.share({ url: uri });
+    }
+  };
+
+  const selectTodoFile = async () => {
     let path = defaultPath;
     if (platform === "electron") {
       const selectedPath = await window.electron.selectDir(
@@ -480,7 +495,7 @@ const [TaskProvider, useTask] = createContext(() => {
           contexts: parseResult.contexts,
           fields: parseResult.fields,
           tasksLoaded: true,
-          todoFilePath: platform === "electron" && path ? path : undefined,
+          todoFilePath: path ?? defaultPath,
         }));
         scheduleDueTaskNotifications(parseResult.taskList);
       } else {
@@ -497,9 +512,10 @@ const [TaskProvider, useTask] = createContext(() => {
   return {
     saveTodoFile,
     downloadTodoFile,
+    shareTodoFile,
     closeTodoFile,
     loadTodoFile,
-    setTodoFilePath,
+    selectTodoFile,
     addTask,
     editTask,
     deleteTask,

@@ -4,7 +4,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
-import { Kbd } from "./Kbd";
+import Kbd from "./Kbd";
 
 const SideSheetButton = () => {
   const { t } = useTranslation();

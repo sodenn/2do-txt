@@ -56,6 +56,7 @@ const LocalizationDatePicker = forwardRef<
         value={value}
         clearable
         allowSameDateSelection
+        onAccept={handleChange}
         toolbarTitle={
           resolvedLanguage !== "en"
             ? (t("datePicker.toolbarTitle") as any)
@@ -82,7 +83,6 @@ const LocalizationDatePicker = forwardRef<
             : undefined
         }
         mask={maskMap[resolvedLanguage]}
-        onChange={handleChange}
         renderInput={(params) => <TextField {...params} fullWidth />}
       />
     </LocalizationProvider>

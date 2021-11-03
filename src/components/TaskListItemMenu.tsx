@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import { Task } from "../utils/task";
-import { Kbd } from "./Kbd";
+import Kbd from "./Kbd";
 
 const ListIconButton = styled(IconButton)`
   padding: 9px;

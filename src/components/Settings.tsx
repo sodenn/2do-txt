@@ -13,12 +13,14 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
 import { useTask } from "../data/TaskContext";
 import { useNotifications } from "../utils/notifications";
-import LanguageButton from "./LanguageButton";
-import ThemeModeButton from "./ThemeModeButton";
+import { usePlatform } from "../utils/platform";
+import LanguageSelect from "./LanguageSelect";
+import ThemeModeSelect from "./ThemeModeSelect";
 import TodoFilePicker from "./TodoFilePicker";
 
 const Settings = () => {
   const { t } = useTranslation();
+  const platform = usePlatform();
   const { checkPermissions, requestPermissions } = useNotifications();
   const { setSideSheetOpen, showNotifications, setShowNotifications } =
     useAppContext();
@@ -47,18 +49,26 @@ const Settings = () => {
     }
   };
 
+  const showTodoFilePath = !!todoFilePath && platform === "electron";
+
   return (
     <>
       <Typography component="div" variant="subtitle1" gutterBottom>
         {t("Appearance")}
       </Typography>
-      <Box sx={{ mb: 3 }}>
-        <ThemeModeButton />
+      <Box sx={{ mb: 2 }}>
+        <ThemeModeSelect />
+      </Box>
+      <Typography component="div" variant="subtitle1" gutterBottom>
+        {t("Language")}
+      </Typography>
+      <Box sx={{ mb: 2 }}>
+        <LanguageSelect />
       </Box>
       <Typography component="div" variant="subtitle1" gutterBottom>
         todo.txt
       </Typography>
-      <Stack direction="row" spacing={1} sx={{ mb: todoFilePath ? 1 : 3 }}>
+      <Stack direction="row" spacing={1} sx={{ mb: showTodoFilePath ? 1 : 2 }}>
         <TodoFilePicker onSelect={() => setSideSheetOpen(false)}>
           {t("Open")}
         </TodoFilePicker>
@@ -73,21 +83,15 @@ const Settings = () => {
           </Button>
         )}
       </Stack>
-      {todoFilePath && (
+      {showTodoFilePath && (
         <Alert
           severity="info"
-          sx={{ mb: 3, wordBreak: "break-all", userSelect: "text" }}
+          sx={{ mb: 2, wordBreak: "break-all", userSelect: "text" }}
         >
           {t("Current file", { filePath: todoFilePath })}
         </Alert>
       )}
-      <Typography component="div" variant="subtitle1" gutterBottom>
-        {t("Language")}
-      </Typography>
-      <Box sx={{ mb: 2 }}>
-        <LanguageButton />
-      </Box>
-      <Typography component="div" variant="subtitle1" gutterBottom>
+      <Typography component="div" variant="subtitle1">
         {t("Dates")}
       </Typography>
       <Box sx={{ mb: 2 }}>
@@ -110,7 +114,7 @@ const Settings = () => {
           label={t("Set completion date")}
         />
       </Box>
-      <Typography component="div" variant="subtitle1" gutterBottom>
+      <Typography component="div" variant="subtitle1">
         {t("Notifications")}
       </Typography>
       <FormControlLabel

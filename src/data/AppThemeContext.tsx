@@ -1,14 +1,15 @@
+import { StatusBar, Style } from "@capacitor/status-bar";
 import {
   createTheme,
   PaletteMode,
   ThemeOptions,
   useMediaQuery,
 } from "@mui/material";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createContext } from "../utils/Context";
 import { useStorage } from "../utils/storage";
 
-type SelectedMode = PaletteMode | "system";
+export type ThemeMode = PaletteMode | "system";
 
 const commonThemeOptions: ThemeOptions = {
   components: {
@@ -50,7 +51,7 @@ const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
 });
 
 const getMode = (
-  selectedMode: SelectedMode,
+  selectedMode: ThemeMode,
   prefersDarkMode: boolean
 ): PaletteMode => {
   if (selectedMode === "light" || selectedMode === "dark") {
@@ -64,27 +65,35 @@ export const [AppThemeProvider, useAppTheme] = createContext(() => {
   const init = useRef(false);
   const { getStorageItem, setStorageItem } = useStorage();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const [selectedMode, setSelectedMode] = useState<SelectedMode>("system");
+  const [selectedMode, _setSelectedMode] = useState<ThemeMode>("system");
   const mode = getMode(selectedMode, prefersDarkMode);
   const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
-  const getSelectedMode = useCallback(
-    () =>
-      getStorageItem("theme-mode").then((value) => {
+  const setSelectedMode = (mode: ThemeMode) => {
+    _setSelectedMode(mode);
+    StatusBar.setStyle({
+      style:
+        mode === "light"
+          ? Style.Light
+          : mode === "dark"
+          ? Style.Dark
+          : Style.Default,
+    }).catch((error) => void error);
+  };
+
+  useEffect(() => {
+    getStorageItem("theme-mode")
+      .then((value) => {
         if (value === "light" || value === "dark") {
           return value;
         } else {
           return "system";
         }
-      }),
-    [getStorageItem]
-  );
-
-  useEffect(() => {
-    getSelectedMode().then((mode) => {
-      setSelectedMode(mode);
-      init.current = true;
-    });
+      })
+      .then((mode) => {
+        setSelectedMode(mode);
+        init.current = true;
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prefersDarkMode]);
 
@@ -92,7 +101,16 @@ export const [AppThemeProvider, useAppTheme] = createContext(() => {
     if (init.current) {
       setStorageItem("theme-mode", selectedMode);
     }
-  }, [setStorageItem, selectedMode]);
+    const themeColorMetaTag = document.querySelector(
+      'meta[name="theme-color"]'
+    );
+    if (themeColorMetaTag) {
+      themeColorMetaTag.setAttribute(
+        "content",
+        theme.palette.background.default
+      );
+    }
+  }, [setStorageItem, selectedMode, theme]);
 
   return {
     mode,
