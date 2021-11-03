@@ -12,7 +12,7 @@ const StyledPaper = styled(Paper)`
   display: flex;
   flex-direction: column;
   flex: 1;
-  width: 340px;
+  width: 320px;
 `;
 
 const SaveAreaHeader = styled("div")`
