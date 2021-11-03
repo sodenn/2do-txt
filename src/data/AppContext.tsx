@@ -11,7 +11,7 @@ const [AppContextProvider, useAppContext] = createContext(() => {
   const { i18n } = useTranslation();
   const { getStorageItem, setStorageItem } = useStorage();
   const [sideSheetOpen, setSideSheetOpen] = useState(false);
-  const [language, setLanguage] = useState(i18n.resolvedLanguage);
+  const [language, setLanguage] = useState(i18n.resolvedLanguage || "en");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortKey>("");
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
