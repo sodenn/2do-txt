@@ -56,5 +56,8 @@
   "Menu": "Menü",
   "Add task": "Aufgabe hinzufügen",
   "Without priority": "Ohne Priorität",
-  "Without due date": "Ohne Fälligkeit"
+  "Without due date": "Ohne Fälligkeit",
+  "@Context": "@Kontext",
+  "+Project": "+Projekt",
+  "Filter": "Filter"
 }

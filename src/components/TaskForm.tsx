@@ -1,8 +1,9 @@
-import { Box, Grid, Stack } from "@mui/material";
+import { Box, Button, Grid, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "../utils/date";
-import { TaskFormData } from "../utils/task";
+import { usePlatform } from "../utils/platform";
+import { parseTaskBody, TaskFormData } from "../utils/task";
 import {
   taskContextStyle,
   taskFieldStyle,
@@ -22,48 +23,36 @@ interface TaskDialogForm {
   onEnterPress: () => void;
 }
 
-function getFieldSuggestions(
-  fields: Dictionary<string[]>,
-  formData: TaskFormData
-) {
-  const fieldSuggestions = Object.entries(fields).map(([key, value]) => ({
-    trigger: `${key}:`,
-    suggestions: value,
-    styleClass: taskFieldStyle,
-  }));
-
-  const dueDate = formData.dueDate;
-  const dueFields = fieldSuggestions.find((i) => i.trigger === "due:");
-
-  if (!dueFields && dueDate) {
-    fieldSuggestions.push({
-      trigger: "due:",
-      suggestions: [formatDate(dueDate)],
-      styleClass: taskFieldStyle,
-    });
-  } else if (dueFields && dueDate) {
-    dueFields.suggestions = [
-      ...dueFields.suggestions,
-      formatDate(dueDate),
-    ].filter((i, pos, self) => self.indexOf(i) === pos);
-  }
-
-  return fieldSuggestions;
-}
-
 const TaskForm = (props: TaskDialogForm) => {
+  const platform = usePlatform();
   const { formData, projects, fields, contexts, onChange, onEnterPress } =
     props;
   const { t } = useTranslation();
-  const [_projects] = useState(projects);
-  const [_contexts] = useState(contexts);
-  const fieldSuggestions = getFieldSuggestions(fields, formData);
-  const [formKey, setFormKey] = useState(0);
+  const [state, setState] = useState({
+    key: 0,
+    projects,
+    contexts,
+    fields,
+  });
+
+  const rerenderEditor = (body: string) => {
+    const { projects, contexts, fields } = parseTaskBody(body);
+    setState((state) => ({
+      key: state.key + 1,
+      projects: [...state.projects, ...projects].filter(
+        (item, i, ar) => ar.indexOf(item) === i
+      ),
+      contexts: [...state.contexts, ...contexts].filter(
+        (item, i, ar) => ar.indexOf(item) === i
+      ),
+      fields: Object.assign(state.fields, fields),
+    }));
+  };
 
   const handleDueDateChange = (value: Date | null) => {
     let newBody: string;
     const bodyWithoutDueDate = formData.body
-      .replace(/due:[^/:][^:]*/g, "")
+      .replace(/due:[\S]+\s?/g, "")
       .trim();
     if (value) {
       const dueDateTag = `due:${formatDate(value)}`;
@@ -72,11 +61,17 @@ const TaskForm = (props: TaskDialogForm) => {
       newBody = bodyWithoutDueDate;
     }
     onChange({ ...formData, body: newBody, dueDate: value ?? undefined });
-    setFormKey((key) => key + 1);
+    rerenderEditor(newBody);
+  };
+
+  const handleAddTag = (key: string) => {
+    const newBody = `${formData.body} ${key}`.trimStart();
+    onChange({ ...formData, body: newBody });
+    rerenderEditor(newBody);
   };
 
   useEffect(() => {
-    if (!/due:[^/:][^:]*/g.test(formData.body)) {
+    if (!/due:[\S]+\s?/g.test(formData.body)) {
       onChange({ ...formData, dueDate: undefined });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,28 +81,57 @@ const TaskForm = (props: TaskDialogForm) => {
     <Stack>
       <Box sx={{ mb: 2 }}>
         <TaskEditor
-          key={formKey}
+          key={state.key}
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           value={formData.body}
           suggestions={[
             {
               trigger: "+",
-              suggestions: _projects,
+              suggestions: state.projects,
               styleClass: taskProjectStyle,
             },
             {
               trigger: "@",
-              suggestions: _contexts,
+              suggestions: state.contexts,
               styleClass: taskContextStyle,
             },
-            ...fieldSuggestions,
+            ...Object.entries(state.fields).map(([key, value]) => ({
+              trigger: `${key}:`,
+              suggestions: value,
+              styleClass: taskFieldStyle,
+            })),
           ]}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           onEnterPress={onEnterPress}
         />
       </Box>
       <Grid spacing={2} container>
+        {(platform === "ios" || platform === "android") && (
+          <Grid item xs={12} sm={6}>
+            <Box sx={{ display: "flex", flex: 1, height: "100%" }}>
+              <Button
+                sx={{ mr: 1 }}
+                fullWidth
+                variant="outlined"
+                color="primary"
+                size="large"
+                onClick={() => handleAddTag("@")}
+              >
+                {t("@Context")}
+              </Button>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="primary"
+                size="large"
+                onClick={() => handleAddTag("+")}
+              >
+                {t("+Project")}
+              </Button>
+            </Box>
+          </Grid>
+        )}
         <Grid item xs={12} sm={6}>
           <PrioritySelect
             value={formData.priority}

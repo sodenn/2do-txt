@@ -2,8 +2,8 @@ import {
   Box,
   Checkbox,
   FormControlLabel,
-  Radio,
-  RadioGroup,
+  MenuItem,
+  Select,
   Typography,
 } from "@mui/material";
 import React from "react";
@@ -126,7 +126,7 @@ const Filter = () => {
       {taskList.filter((t) => t.completed).length > 0 &&
         taskList.filter((t) => !t.completed).length > 0 && (
           <>
-            <Typography component="div" variant="subtitle1" gutterBottom>
+            <Typography component="div" variant="subtitle1">
               {t("Status")}
             </Typography>
             <FormControlLabel
@@ -146,28 +146,18 @@ const Filter = () => {
           <Typography component="div" variant="subtitle1" gutterBottom>
             {t("Sort by")}
           </Typography>
-          <RadioGroup
-            aria-label="sortby"
+          <Select
+            fullWidth
+            size="small"
             defaultValue=""
+            displayEmpty
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value as SortKey)}
           >
-            <FormControlLabel
-              value="priority"
-              control={<Radio />}
-              label={t("Priority")}
-            />
-            <FormControlLabel
-              value="dueDate"
-              control={<Radio />}
-              label={t("Due Date")}
-            />
-            <FormControlLabel
-              value=""
-              control={<Radio />}
-              label={t("No sorting")}
-            />
-          </RadioGroup>
+            <MenuItem value="priority">{t("Priority")}</MenuItem>
+            <MenuItem value="dueDate">{t("Due Date")}</MenuItem>
+            <MenuItem value="">{t("No sorting")}</MenuItem>
+          </Select>
         </>
       )}
     </>

@@ -1,5 +1,6 @@
 import { Box, Chip, List, ListSubheader } from "@mui/material";
 import React, { createRef, useState } from "react";
+import { useAppContext } from "../../data/AppContext";
 import { useTask } from "../../data/TaskContext";
 import { useAddShortcutListener } from "../../utils/shortcuts";
 import { Task } from "../../utils/task";
@@ -14,6 +15,7 @@ const TaskList = () => {
     openTaskDialog,
     deleteTask,
   } = useTask();
+  const { sortBy } = useAppContext();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
 
   useAddShortcutListener(
@@ -100,7 +102,7 @@ const TaskList = () => {
                     <Chip
                       label={group.groupKey}
                       variant="outlined"
-                      color="secondary"
+                      color={sortBy === "dueDate" ? "warning" : "secondary"}
                     />
                   </ListSubheader>
                 )}

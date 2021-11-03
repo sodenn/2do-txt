@@ -9,7 +9,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createContext } from "../utils/Context";
 import { useStorage } from "../utils/storage";
 
-type SelectedMode = PaletteMode | "system";
+export type ThemeMode = PaletteMode | "system";
 
 const commonThemeOptions: ThemeOptions = {
   components: {
@@ -51,7 +51,7 @@ const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
 });
 
 const getMode = (
-  selectedMode: SelectedMode,
+  selectedMode: ThemeMode,
   prefersDarkMode: boolean
 ): PaletteMode => {
   if (selectedMode === "light" || selectedMode === "dark") {
@@ -65,11 +65,11 @@ export const [AppThemeProvider, useAppTheme] = createContext(() => {
   const init = useRef(false);
   const { getStorageItem, setStorageItem } = useStorage();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const [selectedMode, _setSelectedMode] = useState<SelectedMode>("system");
+  const [selectedMode, _setSelectedMode] = useState<ThemeMode>("system");
   const mode = getMode(selectedMode, prefersDarkMode);
   const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
-  const setSelectedMode = (mode: SelectedMode) => {
+  const setSelectedMode = (mode: ThemeMode) => {
     _setSelectedMode(mode);
     StatusBar.setStyle({
       style:
@@ -78,7 +78,7 @@ export const [AppThemeProvider, useAppTheme] = createContext(() => {
           : mode === "dark"
           ? Style.Dark
           : Style.Default,
-    }).catch((error) => console.debug(error));
+    }).catch((error) => void error);
   };
 
   useEffect(() => {

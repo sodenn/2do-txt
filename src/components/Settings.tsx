@@ -14,8 +14,8 @@ import { useAppContext } from "../data/AppContext";
 import { useTask } from "../data/TaskContext";
 import { useNotifications } from "../utils/notifications";
 import { usePlatform } from "../utils/platform";
-import LanguageButton from "./LanguageButton";
-import ThemeModeButton from "./ThemeModeButton";
+import LanguageSelect from "./LanguageSelect";
+import ThemeModeSelect from "./ThemeModeSelect";
 import TodoFilePicker from "./TodoFilePicker";
 
 const Settings = () => {
@@ -57,13 +57,13 @@ const Settings = () => {
         {t("Appearance")}
       </Typography>
       <Box sx={{ mb: 2 }}>
-        <ThemeModeButton />
+        <ThemeModeSelect />
       </Box>
       <Typography component="div" variant="subtitle1" gutterBottom>
         {t("Language")}
       </Typography>
       <Box sx={{ mb: 2 }}>
-        <LanguageButton />
+        <LanguageSelect />
       </Box>
       <Typography component="div" variant="subtitle1" gutterBottom>
         todo.txt
@@ -91,7 +91,7 @@ const Settings = () => {
           {t("Current file", { filePath: todoFilePath })}
         </Alert>
       )}
-      <Typography component="div" variant="subtitle1" gutterBottom>
+      <Typography component="div" variant="subtitle1">
         {t("Dates")}
       </Typography>
       <Box sx={{ mb: 2 }}>
@@ -114,7 +114,7 @@ const Settings = () => {
           label={t("Set completion date")}
         />
       </Box>
-      <Typography component="div" variant="subtitle1" gutterBottom>
+      <Typography component="div" variant="subtitle1">
         {t("Notifications")}
       </Typography>
       <FormControlLabel
