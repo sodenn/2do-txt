@@ -15,11 +15,19 @@ const TodoFileDownloadButton = () => {
   const { downloadTodoFile, shareTodoFile } = useTask();
 
   const download = () => {
-    shareTodoFile().catch((error) => {
-      if (error.message && error.message.includes("Share API not available")) {
-        downloadTodoFile();
-      }
-    });
+    if (platform === "web" || platform === "electron") {
+      downloadTodoFile();
+    } else {
+      shareTodoFile().catch((error) => {
+        if (
+          error.message &&
+          error.message.includes("Share API not available")
+        ) {
+          // download as a fallback
+          downloadTodoFile();
+        }
+      });
+    }
   };
 
   useAddShortcutListener(() => download(), ["t"]);

@@ -78,7 +78,7 @@ export const [AppThemeProvider, useAppTheme] = createContext(() => {
           : mode === "dark"
           ? Style.Dark
           : Style.Default,
-    }).catch((error) => console.debug(error));
+    }).catch((error) => void error);
   };
 
   useEffect(() => {
