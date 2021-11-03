@@ -1,3 +1,6 @@
+const ISO_8601_FULL =
+  /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
+
 export function formatLocaleDate(date: Date, locale?: string) {
   return date.toLocaleDateString(locale, {
     day: "2-digit",
@@ -22,6 +25,13 @@ export function today(): Date {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
   return now;
+}
+
+export function dateReviver(key: string, value: any) {
+  if (typeof value === "string" && ISO_8601_FULL.test(value)) {
+    return new Date(value);
+  }
+  return value;
 }
 
 export const isDate = (date: Date | undefined): date is Date => !!date;
