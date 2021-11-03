@@ -8,7 +8,8 @@ type Keys =
   | "create-creation-date"
   | "line-ending"
   | "show-notifications"
-  | "create-completion-date";
+  | "create-completion-date"
+  | "received-notifications";
 
 export function useStorage() {
   const getStorageItem = useCallback(async (key: Keys) => {
