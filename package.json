@@ -53,6 +53,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "lint": "eslint ./src --ext .ts,.tsx",
+    "format": "prettier --check ./src",
     "electron:sync": "npx cap sync @capacitor-community/electron",
     "electron:start": "yarn build && yarn electron:sync && npx cap open @capacitor-community/electron"
   },
