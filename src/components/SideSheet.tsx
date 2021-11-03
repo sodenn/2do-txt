@@ -1,14 +1,6 @@
 import { TabContext, TabPanel } from "@mui/lab";
-import {
-  Box,
-  Paper,
-  styled,
-  SwipeableDrawer,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import React from "react";
+import { Box, Paper, styled, SwipeableDrawer, Tab, Tabs } from "@mui/material";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
 import { useTask } from "../data/TaskContext";
@@ -36,19 +28,32 @@ const SaveAreaContent = styled("div")`
 const SideSheet = () => {
   const { t } = useTranslation();
   const { sideSheetOpen, setSideSheetOpen } = useAppContext();
-  const { priorities, projects, contexts, fields, taskList } = useTask();
-  const [tab, setTab] = React.useState<string>("filter");
+  const { priorities, projects, contexts, fields, taskList, tasksLoaded } =
+    useTask();
 
   const hideFilter =
-    taskList.filter((t) => t.completed).length === 0 &&
-    Object.keys(priorities).length === 0 &&
-    Object.keys(projects).length === 0 &&
-    Object.keys(contexts).length === 0 &&
-    Object.keys(fields).length === 0;
+    !tasksLoaded ||
+    (taskList.filter((t) => t.completed).length === 0 &&
+      Object.keys(priorities).length === 0 &&
+      Object.keys(projects).length === 0 &&
+      Object.keys(contexts).length === 0 &&
+      Object.keys(fields).length === 0);
+
+  const [tab, setTab] = React.useState<string>(
+    hideFilter ? "settings" : "filter"
+  );
 
   const handleChange = (event: any, newValue: string) => {
     setTab(newValue);
   };
+
+  useEffect(() => {
+    if (hideFilter) {
+      setTab("settings");
+    } else {
+      setTab("filter");
+    }
+  }, [hideFilter]);
 
   return (
     <SwipeableDrawer
@@ -59,52 +64,28 @@ const SideSheet = () => {
       onClose={() => setSideSheetOpen(false)}
     >
       <StyledPaper elevation={0} square>
-        {hideFilter && (
-          <>
-            <Box
-              sx={{
-                px: 2,
-                py: 1,
-                flex: "none",
-                borderBottom: 1,
-                borderColor: "divider",
-              }}
-            >
-              <SaveAreaHeader>
-                <Typography variant="h6" component="div">
-                  {t("Settings")}
-                </Typography>
-              </SaveAreaHeader>
-            </Box>
-            <Box sx={{ p: 2, overflowY: "auto", flex: "auto" }}>
-              <SaveAreaContent>
-                <Settings />
-              </SaveAreaContent>
-            </Box>
-          </>
-        )}
-        {!hideFilter && (
-          <TabContext value={tab}>
-            <Box sx={{ flex: "none", borderBottom: 1, borderColor: "divider" }}>
-              <SaveAreaHeader>
-                <Tabs value={tab} onChange={handleChange}>
-                  <Tab label={t("Filter")} value="filter" />
-                  <Tab label={t("Settings")} value="settings" />
-                </Tabs>
-              </SaveAreaHeader>
-            </Box>
-            <Box sx={{ overflowY: "auto", flex: "auto" }}>
-              <SaveAreaContent>
+        <TabContext value={tab}>
+          <Box sx={{ flex: "none", borderBottom: 1, borderColor: "divider" }}>
+            <SaveAreaHeader>
+              <Tabs value={tab} onChange={handleChange}>
+                {!hideFilter && <Tab label={t("Filter")} value="filter" />}
+                <Tab label={t("Settings")} value="settings" />
+              </Tabs>
+            </SaveAreaHeader>
+          </Box>
+          <Box sx={{ overflowY: "auto", flex: "auto" }}>
+            <SaveAreaContent>
+              {!hideFilter && (
                 <TabPanel value="filter">
                   <Filter />
                 </TabPanel>
-                <TabPanel value="settings">
-                  <Settings />
-                </TabPanel>
-              </SaveAreaContent>
-            </Box>
-          </TabContext>
-        )}
+              )}
+              <TabPanel value="settings">
+                <Settings />
+              </TabPanel>
+            </SaveAreaContent>
+          </Box>
+        </TabContext>
       </StyledPaper>
     </SwipeableDrawer>
   );
