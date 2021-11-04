@@ -1,12 +1,18 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
+import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { groupBy } from "../utils/array";
 import { createContext } from "../utils/Context";
-import { formatDate, formatLocaleDate, parseDate, today } from "../utils/date";
+import {
+  formatDate,
+  formatLocaleDate,
+  parseDate,
+  todayDate,
+} from "../utils/date";
 import { useFilesystem } from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
 import { useNotifications } from "../utils/notifications";
@@ -319,7 +325,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const completeTask = async (task: Task) => {
     const updatedTask = { ...task, completed: !task.completed };
     if (createCompletionDate && updatedTask.completed) {
-      updatedTask.completionDate = today();
+      updatedTask.completionDate = todayDate();
     } else {
       delete updatedTask.completionDate;
     }
@@ -442,27 +448,30 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const scheduleDueTaskNotification = async (task: Task) => {
     const showNotifications = await getStorageItem("show-notifications");
-    if (showNotifications !== "true" || task.completed) {
+
+    const today = todayDate();
+
+    if (
+      showNotifications !== "true" ||
+      task.completed ||
+      !task.dueDate ||
+      isBefore(task.dueDate, today)
+    ) {
       return;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const scheduleAt = subHours(task.dueDate, 12);
 
-    if (task.dueDate && task.dueDate.getTime() >= today.getTime()) {
-      const at = task.dueDate;
-      at.setHours(at.getHours() - 12);
-      scheduleNotifications({
-        notifications: [
-          {
-            title: t("Reminder"),
-            body: task.body,
-            id: hashCode(task.raw),
-            schedule: { at },
-          },
-        ],
-      });
-    }
+    scheduleNotifications({
+      notifications: [
+        {
+          title: t("Reminder"),
+          body: task.body,
+          id: hashCode(task.raw),
+          schedule: { at: scheduleAt },
+        },
+      ],
+    });
   };
 
   const scheduleDueTaskNotifications = async (taskList: Task[]) => {
