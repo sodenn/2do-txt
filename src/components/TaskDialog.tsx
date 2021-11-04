@@ -120,7 +120,6 @@ const TaskDialog = () => {
               fields={fields}
               onChange={handleChange}
               onEnterPress={handleSave}
-              paperBackground={false}
             />
           </Box>
         </>
@@ -138,7 +137,6 @@ const TaskDialog = () => {
               fields={fields}
               onChange={handleChange}
               onEnterPress={handleSave}
-              paperBackground={true}
             />
           </DialogContent>
           <DialogActions>
