@@ -1,6 +1,6 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
-import { isBefore } from "date-fns";
+import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
 import { useEffect, useMemo, useState } from "react";
@@ -460,8 +460,7 @@ const [TaskProvider, useTask] = createContext(() => {
       return;
     }
 
-    const scheduleAt = task.dueDate;
-    scheduleAt.setHours(scheduleAt.getHours() - 12);
+    const scheduleAt = subHours(task.dueDate, 12);
 
     scheduleNotifications({
       notifications: [
