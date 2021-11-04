@@ -4,6 +4,7 @@ import {
   LocalNotificationSchema,
   ScheduleOptions,
 } from "@capacitor/local-notifications";
+import { isAfter, subDays } from "date-fns";
 import { useCallback, useEffect } from "react";
 import { dateReviver } from "./date";
 import { useStorage } from "./storage";
@@ -46,11 +47,10 @@ export function useNotifications() {
     const interval = setInterval(async () => {
       const receivedNotifications = await getReceivedNotifications();
 
-      const day = 1000 * 60 * 60 * 24;
-      const yesterday = Date.now() - day;
+      const twoDaysAgo = subDays(new Date(), 2);
 
-      const newValue = receivedNotifications.filter(
-        (item) => item.receivingDate.getTime() > yesterday
+      const newValue = receivedNotifications.filter((item) =>
+        isAfter(item.receivingDate, twoDaysAgo)
       );
 
       setStorageItem("received-notifications", JSON.stringify(newValue));
