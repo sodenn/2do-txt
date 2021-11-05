@@ -1,5 +1,5 @@
 import Editor from "@draft-js-plugins/editor";
-import { Box, Paper, styled, useTheme } from "@mui/material";
+import { styled, useTheme } from "@mui/material";
 import "draft-js/dist/Draft.css";
 import React, { createRef, useEffect } from "react";
 import { SuggestionData, useTodoEditor } from "./task-editor-hook";
@@ -13,13 +13,13 @@ interface TodoEditorProps {
   suggestions: SuggestionData[];
 }
 
-const StyledBox = styled(Box)(({ theme }) => {
+const Fieldset = styled("fieldset")(({ theme }) => {
   const borderColor =
     theme.palette.mode === "light"
       ? "rgba(0, 0, 0, 0.23)"
       : "rgba(255, 255, 255, 0.23)";
   return {
-    padding: "16.5px 14px",
+    margin: 0,
     borderRadius: theme.shape.borderRadius,
     borderWidth: 1,
     borderColor: borderColor,
@@ -31,21 +31,15 @@ const StyledBox = styled(Box)(({ theme }) => {
   };
 });
 
-const Label = styled("label")(() => {
-  return {
-    fontSize: "0.8em",
-    display: "inline-block",
-    marginLeft: 10,
-    marginBottom: -16,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  };
-});
+const Legend = styled("legend")`
+  margin-left: -5px;
+  font-size: 12px;
+  padding: 0 4px;
+`;
 
 const TaskEditor = (props: TodoEditorProps) => {
   const theme = useTheme();
-  const editorContainerRef = createRef<HTMLDivElement>();
+  const editorContainerRef = createRef<HTMLFieldSetElement>();
   const {
     value,
     placeholder,
@@ -77,41 +71,29 @@ const TaskEditor = (props: TodoEditorProps) => {
   useEffect(() => {
     setTimeout(() => {
       ref.current?.focus();
-    });
+    }, 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div>
-      {label && (
-        <Label>
-          <Paper
-            elevation={24}
-            sx={{
-              px: 0.6,
-              color: focus ? "primary.main" : "text.secondary",
-              boxShadow: "none",
-            }}
-          >
-            {label}
-          </Paper>
-        </Label>
-      )}
-      <StyledBox
+      <Fieldset
         ref={editorContainerRef}
-        onClick={() => {
-          ref.current!.focus();
-        }}
         style={
           focus
             ? {
                 borderColor: theme.palette.primary.main,
                 borderWidth: 2,
-                padding: "14px 14px",
+                padding: "7px 13px 12px 13px",
               }
-            : { padding: "15px 15px" }
+            : { padding: "7px 14px 13px 14px" }
         }
       >
+        {label && (
+          <Legend sx={{ color: focus ? "primary.main" : "text.secondary" }}>
+            {label}
+          </Legend>
+        )}
         <Editor
           placeholder={placeholder}
           editorKey="editor"
@@ -151,7 +133,7 @@ const TaskEditor = (props: TodoEditorProps) => {
             return null;
           }
         })}
-      </StyledBox>
+      </Fieldset>
     </div>
   );
 };

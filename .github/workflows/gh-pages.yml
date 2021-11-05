@@ -22,7 +22,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
-      - run: yarn test
       - run: yarn build
         env:
           PUBLIC_URL: https://sodenn.github.io/2do-txt

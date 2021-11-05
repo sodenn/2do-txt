@@ -3,6 +3,7 @@ import { Button, styled } from "@mui/material";
 import React, { ChangeEvent, PropsWithChildren } from "react";
 import { useTask } from "../data/TaskContext";
 import { usePlatform } from "../utils/platform";
+import { Task } from "../utils/task";
 import { generateId } from "../utils/uuid";
 
 const Input = styled("input")({
@@ -17,7 +18,8 @@ const TodoFilePicker = ({
   onSelect,
   children,
 }: PropsWithChildren<FilePickerProps>) => {
-  const { loadTodoFile, saveTodoFile } = useTask();
+  const { loadTodoFile, saveTodoFile, scheduleDueTaskNotifications } =
+    useTask();
   const platform = usePlatform();
   const id = generateId();
 
@@ -25,19 +27,21 @@ const TodoFilePicker = ({
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       const fileReader = new FileReader();
-      fileReader.onloadend = () => {
+      fileReader.onloadend = async () => {
         const content = fileReader.result;
 
         if (typeof content !== "string") {
           return;
         }
 
+        let taskList: Task[];
         if (platform === "electron") {
           // Note: Electron adds a path property to the file object
-          loadTodoFile(content, (file as any).path);
+          taskList = await loadTodoFile(content, (file as any).path);
         } else {
-          saveTodoFile(content);
+          taskList = await saveTodoFile(content);
         }
+        scheduleDueTaskNotifications(taskList);
 
         if (onSelect) {
           onSelect();

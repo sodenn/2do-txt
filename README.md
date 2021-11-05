@@ -6,8 +6,8 @@
 
 [![CI status][github-action-image]][github-action-url]
 
-[github-action-image]: https://github.com/sodenn/2do-txt/actions/workflows/test.yml/badge.svg
-[github-action-url]: https://github.com/sodenn/2do-txt/actions/workflows/test.yml
+[github-action-image]: https://github.com/sodenn/2do-txt/actions/workflows/ci.yml/badge.svg
+[github-action-url]: https://github.com/sodenn/2do-txt/actions/workflows/ci.yml
 
 **2do.txt** is a [todo.txt](http://todotxt.org) compatible task manager. It should simplify the work with the [todo.txt format](https://github.com/todotxt/todo.txt) by providing additional convenience functions such as autocomplete for contexts and projects or filtering and sorting.
 

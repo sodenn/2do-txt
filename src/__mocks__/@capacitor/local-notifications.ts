@@ -1,5 +1,6 @@
 import {
   CancelOptions,
+  LocalNotificationSchema,
   ScheduleOptions,
   ScheduleResult,
 } from "@capacitor/local-notifications";
@@ -18,4 +19,9 @@ export const LocalNotifications = {
     return { display: "granted" };
   },
   async cancel(options: CancelOptions): Promise<void> {},
+  addListener(
+    eventName: string,
+    listenerFunc: (notification: LocalNotificationSchema) => void
+  ) {},
+  removeAllListeners() {},
 };

@@ -21,7 +21,8 @@ import TodoFilePicker from "./TodoFilePicker";
 const Settings = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { checkPermissions, requestPermissions } = useNotifications();
+  const { checkNotificationPermissions, requestNotificationPermissions } =
+    useNotifications();
   const { setSideSheetOpen, showNotifications, setShowNotifications } =
     useAppContext();
   const { todoFilePath } = useTask();
@@ -40,9 +41,9 @@ const Settings = () => {
   };
 
   const handleShowNotifications = async () => {
-    const currentState = await checkPermissions();
+    const currentState = await checkNotificationPermissions();
     if (!showNotifications && currentState.display !== "granted") {
-      const response = await requestPermissions();
+      const response = await requestNotificationPermissions();
       setShowNotifications(response.display === "granted");
     } else {
       setShowNotifications(!showNotifications);

@@ -1,12 +1,18 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
+import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { groupBy } from "../utils/array";
 import { createContext } from "../utils/Context";
-import { formatDate, formatLocaleDate, parseDate, today } from "../utils/date";
+import {
+  formatDate,
+  formatLocaleDate,
+  parseDate,
+  todayDate,
+} from "../utils/date";
 import { useFilesystem } from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
 import { useNotifications } from "../utils/notifications";
@@ -52,7 +58,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const { getUri, readFile, writeFile, deleteFile } = useFilesystem();
   const { getStorageItem, setStorageItem, removeStorageItem } = useStorage();
   const { enqueueSnackbar } = useSnackbar();
-  const { schedule, cancel } = useNotifications();
+  const { scheduleNotifications, cancelNotifications } = useNotifications();
   const {
     t,
     i18n: { language },
@@ -269,7 +275,6 @@ const [TaskProvider, useTask] = createContext(() => {
     scheduleDueTaskNotification(newTask);
 
     const newTaskList = [...taskList, newTask];
-
     const text = stringifyTaskList(newTaskList, lineEnding);
     return saveTodoFile(text);
   };
@@ -283,7 +288,7 @@ const [TaskProvider, useTask] = createContext(() => {
   }: TaskFormData) => {
     const newTaskList = taskList.map((t) => {
       if (t._id === rest._id) {
-        cancel({ notifications: [{ id: hashCode(t.raw) }] });
+        cancelNotifications({ notifications: [{ id: hashCode(t.raw) }] });
         const updatedTask: Task = {
           ...t,
           ...rest,
@@ -311,37 +316,44 @@ const [TaskProvider, useTask] = createContext(() => {
   };
 
   const deleteTask = (task: Task) => {
-    cancel({ notifications: [{ id: hashCode(task.raw) }] });
+    cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
     const newTaskList = taskList.filter((t) => t._id !== task._id);
     const text = stringifyTaskList(newTaskList, lineEnding);
     return saveTodoFile(text);
   };
 
   const completeTask = async (task: Task) => {
-    if (!task.completed) {
-      cancel({ notifications: [{ id: hashCode(task.raw) }] });
-    }
-    const updatedTask = { ...task };
-    updatedTask.completed = !updatedTask.completed;
-    delete updatedTask.completionDate;
+    const updatedTask = { ...task, completed: !task.completed };
     if (createCompletionDate && updatedTask.completed) {
-      updatedTask.completionDate = today();
+      updatedTask.completionDate = todayDate();
+    } else {
+      delete updatedTask.completionDate;
     }
+
+    if (updatedTask.completed) {
+      cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
+    }
+
     const updatedList = taskList.map((i) =>
       i._id === task._id ? updatedTask : i
     );
+
     setState((state) => ({ ...state, taskList: updatedList }));
+
     const text = stringifyTaskList(updatedList, lineEnding);
     await saveTodoFile(text);
   };
 
   const closeTodoFile = async () => {
     if (platform === "web") {
+      // Delete IndexedDB
       deleteTodoFile();
     }
-    state.taskList.forEach((task) => {
-      cancel({ notifications: [{ id: hashCode(task.raw) }] });
-    });
+
+    state.taskList.forEach((task) =>
+      cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] })
+    );
+
     removeStorageItem("todo-txt-path");
     setState((state) => {
       const { todoFilePath, ...rest } = state;
@@ -360,29 +372,31 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const loadTodoFile = async (text?: string, path?: string) => {
     const parseResult = parseTaskList(text);
-    if (parseResult) {
-      setStorageItem("line-ending", parseResult.lineEnding);
-      if (path) {
-        setStorageItem("todo-txt-path", path);
-      }
-      setState((state) => {
-        const newValue = {
-          ...state,
-          taskList: parseResult.taskList,
-          lineEnding: parseResult.lineEnding,
-          priorities: parseResult.priorities,
-          projects: parseResult.projects,
-          contexts: parseResult.contexts,
-          fields: parseResult.fields,
-          tasksLoaded: true,
-        };
-        delete newValue.selectedTask;
-        if (path) {
-          newValue.todoFilePath = path;
-        }
-        return newValue;
-      });
+
+    setStorageItem("line-ending", parseResult.lineEnding);
+    if (path) {
+      setStorageItem("todo-txt-path", path);
     }
+
+    setState((state) => {
+      const { selectedTask, ...rest } = state;
+      const newValue = {
+        ...rest,
+        taskList: parseResult.taskList,
+        lineEnding: parseResult.lineEnding,
+        priorities: parseResult.priorities,
+        projects: parseResult.projects,
+        contexts: parseResult.contexts,
+        fields: parseResult.fields,
+        tasksLoaded: true,
+      };
+      if (path) {
+        newValue.todoFilePath = path;
+      }
+      return newValue;
+    });
+
+    return parseResult.taskList;
   };
 
   const saveTodoFile = async (text = "") => {
@@ -434,27 +448,30 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const scheduleDueTaskNotification = async (task: Task) => {
     const showNotifications = await getStorageItem("show-notifications");
-    if (showNotifications !== "true" || task.completed) {
+
+    const today = todayDate();
+
+    if (
+      showNotifications !== "true" ||
+      task.completed ||
+      !task.dueDate ||
+      isBefore(task.dueDate, today)
+    ) {
       return;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const scheduleAt = subHours(task.dueDate, 12);
 
-    if (task.dueDate && task.dueDate.getTime() >= today.getTime()) {
-      const at = task.dueDate;
-      at.setHours(at.getHours() - 12);
-      schedule({
-        notifications: [
-          {
-            title: t("Reminder"),
-            body: task.body,
-            id: hashCode(task.raw),
-            schedule: { at },
-          },
-        ],
-      });
-    }
+    scheduleNotifications({
+      notifications: [
+        {
+          title: t("Reminder"),
+          body: task.body,
+          id: hashCode(task.raw),
+          schedule: { at: scheduleAt },
+        },
+      ],
+    });
   };
 
   const scheduleDueTaskNotifications = async (taskList: Task[]) => {
@@ -537,6 +554,7 @@ const [TaskProvider, useTask] = createContext(() => {
     openTaskDialog,
     toggleCreateCreationDate,
     toggleCreateCompletionDate,
+    scheduleDueTaskNotifications,
   };
 });
 

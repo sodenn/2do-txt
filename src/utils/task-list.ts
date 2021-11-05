@@ -1,3 +1,4 @@
+import { isAfter, isBefore } from "date-fns";
 import { parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
 import { Dictionary } from "./types";
@@ -101,9 +102,9 @@ export function sortByDueDate(a?: string, b?: string) {
     return 1;
   } else if (!aDate && !bDate) {
     return 0;
-  } else if (aDate && bDate && aDate.getTime() > bDate.getTime()) {
+  } else if (aDate && bDate && isAfter(aDate, bDate)) {
     return 1;
-  } else if (aDate && bDate && aDate.getTime() < bDate.getTime()) {
+  } else if (aDate && bDate && isBefore(aDate, bDate)) {
     return -1;
   } else {
     return 0;

@@ -54,6 +54,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "lint": "eslint ./src --ext .ts,.tsx",
+    "format": "prettier --check ./src",
     "resources": "capacitor-resources -p ios",
     "cap:sync": "npx cap sync && yarn electron:sync",
     "ios:sync": "npx cap sync ios",
