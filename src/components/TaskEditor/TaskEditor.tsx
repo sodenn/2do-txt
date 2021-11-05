@@ -71,7 +71,7 @@ const TaskEditor = (props: TodoEditorProps) => {
   useEffect(() => {
     setTimeout(() => {
       ref.current?.focus();
-    }, 100);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
