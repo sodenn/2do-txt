@@ -104,7 +104,9 @@ const TaskDialog = () => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t("Cancel")}</Button>
-        <Button onClick={handleSave}>{t("Save")}</Button>
+        <Button disabled={!formData.body} onClick={handleSave}>
+          {t("Save")}
+        </Button>
       </DialogActions>
     </Dialog>
   );
