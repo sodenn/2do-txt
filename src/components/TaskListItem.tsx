@@ -53,7 +53,7 @@ const TaskListItem = (props: TaskListItemProps) => {
         <Stack
           px={{ xs: 0.5, sm: 0 }}
           direction="row"
-          spacing={1}
+          spacing={0.5}
           sx={{ width: "100%" }}
         >
           <div>
