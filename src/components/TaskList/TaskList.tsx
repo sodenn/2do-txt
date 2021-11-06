@@ -1,11 +1,4 @@
-import {
-  Box,
-  Chip,
-  List,
-  ListSubheader,
-  styled,
-  useTheme,
-} from "@mui/material";
+import { Box, Chip, List, ListSubheader, styled } from "@mui/material";
 import React, { createRef, useState } from "react";
 import { useAppContext } from "../../data/AppContext";
 import { useTask } from "../../data/TaskContext";
@@ -31,7 +24,6 @@ const TaskList = () => {
     deleteTask,
   } = useTask();
   const { sortBy } = useAppContext();
-  const theme = useTheme();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
 
   useAddShortcutListener(
