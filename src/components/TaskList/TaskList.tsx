@@ -1,4 +1,4 @@
-import { Box, Chip, List, ListSubheader, styled } from "@mui/material";
+import { alpha, Box, Chip, List, ListSubheader, styled } from "@mui/material";
 import React, { createRef, useState } from "react";
 import { useAppContext } from "../../data/AppContext";
 import { useTask } from "../../data/TaskContext";
@@ -9,7 +9,7 @@ import TaskListItem from "../TaskListItem";
 const StyledListSubheader = styled(ListSubheader)`
   background: linear-gradient(
     to top,
-    rgba(255, 255, 255, 0),
+    ${({ theme }) => alpha(theme.palette.background.default, 0)},
     ${({ theme }) => theme.palette.background.default} 15%
   );
 `;
