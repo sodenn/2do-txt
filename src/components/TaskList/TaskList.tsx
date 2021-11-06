@@ -1,10 +1,25 @@
-import { Box, Chip, List, ListSubheader } from "@mui/material";
+import {
+  Box,
+  Chip,
+  List,
+  ListSubheader,
+  styled,
+  useTheme,
+} from "@mui/material";
 import React, { createRef, useState } from "react";
 import { useAppContext } from "../../data/AppContext";
 import { useTask } from "../../data/TaskContext";
 import { useAddShortcutListener } from "../../utils/shortcuts";
 import { Task } from "../../utils/task";
 import TaskListItem from "../TaskListItem";
+
+const StyledListSubheader = styled(ListSubheader)`
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0),
+    ${({ theme }) => theme.palette.background.default} 15%
+  );
+`;
 
 const TaskList = () => {
   const ref = createRef<HTMLDivElement>();
@@ -16,6 +31,7 @@ const TaskList = () => {
     deleteTask,
   } = useTask();
   const { sortBy } = useAppContext();
+  const theme = useTheme();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
 
   useAddShortcutListener(
@@ -98,13 +114,15 @@ const TaskList = () => {
             <li key={group.groupKey}>
               <ul style={{ padding: 0 }}>
                 {group.groupKey && (
-                  <ListSubheader>
+                  <StyledListSubheader>
                     <Chip
+                      sx={{ px: 1 }}
+                      size="small"
                       label={group.groupKey}
                       variant="outlined"
                       color={sortBy === "dueDate" ? "warning" : "secondary"}
                     />
-                  </ListSubheader>
+                  </StyledListSubheader>
                 )}
                 {group.items.map((task, itemIndex) => {
                   const index = groupIndex + itemIndex;
