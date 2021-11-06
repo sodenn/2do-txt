@@ -4,6 +4,7 @@ export const mentionClassStyle = css`
   border-radius: 4px;
   padding: 0.1em 0.2em;
   text-decoration: none;
+  white-space: nowrap;
 `;
 
 export const mentionStyles = css`
