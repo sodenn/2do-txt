@@ -1202,10 +1202,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/share/-/share-1.0.7.tgz#f62d6827cd65fc131bfb02d2b52dc830eed26786"
   integrity sha512-v7FRld2SdV64YjrZrKGoDyfYqcoEC2I4tk6nkhbOI8ZOaqm6XNiqCWEeTdeb6XPwDftozmfILSzhCxbASrXKMg==
 
-"@capacitor/status-bar@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-1.0.5.tgz#a3b2a00944b70ab8ef167a5ff33e3f90c021bb28"
-  integrity sha512-SZuxjaN5Nr8FKUVlkVH3l0X2JWey0yVMfMhyE3RG7ryUSAesgs3bvkAEXSfjphsHOpt4A/rEeCJb2ZbeCBwroA==
+"@capacitor/status-bar@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-1.0.6.tgz#d58c9087cfc7c7377e8009bea86152e4fdd2939e"
+  integrity sha512-5MGWFq76iiKvHpbZ/Xc0Zig3WZyzWZ62wvC4qxak8OuVHBNG4fA1p/XXY9teQPaU3SupEJHnLkw6Gn1LuDp+ew==
 
 "@capacitor/storage@^1.2.0":
   version "1.2.0"
