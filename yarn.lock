@@ -1197,10 +1197,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/local-notifications/-/local-notifications-1.0.8.tgz#55d75bd58a623c8c78f07c00132a8e593325bc34"
   integrity sha512-zMLgdeSv0mmuNhEfqHI5QFUiYuvAvOUp0Nful/uaO7EFOwmRdurRE8BQwLoVxxTFC67QSBGbLFrCDTZ9PMynhg==
 
-"@capacitor/share@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@capacitor/share/-/share-1.0.6.tgz#b410eefad288f4bf4d690a89f0fcd5a182bc877b"
-  integrity sha512-tzlFfKLu62YjE6ayFpevDjbeoA7P1LvxVUO8taOD9BBGKgWk0yn5dmBs/k2UcvEDAW5yTY4+NMzRj3gkD8MEXA==
+"@capacitor/share@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@capacitor/share/-/share-1.0.7.tgz#f62d6827cd65fc131bfb02d2b52dc830eed26786"
+  integrity sha512-v7FRld2SdV64YjrZrKGoDyfYqcoEC2I4tk6nkhbOI8ZOaqm6XNiqCWEeTdeb6XPwDftozmfILSzhCxbASrXKMg==
 
 "@capacitor/status-bar@^1.0.5":
   version "1.0.5"
