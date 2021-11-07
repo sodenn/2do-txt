@@ -1,5 +1,6 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
+import { SplashScreen } from "@capacitor/splash-screen";
 import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
@@ -522,7 +523,7 @@ const [TaskProvider, useTask] = createContext(() => {
         }));
       }
     };
-    setInitialState();
+    setInitialState().then(() => SplashScreen.hide());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

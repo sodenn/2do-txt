@@ -2016,6 +2016,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/share/-/share-1.0.7.tgz#f62d6827cd65fc131bfb02d2b52dc830eed26786"
   integrity sha512-v7FRld2SdV64YjrZrKGoDyfYqcoEC2I4tk6nkhbOI8ZOaqm6XNiqCWEeTdeb6XPwDftozmfILSzhCxbASrXKMg==
 
+"@capacitor/splash-screen@^1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/splash-screen/-/splash-screen-1.1.6.tgz#e593a72ccd64e15e481007349629198ae71c0f1b"
+  integrity sha512-dU+natoS3/wW16eflLD9eEN/vbh36VNetK+2oa+kCGcoQa1ZzuyicUtXOblULNlY48RyEDlIQ9LvjZNwnYadXQ==
+
 "@capacitor/status-bar@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-1.0.6.tgz#d58c9087cfc7c7377e8009bea86152e4fdd2939e"

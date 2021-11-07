@@ -5,6 +5,12 @@ const config: CapacitorConfig = {
   appName: "2do.txt",
   webDir: "build",
   bundledWebRuntime: false,
+  plugins: {
+    SplashScreen: {
+      launchAutoHide: false,
+      backgroundColor: "#90caf9",
+    },
+  },
 };
 
 export default config;
