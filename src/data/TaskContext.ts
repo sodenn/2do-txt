@@ -523,7 +523,7 @@ const [TaskProvider, useTask] = createContext(() => {
         }));
       }
     };
-    setInitialState().then(() => SplashScreen.hide());
+    setInitialState().then(() => SplashScreen.hide().catch((e) => void e));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
