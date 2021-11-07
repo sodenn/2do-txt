@@ -52,5 +52,6 @@
   "Without due date": "Without due date",
   "@Context": "@Context",
   "+Project": "+Project",
-  "Filter": "Filter"
+  "Filter": "Filter",
+  "The file could not be opened": "The file could not be opened."
 }

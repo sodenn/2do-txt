@@ -1996,10 +1996,10 @@
   dependencies:
     tslib "^2.1.0"
 
-"@capacitor/filesystem@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-1.0.3.tgz#70a5bb6c6cadfd952799b0793609d8ee077c4e92"
-  integrity sha512-7vmIGsO/qheb20xbaY9/ohLDD1BPEcp7EcX/LV6CFB3R0fMqPp43mg85Yy6WnC2nV5mR27xtzkcSEndRVsHshg==
+"@capacitor/filesystem@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-1.0.6.tgz#b837585e6b5d48dc705ee89e49cc7c6aeb8874ec"
+  integrity sha512-8xqUbDZFGBMhgqoBSn9wEd9OBPdHIRegQ9zCCZcpHNf3FFAIby1ck+aDFnoq+Da49xhD6ks1SKCBSxz/26qWTw==
 
 "@capacitor/ios@^3.2.5":
   version "3.2.5"
@@ -2011,15 +2011,15 @@
   resolved "https://registry.yarnpkg.com/@capacitor/local-notifications/-/local-notifications-1.0.8.tgz#55d75bd58a623c8c78f07c00132a8e593325bc34"
   integrity sha512-zMLgdeSv0mmuNhEfqHI5QFUiYuvAvOUp0Nful/uaO7EFOwmRdurRE8BQwLoVxxTFC67QSBGbLFrCDTZ9PMynhg==
 
-"@capacitor/share@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@capacitor/share/-/share-1.0.6.tgz#b410eefad288f4bf4d690a89f0fcd5a182bc877b"
-  integrity sha512-tzlFfKLu62YjE6ayFpevDjbeoA7P1LvxVUO8taOD9BBGKgWk0yn5dmBs/k2UcvEDAW5yTY4+NMzRj3gkD8MEXA==
+"@capacitor/share@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@capacitor/share/-/share-1.0.7.tgz#f62d6827cd65fc131bfb02d2b52dc830eed26786"
+  integrity sha512-v7FRld2SdV64YjrZrKGoDyfYqcoEC2I4tk6nkhbOI8ZOaqm6XNiqCWEeTdeb6XPwDftozmfILSzhCxbASrXKMg==
 
-"@capacitor/status-bar@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-1.0.5.tgz#a3b2a00944b70ab8ef167a5ff33e3f90c021bb28"
-  integrity sha512-SZuxjaN5Nr8FKUVlkVH3l0X2JWey0yVMfMhyE3RG7ryUSAesgs3bvkAEXSfjphsHOpt4A/rEeCJb2ZbeCBwroA==
+"@capacitor/status-bar@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-1.0.6.tgz#d58c9087cfc7c7377e8009bea86152e4fdd2939e"
+  integrity sha512-5MGWFq76iiKvHpbZ/Xc0Zig3WZyzWZ62wvC4qxak8OuVHBNG4fA1p/XXY9teQPaU3SupEJHnLkw6Gn1LuDp+ew==
 
 "@capacitor/storage@^1.2.0":
   version "1.2.0"

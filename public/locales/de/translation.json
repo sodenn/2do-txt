@@ -59,5 +59,6 @@
   "Without due date": "Ohne Fälligkeit",
   "@Context": "@Kontext",
   "+Project": "+Projekt",
-  "Filter": "Filter"
+  "Filter": "Filter",
+  "The file could not be opened": "Die Datei konnte nicht geöffnet werden."
 }
