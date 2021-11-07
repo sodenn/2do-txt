@@ -1,15 +1,11 @@
+import { css } from "@emotion/css";
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Slide,
-  SlideProps,
-  Toolbar,
-  Typography,
-  useMediaQuery,
+  Theme,
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -24,14 +20,18 @@ const initialTaskFormData: TaskFormData = {
   completionDate: undefined,
 };
 
-const Transition = React.forwardRef<HTMLElement, SlideProps>((props, ref) => {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+export const dialogPaperStyle = (theme: Theme) => css`
+  ${theme.breakpoints.down("sm")} {
+    &.MuiPaper-root {
+      margin: ${theme.spacing(2)};
+      width: 100%;
+    }
+  }
+`;
 
 const TaskDialog = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const xs = useMediaQuery(theme.breakpoints.only("xs"));
   const {
     openTaskDialog,
     taskDialogOpen,
@@ -84,67 +84,30 @@ const TaskDialog = () => {
       fullWidth
       maxWidth="sm"
       open={taskDialogOpen}
-      fullScreen={xs}
-      PaperProps={
-        xs
-          ? {
-              style: {
-                backgroundImage: "unset",
-              },
-            }
-          : {}
-      }
-      TransitionComponent={xs ? Transition : undefined}
+      classes={{ paper: dialogPaperStyle(theme) }}
       onClose={(event, reason) =>
         reason !== "backdropClick" ? handleClose() : undefined
       }
     >
-      {xs && (
-        <>
-          <Toolbar color="transparent">
-            <Typography sx={{ flex: 1 }} variant="subtitle1" component="div">
-              {!!formData._id ? t("Edit Task") : t("Create Task")}
-            </Typography>
-            <Button color="primary" onClick={handleClose}>
-              {t("Cancel")}
-            </Button>
-            <Button color="primary" onClick={handleSave}>
-              {t("Save")}
-            </Button>
-          </Toolbar>
-          <Box sx={{ px: 2 }}>
-            <TaskForm
-              formData={formData}
-              contexts={Object.keys(contexts)}
-              projects={Object.keys(projects)}
-              fields={fields}
-              onChange={handleChange}
-              onEnterPress={handleSave}
-            />
-          </Box>
-        </>
-      )}
-      {!xs && (
-        <>
-          <DialogTitle>
-            {!!formData._id ? t("Edit Task") : t("Create Task")}
-          </DialogTitle>
-          <DialogContent>
-            <TaskForm
-              formData={formData}
-              contexts={Object.keys(contexts)}
-              projects={Object.keys(projects)}
-              fields={fields}
-              onChange={handleChange}
-              onEnterPress={handleSave}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>{t("Cancel")}</Button>
-            <Button onClick={handleSave}>{t("Save")}</Button>
-          </DialogActions>
-        </>
-      )}
+      <DialogTitle>
+        {!!formData._id ? t("Edit Task") : t("Create Task")}
+      </DialogTitle>
+      <DialogContent>
+        <TaskForm
+          formData={formData}
+          contexts={Object.keys(contexts)}
+          projects={Object.keys(projects)}
+          fields={fields}
+          onChange={handleChange}
+          onEnterPress={handleSave}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>{t("Cancel")}</Button>
+        <Button disabled={!formData.body} onClick={handleSave}>
+          {t("Save")}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

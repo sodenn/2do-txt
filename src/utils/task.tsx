@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React from "react";
+import React, { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
@@ -148,26 +148,18 @@ export function useFormatBody() {
       .split(/\s+/)
       .map((t) => t.trim());
 
-    const space = <>&nbsp;</>;
-
     let formattedTokens = tokens.map((token, index) => {
       if (/^@[\S]+/.test(token)) {
         return (
-          <React.Fragment key={index}>
-            <span className={clsx(taskContextStyle, taskTagStyle)}>
-              {token}
-            </span>
-            {space}
-          </React.Fragment>
+          <span key={index} className={clsx(taskContextStyle, taskTagStyle)}>
+            {token}
+          </span>
         );
       } else if (/^\+[\S]+/.test(token)) {
         return (
-          <React.Fragment key={index}>
-            <span className={clsx(taskProjectStyle, taskTagStyle)}>
-              {token}
-            </span>
-            {space}
-          </React.Fragment>
+          <span key={index} className={clsx(taskProjectStyle, taskTagStyle)}>
+            {token}
+          </span>
         );
       } else if (/[^:]+:[^/:][^:]*/.test(token)) {
         const substrings = token.split(":");
@@ -179,33 +171,35 @@ export function useFormatBody() {
         const displayValue = date ? formatLocaleDate(date, language) : value;
         const text = displayKey + displayValue;
         return (
-          <React.Fragment key={index}>
-            <span className={clsx(taskFieldStyle, taskTagStyle)}>{text}</span>
-            {space}
-          </React.Fragment>
+          <span key={index} className={clsx(taskFieldStyle, taskTagStyle)}>
+            {text}
+          </span>
         );
       } else {
-        return `${token} `;
+        return <Fragment key={index}>{token}</Fragment>;
       }
     });
 
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <React.Fragment key={task._id}>
-          <span className={clsx(taskTagStyle, taskPriorityStyle)}>
-            {task.priority}
-          </span>
-          {space}
-        </React.Fragment>
+        <span key={task._id} className={clsx(taskTagStyle, taskPriorityStyle)}>
+          {task.priority}
+        </span>
       );
       formattedTokens = [priorityElement, ...formattedTokens];
     }
 
     const completedClass = task.completed
       ? clsx(taskCompletedStyle, taskDisabledStyle)
-      : "";
+      : undefined;
 
-    return <span className={completedClass}>{formattedTokens}</span>;
+    return (
+      <span className={completedClass}>
+        {formattedTokens
+          .map<React.ReactNode>((e) => e)
+          .reduce((prev, curr) => [prev, " ", curr])}
+      </span>
+    );
   };
 }
 

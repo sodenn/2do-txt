@@ -1,10 +1,20 @@
-import { Box, Chip, List, ListSubheader } from "@mui/material";
+import { alpha, Box, Chip, List, ListSubheader, styled } from "@mui/material";
 import React, { createRef, useState } from "react";
 import { useAppContext } from "../../data/AppContext";
 import { useTask } from "../../data/TaskContext";
 import { useAddShortcutListener } from "../../utils/shortcuts";
 import { Task } from "../../utils/task";
 import TaskListItem from "../TaskListItem";
+
+const StyledListSubheader = styled(ListSubheader)`
+  // avoid scrollbar overlapping (Safari mobile)
+  margin-right: ${({ theme }) => theme.spacing(1)};
+  background: linear-gradient(
+    to top,
+    ${({ theme }) => alpha(theme.palette.background.default, 0)},
+    ${({ theme }) => theme.palette.background.default} 15%
+  );
+`;
 
 const TaskList = () => {
   const ref = createRef<HTMLDivElement>();
@@ -98,13 +108,15 @@ const TaskList = () => {
             <li key={group.groupKey}>
               <ul style={{ padding: 0 }}>
                 {group.groupKey && (
-                  <ListSubheader>
+                  <StyledListSubheader>
                     <Chip
+                      sx={{ px: 1 }}
+                      size="small"
                       label={group.groupKey}
                       variant="outlined"
                       color={sortBy === "dueDate" ? "warning" : "secondary"}
                     />
-                  </ListSubheader>
+                  </StyledListSubheader>
                 )}
                 {group.items.map((task, itemIndex) => {
                   const index = groupIndex + itemIndex;

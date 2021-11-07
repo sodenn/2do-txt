@@ -27,6 +27,7 @@ export const taskDateStyle = css`
 `;
 
 export const taskTagStyle = css`
+  hyphens: none;
   display: inline;
   margin-top: 2px;
   margin-bottom: 2px;

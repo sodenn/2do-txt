@@ -12,7 +12,7 @@ import Kbd from "./Kbd";
 const TodoFileDownloadButton = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { downloadTodoFile, shareTodoFile } = useTask();
+  const { downloadTodoFile, shareTodoFile, tasksLoaded } = useTask();
 
   const download = () => {
     if (platform === "web" || platform === "electron") {
@@ -31,6 +31,10 @@ const TodoFileDownloadButton = () => {
   };
 
   useAddShortcutListener(() => download(), ["t"]);
+
+  if (!tasksLoaded) {
+    return null;
+  }
 
   return (
     <Tooltip
