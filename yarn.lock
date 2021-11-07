@@ -1187,10 +1187,10 @@
   dependencies:
     tslib "^2.1.0"
 
-"@capacitor/filesystem@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-1.0.3.tgz#70a5bb6c6cadfd952799b0793609d8ee077c4e92"
-  integrity sha512-7vmIGsO/qheb20xbaY9/ohLDD1BPEcp7EcX/LV6CFB3R0fMqPp43mg85Yy6WnC2nV5mR27xtzkcSEndRVsHshg==
+"@capacitor/filesystem@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-1.0.6.tgz#b837585e6b5d48dc705ee89e49cc7c6aeb8874ec"
+  integrity sha512-8xqUbDZFGBMhgqoBSn9wEd9OBPdHIRegQ9zCCZcpHNf3FFAIby1ck+aDFnoq+Da49xhD6ks1SKCBSxz/26qWTw==
 
 "@capacitor/local-notifications@^1.0.8":
   version "1.0.8"
