@@ -1,11 +1,13 @@
 import CloseIcon from "@mui/icons-material/Close";
 import {
   Alert,
+  AlertTitle,
   Box,
   Button,
   Checkbox,
   FormControlLabel,
   Stack,
+  styled,
   Typography,
 } from "@mui/material";
 import React from "react";
@@ -17,6 +19,12 @@ import { usePlatform } from "../utils/platform";
 import LanguageSelect from "./LanguageSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
 import TodoFilePicker from "./TodoFilePicker";
+
+const FilePath = styled("span")`
+  word-break: break-all;
+  user-select: text;
+  font-family: monospace, monospace;
+`;
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -85,11 +93,9 @@ const Settings = () => {
         )}
       </Stack>
       {showTodoFilePath && (
-        <Alert
-          severity="info"
-          sx={{ mb: 2, wordBreak: "break-all", userSelect: "text" }}
-        >
-          {t("Current file", { filePath: todoFilePath })}
+        <Alert severity="info" sx={{ mb: 2 }}>
+          <AlertTitle>{t("Current file")}</AlertTitle>
+          <FilePath>{todoFilePath}</FilePath>
         </Alert>
       )}
       <Typography component="div" variant="subtitle1">
