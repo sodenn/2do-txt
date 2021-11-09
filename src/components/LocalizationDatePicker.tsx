@@ -23,13 +23,13 @@ const maskMap: Dictionary<string> = {
 type LocalizationDatePickerProps = Omit<
   DatePickerProps<Date>,
   "renderInput" | "date" | "openPicker" | "rawValue"
->;
+> & { ariaLabel?: string };
 
 const LocalizationDatePicker = forwardRef<
   HTMLInputElement,
   LocalizationDatePickerProps
 >((props, ref) => {
-  const { value = null, ...rest } = props;
+  const { value = null, ariaLabel, ...rest } = props;
 
   const {
     t,
@@ -53,6 +53,7 @@ const LocalizationDatePicker = forwardRef<
       <DatePicker
         {...rest}
         ref={ref}
+        InputProps={{ role: "input", "aria-label": ariaLabel }}
         value={value}
         clearable
         allowSameDateSelection
