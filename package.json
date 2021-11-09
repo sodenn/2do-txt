@@ -11,7 +11,7 @@
     "@capacitor-community/electron": "^4.0.3",
     "@capacitor/core": "^3.2.3",
     "@capacitor/filesystem": "^1.0.6",
-    "@capacitor/local-notifications": "^1.0.8",
+    "@capacitor/local-notifications": "^1.0.9",
     "@capacitor/share": "^1.0.7",
     "@capacitor/status-bar": "^1.0.6",
     "@capacitor/storage": "^1.2.0",

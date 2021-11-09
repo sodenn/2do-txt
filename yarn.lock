@@ -1185,10 +1185,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-1.0.6.tgz#b837585e6b5d48dc705ee89e49cc7c6aeb8874ec"
   integrity sha512-8xqUbDZFGBMhgqoBSn9wEd9OBPdHIRegQ9zCCZcpHNf3FFAIby1ck+aDFnoq+Da49xhD6ks1SKCBSxz/26qWTw==
 
-"@capacitor/local-notifications@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@capacitor/local-notifications/-/local-notifications-1.0.8.tgz#55d75bd58a623c8c78f07c00132a8e593325bc34"
-  integrity sha512-zMLgdeSv0mmuNhEfqHI5QFUiYuvAvOUp0Nful/uaO7EFOwmRdurRE8BQwLoVxxTFC67QSBGbLFrCDTZ9PMynhg==
+"@capacitor/local-notifications@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@capacitor/local-notifications/-/local-notifications-1.0.9.tgz#411894f3d44a9d144882250148a1f6a301749d92"
+  integrity sha512-6znL6l2gDj1IS05yWLyo7ENYmid89rmNTQmQxURrJLdkn98AGDNrFlYoApo7+Hfjbb3cpGX4LNKPh+uWgeaBnw==
 
 "@capacitor/share@^1.0.7":
   version "1.0.7"
