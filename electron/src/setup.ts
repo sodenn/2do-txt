@@ -130,6 +130,7 @@ export class ElectronCapacitorApp {
       y: this.mainWindowState.y,
       width: this.mainWindowState.width,
       height: this.mainWindowState.height,
+      autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: true,
