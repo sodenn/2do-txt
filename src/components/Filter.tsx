@@ -137,7 +137,7 @@ const Filter = () => {
                   onChange={(event, checked) => setHideCompletedTasks(checked)}
                 />
               }
-              label={t("Hide completed tasks")}
+              label={t("Hide completed tasks") as string}
             />
           </>
         )}
