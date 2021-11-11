@@ -23,7 +23,7 @@
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.1",
     "@mui/lab": "^5.0.0-alpha.53",
-    "@mui/material": "^5.0.1",
+    "@mui/material": "^5.1.0",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",

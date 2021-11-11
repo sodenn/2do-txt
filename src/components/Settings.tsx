@@ -109,7 +109,7 @@ const Settings = () => {
               onChange={() => toggleCreateCreationDate()}
             />
           }
-          label={t("Set creation date")}
+          label={t("Set creation date") as string}
         />
         <FormControlLabel
           control={
@@ -118,7 +118,7 @@ const Settings = () => {
               onChange={() => toggleCreateCompletionDate()}
             />
           }
-          label={t("Set completion date")}
+          label={t("Set completion date") as string}
         />
       </Box>
       <Typography component="div" variant="subtitle1">
@@ -131,7 +131,7 @@ const Settings = () => {
             onChange={() => handleShowNotifications()}
           />
         }
-        label={t("Due tasks")}
+        label={t("Due tasks") as string}
       />
     </>
   );
