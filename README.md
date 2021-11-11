@@ -15,7 +15,8 @@
 **2do.txt** is a [todo.txt](http://todotxt.org) compatible task manager. It should simplify the work with the [todo.txt format](https://github.com/todotxt/todo.txt) by providing additional convenience functions such as autocomplete for contexts and projects or filtering and sorting.
 
 <p align="center">
-  <img width="600" src="./resources/screenshot1.png" alt="Screenshot">
+  <img width="600" src="./public/screenshot1.png" alt="Screenshot">
+  <img width="600" src="./public/screenshot2.png" alt="Screenshot">
 </p>
 
 ## About todo.txt

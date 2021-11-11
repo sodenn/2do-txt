@@ -44,10 +44,18 @@ const Onboarding = () => {
             <Box sx={{ py: 1, textAlign: "center" }}>
               <img src={logo} alt="Logo" height={96} style={{ opacity: 0.2 }} />
             </Box>
-            <Typography sx={{ textAlign: "center" }} gutterBottom variant="h4">
+            <Typography
+              sx={{ textAlign: "center" }}
+              gutterBottom
+              component="h1"
+              variant="h4"
+              role="heading"
+              aria-label="Onboarding"
+            >
               {t("Get Started")}
             </Typography>
             <Button
+              aria-label="Create task"
               onClick={handleCreateTaskClick}
               startIcon={<AddTaskIcon />}
               variant="contained"

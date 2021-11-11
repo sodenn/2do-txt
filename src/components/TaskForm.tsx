@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { formatDate } from "../utils/date";
+import { formatDate, parseDate } from "../utils/date";
 import { usePlatform } from "../utils/platform";
 import { parseTaskBody, TaskFormData } from "../utils/task";
 import {
@@ -71,11 +71,21 @@ const TaskForm = (props: TaskDialogForm) => {
   };
 
   useEffect(() => {
-    if (!/due:[\S]+\s?/g.test(formData.body)) {
+    const match = formData.body.match(/due:[\S]+\s?/g);
+    if (formData.dueDate && !match) {
       onChange({ ...formData, dueDate: undefined });
+    } else if (!formData.dueDate && match && match.length > 0) {
+      const dateString = match[match.length - 1].trim().substr("due:".length);
+      const dueDate = parseDate(dateString);
+      if (dueDate) {
+        onChange({
+          ...formData,
+          dueDate,
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(formData)]);
+  }, [formData.body, formData.dueDate]);
 
   return (
     <Stack>
@@ -162,6 +172,7 @@ const TaskForm = (props: TaskDialogForm) => {
         )}
         <Grid item xs={12} sm={6}>
           <LocalizationDatePicker
+            ariaLabel="Due date"
             label={t("Due Date")}
             value={formData.dueDate}
             onChange={handleDueDateChange}

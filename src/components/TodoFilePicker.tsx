@@ -90,6 +90,7 @@ const TodoFilePicker = ({
     <label style={{ width: "100%" }} htmlFor={id}>
       <Input accept="text/plain" id={id} type="file" onChange={handleChange} />
       <LoadingButton
+        aria-label="Open todo.txt"
         loading={loading}
         startIcon={<FolderOpenIcon />}
         fullWidth

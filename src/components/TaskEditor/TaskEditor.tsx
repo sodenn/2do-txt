@@ -95,6 +95,7 @@ const TaskEditor = (props: TodoEditorProps) => {
           </Legend>
         )}
         <Editor
+          ariaLabel="Text editor"
           placeholder={placeholder}
           editorKey="editor"
           editorState={editorState}
