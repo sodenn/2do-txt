@@ -1173,10 +1173,10 @@
     tslib "^2.1.0"
     xml2js "^0.4.23"
 
-"@capacitor/core@^3.1.1", "@capacitor/core@^3.2.3":
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/@capacitor/core/-/core-3.2.3.tgz#84535e0adc6f0b99fcbfb2f67578b1b8e7f379c2"
-  integrity sha512-6oIi9EXgTRI8Xg3Gg8IWSQcddshb6lNtywkQA+QWoTL/6qV/l519tBcZHV9cu6BA7GT3qm2WcX9yQjwDq5iKpw==
+"@capacitor/core@^3.1.1", "@capacitor/core@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/core/-/core-3.3.1.tgz#59d61c7dedca3986b8c8db21048a24d09ee77c6b"
+  integrity sha512-wKQwk2nw2yDk5gwbsExs6u2rtGQDkXZ/LaZrdzqBy9T48+juPI/y4IE1zAoGNraBCR+LRcKQbKfZNmmDUYpvdA==
   dependencies:
     tslib "^2.1.0"
 
@@ -11664,15 +11664,10 @@ tslib@^1.8.1, tslib@^1.9.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.1, tslib@^2.1.0:
+tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
   integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
-
-tslib@^2.0.3:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
-  integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
 
 tsutils@^3.17.1:
   version "3.20.0"
