@@ -1,5 +1,5 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { IconButton, Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
@@ -18,7 +18,10 @@ const SideSheetButton = () => {
     <Tooltip
       title={
         <>
-          {t("Menu")} <Kbd>M</Kbd>
+          {t("Menu")}{" "}
+          <Box component="span" sx={{ ml: 0.5 }}>
+            <Kbd>M</Kbd>
+          </Box>
         </>
       }
     >

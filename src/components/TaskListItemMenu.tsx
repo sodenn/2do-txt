@@ -1,5 +1,6 @@
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
+  Box,
   ClickAwayListener,
   Grow,
   IconButton,
@@ -87,7 +88,7 @@ const TaskListItemMenu: React.FC<{ task: Task }> = ({ task }) => {
         transition
         style={{ zIndex: 1 }}
       >
-        {({ TransitionProps, placement }) => (
+        {({ TransitionProps }) => (
           <Grow {...TransitionProps}>
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
@@ -97,10 +98,16 @@ const TaskListItemMenu: React.FC<{ task: Task }> = ({ task }) => {
                   onKeyDown={handleListKeyDown}
                 >
                   <MenuItem role="menuitem" onClick={handleEdit}>
-                    {t("Edit")} <Kbd>E</Kbd>
+                    <Box sx={{ display: "flex", width: "100%" }}>
+                      <Box sx={{ flex: 1, mr: 2 }}>{t("Edit")}</Box>
+                      <Kbd>E</Kbd>
+                    </Box>
                   </MenuItem>
                   <MenuItem onClick={handleDelete}>
-                    {t("Delete")} <Kbd>D</Kbd>
+                    <Box sx={{ display: "flex", width: "100%" }}>
+                      <Box sx={{ flex: 1, mr: 2 }}>{t("Delete")}</Box>
+                      <Kbd>D</Kbd>
+                    </Box>
                   </MenuItem>
                 </MenuList>
               </ClickAwayListener>
