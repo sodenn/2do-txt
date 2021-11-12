@@ -18,7 +18,10 @@ const SideSheetButton = () => {
     <Tooltip
       title={
         <>
-          {t("Menu")} <Kbd>M</Kbd>
+          {t("Menu")}{" "}
+          <Box component="span" sx={{ ml: 0.5 }}>
+            <Kbd>M</Kbd>
+          </Box>
         </>
       }
     >

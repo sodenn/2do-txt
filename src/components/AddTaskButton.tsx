@@ -1,5 +1,5 @@
 import AddIcon from "@mui/icons-material/Add";
-import { IconButton, Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
@@ -22,7 +22,10 @@ const AddTaskButton = ({ edgeEnd }: AddTaskButtonProps) => {
     <Tooltip
       title={
         <>
-          {t("Add task")} <Kbd>N</Kbd>
+          {t("Add task")}{" "}
+          <Box component="span" sx={{ ml: 0.5 }}>
+            <Kbd>N</Kbd>
+          </Box>
         </>
       }
     >

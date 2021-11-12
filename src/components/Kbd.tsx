@@ -3,12 +3,12 @@ import React from "react";
 import { usePlatform } from "../utils/platform";
 
 export const StyledKbd = styled("kbd")`
-  margin-left: ${({ theme }) => theme.spacing(1)};
   padding: 0 0.4em;
-  border-radius: ${({ theme }) => theme.shape.borderRadius}px;
-  outline: 1px solid;
   opacity: 0.5;
   text-align: center;
+  border: none;
+  border-radius: ${({ theme }) => theme.shape.borderRadius}px;
+  box-shadow: 0 0 0 1px grey;
 `;
 
 const Kbd: React.FC = ({ children }) => {
