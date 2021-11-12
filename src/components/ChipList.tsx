@@ -30,7 +30,7 @@ const ChipList = ({
         return (
           <Box sx={{ mr: 1, mb: 0.5 }} component="li" key={index}>
             <Badge
-              badgeContent={usages}
+              badgeContent={usages === 1 ? undefined : usages}
               color="primary"
               anchorOrigin={{
                 vertical: "bottom",
@@ -38,6 +38,7 @@ const ChipList = ({
               }}
             >
               <Chip
+                sx={{ px: 1 }}
                 variant={selected.includes(item) ? "filled" : "outlined"}
                 label={item}
                 color={color}

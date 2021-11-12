@@ -31,7 +31,7 @@ const SideSheetButton = () => {
         size="large"
         edge="start"
         color="inherit"
-        aria-label="Open side sheet"
+        aria-label="Menu"
       >
         <MenuIcon />
       </IconButton>
