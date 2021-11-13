@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
 import { formatDate, formatLocaleDate, parseDate } from "./date";

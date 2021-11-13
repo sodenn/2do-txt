@@ -1,6 +1,5 @@
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";

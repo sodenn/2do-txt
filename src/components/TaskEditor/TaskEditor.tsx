@@ -1,7 +1,7 @@
 import Editor from "@draft-js-plugins/editor";
 import { styled, useTheme } from "@mui/material";
 import "draft-js/dist/Draft.css";
-import React, { createRef, useEffect } from "react";
+import { createRef, useEffect } from "react";
 import { SuggestionData, useTodoEditor } from "./task-editor-hook";
 
 interface TodoEditorProps {

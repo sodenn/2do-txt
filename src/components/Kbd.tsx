@@ -1,5 +1,5 @@
 import { styled } from "@mui/material";
-import React from "react";
+import { FC } from "react";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 
 export const StyledKbd = styled("kbd")`
@@ -11,7 +11,7 @@ export const StyledKbd = styled("kbd")`
   box-shadow: 0 0 0 1px grey;
 `;
 
-const Kbd: React.FC = ({ children }) => {
+const Kbd: FC = ({ children }) => {
   const hasTouchScreen = useTouchScreen();
   const platform = usePlatform();
 

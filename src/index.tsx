@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-http-backend";
-import React from "react";
+import { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { initReactI18next } from "react-i18next";
 import "typeface-roboto";
@@ -32,9 +32,9 @@ i18n
   });
 
 ReactDOM.render(
-  <React.StrictMode>
+  <StrictMode>
     <App />
-  </React.StrictMode>,
+  </StrictMode>,
   document.getElementById("root")
 );
 

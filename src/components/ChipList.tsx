@@ -1,5 +1,4 @@
 import { Badge, Chip, styled } from "@mui/material";
-import React from "react";
 import { Dictionary } from "../utils/types";
 
 interface ChipListProps {

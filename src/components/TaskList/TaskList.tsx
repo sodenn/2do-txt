@@ -1,5 +1,5 @@
 import { alpha, Box, Chip, List, ListSubheader, styled } from "@mui/material";
-import React, { createRef, useState } from "react";
+import { createRef, useState } from "react";
 import { useAppContext } from "../../data/AppContext";
 import { useTask } from "../../data/TaskContext";
 import { useAddShortcutListener } from "../../utils/shortcuts";

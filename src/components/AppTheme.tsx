@@ -1,8 +1,8 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import React from "react";
+import { FC } from "react";
 import { AppThemeProvider, useAppTheme } from "../data/AppThemeContext";
 
-const AppTheme: React.FC = ({ children }) => {
+const AppTheme: FC = ({ children }) => {
   return (
     <AppThemeProvider>
       <AppThemeChild>{children}</AppThemeChild>
@@ -10,7 +10,7 @@ const AppTheme: React.FC = ({ children }) => {
   );
 };
 
-const AppThemeChild: React.FC = ({ children }) => {
+const AppThemeChild: FC = ({ children }) => {
   const { theme } = useAppTheme();
   return (
     <ThemeProvider theme={theme}>

@@ -1,6 +1,5 @@
 import AddIcon from "@mui/icons-material/Add";
 import { Box, IconButton, Tooltip } from "@mui/material";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import { useAddShortcutListener } from "../utils/shortcuts";

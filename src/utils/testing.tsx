@@ -5,7 +5,7 @@ import {
 } from "@capacitor/filesystem";
 import i18n from "i18next";
 import { SnackbarProvider } from "notistack";
-import React, { PropsWithChildren, Suspense } from "react";
+import { PropsWithChildren, Suspense } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouterSwitch } from "../components/AppRouter";
