@@ -2,12 +2,12 @@ import { Box, Button, Grid, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDate, parseDate } from "../utils/date";
-import { usePlatform } from "../utils/platform";
+import { usePlatform, useTouchScreen } from "../utils/platform";
 import { parseTaskBody, TaskFormData } from "../utils/task";
 import {
   taskContextStyle,
   taskFieldStyle,
-  taskProjectStyle,
+  taskProjectStyle
 } from "../utils/task-styles";
 import { Dictionary } from "../utils/types";
 import LocalizationDatePicker from "./LocalizationDatePicker";
@@ -25,6 +25,7 @@ interface TaskDialogForm {
 
 const TaskForm = (props: TaskDialogForm) => {
   const platform = usePlatform();
+  const hasTouchScreen = useTouchScreen();
   const { formData, projects, fields, contexts, onChange, onEnterPress } =
     props;
   const { t } = useTranslation();
@@ -117,7 +118,7 @@ const TaskForm = (props: TaskDialogForm) => {
         />
       </Box>
       <Grid spacing={2} container>
-        {(platform === "ios" || platform === "android") && (
+        {(hasTouchScreen || platform === "ios" || platform === "android") && (
           <Grid item xs={12} sm={6}>
             <Box sx={{ display: "flex", flex: 1, height: "100%" }}>
               <Button
