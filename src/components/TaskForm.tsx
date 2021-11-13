@@ -7,7 +7,7 @@ import { parseTaskBody, TaskFormData } from "../utils/task";
 import {
   taskContextStyle,
   taskFieldStyle,
-  taskProjectStyle
+  taskProjectStyle,
 } from "../utils/task-styles";
 import { Dictionary } from "../utils/types";
 import LocalizationDatePicker from "./LocalizationDatePicker";
