@@ -13,6 +13,11 @@ import AppTheme from "../components/AppTheme";
 import { AppContextProvider } from "../data/AppContext";
 import { TaskProvider } from "../data/TaskContext";
 
+jest.mock("../utils/platform", () => ({
+  ...jest.requireActual("../utils/platform"),
+  useTouchScreen: jest.fn(),
+}));
+
 interface TestContextProps {
   text?: string;
 }
@@ -23,7 +28,7 @@ i18n.use(initReactI18next).init({
   resources: { en: { translations: {} } },
 });
 
-const setupMock = {
+const mocks = {
   Filesystem: {
     readFile: (result?: ReadFileResult) => {
       Filesystem.readFile = jest
@@ -48,7 +53,7 @@ export const TestContext = (props: TestContextProps) => {
   const { text } = props;
 
   if (text) {
-    setupMock.Filesystem.readFile({ data: text });
+    mocks.Filesystem.readFile({ data: text });
   }
 
   return (
@@ -74,7 +79,7 @@ export const EmptyTestContext = (
   const { text, children } = props;
 
   if (text) {
-    setupMock.Filesystem.readFile({ data: text });
+    mocks.Filesystem.readFile({ data: text });
   }
 
   return (

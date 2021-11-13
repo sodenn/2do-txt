@@ -1,6 +1,6 @@
 import { styled } from "@mui/material";
 import React from "react";
-import { usePlatform } from "../utils/platform";
+import { usePlatform, useTouchScreen } from "../utils/platform";
 
 export const StyledKbd = styled("kbd")`
   padding: 0 0.4em;
@@ -12,9 +12,10 @@ export const StyledKbd = styled("kbd")`
 `;
 
 const Kbd: React.FC = ({ children }) => {
+  const hasTouchScreen = useTouchScreen();
   const platform = usePlatform();
 
-  if (platform !== "web" && platform !== "electron") {
+  if (hasTouchScreen || platform === "ios" || platform === "android") {
     return null;
   }
 
