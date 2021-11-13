@@ -10,7 +10,6 @@ import {
   styled,
   Typography,
 } from "@mui/material";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
 import { useTask } from "../data/TaskContext";

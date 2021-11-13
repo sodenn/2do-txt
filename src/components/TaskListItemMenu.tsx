@@ -10,7 +10,7 @@ import {
   Popper,
   styled,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import { Task } from "../utils/task";
@@ -20,11 +20,11 @@ const ListIconButton = styled(IconButton)`
   padding: 9px;
 `;
 
-const TaskListItemMenu: React.FC<{ task: Task }> = ({ task }) => {
+const TaskListItemMenu: FC<{ task: Task }> = ({ task }) => {
   const { t } = useTranslation();
   const { openTaskDialog, deleteTask } = useTask();
   const [open, setOpen] = useState(false);
-  const anchorRef = React.useRef<HTMLButtonElement>(null);
+  const anchorRef = useRef<HTMLButtonElement>(null);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -61,7 +61,7 @@ const TaskListItemMenu: React.FC<{ task: Task }> = ({ task }) => {
   };
 
   // return focus to the button when we transitioned from !open -> open
-  const prevOpen = React.useRef(open);
+  const prevOpen = useRef(open);
   useEffect(() => {
     if (anchorRef.current && prevOpen.current && !open) {
       anchorRef.current.focus();

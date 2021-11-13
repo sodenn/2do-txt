@@ -1,6 +1,6 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import AppRouter from "./components/AppRouter";
 import AppTheme from "./components/AppTheme";
 import { AppContextProvider } from "./data/AppContext";

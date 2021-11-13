@@ -5,7 +5,7 @@ import {
   Stack,
   styled,
 } from "@mui/material";
-import React from "react";
+import { MouseEvent } from "react";
 import { Task } from "../utils/task";
 import TaskBody from "./TaskBody";
 import TaskDates from "./TaskDates";
@@ -32,7 +32,7 @@ interface TaskListItemProps {
   task: Task;
   index: number;
   focused: boolean;
-  onClick: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onClick: (event: MouseEvent<HTMLDivElement>) => void;
   onFocus: () => void;
   onBlur: () => void;
 }

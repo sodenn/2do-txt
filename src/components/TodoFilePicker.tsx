@@ -2,7 +2,7 @@ import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import { LoadingButton } from "@mui/lab";
 import { styled } from "@mui/material";
 import { useSnackbar } from "notistack";
-import React, { ChangeEvent, PropsWithChildren, useState } from "react";
+import { ChangeEvent, PropsWithChildren, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import { usePlatform } from "../utils/platform";

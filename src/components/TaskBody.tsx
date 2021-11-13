@@ -1,5 +1,4 @@
 import { styled } from "@mui/material";
-import React from "react";
 import { Task, useFormatBody } from "../utils/task";
 
 interface TaskBodyProps {

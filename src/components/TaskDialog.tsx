@@ -8,7 +8,7 @@ import {
   Theme,
   useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import { TaskFormData } from "../utils/task";

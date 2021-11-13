@@ -1,5 +1,4 @@
 import { AppBar, Box, styled, Toolbar, Typography } from "@mui/material";
-import React from "react";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
 import AddTaskButton from "./AddTaskButton";

@@ -1,7 +1,7 @@
 import { CloseOutlined } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import { alpha, IconButton, InputBase, styled } from "@mui/material";
-import React, { createRef } from "react";
+import { createRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
