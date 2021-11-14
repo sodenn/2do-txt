@@ -5,7 +5,13 @@ import { useStorage } from "../utils/storage";
 
 export type Language = "de" | "en";
 
-export type SortKey = "priority" | "dueDate" | "";
+export type SortKey =
+  | "priority"
+  | "dueDate"
+  | "context"
+  | "project"
+  | "tag"
+  | "";
 
 const [AppContextProvider, useAppContext] = createContext(() => {
   const { i18n } = useTranslation();
