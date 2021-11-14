@@ -60,5 +60,11 @@
   "@Context": "@Kontext",
   "+Project": "+Projekt",
   "Filter": "Filter",
-  "The file could not be opened": "Die Datei konnte nicht geöffnet werden."
+  "The file could not be opened": "Die Datei konnte nicht geöffnet werden.",
+  "Context": "Kontext",
+  "Project": "Projekt",
+  "Tag": "Tag",
+  "Without context": "Ohne Kontext",
+  "Without project": "Ohne Projekt",
+  "Without tag": "Ohne Tag"
 }

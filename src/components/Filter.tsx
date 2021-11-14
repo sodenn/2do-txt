@@ -155,6 +155,9 @@ const Filter = () => {
           >
             <MenuItem value="priority">{t("Priority")}</MenuItem>
             <MenuItem value="dueDate">{t("Due Date")}</MenuItem>
+            <MenuItem value="context">{t("Context")}</MenuItem>
+            <MenuItem value="project">{t("Project")}</MenuItem>
+            <MenuItem value="tag">{t("Tag")}</MenuItem>
             <MenuItem value="">{t("No sorting")}</MenuItem>
           </Select>
         </>

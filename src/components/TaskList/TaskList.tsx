@@ -20,7 +20,7 @@ const TaskList = () => {
   const ref = createRef<HTMLDivElement>();
   const {
     filteredTaskList,
-    groupedTaskList,
+    taskGroups,
     completeTask,
     openTaskDialog,
     deleteTask,
@@ -104,15 +104,15 @@ const TaskList = () => {
     <Box ref={ref}>
       {filteredTaskList.length > 0 && (
         <List role="list" aria-label="Task list" subheader={<li />}>
-          {groupedTaskList.map((group, groupIndex) => (
-            <li key={group.groupKey}>
+          {taskGroups.map((group, groupIndex) => (
+            <li key={group.label}>
               <ul style={{ padding: 0 }}>
-                {group.groupKey && (
+                {group.label && (
                   <StyledListSubheader>
                     <Chip
                       sx={{ px: 1 }}
                       size="small"
-                      label={group.groupKey}
+                      label={group.label}
                       variant="outlined"
                       color={sortBy === "dueDate" ? "warning" : "secondary"}
                     />
