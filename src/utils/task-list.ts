@@ -12,7 +12,7 @@ interface TaskListParseResult {
   lineEnding: string;
   projects: Dictionary<number>;
   contexts: Dictionary<number>;
-  fields: Dictionary<string[]>;
+  tags: Dictionary<string[]>;
   priorities: Dictionary<number>;
 }
 
@@ -21,7 +21,7 @@ interface TaskListFilter {
   selectedPriorities: string[];
   selectedProjects: string[];
   selectedContexts: string[];
-  selectedFields: string[];
+  selectedTags: string[];
   hideCompletedTasks: boolean;
 }
 
@@ -58,13 +58,13 @@ export function parseTaskList(text?: string): TaskListParseResult {
         prev[cur] = (prev[cur] || 0) + 1;
         return prev;
       }, {});
-    let fields: Dictionary<string[]> = {};
+    let tags: Dictionary<string[]> = {};
     taskList.forEach((i) => {
-      Object.entries(i.fields).forEach(([key, value]) => {
-        if (fields[key]) {
-          fields[key] = [...fields[key], ...value];
+      Object.entries(i.tags).forEach(([key, value]) => {
+        if (tags[key]) {
+          tags[key] = [...tags[key], ...value];
         } else {
-          fields[key] = value;
+          tags[key] = value;
         }
       });
     });
@@ -74,7 +74,7 @@ export function parseTaskList(text?: string): TaskListParseResult {
       priorities,
       projects,
       contexts,
-      fields,
+      tags,
     };
   } else {
     return {
@@ -83,7 +83,7 @@ export function parseTaskList(text?: string): TaskListParseResult {
       priorities: {},
       projects: {},
       contexts: {},
-      fields: {},
+      tags: {},
     };
   }
 }
@@ -101,7 +101,7 @@ export function useFilterTaskList(taskList: Task[]) {
     selectedPriorities,
     selectedProjects,
     selectedContexts,
-    selectedFields,
+    selectedTags,
     hideCompletedTasks,
   } = useAppContext();
   return useMemo(() => {
@@ -110,7 +110,7 @@ export function useFilterTaskList(taskList: Task[]) {
       selectedPriorities,
       selectedProjects,
       selectedContexts,
-      selectedFields,
+      selectedTags,
       hideCompletedTasks,
     });
   }, [
@@ -119,7 +119,7 @@ export function useFilterTaskList(taskList: Task[]) {
     selectedPriorities,
     selectedProjects,
     selectedContexts,
-    selectedFields,
+    selectedTags,
     hideCompletedTasks,
   ]);
 }
@@ -143,7 +143,7 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
     selectedPriorities,
     selectedProjects,
     selectedContexts,
-    selectedFields,
+    selectedTags,
     hideCompletedTasks,
   } = filter;
 
@@ -152,7 +152,7 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
     selectedPriorities.length > 0 ||
     selectedProjects.length > 0 ||
     selectedContexts.length > 0 ||
-    selectedFields.length > 0;
+    selectedTags.length > 0;
 
   const filteredList = taskList.filter((task) => {
     const searchMatch =
@@ -181,10 +181,10 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
         task.contexts.includes(selectedContext)
       );
 
-    const fieldsMatch =
-      selectedFields.length > 0 &&
-      selectedFields.some((selectedField) =>
-        Object.keys(task.fields).includes(selectedField)
+    const tagsMatch =
+      selectedTags.length > 0 &&
+      selectedTags.some((selectedTag) =>
+        Object.keys(task.tags).includes(selectedTag)
       );
 
     return activeFilter
@@ -192,7 +192,7 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
           priorityMatch ||
           projectMatch ||
           contextMatch ||
-          fieldsMatch
+          tagsMatch
       : true;
   });
 
@@ -252,7 +252,7 @@ function getGroupKey(task: Task, sortBy: SortKey) {
   } else if (sortBy === "project") {
     return task.projects.length > 0 ? task.projects : "";
   } else if (sortBy === "tag") {
-    return Object.keys(task.fields).length > 0 ? Object.keys(task.fields) : "";
+    return Object.keys(task.tags).length > 0 ? Object.keys(task.tags) : "";
   } else {
     return "";
   }

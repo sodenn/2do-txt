@@ -41,7 +41,7 @@ interface State {
   priorities: Dictionary<number>;
   projects: Dictionary<number>;
   contexts: Dictionary<number>;
-  fields: Dictionary<string[]>;
+  tags: Dictionary<string[]>;
   selectedTask?: Task;
   todoFilePath?: string;
 }
@@ -64,7 +64,7 @@ const [TaskProvider, useTask] = createContext(() => {
     priorities: {},
     projects: {},
     contexts: {},
-    fields: {},
+    tags: {},
   });
 
   const {
@@ -72,7 +72,7 @@ const [TaskProvider, useTask] = createContext(() => {
     priorities,
     projects,
     contexts,
-    fields,
+    tags,
     taskList,
     tasksLoaded,
     lineEnding,
@@ -120,12 +120,12 @@ const [TaskProvider, useTask] = createContext(() => {
     dueDate,
     ...rest
   }: TaskFormData) => {
-    const { projects, contexts, fields } = parseTaskBody(rest.body);
+    const { projects, contexts, tags } = parseTaskBody(rest.body);
     const newTask: Task = {
       ...rest,
       projects,
       contexts,
-      fields,
+      tags: tags,
       completed: false,
       raw: "",
       _id: generateId(),
@@ -237,7 +237,7 @@ const [TaskProvider, useTask] = createContext(() => {
         priorities: {},
         projects: {},
         contexts: {},
-        fields: {},
+        tags: {},
         lineEnding: defaultLineEnding,
         tasksLoaded: false,
       };
@@ -261,7 +261,7 @@ const [TaskProvider, useTask] = createContext(() => {
         priorities: parseResult.priorities,
         projects: parseResult.projects,
         contexts: parseResult.contexts,
-        fields: parseResult.fields,
+        tags: parseResult.tags,
         tasksLoaded: true,
       };
       if (path) {
@@ -384,7 +384,7 @@ const [TaskProvider, useTask] = createContext(() => {
           priorities: parseResult.priorities,
           projects: parseResult.projects,
           contexts: parseResult.contexts,
-          fields: parseResult.fields,
+          tags: parseResult.tags,
           tasksLoaded: true,
           todoFilePath: path ?? defaultPath,
         }));
@@ -415,7 +415,7 @@ const [TaskProvider, useTask] = createContext(() => {
     priorities,
     projects,
     contexts,
-    fields,
+    tags,
     taskList,
     filteredTaskList,
     taskGroups,

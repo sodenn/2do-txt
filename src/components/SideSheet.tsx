@@ -28,7 +28,7 @@ const SaveAreaContent = styled("div")`
 const SideSheet = () => {
   const { t } = useTranslation();
   const { sideSheetOpen, setSideSheetOpen } = useAppContext();
-  const { priorities, projects, contexts, fields, taskList, tasksLoaded } =
+  const { priorities, projects, contexts, tags, taskList, tasksLoaded } =
     useTask();
 
   const hideFilter =
@@ -37,7 +37,7 @@ const SideSheet = () => {
       Object.keys(priorities).length === 0 &&
       Object.keys(projects).length === 0 &&
       Object.keys(contexts).length === 0 &&
-      Object.keys(fields).length === 0);
+      Object.keys(tags).length === 0);
 
   const [tab, setTab] = useState<string>(hideFilter ? "settings" : "filter");
 

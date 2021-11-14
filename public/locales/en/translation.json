@@ -26,7 +26,6 @@
   "English": "English",
   "German": "German",
   "Description": "Description",
-  "Fields": "Fields",
   "Priority": "Priority",
   "None": "None",
   "Priorities": "Priorities",
@@ -59,5 +58,6 @@
   "Tag": "Tag",
   "Without context": "Without context",
   "Without project": "Without project",
-  "Without tag": "Without tag"
+  "Without tag": "Without tag",
+  "Tags": "Tags"
 }

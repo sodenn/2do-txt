@@ -14,7 +14,7 @@ interface SearchParams {
   sort: string;
   projects: string;
   contexts: string;
-  fields: string;
+  tags: string;
   priorities: string;
   hideCompletedTasks: "true";
 }
@@ -36,14 +36,14 @@ export const AppRouterSwitch = () => {
     selectedPriorities,
     selectedProjects,
     selectedContexts,
-    selectedFields,
+    selectedTags,
     hideCompletedTasks,
     setSearchTerm,
     setSortBy,
     setSelectedPriorities,
     setSelectedProjects,
     setSelectedContexts,
-    setSelectedFields,
+    setSelectedTags,
     setHideCompletedTasks,
   } = useAppContext();
 
@@ -74,9 +74,9 @@ export const AppRouterSwitch = () => {
       setSelectedContexts(contexts.split(","));
     }
 
-    const fields = params.get("fields");
-    if (fields) {
-      setSelectedFields(fields.split(","));
+    const tags = params.get("tags");
+    if (tags) {
+      setSelectedTags(tags.split(","));
     }
 
     const hideCompletedTasks = params.get("hideCompletedTasks");
@@ -103,8 +103,8 @@ export const AppRouterSwitch = () => {
     if (selectedContexts.length > 0) {
       params.contexts = selectedContexts.join(",");
     }
-    if (selectedFields.length > 0) {
-      params.fields = selectedFields.join(",");
+    if (selectedTags.length > 0) {
+      params.tags = selectedTags.join(",");
     }
     if (hideCompletedTasks) {
       params.hideCompletedTasks = "true";
@@ -127,7 +127,7 @@ export const AppRouterSwitch = () => {
     selectedPriorities,
     selectedProjects,
     selectedContexts,
-    selectedFields,
+    selectedTags,
     hideCompletedTasks,
   ]);
 
