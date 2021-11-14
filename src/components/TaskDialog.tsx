@@ -37,7 +37,7 @@ const TaskDialog = () => {
     taskDialogOpen,
     projects,
     contexts,
-    fields,
+    tags,
     selectedTask,
     createCreationDate,
     addTask,
@@ -97,7 +97,7 @@ const TaskDialog = () => {
           formData={formData}
           contexts={Object.keys(contexts)}
           projects={Object.keys(projects)}
-          fields={fields}
+          tags={tags}
           onChange={handleChange}
           onEnterPress={handleSave}
         />

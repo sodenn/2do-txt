@@ -6,8 +6,8 @@ import { usePlatform, useTouchScreen } from "../utils/platform";
 import { parseTaskBody, TaskFormData } from "../utils/task";
 import {
   taskContextStyle,
-  taskFieldStyle,
   taskProjectStyle,
+  taskTagStyle,
 } from "../utils/task-styles";
 import { Dictionary } from "../utils/types";
 import LocalizationDatePicker from "./LocalizationDatePicker";
@@ -18,7 +18,7 @@ interface TaskDialogForm {
   formData: TaskFormData;
   projects: string[];
   contexts: string[];
-  fields: Dictionary<string[]>;
+  tags: Dictionary<string[]>;
   onChange: (value: TaskFormData) => void;
   onEnterPress: () => void;
 }
@@ -26,18 +26,17 @@ interface TaskDialogForm {
 const TaskForm = (props: TaskDialogForm) => {
   const platform = usePlatform();
   const hasTouchScreen = useTouchScreen();
-  const { formData, projects, fields, contexts, onChange, onEnterPress } =
-    props;
+  const { formData, projects, tags, contexts, onChange, onEnterPress } = props;
   const { t } = useTranslation();
   const [state, setState] = useState({
     key: 0,
     projects,
     contexts,
-    fields,
+    tags,
   });
 
   const rerenderEditor = (body: string) => {
-    const { projects, contexts, fields } = parseTaskBody(body);
+    const { projects, contexts, tags } = parseTaskBody(body);
     setState((state) => ({
       key: state.key + 1,
       projects: [...state.projects, ...projects].filter(
@@ -46,7 +45,7 @@ const TaskForm = (props: TaskDialogForm) => {
       contexts: [...state.contexts, ...contexts].filter(
         (item, i, ar) => ar.indexOf(item) === i
       ),
-      fields: Object.assign(state.fields, fields),
+      tags: Object.assign(state.tags, tags),
     }));
   };
 
@@ -107,10 +106,10 @@ const TaskForm = (props: TaskDialogForm) => {
               suggestions: state.contexts,
               styleClass: taskContextStyle,
             },
-            ...Object.entries(state.fields).map(([key, value]) => ({
+            ...Object.entries(state.tags).map(([key, value]) => ({
               trigger: `${key}:`,
               suggestions: value,
-              styleClass: taskFieldStyle,
+              styleClass: taskTagStyle,
             })),
           ]}
           onChange={(body) => onChange({ ...formData, body: body || "" })}

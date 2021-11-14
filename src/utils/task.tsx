@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "../data/AppContext";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import {
+  taskChipStyle,
   taskCompletedStyle,
   taskContextStyle,
   taskDisabledStyle,
-  taskFieldStyle,
   taskPriorityStyle,
   taskProjectStyle,
   taskTagStyle,
@@ -24,7 +24,7 @@ export interface Task {
   completionDate?: Date;
   creationDate?: Date;
   priority?: Priority;
-  fields: Dictionary<string[]>;
+  tags: Dictionary<string[]>;
   dueDate?: Date;
   body: string;
   raw: string;
@@ -99,7 +99,7 @@ export function parseTask(text: string, order: number) {
 
 export function parseTaskBody(
   body: string
-): Pick<Task, "contexts" | "projects" | "fields" | "dueDate"> {
+): Pick<Task, "contexts" | "projects" | "tags" | "dueDate"> {
   const tokens = body
     .trim()
     .split(/\s+/)
@@ -113,25 +113,25 @@ export function parseTaskBody(
     .map((t) => t.substr(1))
     .filter((t) => t.length > 0);
 
-  const fields: Dictionary<string[]> = {};
+  const tags: Dictionary<string[]> = {};
   spliceWhere(tokens, (s) => /[^:]+:[^/:][^:]*/.test(s)).forEach((s) => {
     const tuple = s.split(":");
-    if (fields[tuple[0]]) {
-      fields[tuple[0]] = [...fields[tuple[0]], tuple[1]];
+    if (tags[tuple[0]]) {
+      tags[tuple[0]] = [...tags[tuple[0]], tuple[1]];
     } else {
-      fields[tuple[0]] = [tuple[1]];
+      tags[tuple[0]] = [tuple[1]];
     }
   });
 
   const dueDate =
-    fields["due"]?.length > 0
-      ? parseDate(fields["due"][fields["due"].length - 1])
+    tags["due"]?.length > 0
+      ? parseDate(tags["due"][tags["due"].length - 1])
       : undefined;
 
   return {
     contexts,
     projects,
-    fields,
+    tags,
     dueDate,
   };
 }
@@ -151,13 +151,13 @@ export function useFormatBody() {
     let formattedTokens = tokens.map((token, index) => {
       if (/^@[\S]+/.test(token)) {
         return (
-          <span key={index} className={clsx(taskContextStyle, taskTagStyle)}>
+          <span key={index} className={clsx(taskContextStyle, taskChipStyle)}>
             {token}
           </span>
         );
       } else if (/^\+[\S]+/.test(token)) {
         return (
-          <span key={index} className={clsx(taskProjectStyle, taskTagStyle)}>
+          <span key={index} className={clsx(taskProjectStyle, taskChipStyle)}>
             {token}
           </span>
         );
@@ -171,7 +171,7 @@ export function useFormatBody() {
         const displayValue = date ? formatLocaleDate(date, language) : value;
         const text = displayKey + displayValue;
         return (
-          <span key={index} className={clsx(taskFieldStyle, taskTagStyle)}>
+          <span key={index} className={clsx(taskTagStyle, taskChipStyle)}>
             {text}
           </span>
         );
@@ -182,7 +182,7 @@ export function useFormatBody() {
 
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <span key={task._id} className={clsx(taskTagStyle, taskPriorityStyle)}>
+        <span key={task._id} className={clsx(taskChipStyle, taskPriorityStyle)}>
           {task.priority}
         </span>
       );

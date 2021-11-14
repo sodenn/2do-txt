@@ -23,7 +23,7 @@ const [AppContextProvider, useAppContext] = createContext(() => {
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedContexts, setSelectedContexts] = useState<string[]>([]);
-  const [selectedFields, setSelectedFields] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [hideCompletedTasks, setHideCompletedTasks] = useState(false);
   const [showNotifications, _setShowNotifications] = useState(false);
 
@@ -72,8 +72,8 @@ const [AppContextProvider, useAppContext] = createContext(() => {
     setSelectedProjects,
     selectedContexts,
     setSelectedContexts,
-    selectedFields,
-    setSelectedFields,
+    selectedTags,
+    setSelectedTags,
     hideCompletedTasks,
     setHideCompletedTasks,
     changeLanguage,

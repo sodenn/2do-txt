@@ -33,7 +33,6 @@
   "English": "Englisch",
   "German": "Deutsch",
   "Description": "Beschreibung",
-  "Fields": "Felder",
   "Priority": "Priorität",
   "None": "Keine",
   "Priorities": "Prioritäten",
@@ -66,5 +65,6 @@
   "Tag": "Tag",
   "Without context": "Ohne Kontext",
   "Without project": "Ohne Projekt",
-  "Without tag": "Ohne Tag"
+  "Without tag": "Ohne Tag",
+  "Tags": "Tags"
 }
