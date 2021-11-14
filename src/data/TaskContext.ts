@@ -125,7 +125,7 @@ const [TaskProvider, useTask] = createContext(() => {
       ...rest,
       projects,
       contexts,
-      tags: tags,
+      tags,
       completed: false,
       raw: "",
       _id: generateId(),

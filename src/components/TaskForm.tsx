@@ -32,7 +32,7 @@ const TaskForm = (props: TaskDialogForm) => {
     key: 0,
     projects,
     contexts,
-    tags: tags,
+    tags,
   });
 
   const rerenderEditor = (body: string) => {
