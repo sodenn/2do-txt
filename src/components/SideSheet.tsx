@@ -2,7 +2,7 @@ import { TabContext, TabPanel } from "@mui/lab";
 import { Box, Paper, styled, SwipeableDrawer, Tab, Tabs } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../data/AppContext";
+import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
 import Filter from "./Filter";
 import Settings from "./Settings";
@@ -27,7 +27,7 @@ const SaveAreaContent = styled("div")`
 
 const SideSheet = () => {
   const { t } = useTranslation();
-  const { sideSheetOpen, setSideSheetOpen } = useAppContext();
+  const { sideSheetOpen, setSideSheetOpen } = useSideSheet();
   const { priorities, projects, contexts, tags, taskList, tasksLoaded } =
     useTask();
 

@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { TaskFormData } from "../utils/task";
 import TaskForm from "./TaskForm";
@@ -39,10 +40,10 @@ const TaskDialog = () => {
     contexts,
     tags,
     selectedTask,
-    createCreationDate,
     addTask,
     editTask,
   } = useTask();
+  const { createCreationDate } = useSettings();
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
 
   useEffect(() => {

@@ -1,13 +1,13 @@
 import MenuIcon from "@mui/icons-material/Menu";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../data/AppContext";
+import { useSideSheet } from "../data/SideSheetContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import Kbd from "./Kbd";
 
 const SideSheetButton = () => {
   const { t } = useTranslation();
-  const { setSideSheetOpen } = useAppContext();
+  const { setSideSheetOpen } = useSideSheet();
 
   useAddShortcutListener(() => {
     setSideSheetOpen(true);

@@ -10,7 +10,10 @@ import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouterSwitch } from "../components/AppRouter";
 import AppTheme from "../components/AppTheme";
-import { AppContextProvider } from "../data/AppContext";
+import { FilterContextProvider } from "../data/FilterContext";
+import { LanguageContextProvider } from "../data/LanguageContext";
+import { SettingsContextProvider } from "../data/SettingsContext";
+import { SideSheetContextProvider } from "../data/SideSheetContext";
 import { TaskProvider } from "../data/TaskContext";
 
 jest.mock("../utils/platform", () => ({
@@ -60,13 +63,19 @@ export const TestContext = (props: TestContextProps) => {
     <AppTheme>
       <Suspense fallback={null}>
         <SnackbarProvider>
-          <AppContextProvider>
-            <TaskProvider>
-              <MemoryRouter>
-                <AppRouterSwitch />
-              </MemoryRouter>
-            </TaskProvider>
-          </AppContextProvider>
+          <LanguageContextProvider>
+            <FilterContextProvider>
+              <SettingsContextProvider>
+                <SideSheetContextProvider>
+                  <TaskProvider>
+                    <MemoryRouter>
+                      <AppRouterSwitch />
+                    </MemoryRouter>
+                  </TaskProvider>
+                </SideSheetContextProvider>
+              </SettingsContextProvider>
+            </FilterContextProvider>
+          </LanguageContextProvider>
         </SnackbarProvider>
       </Suspense>
     </AppTheme>
@@ -85,9 +94,15 @@ export const EmptyTestContext = (
   return (
     <Suspense fallback={null}>
       <SnackbarProvider>
-        <AppContextProvider>
-          <TaskProvider>{children}</TaskProvider>
-        </AppContextProvider>
+        <LanguageContextProvider>
+          <FilterContextProvider>
+            <SettingsContextProvider>
+              <SideSheetContextProvider>
+                <TaskProvider>{children}</TaskProvider>
+              </SideSheetContextProvider>
+            </SettingsContextProvider>
+          </FilterContextProvider>
+        </LanguageContextProvider>
       </SnackbarProvider>
     </Suspense>
   );

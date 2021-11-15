@@ -9,7 +9,9 @@ type Keys =
   | "line-ending"
   | "show-notifications"
   | "create-completion-date"
-  | "received-notifications";
+  | "received-notifications"
+  | "sort-by"
+  | "hide-completed-tasks";
 
 export function useStorage() {
   const getStorageItem = useCallback(async (key: Keys) => {

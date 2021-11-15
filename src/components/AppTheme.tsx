@@ -1,17 +1,17 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { FC } from "react";
-import { AppThemeProvider, useAppTheme } from "../data/AppThemeContext";
+import { SettingsContextProvider, useSettings } from "../data/SettingsContext";
 
 const AppTheme: FC = ({ children }) => {
   return (
-    <AppThemeProvider>
+    <SettingsContextProvider>
       <AppThemeChild>{children}</AppThemeChild>
-    </AppThemeProvider>
+    </SettingsContextProvider>
   );
 };
 
 const AppThemeChild: FC = ({ children }) => {
-  const { theme } = useAppTheme();
+  const { theme } = useSettings();
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

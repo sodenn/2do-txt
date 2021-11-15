@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAppContext } from "../data/AppContext";
+import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
 
 export const useAddShortcutListener = (
@@ -7,7 +7,7 @@ export const useAddShortcutListener = (
   key: string | string[],
   deps?: any[]
 ) => {
-  const { sideSheetOpen } = useAppContext();
+  const { sideSheetOpen } = useSideSheet();
   const { taskDialogOpen } = useTask();
 
   useEffect(() => {

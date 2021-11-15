@@ -1,6 +1,6 @@
 import { alpha, Box, Chip, List, ListSubheader, styled } from "@mui/material";
 import { createRef, useState } from "react";
-import { useAppContext } from "../../data/AppContext";
+import { useFilter } from "../../data/FilterContext";
 import { useTask } from "../../data/TaskContext";
 import { useAddShortcutListener } from "../../utils/shortcuts";
 import { Task } from "../../utils/task";
@@ -25,7 +25,7 @@ const TaskList = () => {
     openTaskDialog,
     deleteTask,
   } = useTask();
-  const { sortBy } = useAppContext();
+  const { sortBy } = useFilter();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
 
   useAddShortcutListener(
