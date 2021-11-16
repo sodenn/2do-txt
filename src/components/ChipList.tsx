@@ -11,6 +11,8 @@ interface ChipListProps {
 const List = styled("ul")`
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  row-gap: ${({ theme }) => theme.spacing(1)};
   list-style: none;
   padding: 0;
   margin: 0;
