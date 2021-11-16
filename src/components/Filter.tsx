@@ -6,30 +6,29 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import React from "react";
 import { useTranslation } from "react-i18next";
-import { SortKey, useAppContext } from "../data/AppContext";
+import { SortKey, useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { Dictionary } from "../utils/types";
 import ChipList from "./ChipList";
 
 const Filter = () => {
   const { t } = useTranslation();
-  const { priorities, projects, contexts, fields, taskList } = useTask();
+  const { priorities, projects, contexts, tags, taskList } = useTask();
   const {
     sortBy,
     setSortBy,
     selectedPriorities,
     selectedProjects,
     selectedContexts,
-    selectedFields,
+    selectedTags,
     hideCompletedTasks,
     setSelectedPriorities,
     setSelectedProjects,
     setSelectedContexts,
-    setSelectedFields,
+    setSelectedTags,
     setHideCompletedTasks,
-  } = useAppContext();
+  } = useFilter();
 
   return (
     <>
@@ -96,23 +95,20 @@ const Filter = () => {
           </Box>
         </>
       )}
-      {Object.keys(fields).length > 0 && (
+      {Object.keys(tags).length > 0 && (
         <>
           <Typography component="div" variant="subtitle1" gutterBottom>
-            {t("Fields")}
+            {t("Tags")}
           </Typography>
           <Box sx={{ mb: 2 }}>
             <ChipList
-              list={Object.keys(fields).reduce<Dictionary<number>>(
-                (acc, key) => {
-                  acc[key] = fields[key].length;
-                  return acc;
-                },
-                {}
-              )}
-              selected={selectedFields}
+              list={Object.keys(tags).reduce<Dictionary<number>>((acc, key) => {
+                acc[key] = tags[key].length;
+                return acc;
+              }, {})}
+              selected={selectedTags}
               onClick={(item) =>
-                setSelectedFields((items) =>
+                setSelectedTags((items) =>
                   items.includes(item)
                     ? items.filter((i) => i !== item)
                     : [...items, item]
@@ -154,9 +150,12 @@ const Filter = () => {
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value as SortKey)}
           >
+            <MenuItem value="">{t("No sorting")}</MenuItem>
             <MenuItem value="priority">{t("Priority")}</MenuItem>
             <MenuItem value="dueDate">{t("Due Date")}</MenuItem>
-            <MenuItem value="">{t("No sorting")}</MenuItem>
+            <MenuItem value="context">{t("Context")}</MenuItem>
+            <MenuItem value="project">{t("Project")}</MenuItem>
+            <MenuItem value="tag">{t("Tag")}</MenuItem>
           </Select>
         </>
       )}

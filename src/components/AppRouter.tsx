@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -6,17 +6,15 @@ import {
   useHistory,
   useLocation,
 } from "react-router-dom";
-import { SortKey, useAppContext } from "../data/AppContext";
+import { useFilter } from "../data/FilterContext";
 import Page from "./Page";
 
 interface SearchParams {
   term: string;
-  sort: string;
   projects: string;
   contexts: string;
-  fields: string;
+  tags: string;
   priorities: string;
-  hideCompletedTasks: "true";
 }
 
 const AppRouter = () => {
@@ -32,31 +30,23 @@ export const AppRouterSwitch = () => {
   const location = useLocation();
   const {
     searchTerm,
-    sortBy,
     selectedPriorities,
     selectedProjects,
     selectedContexts,
-    selectedFields,
+    selectedTags,
     hideCompletedTasks,
     setSearchTerm,
-    setSortBy,
     setSelectedPriorities,
     setSelectedProjects,
     setSelectedContexts,
-    setSelectedFields,
-    setHideCompletedTasks,
-  } = useAppContext();
+    setSelectedTags,
+  } = useFilter();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const term = params.get("term");
     if (term) {
       setSearchTerm(term);
-    }
-
-    const sortBy = params.get("sort") as SortKey;
-    if (sortBy) {
-      setSortBy(sortBy);
     }
 
     const priorities = params.get("priorities");
@@ -74,14 +64,9 @@ export const AppRouterSwitch = () => {
       setSelectedContexts(contexts.split(","));
     }
 
-    const fields = params.get("fields");
-    if (fields) {
-      setSelectedFields(fields.split(","));
-    }
-
-    const hideCompletedTasks = params.get("hideCompletedTasks");
-    if (hideCompletedTasks === "true") {
-      setHideCompletedTasks(true);
+    const tags = params.get("tags");
+    if (tags) {
+      setSelectedTags(tags.split(","));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -90,9 +75,6 @@ export const AppRouterSwitch = () => {
     const params: Partial<SearchParams> = {};
     if (searchTerm) {
       params.term = searchTerm;
-    }
-    if (sortBy) {
-      params.sort = sortBy;
     }
     if (selectedPriorities.length > 0) {
       params.priorities = selectedPriorities.join(",");
@@ -103,11 +85,8 @@ export const AppRouterSwitch = () => {
     if (selectedContexts.length > 0) {
       params.contexts = selectedContexts.join(",");
     }
-    if (selectedFields.length > 0) {
-      params.fields = selectedFields.join(",");
-    }
-    if (hideCompletedTasks) {
-      params.hideCompletedTasks = "true";
+    if (selectedTags.length > 0) {
+      params.tags = selectedTags.join(",");
     }
     if (Object.keys(params).length > 0) {
       history.push({
@@ -123,11 +102,10 @@ export const AppRouterSwitch = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchTerm,
-    sortBy,
     selectedPriorities,
     selectedProjects,
     selectedContexts,
-    selectedFields,
+    selectedTags,
     hideCompletedTasks,
   ]);
 

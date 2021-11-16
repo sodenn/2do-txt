@@ -1,8 +1,7 @@
 import DownloadIcon from "@mui/icons-material/Download";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import ShareIcon from "@mui/icons-material/Share";
-import { IconButton, Tooltip } from "@mui/material";
-import React from "react";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import { usePlatform } from "../utils/platform";
@@ -40,7 +39,10 @@ const TodoFileDownloadButton = () => {
     <Tooltip
       title={
         <>
-          {t("Download todo.txt")} <Kbd>T</Kbd>
+          {t("Download todo.txt")}{" "}
+          <Box component="span" sx={{ ml: 0.5 }}>
+            <Kbd>T</Kbd>
+          </Box>
         </>
       }
     >

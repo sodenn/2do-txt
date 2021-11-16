@@ -5,13 +5,20 @@ import {
 } from "@capacitor/filesystem";
 import i18n from "i18next";
 import { SnackbarProvider } from "notistack";
-import React, { PropsWithChildren, Suspense } from "react";
+import { PropsWithChildren, Suspense } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouterSwitch } from "../components/AppRouter";
-import AppTheme from "../components/AppTheme";
-import { AppContextProvider } from "../data/AppContext";
+import { AppTheme } from "../data/AppThemeContext";
+import { FilterContextProvider } from "../data/FilterContext";
+import { SettingsContextProvider } from "../data/SettingsContext";
+import { SideSheetContextProvider } from "../data/SideSheetContext";
 import { TaskProvider } from "../data/TaskContext";
+
+jest.mock("../utils/platform", () => ({
+  ...jest.requireActual("../utils/platform"),
+  useTouchScreen: jest.fn(),
+}));
 
 interface TestContextProps {
   text?: string;
@@ -23,7 +30,7 @@ i18n.use(initReactI18next).init({
   resources: { en: { translations: {} } },
 });
 
-const setupMock = {
+const mocks = {
   Filesystem: {
     readFile: (result?: ReadFileResult) => {
       Filesystem.readFile = jest
@@ -48,22 +55,26 @@ export const TestContext = (props: TestContextProps) => {
   const { text } = props;
 
   if (text) {
-    setupMock.Filesystem.readFile({ data: text });
+    mocks.Filesystem.readFile({ data: text });
   }
 
   return (
     <AppTheme>
-      <Suspense fallback={null}>
-        <SnackbarProvider>
-          <AppContextProvider>
-            <TaskProvider>
-              <MemoryRouter>
-                <AppRouterSwitch />
-              </MemoryRouter>
-            </TaskProvider>
-          </AppContextProvider>
-        </SnackbarProvider>
-      </Suspense>
+      <SnackbarProvider>
+        <FilterContextProvider>
+          <Suspense fallback={null}>
+            <SettingsContextProvider>
+              <SideSheetContextProvider>
+                <TaskProvider>
+                  <MemoryRouter>
+                    <AppRouterSwitch />
+                  </MemoryRouter>
+                </TaskProvider>
+              </SideSheetContextProvider>
+            </SettingsContextProvider>
+          </Suspense>
+        </FilterContextProvider>
+      </SnackbarProvider>
     </AppTheme>
   );
 };
@@ -74,16 +85,20 @@ export const EmptyTestContext = (
   const { text, children } = props;
 
   if (text) {
-    setupMock.Filesystem.readFile({ data: text });
+    mocks.Filesystem.readFile({ data: text });
   }
 
   return (
-    <Suspense fallback={null}>
-      <SnackbarProvider>
-        <AppContextProvider>
-          <TaskProvider>{children}</TaskProvider>
-        </AppContextProvider>
-      </SnackbarProvider>
-    </Suspense>
+    <SnackbarProvider>
+      <FilterContextProvider>
+        <Suspense fallback={null}>
+          <SettingsContextProvider>
+            <SideSheetContextProvider>
+              <TaskProvider>{children}</TaskProvider>
+            </SideSheetContextProvider>
+          </SettingsContextProvider>
+        </Suspense>
+      </FilterContextProvider>
+    </SnackbarProvider>
   );
 };

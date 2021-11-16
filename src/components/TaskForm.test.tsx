@@ -1,5 +1,5 @@
 import { createEvent, fireEvent, render, screen } from "@testing-library/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { TaskFormData } from "../utils/task";
 import "../utils/testing";
 import { Dictionary } from "../utils/types";
@@ -9,7 +9,7 @@ interface TestCompProps {
   formData: TaskFormData;
   contexts?: string[];
   projects?: string[];
-  fields?: Dictionary<string[]>;
+  tags?: Dictionary<string[]>;
   onChange?: jest.Mock<any, [x: TaskFormData]>;
   onEnterPress?: jest.Mock<any, [void]>;
 }
@@ -21,7 +21,7 @@ const TestComp = (props: TestCompProps) => {
     onEnterPress,
     projects = [],
     contexts = [],
-    fields = {},
+    tags = {},
   } = props;
 
   const [_formData, setFormData] = useState<TaskFormData>(formData);
@@ -43,7 +43,7 @@ const TestComp = (props: TestCompProps) => {
     <TaskForm
       projects={projects}
       contexts={contexts}
-      fields={fields}
+      tags={tags}
       formData={_formData}
       onChange={handleChange}
       onEnterPress={handleEnterPress}
@@ -81,11 +81,11 @@ describe("TaskEditor", () => {
       completionDate: undefined,
     };
 
-    const fields = {
+    const tags = {
       due: ["2021-11-11"],
     };
 
-    render(<TestComp formData={formData} fields={fields} />);
+    render(<TestComp formData={formData} tags={tags} />);
 
     const editor = await screen.findByRole("combobox", { name: "Text editor" });
 
@@ -107,11 +107,11 @@ describe("TaskEditor", () => {
       completionDate: undefined,
     };
 
-    const fields = {
+    const tags = {
       due: ["2021-11-11"],
     };
 
-    render(<TestComp formData={formData} fields={fields} />);
+    render(<TestComp formData={formData} tags={tags} />);
 
     const editor = await screen.findByRole("combobox", { name: "Text editor" });
 

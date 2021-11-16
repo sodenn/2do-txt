@@ -1,31 +1,37 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import AppRouter from "./components/AppRouter";
-import AppTheme from "./components/AppTheme";
-import { AppContextProvider } from "./data/AppContext";
+import { AppTheme } from "./data/AppThemeContext";
+import { FilterContextProvider } from "./data/FilterContext";
+import { SettingsContextProvider } from "./data/SettingsContext";
+import { SideSheetContextProvider } from "./data/SideSheetContext";
 import { TaskProvider } from "./data/TaskContext";
 
 function App() {
   return (
     <AppTheme>
-      <Suspense fallback={<></>}>
-        <SnackbarProvider
-          maxSnack={3}
-          preventDuplicate={true}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          TransitionComponent={Grow as any}
-        >
-          <AppContextProvider>
-            <TaskProvider>
-              <AppRouter />
-            </TaskProvider>
-          </AppContextProvider>
-        </SnackbarProvider>
-      </Suspense>
+      <SnackbarProvider
+        maxSnack={3}
+        preventDuplicate={true}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        TransitionComponent={Grow as any}
+      >
+        <FilterContextProvider>
+          <Suspense fallback={null}>
+            <SettingsContextProvider>
+              <SideSheetContextProvider>
+                <TaskProvider>
+                  <AppRouter />
+                </TaskProvider>
+              </SideSheetContextProvider>
+            </SettingsContextProvider>
+          </Suspense>
+        </FilterContextProvider>
+      </SnackbarProvider>
     </AppTheme>
   );
 }

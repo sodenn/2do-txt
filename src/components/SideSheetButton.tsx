@@ -1,14 +1,13 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { IconButton, Tooltip } from "@mui/material";
-import React from "react";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../data/AppContext";
+import { useSideSheet } from "../data/SideSheetContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import Kbd from "./Kbd";
 
 const SideSheetButton = () => {
   const { t } = useTranslation();
-  const { setSideSheetOpen } = useAppContext();
+  const { setSideSheetOpen } = useSideSheet();
 
   useAddShortcutListener(() => {
     setSideSheetOpen(true);
@@ -18,7 +17,10 @@ const SideSheetButton = () => {
     <Tooltip
       title={
         <>
-          {t("Menu")} <Kbd>M</Kbd>
+          {t("Menu")}{" "}
+          <Box component="span" sx={{ ml: 0.5 }}>
+            <Kbd>M</Kbd>
+          </Box>
         </>
       }
     >
@@ -28,7 +30,7 @@ const SideSheetButton = () => {
         size="large"
         edge="start"
         color="inherit"
-        aria-label="Open side sheet"
+        aria-label="Menu"
       >
         <MenuIcon />
       </IconButton>

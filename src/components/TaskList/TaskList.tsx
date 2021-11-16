@@ -1,6 +1,6 @@
 import { alpha, Box, Chip, List, ListSubheader, styled } from "@mui/material";
-import React, { createRef, useState } from "react";
-import { useAppContext } from "../../data/AppContext";
+import { createRef, useState } from "react";
+import { useFilter } from "../../data/FilterContext";
 import { useTask } from "../../data/TaskContext";
 import { useAddShortcutListener } from "../../utils/shortcuts";
 import { Task } from "../../utils/task";
@@ -20,12 +20,12 @@ const TaskList = () => {
   const ref = createRef<HTMLDivElement>();
   const {
     filteredTaskList,
-    groupedTaskList,
+    taskGroups,
     completeTask,
     openTaskDialog,
     deleteTask,
   } = useTask();
-  const { sortBy } = useAppContext();
+  const { sortBy } = useFilter();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
 
   useAddShortcutListener(
@@ -104,15 +104,15 @@ const TaskList = () => {
     <Box ref={ref}>
       {filteredTaskList.length > 0 && (
         <List role="list" aria-label="Task list" subheader={<li />}>
-          {groupedTaskList.map((group, groupIndex) => (
-            <li key={group.groupKey}>
+          {taskGroups.map((group, groupIndex) => (
+            <li key={group.label}>
               <ul style={{ padding: 0 }}>
-                {group.groupKey && (
+                {group.label && (
                   <StyledListSubheader>
                     <Chip
                       sx={{ px: 1 }}
                       size="small"
-                      label={group.groupKey}
+                      label={group.label}
                       variant="outlined"
                       color={sortBy === "dueDate" ? "warning" : "secondary"}
                     />

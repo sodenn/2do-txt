@@ -1,8 +1,8 @@
 import { TabContext, TabPanel } from "@mui/lab";
 import { Box, Paper, styled, SwipeableDrawer, Tab, Tabs } from "@mui/material";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../data/AppContext";
+import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
 import Filter from "./Filter";
 import Settings from "./Settings";
@@ -27,8 +27,8 @@ const SaveAreaContent = styled("div")`
 
 const SideSheet = () => {
   const { t } = useTranslation();
-  const { sideSheetOpen, setSideSheetOpen } = useAppContext();
-  const { priorities, projects, contexts, fields, taskList, tasksLoaded } =
+  const { sideSheetOpen, setSideSheetOpen } = useSideSheet();
+  const { priorities, projects, contexts, tags, taskList, tasksLoaded } =
     useTask();
 
   const hideFilter =
@@ -37,11 +37,9 @@ const SideSheet = () => {
       Object.keys(priorities).length === 0 &&
       Object.keys(projects).length === 0 &&
       Object.keys(contexts).length === 0 &&
-      Object.keys(fields).length === 0);
+      Object.keys(tags).length === 0);
 
-  const [tab, setTab] = React.useState<string>(
-    hideFilter ? "settings" : "filter"
-  );
+  const [tab, setTab] = useState<string>(hideFilter ? "settings" : "filter");
 
   const handleChange = (event: any, newValue: string) => {
     setTab(newValue);

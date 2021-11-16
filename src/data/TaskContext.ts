@@ -4,16 +4,10 @@ import { SplashScreen } from "@capacitor/splash-screen";
 import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { groupBy } from "../utils/array";
 import { createContext } from "../utils/Context";
-import {
-  formatDate,
-  formatLocaleDate,
-  parseDate,
-  todayDate,
-} from "../utils/date";
+import { todayDate } from "../utils/date";
 import { useFilesystem } from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
 import { useNotifications } from "../utils/notifications";
@@ -27,22 +21,19 @@ import {
 } from "../utils/task";
 import {
   parseTaskList,
-  sortByDueDate,
-  sortByOriginalOrder,
-  sortByPriority,
   stringifyTaskList,
+  useFilterTaskList,
+  useTaskGroup,
 } from "../utils/task-list";
 import { Dictionary } from "../utils/types";
 import { generateId } from "../utils/uuid";
-import { useAppContext } from "./AppContext";
+import { useSettings } from "./SettingsContext";
 
 const defaultPath = "todo.txt";
 const defaultLineEnding = "\n";
 
 interface State {
   init: boolean;
-  createCreationDate: boolean;
-  createCompletionDate: boolean;
   tasksLoaded: boolean;
   taskDialogOpen: boolean;
   taskList: Task[];
@@ -50,7 +41,7 @@ interface State {
   priorities: Dictionary<number>;
   projects: Dictionary<number>;
   contexts: Dictionary<number>;
-  fields: Dictionary<string[]>;
+  tags: Dictionary<string[]>;
   selectedTask?: Task;
   todoFilePath?: string;
 }
@@ -60,16 +51,11 @@ const [TaskProvider, useTask] = createContext(() => {
   const { getStorageItem, setStorageItem, removeStorageItem } = useStorage();
   const { enqueueSnackbar } = useSnackbar();
   const { scheduleNotifications, cancelNotifications } = useNotifications();
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation();
+  const { t } = useTranslation();
   const platform = usePlatform();
-
+  const { createCompletionDate } = useSettings();
   const [state, setState] = useState<State>({
     init: false,
-    createCreationDate: true,
-    createCompletionDate: false,
     tasksLoaded: false,
     taskDialogOpen: false,
     taskList: [],
@@ -77,7 +63,7 @@ const [TaskProvider, useTask] = createContext(() => {
     priorities: {},
     projects: {},
     contexts: {},
-    fields: {},
+    tags: {},
   });
 
   const {
@@ -85,133 +71,18 @@ const [TaskProvider, useTask] = createContext(() => {
     priorities,
     projects,
     contexts,
-    fields,
+    tags,
     taskList,
     tasksLoaded,
     lineEnding,
-    createCreationDate,
-    createCompletionDate,
     taskDialogOpen,
     selectedTask,
     todoFilePath,
   } = state;
 
-  const {
-    searchTerm,
-    sortBy,
-    selectedPriorities,
-    selectedProjects,
-    selectedContexts,
-    selectedFields,
-    hideCompletedTasks,
-  } = useAppContext();
+  const filteredTaskList = useFilterTaskList(taskList);
 
-  const filteredTaskList = useMemo(() => {
-    const activeFilter =
-      searchTerm.length > 1 ||
-      selectedPriorities.length > 0 ||
-      selectedProjects.length > 0 ||
-      selectedContexts.length > 0 ||
-      selectedFields.length > 0;
-
-    const filteredList = taskList.filter((task) => {
-      const searchMatch =
-        searchTerm.length > 1 &&
-        task.body.toLowerCase().includes(searchTerm.toLowerCase());
-
-      if (hideCompletedTasks && task.completed) {
-        return false;
-      }
-
-      const priorityMatch =
-        selectedPriorities.length > 0 &&
-        selectedPriorities.some(
-          (selectedPriority) => task.priority === selectedPriority
-        );
-
-      const projectMatch =
-        selectedProjects.length > 0 &&
-        selectedProjects.some((selectedProject) =>
-          task.projects.includes(selectedProject)
-        );
-
-      const contextMatch =
-        selectedContexts.length > 0 &&
-        selectedContexts.some((selectedContext) =>
-          task.contexts.includes(selectedContext)
-        );
-
-      const fieldsMatch =
-        selectedFields.length > 0 &&
-        selectedFields.some((selectedField) =>
-          Object.keys(task.fields).includes(selectedField)
-        );
-
-      return activeFilter
-        ? searchMatch ||
-            priorityMatch ||
-            projectMatch ||
-            contextMatch ||
-            fieldsMatch
-        : true;
-    });
-
-    return filteredList.sort(sortByOriginalOrder);
-  }, [
-    taskList,
-    searchTerm,
-    selectedPriorities,
-    selectedProjects,
-    selectedContexts,
-    selectedFields,
-    hideCompletedTasks,
-  ]);
-
-  const groupedTaskList = useMemo(() => {
-    const getKey = (task: Task) => {
-      if (sortBy === "dueDate") {
-        return task.dueDate ? formatDate(task.dueDate) : "";
-      } else if (sortBy === "priority") {
-        return task.priority || "";
-      } else {
-        return "";
-      }
-    };
-
-    const taskListGroupObject = groupBy(filteredTaskList, getKey);
-
-    return Object.entries(taskListGroupObject)
-      .map(([groupKey, items]) => ({
-        groupKey,
-        items,
-      }))
-      .sort((a, b) => {
-        if (sortBy === "priority") {
-          return sortByPriority(a.groupKey, b.groupKey);
-        } else if (sortBy === "dueDate") {
-          return sortByDueDate(a.groupKey, b.groupKey);
-        } else {
-          return -1;
-        }
-      })
-      .map((item) => {
-        if (sortBy === "priority" && !item.groupKey) {
-          const groupKey = t("Without priority");
-          return { ...item, groupKey };
-        } else if (sortBy === "dueDate" && !item.groupKey) {
-          const groupKey = t("Without due date");
-          return { ...item, groupKey };
-        } else if (sortBy === "dueDate" && item.groupKey) {
-          const date = parseDate(item.groupKey);
-          const groupKey = date
-            ? formatLocaleDate(date, language)
-            : item.groupKey;
-          return { ...item, groupKey };
-        } else {
-          return item;
-        }
-      });
-  }, [filteredTaskList, sortBy, t, language]);
+  const taskGroups = useTaskGroup(taskList);
 
   const openTaskDialog = (open: boolean, selectedTask?: Task) => {
     setState((state) => {
@@ -224,35 +95,15 @@ const [TaskProvider, useTask] = createContext(() => {
     });
   };
 
-  const toggleCreateCompletionDate = () => {
-    setState((state) => {
-      const newValue = !createCompletionDate;
-      setStorageItem("create-completion-date", newValue.toString());
-      return { ...state, createCompletionDate: newValue };
-    });
-  };
+  const addTask = (data: TaskFormData) => {
+    const { priority, completionDate, creationDate, dueDate, ...rest } = data;
+    const { projects, contexts, tags } = parseTaskBody(rest.body);
 
-  const toggleCreateCreationDate = () => {
-    setState((state) => {
-      const newValue = !createCreationDate;
-      setStorageItem("create-creation-date", newValue.toString());
-      return { ...state, createCreationDate: newValue };
-    });
-  };
-
-  const addTask = ({
-    priority,
-    completionDate,
-    creationDate,
-    dueDate,
-    ...rest
-  }: TaskFormData) => {
-    const { projects, contexts, fields } = parseTaskBody(rest.body);
     const newTask: Task = {
       ...rest,
       projects,
       contexts,
-      fields,
+      tags,
       completed: false,
       raw: "",
       _id: generateId(),
@@ -280,13 +131,8 @@ const [TaskProvider, useTask] = createContext(() => {
     return saveTodoFile(text);
   };
 
-  const editTask = ({
-    priority,
-    completionDate,
-    creationDate,
-    dueDate,
-    ...rest
-  }: TaskFormData) => {
+  const editTask = (data: TaskFormData) => {
+    const { priority, completionDate, creationDate, dueDate, ...rest } = data;
     const newTaskList = taskList.map((t) => {
       if (t._id === rest._id) {
         cancelNotifications({ notifications: [{ id: hashCode(t.raw) }] });
@@ -364,7 +210,7 @@ const [TaskProvider, useTask] = createContext(() => {
         priorities: {},
         projects: {},
         contexts: {},
-        fields: {},
+        tags: {},
         lineEnding: defaultLineEnding,
         tasksLoaded: false,
       };
@@ -388,7 +234,7 @@ const [TaskProvider, useTask] = createContext(() => {
         priorities: parseResult.priorities,
         projects: parseResult.projects,
         contexts: parseResult.contexts,
-        fields: parseResult.fields,
+        tags: parseResult.tags,
         tasksLoaded: true,
       };
       if (path) {
@@ -511,7 +357,7 @@ const [TaskProvider, useTask] = createContext(() => {
           priorities: parseResult.priorities,
           projects: parseResult.projects,
           contexts: parseResult.contexts,
-          fields: parseResult.fields,
+          tags: parseResult.tags,
           tasksLoaded: true,
           todoFilePath: path ?? defaultPath,
         }));
@@ -542,19 +388,15 @@ const [TaskProvider, useTask] = createContext(() => {
     priorities,
     projects,
     contexts,
-    fields,
+    tags,
     taskList,
     filteredTaskList,
-    groupedTaskList,
+    taskGroups,
     tasksLoaded,
-    createCreationDate,
-    createCompletionDate,
     taskDialogOpen,
     selectedTask,
     todoFilePath,
     openTaskDialog,
-    toggleCreateCreationDate,
-    toggleCreateCompletionDate,
     scheduleDueTaskNotifications,
   };
 });

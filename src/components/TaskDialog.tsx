@@ -8,8 +8,9 @@ import {
   Theme,
   useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { TaskFormData } from "../utils/task";
 import TaskForm from "./TaskForm";
@@ -37,12 +38,12 @@ const TaskDialog = () => {
     taskDialogOpen,
     projects,
     contexts,
-    fields,
+    tags,
     selectedTask,
-    createCreationDate,
     addTask,
     editTask,
   } = useTask();
+  const { createCreationDate } = useSettings();
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
 
   useEffect(() => {
@@ -97,7 +98,7 @@ const TaskDialog = () => {
           formData={formData}
           contexts={Object.keys(contexts)}
           projects={Object.keys(projects)}
-          fields={fields}
+          tags={tags}
           onChange={handleChange}
           onEnterPress={handleSave}
         />

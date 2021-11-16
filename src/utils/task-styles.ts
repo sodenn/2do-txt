@@ -10,7 +10,7 @@ export const taskContextStyle = css`
   background-color: #d1dfd2;
 `;
 
-export const taskFieldStyle = css`
+export const taskTagStyle = css`
   color: #b44a05;
   background-color: #ffdac2;
 `;
@@ -26,7 +26,7 @@ export const taskDateStyle = css`
   background-color: rgba(235, 235, 235, 0.6);
 `;
 
-export const taskTagStyle = css`
+export const taskChipStyle = css`
   hyphens: none;
   display: inline;
   margin-top: 2px;

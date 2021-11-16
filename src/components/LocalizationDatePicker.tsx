@@ -5,7 +5,6 @@ import { TextField } from "@mui/material";
 import { Locale } from "date-fns";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
-import * as React from "react";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Dictionary } from "../utils/types";

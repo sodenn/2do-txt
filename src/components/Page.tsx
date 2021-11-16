@@ -1,5 +1,5 @@
-import { Box, Container, styled, useMediaQuery, useTheme } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import { Box, Container, styled } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
@@ -13,8 +13,6 @@ export const StyledContainer = styled(Container)`
 `;
 
 const Page = () => {
-  const theme = useTheme();
-  const xs = useMediaQuery(theme.breakpoints.only("xs"));
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
 
@@ -37,7 +35,7 @@ const Page = () => {
       <SideSheet />
       <Box
         ref={scrollContainer}
-        sx={{ overflowY: "auto", flex: "auto", px: xs ? 0 : 1 }}
+        sx={{ overflowY: "auto", flex: "auto", px: { sm: 1 } }}
       >
         <StyledContainer disableGutters>
           <TaskList />

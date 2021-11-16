@@ -5,7 +5,7 @@ import {
   OutlinedInput,
   Select,
 } from "@mui/material";
-import React, { useState } from "react";
+import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const priorities = [
@@ -52,7 +52,7 @@ interface PrioritySelectProps {
   onChange?: (priority: any) => void;
 }
 
-const PrioritySelect: React.FC<PrioritySelectProps> = (props) => {
+const PrioritySelect: FC<PrioritySelectProps> = (props) => {
   const { value, onChange } = props;
   const { t } = useTranslation();
 

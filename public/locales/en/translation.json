@@ -26,7 +26,6 @@
   "English": "English",
   "German": "German",
   "Description": "Description",
-  "Fields": "Fields",
   "Priority": "Priority",
   "None": "None",
   "Priorities": "Priorities",
@@ -53,5 +52,12 @@
   "@Context": "@Context",
   "+Project": "+Project",
   "Filter": "Filter",
-  "The file could not be opened": "The file could not be opened."
+  "The file could not be opened": "The file could not be opened.",
+  "Context": "Context",
+  "Project": "Project",
+  "Tag": "Tag",
+  "Without context": "Without context",
+  "Without project": "Without project",
+  "Without tag": "Without tag",
+  "Tags": "Tags"
 }
