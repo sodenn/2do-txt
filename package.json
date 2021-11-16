@@ -14,7 +14,7 @@
     "@capacitor/local-notifications": "^1.0.9",
     "@capacitor/share": "^1.0.7",
     "@capacitor/status-bar": "^1.0.6",
-    "@capacitor/storage": "^1.2.0",
+    "@capacitor/storage": "^1.2.3",
     "@date-io/date-fns": "^2.11.0",
     "@draft-js-plugins/editor": "^4.1.0",
     "@draft-js-plugins/mention": "^4.6.1",

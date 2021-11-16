@@ -1200,10 +1200,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-1.0.6.tgz#d58c9087cfc7c7377e8009bea86152e4fdd2939e"
   integrity sha512-5MGWFq76iiKvHpbZ/Xc0Zig3WZyzWZ62wvC4qxak8OuVHBNG4fA1p/XXY9teQPaU3SupEJHnLkw6Gn1LuDp+ew==
 
-"@capacitor/storage@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@capacitor/storage/-/storage-1.2.0.tgz#20b92a73bc5f15921580ccf128780457ee11746e"
-  integrity sha512-sPleacspZcNg5Bs7CKbhh/eypqLYeyPKYEdOMSUyJp9QQNXHyZdy0vxGfow/ZRP5WUuiFkGrm7ZEWMrsQRo8Jw==
+"@capacitor/storage@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@capacitor/storage/-/storage-1.2.3.tgz#5d5873f2890d0ba3717cef97ecfea7b02823a122"
+  integrity sha512-Rc5CKS53sfxokF5dxzNQDhig4lnZonky6VqskHZKTe3Ltl37FKmrG+I8ttZCinFZ5MPWfGSuP44m93hsQqitjQ==
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
