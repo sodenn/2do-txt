@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../data/AppContext";
+import { useFilter } from "../data/FilterContext";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import {
   taskChipStyle,
@@ -141,7 +141,7 @@ export function useFormatBody() {
     t,
     i18n: { language },
   } = useTranslation();
-  const { sortBy } = useAppContext();
+  const { sortBy } = useFilter();
   return (task: Task) => {
     const tokens = task.body
       .trim()

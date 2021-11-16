@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { SortKey, useAppContext } from "../data/AppContext";
+import { SortKey, useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { Dictionary } from "../utils/types";
 import ChipList from "./ChipList";
@@ -28,7 +28,7 @@ const Filter = () => {
     setSelectedContexts,
     setSelectedTags,
     setHideCompletedTasks,
-  } = useAppContext();
+  } = useFilter();
 
   return (
     <>

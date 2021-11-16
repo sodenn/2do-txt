@@ -1,7 +1,7 @@
 import { isAfter, isBefore } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { SortKey, useAppContext } from "../data/AppContext";
+import { SortKey, useFilter } from "../data/FilterContext";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
@@ -103,7 +103,7 @@ export function useFilterTaskList(taskList: Task[]) {
     selectedContexts,
     selectedTags,
     hideCompletedTasks,
-  } = useAppContext();
+  } = useFilter();
   return useMemo(() => {
     return filterTaskList(taskList, {
       searchTerm,
@@ -125,7 +125,7 @@ export function useFilterTaskList(taskList: Task[]) {
 }
 
 export function useTaskGroup(taskList: Task[]) {
-  const { sortBy } = useAppContext();
+  const { sortBy } = useFilter();
   const filteredTaskList = useFilterTaskList(taskList);
   const formatGroupLabel = useFormatGroupLabel();
   return useMemo(

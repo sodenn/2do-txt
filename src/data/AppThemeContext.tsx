@@ -1,11 +1,13 @@
 import { StatusBar, Style } from "@capacitor/status-bar";
 import {
   createTheme,
+  CssBaseline,
   PaletteMode,
   ThemeOptions,
+  ThemeProvider,
   useMediaQuery,
 } from "@mui/material";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { createContext } from "../utils/Context";
 import { useStorage } from "../utils/storage";
 
@@ -50,7 +52,7 @@ const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
   },
 });
 
-const getMode = (
+const getPaletteMode = (
   selectedMode: ThemeMode,
   prefersDarkMode: boolean
 ): PaletteMode => {
@@ -61,62 +63,72 @@ const getMode = (
   }
 };
 
-export const [AppThemeProvider, useAppTheme] = createContext(() => {
-  const init = useRef(false);
+const [AppThemeProvider, useAppTheme] = createContext(() => {
   const { getStorageItem, setStorageItem } = useStorage();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const [selectedMode, _setSelectedMode] = useState<ThemeMode>("system");
-  const mode = getMode(selectedMode, prefersDarkMode);
-  const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+  const [themeMode, _setThemeMode] = useState<ThemeMode>("system");
+  const paletteMode = getPaletteMode(themeMode, prefersDarkMode);
+  const theme = useMemo(
+    () => createTheme(getDesignTokens(paletteMode)),
+    [paletteMode]
+  );
 
-  const setSelectedMode = (mode: ThemeMode) => {
-    _setSelectedMode(mode);
-    StatusBar.setStyle({
-      style:
-        mode === "light"
-          ? Style.Light
-          : mode === "dark"
-          ? Style.Dark
-          : Style.Default,
-    }).catch((error) => void error);
-  };
+  const setThemeMode = useCallback(
+    (mode: ThemeMode) => {
+      _setThemeMode(mode);
+      setStorageItem("theme-mode", mode);
 
-  useEffect(() => {
-    getStorageItem("theme-mode")
-      .then((value) => {
-        if (value === "light" || value === "dark") {
-          return value;
-        } else {
-          return "system";
-        }
-      })
-      .then((mode) => {
-        setSelectedMode(mode);
-        init.current = true;
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prefersDarkMode]);
-
-  useEffect(() => {
-    if (init.current) {
-      setStorageItem("theme-mode", selectedMode);
-    }
-    const themeColorMetaTag = document.querySelector(
-      'meta[name="theme-color"]'
-    );
-    if (themeColorMetaTag) {
-      themeColorMetaTag.setAttribute(
-        "content",
-        theme.palette.background.default
+      const themeColorMetaTag = document.querySelector(
+        'meta[name="theme-color"]'
       );
-    }
-  }, [setStorageItem, selectedMode, theme]);
+      if (themeColorMetaTag) {
+        themeColorMetaTag.setAttribute(
+          "content",
+          theme.palette.background.default
+        );
+      }
+
+      StatusBar.setStyle({
+        style:
+          mode === "light"
+            ? Style.Light
+            : mode === "dark"
+            ? Style.Dark
+            : Style.Default,
+      }).catch((error) => void error);
+    },
+    [setStorageItem, theme.palette.background.default]
+  );
+
+  useEffect(() => {
+    getStorageItem("theme-mode").then((themeMode) =>
+      setThemeMode((themeMode as ThemeMode) || "system")
+    );
+  }, [getStorageItem, setThemeMode, prefersDarkMode]);
 
   return {
-    mode,
-    selectedMode,
-    setSelectedMode,
+    setThemeMode,
+    themeMode,
     theme,
-    prefersDarkMode,
   };
 });
+
+const AppTheme: FC = ({ children }) => {
+  return (
+    <AppThemeProvider>
+      <AppThemeChild>{children}</AppThemeChild>
+    </AppThemeProvider>
+  );
+};
+
+const AppThemeChild: FC = ({ children }) => {
+  const { theme } = useAppTheme();
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {children}
+    </ThemeProvider>
+  );
+};
+
+export { AppTheme, useAppTheme };

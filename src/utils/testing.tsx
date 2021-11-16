@@ -9,8 +9,10 @@ import { PropsWithChildren, Suspense } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouterSwitch } from "../components/AppRouter";
-import AppTheme from "../components/AppTheme";
-import { AppContextProvider } from "../data/AppContext";
+import { AppTheme } from "../data/AppThemeContext";
+import { FilterContextProvider } from "../data/FilterContext";
+import { SettingsContextProvider } from "../data/SettingsContext";
+import { SideSheetContextProvider } from "../data/SideSheetContext";
 import { TaskProvider } from "../data/TaskContext";
 
 jest.mock("../utils/platform", () => ({
@@ -58,17 +60,21 @@ export const TestContext = (props: TestContextProps) => {
 
   return (
     <AppTheme>
-      <Suspense fallback={null}>
-        <SnackbarProvider>
-          <AppContextProvider>
-            <TaskProvider>
-              <MemoryRouter>
-                <AppRouterSwitch />
-              </MemoryRouter>
-            </TaskProvider>
-          </AppContextProvider>
-        </SnackbarProvider>
-      </Suspense>
+      <SnackbarProvider>
+        <FilterContextProvider>
+          <Suspense fallback={null}>
+            <SettingsContextProvider>
+              <SideSheetContextProvider>
+                <TaskProvider>
+                  <MemoryRouter>
+                    <AppRouterSwitch />
+                  </MemoryRouter>
+                </TaskProvider>
+              </SideSheetContextProvider>
+            </SettingsContextProvider>
+          </Suspense>
+        </FilterContextProvider>
+      </SnackbarProvider>
     </AppTheme>
   );
 };
@@ -83,12 +89,16 @@ export const EmptyTestContext = (
   }
 
   return (
-    <Suspense fallback={null}>
-      <SnackbarProvider>
-        <AppContextProvider>
-          <TaskProvider>{children}</TaskProvider>
-        </AppContextProvider>
-      </SnackbarProvider>
-    </Suspense>
+    <SnackbarProvider>
+      <FilterContextProvider>
+        <Suspense fallback={null}>
+          <SettingsContextProvider>
+            <SideSheetContextProvider>
+              <TaskProvider>{children}</TaskProvider>
+            </SideSheetContextProvider>
+          </SettingsContextProvider>
+        </Suspense>
+      </FilterContextProvider>
+    </SnackbarProvider>
   );
 };

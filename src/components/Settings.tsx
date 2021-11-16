@@ -11,7 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../data/AppContext";
+import { useSettings } from "../data/SettingsContext";
+import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
 import { useNotifications } from "../utils/notifications";
 import { usePlatform } from "../utils/platform";
@@ -30,17 +31,16 @@ const Settings = () => {
   const platform = usePlatform();
   const { checkNotificationPermissions, requestNotificationPermissions } =
     useNotifications();
-  const { setSideSheetOpen, showNotifications, setShowNotifications } =
-    useAppContext();
-  const { todoFilePath } = useTask();
+  const { todoFilePath, closeTodoFile, tasksLoaded } = useTask();
   const {
+    showNotifications,
+    setShowNotifications,
     createCompletionDate,
     createCreationDate,
     toggleCreateCompletionDate,
     toggleCreateCreationDate,
-    closeTodoFile,
-    tasksLoaded,
-  } = useTask();
+  } = useSettings();
+  const { setSideSheetOpen } = useSideSheet();
 
   const handleCloseFileClick = () => {
     closeTodoFile();

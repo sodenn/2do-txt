@@ -4,13 +4,13 @@ import { ThemeMode, useAppTheme } from "../data/AppThemeContext";
 
 const ThemeModeSelect = () => {
   const { t } = useTranslation();
-  const { selectedMode, setSelectedMode } = useAppTheme();
+  const { themeMode, setThemeMode } = useAppTheme();
   return (
     <Select
       fullWidth
       size="small"
-      value={selectedMode}
-      onChange={(event) => setSelectedMode(event.target.value as ThemeMode)}
+      value={themeMode}
+      onChange={(event) => setThemeMode(event.target.value as ThemeMode)}
     >
       <MenuItem value="light">{t("Light")}</MenuItem>
       <MenuItem value="dark">{t("Dark")}</MenuItem>

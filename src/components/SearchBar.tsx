@@ -3,7 +3,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { alpha, IconButton, InputBase, styled } from "@mui/material";
 import { createRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppContext } from "../data/AppContext";
+import { useFilter } from "../data/FilterContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
 
 const Search = styled("div")(({ theme }) => {
@@ -60,7 +60,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const SearchBar = () => {
   const { t } = useTranslation();
-  const { searchTerm, setSearchTerm } = useAppContext();
+  const { searchTerm, setSearchTerm } = useFilter();
   const searchInputRef = createRef<HTMLInputElement>();
 
   useAddShortcutListener(

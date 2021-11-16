@@ -26,14 +26,13 @@ import {
 } from "../utils/task-list";
 import { Dictionary } from "../utils/types";
 import { generateId } from "../utils/uuid";
+import { useSettings } from "./SettingsContext";
 
 const defaultPath = "todo.txt";
 const defaultLineEnding = "\n";
 
 interface State {
   init: boolean;
-  createCreationDate: boolean;
-  createCompletionDate: boolean;
   tasksLoaded: boolean;
   taskDialogOpen: boolean;
   taskList: Task[];
@@ -53,10 +52,9 @@ const [TaskProvider, useTask] = createContext(() => {
   const { scheduleNotifications, cancelNotifications } = useNotifications();
   const { t } = useTranslation();
   const platform = usePlatform();
+  const { createCompletionDate } = useSettings();
   const [state, setState] = useState<State>({
     init: false,
-    createCreationDate: true,
-    createCompletionDate: false,
     tasksLoaded: false,
     taskDialogOpen: false,
     taskList: [],
@@ -76,14 +74,13 @@ const [TaskProvider, useTask] = createContext(() => {
     taskList,
     tasksLoaded,
     lineEnding,
-    createCreationDate,
-    createCompletionDate,
     taskDialogOpen,
     selectedTask,
     todoFilePath,
   } = state;
 
   const filteredTaskList = useFilterTaskList(taskList);
+
   const taskGroups = useTaskGroup(taskList);
 
   const openTaskDialog = (open: boolean, selectedTask?: Task) => {
@@ -97,30 +94,10 @@ const [TaskProvider, useTask] = createContext(() => {
     });
   };
 
-  const toggleCreateCompletionDate = () => {
-    setState((state) => {
-      const newValue = !createCompletionDate;
-      setStorageItem("create-completion-date", newValue.toString());
-      return { ...state, createCompletionDate: newValue };
-    });
-  };
-
-  const toggleCreateCreationDate = () => {
-    setState((state) => {
-      const newValue = !createCreationDate;
-      setStorageItem("create-creation-date", newValue.toString());
-      return { ...state, createCreationDate: newValue };
-    });
-  };
-
-  const addTask = ({
-    priority,
-    completionDate,
-    creationDate,
-    dueDate,
-    ...rest
-  }: TaskFormData) => {
+  const addTask = (data: TaskFormData) => {
+    const { priority, completionDate, creationDate, dueDate, ...rest } = data;
     const { projects, contexts, tags } = parseTaskBody(rest.body);
+
     const newTask: Task = {
       ...rest,
       projects,
@@ -153,13 +130,8 @@ const [TaskProvider, useTask] = createContext(() => {
     return saveTodoFile(text);
   };
 
-  const editTask = ({
-    priority,
-    completionDate,
-    creationDate,
-    dueDate,
-    ...rest
-  }: TaskFormData) => {
+  const editTask = (data: TaskFormData) => {
+    const { priority, completionDate, creationDate, dueDate, ...rest } = data;
     const newTaskList = taskList.map((t) => {
       if (t._id === rest._id) {
         cancelNotifications({ notifications: [{ id: hashCode(t.raw) }] });
@@ -420,14 +392,10 @@ const [TaskProvider, useTask] = createContext(() => {
     filteredTaskList,
     taskGroups,
     tasksLoaded,
-    createCreationDate,
-    createCompletionDate,
     taskDialogOpen,
     selectedTask,
     todoFilePath,
     openTaskDialog,
-    toggleCreateCreationDate,
-    toggleCreateCompletionDate,
     scheduleDueTaskNotifications,
   };
 });
