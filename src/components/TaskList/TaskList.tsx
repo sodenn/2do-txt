@@ -18,28 +18,26 @@ const StyledListSubheader = styled(ListSubheader)`
 
 const TaskList = () => {
   const ref = createRef<HTMLDivElement>();
-  const {
-    filteredTaskList,
-    taskGroups,
-    completeTask,
-    openTaskDialog,
-    deleteTask,
-  } = useTask();
+  const { taskGroups, completeTask, openTaskDialog, deleteTask } = useTask();
   const { sortBy } = useFilter();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
+  const flatTaskList = taskGroups.reduce<Task[]>(
+    (prev, curr) => [...prev, ...curr.items],
+    []
+  );
 
   useAddShortcutListener(
     (key) => {
       focusNextListItem(key === "ArrowDown" ? "down" : "up");
     },
     ["ArrowDown", "ArrowUp"],
-    [filteredTaskList.length]
+    [flatTaskList.length]
   );
 
   useAddShortcutListener(
     () => {
       if (focusedTaskIndex !== -1) {
-        const focusedTask = filteredTaskList[focusedTaskIndex];
+        const focusedTask = flatTaskList[focusedTaskIndex];
         openTaskDialog(true, focusedTask);
       }
     },
@@ -50,7 +48,7 @@ const TaskList = () => {
   useAddShortcutListener(
     () => {
       if (focusedTaskIndex !== -1) {
-        const focusedTask = filteredTaskList[focusedTaskIndex];
+        const focusedTask = flatTaskList[focusedTaskIndex];
         deleteTask(focusedTask);
       }
     },
@@ -69,9 +67,9 @@ const TaskList = () => {
     if (index === -1) {
       index = 0;
     } else if (direction === "down") {
-      index = index + 1 < filteredTaskList.length ? index + 1 : 0;
+      index = index + 1 < flatTaskList.length ? index + 1 : 0;
     } else {
-      index = index - 1 >= 0 ? index - 1 : filteredTaskList.length - 1;
+      index = index - 1 >= 0 ? index - 1 : flatTaskList.length - 1;
     }
 
     const listItems = root.querySelectorAll<HTMLButtonElement>(
@@ -102,9 +100,9 @@ const TaskList = () => {
 
   return (
     <Box ref={ref}>
-      {filteredTaskList.length > 0 && (
+      {flatTaskList.length > 0 && (
         <List role="list" aria-label="Task list" subheader={<li />}>
-          {taskGroups.map((group, groupIndex) => (
+          {taskGroups.map((group) => (
             <li key={group.label}>
               <ul style={{ padding: 0 }}>
                 {group.label && (
@@ -118,8 +116,8 @@ const TaskList = () => {
                     />
                   </StyledListSubheader>
                 )}
-                {group.items.map((task, itemIndex) => {
-                  const index = groupIndex + itemIndex;
+                {group.items.map((task) => {
+                  const index = flatTaskList.indexOf(task);
                   return (
                     <TaskListItem
                       key={index}
