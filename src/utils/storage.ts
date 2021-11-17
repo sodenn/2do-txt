@@ -1,7 +1,7 @@
 import { Storage } from "@capacitor/storage";
 import { useCallback } from "react";
 
-type Keys =
+export type Keys =
   | "language"
   | "theme-mode"
   | "todo-txt-path"

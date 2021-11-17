@@ -4,7 +4,6 @@
     <node-options value="" />
     <jest-package value="$PROJECT_DIR$/node_modules/react-scripts" />
     <working-dir value="$PROJECT_DIR$" />
-    <jest-options value="--watchAll=false --maxWorkers=50%" />
     <envs />
     <scope-kind value="ALL" />
     <method v="2" />

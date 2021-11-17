@@ -104,6 +104,11 @@ describe("TaskList", () => {
     await screen.findByRole("checkbox", { name: "completed" });
 
     expect(checkbox.getAttribute("aria-checked")).toBe("true");
+
+    // make sure that the click did not open the task dialog
+    await expect(() =>
+      screen.findByRole("presentation", { name: "Task dialog" })
+    ).rejects.toThrow('Unable to find role="presentation"');
   });
 
   it("should complete a task by pressing enter", async () => {

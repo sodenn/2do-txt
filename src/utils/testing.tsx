@@ -1,8 +1,5 @@
-import {
-  Filesystem,
-  ReadFileOptions,
-  ReadFileResult,
-} from "@capacitor/filesystem";
+import { Filesystem, ReadFileResult } from "@capacitor/filesystem";
+import { GetOptions, GetResult, Storage } from "@capacitor/storage";
 import i18n from "i18next";
 import { SnackbarProvider } from "notistack";
 import { PropsWithChildren, Suspense } from "react";
@@ -14,6 +11,7 @@ import { FilterContextProvider } from "../data/FilterContext";
 import { SettingsContextProvider } from "../data/SettingsContext";
 import { SideSheetContextProvider } from "../data/SideSheetContext";
 import { TaskProvider } from "../data/TaskContext";
+import { Keys } from "./storage";
 
 jest.mock("../utils/platform", () => ({
   ...jest.requireActual("../utils/platform"),
@@ -22,6 +20,12 @@ jest.mock("../utils/platform", () => ({
 
 interface TestContextProps {
   text?: string;
+  storage?: StorageItem[];
+}
+
+interface StorageItem {
+  key: Keys;
+  value: string;
 }
 
 i18n.use(initReactI18next).init({
@@ -32,17 +36,25 @@ i18n.use(initReactI18next).init({
 
 const mocks = {
   Filesystem: {
-    readFile: (result?: ReadFileResult) => {
+    readFile: (text: string) => {
       Filesystem.readFile = jest
         .fn()
-        .mockImplementation(
-          async (options: ReadFileOptions): Promise<ReadFileResult> => {
-            if (!result) {
-              throw new Error("[Filesystem Mock] File does not exist");
-            }
-            return result;
+        .mockImplementation(async (): Promise<ReadFileResult> => {
+          if (!text) {
+            throw new Error("[Filesystem Mock] File does not exist");
           }
-        );
+          return { data: text };
+        });
+    },
+  },
+  Storage: {
+    get: (storage: StorageItem[]) => {
+      Storage.get = jest
+        .fn()
+        .mockImplementation(async (option: GetOptions): Promise<GetResult> => {
+          const item = storage.find((i) => i.key === option.key);
+          return { value: item ? item.value : null };
+        });
     },
   },
 };
@@ -52,10 +64,13 @@ X 2012-01-01 Second task
 (A) x Third task @Test`;
 
 export const TestContext = (props: TestContextProps) => {
-  const { text } = props;
+  const { text, storage } = props;
 
   if (text) {
-    mocks.Filesystem.readFile({ data: text });
+    mocks.Filesystem.readFile(text);
+  }
+  if (storage) {
+    mocks.Storage.get(storage);
   }
 
   return (
@@ -82,10 +97,13 @@ export const TestContext = (props: TestContextProps) => {
 export const EmptyTestContext = (
   props: PropsWithChildren<TestContextProps>
 ) => {
-  const { text, children } = props;
+  const { text, storage, children } = props;
 
   if (text) {
-    mocks.Filesystem.readFile({ data: text });
+    mocks.Filesystem.readFile(text);
+  }
+  if (storage) {
+    mocks.Storage.get(storage);
   }
 
   return (
