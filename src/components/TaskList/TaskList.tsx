@@ -79,25 +79,6 @@ const TaskList = () => {
     listItems.item(index).focus();
   };
 
-  const contextMenuClicked = (element: Element): boolean => {
-    if (
-      typeof element.getAttribute === "function" &&
-      (element.getAttribute("role") === "menu" ||
-        element.getAttribute("role") === "menuitem")
-    ) {
-      return true;
-    }
-    return (
-      !!element.parentNode && contextMenuClicked(element.parentNode as Element)
-    );
-  };
-
-  const handleClick = (event: any, task: Task) => {
-    if (!contextMenuClicked(event.target)) {
-      completeTask(task);
-    }
-  };
-
   return (
     <Box ref={ref}>
       {flatTaskList.length > 0 && (
@@ -121,10 +102,11 @@ const TaskList = () => {
                   return (
                     <TaskListItem
                       key={index}
-                      task={task}
                       index={index}
+                      task={task}
                       focused={focusedTaskIndex === index}
-                      onClick={(event) => handleClick(event, task)}
+                      onItemClick={() => openTaskDialog(true, task)}
+                      onCheckboxClick={() => completeTask(task)}
                       onFocus={() => setFocusedTaskIndex(index)}
                       onBlur={() => setFocusedTaskIndex(-1)}
                     />

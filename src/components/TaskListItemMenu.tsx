@@ -17,7 +17,7 @@ import { Task } from "../utils/task";
 import Kbd from "./Kbd";
 
 const ListIconButton = styled(IconButton)`
-  padding: 9px;
+  padding: 9px; // use the same padding as the checkbox on the opposite side
 `;
 
 const TaskListItemMenu: FC<{ task: Task }> = ({ task }) => {
