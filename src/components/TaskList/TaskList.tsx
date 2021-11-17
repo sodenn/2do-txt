@@ -26,13 +26,13 @@ const TaskList = () => {
     []
   );
 
-  useAddShortcutListener(
-    (key) => {
-      focusNextListItem(key === "ArrowDown" ? "down" : "up");
-    },
-    ["ArrowDown", "ArrowUp"],
-    [flatTaskList.length]
-  );
+  useAddShortcutListener(() => focusNextListItem("down"), "ArrowDown", [
+    flatTaskList.length,
+  ]);
+
+  useAddShortcutListener(() => focusNextListItem("up"), "ArrowUp", [
+    flatTaskList.length,
+  ]);
 
   useAddShortcutListener(
     () => {
@@ -42,7 +42,7 @@ const TaskList = () => {
       }
     },
     "e",
-    [ref]
+    [ref.current]
   );
 
   useAddShortcutListener(
@@ -53,7 +53,7 @@ const TaskList = () => {
       }
     },
     "d",
-    [ref]
+    [ref.current]
   );
 
   const focusNextListItem = (direction: "up" | "down") => {

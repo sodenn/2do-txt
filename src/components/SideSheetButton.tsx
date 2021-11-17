@@ -11,7 +11,7 @@ const SideSheetButton = () => {
 
   useAddShortcutListener(() => {
     setSideSheetOpen(true);
-  }, ["m"]);
+  }, "m");
 
   return (
     <Tooltip
