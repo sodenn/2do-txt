@@ -1,7 +1,7 @@
 import { CloseOutlined } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import { alpha, IconButton, InputBase, styled } from "@mui/material";
-import { createRef } from "react";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
@@ -61,7 +61,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const SearchBar = () => {
   const { t } = useTranslation();
   const { searchTerm, setSearchTerm } = useFilter();
-  const searchInputRef = createRef<HTMLInputElement>();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useAddShortcutListener(
     () => {

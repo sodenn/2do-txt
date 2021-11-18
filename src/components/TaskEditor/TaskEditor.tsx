@@ -1,7 +1,7 @@
 import Editor from "@draft-js-plugins/editor";
 import { styled, useTheme } from "@mui/material";
 import "draft-js/dist/Draft.css";
-import { createRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { SuggestionData, useTodoEditor } from "./task-editor-hook";
 
 interface TodoEditorProps {
@@ -39,7 +39,7 @@ const Legend = styled("legend")`
 
 const TaskEditor = (props: TodoEditorProps) => {
   const theme = useTheme();
-  const editorContainerRef = createRef<HTMLFieldSetElement>();
+  const editorContainerRef = useRef<HTMLFieldSetElement>(null);
   const {
     value,
     placeholder,
