@@ -15,7 +15,7 @@ const AddTaskButton = ({ edgeEnd }: AddTaskButtonProps) => {
 
   useAddShortcutListener(() => {
     openTaskDialog(true);
-  }, ["n"]);
+  }, "n");
 
   return (
     <Tooltip

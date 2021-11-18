@@ -11,14 +11,12 @@ interface ChipListProps {
 const List = styled("ul")`
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  row-gap: ${({ theme }) => theme.spacing(1.5)};
+  column-gap: ${({ theme }) => theme.spacing(1)};
   list-style: none;
   padding: 0;
   margin: 0;
-`;
-
-const ListItem = styled("li")`
-  margin-right: ${({ theme }) => theme.spacing(1)};
-  margin-bottom: ${({ theme }) => theme.spacing(0.5)};
 `;
 
 const ChipList = (props: ChipListProps) => {
@@ -27,7 +25,7 @@ const ChipList = (props: ChipListProps) => {
   return (
     <List>
       {Object.entries(list).map(([item, usages], index) => (
-        <ListItem key={index}>
+        <li key={index}>
           <Badge
             badgeContent={usages === 1 ? undefined : usages}
             color="primary"
@@ -44,7 +42,7 @@ const ChipList = (props: ChipListProps) => {
               onClick={() => onClick && onClick(item)}
             />
           </Badge>
-        </ListItem>
+        </li>
       ))}
     </List>
   );
