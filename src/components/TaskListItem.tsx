@@ -77,10 +77,10 @@ const TaskListItem = (props: TaskListItemProps) => {
   };
 
   return (
-    <ListItem role="listitem" key={index} disablePadding>
+    <ListItem key={index} disablePadding>
       <TaskItemButton
         key={index}
-        aria-label="task"
+        aria-label="Task"
         aria-current={focused}
         onClick={handleItemClick}
         onFocus={onFocus}
@@ -95,9 +95,10 @@ const TaskListItem = (props: TaskListItemProps) => {
         >
           <div>
             <Checkbox
-              role="checkbox"
-              aria-label="completed"
-              aria-checked={task.completed}
+              inputProps={{
+                "aria-label": "Complete task",
+                "aria-checked": task.completed,
+              }}
               onClick={onCheckboxClick}
               edge="start"
               checked={task.completed}

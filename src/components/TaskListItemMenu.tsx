@@ -72,7 +72,9 @@ const TaskListItemMenu: FC<{ task: Task }> = ({ task }) => {
   return (
     <>
       <ListIconButton
-        role="menu"
+        aria-controls={open ? "composition-menu" : undefined}
+        aria-expanded={open ? "true" : undefined}
+        aria-haspopup="true"
         ref={anchorRef}
         onClick={handleToggle}
         tabIndex={-1}
@@ -92,12 +94,8 @@ const TaskListItemMenu: FC<{ task: Task }> = ({ task }) => {
           <Grow {...TransitionProps}>
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
-                <MenuList
-                  role="menu"
-                  autoFocusItem={open}
-                  onKeyDown={handleListKeyDown}
-                >
-                  <MenuItem role="menuitem" onClick={handleEdit}>
+                <MenuList autoFocusItem={open} onKeyDown={handleListKeyDown}>
+                  <MenuItem onClick={handleEdit}>
                     <Box sx={{ display: "flex", width: "100%" }}>
                       <Box sx={{ flex: 1, mr: 2 }}>{t("Edit")}</Box>
                       <Kbd>E</Kbd>

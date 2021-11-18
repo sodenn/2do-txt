@@ -73,7 +73,7 @@ const TaskList = () => {
     }
 
     const listItems = root.querySelectorAll<HTMLButtonElement>(
-      '[role="button"][aria-label="task"]'
+      '[role="button"][aria-label="Task"]'
     );
 
     listItems.item(index).focus();
@@ -82,7 +82,7 @@ const TaskList = () => {
   return (
     <Box ref={ref}>
       {flatTaskList.length > 0 && (
-        <List role="list" aria-label="Task list" subheader={<li />}>
+        <List aria-label="Task list" subheader={<li />}>
           {taskGroups.map((group) => (
             <li key={group.label}>
               <ul style={{ padding: 0 }}>

@@ -5,23 +5,23 @@ describe("SearchBar", () => {
   it("should search a task", async () => {
     render(<TestContext text={todoTxt} />);
 
-    const taskList = await screen.findByRole("list", {
-      name: "Task list",
+    let taskListItems = await screen.findAllByRole("button", {
+      name: "Task",
     });
+
+    expect(taskListItems.length).toBe(3);
 
     const searchBar = await screen.findByRole("search", {
       name: "Search for tasks",
     });
 
-    let count = taskList.querySelectorAll('[role="listitem"]').length;
-
-    expect(count).toBe(3);
-
     fireEvent.change(searchBar, { target: { value: "first" } });
 
-    count = taskList.querySelectorAll('[role="listitem"]').length;
+    taskListItems = await screen.findAllByRole("button", {
+      name: "Task",
+    });
 
-    expect(count).toBe(1);
+    expect(taskListItems.length).toBe(1);
 
     const clearButton = await screen.findByRole("button", {
       name: "Clear search term",
@@ -29,8 +29,10 @@ describe("SearchBar", () => {
 
     fireEvent.click(clearButton);
 
-    count = taskList.querySelectorAll('[role="listitem"]').length;
+    taskListItems = await screen.findAllByRole("button", {
+      name: "Task",
+    });
 
-    expect(count).toBe(3);
+    expect(taskListItems.length).toBe(3);
   });
 });
