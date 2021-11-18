@@ -69,9 +69,9 @@ const TaskListItem = (props: TaskListItemProps) => {
   } = props;
 
   const handleItemClick = (event: any) => {
-    if (event.code === "Enter") {
+    if (event.code === "Space") {
       onCheckboxClick();
-    } else if (!shouldAbortItemClick(event.target)) {
+    } else if (!shouldAbortItemClick(event.target) || event.code === "Enter") {
       onItemClick();
     }
   };

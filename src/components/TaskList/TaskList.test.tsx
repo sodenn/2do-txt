@@ -113,7 +113,7 @@ describe("TaskList", () => {
     ).rejects.toThrow('Unable to find role="presentation"');
   });
 
-  it("should complete a task by pressing enter", async () => {
+  it("should complete a task by pressing space key", async () => {
     const todoTxt = "First task";
     const { container } = render(
       <EmptyTestContext text={todoTxt}>
@@ -126,15 +126,42 @@ describe("TaskList", () => {
     ).rejects.toThrow('Unable to find role="checkbox"');
 
     fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
-    fireEvent.keyDown(document.activeElement!, {
+
+    const focusedTask = await screen.findByRole("button", {
+      name: "Task",
+      current: true,
+    });
+
+    userEvent.type(focusedTask, "{space}");
+
+    await screen.findByRole("checkbox", {
+      name: "Complete task",
+      checked: true,
+    });
+  });
+
+  it("should edit task by pressing enter", async () => {
+    const todoTxt = "First task";
+
+    const { container } = render(<TestContext text={todoTxt} />);
+
+    await screen.findByRole("list", { name: "Task list" });
+
+    fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
+
+    const focusedTask = await screen.findByRole("button", {
+      name: "Task",
+      current: true,
+    });
+
+    fireEvent.keyDown(focusedTask, {
       key: "Enter",
       code: "Enter",
       charCode: 13,
     });
 
-    await screen.findByRole("checkbox", {
-      name: "Complete task",
-      checked: true,
+    await screen.findByRole("presentation", {
+      name: "Task dialog",
     });
   });
 
@@ -163,7 +190,7 @@ Task E @Test @Feature`;
 
     getByText(focusedTask, /Task B/);
 
-    fireEvent.keyDown(document.activeElement!, {
+    fireEvent.keyDown(focusedTask, {
       key: "e",
       code: "KeyE",
     });
@@ -173,5 +200,30 @@ Task E @Test @Feature`;
     });
 
     getByText(taskDialog, /Task B/);
+  });
+
+  it("should hide completed task", async () => {
+    const todoTxt = "First task";
+    render(
+      <EmptyTestContext
+        text={todoTxt}
+        storage={[{ key: "hide-completed-tasks", value: "true" }]}
+      >
+        <TaskList />
+      </EmptyTestContext>
+    );
+
+    const listItems = await screen.findAllByRole("button", { name: "Task" });
+    expect(listItems.length).toBe(1);
+
+    const checkbox = await screen.findByRole("checkbox", {
+      name: "Complete task",
+    });
+
+    fireEvent.click(checkbox);
+
+    await expect(() =>
+      screen.findAllByRole("button", { name: "Task" })
+    ).rejects.toThrow('Unable to find role="button"');
   });
 });
