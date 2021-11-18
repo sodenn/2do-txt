@@ -18,44 +18,42 @@ const StyledListSubheader = styled(ListSubheader)`
 
 const TaskList = () => {
   const ref = createRef<HTMLDivElement>();
-  const {
-    filteredTaskList,
-    taskGroups,
-    completeTask,
-    openTaskDialog,
-    deleteTask,
-  } = useTask();
+  const { taskGroups, completeTask, openTaskDialog, deleteTask } = useTask();
   const { sortBy } = useFilter();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
-
-  useAddShortcutListener(
-    (key) => {
-      focusNextListItem(key === "ArrowDown" ? "down" : "up");
-    },
-    ["ArrowDown", "ArrowUp"],
-    [filteredTaskList.length]
+  const flatTaskList = taskGroups.reduce<Task[]>(
+    (prev, curr) => [...prev, ...curr.items],
+    []
   );
+
+  useAddShortcutListener(() => focusNextListItem("down"), "ArrowDown", [
+    flatTaskList.length,
+  ]);
+
+  useAddShortcutListener(() => focusNextListItem("up"), "ArrowUp", [
+    flatTaskList.length,
+  ]);
 
   useAddShortcutListener(
     () => {
       if (focusedTaskIndex !== -1) {
-        const focusedTask = filteredTaskList[focusedTaskIndex];
+        const focusedTask = flatTaskList[focusedTaskIndex];
         openTaskDialog(true, focusedTask);
       }
     },
     "e",
-    [ref]
+    [ref.current]
   );
 
   useAddShortcutListener(
     () => {
       if (focusedTaskIndex !== -1) {
-        const focusedTask = filteredTaskList[focusedTaskIndex];
+        const focusedTask = flatTaskList[focusedTaskIndex];
         deleteTask(focusedTask);
       }
     },
     "d",
-    [ref]
+    [ref.current]
   );
 
   const focusNextListItem = (direction: "up" | "down") => {
@@ -69,42 +67,23 @@ const TaskList = () => {
     if (index === -1) {
       index = 0;
     } else if (direction === "down") {
-      index = index + 1 < filteredTaskList.length ? index + 1 : 0;
+      index = index + 1 < flatTaskList.length ? index + 1 : 0;
     } else {
-      index = index - 1 >= 0 ? index - 1 : filteredTaskList.length - 1;
+      index = index - 1 >= 0 ? index - 1 : flatTaskList.length - 1;
     }
 
     const listItems = root.querySelectorAll<HTMLButtonElement>(
-      '[role="button"][aria-label="task"]'
+      '[role="button"][aria-label="Task"]'
     );
 
     listItems.item(index).focus();
   };
 
-  const contextMenuClicked = (element: Element): boolean => {
-    if (
-      typeof element.getAttribute === "function" &&
-      (element.getAttribute("role") === "menu" ||
-        element.getAttribute("role") === "menuitem")
-    ) {
-      return true;
-    }
-    return (
-      !!element.parentNode && contextMenuClicked(element.parentNode as Element)
-    );
-  };
-
-  const handleClick = (event: any, task: Task) => {
-    if (!contextMenuClicked(event.target)) {
-      completeTask(task);
-    }
-  };
-
   return (
     <Box ref={ref}>
-      {filteredTaskList.length > 0 && (
-        <List role="list" aria-label="Task list" subheader={<li />}>
-          {taskGroups.map((group, groupIndex) => (
+      {flatTaskList.length > 0 && (
+        <List aria-label="Task list" subheader={<li />}>
+          {taskGroups.map((group) => (
             <li key={group.label}>
               <ul style={{ padding: 0 }}>
                 {group.label && (
@@ -118,15 +97,16 @@ const TaskList = () => {
                     />
                   </StyledListSubheader>
                 )}
-                {group.items.map((task, itemIndex) => {
-                  const index = groupIndex + itemIndex;
+                {group.items.map((task) => {
+                  const index = flatTaskList.indexOf(task);
                   return (
                     <TaskListItem
                       key={index}
-                      task={task}
                       index={index}
+                      task={task}
                       focused={focusedTaskIndex === index}
-                      onClick={(event) => handleClick(event, task)}
+                      onItemClick={() => openTaskDialog(true, task)}
+                      onCheckboxClick={() => completeTask(task)}
                       onFocus={() => setFocusedTaskIndex(index)}
                       onBlur={() => setFocusedTaskIndex(-1)}
                     />

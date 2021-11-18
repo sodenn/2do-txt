@@ -21,7 +21,6 @@ import {
 import {
   parseTaskList,
   stringifyTaskList,
-  useFilterTaskList,
   useTaskGroup,
 } from "../utils/task-list";
 import { Dictionary } from "../utils/types";
@@ -78,8 +77,6 @@ const [TaskProvider, useTask] = createContext(() => {
     selectedTask,
     todoFilePath,
   } = state;
-
-  const filteredTaskList = useFilterTaskList(taskList);
 
   const taskGroups = useTaskGroup(taskList);
 
@@ -389,7 +386,6 @@ const [TaskProvider, useTask] = createContext(() => {
     contexts,
     tags,
     taskList,
-    filteredTaskList,
     taskGroups,
     tasksLoaded,
     taskDialogOpen,

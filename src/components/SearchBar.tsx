@@ -86,7 +86,6 @@ const SearchBar = () => {
         endAdornment={
           searchTerm && (
             <IconButton
-              role="button"
               aria-label="Clear search term"
               size="small"
               sx={{ mr: 1 }}

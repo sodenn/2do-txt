@@ -29,7 +29,7 @@ const TodoFileDownloadButton = () => {
     }
   };
 
-  useAddShortcutListener(() => download(), ["t"]);
+  useAddShortcutListener(download, "t");
 
   if (!tasksLoaded) {
     return null;
