@@ -5,6 +5,7 @@ import {
   Stack,
   styled,
 } from "@mui/material";
+import { useRef } from "react";
 import { Task } from "../utils/task";
 import TaskBody from "./TaskBody";
 import TaskDates from "./TaskDates";
@@ -37,26 +38,6 @@ interface TaskListItemProps {
   onBlur: () => void;
 }
 
-const shouldAbortItemClick = (element: Element): boolean => {
-  if (!(element instanceof Element)) {
-    return false;
-  }
-
-  const contextMenuClick =
-    element.getAttribute("role") === "menu" ||
-    element.getAttribute("role") === "menuitem";
-
-  const checkboxClick = element.getAttribute("role") === "checkbox";
-
-  if (contextMenuClick || checkboxClick) {
-    return true;
-  }
-
-  return (
-    !!element.parentNode && shouldAbortItemClick(element.parentNode as Element)
-  );
-};
-
 const TaskListItem = (props: TaskListItemProps) => {
   const {
     index,
@@ -68,10 +49,22 @@ const TaskListItem = (props: TaskListItemProps) => {
     onFocus,
   } = props;
 
+  const checkboxRef = useRef<HTMLButtonElement>(null);
+  const contextMenuRef = useRef<HTMLButtonElement>(null);
+
   const handleItemClick = (event: any) => {
+    const checkboxClick =
+      !!checkboxRef.current && checkboxRef.current.contains(event.target);
+
+    const contextMenuClick =
+      !!contextMenuRef.current && contextMenuRef.current.contains(event.target);
+
     if (event.code === "Space") {
       onCheckboxClick();
-    } else if (!shouldAbortItemClick(event.target) || event.code === "Enter") {
+    } else if (
+      (!checkboxClick && !contextMenuClick) ||
+      event.code === "Enter"
+    ) {
       onItemClick();
     }
   };
@@ -95,6 +88,7 @@ const TaskListItem = (props: TaskListItemProps) => {
         >
           <div>
             <Checkbox
+              ref={checkboxRef}
               inputProps={{
                 "aria-label": "Complete task",
                 "aria-checked": task.completed,
@@ -117,7 +111,7 @@ const TaskListItem = (props: TaskListItemProps) => {
             <TaskDates task={task} />
           </Stack>
           <div>
-            <TaskListItemMenu task={task} />
+            <TaskListItemMenu task={task} ref={contextMenuRef} />
           </div>
         </Stack>
       </TaskItemButton>
