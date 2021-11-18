@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, getByText, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { EmptyTestContext, todoTxt } from "../../utils/testing";
+import { EmptyTestContext, TestContext, todoTxt } from "../../utils/testing";
 import TaskList from "./TaskList";
 
 describe("TaskList", () => {
@@ -23,7 +23,7 @@ describe("TaskList", () => {
       </EmptyTestContext>
     );
 
-    const listItems = await screen.findAllByRole("button", { name: "task" });
+    const listItems = await screen.findAllByRole("button", { name: "Task" });
 
     expect(listItems.length).toBeGreaterThan(0);
   });
@@ -35,7 +35,7 @@ describe("TaskList", () => {
       </EmptyTestContext>
     );
 
-    const listItems = await screen.findAllByRole("button", { name: "task" });
+    const listItems = await screen.findAllByRole("button", { name: "Task" });
 
     expect(
       listItems.every((i) => i.getAttribute("aria-current") === "false")
@@ -65,7 +65,7 @@ describe("TaskList", () => {
       </EmptyTestContext>
     );
 
-    const listItems = await screen.findAllByRole("button", { name: "task" });
+    const listItems = await screen.findAllByRole("button", { name: "Task" });
 
     expect(
       listItems.every((i) => i.getAttribute("aria-current") === "false")
@@ -96,12 +96,14 @@ describe("TaskList", () => {
       </EmptyTestContext>
     );
 
-    const checkbox = await screen.findByRole("checkbox", { name: "completed" });
+    const checkbox = await screen.findByRole("checkbox", {
+      name: "Complete task",
+    });
 
     expect(checkbox.getAttribute("aria-checked")).toBe("false");
 
     fireEvent.click(checkbox);
-    await screen.findByRole("checkbox", { name: "completed" });
+    await screen.findByRole("checkbox", { name: "Complete task" });
 
     expect(checkbox.getAttribute("aria-checked")).toBe("true");
 
@@ -120,7 +122,7 @@ describe("TaskList", () => {
     );
 
     await expect(() =>
-      screen.findByRole("checkbox", { name: "completed", checked: true })
+      screen.findByRole("checkbox", { name: "Complete task", checked: true })
     ).rejects.toThrow('Unable to find role="checkbox"');
 
     fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
@@ -130,6 +132,46 @@ describe("TaskList", () => {
       charCode: 13,
     });
 
-    await screen.findByRole("checkbox", { name: "completed", checked: true });
+    await screen.findByRole("checkbox", {
+      name: "Complete task",
+      checked: true,
+    });
+  });
+
+  it("should edit task by pressing the shortcut", async () => {
+    const todoTxt = `Task A
+Task B @Feature
+Task C
+Task D @Test
+Task E @Test @Feature`;
+
+    const { container } = render(
+      <TestContext
+        text={todoTxt}
+        storage={[{ key: "sort-by", value: "context" }]}
+      />
+    );
+
+    await screen.findByRole("list", { name: "Task list" });
+
+    fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
+
+    const focusedTask = await screen.findByRole("button", {
+      name: "Task",
+      current: true,
+    });
+
+    getByText(focusedTask, /Task B/);
+
+    fireEvent.keyDown(document.activeElement!, {
+      key: "e",
+      code: "KeyE",
+    });
+
+    const taskDialog = await screen.findByRole("presentation", {
+      name: "Task dialog",
+    });
+
+    getByText(taskDialog, /Task B/);
   });
 });
