@@ -1,5 +1,5 @@
 import { alpha, Box, Chip, List, ListSubheader, styled } from "@mui/material";
-import { createRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useFilter } from "../../data/FilterContext";
 import { useTask } from "../../data/TaskContext";
 import { useAddShortcutListener } from "../../utils/shortcuts";
@@ -17,7 +17,7 @@ const StyledListSubheader = styled(ListSubheader)`
 `;
 
 const TaskList = () => {
-  const ref = createRef<HTMLDivElement>();
+  const listItemsRef = useRef<HTMLDivElement[]>([]);
   const { taskGroups, completeTask, openTaskDialog, deleteTask } = useTask();
   const { sortBy } = useFilter();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
@@ -42,7 +42,7 @@ const TaskList = () => {
       }
     },
     "e",
-    [ref.current]
+    [listItemsRef.current.length]
   );
 
   useAddShortcutListener(
@@ -53,16 +53,10 @@ const TaskList = () => {
       }
     },
     "d",
-    [ref.current]
+    [listItemsRef.current.length]
   );
 
   const focusNextListItem = (direction: "up" | "down") => {
-    const root = ref.current;
-
-    if (!root) {
-      return;
-    }
-
     let index = focusedTaskIndex;
     if (index === -1) {
       index = 0;
@@ -71,16 +65,11 @@ const TaskList = () => {
     } else {
       index = index - 1 >= 0 ? index - 1 : flatTaskList.length - 1;
     }
-
-    const listItems = root.querySelectorAll<HTMLButtonElement>(
-      '[role="button"][aria-label="Task"]'
-    );
-
-    listItems.item(index).focus();
+    listItemsRef.current[index].focus();
   };
 
   return (
-    <Box ref={ref}>
+    <Box>
       {flatTaskList.length > 0 && (
         <List aria-label="Task list" subheader={<li />}>
           {taskGroups.map((group) => (
@@ -101,8 +90,12 @@ const TaskList = () => {
                   const index = flatTaskList.indexOf(task);
                   return (
                     <TaskListItem
+                      ref={(el) => {
+                        if (listItemsRef.current && el) {
+                          listItemsRef.current[index] = el;
+                        }
+                      }}
                       key={index}
-                      index={index}
                       task={task}
                       focused={focusedTaskIndex === index}
                       onItemClick={() => openTaskDialog(true, task)}

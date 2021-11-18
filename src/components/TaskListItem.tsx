@@ -5,7 +5,7 @@ import {
   Stack,
   styled,
 } from "@mui/material";
-import { useRef } from "react";
+import { forwardRef, useRef } from "react";
 import { Task } from "../utils/task";
 import TaskBody from "./TaskBody";
 import TaskDates from "./TaskDates";
@@ -30,7 +30,6 @@ const TaskItemButton = styled(ListItemButton)`
 
 interface TaskListItemProps {
   task: Task;
-  index: number;
   focused: boolean;
   onCheckboxClick: () => void;
   onItemClick: () => void;
@@ -38,85 +37,81 @@ interface TaskListItemProps {
   onBlur: () => void;
 }
 
-const TaskListItem = (props: TaskListItemProps) => {
-  const {
-    index,
-    task,
-    focused,
-    onItemClick,
-    onCheckboxClick,
-    onBlur,
-    onFocus,
-  } = props;
+const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
+  (props, ref) => {
+    const { task, focused, onItemClick, onCheckboxClick, onBlur, onFocus } =
+      props;
 
-  const checkboxRef = useRef<HTMLButtonElement>(null);
-  const contextMenuRef = useRef<HTMLButtonElement>(null);
+    const checkboxRef = useRef<HTMLButtonElement>(null);
+    const contextMenuRef = useRef<HTMLButtonElement>(null);
 
-  const handleItemClick = (event: any) => {
-    const checkboxClick =
-      !!checkboxRef.current && checkboxRef.current.contains(event.target);
+    const handleItemClick = (event: any) => {
+      const checkboxClick =
+        !!checkboxRef.current && checkboxRef.current.contains(event.target);
 
-    const contextMenuClick =
-      !!contextMenuRef.current && contextMenuRef.current.contains(event.target);
+      const contextMenuClick =
+        !!contextMenuRef.current &&
+        contextMenuRef.current.contains(event.target);
 
-    if (event.code === "Space") {
-      onCheckboxClick();
-    } else if (
-      (!checkboxClick && !contextMenuClick) ||
-      event.code === "Enter"
-    ) {
-      onItemClick();
-    }
-  };
+      if (event.code === "Space") {
+        onCheckboxClick();
+      } else if (
+        (!checkboxClick && !contextMenuClick) ||
+        event.code === "Enter"
+      ) {
+        onItemClick();
+      }
+    };
 
-  return (
-    <ListItem key={index} disablePadding>
-      <TaskItemButton
-        key={index}
-        aria-label="Task"
-        aria-current={focused}
-        onClick={handleItemClick}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        dense
-      >
-        <Stack
-          px={{ xs: 0.5, sm: 0 }}
-          direction="row"
-          spacing={0.5}
-          sx={{ width: "100%" }}
+    return (
+      <ListItem disablePadding>
+        <TaskItemButton
+          ref={ref}
+          aria-label="Task"
+          aria-current={focused}
+          onClick={handleItemClick}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          dense
         >
-          <div>
-            <Checkbox
-              ref={checkboxRef}
-              inputProps={{
-                "aria-label": "Complete task",
-                "aria-checked": task.completed,
-              }}
-              onClick={onCheckboxClick}
-              edge="start"
-              checked={task.completed}
-              tabIndex={-1}
-            />
-          </div>
           <Stack
-            direction="column"
-            style={{
-              paddingTop: 10,
-              paddingBottom: 10,
-              flex: "auto",
-            }}
+            px={{ xs: 0.5, sm: 0 }}
+            direction="row"
+            spacing={0.5}
+            sx={{ width: "100%" }}
           >
-            <TaskBody task={task} />
-            <TaskDates task={task} />
+            <div>
+              <Checkbox
+                ref={checkboxRef}
+                inputProps={{
+                  "aria-label": "Complete task",
+                  "aria-checked": task.completed,
+                }}
+                onClick={onCheckboxClick}
+                edge="start"
+                checked={task.completed}
+                tabIndex={-1}
+              />
+            </div>
+            <Stack
+              direction="column"
+              style={{
+                paddingTop: 10,
+                paddingBottom: 10,
+                flex: "auto",
+              }}
+            >
+              <TaskBody task={task} />
+              <TaskDates task={task} />
+            </Stack>
+            <div>
+              <TaskListItemMenu task={task} ref={contextMenuRef} />
+            </div>
           </Stack>
-          <div>
-            <TaskListItemMenu task={task} ref={contextMenuRef} />
-          </div>
-        </Stack>
-      </TaskItemButton>
-    </ListItem>
-  );
-};
+        </TaskItemButton>
+      </ListItem>
+    );
+  }
+);
 
 export default TaskListItem;
