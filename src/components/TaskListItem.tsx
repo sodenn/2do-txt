@@ -43,20 +43,23 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
       props;
 
     const checkboxRef = useRef<HTMLButtonElement>(null);
-    const contextMenuRef = useRef<HTMLButtonElement>(null);
+    const menuRef = useRef<HTMLUListElement>(null);
+    const menuButtonRef = useRef<HTMLButtonElement>(null);
 
     const handleItemClick = (event: any) => {
       const checkboxClick =
         !!checkboxRef.current && checkboxRef.current.contains(event.target);
 
       const contextMenuClick =
-        !!contextMenuRef.current &&
-        contextMenuRef.current.contains(event.target);
+        !!menuRef.current && menuRef.current.contains(event.target);
+
+      const contextMenuButtonClick =
+        !!menuButtonRef.current && menuButtonRef.current.contains(event.target);
 
       if (event.code === "Space") {
         onCheckboxClick();
       } else if (
-        (!checkboxClick && !contextMenuClick) ||
+        (!checkboxClick && !contextMenuClick && !contextMenuButtonClick) ||
         event.code === "Enter"
       ) {
         onItemClick();
@@ -105,7 +108,11 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
               <TaskDates task={task} />
             </Stack>
             <div>
-              <TaskListItemMenu task={task} ref={contextMenuRef} />
+              <TaskListItemMenu
+                task={task}
+                menuRef={menuRef}
+                menuButtonRef={menuButtonRef}
+              />
             </div>
           </Stack>
         </TaskItemButton>
