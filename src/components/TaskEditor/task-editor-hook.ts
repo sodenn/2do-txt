@@ -114,7 +114,7 @@ export const useTodoEditor = (props: TaskEditorHook) => {
             !searchValue.includes(" ")
           ) {
             const uniqueSug = uniqueListBy(
-              [{ name: searchValue }, ...sug],
+              [...sug, { name: searchValue, id: "new" }],
               "name"
             );
             return {

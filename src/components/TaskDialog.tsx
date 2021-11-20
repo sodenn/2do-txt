@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { TaskFormData } from "../utils/task";
+import { isSuggestionsPopupOpen } from "./TaskEditor";
 import TaskForm from "./TaskForm";
 
 const initialTaskFormData: TaskFormData = {
@@ -87,7 +88,9 @@ const TaskDialog = () => {
       open={taskDialogOpen}
       classes={{ paper: dialogPaperStyle(theme) }}
       onClose={(event, reason) =>
-        reason !== "backdropClick" ? handleClose() : undefined
+        reason !== "backdropClick" && !isSuggestionsPopupOpen()
+          ? handleClose()
+          : undefined
       }
     >
       <DialogTitle>
