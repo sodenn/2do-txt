@@ -1,6 +1,6 @@
 {
   "name": "2do-txt",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "A todo.txt compatible task manager",
   "license": "GPL-3.0",
   "private": true,
@@ -61,7 +61,8 @@
     "lint": "eslint ./src --max-warnings=0 --ext .ts,.tsx",
     "format": "prettier --check ./src",
     "electron:sync": "npx cap sync @capacitor-community/electron",
-    "electron:start": "yarn build && yarn electron:sync && npx cap open @capacitor-community/electron"
+    "electron:start": "yarn build && yarn electron:sync && npx cap open @capacitor-community/electron",
+    "semantic-release": "semantic-release"
   },
   "eslintConfig": {
     "extends": [
