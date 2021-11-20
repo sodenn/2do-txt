@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "A todo.txt compatible task manager",
   "license": "GPL-3.0",
+  "private": true,
   "author": {
     "name": "sodenn",
     "email": "mail@sodenn.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sodenn/2do-txt.git"
   },
   "dependencies": {
     "@capacitor-community/electron": "^4.0.3",
