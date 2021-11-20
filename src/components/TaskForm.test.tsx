@@ -1,8 +1,9 @@
-import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { TaskFormData } from "../utils/task";
 import "../utils/testing";
 import { Dictionary } from "../utils/types";
+import { pasteText } from "./TaskEditor/TaskEditor.test";
 import TaskForm from "./TaskForm";
 
 interface TestCompProps {
@@ -62,16 +63,6 @@ describe("TaskEditor", () => {
     fireEvent.mouseEnter(menuItem);
     fireEvent.mouseDown(menuItem);
     fireEvent.mouseUp(menuItem);
-  };
-
-  const pasteText = (editor: HTMLElement, text: string) => {
-    const event = createEvent.paste(editor, {
-      clipboardData: {
-        types: ["text/plain"],
-        getData: () => text,
-      },
-    });
-    fireEvent(editor, event);
   };
 
   it("should render a popover with due date suggestion", async () => {

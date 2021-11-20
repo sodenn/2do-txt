@@ -59,5 +59,6 @@
   "Without context": "Without context",
   "Without project": "Without project",
   "Without tag": "Without tag",
-  "Tags": "Tags"
+  "Tags": "Tags",
+  "Add tag": "<strong>Add</strong> {{name}}"
 }
