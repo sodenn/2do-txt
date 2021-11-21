@@ -1,6 +1,6 @@
 {
   "name": "2do-txt",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A todo.txt compatible task manager",
   "license": "GPL-3.0",
   "private": true,
@@ -18,8 +18,8 @@
     "build": "tsc && electron-rebuild",
     "electron:start-live": "node ./live-runner.js",
     "electron:start": "yarn build && electron --inspect=5858 ./",
-    "electron:pack": "yarn build && electron-builder build --dir -c ./electron-builder.config.json",
-    "electron:make": "yarn build && electron-builder build -c ./electron-builder.config.json -p always"
+    "electron:pack": "yarn build && electron-builder --dir -c ./electron-builder.config.json",
+    "electron:make": "yarn build && electron-builder -c ./electron-builder.config.json -p always"
   },
   "dependencies": {
     "@capacitor-community/electron": "^4.0.3",
