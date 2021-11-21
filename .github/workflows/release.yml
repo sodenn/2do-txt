@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-react-app:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,24 +23,28 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
       - run: yarn build
-      - name: dd
-        run: yarn electron:sync
+      - run: yarn electron:sync
       - uses: actions/upload-artifact@v2
         with:
           name: electron
           path: electron/
-      - uses: actions/upload-artifact@v2
-        with:
-          name: artifacts
-          path: build/
-  semantic-release:
-    needs: build-react-app
-    runs-on: ubuntu-latest
+      - run: yarn semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  attach-binaries:
+    needs: release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+      fail-fast: false
     steps:
-      - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: v16.13.0
+      - uses: actions/download-artifact@v2
+        with:
+          name: electron
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -52,11 +56,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
-      - uses: actions/download-artifact@v2
-        with:
-          name: artifacts
-          path: artifacts
-      - name: Release
+      - run: yarn electron:make
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn semantic-release
+          GH_TOKEN: '${{ secrets.github_token }}'
+          EP_GH_IGNORE_TIME: true
