@@ -34,6 +34,9 @@ i18n.use(initReactI18next).init({
   resources: { en: { translations: {} } },
 });
 
+window.scrollTo = jest.fn();
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
 const mocks = {
   Filesystem: {
     readFile: (text: string) => {

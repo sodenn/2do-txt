@@ -1,4 +1,5 @@
 import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import "../../utils/testing";
 import TaskEditor from "./TaskEditor";
 
 export const pasteText = (editor: HTMLElement, text: string) => {

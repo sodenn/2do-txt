@@ -53,11 +53,6 @@ const TestComp = (props: TestCompProps) => {
 };
 
 describe("TaskEditor", () => {
-  beforeAll(() => {
-    window.scrollTo = jest.fn();
-    window.HTMLElement.prototype.scrollIntoView = jest.fn();
-  });
-
   const selectSuggestion = async (text: string) => {
     const menuItem = await screen.findByText(text);
     fireEvent.mouseEnter(menuItem);
