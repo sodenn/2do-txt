@@ -11,5 +11,13 @@
     ],
     "@semantic-release/git"
   ],
-  "branches": ["chore/release-workflow"]
+  "branches": [
+    {
+      name: "main",
+    },
+    {
+      name: "pre/rc",
+      prerelease: "rc"
+    }
+  ]
 }
