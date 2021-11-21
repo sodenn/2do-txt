@@ -18,7 +18,8 @@
       "@semantic-release/npm", {
         "npmPublish": false,
       }
-    ]
+    ],
+    "@semantic-release/git"
   ],
   "branches": ["chore/release-workflow"]
 }
