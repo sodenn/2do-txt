@@ -83,7 +83,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^3.3.1",
+    "@capacitor/cli": "^3.3.2",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@types/draft-js": "^0.11.6",
