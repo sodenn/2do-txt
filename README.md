@@ -27,6 +27,8 @@
 
 - Filter tasks by projects, contexts and tags
 - Sort tasks by due date or priority
+- Group tasks by context, projects or tags
+- Hide completed tasks
 - Search for tasks
 - Shortcuts for the most important functions
 - Due date notifications
