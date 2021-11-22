@@ -9,11 +9,7 @@
         "npmPublish": false,
       }
     ],
-    [
-      "@semantic-release/git", {
-        "assets": ["CHANGELOG.md"],
-      }
-    ]
+    "@semantic-release/git"
   ],
   "branches": [
     {
