@@ -22,6 +22,7 @@ const commonThemeOptions: ThemeOptions = {
     },
     MuiButton: {
       defaultProps: {
+        disableRipple: true,
         disableElevation: true,
         style: {
           textTransform: "none",

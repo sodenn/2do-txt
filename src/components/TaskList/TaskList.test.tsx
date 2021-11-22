@@ -1,4 +1,10 @@
-import { fireEvent, getByText, render, screen } from "@testing-library/react";
+import {
+  fireEvent,
+  getByText,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { EmptyTestContext, TestContext, todoTxt } from "../../utils/testing";
 import TaskList from "./TaskList";
@@ -225,5 +231,36 @@ Task E @Test @Feature`;
     await expect(() =>
       screen.findAllByRole("button", { name: "Task" })
     ).rejects.toThrow('Unable to find role="button"');
+  });
+
+  it("should delete task via menu", async () => {
+    const todoTxt = "First task";
+    render(
+      <EmptyTestContext text={todoTxt}>
+        <TaskList />
+      </EmptyTestContext>
+    );
+
+    const menuButton = await screen.findByRole("button", {
+      name: "Task menu",
+    });
+
+    fireEvent.click(menuButton);
+
+    const deleteMenuItem = await screen.findByRole("menuitem", {
+      name: "Delete task",
+    });
+
+    fireEvent.click(deleteMenuItem);
+
+    await waitFor(async () => {
+      const taskList = screen.queryByRole("list", { name: "Task list" });
+      expect(taskList).toBeNull();
+
+      const taskDialog = screen.queryByRole("presentation", {
+        name: "Task dialog",
+      });
+      expect(taskDialog).toBeNull();
+    });
   });
 });

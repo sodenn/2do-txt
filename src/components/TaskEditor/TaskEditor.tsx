@@ -1,7 +1,9 @@
 import Editor from "@draft-js-plugins/editor";
+import { EntryComponentProps } from "@draft-js-plugins/mention/lib/MentionSuggestions/Entry/Entry";
 import { styled, useTheme } from "@mui/material";
 import "draft-js/dist/Draft.css";
-import { createRef, useEffect } from "react";
+import { FC, useEffect, useRef } from "react";
+import { Trans } from "react-i18next";
 import { SuggestionData, useTodoEditor } from "./task-editor-hook";
 
 interface TodoEditorProps {
@@ -37,9 +39,39 @@ const Legend = styled("legend")`
   padding: 0 4px;
 `;
 
+const EntryComponent: FC<EntryComponentProps> = (props) => {
+  const {
+    mention,
+    theme,
+    isFocused,
+    searchValue,
+    selectMention,
+    ...parentProps
+  } = props;
+
+  return (
+    <div {...parentProps}>
+      <span className={theme?.mentionSuggestionsEntryText}>
+        {mention.id === "new" ? (
+          <Trans i18nKey="Add tag" values={{ name: mention.name }} />
+        ) : (
+          mention.name
+        )}
+      </span>
+    </div>
+  );
+};
+
+export const isSuggestionsPopupOpen = (
+  elem: ParentNode | null | undefined = document
+) => {
+  const popover = elem?.querySelector(".mentionSuggestions");
+  return !!popover;
+};
+
 const TaskEditor = (props: TodoEditorProps) => {
   const theme = useTheme();
-  const editorContainerRef = createRef<HTMLFieldSetElement>();
+  const editorContainerRef = useRef<HTMLFieldSetElement>(null);
   const {
     value,
     placeholder,
@@ -103,15 +135,15 @@ const TaskEditor = (props: TodoEditorProps) => {
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
           handlePastedText={handlePastedText}
-          handleReturn={(a, b) => {
-            const elem = editorContainerRef.current?.querySelector(
-              ".mentionSuggestions"
+          handleReturn={() => {
+            const suggestionsPopupOpen = isSuggestionsPopupOpen(
+              editorContainerRef.current
             );
-            if (!elem && onEnterPress && value) {
+            if (!suggestionsPopupOpen && onEnterPress && value) {
               onEnterPress();
               return "handled";
             } else {
-              return elem ? "not-handled" : "handled";
+              return suggestionsPopupOpen ? "not-handled" : "handled";
             }
           }}
           plugins={plugins}
@@ -128,6 +160,7 @@ const TaskEditor = (props: TodoEditorProps) => {
                 suggestions={data.suggestions}
                 onOpenChange={(open) => handleOpenSuggestions(data, open)}
                 onSearchChange={(val) => handleSearch(data, val)}
+                entryComponent={EntryComponent}
               />
             );
           } else {
