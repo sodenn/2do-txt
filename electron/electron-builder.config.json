@@ -11,7 +11,8 @@
     "app/**/*"
   ],
   "publish": {
-    "provider": "github"
+    "provider": "github",
+    "releaseType": "release"
   },
   "nsis": {
     "allowElevation": true,
