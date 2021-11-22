@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
-  Switch,
-  useHistory,
+  Routes,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import { useFilter } from "../data/FilterContext";
 import Page from "./Page";
@@ -20,13 +20,13 @@ interface SearchParams {
 const AppRouter = () => {
   return (
     <Router>
-      <AppRouterSwitch />
+      <AppRouters />
     </Router>
   );
 };
 
-export const AppRouterSwitch = () => {
-  const history = useHistory();
+export const AppRouters = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const {
     searchTerm,
@@ -89,12 +89,12 @@ export const AppRouterSwitch = () => {
       params.tags = selectedTags.join(",");
     }
     if (Object.keys(params).length > 0) {
-      history.push({
+      navigate({
         pathname: location.pathname,
         search: "?" + new URLSearchParams(params),
       });
     } else if (location.search !== "") {
-      history.push({
+      navigate({
         pathname: location.pathname,
         search: "",
       });
@@ -110,11 +110,9 @@ export const AppRouterSwitch = () => {
   ]);
 
   return (
-    <Switch>
-      <Route path="/">
-        <Page />
-      </Route>
-    </Switch>
+    <Routes>
+      <Route path="/" element={<Page />} />
+    </Routes>
   );
 };
 
