@@ -1,13 +1,7 @@
 import { Stack } from "@mui/material";
-import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { Task } from "../utils/task";
-import {
-  taskChipStyle,
-  taskDateStyle,
-  taskDisabledStyle,
-  taskSmallStyle,
-} from "../utils/task-styles";
+import { taskDateStyle } from "../utils/task-styles";
 
 interface TaskDatesProps {
   task: Task;
@@ -16,19 +10,20 @@ interface TaskDatesProps {
 const TaskDates = ({ task }: TaskDatesProps) => {
   const { t } = useTranslation();
   const { creationDate, completionDate, completed } = task;
-  const classes = clsx(taskChipStyle, taskDateStyle, taskSmallStyle, {
-    [taskDisabledStyle]: completed,
-  });
   return (
     <Stack direction="row" spacing={0.5}>
-      {creationDate && (
+      {creationDate && !completed && (
         <div>
-          <span className={classes}>{t("Created", { creationDate })}</span>
+          <span className={taskDateStyle}>
+            {t("Created", { creationDate })}
+          </span>
         </div>
       )}
-      {completionDate && (
+      {completionDate && completed && (
         <div>
-          <span className={classes}>{t("Completed", { completionDate })}</span>
+          <span className={taskDateStyle}>
+            {t("Completed", { completionDate })}
+          </span>
         </div>
       )}
     </Stack>
