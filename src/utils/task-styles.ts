@@ -1,29 +1,34 @@
 import { css } from "@emotion/css";
 
 export const taskProjectStyle = css`
-  color: #1970c9;
-  background-color: #d5e6fc;
+  color: #175fab;
+  background-color: #c4dcf7;
 `;
 
 export const taskContextStyle = css`
-  color: #1b5e20;
-  background-color: #d1dfd2;
+  color: #17501b;
+  background-color: #c8efcb;
+`;
+
+export const taskDudDateStyle = css`
+  color: #a14205;
+  background-color: #fddac3;
 `;
 
 export const taskTagStyle = css`
-  color: #b44a05;
-  background-color: #ffdac2;
+  color: #4b4b4b;
+  background-color: #dfdfdf;
 `;
 
 export const taskPriorityStyle = css`
   color: #720daf;
-  background-color: #c3b5c5;
+  background-color: #ecd2fb;
   font-weight: bold;
 `;
 
 export const taskDateStyle = css`
-  color: #00000099;
-  background-color: rgba(235, 235, 235, 0.6);
+  opacity: 0.5;
+  font-size: 0.75em;
 `;
 
 export const taskChipStyle = css`
@@ -46,10 +51,5 @@ export const taskCompletedStyle = css`
 `;
 
 export const taskDisabledStyle = css`
-  opacity: 0.5;
-`;
-
-export const taskSmallStyle = css`
-  font-size: 0.75em;
-  padding: 1px 0 0 0;
+  opacity: 0.6;
 `;

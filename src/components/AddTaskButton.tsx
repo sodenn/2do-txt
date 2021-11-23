@@ -19,6 +19,7 @@ const AddTaskButton = ({ edgeEnd }: AddTaskButtonProps) => {
 
   return (
     <Tooltip
+      disableTouchListener
       title={
         <>
           {t("Add task")}{" "}

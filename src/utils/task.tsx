@@ -8,6 +8,7 @@ import {
   taskCompletedStyle,
   taskContextStyle,
   taskDisabledStyle,
+  taskDudDateStyle,
   taskPriorityStyle,
   taskProjectStyle,
   taskTagStyle,
@@ -163,15 +164,25 @@ export function useFormatBody() {
         );
       } else if (/[^:]+:[^/:][^:]*/.test(token)) {
         const substrings = token.split(":");
-        const key = t(substrings[0].toLowerCase());
-        const keySuffix = key !== substrings[0] ? ": " : ":";
+        const key = substrings[0].toLowerCase();
+        const translatedKey = t(key);
+        const keySuffix = translatedKey !== key ? ": " : ":";
         const value = substrings[1];
         const date = parseDate(value);
-        const displayKey = key + keySuffix;
+        const displayKey = translatedKey + keySuffix;
         const displayValue = date ? formatLocaleDate(date, language) : value;
         const text = displayKey + displayValue;
         return (
-          <span key={index} className={clsx(taskTagStyle, taskChipStyle)}>
+          <span
+            key={index}
+            className={clsx(
+              {
+                [taskDudDateStyle]: key === "due",
+                [taskTagStyle]: key !== "due",
+              },
+              taskChipStyle
+            )}
+          >
             {text}
           </span>
         );
