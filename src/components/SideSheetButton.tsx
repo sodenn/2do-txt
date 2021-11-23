@@ -15,6 +15,7 @@ const SideSheetButton = () => {
 
   return (
     <Tooltip
+      disableTouchListener
       title={
         <>
           {t("Menu")}{" "}
