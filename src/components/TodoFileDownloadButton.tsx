@@ -37,6 +37,7 @@ const TodoFileDownloadButton = () => {
 
   return (
     <Tooltip
+      disableTouchListener
       title={
         <>
           {t("Download todo.txt")}{" "}
