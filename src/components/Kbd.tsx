@@ -2,7 +2,7 @@ import { styled } from "@mui/material";
 import { FC } from "react";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 
-export const StyledKbd = styled("kbd")`
+const StyledKbd = styled("kbd")`
   padding: 0 0.4em;
   opacity: 0.5;
   text-align: center;
