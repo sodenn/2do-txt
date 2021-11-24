@@ -8,6 +8,7 @@ import TaskListItem from "../TaskListItem";
 
 const StyledListSubheader = styled(ListSubheader)`
   // avoid scrollbar overlapping (Safari mobile)
+  top: -1px;
   margin-right: ${({ theme }) => theme.spacing(1)};
   background: linear-gradient(
     to top,
