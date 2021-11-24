@@ -30,7 +30,7 @@ const Page = () => {
   }, [scrollContainer]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <>
       <Header divider={scrollTop > 12} />
       <SideSheet />
       <Box
@@ -43,7 +43,7 @@ const Page = () => {
         </StyledContainer>
       </Box>
       <TaskDialog />
-    </Box>
+    </>
   );
 };
 
