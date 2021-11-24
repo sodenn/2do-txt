@@ -63,21 +63,28 @@ const TaskDialog = () => {
     }
   }, [taskDialogOpen, selectedTask, createCreationDate]);
 
+  const closeDialog = () => openTaskDialog(false);
+
   const handleSave = () => {
     if (formData._id) {
       editTask(formData);
     } else {
       addTask(formData);
     }
-    handleClose();
-  };
-
-  const handleClose = () => {
-    openTaskDialog(false);
+    closeDialog();
   };
 
   const handleChange = (data: TaskFormData) => {
     setFormData((task) => ({ ...task, ...data }));
+  };
+
+  const handleClose = (
+    event: any,
+    reason: "backdropClick" | "escapeKeyDown"
+  ) => {
+    return reason !== "backdropClick" && !isSuggestionsPopupOpen()
+      ? closeDialog()
+      : undefined;
   };
 
   return (
@@ -87,11 +94,7 @@ const TaskDialog = () => {
       maxWidth="sm"
       open={taskDialogOpen}
       classes={{ paper: dialogPaperStyle(theme) }}
-      onClose={(event, reason) =>
-        reason !== "backdropClick" && !isSuggestionsPopupOpen()
-          ? handleClose()
-          : undefined
-      }
+      onClose={handleClose}
     >
       <DialogTitle>
         {!!formData._id ? t("Edit Task") : t("Create Task")}
@@ -107,7 +110,7 @@ const TaskDialog = () => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>{t("Cancel")}</Button>
+        <Button onClick={closeDialog}>{t("Cancel")}</Button>
         <Button disabled={!formData.body} onClick={handleSave}>
           {t("Save")}
         </Button>
