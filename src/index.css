@@ -9,3 +9,8 @@ body {
   /* Disable pull-to-refresh in iOS 15 Safari */
   overflow: hidden;
 }
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
