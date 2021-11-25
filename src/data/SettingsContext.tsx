@@ -7,10 +7,12 @@ export type Language = "de" | "en";
 
 const [SettingsContextProvider, useSettings] = createContext(() => {
   const { i18n } = useTranslation();
-  const [language, setLanguage] = useState(i18n.resolvedLanguage || "en");
+  const [language, setLanguage] = useState<Language>(
+    (i18n.resolvedLanguage as Language) || "en"
+  );
   const { getStorageItem, setStorageItem } = useStorage();
-  const [createCreationDate, setCreateCreationDate] = useState(false);
-  const [createCompletionDate, setCreateCompletionDate] = useState(false);
+  const [createCreationDate, setCreateCreationDate] = useState(true);
+  const [createCompletionDate, setCreateCompletionDate] = useState(true);
   const [showNotifications, _setShowNotifications] = useState(false);
 
   const changeLanguage = useCallback(
