@@ -19,7 +19,7 @@ interface SearchParams {
 
 const AppRouter = () => {
   return (
-    <Router>
+    <Router basename="/2do-txt">
       <AppRouters />
     </Router>
   );
