@@ -5,7 +5,7 @@ import { SnackbarProvider } from "notistack";
 import { PropsWithChildren, Suspense } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
-import { AppRouters } from "../components/AppRouter";
+import { AppRouterSwitch } from "../components/AppRouter";
 import { AppTheme } from "../data/AppThemeContext";
 import { FilterContextProvider } from "../data/FilterContext";
 import { SettingsContextProvider } from "../data/SettingsContext";
@@ -85,7 +85,7 @@ export const TestContext = (props: TestContextProps) => {
               <SideSheetContextProvider>
                 <TaskProvider>
                   <MemoryRouter>
-                    <AppRouters />
+                    <AppRouterSwitch />
                   </MemoryRouter>
                 </TaskProvider>
               </SideSheetContextProvider>
