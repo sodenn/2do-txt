@@ -65,9 +65,11 @@ const [SettingsContextProvider, useSettings] = createContext(() => {
       ]) => {
         _setShowNotifications(showNotifications === "true");
         setCreateCreationDate(
-          !createCreationDate ? true : createCreationDate === "true"
+          createCreationDate === null ? true : createCreationDate === "true"
         );
-        setCreateCompletionDate(createCompletionDate === "true");
+        setCreateCompletionDate(
+          createCompletionDate === null ? true : createCompletionDate === "true"
+        );
         changeLanguage(language as Language);
       }
     );
