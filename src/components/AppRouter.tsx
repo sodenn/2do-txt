@@ -19,7 +19,7 @@ interface SearchParams {
 
 const AppRouter = () => {
   return (
-    <Router basename="/2do-txt">
+    <Router basename={process.env.BASE_PATH}>
       <AppRouters />
     </Router>
   );
