@@ -6,6 +6,7 @@ import { usePlatform, useTouchScreen } from "../utils/platform";
 import { parseTaskBody, TaskFormData } from "../utils/task";
 import {
   taskContextStyle,
+  taskDudDateStyle,
   taskProjectStyle,
   taskTagStyle,
 } from "../utils/task-styles";
@@ -109,7 +110,7 @@ const TaskForm = (props: TaskDialogForm) => {
             ...Object.entries(state.tags).map(([key, value]) => ({
               trigger: `${key}:`,
               suggestions: value,
-              styleClass: taskTagStyle,
+              styleClass: key === "due" ? taskDudDateStyle : taskTagStyle,
             })),
           ]}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
