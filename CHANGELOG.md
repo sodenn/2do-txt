@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/sodenn/2do-txt/compare/v1.1.1...v1.2.0) (2021-11-25)
+
+
+### Bug Fixes
+
+* allow to reset task priority, creation date and due date ([#157](https://github.com/sodenn/2do-txt/issues/157)) ([94c9f96](https://github.com/sodenn/2do-txt/commit/94c9f96bfc7028dc00471156dd59e164a2bd13a7))
+
+
+### Features
+
+* new default values in the settings ([#160](https://github.com/sodenn/2do-txt/issues/160)) ([c624c2e](https://github.com/sodenn/2do-txt/commit/c624c2ea73d52c8b3be8aafa5cde7b303a2ba31f))
+
 ## [1.1.1](https://github.com/sodenn/2do-txt/compare/v1.1.0...v1.1.1) (2021-11-22)
 
 

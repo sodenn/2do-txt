@@ -6,7 +6,7 @@ import SideSheet from "./SideSheet";
 import TaskDialog from "./TaskDialog";
 import TaskList from "./TaskList/TaskList";
 
-export const StyledContainer = styled(Container)`
+const StyledContainer = styled(Container)`
   padding-right: env(safe-area-inset-right);
   padding-left: env(safe-area-inset-left);
   padding-bottom: env(safe-area-inset-bottom);
@@ -30,7 +30,7 @@ const Page = () => {
   }, [scrollContainer]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <>
       <Header divider={scrollTop > 12} />
       <SideSheet />
       <Box
@@ -43,7 +43,7 @@ const Page = () => {
         </StyledContainer>
       </Box>
       <TaskDialog />
-    </Box>
+    </>
   );
 };
 

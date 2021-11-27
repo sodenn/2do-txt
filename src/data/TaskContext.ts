@@ -129,26 +129,13 @@ const [TaskProvider, useTask] = createContext(() => {
   };
 
   const editTask = (data: TaskFormData) => {
-    const { priority, completionDate, creationDate, dueDate, ...rest } = data;
     const newTaskList = taskList.map((t) => {
-      if (t._id === rest._id) {
+      if (t._id === data._id) {
         cancelNotifications({ notifications: [{ id: hashCode(t.raw) }] });
         const updatedTask: Task = {
           ...t,
-          ...rest,
+          ...data,
         };
-        if (priority) {
-          updatedTask.priority = priority;
-        }
-        if (completionDate) {
-          updatedTask.completionDate = completionDate;
-        }
-        if (creationDate) {
-          updatedTask.creationDate = creationDate;
-        }
-        if (dueDate) {
-          updatedTask.dueDate = dueDate;
-        }
         scheduleDueTaskNotification(updatedTask);
         return updatedTask;
       } else {

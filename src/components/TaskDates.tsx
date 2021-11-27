@@ -12,20 +12,18 @@ const TaskDates = ({ task }: TaskDatesProps) => {
   const { creationDate, completionDate, completed } = task;
   return (
     <Stack direction="row" spacing={0.5}>
-      {creationDate && !completed && (
-        <div>
-          <span className={taskDateStyle}>
-            {t("Created", { creationDate })}
-          </span>
-        </div>
-      )}
-      {completionDate && completed && (
-        <div>
+      <div>
+        {completionDate && (
           <span className={taskDateStyle}>
             {t("Completed", { completionDate })}
           </span>
-        </div>
-      )}
+        )}
+        {creationDate && !completed && (
+          <span className={taskDateStyle}>
+            {t("Created", { creationDate })}
+          </span>
+        )}
+      </div>
     </Stack>
   );
 };
