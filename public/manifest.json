@@ -2,7 +2,7 @@
   "name": "2do.txt",
   "short_name": "2do.txt",
   "author": "sodenn",
-  "description": "A todo.txt compatible task manager",
+  "description": "todo.txt-compatible task manager",
   "icons": [
     {
       "src": "favicon.png",
