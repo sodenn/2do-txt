@@ -1,0 +1,8 @@
+Ask John for a jogging session @Private
+x 2021-11-26 2021-11-25 Book a flight to sydney @Holiday
+(A) 2021-11-25 Book a hotel to sydney @Holiday due:2021-11-30
+(B) Repair the computer @Private
+2021-11-26 Invite a client to dinner @Work +CompanyA
+(A) 2021-11-26 Pay the invoice +CompanyB @Work due:2021-12-15
+Watch a new movie @Private
+x 2021-11-24 2021-11-23 Play soccer with friends @Private
