@@ -122,7 +122,7 @@ export function useNotifications() {
         JSON.stringify(newReceivedNotifications)
       );
     },
-    [getReceivedNotifications, setStorageItem]
+    [getReceivedNotifications, setStorageItem, shouldNotificationsBeRescheduled]
   );
 
   return {
