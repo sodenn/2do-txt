@@ -49,7 +49,11 @@ const [TaskProvider, useTask] = createContext(() => {
   const { getUri, readFile, writeFile, deleteFile } = useFilesystem();
   const { getStorageItem, setStorageItem, removeStorageItem } = useStorage();
   const { enqueueSnackbar } = useSnackbar();
-  const { scheduleNotifications, cancelNotifications } = useNotifications();
+  const {
+    scheduleNotifications,
+    cancelNotifications,
+    shouldNotificationsBeRescheduled,
+  } = useNotifications();
   const { t } = useTranslation();
   const platform = usePlatform();
   const { createCompletionDate } = useSettings();
@@ -345,7 +349,9 @@ const [TaskProvider, useTask] = createContext(() => {
           tasksLoaded: true,
           todoFilePath: path ?? defaultPath,
         }));
-        scheduleDueTaskNotifications(parseResult.taskList);
+        if (shouldNotificationsBeRescheduled()) {
+          scheduleDueTaskNotifications(parseResult.taskList);
+        }
       } else {
         setState((state) => ({
           ...state,
