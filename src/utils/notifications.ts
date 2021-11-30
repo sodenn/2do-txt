@@ -7,6 +7,7 @@ import {
 import { isAfter, subDays } from "date-fns";
 import { useCallback, useEffect } from "react";
 import { dateReviver } from "./date";
+import { usePlatform } from "./platform";
 import { useStorage } from "./storage";
 
 interface ReceivedNotifications {
@@ -16,6 +17,12 @@ interface ReceivedNotifications {
 
 export function useNotifications() {
   const { setStorageItem, getStorageItem } = useStorage();
+  const platform = usePlatform();
+
+  // Notifications in the browser must be re-scheduled because they are based on setTimeout
+  const shouldNotificationsBeRescheduled = useCallback(() => {
+    return platform === "web" || platform === "electron";
+  }, [platform]);
 
   const getReceivedNotifications = useCallback(async () => {
     const value = await getStorageItem("received-notifications");
@@ -28,6 +35,10 @@ export function useNotifications() {
   }, [getStorageItem]);
 
   useEffect(() => {
+    if (!shouldNotificationsBeRescheduled()) {
+      return;
+    }
+
     // save identifiers of received messages
     LocalNotifications.addListener(
       "localNotificationReceived",
@@ -43,7 +54,7 @@ export function useNotifications() {
       }
     );
 
-    // cleanup: delete received message identifiers that are older than 24 hours
+    // cleanup: delete received message identifiers that are older than 48 hours
     const interval = setInterval(async () => {
       const receivedNotifications = await getReceivedNotifications();
 
@@ -67,16 +78,17 @@ export function useNotifications() {
     async (options: ScheduleOptions) => {
       const permissionStatus = await LocalNotifications.checkPermissions();
       const receivedNotifications = await getReceivedNotifications();
+      const notificationAlreadyReceived = receivedNotifications.some((r) =>
+        options.notifications.some((n) => n.id === r.id)
+      );
       if (
         permissionStatus.display === "granted" &&
-        receivedNotifications.every((r) =>
-          options.notifications.every((n) => n.id !== r.id)
-        )
+        (!shouldNotificationsBeRescheduled() || !notificationAlreadyReceived)
       ) {
         return LocalNotifications.schedule(options);
       }
     },
-    [getReceivedNotifications]
+    [getReceivedNotifications, shouldNotificationsBeRescheduled]
   );
 
   const checkNotificationPermissions = useCallback(
@@ -95,20 +107,27 @@ export function useNotifications() {
         console.log(error)
       );
 
-      const receivedNotifications = await getReceivedNotifications();
-      const newReceivedNotifications = receivedNotifications.filter((item) =>
+      if (!shouldNotificationsBeRescheduled()) {
+        return;
+      }
+
+      const oldReceivedNotifications = await getReceivedNotifications();
+
+      const newReceivedNotifications = oldReceivedNotifications.filter((item) =>
         options.notifications.every((n) => n.id !== item.id)
       );
+
       setStorageItem(
         "received-notifications",
         JSON.stringify(newReceivedNotifications)
       );
     },
-    [getReceivedNotifications, setStorageItem]
+    [getReceivedNotifications, setStorageItem, shouldNotificationsBeRescheduled]
   );
 
   return {
     scheduleNotifications,
+    shouldNotificationsBeRescheduled,
     checkNotificationPermissions,
     requestNotificationPermissions,
     cancelNotifications,

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDate, parseDate } from "../utils/date";
 import { usePlatform, useTouchScreen } from "../utils/platform";
-import { parseTaskBody, TaskFormData } from "../utils/task";
+import { createDueDateRegex, parseTaskBody, TaskFormData } from "../utils/task";
 import {
   taskContextStyle,
   taskDudDateStyle,
@@ -53,7 +53,7 @@ const TaskForm = (props: TaskDialogForm) => {
   const handleDueDateChange = (value: Date | null) => {
     let newBody: string;
     const bodyWithoutDueDate = formData.body
-      .replace(/due:[\S]+\s?/g, "")
+      .replace(createDueDateRegex(), "")
       .trim();
     if (value) {
       const dueDateTag = `due:${formatDate(value)}`;
@@ -72,7 +72,7 @@ const TaskForm = (props: TaskDialogForm) => {
   };
 
   useEffect(() => {
-    const match = formData.body.match(/due:[\S]+\s?/g);
+    const match = formData.body.match(createDueDateRegex());
     if (formData.dueDate && !match) {
       onChange({ ...formData, dueDate: undefined });
     } else if (!formData.dueDate && match && match.length > 0) {
