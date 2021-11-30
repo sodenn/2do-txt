@@ -42,6 +42,9 @@ export interface TaskFormData {
   _id?: string;
 }
 
+export const createDueDateRegex = () =>
+  /due:\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\s?/g;
+
 export function parseTask(text: string, order: number) {
   const line = text.trim();
   const tokens = line.split(/\s+/).map((s) => s.trim());

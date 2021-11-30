@@ -13,6 +13,7 @@ import { useNotifications } from "../utils/notifications";
 import { usePlatform } from "../utils/platform";
 import { useStorage } from "../utils/storage";
 import {
+  createDueDateRegex,
   parseTaskBody,
   stringifyTask,
   Task,
@@ -296,7 +297,7 @@ const [TaskProvider, useTask] = createContext(() => {
       notifications: [
         {
           title: t("Reminder"),
-          body: task.body,
+          body: task.body.replace(createDueDateRegex(), "").trim(),
           id: hashCode(task.raw),
           schedule: { at: scheduleAt },
         },
