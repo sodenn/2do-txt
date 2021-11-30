@@ -12,7 +12,7 @@
 [github-codeql-analysis-action-image]: https://github.com/sodenn/2do-txt/actions/workflows/codeql-analysis.yml/badge.svg
 [github-codeql-analysis-action-url]: https://github.com/sodenn/2do-txt/actions/workflows/codeql-analysis.yml
 
-**2do.txt** is a task management that uses the [todo.txt](https://github.com/todotxt/todo.txt) format. 2do.txt simplifies the work with todo.txt files by providing additional convenience functions such as sorting and filtering of tasks, autocomplete or notifications for due tasks.
+**2do.txt** is a task management that uses the [todo.txt](https://github.com/todotxt/todo.txt) format. 2do.txt simplifies the work with todo.txt files by providing convenience functions such as sorting and filtering of tasks, autocomplete or notifications for due tasks.
 
 <p align="center">
   <img width="600" src="./resources/screenshot1.png" alt="Screenshot">
@@ -21,7 +21,7 @@
 
 ## About todo.txt
 
-**todo.txt** is a plain text syntax. A todo.txt file can be opened with any text editor. It is searchable, portable and operating system agnostic. todo.txt allows you to organize tasks by **projects** (+SomeProject), **contexts** (@SomeContext), **tags** (key:value) and **priorities** (A-Z).
+The **todo.txt** format is a simple set of rules that make todo.txt both human and machine-readable. The format supports priorities, creation and completion dates, projects and contexts. For more information please see http://todotxt.org/.
 
 ## Features
 
