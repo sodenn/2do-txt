@@ -14,6 +14,7 @@ import { useNotifications } from "../utils/notifications";
 import { usePlatform } from "../utils/platform";
 import { useStorage } from "../utils/storage";
 import {
+  createDueDateRegex,
   parseTaskBody,
   stringifyTask,
   Task,
@@ -49,7 +50,11 @@ const [TaskProvider, useTask] = createContext(() => {
   const { getUri, readFile, writeFile, deleteFile } = useFilesystem();
   const { getStorageItem, setStorageItem, removeStorageItem } = useStorage();
   const { enqueueSnackbar } = useSnackbar();
-  const { scheduleNotifications, cancelNotifications } = useNotifications();
+  const {
+    scheduleNotifications,
+    cancelNotifications,
+    shouldNotificationsBeRescheduled,
+  } = useNotifications();
   const { t } = useTranslation();
   const platform = usePlatform();
   const { createCompletionDate } = useSettings();
@@ -297,7 +302,7 @@ const [TaskProvider, useTask] = createContext(() => {
       notifications: [
         {
           title: t("Reminder"),
-          body: task.body,
+          body: task.body.replace(createDueDateRegex(), "").trim(),
           id: hashCode(task.raw),
           schedule: { at: scheduleAt },
         },
@@ -345,7 +350,9 @@ const [TaskProvider, useTask] = createContext(() => {
           tasksLoaded: true,
           todoFilePath: path ?? defaultPath,
         }));
-        scheduleDueTaskNotifications(parseResult.taskList);
+        if (shouldNotificationsBeRescheduled()) {
+          scheduleDueTaskNotifications(parseResult.taskList);
+        }
       } else {
         setState((state) => ({
           ...state,
