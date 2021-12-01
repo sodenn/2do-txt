@@ -141,6 +141,7 @@ const [TaskProvider, useTask] = createContext(() => {
           ...t,
           ...data,
         };
+        updatedTask.raw = stringifyTask(updatedTask);
         scheduleDueTaskNotification(updatedTask);
         return updatedTask;
       } else {
