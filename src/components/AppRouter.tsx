@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import { useFilter } from "../data/FilterContext";
 import Page from "./Page";
-import PrivacyPolicy from "./PrivacyPolicy";
 
 interface SearchParams {
   term: string;
@@ -71,9 +70,7 @@ export const AppRouters = () => {
   }, []);
 
   useEffect(() => {
-    const params: Partial<SearchParams & { platform?: string }> = {};
-    const platform = searchParams.get("platform");
-
+    const params: Partial<SearchParams> = {};
     if (searchTerm) {
       params.term = searchTerm;
     }
@@ -89,10 +86,6 @@ export const AppRouters = () => {
     if (selectedTags.length > 0) {
       params.tags = selectedTags.join(",");
     }
-    if (platform) {
-      params.platform = platform;
-    }
-
     if (Object.keys(params).length > 0) {
       setSearchParams(params);
     } else if (searchParams.entries().next()) {
@@ -111,7 +104,6 @@ export const AppRouters = () => {
   return (
     <Routes>
       <Route path="/" element={<Page />} />
-      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
     </Routes>
   );
 };
