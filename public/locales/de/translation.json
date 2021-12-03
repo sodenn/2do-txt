@@ -67,5 +67,11 @@
   "Without project": "Ohne Projekt",
   "Without tag": "Ohne Tag",
   "Tags": "Tags",
-  "Add tag": "{{name}} <strong>hinzufügen</strong>"
+  "Add tag": "{{name}} <strong>hinzufügen</strong>",
+  "Privacy Policy": "Datenschutz",
+  "privacy_policy_body": "Wir nehmen den Schutz deiner Daten ernst. <s>2do.txt</s> verarbeitet weder personenbezogenen Daten, noch werden Daten an Dritte weitergegeben.",
+  "privacy_policy_body_web": "Wir nehmen den Schutz deiner Daten ernst. <s>2do.txt</s> selbst verarbeitet weder personenbezogenen Daten, noch werden Daten an Dritte weitergegeben.",
+  "privacy_policy_hosting": "Hosting",
+  "privacy_policy_body_1": "Diese Website wird auf Servern von Github Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA gehostet.",
+  "privacy_policy_body_2": "Beachten daher auch die <1>GitHub Privacy Policy</1>."
 }
