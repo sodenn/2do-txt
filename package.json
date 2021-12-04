@@ -86,7 +86,7 @@
     "@capacitor/cli": "^3.3.2",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
-    "@types/draft-js": "^0.11.6",
+    "@types/draft-js": "^0.11.7",
     "@types/file-saver": "^2.0.3",
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.4.1",
