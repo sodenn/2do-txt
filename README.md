@@ -38,11 +38,12 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 
 ## Supported Platforms
 - [Webbrowser](https://sodenn.github.io/2do-txt/)
+- iOS
 - Desktop (Electron): macOS, Windows, Linux
 
 ## Known Issues
 
-**todo.txt** uses [Draft.js](https://github.com/facebook/draft-js) to provide autocomplete for projects, contexts and tags. The library does not support mobile browsers at this point. See the current status for [Android](https://github.com/facebook/draft-js/labels/android) and [iOS](https://github.com/facebook/draft-js/labels/ios).
+**todo.txt** uses [Draft.js](https://github.com/facebook/draft-js) to provide autocomplete for projects, contexts and tags. The library does not officially support mobile browsers at this point. There are some known issues, especially for [Android](https://github.com/facebook/draft-js/labels/android).
 
 ## Available Scripts
 
