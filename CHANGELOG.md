@@ -1,3 +1,17 @@
+# [1.3.0](https://github.com/sodenn/2do-txt/compare/v1.2.0...v1.3.0) (2021-12-03)
+
+
+### Bug Fixes
+
+* **react-router:** add basename for GitHub Pages ([#161](https://github.com/sodenn/2do-txt/issues/161)) ([3c705a1](https://github.com/sodenn/2do-txt/commit/3c705a1bd37ab32c66e411e82916862956121f52))
+* update the raw property when editing a task ([#165](https://github.com/sodenn/2do-txt/issues/165)) ([22df1aa](https://github.com/sodenn/2do-txt/commit/22df1aac88195e2c9c75ce885df87f961f4ae63f))
+
+
+### Features
+
+* add privacy policy page ([#167](https://github.com/sodenn/2do-txt/issues/167)) ([772d671](https://github.com/sodenn/2do-txt/commit/772d67123a85234528c33a75c132d8ce243e7924))
+* improve readability of notifications ([#164](https://github.com/sodenn/2do-txt/issues/164)) ([bd42cd7](https://github.com/sodenn/2do-txt/commit/bd42cd75bd88cc42f1471a41895330884b5d5e17))
+
 # [1.2.0](https://github.com/sodenn/2do-txt/compare/v1.1.1...v1.2.0) (2021-11-25)
 
 

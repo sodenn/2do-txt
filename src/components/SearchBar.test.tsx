@@ -35,4 +35,16 @@ describe("SearchBar", () => {
 
     expect(taskListItems.length).toBe(3);
   });
+
+  it("should focus the search input via shortcut", async () => {
+    const { container } = render(<TestContext />);
+
+    fireEvent.keyDown(container, { key: "f", code: "KeyF" });
+
+    await screen.findByRole("search", {
+      name: "Search for tasks",
+    });
+
+    await expect(document.activeElement!.tagName).toBe("INPUT");
+  });
 });

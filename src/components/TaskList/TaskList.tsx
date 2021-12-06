@@ -99,7 +99,7 @@ const TaskList = () => {
                       key={index}
                       task={task}
                       focused={focusedTaskIndex === index}
-                      onItemClick={() => openTaskDialog(true, task)}
+                      onClick={() => openTaskDialog(true, task)}
                       onCheckboxClick={() => completeTask(task)}
                       onFocus={() => setFocusedTaskIndex(index)}
                       onBlur={() => setFocusedTaskIndex(-1)}

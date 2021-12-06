@@ -3,8 +3,7 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  useLocation,
-  useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 import { useFilter } from "../data/FilterContext";
 import Page from "./Page";
@@ -26,8 +25,8 @@ const AppRouter = () => {
 };
 
 export const AppRouters = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const {
     searchTerm,
     selectedPriorities,
@@ -43,28 +42,27 @@ export const AppRouters = () => {
   } = useFilter();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const term = params.get("term");
+    const term = searchParams.get("term");
     if (term) {
       setSearchTerm(term);
     }
 
-    const priorities = params.get("priorities");
+    const priorities = searchParams.get("priorities");
     if (priorities) {
       setSelectedPriorities(priorities.split(","));
     }
 
-    const projects = params.get("projects");
+    const projects = searchParams.get("projects");
     if (projects) {
       setSelectedProjects(projects.split(","));
     }
 
-    const contexts = params.get("contexts");
+    const contexts = searchParams.get("contexts");
     if (contexts) {
       setSelectedContexts(contexts.split(","));
     }
 
-    const tags = params.get("tags");
+    const tags = searchParams.get("tags");
     if (tags) {
       setSelectedTags(tags.split(","));
     }
@@ -89,15 +87,9 @@ export const AppRouters = () => {
       params.tags = selectedTags.join(",");
     }
     if (Object.keys(params).length > 0) {
-      navigate({
-        pathname: location.pathname,
-        search: "?" + new URLSearchParams(params),
-      });
-    } else if (location.search !== "") {
-      navigate({
-        pathname: location.pathname,
-        search: "",
-      });
+      setSearchParams(params);
+    } else if (searchParams.entries().next()) {
+      setSearchParams({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
