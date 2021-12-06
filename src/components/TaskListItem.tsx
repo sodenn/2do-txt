@@ -32,15 +32,14 @@ interface TaskListItemProps {
   task: Task;
   focused: boolean;
   onCheckboxClick: () => void;
-  onItemClick: () => void;
+  onClick: () => void;
   onFocus: () => void;
   onBlur: () => void;
 }
 
 const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
   (props, ref) => {
-    const { task, focused, onItemClick, onCheckboxClick, onBlur, onFocus } =
-      props;
+    const { task, focused, onClick, onCheckboxClick, onBlur, onFocus } = props;
 
     const checkboxRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLUListElement>(null);
@@ -62,7 +61,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
         (!checkboxClick && !contextMenuClick && !contextMenuButtonClick) ||
         event.code === "Enter"
       ) {
-        onItemClick();
+        onClick();
       }
     };
 
