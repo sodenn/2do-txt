@@ -7,8 +7,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+#        os: [ ubuntu-latest, macos-latest ]
+        os: [ macos-latest ]
     steps:
+      - name: Sets env vars for macOS code signing
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "CSC_LINK=${{ secrets.CSC_LINK }}" >> $GITHUB_ENV
+          echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
+          echo "APPLEID=${{ secrets.APPLEID }}" >> $GITHUB_ENV
+          echo "APPLEIDPASS=${{ secrets.APPLEIDPASS }}" >> $GITHUB_ENV
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -28,13 +36,13 @@ jobs:
       - run: yarn electron:sync
       - run: yarn install --frozen-lockfile
         working-directory: electron
-      - name: Sets env vars for macOS code signing
-        if: matrix.os == 'macos-latest'
-        run: |
-          echo "CSC_LINK=${{ secrets.CSC_LINK }}" >> $GITHUB_ENV
-          echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
-          echo "APPLEID=${{ secrets.APPLEID }}" >> $GITHUB_ENV
-          echo "APPLEIDPASS=${{ secrets.APPLEIDPASS }}" >> $GITHUB_ENV
+#      - name: Sets env vars for macOS code signing
+#        if: matrix.os == 'macos-latest'
+#        run: |
+#          echo "CSC_LINK=${{ secrets.CSC_LINK }}" >> $GITHUB_ENV
+#          echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
+#          echo "APPLEID=${{ secrets.APPLEID }}" >> $GITHUB_ENV
+#          echo "APPLEIDPASS=${{ secrets.APPLEIDPASS }}" >> $GITHUB_ENV
       - run: yarn electron:make
         working-directory: electron
         env:
