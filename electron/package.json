@@ -18,7 +18,6 @@
     "build": "tsc && electron-rebuild",
     "electron:start-live": "node ./live-runner.js",
     "electron:start": "yarn build && electron --inspect=5858 ./",
-    "electron:pack": "yarn build && electron-builder --dir -c ./electron-builder.config.json",
     "electron:make": "yarn build && electron-builder -c ./electron-builder.config.json -p always"
   },
   "dependencies": {
