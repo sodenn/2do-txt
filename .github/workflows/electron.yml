@@ -4,9 +4,7 @@ on: push
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    outputs:
-      releaseVersion: ${{ steps.package-version.outputs.current-version }}
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
