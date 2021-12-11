@@ -30,7 +30,12 @@
   },
   "mac": {
     "category": "public.app-category.productivity",
-    "target": "dmg",
+    "hardenedRuntime" : true,
+    "gatekeeperAssess": false,
+    "entitlements": "./mac/entitlements.mas.plist",
+    "entitlementsInherit": "./mac/entitlements.mas.plist",
+    "target": ["dmg", "zip"],
     "icon": "assets/appIcon.png"
-  }
+  },
+  "afterSign": "./afterSign.js"
 }
