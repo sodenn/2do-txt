@@ -36,6 +36,7 @@ interface State {
   init: boolean;
   tasksLoaded: boolean;
   taskDialogOpen: boolean;
+  deleteConfirmationDialogOpen: boolean;
   taskList: Task[];
   lineEnding: string;
   priorities: Dictionary<number>;
@@ -62,6 +63,7 @@ const [TaskProvider, useTask] = createContext(() => {
     init: false,
     tasksLoaded: false,
     taskDialogOpen: false,
+    deleteConfirmationDialogOpen: false,
     taskList: [],
     lineEnding: defaultLineEnding,
     priorities: {},
@@ -80,18 +82,30 @@ const [TaskProvider, useTask] = createContext(() => {
     tasksLoaded,
     lineEnding,
     taskDialogOpen,
+    deleteConfirmationDialogOpen,
     selectedTask,
     todoFilePath,
   } = state;
 
   const taskGroups = useTaskGroup(taskList);
 
-  const openTaskDialog = (open: boolean, selectedTask?: Task) => {
+  const openTaskDialog = (open: boolean, task?: Task) => {
     setState((state) => {
       const { selectedTask: oldSelectedTask, ...rest } = state;
       const newState: State = { ...rest, taskDialogOpen: open };
-      if (selectedTask) {
-        newState.selectedTask = selectedTask;
+      if (task) {
+        newState.selectedTask = task;
+      }
+      return newState;
+    });
+  };
+
+  const openDeleteConfirmationDialog = (open: boolean, task?: Task) => {
+    setState((state) => {
+      const { selectedTask: oldSelectedTask, ...rest } = state;
+      const newState: State = { ...rest, deleteConfirmationDialogOpen: open };
+      if (task) {
+        newState.selectedTask = task;
       }
       return newState;
     });
@@ -388,6 +402,8 @@ const [TaskProvider, useTask] = createContext(() => {
     selectedTask,
     todoFilePath,
     openTaskDialog,
+    openDeleteConfirmationDialog,
+    deleteConfirmationDialogOpen,
     scheduleDueTaskNotifications,
   };
 });

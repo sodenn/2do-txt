@@ -1,5 +1,6 @@
 import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
@@ -43,6 +44,7 @@ const Page = () => {
         </StyledContainer>
       </Box>
       <TaskDialog />
+      <DeleteConfirmationDialog />
     </>
   );
 };

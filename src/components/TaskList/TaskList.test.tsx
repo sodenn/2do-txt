@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { EmptyTestContext, TestContext, todoTxt } from "../../utils/testing";
+import DeleteConfirmationDialog from "../DeleteConfirmationDialog";
 import TaskList from "./TaskList";
 
 describe("TaskList", () => {
@@ -238,6 +239,7 @@ Task E @Test @Feature`;
     render(
       <EmptyTestContext text={todoTxt}>
         <TaskList />
+        <DeleteConfirmationDialog />
       </EmptyTestContext>
     );
 
@@ -252,6 +254,12 @@ Task E @Test @Feature`;
     });
 
     fireEvent.click(deleteMenuItem);
+
+    const deleteButton = await screen.findByRole("button", {
+      name: "Delete task",
+    });
+
+    fireEvent.click(deleteButton);
 
     await waitFor(async () => {
       const taskList = screen.queryByRole("list", { name: "Task list" });
