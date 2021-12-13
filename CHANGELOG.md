@@ -1,3 +1,12 @@
+# [1.4.0](https://github.com/sodenn/2do-txt/compare/v1.3.0...v1.4.0) (2021-12-13)
+
+
+### Features
+
+* add iOS platform ([#176](https://github.com/sodenn/2do-txt/issues/176)) ([fcc6584](https://github.com/sodenn/2do-txt/commit/fcc6584cd79b453bb349eb7fa329746f1b460086))
+* code signing for macOS app ([#186](https://github.com/sodenn/2do-txt/issues/186)) ([f88710b](https://github.com/sodenn/2do-txt/commit/f88710b3ec83d83509fd474b028ba1e4a4730914))
+* show confirmation dialog before deleting a task ([#187](https://github.com/sodenn/2do-txt/issues/187)) ([9117312](https://github.com/sodenn/2do-txt/commit/911731273994430b180cb5903b8dfdf8b26c8918))
+
 # [1.3.0](https://github.com/sodenn/2do-txt/compare/v1.2.0...v1.3.0) (2021-12-03)
 
 
