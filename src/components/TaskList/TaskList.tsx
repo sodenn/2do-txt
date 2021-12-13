@@ -19,7 +19,12 @@ const StyledListSubheader = styled(ListSubheader)`
 
 const TaskList = () => {
   const listItemsRef = useRef<HTMLDivElement[]>([]);
-  const { taskGroups, completeTask, openTaskDialog, deleteTask } = useTask();
+  const {
+    taskGroups,
+    completeTask,
+    openTaskDialog,
+    openDeleteConfirmationDialog,
+  } = useTask();
   const { sortBy } = useFilter();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
   const flatTaskList = taskGroups.reduce<Task[]>(
@@ -50,7 +55,7 @@ const TaskList = () => {
     () => {
       if (focusedTaskIndex !== -1) {
         const focusedTask = flatTaskList[focusedTaskIndex];
-        deleteTask(focusedTask);
+        openDeleteConfirmationDialog(true, focusedTask);
       }
     },
     "d",

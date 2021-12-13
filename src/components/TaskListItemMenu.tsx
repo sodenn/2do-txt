@@ -29,7 +29,7 @@ interface TaskListItemMenuProps {
 const TaskListItemMenu = (props: TaskListItemMenuProps) => {
   const { task, menuRef, menuButtonRef } = props;
   const { t } = useTranslation();
-  const { openTaskDialog, deleteTask } = useTask();
+  const { openTaskDialog, openDeleteConfirmationDialog } = useTask();
   const [open, setOpen] = useState(false);
 
   const handleToggle = () => {
@@ -43,7 +43,7 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
 
   const handleDelete = () => {
     handleClose();
-    deleteTask(task);
+    openDeleteConfirmationDialog(true, task);
   };
 
   const handleClose = (event?: any) => {
