@@ -97,7 +97,7 @@
     "@types/file-saver": "^2.0.3",
     "cordova-res": "^0.15.3",
     "import-sort-style-module": "^6.0.0",
-    "prettier": "^2.4.1",
+    "prettier": "^2.5.1",
     "prettier-plugin-organize-imports": "^2.3.4",
     "semantic-release": "^18.0.0"
   }
