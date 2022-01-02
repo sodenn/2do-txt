@@ -14,7 +14,7 @@ import ChipList from "./ChipList";
 
 const Filter = () => {
   const { t } = useTranslation();
-  const { priorities, projects, contexts, tags, taskList } = useTask();
+  const { taskList, ...rest } = useTask();
   const {
     sortBy,
     setSortBy,
@@ -29,6 +29,10 @@ const Filter = () => {
     setSelectedTags,
     setHideCompletedTasks,
   } = useFilter();
+
+  const { priorities, projects, contexts, tags } = hideCompletedTasks
+    ? rest.incomplete
+    : rest;
 
   return (
     <>

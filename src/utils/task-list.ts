@@ -7,13 +7,17 @@ import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
 import { Dictionary } from "./types";
 
-interface TaskListParseResult {
-  taskList: Task[];
-  lineEnding: string;
+export interface TaskListAttributes {
+  priorities: Dictionary<number>;
   projects: Dictionary<number>;
   contexts: Dictionary<number>;
   tags: Dictionary<string[]>;
-  priorities: Dictionary<number>;
+}
+
+export interface TaskListParseResult extends TaskListAttributes {
+  taskList: Task[];
+  lineEnding: string;
+  incomplete: TaskListAttributes;
 }
 
 interface TaskListFilter {
@@ -33,48 +37,22 @@ interface TaskGroup {
 export function parseTaskList(text?: string): TaskListParseResult {
   if (text) {
     const lineEnding = /\r\n/.test(text) ? "\r\n" : "\n";
+
     const taskList = text
       .split("\n")
       .map((t) => t.trim())
       .filter((t) => t.length > 0)
       .map((t, o) => parseTask(t, o));
-    const priorities = (
-      taskList
-        .map((task) => task.priority)
-        .filter((priority) => !!priority) as string[]
-    ).reduce<Dictionary<number>>((prev, cur) => {
-      prev[cur] = (prev[cur] || 0) + 1;
-      return prev;
-    }, {});
-    const projects = taskList
-      .flatMap((i) => i.projects)
-      .reduce<Dictionary<number>>((prev, cur) => {
-        prev[cur] = (prev[cur] || 0) + 1;
-        return prev;
-      }, {});
-    const contexts = taskList
-      .flatMap((i) => i.contexts)
-      .reduce<Dictionary<number>>((prev, cur) => {
-        prev[cur] = (prev[cur] || 0) + 1;
-        return prev;
-      }, {});
-    let tags: Dictionary<string[]> = {};
-    taskList.forEach((i) => {
-      Object.entries(i.tags).forEach(([key, value]) => {
-        if (tags[key]) {
-          tags[key] = [...tags[key], ...value];
-        } else {
-          tags[key] = value;
-        }
-      });
-    });
+
+    const attributes = getTaskListAttributes(taskList, false);
+
+    const incompleteTasksAttributes = getTaskListAttributes(taskList, true);
+
     return {
       taskList,
       lineEnding,
-      priorities,
-      projects,
-      contexts,
-      tags,
+      incomplete: incompleteTasksAttributes,
+      ...attributes,
     };
   } else {
     return {
@@ -84,6 +62,12 @@ export function parseTaskList(text?: string): TaskListParseResult {
       projects: {},
       contexts: {},
       tags: {},
+      incomplete: {
+        priorities: {},
+        projects: {},
+        contexts: {},
+        tags: {},
+      },
     };
   }
 }
@@ -206,6 +190,57 @@ export function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
   return Object.entries(groups)
     .map(mapGroups)
     .sort((a, b) => sortGroups(a, b, sortBy));
+}
+
+function getTaskListAttributes(
+  taskList: Task[],
+  incompleteTasksOnly: boolean
+): TaskListAttributes {
+  const priorities = (
+    taskList
+      .filter((i) => !incompleteTasksOnly || !i.completed)
+      .map((task) => task.priority)
+      .filter((priority) => !!priority) as string[]
+  ).reduce<Dictionary<number>>((prev, cur) => {
+    prev[cur] = (prev[cur] || 0) + 1;
+    return prev;
+  }, {});
+
+  const projects = taskList
+    .filter((i) => !incompleteTasksOnly || !i.completed)
+    .flatMap((i) => i.projects)
+    .reduce<Dictionary<number>>((prev, cur) => {
+      prev[cur] = (prev[cur] || 0) + 1;
+      return prev;
+    }, {});
+
+  const contexts = taskList
+    .filter((i) => !incompleteTasksOnly || !i.completed)
+    .flatMap((i) => i.contexts)
+    .reduce<Dictionary<number>>((prev, cur) => {
+      prev[cur] = (prev[cur] || 0) + 1;
+      return prev;
+    }, {});
+
+  let tags: Dictionary<string[]> = {};
+  taskList
+    .filter((i) => !incompleteTasksOnly || !i.completed)
+    .forEach((i) => {
+      Object.entries(i.tags).forEach(([key, value]) => {
+        if (tags[key]) {
+          tags[key] = [...tags[key], ...value];
+        } else {
+          tags[key] = value;
+        }
+      });
+    });
+
+  return {
+    priorities,
+    projects,
+    contexts,
+    tags,
+  };
 }
 
 function useFormatGroupLabel() {

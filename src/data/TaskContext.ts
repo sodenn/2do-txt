@@ -23,26 +23,20 @@ import {
 import {
   parseTaskList,
   stringifyTaskList,
+  TaskListParseResult,
   useTaskGroup,
 } from "../utils/task-list";
-import { Dictionary } from "../utils/types";
 import { generateId } from "../utils/uuid";
 import { useSettings } from "./SettingsContext";
 
 const defaultPath = "todo.txt";
 const defaultLineEnding = "\n";
 
-interface State {
+interface State extends TaskListParseResult {
   init: boolean;
   tasksLoaded: boolean;
   taskDialogOpen: boolean;
   deleteConfirmationDialogOpen: boolean;
-  taskList: Task[];
-  lineEnding: string;
-  priorities: Dictionary<number>;
-  projects: Dictionary<number>;
-  contexts: Dictionary<number>;
-  tags: Dictionary<string[]>;
   selectedTask?: Task;
   todoFilePath?: string;
 }
@@ -70,6 +64,12 @@ const [TaskProvider, useTask] = createContext(() => {
     projects: {},
     contexts: {},
     tags: {},
+    incomplete: {
+      priorities: {},
+      projects: {},
+      contexts: {},
+      tags: {},
+    },
   });
 
   const {
@@ -85,6 +85,7 @@ const [TaskProvider, useTask] = createContext(() => {
     deleteConfirmationDialogOpen,
     selectedTask,
     todoFilePath,
+    incomplete,
   } = state;
 
   const taskGroups = useTaskGroup(taskList);
@@ -233,12 +234,7 @@ const [TaskProvider, useTask] = createContext(() => {
       const { selectedTask, ...rest } = state;
       const newValue = {
         ...rest,
-        taskList: parseResult.taskList,
-        lineEnding: parseResult.lineEnding,
-        priorities: parseResult.priorities,
-        projects: parseResult.projects,
-        contexts: parseResult.contexts,
-        tags: parseResult.tags,
+        ...parseResult,
         tasksLoaded: true,
       };
       if (path) {
@@ -354,16 +350,11 @@ const [TaskProvider, useTask] = createContext(() => {
         setStorageItem("line-ending", parseResult.lineEnding);
         setState((state) => ({
           ...state,
-          createCompletionDate: createCompletionDateStr === "true",
-          init: true,
-          taskList: parseResult.taskList,
-          lineEnding: parseResult.lineEnding,
-          priorities: parseResult.priorities,
-          projects: parseResult.projects,
-          contexts: parseResult.contexts,
-          tags: parseResult.tags,
+          ...parseResult,
           tasksLoaded: true,
+          createCompletionDate: createCompletionDateStr === "true",
           todoFilePath: path ?? defaultPath,
+          init: true,
         }));
         if (shouldNotificationsBeRescheduled()) {
           scheduleDueTaskNotifications(parseResult.taskList);
@@ -395,6 +386,7 @@ const [TaskProvider, useTask] = createContext(() => {
     projects,
     contexts,
     tags,
+    incomplete,
     taskList,
     taskGroups,
     tasksLoaded,
