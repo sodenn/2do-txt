@@ -1,3 +1,15 @@
+# [1.5.0](https://github.com/sodenn/2do-txt/compare/v1.4.0...v1.5.0) (2022-01-03)
+
+
+### Bug Fixes
+
+* **Filter:** only show filters for incomplete tasks when completed tasks are hidden ([#197](https://github.com/sodenn/2do-txt/issues/197)) ([5f75c6a](https://github.com/sodenn/2do-txt/commit/5f75c6a6ac7c77e324f5fcce38d25285b3a51610))
+
+
+### Features
+
+* **i18n:** improve German translation ([#199](https://github.com/sodenn/2do-txt/issues/199)) ([7b9eb7c](https://github.com/sodenn/2do-txt/commit/7b9eb7c259ea186c4ae4a0860dc979c54c039376))
+
 # [1.4.0](https://github.com/sodenn/2do-txt/compare/v1.3.0...v1.4.0) (2021-12-13)
 
 
