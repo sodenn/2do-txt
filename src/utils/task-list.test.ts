@@ -102,4 +102,18 @@ describe("task-list", () => {
 
     expect(taskGroups[0].items.length).toBe(2);
   });
+
+  it("should contain projects of incomplete tasks", async () => {
+    const todoTxt = `x 1. task +ProjA
+x 2. task +ProjB
+3. task +ProjA`;
+
+    const { projects, incomplete } = parseTaskList(todoTxt);
+
+    expect(projects.ProjA).toBe(2);
+    expect(projects.ProjB).toBe(1);
+
+    expect(incomplete.projects.ProjA).toBe(1);
+    expect(incomplete.projects.ProjB).toBeUndefined();
+  });
 });

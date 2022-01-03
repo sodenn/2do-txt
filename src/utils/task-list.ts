@@ -7,17 +7,17 @@ import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
 import { Dictionary } from "./types";
 
-export interface TaskListAttributes {
-  priorities: Dictionary<number>;
-  projects: Dictionary<number>;
-  contexts: Dictionary<number>;
-  tags: Dictionary<string[]>;
-}
-
 export interface TaskListParseResult extends TaskListAttributes {
   taskList: Task[];
   lineEnding: string;
   incomplete: TaskListAttributes;
+}
+
+interface TaskListAttributes {
+  priorities: Dictionary<number>;
+  projects: Dictionary<number>;
+  contexts: Dictionary<number>;
+  tags: Dictionary<string[]>;
 }
 
 interface TaskListFilter {
