@@ -22,7 +22,7 @@ const AddTaskButton = ({ edgeEnd }: AddTaskButtonProps) => {
       disableTouchListener
       title={
         <>
-          {t("Add task")}{" "}
+          {t("Create Task")}{" "}
           <Box component="span" sx={{ ml: 0.5 }}>
             <Kbd>N</Kbd>
           </Box>
