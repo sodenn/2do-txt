@@ -14,7 +14,7 @@ const DeleteConfirmationDialog = () => {
   const {
     deleteConfirmationDialogOpen,
     openDeleteConfirmationDialog,
-    selectedTask,
+    activeTask,
     deleteTask,
   } = useTask();
 
@@ -23,17 +23,15 @@ const DeleteConfirmationDialog = () => {
   };
 
   const handleDelete = () => {
-    if (selectedTask) {
+    if (activeTask) {
       openDeleteConfirmationDialog(false);
-      deleteTask(selectedTask);
+      deleteTask(activeTask);
     }
   };
 
   return (
     <Dialog
       aria-label="Delete confirmation dialog"
-      fullWidth
-      maxWidth="sm"
       open={deleteConfirmationDialogOpen}
       onClose={handleClose}
     >

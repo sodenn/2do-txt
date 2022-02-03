@@ -1,10 +1,12 @@
-import { AppBar, Box, styled, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, styled, Toolbar } from "@mui/material";
+import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
 import AddTaskButton from "./AddTaskButton";
 import SearchBar from "./SearchBar";
 import SideSheetButton from "./SideSheetButton";
 import TodoFileDownloadButton from "./TodoFileDownloadButton";
+import TodoFileMenu from "./TodoFileMenu";
 
 interface HeaderProps {
   divider?: boolean;
@@ -18,6 +20,7 @@ export const StyledAppBar = styled(AppBar)`
 
 const Header = ({ divider = false }: HeaderProps) => {
   const platform = usePlatform();
+  const { init, activeTaskList, taskLists } = useTask();
   const showTodoFileDownloadButton = platform !== "electron";
   return (
     <Box style={{ flex: "none", marginBottom: 2 }}>
@@ -38,19 +41,20 @@ const Header = ({ divider = false }: HeaderProps) => {
             }}
           >
             <img src={logo} alt="Logo" height={24} />
-            <Typography variant="h6" noWrap component="div" sx={{ ml: 1 }}>
-              2do.txt
-            </Typography>
+            <TodoFileMenu />
           </Box>
-          <SearchBar />
-          <Box sx={{ ml: 1, flexGrow: 0 }}>
-            <AddTaskButton edgeEnd={!showTodoFileDownloadButton} />
-          </Box>
-          {showTodoFileDownloadButton && (
-            <Box sx={{ ml: 0.5, flexGrow: 0 }}>
-              <TodoFileDownloadButton />
-            </Box>
+          {taskLists.length > 0 && <SearchBar />}
+          {taskLists.length > 0 && (
+            <AddTaskButton
+              sx={{ ml: 1, flexGrow: 0 }}
+              edge={!showTodoFileDownloadButton ? "end" : undefined}
+            />
           )}
+          {showTodoFileDownloadButton &&
+            init &&
+            (activeTaskList || taskLists.length === 1) && (
+              <TodoFileDownloadButton sx={{ ml: 0.5, flexGrow: 0 }} />
+            )}
         </Toolbar>
       </StyledAppBar>
     </Box>

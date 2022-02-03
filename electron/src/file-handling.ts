@@ -18,11 +18,10 @@ export function setupFileHandling(mainWindow: Electron.BrowserWindow) {
     return fs.promises.unlink(...args);
   });
 
-  ipcMain.handle("selectDir", async (event, title) => {
-    const result = await dialog.showOpenDialog(mainWindow, {
-      properties: ["openDirectory", "createDirectory"],
-      title,
+  ipcMain.handle("saveFile", async (event, fileName) => {
+    const result = await dialog.showSaveDialog(mainWindow, {
+      defaultPath: fileName,
     });
-    return result.filePaths.length > 0 ? result.filePaths[0] : undefined;
+    return result.canceled ? undefined : result.filePath;
   });
 }

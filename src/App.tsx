@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import AppRouter from "./components/AppRouter";
 import { AppTheme } from "./data/AppThemeContext";
 import { FilterContextProvider } from "./data/FilterContext";
+import { MigrationContextProvider } from "./data/MigrationContext";
 import { SettingsContextProvider } from "./data/SettingsContext";
 import { SideSheetContextProvider } from "./data/SideSheetContext";
 import { TaskProvider } from "./data/TaskContext";
@@ -20,17 +21,19 @@ function App() {
         }}
         TransitionComponent={Grow as any}
       >
-        <FilterContextProvider>
-          <Suspense fallback={null}>
+        <Suspense fallback={null}>
+          <MigrationContextProvider>
             <SettingsContextProvider>
-              <SideSheetContextProvider>
-                <TaskProvider>
-                  <AppRouter />
-                </TaskProvider>
-              </SideSheetContextProvider>
+              <FilterContextProvider>
+                <SideSheetContextProvider>
+                  <TaskProvider>
+                    <AppRouter />
+                  </TaskProvider>
+                </SideSheetContextProvider>
+              </FilterContextProvider>
             </SettingsContextProvider>
-          </Suspense>
-        </FilterContextProvider>
+          </MigrationContextProvider>
+        </Suspense>
       </SnackbarProvider>
     </AppTheme>
   );

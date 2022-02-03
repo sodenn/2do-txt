@@ -8,6 +8,7 @@ import { MemoryRouter } from "react-router-dom";
 import { AppRouters } from "../components/AppRouter";
 import { AppTheme } from "../data/AppThemeContext";
 import { FilterContextProvider } from "../data/FilterContext";
+import { MigrationContextProvider } from "../data/MigrationContext";
 import { SettingsContextProvider } from "../data/SettingsContext";
 import { SideSheetContextProvider } from "../data/SideSheetContext";
 import { TaskProvider } from "../data/TaskContext";
@@ -18,14 +19,14 @@ jest.mock("../utils/platform", () => ({
   useTouchScreen: jest.fn(),
 }));
 
-interface TestContextProps {
-  text?: string;
-  storage?: StorageItem[];
-}
-
 interface StorageItem {
   key: Keys;
   value: string;
+}
+
+interface TestContextProps {
+  text?: string;
+  storage?: StorageItem[];
 }
 
 i18n.use(initReactI18next).init({
@@ -66,6 +67,11 @@ export const todoTxt = `First task @Test
 X 2012-01-01 Second task
 (A) x Third task @Test`;
 
+export const todoTxtPaths: StorageItem = {
+  key: "todo-txt-paths",
+  value: JSON.stringify(["todo.txt"]),
+};
+
 export const TestContext = (props: TestContextProps) => {
   const { text, storage } = props;
 
@@ -79,19 +85,21 @@ export const TestContext = (props: TestContextProps) => {
   return (
     <AppTheme>
       <SnackbarProvider>
-        <FilterContextProvider>
-          <Suspense fallback={null}>
+        <Suspense fallback={null}>
+          <MigrationContextProvider>
             <SettingsContextProvider>
-              <SideSheetContextProvider>
-                <TaskProvider>
-                  <MemoryRouter>
-                    <AppRouters />
-                  </MemoryRouter>
-                </TaskProvider>
-              </SideSheetContextProvider>
+              <FilterContextProvider>
+                <SideSheetContextProvider>
+                  <TaskProvider>
+                    <MemoryRouter>
+                      <AppRouters />
+                    </MemoryRouter>
+                  </TaskProvider>
+                </SideSheetContextProvider>
+              </FilterContextProvider>
             </SettingsContextProvider>
-          </Suspense>
-        </FilterContextProvider>
+          </MigrationContextProvider>
+        </Suspense>
       </SnackbarProvider>
     </AppTheme>
   );
@@ -111,15 +119,17 @@ export const EmptyTestContext = (
 
   return (
     <SnackbarProvider>
-      <FilterContextProvider>
-        <Suspense fallback={null}>
+      <Suspense fallback={null}>
+        <MigrationContextProvider>
           <SettingsContextProvider>
-            <SideSheetContextProvider>
-              <TaskProvider>{children}</TaskProvider>
-            </SideSheetContextProvider>
+            <FilterContextProvider>
+              <SideSheetContextProvider>
+                <TaskProvider>{children}</TaskProvider>
+              </SideSheetContextProvider>
+            </FilterContextProvider>
           </SettingsContextProvider>
-        </Suspense>
-      </FilterContextProvider>
+        </MigrationContextProvider>
+      </Suspense>
     </SnackbarProvider>
   );
 };

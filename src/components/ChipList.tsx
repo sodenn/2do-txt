@@ -3,7 +3,7 @@ import { Dictionary } from "../utils/types";
 
 interface ChipListProps {
   list?: Dictionary<number>;
-  selected?: string[];
+  active?: string[];
   onClick?: (item: string) => void;
   color?: "info" | "success" | "warning" | "secondary";
 }
@@ -20,7 +20,7 @@ const List = styled("ul")`
 `;
 
 const ChipList = (props: ChipListProps) => {
-  const { list = {}, selected = [], onClick, color } = props;
+  const { list = {}, active = [], onClick, color } = props;
 
   return (
     <List>
@@ -36,7 +36,7 @@ const ChipList = (props: ChipListProps) => {
           >
             <Chip
               sx={{ px: 1 }}
-              variant={selected.includes(item) ? "filled" : "outlined"}
+              variant={active.includes(item) ? "filled" : "outlined"}
               label={item}
               color={color}
               onClick={() => onClick && onClick(item)}

@@ -14,6 +14,7 @@ interface SearchParams {
   contexts: string;
   tags: string;
   priorities: string;
+  active: string;
 }
 
 const AppRouter = () => {
@@ -29,16 +30,18 @@ export const AppRouters = () => {
 
   const {
     searchTerm,
-    selectedPriorities,
-    selectedProjects,
-    selectedContexts,
-    selectedTags,
+    activeTaskListPath,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
     hideCompletedTasks,
     setSearchTerm,
-    setSelectedPriorities,
-    setSelectedProjects,
-    setSelectedContexts,
-    setSelectedTags,
+    setActiveTaskListPath,
+    setActivePriorities,
+    setActiveProjects,
+    setActiveContexts,
+    setActiveTags,
   } = useFilter();
 
   useEffect(() => {
@@ -47,24 +50,29 @@ export const AppRouters = () => {
       setSearchTerm(term);
     }
 
+    const activeTaskListPath = searchParams.get("active");
+    if (activeTaskListPath) {
+      setActiveTaskListPath(decodeURIComponent(activeTaskListPath));
+    }
+
     const priorities = searchParams.get("priorities");
     if (priorities) {
-      setSelectedPriorities(priorities.split(","));
+      setActivePriorities(priorities.split(","));
     }
 
     const projects = searchParams.get("projects");
     if (projects) {
-      setSelectedProjects(projects.split(","));
+      setActiveProjects(projects.split(","));
     }
 
     const contexts = searchParams.get("contexts");
     if (contexts) {
-      setSelectedContexts(contexts.split(","));
+      setActiveContexts(contexts.split(","));
     }
 
     const tags = searchParams.get("tags");
     if (tags) {
-      setSelectedTags(tags.split(","));
+      setActiveTags(tags.split(","));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -74,17 +82,20 @@ export const AppRouters = () => {
     if (searchTerm) {
       params.term = searchTerm;
     }
-    if (selectedPriorities.length > 0) {
-      params.priorities = selectedPriorities.join(",");
+    if (activeTaskListPath) {
+      params.active = encodeURIComponent(activeTaskListPath);
     }
-    if (selectedProjects.length > 0) {
-      params.projects = selectedProjects.join(",");
+    if (activePriorities.length > 0) {
+      params.priorities = activePriorities.join(",");
     }
-    if (selectedContexts.length > 0) {
-      params.contexts = selectedContexts.join(",");
+    if (activeProjects.length > 0) {
+      params.projects = activeProjects.join(",");
     }
-    if (selectedTags.length > 0) {
-      params.tags = selectedTags.join(",");
+    if (activeContexts.length > 0) {
+      params.contexts = activeContexts.join(",");
+    }
+    if (activeTags.length > 0) {
+      params.tags = activeTags.join(",");
     }
     if (Object.keys(params).length > 0) {
       setSearchParams(params);
@@ -94,10 +105,11 @@ export const AppRouters = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchTerm,
-    selectedPriorities,
-    selectedProjects,
-    selectedContexts,
-    selectedTags,
+    activeTaskListPath,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
     hideCompletedTasks,
   ]);
 

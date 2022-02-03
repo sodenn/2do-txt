@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import FileSaver from "file-saver";
-import { EmptyTestContext, todoTxt } from "../utils/testing";
+import { EmptyTestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 import TodoFileDownloadButton from "./TodoFileDownloadButton";
 
 jest.mock("file-saver", () => ({ saveAs: jest.fn() }));
@@ -14,7 +14,7 @@ global.Blob = function (content, options) {
 describe("TodoFileDownloadButton", () => {
   it("should download a todo.txt file", async () => {
     render(
-      <EmptyTestContext text={todoTxt}>
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
         <TodoFileDownloadButton />
       </EmptyTestContext>
     );

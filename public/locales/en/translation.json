@@ -37,7 +37,7 @@
   "Due Date": "Due Date",
   "No sorting": "No sorting",
   "Close": "Close",
-  "Current file": "Current file",
+  "Create todo.txt": "Create todo.txt",
   "Open todo.txt": "Open todo.txt",
   "Open": "Open",
   "File not found": "File not found",
@@ -61,5 +61,12 @@
   "Tags": "Tags",
   "Add tag": "<strong>Add</strong> {{name}}",
   "Delete task": "Delete task",
-  "Are you sure you want to delete this task?": "Are you sure you want to delete this task?"
+  "Are you sure you want to delete this task?": "Are you sure you want to delete this task?",
+  "The file name must end with .txt": "The file name must end with .txt",
+  "File already exist": "File already exist",
+  "Create new todo.txt file": "Create new todo.txt file",
+  "File Name": "File Name",
+  "Create": "Create",
+  "No tasks": "No tasks",
+  "The file already exists": "The file already exists"
 }

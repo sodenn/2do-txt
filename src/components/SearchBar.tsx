@@ -1,7 +1,7 @@
 import { CloseOutlined } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import { alpha, IconButton, InputBase, styled } from "@mui/material";
-import { useRef } from "react";
+import { ChangeEvent, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
@@ -77,6 +77,10 @@ const SearchBar = () => {
     }
   };
 
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
     <Search>
       <SearchIconWrapper>
@@ -98,7 +102,7 @@ const SearchBar = () => {
         inputRef={searchInputRef}
         value={searchTerm}
         onKeyDown={handleKeyDown}
-        onChange={(event) => setSearchTerm(event.target.value)}
+        onChange={handleChange}
         placeholder={t("Search…")}
         inputProps={{
           "aria-label": "Search for tasks",

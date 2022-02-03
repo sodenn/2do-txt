@@ -1,10 +1,12 @@
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { LoadingButton } from "@mui/lab";
 import { styled } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { ChangeEvent, PropsWithChildren, useState } from "react";
+import { ChangeEvent, PropsWithChildren, ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
+import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
 import { Task } from "../utils/task";
 import { generateId } from "../utils/uuid";
@@ -15,32 +17,44 @@ const Input = styled("input")({
 
 interface FilePickerProps {
   onSelect?: () => void;
+  component?: ReactNode;
 }
 
-const TodoFilePicker = ({
-  onSelect,
-  children,
-}: PropsWithChildren<FilePickerProps>) => {
-  const { loadTodoFile, saveTodoFile, scheduleDueTaskNotifications } =
-    useTask();
+const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
+  const { onSelect, component, children } = props;
+
+  const {
+    loadTodoFile,
+    saveTodoFile,
+    scheduleDueTaskNotifications,
+    taskLists,
+  } = useTask();
+  const { setActiveTaskListPath } = useFilter();
   const platform = usePlatform();
   const id = generateId();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { getUniqueFilePath } = useFilesystem();
   const [loading, setLoading] = useState(false);
 
-  const readFileContent = async (content: string, file: File) => {
+  const openTodoFile = async (content: string, file: File) => {
     let taskList: Task[];
-    // Note: Electron adds a path property to the file object
+    let filePath: string;
+
     if (platform === "electron") {
-      // Load the content and save the path so that the file can be loaded the next time the app is opened.
-      taskList = await loadTodoFile(content, (file as any).path);
+      // Note: Electron adds a path property to the file object
+      filePath = (file as any).path;
+      taskList = await loadTodoFile(filePath, content);
     } else {
-      // Other platforms does not allow to accessing the file storage. For this reason, a copy of
+      // Other platforms does not allow to access the file storage. For this reason, a copy of
       // the selected file is created in the app's document directory.
-      taskList = await saveTodoFile(content);
+      const uniqueFilePath = await getUniqueFilePath(file.name);
+      filePath = uniqueFilePath.fileName;
+      taskList = await saveTodoFile(filePath, content);
     }
+
     scheduleDueTaskNotifications(taskList);
+    return filePath;
   };
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -60,12 +74,20 @@ const TodoFilePicker = ({
         return;
       }
 
-      await readFileContent(content, file).catch(() => {
+      const updateFilePath = taskLists.length > 0;
+
+      const filePath = await openTodoFile(content, file).catch(() => {
         enqueueSnackbar(t("The file could not be opened"), {
           variant: "error",
         });
         setLoading(false);
       });
+
+      setLoading(false);
+
+      if (updateFilePath && filePath) {
+        setActiveTaskListPath(filePath);
+      }
 
       if (onSelect) {
         onSelect();
@@ -89,16 +111,19 @@ const TodoFilePicker = ({
   return (
     <label style={{ width: "100%" }} htmlFor={id}>
       <Input accept="text/plain" id={id} type="file" onChange={handleChange} />
-      <LoadingButton
-        aria-label="Open todo.txt"
-        loading={loading}
-        startIcon={<FolderOpenIcon />}
-        fullWidth
-        variant="outlined"
-        component="span"
-      >
-        {children}
-      </LoadingButton>
+      {!!component && component}
+      {!component && (
+        <LoadingButton
+          aria-label="Open todo.txt"
+          loading={loading}
+          startIcon={<FolderOpenOutlinedIcon />}
+          fullWidth
+          variant="outlined"
+          component="span"
+        >
+          {children}
+        </LoadingButton>
+      )}
     </label>
   );
 };

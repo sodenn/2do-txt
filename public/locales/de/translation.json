@@ -44,7 +44,7 @@
   "Due Date": "Fälligkeit",
   "No sorting": "Keine Sortierung",
   "Close": "Schließen",
-  "Current file": "Aktuelle Datei",
+  "Create todo.txt": "todo.txt erstellen",
   "Open todo.txt": "todo.txt öffnen",
   "Open": "Öffnen",
   "File not found": "Datei nicht gefunden",
@@ -68,5 +68,12 @@
   "Tags": "Tags",
   "Add tag": "{{name}} <strong>hinzufügen</strong>",
   "Delete task": "Aufgabe löschen",
-  "Are you sure you want to delete this task?": "Diese Aufgabe wirklich löschen?"
+  "Are you sure you want to delete this task?": "Diese Aufgabe wirklich löschen?",
+  "The file name must end with .txt": "Die Datei muss mit .txt enden",
+  "File already exist": "Die Datei existiert bereits",
+  "Create new todo.txt file": "Neue todo.txt Datei erstellen",
+  "File Name": "Dateiname",
+  "Create": "Erstellen",
+  "No tasks": "Keine Aufgaben",
+  "The file already exists": "Diese Datei existiert bereits"
 }

@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { TestContext } from "../utils/testing";
+import { TestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 
 describe("SideSheetButton", () => {
   it("should open the menu via mouse click", async () => {
-    render(<TestContext />);
+    render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
     await expect(() =>
       screen.findByRole("presentation", { name: "Menu" })
@@ -21,7 +21,9 @@ describe("SideSheetButton", () => {
   });
 
   it("should open the menu via shortcut", async () => {
-    const { container } = render(<TestContext />);
+    const { container } = render(
+      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
+    );
 
     await expect(() =>
       screen.findByRole("presentation", { name: "Menu" })
@@ -35,7 +37,9 @@ describe("SideSheetButton", () => {
   });
 
   it("should close the menu via esc key", async () => {
-    const { container } = render(<TestContext />);
+    const { container } = render(
+      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
+    );
 
     fireEvent.keyDown(container, { key: "m", code: "KeyM" });
 

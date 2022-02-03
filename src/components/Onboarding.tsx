@@ -18,26 +18,15 @@ const StyledBox = styled("div")`
 
 const Onboarding = () => {
   const { t } = useTranslation();
-  const {
-    init,
-    taskList,
-    saveTodoFile,
-    tasksLoaded,
-    openTaskDialog,
-    selectTodoFile,
-  } = useTask();
+  const { init, taskLists, openTodoFileCreateDialog } = useTask();
 
-  const handleCreateTaskClick = async () => {
-    if (!tasksLoaded) {
-      await selectTodoFile();
-      await saveTodoFile();
-    }
-    openTaskDialog(true);
+  const handleClick = async () => {
+    openTodoFileCreateDialog(true);
   };
 
   return (
     <>
-      {init && taskList.length === 0 && (
+      {init && taskLists.length === 0 && (
         <StyledBox>
           <Stack spacing={2}>
             <Box sx={{ py: 1, textAlign: "center" }}>
@@ -55,15 +44,13 @@ const Onboarding = () => {
             </Typography>
             <Button
               aria-label="Create task"
-              onClick={handleCreateTaskClick}
+              onClick={handleClick}
               startIcon={<AddTaskIcon />}
               variant="contained"
             >
               {t("Create Task")}
             </Button>
-            {!tasksLoaded && (
-              <TodoFilePicker>{t("Open todo.txt")}</TodoFilePicker>
-            )}
+            <TodoFilePicker>{t("Open todo.txt")}</TodoFilePicker>
           </Stack>
         </StyledBox>
       )}

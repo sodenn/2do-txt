@@ -1,10 +1,20 @@
-import { alpha, Box, Chip, List, ListSubheader, styled } from "@mui/material";
+import {
+  alpha,
+  Box,
+  Chip,
+  List,
+  ListSubheader,
+  styled,
+  Typography,
+} from "@mui/material";
 import { useRef, useState } from "react";
-import { useFilter } from "../../data/FilterContext";
-import { useTask } from "../../data/TaskContext";
-import { useAddShortcutListener } from "../../utils/shortcuts";
-import { Task } from "../../utils/task";
-import TaskListItem from "../TaskListItem";
+import { useTranslation } from "react-i18next";
+import { useFilter } from "../data/FilterContext";
+import { TaskListState, useTask } from "../data/TaskContext";
+import { useAddShortcutListener } from "../utils/shortcuts";
+import { Task } from "../utils/task";
+import { useTaskGroups } from "../utils/task-list";
+import TaskListItem from "./TaskListItem";
 
 const StyledListSubheader = styled(ListSubheader)`
   // avoid scrollbar overlapping (Safari mobile)
@@ -17,16 +27,19 @@ const StyledListSubheader = styled(ListSubheader)`
   );
 `;
 
-const TaskList = () => {
+interface TaskListProps {
+  taskList: TaskListState;
+  showHeader?: boolean;
+}
+
+const TaskList = ({ taskList, showHeader = false }: TaskListProps) => {
+  const { t } = useTranslation();
   const listItemsRef = useRef<HTMLDivElement[]>([]);
-  const {
-    taskGroups,
-    completeTask,
-    openTaskDialog,
-    openDeleteConfirmationDialog,
-  } = useTask();
+  const { completeTask, openTaskDialog, openDeleteConfirmationDialog } =
+    useTask();
   const { sortBy } = useFilter();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
+  const taskGroups = useTaskGroups(taskList.items);
   const flatTaskList = taskGroups.reduce<Task[]>(
     (prev, curr) => [...prev, ...curr.items],
     []
@@ -76,6 +89,16 @@ const TaskList = () => {
 
   return (
     <Box>
+      {showHeader && (
+        <Typography sx={{ ml: 2 }} variant="h5">
+          {taskList.fileName}
+        </Typography>
+      )}
+      {flatTaskList.length === 0 && (
+        <Typography sx={{ ml: 2, mt: 1, mb: 3 }} color="text.secondary">
+          {t("No tasks")}
+        </Typography>
+      )}
       {flatTaskList.length > 0 && (
         <List aria-label="Task list" subheader={<li />}>
           {taskGroups.map((group) => (

@@ -1,17 +1,17 @@
 import DownloadIcon from "@mui/icons-material/Download";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import ShareIcon from "@mui/icons-material/Share";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import { usePlatform } from "../utils/platform";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import Kbd from "./Kbd";
 
-const TodoFileDownloadButton = () => {
+const TodoFileDownloadButton = (props: IconButtonProps) => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { downloadTodoFile, shareTodoFile, tasksLoaded } = useTask();
+  const { downloadTodoFile, shareTodoFile } = useTask();
 
   const download = () => {
     if (platform === "web" || platform === "electron") {
@@ -30,10 +30,6 @@ const TodoFileDownloadButton = () => {
   };
 
   useAddShortcutListener(download, "t");
-
-  if (!tasksLoaded) {
-    return null;
-  }
 
   return (
     <Tooltip
@@ -54,6 +50,7 @@ const TodoFileDownloadButton = () => {
         edge="end"
         color="inherit"
         onClick={() => download()}
+        {...props}
       >
         {(platform === "web" || platform === "electron") && <DownloadIcon />}
         {platform === "ios" && <IosShareIcon />}

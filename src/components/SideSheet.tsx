@@ -28,12 +28,19 @@ const SaveAreaContent = styled("div")`
 const SideSheet = () => {
   const { t } = useTranslation();
   const { sideSheetOpen, setSideSheetOpen } = useSideSheet();
-  const { priorities, projects, contexts, tags, taskList, tasksLoaded } =
-    useTask();
+  const { taskLists, init, activeTaskList, ...rest } = useTask();
+
+  const { priorities, projects, contexts, tags } = activeTaskList
+    ? activeTaskList
+    : rest;
+
+  const completedTasksCount = activeTaskList
+    ? activeTaskList.items.filter((task) => task.completed).length
+    : taskLists.flatMap((list) => list.items).filter((t) => t.completed).length;
 
   const hideFilter =
-    !tasksLoaded ||
-    (taskList.filter((t) => t.completed).length === 0 &&
+    !init ||
+    (completedTasksCount === 0 &&
       Object.keys(priorities).length === 0 &&
       Object.keys(projects).length === 0 &&
       Object.keys(contexts).length === 0 &&

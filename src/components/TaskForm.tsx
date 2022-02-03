@@ -14,20 +14,32 @@ import { Dictionary } from "../utils/types";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
 import TaskEditor from "./TaskEditor/TaskEditor";
+import TodoFileSelect from "./TodoFileSelect";
 
 interface TaskDialogForm {
   formData: TaskFormData;
   projects: string[];
   contexts: string[];
   tags: Dictionary<string[]>;
+  fileList: { filePath: string; fileName: string }[];
   onChange: (value: TaskFormData) => void;
+  onFileListChange: (value?: string) => void;
   onEnterPress: () => void;
 }
 
 const TaskForm = (props: TaskDialogForm) => {
   const platform = usePlatform();
   const hasTouchScreen = useTouchScreen();
-  const { formData, projects, tags, contexts, onChange, onEnterPress } = props;
+  const {
+    formData,
+    projects,
+    tags,
+    contexts,
+    fileList,
+    onChange,
+    onFileListChange,
+    onEnterPress,
+  } = props;
   const { t } = useTranslation();
   const [state, setState] = useState({
     key: 0,
@@ -141,6 +153,11 @@ const TaskForm = (props: TaskDialogForm) => {
                 {t("+Project")}
               </Button>
             </Box>
+          </Grid>
+        )}
+        {fileList.length > 0 && (
+          <Grid item xs={12} sm={6}>
+            <TodoFileSelect value={fileList} onChange={onFileListChange} />
           </Grid>
         )}
         <Grid item xs={12} sm={6}>

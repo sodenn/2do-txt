@@ -2,18 +2,19 @@ import { isAfter, isBefore } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { SortKey, useFilter } from "../data/FilterContext";
+import { TaskListState } from "../data/TaskContext";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
 import { Dictionary } from "./types";
 
 export interface TaskListParseResult extends TaskListAttributes {
-  taskList: Task[];
+  items: Task[];
   lineEnding: string;
   incomplete: TaskListAttributes;
 }
 
-interface TaskListAttributes {
+export interface TaskListAttributes {
   priorities: Dictionary<number>;
   projects: Dictionary<number>;
   contexts: Dictionary<number>;
@@ -22,10 +23,10 @@ interface TaskListAttributes {
 
 interface TaskListFilter {
   searchTerm: string;
-  selectedPriorities: string[];
-  selectedProjects: string[];
-  selectedContexts: string[];
-  selectedTags: string[];
+  activePriorities: string[];
+  activeProjects: string[];
+  activeContexts: string[];
+  activeTags: string[];
   hideCompletedTasks: boolean;
 }
 
@@ -38,25 +39,25 @@ export function parseTaskList(text?: string): TaskListParseResult {
   if (text) {
     const lineEnding = /\r\n/.test(text) ? "\r\n" : "\n";
 
-    const taskList = text
+    const items = text
       .split("\n")
       .map((t) => t.trim())
       .filter((t) => t.length > 0)
       .map((t, o) => parseTask(t, o));
 
-    const attributes = getTaskListAttributes(taskList, false);
+    const attributes = getTaskListAttributes(items, false);
 
-    const incompleteTasksAttributes = getTaskListAttributes(taskList, true);
+    const incompleteTasksAttributes = getTaskListAttributes(items, true);
 
     return {
-      taskList,
+      items,
       lineEnding,
       incomplete: incompleteTasksAttributes,
       ...attributes,
     };
   } else {
     return {
-      taskList: [],
+      items: [],
       lineEnding: "\n",
       priorities: {},
       projects: {},
@@ -82,33 +83,33 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
 export function useFilterTaskList(taskList: Task[]) {
   const {
     searchTerm,
-    selectedPriorities,
-    selectedProjects,
-    selectedContexts,
-    selectedTags,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
     hideCompletedTasks,
   } = useFilter();
   return useMemo(() => {
     return filterTaskList(taskList, {
       searchTerm,
-      selectedPriorities,
-      selectedProjects,
-      selectedContexts,
-      selectedTags,
+      activePriorities,
+      activeProjects,
+      activeContexts,
+      activeTags,
       hideCompletedTasks,
     });
   }, [
     taskList,
     searchTerm,
-    selectedPriorities,
-    selectedProjects,
-    selectedContexts,
-    selectedTags,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
     hideCompletedTasks,
   ]);
 }
 
-export function useTaskGroup(taskList: Task[]) {
+export function useTaskGroups(taskList: Task[]) {
   const { sortBy } = useFilter();
   const filteredTaskList = useFilterTaskList(taskList);
   const formatGroupLabel = useFormatGroupLabel();
@@ -124,19 +125,19 @@ export function useTaskGroup(taskList: Task[]) {
 export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
   const {
     searchTerm,
-    selectedPriorities,
-    selectedProjects,
-    selectedContexts,
-    selectedTags,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
     hideCompletedTasks,
   } = filter;
 
   const activeFilter =
     searchTerm.length > 1 ||
-    selectedPriorities.length > 0 ||
-    selectedProjects.length > 0 ||
-    selectedContexts.length > 0 ||
-    selectedTags.length > 0;
+    activePriorities.length > 0 ||
+    activeProjects.length > 0 ||
+    activeContexts.length > 0 ||
+    activeTags.length > 0;
 
   const filteredList = taskList.filter((task) => {
     const searchMatch =
@@ -148,27 +149,27 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
     }
 
     const priorityMatch =
-      selectedPriorities.length > 0 &&
-      selectedPriorities.some(
-        (selectedPriority) => task.priority === selectedPriority
+      activePriorities.length > 0 &&
+      activePriorities.some(
+        (activePriority) => task.priority === activePriority
       );
 
     const projectMatch =
-      selectedProjects.length > 0 &&
-      selectedProjects.some((selectedProject) =>
-        task.projects.includes(selectedProject)
+      activeProjects.length > 0 &&
+      activeProjects.some((activeProject) =>
+        task.projects.includes(activeProject)
       );
 
     const contextMatch =
-      selectedContexts.length > 0 &&
-      selectedContexts.some((selectedContext) =>
-        task.contexts.includes(selectedContext)
+      activeContexts.length > 0 &&
+      activeContexts.some((activeContext) =>
+        task.contexts.includes(activeContext)
       );
 
     const tagsMatch =
-      selectedTags.length > 0 &&
-      selectedTags.some((selectedTag) =>
-        Object.keys(task.tags).includes(selectedTag)
+      activeTags.length > 0 &&
+      activeTags.some((activeTag) =>
+        Object.keys(task.tags).includes(activeTag)
       );
 
     return activeFilter
@@ -241,6 +242,49 @@ function getTaskListAttributes(
     contexts,
     tags,
   };
+}
+
+export function getCommonTaskListAttributes(taskLists: TaskListState[]) {
+  const projects = reduceDictionaries(taskLists.map((l) => l.projects));
+  const tags = reduceDictionaries(taskLists.map((l) => l.tags));
+  const contexts = reduceDictionaries(taskLists.map((l) => l.contexts));
+  const priorities = reduceDictionaries(taskLists.map((l) => l.priorities));
+
+  const incompleteProjects = reduceDictionaries(
+    taskLists.map((l) => l.incomplete.projects)
+  );
+  const incompleteTags = reduceDictionaries(
+    taskLists.map((l) => l.incomplete.tags)
+  );
+  const incompleteContexts = reduceDictionaries(
+    taskLists.map((l) => l.incomplete.contexts)
+  );
+  const incompletePriorities = reduceDictionaries(
+    taskLists.map((l) => l.incomplete.priorities)
+  );
+
+  return {
+    projects,
+    tags,
+    contexts,
+    priorities,
+    incomplete: {
+      projects: incompleteProjects,
+      tags: incompleteTags,
+      contexts: incompleteContexts,
+      priorities: incompletePriorities,
+    },
+  };
+}
+
+export function sortByOriginalOrder(a: Task, b: Task) {
+  if (a._order < b._order) {
+    return -1;
+  } else if (a._order > b._order) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 function useFormatGroupLabel() {
@@ -349,12 +393,18 @@ function sortByDate(a?: string, b?: string) {
   }
 }
 
-export function sortByOriginalOrder(a: Task, b: Task) {
-  if (a._order < b._order) {
-    return -1;
-  } else if (a._order > b._order) {
-    return 1;
-  } else {
-    return 0;
-  }
+function reduceDictionaries<T>(dictionaries: Dictionary<T>[]) {
+  return dictionaries.reduce<Dictionary<T>>((prev, curr) => {
+    Object.entries(curr).forEach(([key, value]) => {
+      const prevValue = prev[key];
+      if (typeof prevValue === "number") {
+        prev[key] = prevValue + (value as any);
+      } else if (Array.isArray(prevValue)) {
+        prev[key] = [...prevValue, value] as any;
+      } else {
+        prev[key] = value;
+      }
+    });
+    return prev;
+  }, {});
 }

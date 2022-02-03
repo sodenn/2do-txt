@@ -6,15 +6,31 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { EmptyTestContext, TestContext, todoTxt } from "../../utils/testing";
-import DeleteConfirmationDialog from "../DeleteConfirmationDialog";
+import { useTask } from "../data/TaskContext";
+import {
+  EmptyTestContext,
+  TestContext,
+  todoTxt,
+  todoTxtPaths,
+} from "../utils/testing";
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import TaskList from "./TaskList";
+
+const TestComp = () => {
+  const { activeTaskList } = useTask();
+
+  if (!activeTaskList) {
+    return null;
+  }
+
+  return <TaskList taskList={activeTaskList} />;
+};
 
 describe("TaskList", () => {
   it("should render an empty task list", async () => {
     render(
       <EmptyTestContext>
-        <TaskList />
+        <TestComp />
       </EmptyTestContext>
     );
 
@@ -25,8 +41,8 @@ describe("TaskList", () => {
 
   it("should render a task list with items", async () => {
     render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TestComp />
       </EmptyTestContext>
     );
 
@@ -37,8 +53,8 @@ describe("TaskList", () => {
 
   it("should navigate through task list by using the tab key", async () => {
     render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TestComp />
       </EmptyTestContext>
     );
 
@@ -67,8 +83,8 @@ describe("TaskList", () => {
 
   it("should navigate through task list by using the arrow keys", async () => {
     const { container } = render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TestComp />
       </EmptyTestContext>
     );
 
@@ -98,8 +114,8 @@ describe("TaskList", () => {
   it("should complete a task by clicking the checkbox", async () => {
     const todoTxt = "First task";
     render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TestComp />
       </EmptyTestContext>
     );
 
@@ -123,8 +139,8 @@ describe("TaskList", () => {
   it("should complete a task by pressing space key", async () => {
     const todoTxt = "First task";
     const { container } = render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TestComp />
       </EmptyTestContext>
     );
 
@@ -150,7 +166,9 @@ describe("TaskList", () => {
   it("should edit task by pressing enter", async () => {
     const todoTxt = "First task";
 
-    const { container } = render(<TestContext text={todoTxt} />);
+    const { container } = render(
+      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
+    );
 
     await screen.findByRole("list", { name: "Task list" });
 
@@ -182,7 +200,7 @@ Task E @Test @Feature`;
     const { container } = render(
       <TestContext
         text={todoTxt}
-        storage={[{ key: "sort-by", value: "context" }]}
+        storage={[todoTxtPaths, { key: "sort-by", value: "context" }]}
       />
     );
 
@@ -214,9 +232,9 @@ Task E @Test @Feature`;
     render(
       <EmptyTestContext
         text={todoTxt}
-        storage={[{ key: "hide-completed-tasks", value: "true" }]}
+        storage={[todoTxtPaths, { key: "hide-completed-tasks", value: "true" }]}
       >
-        <TaskList />
+        <TestComp />
       </EmptyTestContext>
     );
 
@@ -229,16 +247,17 @@ Task E @Test @Feature`;
 
     fireEvent.click(checkbox);
 
-    await expect(() =>
-      screen.findAllByRole("button", { name: "Task" })
-    ).rejects.toThrow('Unable to find role="button"');
+    await waitFor(async () => {
+      const taskElements = screen.queryAllByRole("button", { name: "Task" });
+      await expect(taskElements.length).toBe(0);
+    });
   });
 
   it("should delete task via menu", async () => {
     const todoTxt = "First task";
     render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TestComp />
         <DeleteConfirmationDialog />
       </EmptyTestContext>
     );

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createContext } from "../utils/Context";
 import { useStorage } from "../utils/storage";
+import { useSettings } from "./SettingsContext";
 
 export type SortKey =
   | "priority"
@@ -13,12 +14,14 @@ export type SortKey =
 const [FilterContextProvider, useFilter] = createContext(() => {
   const { getStorageItem, setStorageItem } = useStorage();
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTaskListPath, setActiveTaskListPath] = useState("");
   const [sortBy, _setSortBy] = useState<SortKey>("");
-  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
-  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
-  const [selectedContexts, setSelectedContexts] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [activePriorities, setActivePriorities] = useState<string[]>([]);
+  const [activeProjects, setActiveProjects] = useState<string[]>([]);
+  const [activeContexts, setActiveContexts] = useState<string[]>([]);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
   const [hideCompletedTasks, _setHideCompletedTasks] = useState(false);
+  const { getTodoFilePaths } = useSettings();
 
   const setSortBy = useCallback(
     (value: SortKey) => {
@@ -44,21 +47,23 @@ const [FilterContextProvider, useFilter] = createContext(() => {
       _setSortBy((sortBy as SortKey) || "");
       _setHideCompletedTasks(hideCompletedTasks === "true");
     });
-  }, [getStorageItem]);
+  }, [getStorageItem, getTodoFilePaths]);
 
   return {
     searchTerm,
     setSearchTerm,
+    activeTaskListPath,
+    setActiveTaskListPath,
     sortBy,
     setSortBy,
-    selectedPriorities,
-    setSelectedPriorities,
-    selectedProjects,
-    setSelectedProjects,
-    selectedContexts,
-    setSelectedContexts,
-    selectedTags,
-    setSelectedTags,
+    activePriorities,
+    setActivePriorities,
+    activeProjects,
+    setActiveProjects,
+    activeContexts,
+    setActiveContexts,
+    activeTags,
+    setActiveTags,
     hideCompletedTasks,
     setHideCompletedTasks,
   };

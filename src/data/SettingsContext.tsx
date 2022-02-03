@@ -50,6 +50,62 @@ const [SettingsContextProvider, useSettings] = createContext(() => {
     [setStorageItem]
   );
 
+  const getTodoFilePaths = useCallback(async () => {
+    const pathStr = await getStorageItem("todo-txt-paths");
+    try {
+      const paths: string[] = pathStr ? JSON.parse(pathStr) : [];
+      return paths;
+    } catch (e) {
+      setStorageItem("todo-txt-paths", JSON.stringify([]));
+      return [];
+    }
+  }, [getStorageItem, setStorageItem]);
+
+  const addTodoFilePath = useCallback(
+    async (filePath: string) => {
+      const filePathsStr = await getStorageItem("todo-txt-paths");
+      let updatedFilePathsStr = JSON.stringify([filePath]);
+
+      if (filePathsStr) {
+        try {
+          const filePaths: string[] = JSON.parse(filePathsStr);
+          if (filePaths.every((p) => p !== filePath)) {
+            updatedFilePathsStr = JSON.stringify([...filePaths, filePath]);
+          } else {
+            return;
+          }
+        } catch (e) {
+          //
+        }
+      }
+
+      setStorageItem("todo-txt-paths", updatedFilePathsStr);
+    },
+    [getStorageItem, setStorageItem]
+  );
+
+  const removeTodoFilePath = useCallback(
+    async (filePath: string) => {
+      const filePathsStr = await getStorageItem("todo-txt-paths");
+      let updatedFilePathsStr = JSON.stringify([]);
+
+      if (filePathsStr) {
+        try {
+          const filePaths: string[] = JSON.parse(filePathsStr);
+          const updatedFilePaths = filePaths.filter(
+            (path) => path !== filePath
+          );
+          updatedFilePathsStr = JSON.stringify(updatedFilePaths);
+        } catch (e) {
+          //
+        }
+      }
+
+      setStorageItem("todo-txt-paths", updatedFilePathsStr);
+    },
+    [getStorageItem, setStorageItem]
+  );
+
   useEffect(() => {
     Promise.all([
       getStorageItem("show-notifications"),
@@ -84,6 +140,9 @@ const [SettingsContextProvider, useSettings] = createContext(() => {
     toggleCreateCreationDate,
     showNotifications,
     setShowNotifications,
+    getTodoFilePaths,
+    addTodoFilePath,
+    removeTodoFilePath,
   };
 });
 

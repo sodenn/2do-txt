@@ -1,7 +1,5 @@
-import CloseIcon from "@mui/icons-material/Close";
 import {
   Alert,
-  AlertTitle,
   Box,
   Button,
   Checkbox,
@@ -15,10 +13,8 @@ import { useSettings } from "../data/SettingsContext";
 import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
 import { useNotifications } from "../utils/notifications";
-import { usePlatform } from "../utils/platform";
 import LanguageSelect from "./LanguageSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
-import TodoFilePicker from "./TodoFilePicker";
 
 const FilePath = styled("span")`
   word-break: break-all;
@@ -28,10 +24,9 @@ const FilePath = styled("span")`
 
 const Settings = () => {
   const { t } = useTranslation();
-  const platform = usePlatform();
   const { checkNotificationPermissions, requestNotificationPermissions } =
     useNotifications();
-  const { todoFilePath, closeTodoFile, tasksLoaded } = useTask();
+  const { taskLists, closeTodoFile } = useTask();
   const {
     showNotifications,
     setShowNotifications,
@@ -42,8 +37,8 @@ const Settings = () => {
   } = useSettings();
   const { setSideSheetOpen } = useSideSheet();
 
-  const handleCloseFileClick = () => {
-    closeTodoFile();
+  const handleCloseFileClick = (filePath: string) => {
+    closeTodoFile(filePath);
     setSideSheetOpen(false);
   };
 
@@ -57,50 +52,24 @@ const Settings = () => {
     }
   };
 
-  const showTodoFilePath = !!todoFilePath && platform === "electron";
-
   return (
     <>
-      <Typography component="div" variant="subtitle1" gutterBottom>
-        {t("Appearance")}
-      </Typography>
       <Box sx={{ mb: 2 }}>
+        <Typography component="div" variant="subtitle1" gutterBottom>
+          {t("Appearance")}
+        </Typography>
         <ThemeModeSelect />
       </Box>
-      <Typography component="div" variant="subtitle1" gutterBottom>
-        {t("Language")}
-      </Typography>
       <Box sx={{ mb: 2 }}>
+        <Typography component="div" variant="subtitle1" gutterBottom>
+          {t("Language")}
+        </Typography>
         <LanguageSelect />
       </Box>
-      <Typography component="div" variant="subtitle1" gutterBottom>
-        todo.txt
-      </Typography>
-      <Stack direction="row" spacing={1} sx={{ mb: showTodoFilePath ? 1 : 2 }}>
-        <TodoFilePicker onSelect={() => setSideSheetOpen(false)}>
-          {t("Open")}
-        </TodoFilePicker>
-        {tasksLoaded && (
-          <Button
-            onClick={handleCloseFileClick}
-            startIcon={<CloseIcon />}
-            fullWidth
-            variant="outlined"
-          >
-            {t("Close")}
-          </Button>
-        )}
-      </Stack>
-      {showTodoFilePath && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          <AlertTitle>{t("Current file")}</AlertTitle>
-          <FilePath>{todoFilePath}</FilePath>
-        </Alert>
-      )}
-      <Typography component="div" variant="subtitle1">
-        {t("Dates")}
-      </Typography>
       <Box sx={{ mb: 2 }}>
+        <Typography component="div" variant="subtitle1">
+          {t("Dates")}
+        </Typography>
         <FormControlLabel
           control={
             <Checkbox
@@ -120,18 +89,45 @@ const Settings = () => {
           label={t("Set completion date") as string}
         />
       </Box>
-      <Typography component="div" variant="subtitle1">
-        {t("Notifications")}
+      <Box sx={{ mb: 2 }}>
+        <Typography component="div" variant="subtitle1">
+          {t("Notifications")}
+        </Typography>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showNotifications}
+              onChange={() => handleShowNotifications()}
+            />
+          }
+          label={t("Due tasks") as string}
+        />
+      </Box>
+      <Typography component="div" variant="subtitle1" gutterBottom>
+        todo.txt
       </Typography>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={showNotifications}
-            onChange={() => handleShowNotifications()}
-          />
-        }
-        label={t("Due tasks") as string}
-      />
+      {taskLists.length > 0 && (
+        <Stack spacing={1}>
+          {taskLists.map((taskList, idx) => (
+            <Alert
+              key={idx}
+              action={
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() => handleCloseFileClick(taskList.filePath)}
+                >
+                  {t("Close")}
+                </Button>
+              }
+              severity="info"
+              icon={false}
+            >
+              <FilePath>{taskList.filePath}</FilePath>
+            </Alert>
+          ))}
+        </Stack>
+      )}
     </>
   );
 };
