@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
+import { TaskListState, useTask } from "../data/TaskContext";
 import { Task, TaskFormData } from "../utils/task";
 import { isSuggestionsPopupOpen } from "./TaskEditor";
 import TaskForm from "./TaskForm";
@@ -65,39 +65,31 @@ const TaskDialog = () => {
   } = useTask();
   const { createCreationDate } = useSettings();
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
-  const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>(
-    () => {
-      if (activeTask) {
-        const list = findTaskListByTaskId(activeTask._id);
-        return list?.filePath;
-      } else if (activeTaskList) {
-        return activeTaskList.filePath;
-      }
+  const [selectedTaskList, setSelectedTaskList] = useState<
+    TaskListState | undefined
+  >(() => {
+    if (activeTask) {
+      return findTaskListByTaskId(activeTask._id);
+    } else if (activeTaskList) {
+      return activeTaskList;
     }
-  );
+  });
 
-  const formDisabled = !formData.body || (!activeTaskList && !selectedFilePath);
+  const formDisabled = !formData.body || (!activeTaskList && !selectedTaskList);
   const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
-  const fileList = selectedFilePath
-    ? []
-    : taskLists.map((list) => ({
-        filePath: list.filePath,
-        fileName: list.fileName,
-      }));
 
   useEffect(() => {
     if (!taskDialogOpen) {
       return;
     }
     setFormData(createFormData(createCreationDate, activeTask));
-    setSelectedFilePath(() => {
+    setSelectedTaskList(() => {
       if (activeTask) {
-        const list = findTaskListByTaskId(activeTask._id);
-        return list?.filePath;
+        return findTaskListByTaskId(activeTask._id);
       } else if (activeTaskList) {
-        return activeTaskList.filePath;
+        return activeTaskList;
       } else {
         return undefined;
       }
@@ -116,8 +108,8 @@ const TaskDialog = () => {
     closeDialog();
     if (formData._id) {
       editTask(formData);
-    } else {
-      addTask(formData);
+    } else if (selectedTaskList) {
+      addTask(formData, selectedTaskList);
     }
   };
 
@@ -125,8 +117,8 @@ const TaskDialog = () => {
     setFormData((task) => ({ ...task, ...data }));
   };
 
-  const handleFileListChange = (filePath?: string) => {
-    setSelectedFilePath(filePath);
+  const handleFileListChange = (taskList?: TaskListState) => {
+    setSelectedTaskList(taskList);
   };
 
   const handleClose = (
@@ -156,7 +148,7 @@ const TaskDialog = () => {
           contexts={Object.keys(contexts)}
           projects={Object.keys(projects)}
           tags={tags}
-          fileList={fileList}
+          taskLists={taskLists}
           onChange={handleChange}
           onFileListChange={handleFileListChange}
           onEnterPress={handleSave}

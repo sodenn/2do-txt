@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { TaskListState } from "../data/TaskContext";
 import { formatDate, parseDate } from "../utils/date";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import { createDueDateRegex, parseTaskBody, TaskFormData } from "../utils/task";
@@ -21,9 +22,9 @@ interface TaskDialogForm {
   projects: string[];
   contexts: string[];
   tags: Dictionary<string[]>;
-  fileList: { filePath: string; fileName: string }[];
+  taskLists: TaskListState[];
   onChange: (value: TaskFormData) => void;
-  onFileListChange: (value?: string) => void;
+  onFileListChange: (value?: TaskListState) => void;
   onEnterPress: () => void;
 }
 
@@ -35,7 +36,7 @@ const TaskForm = (props: TaskDialogForm) => {
     projects,
     tags,
     contexts,
-    fileList,
+    taskLists,
     onChange,
     onFileListChange,
     onEnterPress,
@@ -155,9 +156,9 @@ const TaskForm = (props: TaskDialogForm) => {
             </Box>
           </Grid>
         )}
-        {fileList.length > 0 && (
+        {taskLists.length > 0 && (
           <Grid item xs={12} sm={6}>
-            <TodoFileSelect value={fileList} onChange={onFileListChange} />
+            <TodoFileSelect value={taskLists} onChange={onFileListChange} />
           </Grid>
         )}
         <Grid item xs={12} sm={6}>

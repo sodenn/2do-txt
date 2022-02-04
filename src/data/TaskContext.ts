@@ -226,12 +226,8 @@ const [TaskProvider, useTask] = createContext(() => {
   );
 
   const addTask = useCallback(
-    (data: TaskFormData) => {
-      if (!activeTaskList) {
-        return;
-      }
-
-      const { items, lineEnding } = activeTaskList;
+    (data: TaskFormData, taskList: TaskListState) => {
+      const { items, lineEnding } = taskList;
       const { priority, completionDate, creationDate, dueDate, ...rest } = data;
       const { projects, contexts, tags } = parseTaskBody(rest.body);
 
@@ -264,9 +260,9 @@ const [TaskProvider, useTask] = createContext(() => {
 
       const newTaskList = [...items, newTask];
       const text = stringifyTaskList(newTaskList, lineEnding);
-      return saveTodoFile(activeTaskList.filePath, text);
+      return saveTodoFile(taskList.filePath, text);
     },
-    [activeTaskList, saveTodoFile, scheduleDueTaskNotification]
+    [saveTodoFile, scheduleDueTaskNotification]
   );
 
   const editTask = useCallback(
