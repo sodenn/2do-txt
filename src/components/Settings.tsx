@@ -103,30 +103,32 @@ const Settings = () => {
           label={t("Due tasks") as string}
         />
       </Box>
-      <Typography component="div" variant="subtitle1" gutterBottom>
-        todo.txt
-      </Typography>
       {taskLists.length > 0 && (
-        <Stack spacing={1}>
-          {taskLists.map((taskList, idx) => (
-            <Alert
-              key={idx}
-              action={
-                <Button
-                  color="inherit"
-                  size="small"
-                  onClick={() => handleCloseFileClick(taskList.filePath)}
-                >
-                  {t("Close")}
-                </Button>
-              }
-              severity="info"
-              icon={false}
-            >
-              <FilePath>{taskList.filePath}</FilePath>
-            </Alert>
-          ))}
-        </Stack>
+        <>
+          <Typography component="div" variant="subtitle1" gutterBottom>
+            todo.txt
+          </Typography>
+          <Stack spacing={1}>
+            {taskLists.map((taskList, idx) => (
+              <Alert
+                key={idx}
+                action={
+                  <Button
+                    color="inherit"
+                    size="small"
+                    onClick={() => handleCloseFileClick(taskList.filePath)}
+                  >
+                    {t("Close")}
+                  </Button>
+                }
+                severity="info"
+                icon={false}
+              >
+                <FilePath>{taskList.filePath}</FilePath>
+              </Alert>
+            ))}
+          </Stack>
+        </>
       )}
     </>
   );
