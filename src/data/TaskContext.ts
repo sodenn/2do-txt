@@ -4,7 +4,7 @@ import { SplashScreen } from "@capacitor/splash-screen";
 import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
 import { todayDate } from "../utils/date";
@@ -83,27 +83,19 @@ const [TaskProvider, useTask] = createContext(() => {
     activeTaskId,
   } = state;
 
-  const commonTaskListAttributes = useMemo(
-    () => getCommonTaskListAttributes(taskLists),
-    [taskLists]
-  );
+  const commonTaskListAttributes = getCommonTaskListAttributes(taskLists);
 
-  const activeTask = useMemo(() => {
-    if (!activeTaskId) {
-      return;
-    }
-    return taskLists
-      .flatMap((list) => list.items)
-      .find((task) => task._id === activeTaskId);
-  }, [activeTaskId, taskLists]);
+  const activeTask = activeTaskId
+    ? taskLists
+        .flatMap((list) => list.items)
+        .find((task) => task._id === activeTaskId)
+    : undefined;
 
-  const activeTaskList = useMemo(() => {
-    if (activeTaskListPath) {
-      return taskLists.find((list) => list.filePath === activeTaskListPath);
-    } else if (taskLists.length === 1) {
-      return taskLists[0];
-    }
-  }, [activeTaskListPath, taskLists]);
+  const activeTaskList = activeTaskListPath
+    ? taskLists.find((list) => list.filePath === activeTaskListPath)
+    : taskLists.length === 1
+    ? taskLists[0]
+    : undefined;
 
   const openTaskDialog = useCallback((open: boolean, task?: Task) => {
     setState((state) => {
