@@ -75,5 +75,7 @@
   "File Name": "Dateiname",
   "Create": "Erstellen",
   "No tasks": "Keine Aufgaben",
-  "The file already exists": "Diese Datei existiert bereits"
+  "The file already exists": "Diese Datei existiert bereits",
+  "Close todo.txt": "{{fileName}} schließen",
+  "Import todo.txt": "todo.txt importieren"
 }

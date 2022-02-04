@@ -1,4 +1,5 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -16,11 +17,14 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
+import { usePlatform } from "../utils/platform";
 import TodoFilePicker from "./TodoFilePicker";
 
 const TodoFileMenu = () => {
   const { t } = useTranslation();
-  const { taskLists, activeTaskList, openTodoFileCreateDialog } = useTask();
+  const platform = usePlatform();
+  const { taskLists, activeTaskList, openTodoFileCreateDialog, closeTodoFile } =
+    useTask();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -43,12 +47,21 @@ const TodoFileMenu = () => {
     handleClose();
   };
 
+  const handleCloseFile = () => {
+    if (activeTaskList) {
+      closeTodoFile(activeTaskList.filePath);
+    }
+    handleClose();
+  };
+
   const openFileMenuItem = (
-    <MenuItem>
+    <MenuItem onClick={handleClose}>
       <ListItemIcon>
         <FolderOpenOutlinedIcon fontSize="small" />
       </ListItemIcon>
-      <ListItemText>{t("Open todo.txt")}</ListItemText>
+      <ListItemText>
+        {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
+      </ListItemText>
     </MenuItem>
   );
 
@@ -68,6 +81,7 @@ const TodoFileMenu = () => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        keepMounted
       >
         {taskLists.length > 1 && (
           <MenuItem
@@ -100,6 +114,16 @@ const TodoFileMenu = () => {
             </MenuItem>
           ))}
         {taskLists.length > 1 && <Divider />}
+        {activeTaskList && (
+          <MenuItem onClick={handleCloseFile}>
+            <ListItemIcon>
+              <CloseOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>
+              {t("Close todo.txt", { fileName: activeTaskList.fileName })}
+            </ListItemText>
+          </MenuItem>
+        )}
         <TodoFilePicker component={openFileMenuItem} onSelect={handleClose} />
         <MenuItem onClick={handleCreateFile}>
           <ListItemIcon>

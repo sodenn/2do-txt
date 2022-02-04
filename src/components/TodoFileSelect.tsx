@@ -1,5 +1,12 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import React, { useState } from "react";
+import { TaskListState } from "../data/TaskContext";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -12,13 +19,23 @@ const MenuProps = {
 };
 
 interface TodoFileSelectProps {
-  value: { filePath: string; fileName: string }[];
-  onChange: (value?: string) => void;
+  value: TaskListState[];
+  onChange: (value?: TaskListState) => void;
 }
 
 const TodoFileSelect = (props: TodoFileSelectProps) => {
   const { value, onChange } = props;
   const [filePath, setFilePath] = useState("");
+
+  const handleChange = (event: SelectChangeEvent) => {
+    const filePath = event.target.value;
+    if (onChange) {
+      const list = value.find((l) => l.filePath === filePath);
+      onChange(list);
+    }
+    setFilePath(filePath);
+  };
+
   return (
     <FormControl fullWidth sx={{ minWidth: 110 }}>
       <InputLabel id="todo-file-select-label">todo.txt</InputLabel>
@@ -26,13 +43,7 @@ const TodoFileSelect = (props: TodoFileSelectProps) => {
         required
         value={filePath}
         MenuProps={MenuProps}
-        onChange={(event) => {
-          const filePath = event.target.value;
-          if (onChange) {
-            onChange(filePath);
-          }
-          setFilePath(filePath);
-        }}
+        onChange={handleChange}
         labelId="todo-file-select-label"
         id="todo-file-select"
         label="todo.txt"

@@ -68,5 +68,7 @@
   "File Name": "File Name",
   "Create": "Create",
   "No tasks": "No tasks",
-  "The file already exists": "The file already exists"
+  "The file already exists": "The file already exists",
+  "Close todo.txt": "Close {{fileName}}",
+  "Import todo.txt": "Import todo.txt"
 }

@@ -17,11 +17,12 @@ const Input = styled("input")({
 
 interface FilePickerProps {
   onSelect?: () => void;
+  onClick?: () => void;
   component?: ReactNode;
 }
 
 const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
-  const { onSelect, component, children } = props;
+  const { onSelect, onClick, component, children } = props;
 
   const {
     loadTodoFile,
@@ -108,14 +109,25 @@ const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
     fileReader.readAsText(file);
   };
 
+  const handleClick = (event: any) => {
+    event.target.value = null;
+  };
+
   return (
     <label style={{ width: "100%" }} htmlFor={id}>
-      <Input accept="text/plain" id={id} type="file" onChange={handleChange} />
+      <Input
+        accept="text/plain"
+        id={id}
+        type="file"
+        onChange={handleChange}
+        onClick={handleClick}
+      />
       {!!component && component}
       {!component && (
         <LoadingButton
           aria-label="Open todo.txt"
-          loading={loading}
+          onClick={onClick}
+          disabled={loading}
           startIcon={<FolderOpenOutlinedIcon />}
           fullWidth
           variant="outlined"
