@@ -18,7 +18,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
-import LogoIcon from "../icons/Logo";
+import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
 import TodoFilePicker from "./TodoFilePicker";
 
@@ -95,7 +95,7 @@ const TodoFileMenu = () => {
         sx={{ maxWidth, pl: 1 }}
         size="large"
         id="task-list-menu"
-        startIcon={<LogoIcon />}
+        startIcon={<img src={logo} alt="Logo" height={22} />}
         endIcon={<KeyboardArrowDownIcon />}
         onClick={handleClick}
       >
