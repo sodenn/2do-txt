@@ -5,32 +5,46 @@ import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
-  Box,
   Button,
   Divider,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
+  styled,
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
-import logo from "../images/logo.png";
+import LogoIcon from "../icons/Logo";
 import { usePlatform } from "../utils/platform";
 import TodoFilePicker from "./TodoFilePicker";
 
-interface TodoFileMenuProps {
-  hideButtonText?: boolean;
-}
+const maxWidth = 350;
 
-const TodoFileMenu = ({ hideButtonText }: TodoFileMenuProps) => {
+const ButtonLabel = styled("span")(({ theme }) => ({
+  textOverflow: "ellipsis",
+  overflow: "hidden",
+  whiteSpace: "nowrap",
+  direction: "rtl",
+  textAlign: "left",
+  [theme.breakpoints.down("md")]: {
+    display: "none",
+  },
+}));
+
+const TodoFileMenu = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { taskLists, activeTaskList, openTodoFileCreateDialog, closeTodoFile } =
-    useTask();
+  const {
+    taskLists,
+    activeTaskList,
+    openTodoFileCreateDialog,
+    closeTodoFile,
+    init,
+  } = useTask();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -71,23 +85,26 @@ const TodoFileMenu = ({ hideButtonText }: TodoFileMenuProps) => {
     </MenuItem>
   );
 
+  if (!init) {
+    return null;
+  }
+
   return (
     <>
       <Button
+        sx={{ maxWidth, pl: 1 }}
         size="large"
         id="task-list-menu"
+        startIcon={<LogoIcon />}
         endIcon={<KeyboardArrowDownIcon />}
         onClick={handleClick}
       >
-        <img src={logo} alt="Logo" height={24} />
-        {!hideButtonText && (
-          <Box sx={{ pl: 1 }}>
-            {activeTaskList ? activeTaskList.fileName : "2do.txt"}
-          </Box>
-        )}
+        <ButtonLabel>
+          {activeTaskList ? activeTaskList.fileName : "2do.txt"}
+        </ButtonLabel>
       </Button>
       <Menu
-        sx={{ maxWidth: 350 }}
+        sx={{ maxWidth }}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -130,7 +147,13 @@ const TodoFileMenu = ({ hideButtonText }: TodoFileMenuProps) => {
               <CloseOutlinedIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>
-              {t("Close todo.txt", { fileName: activeTaskList.fileName })}
+              <Typography
+                variant="inherit"
+                noWrap
+                sx={{ direction: "rtl", textAlign: "left" }}
+              >
+                {t("Close todo.txt", { fileName: activeTaskList.fileName })}
+              </Typography>
             </ListItemText>
           </MenuItem>
         )}

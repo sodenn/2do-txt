@@ -36,22 +36,10 @@ const Header = ({ divider = false }: HeaderProps) => {
             <SideSheetButton />
           </Box>
           <Fade in={!expanded} unmountOnExit>
-            <Box
-              sx={{
-                display: { xs: "flex", md: "none" },
-              }}
-            >
-              <TodoFileMenu hideButtonText />
-            </Box>
+            <div>
+              <TodoFileMenu />
+            </div>
           </Fade>
-          <Box
-            sx={{
-              display: { xs: "none", md: "flex" },
-            }}
-          >
-            <TodoFileMenu />
-          </Box>
-          <Box sx={{ flex: 1, display: { xs: "none", md: "block" } }} />
           {taskLists.length > 0 && <SearchBar onExpand={setExpanded} />}
           {taskLists.length > 0 && (
             <AddTaskButton

@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { ChangeEvent, useRef } from "react";
 import { useFilter } from "../data/FilterContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
@@ -30,13 +31,15 @@ const SearchBar = ({ onExpand }: SearchBarProps) => {
   };
 
   return (
-    <ExpandableSearch
-      onExpand={onExpand}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      value={searchTerm}
-      ref={searchInputRef}
-    />
+    <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+      <ExpandableSearch
+        onExpand={onExpand}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        value={searchTerm}
+        ref={searchInputRef}
+      />
+    </Box>
   );
 };
 

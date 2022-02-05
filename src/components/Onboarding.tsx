@@ -2,7 +2,7 @@ import AddTaskIcon from "@mui/icons-material/AddTask";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
-import logo from "../images/logo.png";
+import LogoIcon from "../icons/Logo";
 import { usePlatform } from "../utils/platform";
 import TodoFilePicker from "./TodoFilePicker";
 
@@ -32,7 +32,7 @@ const Onboarding = () => {
     >
       <Stack spacing={2}>
         <Box sx={{ py: 1, textAlign: "center" }}>
-          <img src={logo} alt="Logo" height={96} style={{ opacity: 0.2 }} />
+          <LogoIcon style={{ opacity: 0.2, height: 96, width: 96 }} />
         </Box>
         <Typography
           sx={{ textAlign: "center" }}
