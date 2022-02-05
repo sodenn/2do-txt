@@ -148,7 +148,7 @@ const TaskDialog = () => {
           contexts={Object.keys(contexts)}
           projects={Object.keys(projects)}
           tags={tags}
-          taskLists={taskLists}
+          taskLists={activeTaskList ? [] : taskLists}
           onChange={handleChange}
           onFileListChange={handleFileListChange}
           onEnterPress={handleSave}
