@@ -5,6 +5,7 @@ import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
+  Box,
   Button,
   Divider,
   ListItemIcon,
@@ -17,10 +18,15 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
+import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
 import TodoFilePicker from "./TodoFilePicker";
 
-const TodoFileMenu = () => {
+interface TodoFileMenuProps {
+  hideButtonText?: boolean;
+}
+
+const TodoFileMenu = ({ hideButtonText }: TodoFileMenuProps) => {
   const { t } = useTranslation();
   const platform = usePlatform();
   const { taskLists, activeTaskList, openTodoFileCreateDialog, closeTodoFile } =
@@ -70,11 +76,15 @@ const TodoFileMenu = () => {
       <Button
         size="large"
         id="task-list-menu"
-        sx={{ ml: 1 }}
         endIcon={<KeyboardArrowDownIcon />}
         onClick={handleClick}
       >
-        {activeTaskList ? activeTaskList.fileName : "2do.txt"}
+        <img src={logo} alt="Logo" height={24} />
+        {!hideButtonText && (
+          <Box sx={{ pl: 1 }}>
+            {activeTaskList ? activeTaskList.fileName : "2do.txt"}
+          </Box>
+        )}
       </Button>
       <Menu
         sx={{ maxWidth: 350 }}
