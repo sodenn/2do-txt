@@ -85,7 +85,7 @@ const TodoFileMenu = () => {
     </MenuItem>
   );
 
-  if (!init) {
+  if (!init || (init && taskLists.length === 0)) {
     return null;
   }
 
