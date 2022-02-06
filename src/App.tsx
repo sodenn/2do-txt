@@ -3,6 +3,7 @@ import { SnackbarProvider } from "notistack";
 import { Suspense } from "react";
 import AppRouter from "./components/AppRouter";
 import { AppTheme } from "./data/AppThemeContext";
+import { ConfirmationDialogContextProvider } from "./data/ConfirmationDialogContext";
 import { FilterContextProvider } from "./data/FilterContext";
 import { MigrationContextProvider } from "./data/MigrationContext";
 import { SettingsContextProvider } from "./data/SettingsContext";
@@ -23,15 +24,17 @@ function App() {
       >
         <Suspense fallback={null}>
           <MigrationContextProvider>
-            <SettingsContextProvider>
-              <FilterContextProvider>
-                <SideSheetContextProvider>
-                  <TaskProvider>
-                    <AppRouter />
-                  </TaskProvider>
-                </SideSheetContextProvider>
-              </FilterContextProvider>
-            </SettingsContextProvider>
+            <ConfirmationDialogContextProvider>
+              <SettingsContextProvider>
+                <FilterContextProvider>
+                  <SideSheetContextProvider>
+                    <TaskProvider>
+                      <AppRouter />
+                    </TaskProvider>
+                  </SideSheetContextProvider>
+                </FilterContextProvider>
+              </SettingsContextProvider>
+            </ConfirmationDialogContextProvider>
           </MigrationContextProvider>
         </Suspense>
       </SnackbarProvider>

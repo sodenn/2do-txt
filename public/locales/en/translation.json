@@ -62,13 +62,12 @@
   "Add tag": "<strong>Add</strong> {{name}}",
   "Delete task": "Delete task",
   "Are you sure you want to delete this task?": "Are you sure you want to delete this task?",
-  "The file name must end with .txt": "The file name must end with .txt",
-  "File already exist": "File already exist",
-  "Create new todo.txt file": "Create todo.txt",
   "File Name": "File Name",
   "Create": "Create",
   "No tasks": "No tasks",
   "The file already exists": "The file already exists",
   "Close todo.txt": "Close {{fileName}}",
-  "Import todo.txt": "Import todo.txt"
+  "Import todo.txt": "Import todo.txt",
+  "todo.txt already exists. Do you want to replace it?": "\"{{fileName}}\" already exists. Do you want to replace it?",
+  "Replace": "Replace"
 }

@@ -7,6 +7,7 @@ import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouters } from "../components/AppRouter";
 import { AppTheme } from "../data/AppThemeContext";
+import { ConfirmationDialogContextProvider } from "../data/ConfirmationDialogContext";
 import { FilterContextProvider } from "../data/FilterContext";
 import { MigrationContextProvider } from "../data/MigrationContext";
 import { SettingsContextProvider } from "../data/SettingsContext";
@@ -87,17 +88,19 @@ export const TestContext = (props: TestContextProps) => {
       <SnackbarProvider>
         <Suspense fallback={null}>
           <MigrationContextProvider>
-            <SettingsContextProvider>
-              <FilterContextProvider>
-                <SideSheetContextProvider>
-                  <TaskProvider>
-                    <MemoryRouter>
-                      <AppRouters />
-                    </MemoryRouter>
-                  </TaskProvider>
-                </SideSheetContextProvider>
-              </FilterContextProvider>
-            </SettingsContextProvider>
+            <ConfirmationDialogContextProvider>
+              <SettingsContextProvider>
+                <FilterContextProvider>
+                  <SideSheetContextProvider>
+                    <TaskProvider>
+                      <MemoryRouter>
+                        <AppRouters />
+                      </MemoryRouter>
+                    </TaskProvider>
+                  </SideSheetContextProvider>
+                </FilterContextProvider>
+              </SettingsContextProvider>
+            </ConfirmationDialogContextProvider>
           </MigrationContextProvider>
         </Suspense>
       </SnackbarProvider>
@@ -121,13 +124,15 @@ export const EmptyTestContext = (
     <SnackbarProvider>
       <Suspense fallback={null}>
         <MigrationContextProvider>
-          <SettingsContextProvider>
-            <FilterContextProvider>
-              <SideSheetContextProvider>
-                <TaskProvider>{children}</TaskProvider>
-              </SideSheetContextProvider>
-            </FilterContextProvider>
-          </SettingsContextProvider>
+          <ConfirmationDialogContextProvider>
+            <SettingsContextProvider>
+              <FilterContextProvider>
+                <SideSheetContextProvider>
+                  <TaskProvider>{children}</TaskProvider>
+                </SideSheetContextProvider>
+              </FilterContextProvider>
+            </SettingsContextProvider>
+          </ConfirmationDialogContextProvider>
         </MigrationContextProvider>
       </Suspense>
     </SnackbarProvider>

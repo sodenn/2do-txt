@@ -7,8 +7,9 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { defaultTodoFilePath, useTask } from "../data/TaskContext";
 import { useFilesystem } from "../utils/filesystem";
@@ -18,8 +19,8 @@ const TodoFileCreateDialog = () => {
   const { t } = useTranslation();
   const { isFile, getUniqueFilePath } = useFilesystem();
   const [fileName, setFileName] = React.useState("");
-  const [error, setError] = useState<string | null>(null);
   const platform = usePlatform();
+  const { setConfirmationDialog } = useConfirmationDialog();
   const { setActiveTaskListPath } = useFilter();
   const {
     taskLists,
@@ -29,9 +30,8 @@ const TodoFileCreateDialog = () => {
     todoFileCreateDialogOpen,
   } = useTask();
 
-  const closeDialog = useCallback(
+  const createNewFile = useCallback(
     (filePath?: string) => {
-      openTodoFileCreateDialog(false);
       if (filePath) {
         saveTodoFile(filePath).then(() => {
           setActiveTaskListPath(filePath);
@@ -41,56 +41,63 @@ const TodoFileCreateDialog = () => {
         });
       }
     },
-    [
-      openTaskDialog,
-      openTodoFileCreateDialog,
-      saveTodoFile,
-      setActiveTaskListPath,
-      taskLists.length,
-    ]
+    [openTaskDialog, saveTodoFile, setActiveTaskListPath, taskLists.length]
   );
 
-  const handleChange = async (
-    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    const value = event.target.value;
-    setFileName(value);
-    if (!value.endsWith(".txt")) {
-      setError(t("The file name must end with .txt"));
-    } else {
-      const result = await isFile({
-        directory: Directory.Documents,
-        path: value,
-      });
-      if (result) {
-        setError(t("File already exist"));
-      } else {
-        setError(null);
-      }
+  const handleSave = async () => {
+    if (!fileName) {
+      return;
     }
-  };
 
-  const handleSave = () => {
-    if (!error) {
-      closeDialog(fileName);
+    const result = await isFile({
+      directory: Directory.Documents,
+      path: fileName,
+    });
+
+    if (result) {
+      setConfirmationDialog({
+        content: t("todo.txt already exists. Do you want to replace it?", {
+          fileName,
+        }),
+        buttons: [
+          {
+            text: t("Cancel"),
+          },
+          {
+            text: t("Replace"),
+            handler: () => {
+              openTodoFileCreateDialog(false);
+              createNewFile(fileName);
+            },
+          },
+        ],
+      });
     } else {
-      closeDialog();
+      openTodoFileCreateDialog(false);
+      createNewFile(fileName);
     }
   };
 
   const handleCancel = () => {
-    closeDialog();
+    openTodoFileCreateDialog(false);
   };
 
   useEffect(() => {
     if (platform === "electron" && todoFileCreateDialogOpen) {
       getUniqueFilePath(defaultTodoFilePath).then(({ fileName }) => {
         window.electron.saveFile(fileName).then((filePath) => {
-          closeDialog(filePath);
+          openTodoFileCreateDialog(false);
+          createNewFile(filePath);
         });
       });
     }
-  }, [getUniqueFilePath, closeDialog, todoFileCreateDialogOpen, platform]);
+  }, [
+    openTodoFileCreateDialog,
+    getUniqueFilePath,
+    createNewFile,
+    todoFileCreateDialogOpen,
+    platform,
+  ]);
 
   useEffect(() => {
     if (platform !== "electron" && todoFileCreateDialogOpen) {
@@ -110,25 +117,23 @@ const TodoFileCreateDialog = () => {
       open={todoFileCreateDialogOpen}
       onClose={handleCancel}
     >
-      <DialogTitle>{t("Create new todo.txt file")}</DialogTitle>
+      <DialogTitle>{t("Create todo.txt")}</DialogTitle>
       <DialogContent>
         <TextField
           value={fileName}
+          onChange={(event) => setFileName(event.target.value)}
           autoFocus
           margin="normal"
-          error={!!error}
-          onChange={handleChange}
           label={t("File Name")}
           fullWidth
           variant="outlined"
-          helperText={error}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCancel}>{t("Cancel")}</Button>
         <Button
           aria-label="Create file"
-          disabled={!!error}
+          disabled={!fileName}
           onClick={handleSave}
         >
           {t("Create")}

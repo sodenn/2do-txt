@@ -1,14 +1,15 @@
+import { Directory } from "@capacitor/filesystem";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { LoadingButton } from "@mui/lab";
 import { styled } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { ChangeEvent, PropsWithChildren, ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
-import { Task } from "../utils/task";
 import { generateId } from "../utils/uuid";
 
 const Input = styled("input")({
@@ -16,13 +17,11 @@ const Input = styled("input")({
 });
 
 interface FilePickerProps {
-  onSelect?: () => void;
-  onClick?: () => void;
   component?: ReactNode;
 }
 
 const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
-  const { onSelect, onClick, component, children } = props;
+  const { component, children } = props;
 
   const {
     loadTodoFile,
@@ -35,27 +34,64 @@ const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
   const id = generateId();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { getUniqueFilePath } = useFilesystem();
+  const { isFile } = useFilesystem();
+  const { setConfirmationDialog } = useConfirmationDialog();
   const [loading, setLoading] = useState(false);
 
   const openTodoFile = async (content: string, file: File) => {
-    let taskList: Task[];
-    let filePath: string;
+    return new Promise<string | undefined>(async (resolve, reject) => {
+      try {
+        if (platform === "electron") {
+          // Note: Electron adds a path property to the file object
+          const filePath = (file as any).path;
+          const taskList = await loadTodoFile(filePath, content);
+          scheduleDueTaskNotifications(taskList);
+          resolve(filePath);
+        } else {
+          // Other platforms does not allow to access the file storage. For this reason, a copy of
+          // the selected file is created in the app's document directory.
+          const fileName = file.name;
 
-    if (platform === "electron") {
-      // Note: Electron adds a path property to the file object
-      filePath = (file as any).path;
-      taskList = await loadTodoFile(filePath, content);
-    } else {
-      // Other platforms does not allow to access the file storage. For this reason, a copy of
-      // the selected file is created in the app's document directory.
-      const uniqueFilePath = await getUniqueFilePath(file.name);
-      filePath = uniqueFilePath.fileName;
-      taskList = await saveTodoFile(filePath, content);
-    }
+          const result = await isFile({
+            directory: Directory.Documents,
+            path: fileName,
+          });
 
-    scheduleDueTaskNotifications(taskList);
-    return filePath;
+          if (result) {
+            setConfirmationDialog({
+              content: t(
+                "todo.txt already exists. Do you want to replace it?",
+                {
+                  fileName,
+                }
+              ),
+              buttons: [
+                {
+                  text: t("Cancel"),
+                  handler: () => {
+                    resolve(undefined);
+                  },
+                },
+                {
+                  text: t("Replace"),
+                  handler: async () => {
+                    const taskList = await saveTodoFile(fileName, content);
+                    scheduleDueTaskNotifications(taskList);
+                    resolve(fileName);
+                  },
+                },
+              ],
+            });
+          } else {
+            const taskList = await saveTodoFile(fileName, content);
+            scheduleDueTaskNotifications(taskList);
+            resolve(fileName);
+          }
+        }
+      } catch (e) {
+        reject();
+      }
+    });
   };
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -81,17 +117,12 @@ const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
         enqueueSnackbar(t("The file could not be opened"), {
           variant: "error",
         });
-        setLoading(false);
       });
 
       setLoading(false);
 
       if (updateFilePath && filePath) {
         setActiveTaskListPath(filePath);
-      }
-
-      if (onSelect) {
-        onSelect();
       }
     };
 
@@ -126,7 +157,6 @@ const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
       {!component && (
         <LoadingButton
           aria-label="Open todo.txt"
-          onClick={onClick}
           disabled={loading}
           startIcon={<FolderOpenOutlinedIcon />}
           fullWidth

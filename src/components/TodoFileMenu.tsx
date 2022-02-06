@@ -157,7 +157,7 @@ const TodoFileMenu = () => {
             </ListItemText>
           </MenuItem>
         )}
-        <TodoFilePicker component={openFileMenuItem} onSelect={handleClose} />
+        <TodoFilePicker component={openFileMenuItem} />
         <MenuItem onClick={handleCreateFile}>
           <ListItemIcon>
             <AddOutlinedIcon fontSize="small" />

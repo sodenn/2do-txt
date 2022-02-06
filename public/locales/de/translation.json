@@ -69,13 +69,12 @@
   "Add tag": "{{name}} <strong>hinzufügen</strong>",
   "Delete task": "Aufgabe löschen",
   "Are you sure you want to delete this task?": "Diese Aufgabe wirklich löschen?",
-  "The file name must end with .txt": "Die Datei muss mit .txt enden",
-  "File already exist": "Die Datei existiert bereits",
-  "Create new todo.txt file": "todo.txt erstellen",
   "File Name": "Dateiname",
   "Create": "Erstellen",
   "No tasks": "Keine Aufgaben",
   "The file already exists": "Diese Datei existiert bereits",
   "Close todo.txt": "{{fileName}} schließen",
-  "Import todo.txt": "todo.txt importieren"
+  "Import todo.txt": "todo.txt importieren",
+  "todo.txt already exists. Do you want to replace it?": "\"{{fileName}}\" existiert bereits. Möchtest du die Datei ersetzen?",
+  "Replace": "Ersetzen"
 }
