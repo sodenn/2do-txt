@@ -150,4 +150,47 @@ x 2. task +ProjB
 
     expect(attributes).toEqual(commonAttributes);
   });
+
+  it("should correctly add tags from multiple lists", async () => {
+    const todoTxt = `1. task due:2021-11-30
+2. task due:2021-11-15`;
+
+    const parseResult = parseTaskList(todoTxt);
+
+    const taskLists: TaskListState[] = [
+      {
+        ...parseResult,
+        filePath: "todo1.txt",
+        fileName: "todo1.txt",
+        tasksLoaded: true,
+      },
+      {
+        ...parseResult,
+        filePath: "todo2.txt",
+        fileName: "todo2.txt",
+        tasksLoaded: true,
+      },
+    ];
+
+    const attributes = {
+      projects: {},
+      contexts: {},
+      priorities: {},
+      tags: {
+        due: ["2021-11-30", "2021-11-15"],
+      },
+      incomplete: {
+        projects: {},
+        contexts: {},
+        priorities: {},
+        tags: {
+          due: ["2021-11-30", "2021-11-15"],
+        },
+      },
+    };
+
+    const commonAttributes = getCommonTaskListAttributes(taskLists);
+
+    expect(attributes).toEqual(commonAttributes);
+  });
 });

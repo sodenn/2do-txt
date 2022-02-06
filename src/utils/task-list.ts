@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { SortKey, useFilter } from "../data/FilterContext";
 import { TaskListState } from "../data/TaskContext";
-import { groupBy } from "./array";
+import { groupBy, uniqueList } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
 import { Dictionary } from "./types";
@@ -393,18 +393,58 @@ function sortByDate(a?: string, b?: string) {
   }
 }
 
-function reduceDictionaries<T>(dictionaries: Dictionary<T>[]) {
-  return dictionaries.reduce<Dictionary<T>>((prev, curr) => {
-    Object.entries(curr).forEach(([key, value]) => {
-      const prevValue = prev[key];
-      if (typeof prevValue === "number") {
-        prev[key] = prevValue + (value as any);
-      } else if (Array.isArray(prevValue)) {
-        prev[key] = [...prevValue, value] as any;
-      } else {
-        prev[key] = value;
-      }
-    });
-    return prev;
-  }, {});
+function reduceDictionaries<T extends number | string[]>(
+  dictionaries: Dictionary<T>[]
+): Dictionary<T> {
+  if (containsNumberDictionaries(dictionaries)) {
+    const arr: Dictionary<number>[] = dictionaries;
+    const result = arr.reduce((prev, curr) => {
+      Object.entries(curr).forEach(([key, value]) => {
+        const prevValue = prev[key];
+        if (typeof prevValue !== "undefined") {
+          prev[key] = prevValue + value;
+        } else {
+          prev[key] = value;
+        }
+      });
+      return prev;
+    }, {});
+    return result as any;
+  }
+
+  if (containsStringArrayDictionaries(dictionaries)) {
+    const arr: Dictionary<string[]>[] = dictionaries;
+    const result = arr.reduce((prev, curr) => {
+      Object.entries(curr).forEach(([key, value]) => {
+        const prevValue = prev[key];
+        if (typeof prevValue !== "undefined") {
+          prev[key] = uniqueList([...prevValue, ...value]);
+        } else {
+          prev[key] = value;
+        }
+      });
+      return prev;
+    }, {});
+    return result as any;
+  }
+
+  throw new Error("Unknown dictionary type");
+}
+
+function containsNumberDictionaries(
+  dictionary: Dictionary<any>[]
+): dictionary is Dictionary<number>[] {
+  return dictionary.every((dictionary) =>
+    Object.values(dictionary).every((v) => typeof v === "number")
+  );
+}
+
+function containsStringArrayDictionaries(
+  dictionary: Dictionary<any>[]
+): dictionary is Dictionary<string[]>[] {
+  return dictionary.every((dictionary) =>
+    Object.values(dictionary).every(
+      (v) => Array.isArray(v) && v.every((s) => typeof s === "string")
+    )
+  );
 }
