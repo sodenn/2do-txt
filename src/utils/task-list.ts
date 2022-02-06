@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { SortKey, useFilter } from "../data/FilterContext";
 import { TaskListState } from "../data/TaskContext";
-import { groupBy, uniqueList } from "./array";
+import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
 import { Dictionary } from "./types";
@@ -418,7 +418,7 @@ function reduceDictionaries<T extends number | string[]>(
       Object.entries(curr).forEach(([key, value]) => {
         const prevValue = prev[key];
         if (typeof prevValue !== "undefined") {
-          prev[key] = uniqueList([...prevValue, ...value]);
+          prev[key] = [...prevValue, ...value];
         } else {
           prev[key] = value;
         }
