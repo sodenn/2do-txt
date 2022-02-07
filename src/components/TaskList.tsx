@@ -1,31 +1,12 @@
-import {
-  alpha,
-  Box,
-  Chip,
-  List,
-  ListSubheader,
-  styled,
-  Typography,
-} from "@mui/material";
+import { Box, List, Typography } from "@mui/material";
 import { MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
-import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { Task } from "../utils/task";
 import { TaskGroup } from "../utils/task-list";
 import TaskListHeader from "./TaskListHeader";
 import TaskListItem from "./TaskListItem";
-
-const StyledListSubheader = styled(ListSubheader)`
-  // avoid scrollbar overlapping (Safari mobile)
-  top: -1px;
-  margin-right: ${({ theme }) => theme.spacing(1)};
-  background: linear-gradient(
-    to top,
-    ${({ theme }) => alpha(theme.palette.background.default, 0)},
-    ${({ theme }) => theme.palette.background.default} 15%
-  );
-`;
+import TaskListSubheader from "./TaskListSubheader";
 
 interface TaskListProps {
   fileName: string;
@@ -53,7 +34,6 @@ const TaskList = (props: TaskListProps) => {
   } = props;
   const { t } = useTranslation();
   const { completeTask, openTaskDialog } = useTask();
-  const { sortBy } = useFilter();
   const hasItems = taskGroups.some((g) => g.items.length > 0);
 
   return (
@@ -69,17 +49,7 @@ const TaskList = (props: TaskListProps) => {
           {taskGroups.map((group) => (
             <li key={group.label}>
               <ul style={{ padding: 0 }}>
-                {group.label && (
-                  <StyledListSubheader>
-                    <Chip
-                      sx={{ px: 1 }}
-                      size="small"
-                      label={group.label}
-                      variant="outlined"
-                      color={sortBy === "dueDate" ? "warning" : "secondary"}
-                    />
-                  </StyledListSubheader>
-                )}
+                {group.label && <TaskListSubheader title={group.label} />}
                 {group.items.map((task) => {
                   const index = flatTaskList.indexOf(task);
                   return (
