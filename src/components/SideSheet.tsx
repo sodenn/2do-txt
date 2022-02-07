@@ -28,7 +28,7 @@ const SaveAreaContent = styled("div")`
 const SideSheet = () => {
   const { t } = useTranslation();
   const { sideSheetOpen, setSideSheetOpen } = useSideSheet();
-  const { taskLists, init, activeTaskList, ...rest } = useTask();
+  const { taskLists, activeTaskList, ...rest } = useTask();
 
   const { priorities, projects, contexts, tags } = activeTaskList
     ? activeTaskList
@@ -39,12 +39,11 @@ const SideSheet = () => {
     : taskLists.flatMap((list) => list.items).filter((t) => t.completed).length;
 
   const hideFilter =
-    !init ||
-    (completedTasksCount === 0 &&
-      Object.keys(priorities).length === 0 &&
-      Object.keys(projects).length === 0 &&
-      Object.keys(contexts).length === 0 &&
-      Object.keys(tags).length === 0);
+    completedTasksCount === 0 &&
+    Object.keys(priorities).length === 0 &&
+    Object.keys(projects).length === 0 &&
+    Object.keys(contexts).length === 0 &&
+    Object.keys(tags).length === 0;
 
   const [tab, setTab] = useState<string>(hideFilter ? "settings" : "filter");
 

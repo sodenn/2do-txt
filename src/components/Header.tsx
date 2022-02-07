@@ -20,7 +20,7 @@ export const StyledAppBar = styled(AppBar)`
 
 const Header = ({ divider = false }: HeaderProps) => {
   const platform = usePlatform();
-  const { init, activeTaskList, taskLists } = useTask();
+  const { activeTaskList, taskLists } = useTask();
   const showTodoFileDownloadButton = platform !== "electron";
   const [expanded, setExpanded] = useState(false);
 
@@ -46,7 +46,6 @@ const Header = ({ divider = false }: HeaderProps) => {
             />
           )}
           {showTodoFileDownloadButton &&
-            init &&
             (activeTaskList || taskLists.length === 1) && (
               <TodoFileDownloadButton sx={{ flexGrow: 0 }} />
             )}

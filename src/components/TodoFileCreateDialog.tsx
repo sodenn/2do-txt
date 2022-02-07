@@ -44,7 +44,13 @@ const TodoFileCreateDialog = () => {
         });
       }
     },
-    [openTaskDialog, saveTodoFile, setActiveTaskListPath, taskLists.length]
+    [
+      addTodoFilePath,
+      openTaskDialog,
+      saveTodoFile,
+      setActiveTaskListPath,
+      taskLists.length,
+    ]
   );
 
   const handleSave = async () => {

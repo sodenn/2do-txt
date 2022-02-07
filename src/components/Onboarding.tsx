@@ -20,16 +20,14 @@ const StyledBox = styled("div")`
 const Onboarding = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { init, taskLists, openTodoFileCreateDialog } = useTask();
+  const { taskLists, openTodoFileCreateDialog } = useTask();
 
   const handleClick = async () => {
     openTodoFileCreateDialog(true);
   };
 
   return (
-    <StyledBox
-      sx={{ display: init && taskLists.length === 0 ? "flex" : "none" }}
-    >
+    <StyledBox sx={{ display: taskLists.length === 0 ? "flex" : "none" }}>
       <Stack spacing={2}>
         <Box sx={{ py: 1, textAlign: "center" }}>
           <img src={logo} alt="Logo" height={96} style={{ opacity: 0.2 }} />

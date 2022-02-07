@@ -1,5 +1,6 @@
 import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import { useTask } from "../data/TaskContext";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
@@ -15,6 +16,7 @@ const StyledContainer = styled(Container)`
 `;
 
 const Page = () => {
+  const { init } = useTask();
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
 
@@ -29,7 +31,11 @@ const Page = () => {
         element.removeEventListener("scroll", listener);
       };
     }
-  }, [scrollContainer]);
+  }, [scrollContainer, init]);
+
+  if (!init) {
+    return null;
+  }
 
   return (
     <>
