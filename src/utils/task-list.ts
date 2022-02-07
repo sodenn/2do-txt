@@ -110,7 +110,8 @@ export function useFilterTaskList(taskList: Task[]) {
 }
 
 export function useTaskGroups() {
-  const { taskLists } = useTask();
+  const { taskLists: _taskLists, activeTaskList } = useTask();
+  const taskLists = activeTaskList ? [activeTaskList] : _taskLists;
 
   const {
     sortBy,

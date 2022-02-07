@@ -51,20 +51,25 @@ const TaskList = (props: TaskListProps) => {
   const { t } = useTranslation();
   const { completeTask, openTaskDialog } = useTask();
   const { sortBy } = useFilter();
+  const hasItems = taskGroups.some((g) => g.items.length > 0);
 
   return (
     <Box>
       {showHeader && (
-        <Typography sx={{ ml: 2 }} variant="h5">
+        <Typography
+          noWrap
+          sx={{ mx: 2, direction: "rtl", textAlign: "left" }}
+          variant="h5"
+        >
           {fileName}
         </Typography>
       )}
-      {flatTaskList.length === 0 && (
-        <Typography sx={{ ml: 2, mt: 1, mb: 3 }} color="text.secondary">
+      {!hasItems && (
+        <Typography sx={{ mt: 1, mx: 2, mb: 3 }} color="text.disabled">
           {t("No tasks")}
         </Typography>
       )}
-      {flatTaskList.length > 0 && (
+      {hasItems && (
         <List aria-label="Task list" subheader={<li />}>
           {taskGroups.map((group) => (
             <li key={group.label}>
