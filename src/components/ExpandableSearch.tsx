@@ -1,6 +1,6 @@
 import SearchIcon from "@mui/icons-material/Search";
-import { Box, Fade, IconButton, InputBaseProps, Slide } from "@mui/material";
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { Box, Fade, IconButton, InputBaseProps } from "@mui/material";
+import React, { forwardRef, useRef, useState } from "react";
 import SearchInput from "./SearchInput";
 
 interface ExpandableSearchProps extends InputBaseProps {
@@ -10,14 +10,13 @@ interface ExpandableSearchProps extends InputBaseProps {
 const ExpandableSearch = forwardRef<HTMLInputElement, ExpandableSearchProps>(
   (props, ref) => {
     const { value, onChange, onExpand } = props;
-    const [expanded, setExpanded] = useState(!!value);
+    const [showButton, setShowButton] = useState(!value);
+    const [showInput, setShowInput] = useState(!!value);
     const containerRef = useRef<HTMLDivElement>();
-
-    useEffect(() => onExpand && onExpand(expanded), [onExpand, expanded]);
 
     const handleBlur = () => {
       if (!value) {
-        setExpanded(false);
+        setShowInput(false);
       }
     };
 
@@ -33,15 +32,29 @@ const ExpandableSearch = forwardRef<HTMLInputElement, ExpandableSearchProps>(
       const ev2 = new Event("input", { bubbles: true });
       input.dispatchEvent(ev2);
 
-      setExpanded(false);
+      setShowInput(false);
     };
 
-    const handleExpand = () => {
-      setExpanded(true);
+    const handleEnteredInput = () => {
       const input = (ref as any).current;
-      setTimeout(() => {
-        input.focus();
-      }, 500);
+      input.focus();
+    };
+
+    const handleExitedInput = () => {
+      setShowButton(true);
+      if (onExpand) {
+        onExpand(false);
+      }
+    };
+
+    const handleExitButton = () => {
+      if (onExpand) {
+        onExpand(true);
+      }
+    };
+
+    const handleExitedButton = () => {
+      setShowInput(true);
     };
 
     const input = (
@@ -56,40 +69,38 @@ const ExpandableSearch = forwardRef<HTMLInputElement, ExpandableSearchProps>(
 
     return (
       <>
-        <Box sx={{ display: { xs: "none", md: "flex" } }}>{input}</Box>
+        <Box sx={{ display: { xs: "none", sm: "flex" } }}>{input}</Box>
         <Box
           sx={{
             flex: 1,
-            display: { xs: "flex", md: "none" },
+            display: { xs: "flex", sm: "none" },
             overflow: "hidden",
             alignItems: "center",
           }}
           ref={containerRef}
         >
           <Box sx={{ flex: 1 }}>
-            <Slide
-              in={expanded}
-              direction="left"
-              container={containerRef.current}
-              style={{ transitionDelay: expanded ? "225ms" : "0ms" }}
+            <Fade
+              in={showInput}
+              unmountOnExit
+              onEntered={handleEnteredInput}
+              onExited={handleExitedInput}
             >
               <div>{input}</div>
-            </Slide>
+            </Fade>
           </Box>
           <Box sx={{ flexShrink: 0 }}>
             <Fade
-              in={!expanded}
+              in={showButton}
               unmountOnExit
-              timeout={{ exit: 225, appear: 225 }}
-              style={{
-                transitionDelay: !expanded ? "225ms" : "0ms",
-              }}
+              onExit={handleExitButton}
+              onExited={handleExitedButton}
             >
               <IconButton
                 size="large"
                 color="inherit"
                 aria-label="Expand search bar"
-                onClick={handleExpand}
+                onClick={() => setShowButton(false)}
               >
                 <SearchIcon />
               </IconButton>

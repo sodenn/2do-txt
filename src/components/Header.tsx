@@ -32,18 +32,16 @@ const Header = ({ divider = false }: HeaderProps) => {
         elevation={divider ? 1 : 0}
       >
         <Toolbar>
-          <Box sx={{ mr: { xs: 0, md: 1 } }}>
+          <Box sx={{ mr: { xs: 0, sm: 1 } }}>
             <SideSheetButton />
           </Box>
           <Fade in={!expanded} unmountOnExit>
-            <div>
-              <TodoFileMenu />
-            </div>
+            <div>{taskLists.length > 0 && <TodoFileMenu />}</div>
           </Fade>
           {taskLists.length > 0 && <SearchBar onExpand={setExpanded} />}
           {taskLists.length > 0 && (
             <AddTaskButton
-              sx={{ ml: { md: 1 }, flexGrow: 0 }}
+              sx={{ ml: { sm: 1 }, flexGrow: 0 }}
               edge={!showTodoFileDownloadButton ? "end" : undefined}
             />
           )}
