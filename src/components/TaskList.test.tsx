@@ -6,31 +6,26 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useTask } from "../data/TaskContext";
+import React from "react";
 import {
   EmptyTestContext,
+  StorageItem,
   TestContext,
   todoTxt,
-  todoTxtPaths,
 } from "../utils/testing";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
-import TaskList from "./TaskList";
+import TaskLists from "./TaskLists";
 
-const TestComp = () => {
-  const { activeTaskList } = useTask();
-
-  if (!activeTaskList) {
-    return null;
-  }
-
-  return <TaskList taskList={activeTaskList} />;
+export const todoTxtPaths: StorageItem = {
+  key: "todo-txt-paths",
+  value: JSON.stringify(["todo1.txt", "todo2.txt"]),
 };
 
 describe("TaskList", () => {
   it("should render an empty task list", async () => {
     render(
       <EmptyTestContext>
-        <TestComp />
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -42,7 +37,7 @@ describe("TaskList", () => {
   it("should render a task list with items", async () => {
     render(
       <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
-        <TestComp />
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -54,7 +49,7 @@ describe("TaskList", () => {
   it("should navigate through task list by using the tab key", async () => {
     render(
       <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
-        <TestComp />
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -84,7 +79,7 @@ describe("TaskList", () => {
   it("should navigate through task list by using the arrow keys", async () => {
     const { container } = render(
       <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
-        <TestComp />
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -115,20 +110,23 @@ describe("TaskList", () => {
     const todoTxt = "First task";
     render(
       <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
-        <TestComp />
+        <TaskLists />
       </EmptyTestContext>
     );
 
-    const checkbox = await screen.findByRole("checkbox", {
+    let checkboxes = await screen.findAllByRole("checkbox", {
       name: "Complete task",
+      checked: false,
     });
+    expect(checkboxes.length).toBe(2);
 
-    expect(checkbox.getAttribute("aria-checked")).toBe("false");
+    fireEvent.click(checkboxes[0]);
 
-    fireEvent.click(checkbox);
-    await screen.findByRole("checkbox", { name: "Complete task" });
-
-    expect(checkbox.getAttribute("aria-checked")).toBe("true");
+    checkboxes = await screen.findAllByRole("checkbox", {
+      name: "Complete task",
+      checked: true,
+    });
+    expect(checkboxes.length).toBe(1);
 
     // make sure that the click did not open the task dialog
     await expect(() =>
@@ -140,7 +138,7 @@ describe("TaskList", () => {
     const todoTxt = "First task";
     const { container } = render(
       <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
-        <TestComp />
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -170,7 +168,7 @@ describe("TaskList", () => {
       <TestContext text={todoTxt} storage={[todoTxtPaths]} />
     );
 
-    await screen.findByRole("list", { name: "Task list" });
+    await screen.findAllByRole("list", { name: "Task list" });
 
     fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
 
@@ -204,7 +202,7 @@ Task E @Test @Feature`;
       />
     );
 
-    await screen.findByRole("list", { name: "Task list" });
+    await screen.findAllByRole("list", { name: "Task list" });
 
     fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
 
@@ -234,22 +232,23 @@ Task E @Test @Feature`;
         text={todoTxt}
         storage={[todoTxtPaths, { key: "hide-completed-tasks", value: "true" }]}
       >
-        <TestComp />
+        <TaskLists />
       </EmptyTestContext>
     );
 
     const listItems = await screen.findAllByRole("button", { name: "Task" });
-    expect(listItems.length).toBe(1);
+    expect(listItems.length).toBe(2);
 
-    const checkbox = await screen.findByRole("checkbox", {
+    const checkboxes = await screen.findAllByRole("checkbox", {
       name: "Complete task",
     });
 
-    fireEvent.click(checkbox);
+    expect(checkboxes.length).toBe(2);
+    fireEvent.click(checkboxes[0]);
 
     await waitFor(async () => {
       const taskElements = screen.queryAllByRole("button", { name: "Task" });
-      await expect(taskElements.length).toBe(0);
+      await expect(taskElements.length).toBe(1);
     });
   });
 
@@ -257,16 +256,18 @@ Task E @Test @Feature`;
     const todoTxt = "First task";
     render(
       <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
-        <TestComp />
+        <TaskLists />
         <DeleteConfirmationDialog />
       </EmptyTestContext>
     );
 
-    const menuButton = await screen.findByRole("button", {
+    const menuButtons = await screen.findAllByRole("button", {
       name: "Task menu",
     });
 
-    fireEvent.click(menuButton);
+    expect(menuButtons.length).toBe(2);
+
+    fireEvent.click(menuButtons[0]);
 
     const deleteMenuItem = await screen.findByRole("menuitem", {
       name: "Delete task",

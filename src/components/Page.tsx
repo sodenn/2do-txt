@@ -1,12 +1,11 @@
-import { Box, Container, Stack, styled } from "@mui/material";
+import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useTask } from "../data/TaskContext";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
 import TaskDialog from "./TaskDialog";
-import TaskList from "./TaskList";
+import TaskLists from "./TaskLists";
 import TodoFileCreateDialog from "./TodoFileCreateDialog";
 
 const StyledContainer = styled(Container)`
@@ -18,7 +17,6 @@ const StyledContainer = styled(Container)`
 const Page = () => {
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
-  const { taskLists, activeTaskList } = useTask();
 
   useEffect(() => {
     const element = scrollContainer?.current;
@@ -42,14 +40,7 @@ const Page = () => {
         sx={{ overflowY: "auto", flex: "auto", px: { sm: 1 } }}
       >
         <StyledContainer disableGutters>
-          {!activeTaskList && (
-            <Stack spacing={1}>
-              {taskLists.map((taskList, idx) => (
-                <TaskList taskList={taskList} showHeader key={idx} />
-              ))}
-            </Stack>
-          )}
-          {activeTaskList && <TaskList taskList={activeTaskList} />}
+          <TaskLists />
           <Onboarding />
         </StyledContainer>
       </Box>

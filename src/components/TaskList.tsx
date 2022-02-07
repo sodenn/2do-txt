@@ -7,13 +7,12 @@ import {
   styled,
   Typography,
 } from "@mui/material";
-import { useRef, useState } from "react";
+import { MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
-import { TaskListState, useTask } from "../data/TaskContext";
-import { useAddShortcutListener } from "../utils/shortcuts";
+import { useTask } from "../data/TaskContext";
 import { Task } from "../utils/task";
-import { useTaskGroups } from "../utils/task-list";
+import { TaskGroup } from "../utils/task-list";
 import TaskListItem from "./TaskListItem";
 
 const StyledListSubheader = styled(ListSubheader)`
@@ -28,70 +27,36 @@ const StyledListSubheader = styled(ListSubheader)`
 `;
 
 interface TaskListProps {
-  taskList: TaskListState;
+  fileName: string;
+  taskGroups: TaskGroup[];
+  flatTaskList: Task[];
+  focusedTaskIndex: number;
+  listItemsRef: MutableRefObject<HTMLDivElement[]>;
   showHeader?: boolean;
+  onFocus: (index: number) => void;
+  onBlur: () => void;
 }
 
-const TaskList = ({ taskList, showHeader = false }: TaskListProps) => {
+const TaskList = (props: TaskListProps) => {
+  const {
+    fileName,
+    taskGroups,
+    flatTaskList,
+    focusedTaskIndex,
+    listItemsRef,
+    showHeader = false,
+    onFocus,
+    onBlur,
+  } = props;
   const { t } = useTranslation();
-  const listItemsRef = useRef<HTMLDivElement[]>([]);
-  const { completeTask, openTaskDialog, openDeleteConfirmationDialog } =
-    useTask();
+  const { completeTask, openTaskDialog } = useTask();
   const { sortBy } = useFilter();
-  const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
-  const taskGroups = useTaskGroups(taskList.items);
-  const flatTaskList = taskGroups.reduce<Task[]>(
-    (prev, curr) => [...prev, ...curr.items],
-    []
-  );
-
-  useAddShortcutListener(() => focusNextListItem("down"), "ArrowDown", [
-    flatTaskList.length,
-  ]);
-
-  useAddShortcutListener(() => focusNextListItem("up"), "ArrowUp", [
-    flatTaskList.length,
-  ]);
-
-  useAddShortcutListener(
-    () => {
-      if (focusedTaskIndex !== -1) {
-        const focusedTask = flatTaskList[focusedTaskIndex];
-        openTaskDialog(true, focusedTask);
-      }
-    },
-    "e",
-    [listItemsRef.current.length]
-  );
-
-  useAddShortcutListener(
-    () => {
-      if (focusedTaskIndex !== -1) {
-        const focusedTask = flatTaskList[focusedTaskIndex];
-        openDeleteConfirmationDialog(true, focusedTask);
-      }
-    },
-    "d",
-    [listItemsRef.current.length]
-  );
-
-  const focusNextListItem = (direction: "up" | "down") => {
-    let index = focusedTaskIndex;
-    if (index === -1) {
-      index = 0;
-    } else if (direction === "down") {
-      index = index + 1 < flatTaskList.length ? index + 1 : 0;
-    } else {
-      index = index - 1 >= 0 ? index - 1 : flatTaskList.length - 1;
-    }
-    listItemsRef.current[index].focus();
-  };
 
   return (
     <Box>
       {showHeader && (
         <Typography sx={{ ml: 2 }} variant="h5">
-          {taskList.fileName}
+          {fileName}
         </Typography>
       )}
       {flatTaskList.length === 0 && (
@@ -129,8 +94,8 @@ const TaskList = ({ taskList, showHeader = false }: TaskListProps) => {
                       focused={focusedTaskIndex === index}
                       onClick={() => openTaskDialog(true, task)}
                       onCheckboxClick={() => completeTask(task)}
-                      onFocus={() => setFocusedTaskIndex(index)}
-                      onBlur={() => setFocusedTaskIndex(-1)}
+                      onFocus={() => onFocus(index)}
+                      onBlur={onBlur}
                     />
                   );
                 })}

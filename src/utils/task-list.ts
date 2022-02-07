@@ -2,7 +2,7 @@ import { isAfter, isBefore } from "date-fns";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { SortKey, useFilter } from "../data/FilterContext";
-import { TaskListState } from "../data/TaskContext";
+import { TaskListState, useTask } from "../data/TaskContext";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
@@ -21,6 +21,11 @@ export interface TaskListAttributes {
   tags: Dictionary<string[]>;
 }
 
+export interface TaskGroup {
+  label: string;
+  items: Task[];
+}
+
 interface TaskListFilter {
   searchTerm: string;
   activePriorities: string[];
@@ -28,11 +33,6 @@ interface TaskListFilter {
   activeContexts: string[];
   activeTags: string[];
   hideCompletedTasks: boolean;
-}
-
-interface TaskGroup {
-  label: string;
-  items: Task[];
 }
 
 export function parseTaskList(text?: string): TaskListParseResult {
@@ -109,17 +109,39 @@ export function useFilterTaskList(taskList: Task[]) {
   ]);
 }
 
-export function useTaskGroups(taskList: Task[]) {
-  const { sortBy } = useFilter();
-  const filteredTaskList = useFilterTaskList(taskList);
+export function useTaskGroups() {
+  const { taskLists } = useTask();
+
+  const {
+    sortBy,
+    searchTerm,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
+    hideCompletedTasks,
+  } = useFilter();
+
+  const filteredTaskLists = taskLists.map((taskList) => ({
+    ...taskList,
+    items: filterTaskList(taskList.items, {
+      searchTerm,
+      activePriorities,
+      activeProjects,
+      activeContexts,
+      activeTags,
+      hideCompletedTasks,
+    }),
+  }));
+
   const formatGroupLabel = useFormatGroupLabel();
-  return useMemo(
-    () =>
-      convertToTaskGroups(filteredTaskList, sortBy).map((item) =>
-        formatGroupLabel(item, sortBy)
-      ),
-    [filteredTaskList, sortBy, formatGroupLabel]
-  );
+
+  return filteredTaskLists.map((filteredTaskList) => ({
+    ...filteredTaskList,
+    groups: convertToTaskGroups(filteredTaskList.items, sortBy).map((item) =>
+      formatGroupLabel(item, sortBy)
+    ),
+  }));
 }
 
 export function filterTaskList(taskList: Task[], filter: TaskListFilter) {

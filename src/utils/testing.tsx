@@ -20,7 +20,7 @@ jest.mock("../utils/platform", () => ({
   useTouchScreen: jest.fn(),
 }));
 
-interface StorageItem {
+export interface StorageItem {
   key: Keys;
   value: string;
 }
