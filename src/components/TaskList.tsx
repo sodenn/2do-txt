@@ -13,6 +13,7 @@ import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { Task } from "../utils/task";
 import { TaskGroup } from "../utils/task-list";
+import TaskListHeader from "./TaskListHeader";
 import TaskListItem from "./TaskListItem";
 
 const StyledListSubheader = styled(ListSubheader)`
@@ -28,6 +29,7 @@ const StyledListSubheader = styled(ListSubheader)`
 
 interface TaskListProps {
   fileName: string;
+  filePath: string;
   taskGroups: TaskGroup[];
   flatTaskList: Task[];
   focusedTaskIndex: number;
@@ -40,6 +42,7 @@ interface TaskListProps {
 const TaskList = (props: TaskListProps) => {
   const {
     fileName,
+    filePath,
     taskGroups,
     flatTaskList,
     focusedTaskIndex,
@@ -55,15 +58,7 @@ const TaskList = (props: TaskListProps) => {
 
   return (
     <Box>
-      {showHeader && (
-        <Typography
-          noWrap
-          sx={{ mx: 2, direction: "rtl", textAlign: "left" }}
-          variant="h5"
-        >
-          {fileName}
-        </Typography>
-      )}
+      {showHeader && <TaskListHeader fileName={fileName} filePath={filePath} />}
       {!hasItems && (
         <Typography sx={{ mt: 1, mx: 2, mb: 3 }} color="text.disabled">
           {t("No tasks")}

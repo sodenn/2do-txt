@@ -38,6 +38,9 @@ describe("SearchBar", () => {
 
   it("should not show the search bar when no files are open", async () => {
     render(<TestContext />);
+
+    await screen.findByTestId("page");
+
     await expect(() =>
       screen.findByRole("search", { name: "Search for tasks" })
     ).rejects.toThrow('Unable to find role="search"');

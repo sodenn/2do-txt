@@ -5,6 +5,8 @@ describe("SideSheetButton", () => {
   it("should open the menu via mouse click", async () => {
     render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
+    await screen.findByTestId("page");
+
     await expect(() =>
       screen.findByRole("presentation", { name: "Menu" })
     ).rejects.toThrow('Unable to find role="presentation"');
@@ -25,6 +27,8 @@ describe("SideSheetButton", () => {
       <TestContext text={todoTxt} storage={[todoTxtPaths]} />
     );
 
+    await screen.findByTestId("page");
+
     await expect(() =>
       screen.findByRole("presentation", { name: "Menu" })
     ).rejects.toThrow('Unable to find role="presentation"');
@@ -40,6 +44,8 @@ describe("SideSheetButton", () => {
     const { container } = render(
       <TestContext text={todoTxt} storage={[todoTxtPaths]} />
     );
+
+    await screen.findByTestId("page");
 
     fireEvent.keyDown(container, { key: "m", code: "KeyM" });
 

@@ -69,6 +69,7 @@ const TaskLists = () => {
             <TaskList
               key={idx}
               fileName={i.fileName}
+              filePath={i.filePath}
               taskGroups={i.groups}
               flatTaskList={flatTaskList}
               focusedTaskIndex={focusedTaskIndex}

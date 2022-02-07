@@ -7,6 +7,8 @@ describe("TaskDialog", () => {
       <TestContext text={todoTxt} storage={[todoTxtPaths]} />
     );
 
+    await screen.findByTestId("page");
+
     await expect(() =>
       screen.findByRole("presentation", { name: "Task dialog" })
     ).rejects.toThrow('Unable to find role="presentation"');
@@ -22,6 +24,8 @@ describe("TaskDialog", () => {
     const { container } = render(
       <TestContext text={todoTxt} storage={[todoTxtPaths]} />
     );
+
+    await screen.findByTestId("page");
 
     await expect(() =>
       screen.findByRole("presentation", { name: "Task dialog" })

@@ -42,6 +42,7 @@ const Page = () => {
       <Header divider={scrollTop > 12} />
       <SideSheet />
       <Box
+        data-testid="page"
         ref={scrollContainer}
         sx={{ overflowY: "auto", flex: "auto", px: { sm: 1 } }}
       >

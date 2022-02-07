@@ -1,10 +1,4 @@
-import {
-  Checkbox,
-  ListItem,
-  ListItemButton,
-  Stack,
-  styled,
-} from "@mui/material";
+import { Checkbox, ListItemButton, Stack, styled } from "@mui/material";
 import { forwardRef, useRef } from "react";
 import { Task } from "../utils/task";
 import TaskBody from "./TaskBody";
@@ -66,56 +60,54 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
     };
 
     return (
-      <ListItem disablePadding>
-        <TaskItemButton
-          ref={ref}
-          aria-label="Task"
-          aria-current={focused}
-          onClick={handleItemClick}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          dense
+      <TaskItemButton
+        ref={ref}
+        aria-label="Task"
+        aria-current={focused}
+        onClick={handleItemClick}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        dense
+      >
+        <Stack
+          px={{ xs: 0.5, sm: 0 }}
+          direction="row"
+          spacing={0.5}
+          sx={{ width: "100%" }}
         >
-          <Stack
-            px={{ xs: 0.5, sm: 0 }}
-            direction="row"
-            spacing={0.5}
-            sx={{ width: "100%" }}
-          >
-            <div>
-              <Checkbox
-                ref={checkboxRef}
-                inputProps={{
-                  "aria-label": "Complete task",
-                  "aria-checked": task.completed,
-                }}
-                onClick={onCheckboxClick}
-                edge="start"
-                checked={task.completed}
-                tabIndex={-1}
-              />
-            </div>
-            <Stack
-              direction="column"
-              style={{
-                paddingTop: 10,
-                paddingBottom: 10,
-                flex: "auto",
+          <div>
+            <Checkbox
+              ref={checkboxRef}
+              inputProps={{
+                "aria-label": "Complete task",
+                "aria-checked": task.completed,
               }}
-            >
-              <TaskBody task={task} />
-              <TaskDates task={task} />
-            </Stack>
-            <div>
-              <TaskListItemMenu
-                task={task}
-                menuRef={menuRef}
-                menuButtonRef={menuButtonRef}
-              />
-            </div>
+              onClick={onCheckboxClick}
+              edge="start"
+              checked={task.completed}
+              tabIndex={-1}
+            />
+          </div>
+          <Stack
+            direction="column"
+            style={{
+              paddingTop: 10,
+              paddingBottom: 10,
+              flex: "auto",
+            }}
+          >
+            <TaskBody task={task} />
+            <TaskDates task={task} />
           </Stack>
-        </TaskItemButton>
-      </ListItem>
+          <div>
+            <TaskListItemMenu
+              task={task}
+              menuRef={menuRef}
+              menuButtonRef={menuButtonRef}
+            />
+          </div>
+        </Stack>
+      </TaskItemButton>
     );
   }
 );

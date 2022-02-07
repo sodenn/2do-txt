@@ -15,6 +15,8 @@ import { SideSheetContextProvider } from "../data/SideSheetContext";
 import { TaskProvider } from "../data/TaskContext";
 import { Keys } from "./storage";
 
+jest.setTimeout(15000);
+
 jest.mock("../utils/platform", () => ({
   ...jest.requireActual("../utils/platform"),
   useTouchScreen: jest.fn(),
