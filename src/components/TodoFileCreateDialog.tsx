@@ -11,6 +11,7 @@ import React, { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFilter } from "../data/FilterContext";
+import { useSettings } from "../data/SettingsContext";
 import { defaultTodoFilePath, useTask } from "../data/TaskContext";
 import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
@@ -18,6 +19,7 @@ import { usePlatform } from "../utils/platform";
 const TodoFileCreateDialog = () => {
   const { t } = useTranslation();
   const { isFile, getUniqueFilePath } = useFilesystem();
+  const { addTodoFilePath } = useSettings();
   const [fileName, setFileName] = React.useState("");
   const platform = usePlatform();
   const { setConfirmationDialog } = useConfirmationDialog();
@@ -34,6 +36,7 @@ const TodoFileCreateDialog = () => {
     (filePath?: string) => {
       if (filePath) {
         saveTodoFile(filePath).then(() => {
+          addTodoFilePath(filePath);
           setActiveTaskListPath(filePath);
           if (taskLists.length === 0) {
             openTaskDialog(true);
