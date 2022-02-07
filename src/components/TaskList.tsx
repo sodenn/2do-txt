@@ -40,7 +40,10 @@ const TaskList = (props: TaskListProps) => {
     <Box>
       {showHeader && <TaskListHeader fileName={fileName} filePath={filePath} />}
       {!hasItems && (
-        <Typography sx={{ mt: 1, mx: 2, mb: 3 }} color="text.disabled">
+        <Typography
+          sx={{ mt: 1, mx: 2, mb: 3, fontStyle: "italic" }}
+          color="text.disabled"
+        >
           {t("No tasks")}
         </Typography>
       )}
