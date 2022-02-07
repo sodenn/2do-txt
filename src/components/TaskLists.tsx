@@ -1,5 +1,7 @@
 import { Stack } from "@mui/material";
 import React, { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useTask } from "../data/TaskContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import { Task } from "../utils/task";
@@ -7,8 +9,9 @@ import { useTaskGroups } from "../utils/task-list";
 import TaskList from "./TaskList";
 
 const TaskLists = () => {
-  const { activeTaskList, openTaskDialog, openDeleteConfirmationDialog } =
-    useTask();
+  const { t } = useTranslation();
+  const { activeTaskList, openTaskDialog, deleteTask } = useTask();
+  const { setConfirmationDialog } = useConfirmationDialog();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
   const listItemsRef = useRef<HTMLDivElement[]>([]);
   const taskGroups = useTaskGroups();
@@ -39,7 +42,21 @@ const TaskLists = () => {
     () => {
       if (focusedTaskIndex !== -1) {
         const focusedTask = flatTaskList[focusedTaskIndex];
-        openDeleteConfirmationDialog(true, focusedTask);
+        setConfirmationDialog({
+          title: t("Delete task"),
+          content: t("Are you sure you want to delete this task?"),
+          buttons: [
+            {
+              text: t("Cancel"),
+            },
+            {
+              text: t("Delete task"),
+              handler: () => {
+                deleteTask(focusedTask);
+              },
+            },
+          ],
+        });
       }
     },
     "d",

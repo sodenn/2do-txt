@@ -36,7 +36,6 @@ interface State {
   init: boolean;
   taskDialogOpen: boolean;
   todoFileCreateDialogOpen: boolean;
-  deleteConfirmationDialogOpen: boolean;
   activeTaskId?: string;
   taskLists: TaskListState[];
 }
@@ -69,7 +68,6 @@ const [TaskProvider, useTask] = createContext(() => {
     init: false,
     taskDialogOpen: false,
     todoFileCreateDialogOpen: false,
-    deleteConfirmationDialogOpen: false,
     taskLists: [],
   });
 
@@ -77,7 +75,6 @@ const [TaskProvider, useTask] = createContext(() => {
     init,
     taskDialogOpen,
     todoFileCreateDialogOpen,
-    deleteConfirmationDialogOpen,
     taskLists,
     activeTaskId,
   } = state;
@@ -112,23 +109,6 @@ const [TaskProvider, useTask] = createContext(() => {
       return { ...state, todoFileCreateDialogOpen: open };
     });
   }, []);
-
-  const openDeleteConfirmationDialog = useCallback(
-    (open: boolean, task?: Task) => {
-      setState((state) => {
-        const { activeTaskId, ...rest } = state;
-        const newState: State = {
-          ...rest,
-          deleteConfirmationDialogOpen: open,
-        };
-        if (task) {
-          newState.activeTaskId = task._id;
-        }
-        return newState;
-      });
-    },
-    []
-  );
 
   const findTaskListByTaskId = useCallback(
     (taskId?: string) => {
@@ -497,8 +477,6 @@ const [TaskProvider, useTask] = createContext(() => {
     todoFileCreateDialogOpen,
     openTaskDialog,
     openTodoFileCreateDialog,
-    openDeleteConfirmationDialog,
-    deleteConfirmationDialogOpen,
     scheduleDueTaskNotifications,
     activeTaskList,
     activeTask,
