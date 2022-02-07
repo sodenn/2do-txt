@@ -7,6 +7,7 @@ import { ChangeEvent, PropsWithChildren, ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFilter } from "../data/FilterContext";
+import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
@@ -30,6 +31,7 @@ const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
     taskLists,
   } = useTask();
   const { setActiveTaskListPath } = useFilter();
+  const { addTodoFilePath } = useSettings();
   const platform = usePlatform();
   const id = generateId();
   const { t } = useTranslation();
@@ -45,6 +47,7 @@ const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
           // Note: Electron adds a path property to the file object
           const filePath = (file as any).path;
           const taskList = await loadTodoFile(filePath, content);
+          await addTodoFilePath(filePath);
           scheduleDueTaskNotifications(taskList);
           resolve(filePath);
         } else {
@@ -75,6 +78,7 @@ const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
                 {
                   text: t("Replace"),
                   handler: async () => {
+                    await addTodoFilePath(fileName);
                     const taskList = await saveTodoFile(fileName, content);
                     scheduleDueTaskNotifications(taskList);
                     resolve(fileName);
@@ -83,6 +87,7 @@ const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
               ],
             });
           } else {
+            await addTodoFilePath(fileName);
             const taskList = await saveTodoFile(fileName, content);
             scheduleDueTaskNotifications(taskList);
             resolve(fileName);

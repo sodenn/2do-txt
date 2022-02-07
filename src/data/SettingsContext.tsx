@@ -56,7 +56,7 @@ const [SettingsContextProvider, useSettings] = createContext(() => {
       const paths: string[] = pathStr ? JSON.parse(pathStr) : [];
       return paths;
     } catch (e) {
-      setStorageItem("todo-txt-paths", JSON.stringify([]));
+      await setStorageItem("todo-txt-paths", JSON.stringify([]));
       return [];
     }
   }, [getStorageItem, setStorageItem]);
@@ -64,22 +64,26 @@ const [SettingsContextProvider, useSettings] = createContext(() => {
   const addTodoFilePath = useCallback(
     async (filePath: string) => {
       const filePathsStr = await getStorageItem("todo-txt-paths");
-      let updatedFilePathsStr = JSON.stringify([filePath]);
 
-      if (filePathsStr) {
-        try {
-          const filePaths: string[] = JSON.parse(filePathsStr);
-          if (filePaths.every((p) => p !== filePath)) {
-            updatedFilePathsStr = JSON.stringify([...filePaths, filePath]);
-          } else {
-            return;
-          }
-        } catch (e) {
-          //
+      let filePaths: string[] = [];
+      try {
+        if (filePathsStr) {
+          filePaths = JSON.parse(filePathsStr);
         }
+      } catch (e) {
+        //
       }
 
-      setStorageItem("todo-txt-paths", updatedFilePathsStr);
+      const alreadyExists = filePaths.some((p) => p === filePath);
+
+      if (alreadyExists) {
+        return;
+      }
+
+      await setStorageItem(
+        "todo-txt-paths",
+        JSON.stringify([...filePaths, filePath])
+      );
     },
     [getStorageItem, setStorageItem]
   );
@@ -101,7 +105,7 @@ const [SettingsContextProvider, useSettings] = createContext(() => {
         }
       }
 
-      setStorageItem("todo-txt-paths", updatedFilePathsStr);
+      await setStorageItem("todo-txt-paths", updatedFilePathsStr);
     },
     [getStorageItem, setStorageItem]
   );

@@ -61,7 +61,6 @@ const [TaskProvider, useTask] = createContext(() => {
   const {
     showNotifications,
     createCompletionDate,
-    addTodoFilePath,
     removeTodoFilePath,
     getTodoFilePaths,
   } = useSettings();
@@ -159,20 +158,26 @@ const [TaskProvider, useTask] = createContext(() => {
   const loadTodoFile = useCallback(
     async (filePath: string, text: string) => {
       const taskList = toTaskList(filePath, text);
-      await addTodoFilePath(filePath);
       setState((state) => {
+        const taskLists = state.taskLists.some(
+          (t) => t.filePath === taskList.filePath
+        )
+          ? state.taskLists.map((t) =>
+              t.filePath === taskList.filePath ? taskList : t
+            )
+          : [
+              ...state.taskLists.filter((i) => i.filePath !== filePath),
+              taskList,
+            ];
         const newValue: State = {
           ...state,
-          taskLists: [
-            ...state.taskLists.filter((i) => i.filePath !== filePath),
-            taskList,
-          ],
+          taskLists,
         };
         return newValue;
       });
       return taskList.items;
     },
-    [addTodoFilePath, toTaskList]
+    [toTaskList]
   );
 
   const saveTodoFile = useCallback(
