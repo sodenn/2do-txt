@@ -35,7 +35,6 @@ export const AppRouters = () => {
     activeProjects,
     activeContexts,
     activeTags,
-    hideCompletedTasks,
     setSearchTerm,
     setActiveTaskListPath,
     setActivePriorities,
@@ -97,12 +96,7 @@ export const AppRouters = () => {
     if (activeTags.length > 0) {
       params.tags = activeTags.join(",");
     }
-    if (Object.keys(params).length > 0) {
-      setSearchParams(params);
-    } else if (searchParams.entries().next()) {
-      setSearchParams({});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setSearchParams(params);
   }, [
     searchTerm,
     activeTaskListPath,
@@ -110,7 +104,7 @@ export const AppRouters = () => {
     activeProjects,
     activeContexts,
     activeTags,
-    hideCompletedTasks,
+    setSearchParams,
   ]);
 
   return (
