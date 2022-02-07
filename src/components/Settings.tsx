@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
-import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
 import { useNotifications } from "../utils/notifications";
 import LanguageSelect from "./LanguageSelect";
@@ -35,11 +34,9 @@ const Settings = () => {
     toggleCreateCompletionDate,
     toggleCreateCreationDate,
   } = useSettings();
-  const { setSideSheetOpen } = useSideSheet();
 
   const handleCloseFileClick = (filePath: string) => {
     closeTodoFile(filePath);
-    setSideSheetOpen(false);
   };
 
   const handleShowNotifications = async () => {
