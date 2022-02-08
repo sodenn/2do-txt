@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import AppRouter from "./components/AppRouter";
 import { AppTheme } from "./data/AppThemeContext";
 import { ConfirmationDialogContextProvider } from "./data/ConfirmationDialogContext";
+import { FileManagerContextProvider } from "./data/FileManagerContext";
 import { FilterContextProvider } from "./data/FilterContext";
 import { MigrationContextProvider } from "./data/MigrationContext";
 import { SettingsContextProvider } from "./data/SettingsContext";
@@ -29,7 +30,9 @@ function App() {
                 <FilterContextProvider>
                   <SideSheetContextProvider>
                     <TaskProvider>
-                      <AppRouter />
+                      <FileManagerContextProvider>
+                        <AppRouter />
+                      </FileManagerContextProvider>
                     </TaskProvider>
                   </SideSheetContextProvider>
                 </FilterContextProvider>

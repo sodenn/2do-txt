@@ -3,6 +3,7 @@ import {
   Filesystem,
   GetUriOptions,
   GetUriResult,
+  ReaddirOptions,
   ReadFileResult,
   WriteFileResult,
 } from "@capacitor/filesystem";
@@ -76,6 +77,10 @@ export function useFilesystem() {
     return Filesystem.deleteFile(options);
   }, []);
 
+  const readdir = useCallback(async (options: ReaddirOptions) => {
+    return Filesystem.readdir(options);
+  }, []);
+
   const isFile = useCallback(
     async (options: ReadFileOptions) => {
       return readFile(options)
@@ -104,6 +109,7 @@ export function useFilesystem() {
       readFile,
       writeFile,
       deleteFile,
+      readdir,
       isFile,
       getUniqueFilePath,
     };
@@ -156,6 +162,10 @@ function useElectronFilesystem() {
     []
   );
 
+  const readdir = useCallback(async (options: ReaddirOptions) => {
+    throw new Error("Not implemented");
+  }, []);
+
   const isFile = useCallback(
     async (options: ReadFileOptions) => {
       return readFile(options)
@@ -176,5 +186,13 @@ function useElectronFilesystem() {
     [isFile]
   );
 
-  return { getUri, readFile, writeFile, deleteFile, isFile, getUniqueFilePath };
+  return {
+    getUri,
+    readFile,
+    writeFile,
+    deleteFile,
+    readdir,
+    isFile,
+    getUniqueFilePath,
+  };
 }

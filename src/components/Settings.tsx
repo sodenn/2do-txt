@@ -1,31 +1,14 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Stack,
-  styled,
-  Typography,
-} from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
 import { useNotifications } from "../utils/notifications";
 import LanguageSelect from "./LanguageSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
-
-const FilePath = styled("span")`
-  word-break: break-all;
-  user-select: text;
-  font-family: monospace, monospace;
-`;
 
 const Settings = () => {
   const { t } = useTranslation();
   const { checkNotificationPermissions, requestNotificationPermissions } =
     useNotifications();
-  const { taskLists, closeTodoFile } = useTask();
   const {
     showNotifications,
     setShowNotifications,
@@ -34,10 +17,6 @@ const Settings = () => {
     toggleCreateCompletionDate,
     toggleCreateCreationDate,
   } = useSettings();
-
-  const handleCloseFileClick = (filePath: string) => {
-    closeTodoFile(filePath);
-  };
 
   const handleShowNotifications = async () => {
     const currentState = await checkNotificationPermissions();
@@ -100,33 +79,6 @@ const Settings = () => {
           label={t("Due tasks") as string}
         />
       </Box>
-      {taskLists.length > 0 && (
-        <>
-          <Typography component="div" variant="subtitle1" gutterBottom>
-            todo.txt
-          </Typography>
-          <Stack spacing={1}>
-            {taskLists.map((taskList, idx) => (
-              <Alert
-                key={idx}
-                action={
-                  <Button
-                    color="inherit"
-                    size="small"
-                    onClick={() => handleCloseFileClick(taskList.filePath)}
-                  >
-                    {t("Close")}
-                  </Button>
-                }
-                severity="info"
-                icon={false}
-              >
-                <FilePath>{taskList.filePath}</FilePath>
-              </Alert>
-            ))}
-          </Stack>
-        </>
-      )}
     </>
   );
 };

@@ -76,5 +76,10 @@
   "The file already exists": "Diese Datei existiert bereits",
   "Import todo.txt": "todo.txt importieren",
   "todo.txt already exists. Do you want to replace it?": "\"{{fileName}}\" existiert bereits. Möchtest du die Datei ersetzen?",
-  "Replace": "Ersetzen"
+  "Replace": "Ersetzen",
+  "Manage todo.txt": "todo.txt verwalten",
+  "Open files": "Geöffnete Dateien",
+  "Closed files": "Geschlossene Dateien",
+  "Click on the list items to copy the file content to the clipboard": "Klicken Sie auf die Listeneinträge, um den Dateiinhalt in die Zwischenablage zu kopieren.",
+  "Copied to clipboard": "In die Zwischenablage kopiert"
 }

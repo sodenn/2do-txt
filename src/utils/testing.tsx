@@ -8,6 +8,7 @@ import { MemoryRouter } from "react-router-dom";
 import { AppRouters } from "../components/AppRouter";
 import { AppTheme } from "../data/AppThemeContext";
 import { ConfirmationDialogContextProvider } from "../data/ConfirmationDialogContext";
+import { FileManagerContextProvider } from "../data/FileManagerContext";
 import { FilterContextProvider } from "../data/FilterContext";
 import { MigrationContextProvider } from "../data/MigrationContext";
 import { SettingsContextProvider } from "../data/SettingsContext";
@@ -95,9 +96,11 @@ export const TestContext = (props: TestContextProps) => {
                 <FilterContextProvider>
                   <SideSheetContextProvider>
                     <TaskProvider>
-                      <MemoryRouter>
-                        <AppRouters />
-                      </MemoryRouter>
+                      <FileManagerContextProvider>
+                        <MemoryRouter>
+                          <AppRouters />
+                        </MemoryRouter>
+                      </FileManagerContextProvider>
                     </TaskProvider>
                   </SideSheetContextProvider>
                 </FilterContextProvider>
@@ -130,7 +133,11 @@ export const EmptyTestContext = (
             <SettingsContextProvider>
               <FilterContextProvider>
                 <SideSheetContextProvider>
-                  <TaskProvider>{children}</TaskProvider>
+                  <TaskProvider>
+                    <FileManagerContextProvider>
+                      {children}
+                    </FileManagerContextProvider>
+                  </TaskProvider>
                 </SideSheetContextProvider>
               </FilterContextProvider>
             </SettingsContextProvider>

@@ -341,7 +341,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
       if (platform === "web") {
         // Delete IndexedDB
-        deleteTodoFile(taskList.filePath);
+        await deleteTodoFile(taskList.filePath);
       }
 
       taskList.items.forEach((task) =>
@@ -350,20 +350,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
       await removeTodoFilePath(taskList.filePath);
 
-      if (activeTaskListPath === taskList.filePath) {
-        if (taskLists.length === 2) {
-          const fallbackList = taskLists.find(
-            (list) => list.filePath !== activeTaskListPath
-          );
-          if (fallbackList) {
-            setActiveTaskListPath(fallbackList.filePath);
-          } else {
-            setActiveTaskListPath("");
-          }
-        } else {
-          setActiveTaskListPath("");
-        }
-      }
+      setActiveTaskListPath("");
 
       setState((state) => {
         return {
@@ -376,7 +363,6 @@ const [TaskProvider, useTask] = createContext(() => {
       });
     },
     [
-      activeTaskListPath,
       cancelNotifications,
       deleteTodoFile,
       platform,

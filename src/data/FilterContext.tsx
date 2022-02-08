@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { createContext } from "../utils/Context";
 import { useStorage } from "../utils/storage";
-import { useSettings } from "./SettingsContext";
 
 export type SortKey =
   | "priority"
@@ -21,7 +20,6 @@ const [FilterContextProvider, useFilter] = createContext(() => {
   const [activeContexts, setActiveContexts] = useState<string[]>([]);
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [hideCompletedTasks, _setHideCompletedTasks] = useState(false);
-  const { getTodoFilePaths } = useSettings();
 
   const setSortBy = useCallback(
     (value: SortKey) => {
@@ -47,7 +45,7 @@ const [FilterContextProvider, useFilter] = createContext(() => {
       _setSortBy((sortBy as SortKey) || "");
       _setHideCompletedTasks(hideCompletedTasks === "true");
     });
-  }, [getStorageItem, getTodoFilePaths]);
+  }, [getStorageItem]);
 
   return {
     searchTerm,

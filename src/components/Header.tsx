@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useTask } from "../data/TaskContext";
 import { usePlatform } from "../utils/platform";
 import AddTaskButton from "./AddTaskButton";
+import FileMenu from "./FileMenu";
 import SearchBar from "./SearchBar";
 import SideSheetButton from "./SideSheetButton";
 import TodoFileDownloadButton from "./TodoFileDownloadButton";
-import TodoFileMenu from "./TodoFileMenu";
 
 interface HeaderProps {
   divider?: boolean;
@@ -36,7 +36,7 @@ const Header = ({ divider = false }: HeaderProps) => {
             <SideSheetButton />
           </Box>
           <Fade in={!expanded} unmountOnExit>
-            <div>{taskLists.length > 0 && <TodoFileMenu />}</div>
+            <div>{taskLists.length > 0 && <FileMenu />}</div>
           </Fade>
           {taskLists.length > 0 && <SearchBar onExpand={setExpanded} />}
           {taskLists.length > 0 && (

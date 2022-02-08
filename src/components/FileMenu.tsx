@@ -1,6 +1,7 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
+import InboxIcon from "@mui/icons-material/Inbox";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
@@ -15,10 +16,12 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useFileManagerDialog } from "../data/FileManagerContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
+import FileManagementDialog from "./FileManagementDialog";
 import TodoFilePicker from "./TodoFilePicker";
 
 const maxWidthXs = 170;
@@ -32,9 +35,10 @@ const ButtonLabel = styled("span")(({ theme }) => ({
   textAlign: "left",
 }));
 
-const TodoFileMenu = () => {
+const FileMenu = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
+  const { openFileManagerDialog } = useFileManagerDialog();
   const { taskLists, activeTaskList, openTodoFileCreateDialog } = useTask();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -56,6 +60,11 @@ const TodoFileMenu = () => {
   const handleCreateFile = () => {
     openTodoFileCreateDialog(true);
     handleClose();
+  };
+
+  const handleManageFile = () => {
+    handleClose();
+    openFileManagerDialog();
   };
 
   const openFileMenuItem = (
@@ -128,9 +137,16 @@ const TodoFileMenu = () => {
           </ListItemIcon>
           <ListItemText>{t("Create todo.txt")}</ListItemText>
         </MenuItem>
+        <MenuItem onClick={handleManageFile}>
+          <ListItemIcon>
+            <InboxIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{t("Manage todo.txt")}</ListItemText>
+        </MenuItem>
+        <FileManagementDialog />
       </Menu>
     </>
   );
 };
 
-export default TodoFileMenu;
+export default FileMenu;
