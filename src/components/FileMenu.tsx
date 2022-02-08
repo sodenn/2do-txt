@@ -16,12 +16,11 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useFileManagerDialog } from "../data/FileManagerContext";
+import { useFileManagementDialog } from "../data/FileManagementContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
-import FileManagementDialog from "./FileManagementDialog";
 import FilePicker from "./FilePicker";
 
 const maxWidthXs = 170;
@@ -38,7 +37,7 @@ const ButtonLabel = styled("span")(({ theme }) => ({
 const FileMenu = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { openFileManagerDialog } = useFileManagerDialog();
+  const { openFileManagementDialog } = useFileManagementDialog();
   const { taskLists, activeTaskList, openTodoFileCreateDialog } = useTask();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -64,7 +63,7 @@ const FileMenu = () => {
 
   const handleManageFile = () => {
     handleClose();
-    openFileManagerDialog();
+    openFileManagementDialog();
   };
 
   const openFileMenuItem = (
@@ -143,7 +142,6 @@ const FileMenu = () => {
           </ListItemIcon>
           <ListItemText>{t("Manage todo.txt")}</ListItemText>
         </MenuItem>
-        <FileManagementDialog />
       </Menu>
     </>
   );

@@ -2,7 +2,7 @@ import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import React, { FC, Suspense } from "react";
 import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
-import { FileManagementProvider } from "./FileManagerContext";
+import { FileManagementProvider } from "./FileManagementContext";
 import { FilterProvider } from "./FilterContext";
 import { MigrationProvider } from "./MigrationContext";
 import { SettingsProvider } from "./SettingsContext";

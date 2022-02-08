@@ -16,13 +16,15 @@ import {
 import { useSnackbar } from "notistack";
 import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useFileManagerDialog } from "../data/FileManagerContext";
+import { useFileManagementDialog } from "../data/FileManagementContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { useFilesystem } from "../utils/filesystem";
+import { usePlatform } from "../utils/platform";
 
 const FileManagementDialog = () => {
-  const { open, setFileManagementDialog } = useFileManagerDialog();
+  const platform = usePlatform();
+  const { open, setFileManagementDialog } = useFileManagementDialog();
   const { enqueueSnackbar } = useSnackbar();
   const { readdir, deleteFile, readFile } = useFilesystem();
   const { t } = useTranslation();
@@ -40,7 +42,11 @@ const FileManagementDialog = () => {
     }).then((result) => setFiles(result.files));
   }, [readdir]);
 
-  useEffect(() => listFiles(), [listFiles]);
+  useEffect(() => {
+    if (platform !== "electron") {
+      listFiles();
+    }
+  }, [listFiles, platform]);
 
   const handleCloseFile = (
     event: MouseEvent<HTMLButtonElement>,
