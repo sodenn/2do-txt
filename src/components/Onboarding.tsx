@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
-import TodoFilePicker from "./TodoFilePicker";
+import FilePicker from "./FilePicker";
 
 const StyledBox = styled("div")`
   display: flex;
@@ -50,9 +50,9 @@ const Onboarding = () => {
         >
           {t("Create Task")}
         </Button>
-        <TodoFilePicker>
+        <FilePicker>
           {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
-        </TodoFilePicker>
+        </FilePicker>
       </Stack>
     </StyledBox>
   );

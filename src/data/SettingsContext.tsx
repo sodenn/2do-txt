@@ -5,7 +5,7 @@ import { useStorage } from "../utils/storage";
 
 export type Language = "de" | "en";
 
-const [SettingsContextProvider, useSettings] = createContext(() => {
+const [SettingsProvider, useSettings] = createContext(() => {
   const { i18n } = useTranslation();
   const [language, setLanguage] = useState<Language>(
     (i18n.resolvedLanguage as Language) || "en"
@@ -150,4 +150,4 @@ const [SettingsContextProvider, useSettings] = createContext(() => {
   };
 });
 
-export { SettingsContextProvider, useSettings };
+export { SettingsProvider, useSettings };

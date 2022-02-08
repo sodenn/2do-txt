@@ -10,7 +10,7 @@ export type SortKey =
   | "tag"
   | "";
 
-const [FilterContextProvider, useFilter] = createContext(() => {
+const [FilterProvider, useFilter] = createContext(() => {
   const { getStorageItem, setStorageItem } = useStorage();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTaskListPath, setActiveTaskListPath] = useState("");
@@ -67,4 +67,4 @@ const [FilterContextProvider, useFilter] = createContext(() => {
   };
 });
 
-export { FilterContextProvider, useFilter };
+export { FilterProvider, useFilter };

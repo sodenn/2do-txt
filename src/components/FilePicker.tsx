@@ -21,7 +21,7 @@ interface FilePickerProps {
   component?: ReactNode;
 }
 
-const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
+const FilePicker = (props: PropsWithChildren<FilePickerProps>) => {
   const { component, children } = props;
 
   const {
@@ -175,4 +175,4 @@ const TodoFilePicker = (props: PropsWithChildren<FilePickerProps>) => {
   );
 };
 
-export default TodoFilePicker;
+export default FilePicker;

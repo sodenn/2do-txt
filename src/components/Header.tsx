@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useTask } from "../data/TaskContext";
 import { usePlatform } from "../utils/platform";
 import AddTaskButton from "./AddTaskButton";
+import DownloadButton from "./DownloadButton";
 import FileMenu from "./FileMenu";
 import SearchBar from "./SearchBar";
 import SideSheetButton from "./SideSheetButton";
-import TodoFileDownloadButton from "./TodoFileDownloadButton";
 
 interface HeaderProps {
   divider?: boolean;
@@ -47,7 +47,7 @@ const Header = ({ divider = false }: HeaderProps) => {
           )}
           {showTodoFileDownloadButton &&
             (activeTaskList || taskLists.length === 1) && (
-              <TodoFileDownloadButton sx={{ flexGrow: 0 }} />
+              <DownloadButton sx={{ flexGrow: 0 }} />
             )}
         </Toolbar>
       </StyledAppBar>

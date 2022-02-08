@@ -16,7 +16,7 @@ import { defaultTodoFilePath, useTask } from "../data/TaskContext";
 import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
 
-const TodoFileCreateDialog = () => {
+const FileCreateDialog = () => {
   const { t } = useTranslation();
   const { isFile, getUniqueFilePath } = useFilesystem();
   const { addTodoFilePath } = useSettings();
@@ -152,4 +152,4 @@ const TodoFileCreateDialog = () => {
   );
 };
 
-export default TodoFileCreateDialog;
+export default FileCreateDialog;

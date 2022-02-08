@@ -6,28 +6,30 @@ export interface FileManagementDialogProps {
   open: boolean;
 }
 
-const [FileManagerDialogContext, useFileManagerDialog] = createContext(() => {
-  const [{ open }, setFileManagementDialog] =
-    useState<FileManagementDialogProps>({ open: false });
+const [FileManagementProviderInternal, useFileManagerDialog] = createContext(
+  () => {
+    const [{ open }, setFileManagementDialog] =
+      useState<FileManagementDialogProps>({ open: false });
 
-  const openFileManagerDialog = useCallback(() => {
-    setFileManagementDialog({ open: true });
-  }, []);
+    const openFileManagerDialog = useCallback(() => {
+      setFileManagementDialog({ open: true });
+    }, []);
 
-  return {
-    open,
-    openFileManagerDialog,
-    setFileManagementDialog,
-  };
-});
+    return {
+      open,
+      openFileManagerDialog,
+      setFileManagementDialog,
+    };
+  }
+);
 
-const FileManagerContextProvider: FC = ({ children }) => {
+const FileManagementProvider: FC = ({ children }) => {
   return (
-    <FileManagerDialogContext>
+    <FileManagementProviderInternal>
       {children}
       <FileManagementDialog />
-    </FileManagerDialogContext>
+    </FileManagementProviderInternal>
   );
 };
 
-export { FileManagerContextProvider, useFileManagerDialog };
+export { FileManagementProvider, useFileManagerDialog };

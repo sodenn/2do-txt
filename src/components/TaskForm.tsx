@@ -12,10 +12,10 @@ import {
   taskTagStyle,
 } from "../utils/task-styles";
 import { Dictionary } from "../utils/types";
+import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
 import TaskEditor from "./TaskEditor/TaskEditor";
-import TodoFileSelect from "./TodoFileSelect";
 
 interface TaskDialogForm {
   formData: TaskFormData;
@@ -158,7 +158,7 @@ const TaskForm = (props: TaskDialogForm) => {
         )}
         {taskLists.length > 0 && (
           <Grid item xs={12} sm={6}>
-            <TodoFileSelect value={taskLists} onChange={onFileListChange} />
+            <FileSelect value={taskLists} onChange={onFileListChange} />
           </Grid>
         )}
         <Grid item xs={12} sm={6}>

@@ -8,7 +8,7 @@ import { usePlatform } from "../utils/platform";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import Kbd from "./Kbd";
 
-const TodoFileDownloadButton = (props: IconButtonProps) => {
+const DownloadButton = (props: IconButtonProps) => {
   const { t } = useTranslation();
   const platform = usePlatform();
   const { downloadTodoFile, shareTodoFile } = useTask();
@@ -60,4 +60,4 @@ const TodoFileDownloadButton = (props: IconButtonProps) => {
   );
 };
 
-export default TodoFileDownloadButton;
+export default DownloadButton;

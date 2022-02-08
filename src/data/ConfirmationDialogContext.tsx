@@ -20,23 +20,24 @@ interface ConfirmationDialogProps {
   buttons: ConfirmationButtonProps[];
 }
 
-const [ConfirmationDialogContext, useConfirmationDialog] = createContext(() => {
-  const [confirmationDialog, setConfirmationDialog] = useState<
-    ConfirmationDialogProps | undefined
-  >(undefined);
+const [ConfirmationDialogProviderInternal, useConfirmationDialog] =
+  createContext(() => {
+    const [confirmationDialog, setConfirmationDialog] = useState<
+      ConfirmationDialogProps | undefined
+    >(undefined);
 
-  return {
-    confirmationDialog,
-    setConfirmationDialog,
-  };
-});
+    return {
+      confirmationDialog,
+      setConfirmationDialog,
+    };
+  });
 
-const ConfirmationDialogContextProvider: FC = ({ children }) => {
+const ConfirmationDialogProvider: FC = ({ children }) => {
   return (
-    <ConfirmationDialogContext>
+    <ConfirmationDialogProviderInternal>
       {children}
       <ConfirmationDialog />
-    </ConfirmationDialogContext>
+    </ConfirmationDialogProviderInternal>
   );
 };
 
@@ -83,4 +84,4 @@ const ConfirmationDialog = () => {
   );
 };
 
-export { ConfirmationDialogContextProvider, useConfirmationDialog };
+export { ConfirmationDialogProvider, useConfirmationDialog };

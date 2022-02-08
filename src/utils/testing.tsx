@@ -1,19 +1,11 @@
 import { Filesystem, ReadFileResult } from "@capacitor/filesystem";
 import { GetOptions, GetResult, Storage } from "@capacitor/storage";
 import i18n from "i18next";
-import { SnackbarProvider } from "notistack";
-import { PropsWithChildren, Suspense } from "react";
+import { PropsWithChildren } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouters } from "../components/AppRouter";
-import { AppTheme } from "../data/AppThemeContext";
-import { ConfirmationDialogContextProvider } from "../data/ConfirmationDialogContext";
-import { FileManagerContextProvider } from "../data/FileManagerContext";
-import { FilterContextProvider } from "../data/FilterContext";
-import { MigrationContextProvider } from "../data/MigrationContext";
-import { SettingsContextProvider } from "../data/SettingsContext";
-import { SideSheetContextProvider } from "../data/SideSheetContext";
-import { TaskProvider } from "../data/TaskContext";
+import ProviderBundle from "../data/ProviderBundle";
 import { Keys } from "./storage";
 
 jest.setTimeout(15000);
@@ -87,29 +79,11 @@ export const TestContext = (props: TestContextProps) => {
   }
 
   return (
-    <AppTheme>
-      <SnackbarProvider>
-        <Suspense fallback={null}>
-          <MigrationContextProvider>
-            <ConfirmationDialogContextProvider>
-              <SettingsContextProvider>
-                <FilterContextProvider>
-                  <SideSheetContextProvider>
-                    <TaskProvider>
-                      <FileManagerContextProvider>
-                        <MemoryRouter>
-                          <AppRouters />
-                        </MemoryRouter>
-                      </FileManagerContextProvider>
-                    </TaskProvider>
-                  </SideSheetContextProvider>
-                </FilterContextProvider>
-              </SettingsContextProvider>
-            </ConfirmationDialogContextProvider>
-          </MigrationContextProvider>
-        </Suspense>
-      </SnackbarProvider>
-    </AppTheme>
+    <ProviderBundle>
+      <MemoryRouter>
+        <AppRouters />
+      </MemoryRouter>
+    </ProviderBundle>
   );
 };
 
@@ -125,25 +99,5 @@ export const EmptyTestContext = (
     mocks.Storage.get(storage);
   }
 
-  return (
-    <SnackbarProvider>
-      <Suspense fallback={null}>
-        <MigrationContextProvider>
-          <ConfirmationDialogContextProvider>
-            <SettingsContextProvider>
-              <FilterContextProvider>
-                <SideSheetContextProvider>
-                  <TaskProvider>
-                    <FileManagerContextProvider>
-                      {children}
-                    </FileManagerContextProvider>
-                  </TaskProvider>
-                </SideSheetContextProvider>
-              </FilterContextProvider>
-            </SettingsContextProvider>
-          </ConfirmationDialogContextProvider>
-        </MigrationContextProvider>
-      </Suspense>
-    </SnackbarProvider>
-  );
+  return <ProviderBundle>{children}</ProviderBundle>;
 };

@@ -22,7 +22,7 @@ import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
 import FileManagementDialog from "./FileManagementDialog";
-import TodoFilePicker from "./TodoFilePicker";
+import FilePicker from "./FilePicker";
 
 const maxWidthXs = 170;
 const maxWidth = 300;
@@ -130,7 +130,7 @@ const FileMenu = () => {
             </MenuItem>
           ))}
         {taskLists.length > 1 && <Divider />}
-        <TodoFilePicker component={openFileMenuItem} />
+        <FilePicker component={openFileMenuItem} />
         <MenuItem onClick={handleCreateFile}>
           <ListItemIcon>
             <AddOutlinedIcon fontSize="small" />

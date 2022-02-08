@@ -1,12 +1,12 @@
 import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useTask } from "../data/TaskContext";
+import FileCreateDialog from "./FileCreateDialog";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
 import TaskDialog from "./TaskDialog";
 import TaskLists from "./TaskLists";
-import TodoFileCreateDialog from "./TodoFileCreateDialog";
 
 const StyledContainer = styled(Container)`
   padding-right: env(safe-area-inset-right);
@@ -51,7 +51,7 @@ const Page = () => {
         </StyledContainer>
       </Box>
       <TaskDialog />
-      <TodoFileCreateDialog />
+      <FileCreateDialog />
     </>
   );
 };

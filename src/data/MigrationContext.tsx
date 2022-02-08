@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { createContext } from "../utils/Context";
 import { useStorage } from "../utils/storage";
 
-const [MigrationContextProvider, useMigration] = createContext(() => {
+const [MigrationProvider, useMigration] = createContext(() => {
   const { getStorageItem, setStorageItem, removeStorageItem } = useStorage();
 
   const migrate1 = useCallback(async () => {
@@ -20,4 +20,4 @@ const [MigrationContextProvider, useMigration] = createContext(() => {
   };
 });
 
-export { MigrationContextProvider, useMigration };
+export { MigrationProvider, useMigration };
