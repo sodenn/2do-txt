@@ -1,13 +1,13 @@
 import {
   FormControl,
-  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
 } from "@mui/material";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TaskListState } from "../data/TaskContext";
-import { generateId } from "../utils/uuid";
+import StartEllipsis from "./StartEllipsis";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -26,9 +26,8 @@ interface FileSelectProps {
 
 const FileSelect = (props: FileSelectProps) => {
   const { value, onChange } = props;
+  const { t } = useTranslation();
   const [filePath, setFilePath] = useState("");
-
-  const labelId = generateId();
 
   const handleChange = (event: SelectChangeEvent) => {
     const filePath = event.target.value;
@@ -41,18 +40,21 @@ const FileSelect = (props: FileSelectProps) => {
 
   return (
     <FormControl fullWidth sx={{ minWidth: 110 }}>
-      <InputLabel id={labelId}>todo.txt</InputLabel>
       <Select
         required
+        displayEmpty
         value={filePath}
         MenuProps={MenuProps}
         onChange={handleChange}
-        labelId={labelId}
-        label="todo.txt"
       >
+        <MenuItem disabled value="">
+          <em>{t("Select todo.txt")}</em>
+        </MenuItem>
         {value.map((item, index) => (
           <MenuItem key={index} value={item.filePath}>
-            {item.filePath}
+            <StartEllipsis sx={{ maxWidth: 300 }}>
+              {item.filePath}
+            </StartEllipsis>
           </MenuItem>
         ))}
       </Select>

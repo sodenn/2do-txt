@@ -81,5 +81,6 @@
   "Open files": "Geöffnete Dateien",
   "Closed files": "Geschlossene Dateien",
   "Click on the list items to copy the file content to the clipboard": "Klicken Sie auf die Listeneinträge, um den Dateiinhalt in die Zwischenablage zu kopieren.",
-  "Copied to clipboard": "In die Zwischenablage kopiert"
+  "Copied to clipboard": "In die Zwischenablage kopiert",
+  "Select todo.txt": "todo.txt wählen"
 }
