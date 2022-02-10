@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/sodenn/2do-txt/compare/v1.5.0...v1.6.0) (2022-02-10)
+
+
+### Features
+
+* work with multiple todo.txt files ([#218](https://github.com/sodenn/2do-txt/issues/218)) ([4814280](https://github.com/sodenn/2do-txt/commit/4814280e15e144d31a68be1b15b353aaeaacd41a))
+
 # [1.5.0](https://github.com/sodenn/2do-txt/compare/v1.4.0...v1.5.0) (2022-01-03)
 
 
