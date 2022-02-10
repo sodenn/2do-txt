@@ -4,9 +4,8 @@ import { useCallback } from "react";
 export type Keys =
   | "language"
   | "theme-mode"
-  | "todo-txt-path"
+  | "todo-txt-paths"
   | "create-creation-date"
-  | "line-ending"
   | "show-notifications"
   | "create-completion-date"
   | "received-notifications"

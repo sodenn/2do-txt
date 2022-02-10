@@ -1,11 +1,12 @@
 import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
+import { useTask } from "../data/TaskContext";
+import FileCreateDialog from "./FileCreateDialog";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
 import TaskDialog from "./TaskDialog";
-import TaskList from "./TaskList/TaskList";
+import TaskLists from "./TaskLists";
 
 const StyledContainer = styled(Container)`
   padding-right: env(safe-area-inset-right);
@@ -14,6 +15,7 @@ const StyledContainer = styled(Container)`
 `;
 
 const Page = () => {
+  const { init } = useTask();
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
 
@@ -28,23 +30,28 @@ const Page = () => {
         element.removeEventListener("scroll", listener);
       };
     }
-  }, [scrollContainer]);
+  }, [scrollContainer, init]);
+
+  if (!init) {
+    return null;
+  }
 
   return (
     <>
       <Header divider={scrollTop > 12} />
       <SideSheet />
       <Box
+        data-testid="page"
         ref={scrollContainer}
         sx={{ overflowY: "auto", flex: "auto", px: { sm: 1 } }}
       >
         <StyledContainer disableGutters>
-          <TaskList />
+          <TaskLists />
           <Onboarding />
         </StyledContainer>
       </Box>
       <TaskDialog />
-      <DeleteConfirmationDialog />
+      <FileCreateDialog />
     </>
   );
 };

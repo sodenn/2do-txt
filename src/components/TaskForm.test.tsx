@@ -46,6 +46,8 @@ const TestComp = (props: TestCompProps) => {
       contexts={contexts}
       tags={tags}
       formData={_formData}
+      taskLists={[]}
+      onFileListChange={() => undefined}
       onChange={handleChange}
       onEnterPress={handleEnterPress}
     />

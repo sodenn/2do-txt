@@ -14,5 +14,5 @@ contextBridge.exposeInMainWorld("electron", {
     options?: { encoding?: null | undefined }
   ) => ipcRenderer.invoke("writeFile", path, data, options),
   deleteFile: (path: string) => ipcRenderer.invoke("deleteFile", path),
-  selectDir: (title?: string) => ipcRenderer.invoke("selectDir", title),
+  saveFile: (title?: string) => ipcRenderer.invoke("saveFile", title),
 });

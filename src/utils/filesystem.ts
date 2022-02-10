@@ -1,7 +1,9 @@
 import {
+  Directory,
   Filesystem,
   GetUriOptions,
   GetUriResult,
+  ReaddirOptions,
   ReadFileResult,
   WriteFileResult,
 } from "@capacitor/filesystem";
@@ -27,10 +29,33 @@ declare global {
       ) => Promise<void>;
       deleteFile: (path: string) => Promise<void>;
       mkdir: (path: string, options?: { recursive: boolean }) => Promise<void>;
-      selectDir: (title?: string) => Promise<string | undefined>;
+      saveFile: (fileName: string) => Promise<string | undefined>;
     };
   }
 }
+
+const _getUniqueFilePath = async (
+  filePath: string,
+  isFile: (options: ReadFileOptions) => Promise<boolean>
+): Promise<{ filePath: string; fileName: string }> => {
+  let exists = true;
+  let p = filePath;
+  let newFilePath = filePath;
+  let num = 0;
+
+  while (exists) {
+    newFilePath = p;
+    exists = await isFile({
+      directory: Directory.Documents,
+      path: p,
+    });
+    num++;
+    p = p.replace(/\.[0-9a-z]+$/i, ` ${num}$&`);
+  }
+
+  const fileName = newFilePath.replace(/^.*[\\/]/, "");
+  return { fileName, filePath: newFilePath };
+};
 
 export function useFilesystem() {
   const platform = usePlatform();
@@ -52,10 +77,42 @@ export function useFilesystem() {
     return Filesystem.deleteFile(options);
   }, []);
 
+  const readdir = useCallback(async (options: ReaddirOptions) => {
+    return Filesystem.readdir(options);
+  }, []);
+
+  const isFile = useCallback(
+    async (options: ReadFileOptions) => {
+      return readFile(options)
+        .then(() => {
+          return true;
+        })
+        .catch(() => {
+          return false;
+        });
+    },
+    [readFile]
+  );
+
+  const getUniqueFilePath = useCallback(
+    async (filePath: string) => {
+      return _getUniqueFilePath(filePath, isFile);
+    },
+    [isFile]
+  );
+
   if (platform === "electron") {
     return electronFilesystem;
   } else {
-    return { getUri, readFile, writeFile, deleteFile };
+    return {
+      getUri,
+      readFile,
+      writeFile,
+      deleteFile,
+      readdir,
+      isFile,
+      getUniqueFilePath,
+    };
   }
 }
 
@@ -105,5 +162,37 @@ function useElectronFilesystem() {
     []
   );
 
-  return { getUri, readFile, writeFile, deleteFile };
+  const readdir = useCallback(async (options: ReaddirOptions) => {
+    throw new Error("Not implemented");
+  }, []);
+
+  const isFile = useCallback(
+    async (options: ReadFileOptions) => {
+      return readFile(options)
+        .then(() => {
+          return true;
+        })
+        .catch(() => {
+          return false;
+        });
+    },
+    [readFile]
+  );
+
+  const getUniqueFilePath = useCallback(
+    async (filePath: string) => {
+      return _getUniqueFilePath(filePath, isFile);
+    },
+    [isFile]
+  );
+
+  return {
+    getUri,
+    readFile,
+    writeFile,
+    deleteFile,
+    readdir,
+    isFile,
+    getUniqueFilePath,
+  };
 }

@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { TestContext } from "../utils/testing";
+import { TestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 
 describe("AddTaskButton", () => {
   it("should open the task dialog", async () => {
-    render(<TestContext />);
+    render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
     const addTaskButton = await screen.findByRole("button", {
       name: "Add task",

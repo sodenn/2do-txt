@@ -1,31 +1,28 @@
 import { Filesystem, ReadFileResult } from "@capacitor/filesystem";
 import { GetOptions, GetResult, Storage } from "@capacitor/storage";
 import i18n from "i18next";
-import { SnackbarProvider } from "notistack";
-import { PropsWithChildren, Suspense } from "react";
+import { PropsWithChildren } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouters } from "../components/AppRouter";
-import { AppTheme } from "../data/AppThemeContext";
-import { FilterContextProvider } from "../data/FilterContext";
-import { SettingsContextProvider } from "../data/SettingsContext";
-import { SideSheetContextProvider } from "../data/SideSheetContext";
-import { TaskProvider } from "../data/TaskContext";
+import ProviderBundle from "../data/ProviderBundle";
 import { Keys } from "./storage";
+
+jest.setTimeout(15000);
 
 jest.mock("../utils/platform", () => ({
   ...jest.requireActual("../utils/platform"),
   useTouchScreen: jest.fn(),
 }));
 
+export interface StorageItem {
+  key: Keys;
+  value: string;
+}
+
 interface TestContextProps {
   text?: string;
   storage?: StorageItem[];
-}
-
-interface StorageItem {
-  key: Keys;
-  value: string;
 }
 
 i18n.use(initReactI18next).init({
@@ -66,6 +63,11 @@ export const todoTxt = `First task @Test
 X 2012-01-01 Second task
 (A) x Third task @Test`;
 
+export const todoTxtPaths: StorageItem = {
+  key: "todo-txt-paths",
+  value: JSON.stringify(["todo.txt"]),
+};
+
 export const TestContext = (props: TestContextProps) => {
   const { text, storage } = props;
 
@@ -77,23 +79,11 @@ export const TestContext = (props: TestContextProps) => {
   }
 
   return (
-    <AppTheme>
-      <SnackbarProvider>
-        <FilterContextProvider>
-          <Suspense fallback={null}>
-            <SettingsContextProvider>
-              <SideSheetContextProvider>
-                <TaskProvider>
-                  <MemoryRouter>
-                    <AppRouters />
-                  </MemoryRouter>
-                </TaskProvider>
-              </SideSheetContextProvider>
-            </SettingsContextProvider>
-          </Suspense>
-        </FilterContextProvider>
-      </SnackbarProvider>
-    </AppTheme>
+    <ProviderBundle>
+      <MemoryRouter>
+        <AppRouters />
+      </MemoryRouter>
+    </ProviderBundle>
   );
 };
 
@@ -109,17 +99,5 @@ export const EmptyTestContext = (
     mocks.Storage.get(storage);
   }
 
-  return (
-    <SnackbarProvider>
-      <FilterContextProvider>
-        <Suspense fallback={null}>
-          <SettingsContextProvider>
-            <SideSheetContextProvider>
-              <TaskProvider>{children}</TaskProvider>
-            </SideSheetContextProvider>
-          </SettingsContextProvider>
-        </Suspense>
-      </FilterContextProvider>
-    </SnackbarProvider>
-  );
+  return <ProviderBundle>{children}</ProviderBundle>;
 };

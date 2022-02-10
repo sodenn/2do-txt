@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { TaskListState } from "../data/TaskContext";
 import { formatDate, parseDate } from "../utils/date";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import { createDueDateRegex, parseTaskBody, TaskFormData } from "../utils/task";
@@ -11,6 +12,7 @@ import {
   taskTagStyle,
 } from "../utils/task-styles";
 import { Dictionary } from "../utils/types";
+import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
 import TaskEditor from "./TaskEditor/TaskEditor";
@@ -20,14 +22,25 @@ interface TaskDialogForm {
   projects: string[];
   contexts: string[];
   tags: Dictionary<string[]>;
+  taskLists: TaskListState[];
   onChange: (value: TaskFormData) => void;
+  onFileListChange: (value?: TaskListState) => void;
   onEnterPress: () => void;
 }
 
 const TaskForm = (props: TaskDialogForm) => {
   const platform = usePlatform();
   const hasTouchScreen = useTouchScreen();
-  const { formData, projects, tags, contexts, onChange, onEnterPress } = props;
+  const {
+    formData,
+    projects,
+    tags,
+    contexts,
+    taskLists,
+    onChange,
+    onFileListChange,
+    onEnterPress,
+  } = props;
   const { t } = useTranslation();
   const [state, setState] = useState({
     key: 0,
@@ -141,6 +154,11 @@ const TaskForm = (props: TaskDialogForm) => {
                 {t("+Project")}
               </Button>
             </Box>
+          </Grid>
+        )}
+        {taskLists.length > 0 && (
+          <Grid item xs={12} sm={6}>
+            <FileSelect value={taskLists} onChange={onFileListChange} />
           </Grid>
         )}
         <Grid item xs={12} sm={6}>

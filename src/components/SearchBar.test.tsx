@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { TestContext, todoTxt } from "../utils/testing";
+import { TestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 
 describe("SearchBar", () => {
   it("should search a task", async () => {
-    render(<TestContext text={todoTxt} />);
+    render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
     let taskListItems = await screen.findAllByRole("button", {
       name: "Task",
@@ -36,14 +36,26 @@ describe("SearchBar", () => {
     expect(taskListItems.length).toBe(3);
   });
 
-  it("should focus the search input via shortcut", async () => {
-    const { container } = render(<TestContext />);
+  it("should not show the search bar when no files are open", async () => {
+    render(<TestContext />);
 
-    fireEvent.keyDown(container, { key: "f", code: "KeyF" });
+    await screen.findByTestId("page");
+
+    await expect(() =>
+      screen.findByRole("search", { name: "Search for tasks" })
+    ).rejects.toThrow('Unable to find role="search"');
+  });
+
+  it("should focus the search input via shortcut", async () => {
+    const { container } = render(
+      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
+    );
 
     await screen.findByRole("search", {
       name: "Search for tasks",
     });
+
+    fireEvent.keyDown(container, { key: "f", code: "KeyF" });
 
     await expect(document.activeElement!.tagName).toBe("INPUT");
   });

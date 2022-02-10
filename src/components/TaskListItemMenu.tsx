@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useTask } from "../data/TaskContext";
 import { Task } from "../utils/task";
 import Kbd from "./Kbd";
@@ -29,7 +30,8 @@ interface TaskListItemMenuProps {
 const TaskListItemMenu = (props: TaskListItemMenuProps) => {
   const { task, menuRef, menuButtonRef } = props;
   const { t } = useTranslation();
-  const { openTaskDialog, openDeleteConfirmationDialog } = useTask();
+  const { openTaskDialog, deleteTask } = useTask();
+  const { setConfirmationDialog } = useConfirmationDialog();
   const [open, setOpen] = useState(false);
 
   const handleToggle = () => {
@@ -43,7 +45,21 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
 
   const handleDelete = () => {
     handleClose();
-    openDeleteConfirmationDialog(true, task);
+    setConfirmationDialog({
+      title: t("Delete task"),
+      content: t("Are you sure you want to delete this task?"),
+      buttons: [
+        {
+          text: t("Cancel"),
+        },
+        {
+          text: t("Delete task"),
+          handler: () => {
+            deleteTask(task);
+          },
+        },
+      ],
+    });
   };
 
   const handleClose = (event?: any) => {

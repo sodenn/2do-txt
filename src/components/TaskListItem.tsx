@@ -1,11 +1,5 @@
-import {
-  Checkbox,
-  ListItem,
-  ListItemButton,
-  Stack,
-  styled,
-} from "@mui/material";
-import { forwardRef, useRef } from "react";
+import { Checkbox, ListItemButton, Stack, styled } from "@mui/material";
+import { forwardRef, useMemo, useRef } from "react";
 import { Task } from "../utils/task";
 import TaskBody from "./TaskBody";
 import TaskDates from "./TaskDates";
@@ -40,7 +34,6 @@ interface TaskListItemProps {
 const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
   (props, ref) => {
     const { task, focused, onClick, onCheckboxClick, onBlur, onFocus } = props;
-
     const checkboxRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLUListElement>(null);
     const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -65,8 +58,8 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
       }
     };
 
-    return (
-      <ListItem disablePadding>
+    return useMemo(
+      () => (
         <TaskItemButton
           ref={ref}
           aria-label="Task"
@@ -115,7 +108,9 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
             </div>
           </Stack>
         </TaskItemButton>
-      </ListItem>
+      ),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [task, focused]
     );
   }
 );

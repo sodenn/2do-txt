@@ -1,5 +1,10 @@
+import { TaskListState } from "../data/TaskContext";
 import { arrayMove } from "./array";
-import { convertToTaskGroups, parseTaskList } from "./task-list";
+import {
+  convertToTaskGroups,
+  getCommonTaskListAttributes,
+  parseTaskList,
+} from "./task-list";
 
 describe("task-list", () => {
   it("should group by context", async () => {
@@ -7,8 +12,8 @@ describe("task-list", () => {
 2. task @CtxB
 3. task`;
 
-    const { taskList } = parseTaskList(todoTxt);
-    const taskGroups = convertToTaskGroups(taskList, "context");
+    const { items } = parseTaskList(todoTxt);
+    const taskGroups = convertToTaskGroups(items, "context");
 
     expect(taskGroups.length).toBe(3);
 
@@ -27,8 +32,8 @@ describe("task-list", () => {
 3. task phone:1234
 4. task`;
 
-    const { taskList } = parseTaskList(todoTxt);
-    const taskGroups = convertToTaskGroups(taskList, "tag");
+    const { items } = parseTaskList(todoTxt);
+    const taskGroups = convertToTaskGroups(items, "tag");
 
     expect(taskGroups.length).toBe(2);
 
@@ -43,8 +48,8 @@ describe("task-list", () => {
     const todoTxt = `1. task @CtxA
 2. task @CtxA @CtxB`;
 
-    const { taskList } = parseTaskList(todoTxt);
-    const taskGroups = convertToTaskGroups(taskList, "context");
+    const { items } = parseTaskList(todoTxt);
+    const taskGroups = convertToTaskGroups(items, "context");
 
     expect(taskGroups.length).toBe(2);
 
@@ -59,8 +64,8 @@ describe("task-list", () => {
     const todoTxt = `1. task +ProjA
 2. task +ProjA +ProjB`;
 
-    const { taskList } = parseTaskList(todoTxt);
-    const taskGroups = convertToTaskGroups(taskList, "project");
+    const { items } = parseTaskList(todoTxt);
+    const taskGroups = convertToTaskGroups(items, "project");
 
     expect(taskGroups.length).toBe(2);
 
@@ -77,9 +82,9 @@ describe("task-list", () => {
 3. task @CtxB
 4. task @CtxB`;
 
-    const { taskList } = parseTaskList(todoTxt);
-    arrayMove(taskList, 1, 2);
-    const taskGroups = convertToTaskGroups(taskList, "context");
+    const { items } = parseTaskList(todoTxt);
+    arrayMove(items, 1, 2);
+    const taskGroups = convertToTaskGroups(items, "context");
 
     expect(taskGroups.length).toBe(2);
 
@@ -93,8 +98,8 @@ describe("task-list", () => {
     const todoTxt = `1. task @CtxA
 2. task @CtxB`;
 
-    const { taskList } = parseTaskList(todoTxt);
-    const taskGroups = convertToTaskGroups(taskList, "project");
+    const { items } = parseTaskList(todoTxt);
+    const taskGroups = convertToTaskGroups(items, "project");
 
     expect(taskGroups.length).toBe(1);
 
@@ -115,5 +120,77 @@ x 2. task +ProjB
 
     expect(incomplete.projects.ProjA).toBe(1);
     expect(incomplete.projects.ProjB).toBeUndefined();
+  });
+
+  it("should produce the same result when comparing a task list with a group of task lists with one entry", async () => {
+    const todoTxt = `x 1. task +ProjA
+x 2. task +ProjB
+3. task +ProjA`;
+
+    const parseResult = parseTaskList(todoTxt);
+
+    const attributes = {
+      projects: parseResult.projects,
+      contexts: parseResult.contexts,
+      tags: parseResult.tags,
+      priorities: parseResult.priorities,
+      incomplete: parseResult.incomplete,
+    };
+
+    const taskLists: TaskListState[] = [
+      {
+        ...parseResult,
+        filePath: "todo.txt",
+        fileName: "todo.txt",
+        tasksLoaded: true,
+      },
+    ];
+
+    const commonAttributes = getCommonTaskListAttributes(taskLists);
+
+    expect(attributes).toEqual(commonAttributes);
+  });
+
+  it("should correctly add tags from multiple lists", async () => {
+    const todoTxt = `1. task due:2021-11-30
+2. task due:2021-11-15`;
+
+    const parseResult = parseTaskList(todoTxt);
+
+    const taskLists: TaskListState[] = [
+      {
+        ...parseResult,
+        filePath: "todo1.txt",
+        fileName: "todo1.txt",
+        tasksLoaded: true,
+      },
+      {
+        ...parseResult,
+        filePath: "todo2.txt",
+        fileName: "todo2.txt",
+        tasksLoaded: true,
+      },
+    ];
+
+    const attributes = {
+      projects: {},
+      contexts: {},
+      priorities: {},
+      tags: {
+        due: ["2021-11-30", "2021-11-15", "2021-11-30", "2021-11-15"],
+      },
+      incomplete: {
+        projects: {},
+        contexts: {},
+        priorities: {},
+        tags: {
+          due: ["2021-11-30", "2021-11-15", "2021-11-30", "2021-11-15"],
+        },
+      },
+    };
+
+    const commonAttributes = getCommonTaskListAttributes(taskLists);
+
+    expect(attributes).toEqual(commonAttributes);
   });
 });

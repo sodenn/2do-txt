@@ -10,14 +10,15 @@ export type SortKey =
   | "tag"
   | "";
 
-const [FilterContextProvider, useFilter] = createContext(() => {
+const [FilterProvider, useFilter] = createContext(() => {
   const { getStorageItem, setStorageItem } = useStorage();
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTaskListPath, setActiveTaskListPath] = useState("");
   const [sortBy, _setSortBy] = useState<SortKey>("");
-  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
-  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
-  const [selectedContexts, setSelectedContexts] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [activePriorities, setActivePriorities] = useState<string[]>([]);
+  const [activeProjects, setActiveProjects] = useState<string[]>([]);
+  const [activeContexts, setActiveContexts] = useState<string[]>([]);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
   const [hideCompletedTasks, _setHideCompletedTasks] = useState(false);
 
   const setSortBy = useCallback(
@@ -49,19 +50,21 @@ const [FilterContextProvider, useFilter] = createContext(() => {
   return {
     searchTerm,
     setSearchTerm,
+    activeTaskListPath,
+    setActiveTaskListPath,
     sortBy,
     setSortBy,
-    selectedPriorities,
-    setSelectedPriorities,
-    selectedProjects,
-    setSelectedProjects,
-    selectedContexts,
-    setSelectedContexts,
-    selectedTags,
-    setSelectedTags,
+    activePriorities,
+    setActivePriorities,
+    activeProjects,
+    setActiveProjects,
+    activeContexts,
+    setActiveContexts,
+    activeTags,
+    setActiveTags,
     hideCompletedTasks,
     setHideCompletedTasks,
   };
 });
 
-export { FilterContextProvider, useFilter };
+export { FilterProvider, useFilter };
