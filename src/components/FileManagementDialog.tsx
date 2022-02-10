@@ -37,22 +37,23 @@ const FileManagementDialog = () => {
   );
 
   const listFiles = useCallback(() => {
-    readdir({
-      path: "",
-      directory: Directory.Documents,
-    }).then((result) => setFiles(result.files));
-  }, [readdir]);
-
-  useEffect(() => {
     if (platform !== "electron") {
-      listFiles();
+      readdir({
+        path: "",
+        directory: Directory.Documents,
+      }).then((result) => setFiles(result.files));
     }
-  }, [listFiles, platform]);
+  }, [platform, readdir]);
+
+  useEffect(listFiles, [listFiles, platform]);
 
   const handleCloseFile = (
     event: MouseEvent<HTMLButtonElement>,
     path: string
   ) => {
+    if (taskLists.length === 1) {
+      handleClose();
+    }
     closeTodoFile(path).then(listFiles);
     event.stopPropagation();
   };
@@ -104,14 +105,16 @@ const FileManagementDialog = () => {
 
   return (
     <Dialog maxWidth="xs" open={open} onClose={handleClose}>
-      <DialogTitle>{t("Manage todo.txt")}</DialogTitle>
+      <DialogTitle sx={{ px: 2 }}>{t("Manage todo.txt")}</DialogTitle>
       {taskLists.length > 0 && (
         <List
           sx={{ pt: 0 }}
           subheader={
-            <ListSubheader sx={{ bgcolor: "inherit" }} component="div">
-              {t("Open files")}
-            </ListSubheader>
+            closedFiles.length > 0 ? (
+              <ListSubheader sx={{ bgcolor: "inherit" }} component="div">
+                {t("Open files")}
+              </ListSubheader>
+            ) : undefined
           }
         >
           {taskLists.map(({ filePath }, idx) => (
@@ -120,15 +123,29 @@ const FileManagementDialog = () => {
               button
               onClick={() => handleCopyToClipboard(filePath)}
               secondaryAction={
-                <Tooltip title={t("Close") as string}>
-                  <IconButton
-                    edge="end"
-                    aria-label="Close file"
-                    onClick={(event) => handleCloseFile(event, filePath)}
-                  >
-                    <CloseOutlinedIcon />
-                  </IconButton>
-                </Tooltip>
+                platform === "web" ||
+                platform === "ios" ||
+                platform === "android" ? (
+                  <Tooltip title={t("Delete") as string}>
+                    <IconButton
+                      edge="end"
+                      aria-label="Delete file"
+                      onClick={(event) => handleCloseFile(event, filePath)}
+                    >
+                      <DeleteOutlineOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title={t("Close") as string}>
+                    <IconButton
+                      edge="end"
+                      aria-label="Close file"
+                      onClick={(event) => handleCloseFile(event, filePath)}
+                    >
+                      <CloseOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
+                )
               }
             >
               <StartEllipsis sx={{ my: 0.5 }} variant="inherit" noWrap>
@@ -151,6 +168,7 @@ const FileManagementDialog = () => {
             <ListItem
               key={idx}
               button
+              sx={{ pr: 12 }}
               onClick={() => handleCopyToClipboard(file)}
               secondaryAction={
                 <>
@@ -174,9 +192,9 @@ const FileManagementDialog = () => {
                 </>
               }
             >
-              <Typography variant="inherit" noWrap>
+              <StartEllipsis sx={{ my: 0.5 }} variant="inherit" noWrap>
                 {file}
-              </Typography>
+              </StartEllipsis>
             </ListItem>
           ))}
         </List>

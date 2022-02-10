@@ -339,8 +339,8 @@ const [TaskProvider, useTask] = createContext(() => {
         return;
       }
 
-      if (platform === "web") {
-        // Delete IndexedDB
+      if (platform === "web" || platform === "ios" || platform === "android") {
+        // Delete IndexedDB (web) / remove file from the app's document directory (ios, android)
         await deleteTodoFile(taskList.filePath);
       }
 
@@ -350,7 +350,20 @@ const [TaskProvider, useTask] = createContext(() => {
 
       await removeTodoFilePath(taskList.filePath);
 
-      setActiveTaskListPath("");
+      if (filePath === activeTaskListPath) {
+        if (taskLists.length === 2) {
+          const fallbackList = taskLists.find(
+            (list) => list.filePath !== activeTaskListPath
+          );
+          if (fallbackList) {
+            setActiveTaskListPath(fallbackList.filePath);
+          } else {
+            setActiveTaskListPath("");
+          }
+        } else {
+          setActiveTaskListPath("");
+        }
+      }
 
       setState((state) => {
         return {
@@ -363,6 +376,7 @@ const [TaskProvider, useTask] = createContext(() => {
       });
     },
     [
+      activeTaskListPath,
       cancelNotifications,
       deleteTodoFile,
       platform,
