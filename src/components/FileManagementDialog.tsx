@@ -1,5 +1,5 @@
 import { Clipboard } from "@capacitor/clipboard";
-import { Directory } from "@capacitor/filesystem";
+import { Directory, Encoding } from "@capacitor/filesystem";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
@@ -80,6 +80,7 @@ const FileManagementDialog = () => {
     const result = await readFile({
       path,
       directory: Directory.Documents,
+      encoding: Encoding.UTF8,
     });
     loadTodoFile(path, result.data).then(() => {
       setActiveTaskListPath(path);
@@ -92,6 +93,7 @@ const FileManagementDialog = () => {
     const result = await readFile({
       path,
       directory: Directory.Documents,
+      encoding: Encoding.UTF8,
     });
     await Clipboard.write({
       string: result.data,
