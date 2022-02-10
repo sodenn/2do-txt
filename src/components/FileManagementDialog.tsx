@@ -21,6 +21,7 @@ import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
+import StartEllipsis from "./StartEllipsis";
 
 const FileManagementDialog = () => {
   const platform = usePlatform();
@@ -130,13 +131,9 @@ const FileManagementDialog = () => {
                 </Tooltip>
               }
             >
-              <Typography
-                sx={{ my: 0.5, direction: "rtl", textAlign: "left" }}
-                variant="inherit"
-                noWrap
-              >
+              <StartEllipsis sx={{ my: 0.5 }} variant="inherit" noWrap>
                 {filePath}
-              </Typography>
+              </StartEllipsis>
             </ListItem>
           ))}
         </List>

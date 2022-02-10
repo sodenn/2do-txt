@@ -11,8 +11,6 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  styled,
-  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,17 +20,11 @@ import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
 import FilePicker from "./FilePicker";
+import StartEllipsis from "./StartEllipsis";
 
-const maxWidthXs = 170;
-const maxWidth = 300;
-
-const ButtonLabel = styled("span")(({ theme }) => ({
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-  whiteSpace: "nowrap",
-  direction: "rtl",
-  textAlign: "left",
-}));
+const buttonMaxWidthXs = 170;
+const buttonMaxWidth = 300;
+const menuMaxWidth = 350;
 
 const FileMenu = () => {
   const { t } = useTranslation();
@@ -80,19 +72,19 @@ const FileMenu = () => {
   return (
     <>
       <Button
-        sx={{ maxWidth: { xs: maxWidthXs, md: maxWidth }, pl: 1 }}
+        sx={{ maxWidth: { xs: buttonMaxWidthXs, md: buttonMaxWidth }, pl: 1 }}
         size="large"
         id="task-list-menu"
         startIcon={<img src={logo} alt="Logo" height={22} />}
         endIcon={<KeyboardArrowDownIcon />}
         onClick={handleClick}
       >
-        <ButtonLabel>
+        <StartEllipsis>
           {activeTaskList ? activeTaskList.fileName : "2do.txt"}
-        </ButtonLabel>
+        </StartEllipsis>
       </Button>
       <Menu
-        sx={{ maxWidth }}
+        sx={{ maxWidth: menuMaxWidth }}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -119,13 +111,7 @@ const FileMenu = () => {
               <ListItemIcon>
                 <InsertDriveFileOutlinedIcon fontSize="small" />
               </ListItemIcon>
-              <Typography
-                variant="inherit"
-                noWrap
-                sx={{ direction: "rtl", textAlign: "left" }}
-              >
-                {filePath}
-              </Typography>
+              <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
             </MenuItem>
           ))}
         {taskLists.length > 1 && <Divider />}

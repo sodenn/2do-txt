@@ -1,7 +1,8 @@
 import LaunchIcon from "@mui/icons-material/Launch";
-import { Box, ListItemButton, styled, Typography } from "@mui/material";
+import { Box, ListItemButton, styled } from "@mui/material";
 import React from "react";
 import { useFilter } from "../data/FilterContext";
+import StartEllipsis from "./StartEllipsis";
 
 interface TaskListHeaderProps {
   fileName: string;
@@ -12,12 +13,14 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
 }));
 
-const Container = styled(Box)`
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: space-between;
-`;
+const Container = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flex: 1,
+  alignItems: "center",
+  justifyContent: "space-between",
+  overflow: "hidden",
+  gap: theme.spacing(2),
+}));
 
 const TaskListHeader = (props: TaskListHeaderProps) => {
   const { fileName, filePath } = props;
@@ -28,16 +31,7 @@ const TaskListHeader = (props: TaskListHeaderProps) => {
       onClick={() => setActiveTaskListPath(filePath)}
     >
       <Container>
-        <Typography
-          noWrap
-          sx={{
-            direction: "rtl",
-            textAlign: "left",
-          }}
-          variant="h5"
-        >
-          {fileName}
-        </Typography>
+        <StartEllipsis variant="h5">{fileName}</StartEllipsis>
         <LaunchIcon />
       </Container>
     </StyledListItemButton>
