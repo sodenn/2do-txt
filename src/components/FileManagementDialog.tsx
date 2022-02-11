@@ -33,21 +33,27 @@ import { getFilenameFromPath, useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
 import StartEllipsis from "./StartEllipsis";
 
+interface CloseOptions {
+  event: MouseEvent<HTMLButtonElement>;
+  filePath: string;
+  deleteFile: boolean;
+}
+
 export type DraggableListProps = {
   subheader: boolean;
   onClick: (filePath: string) => void;
-  onRemove: (event: MouseEvent<HTMLButtonElement>, filePath: string) => void;
+  onClose: (options: CloseOptions) => void;
 };
 
 export type DraggableListItemProps = {
   filePath: string;
   index: number;
   onClick: (filePath: string) => void;
-  onRemove: (event: MouseEvent<HTMLButtonElement>, filePath: string) => void;
+  onClose: (options: CloseOptions) => void;
 };
 
 const TaskListItem = (props: DraggableListItemProps) => {
-  const { filePath, index, onClick, onRemove } = props;
+  const { filePath, index, onClick, onClose } = props;
   const { t } = useTranslation();
   const platform = usePlatform();
 
@@ -65,7 +71,9 @@ const TaskListItem = (props: DraggableListItemProps) => {
                 <IconButton
                   edge="end"
                   aria-label="Delete file"
-                  onClick={(event) => onRemove(event, filePath)}
+                  onClick={(event) =>
+                    onClose({ event, filePath, deleteFile: true })
+                  }
                 >
                   <DeleteOutlineOutlinedIcon />
                 </IconButton>
@@ -75,7 +83,9 @@ const TaskListItem = (props: DraggableListItemProps) => {
                 <IconButton
                   edge="end"
                   aria-label="Close file"
-                  onClick={(event) => onRemove(event, filePath)}
+                  onClick={(event) =>
+                    onClose({ event, filePath, deleteFile: false })
+                  }
                 >
                   <CloseOutlinedIcon />
                 </IconButton>
@@ -102,7 +112,7 @@ const TaskListItem = (props: DraggableListItemProps) => {
 };
 
 const TaskList = memo((props: DraggableListProps) => {
-  const { subheader, onClick, onRemove } = props;
+  const { subheader, onClick, onClose } = props;
   const { taskLists, reorderTaskList } = useTask();
   const { t } = useTranslation();
 
@@ -143,7 +153,7 @@ const TaskList = memo((props: DraggableListProps) => {
                 index={index}
                 key={item.filePath}
                 onClick={onClick}
-                onRemove={onRemove}
+                onClose={onClose}
               />
             ))}
             {provided.placeholder}
@@ -202,17 +212,22 @@ const FileManagementDialog = () => {
     });
   };
 
-  const handleRemoveFile = (
-    event: MouseEvent<HTMLButtonElement>,
-    filePath: string
-  ) => {
+  const handleCloseFile = (options: CloseOptions) => {
+    const { event, filePath, deleteFile } = options;
     event.stopPropagation();
-    openDeleteConfirmationDialog(filePath, () => {
+    if (deleteFile) {
+      openDeleteConfirmationDialog(filePath, () => {
+        if (taskLists.length === 1) {
+          handleClose();
+        }
+        closeTodoFile(filePath).then(listFiles);
+      });
+    } else {
       if (taskLists.length === 1) {
         handleClose();
       }
       closeTodoFile(filePath).then(listFiles);
-    });
+    }
   };
 
   const handleDeleteFile = (
@@ -271,7 +286,7 @@ const FileManagementDialog = () => {
       <TaskList
         subheader={closedFiles.length > 0}
         onClick={handleCopyToClipboard}
-        onRemove={handleRemoveFile}
+        onClose={handleCloseFile}
       />
       {closedFiles.length > 0 && (
         <List
