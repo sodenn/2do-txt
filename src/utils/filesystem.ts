@@ -34,10 +34,14 @@ declare global {
   }
 }
 
-const _getUniqueFilePath = async (
+export function getFilenameFromPath(filePath: string) {
+  return filePath.replace(/^.*[\\/]/, "");
+}
+
+async function _getUniqueFilePath(
   filePath: string,
   isFile: (options: ReadFileOptions) => Promise<boolean>
-): Promise<{ filePath: string; fileName: string }> => {
+): Promise<{ filePath: string; fileName: string }> {
   let exists = true;
   let p = filePath;
   let newFilePath = filePath;
@@ -53,9 +57,9 @@ const _getUniqueFilePath = async (
     p = p.replace(/\.[0-9a-z]+$/i, ` ${num}$&`);
   }
 
-  const fileName = newFilePath.replace(/^.*[\\/]/, "");
+  const fileName = getFilenameFromPath(newFilePath);
   return { fileName, filePath: newFilePath };
-};
+}
 
 export function useFilesystem() {
   const platform = usePlatform();

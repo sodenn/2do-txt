@@ -6,7 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { createContext } from "../utils/Context";
 
 interface ConfirmationButtonProps {
@@ -15,8 +15,8 @@ interface ConfirmationButtonProps {
 }
 
 interface ConfirmationDialogProps {
-  title?: string;
-  content: string;
+  title?: ReactNode;
+  content: ReactNode;
   buttons: ConfirmationButtonProps[];
 }
 

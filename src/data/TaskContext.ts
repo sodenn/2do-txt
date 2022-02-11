@@ -8,10 +8,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
 import { todayDate } from "../utils/date";
-import { useFilesystem } from "../utils/filesystem";
+import { getFilenameFromPath, useFilesystem } from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
 import { useNotifications } from "../utils/notifications";
 import { usePlatform } from "../utils/platform";
+import { useStorage } from "../utils/storage";
 import {
   createDueDateRegex,
   parseTaskBody,
@@ -48,6 +49,7 @@ export interface TaskListState extends TaskListParseResult {
 
 const [TaskProvider, useTask] = createContext(() => {
   const { getUri, readFile, writeFile, deleteFile } = useFilesystem();
+  const { setStorageItem } = useStorage();
   const { migrate1 } = useMigration();
   const { enqueueSnackbar } = useSnackbar();
   const {
@@ -123,7 +125,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const toTaskList = useCallback((filePath: string, text: string) => {
     const parseResult = parseTaskList(text);
 
-    const fileName = filePath.replace(/^.*[\\/]/, "");
+    const fileName = getFilenameFromPath(filePath);
 
     const taskList: TaskListState = {
       ...parseResult,
@@ -414,6 +416,24 @@ const [TaskProvider, useTask] = createContext(() => {
     [scheduleDueTaskNotification]
   );
 
+  const orderTaskList = useCallback(
+    (filePaths: string[]) => {
+      return taskLists.sort(
+        (a, b) => filePaths.indexOf(a.filePath) - filePaths.indexOf(b.filePath)
+      );
+    },
+    [taskLists]
+  );
+
+  const reorderTaskList = useCallback(
+    async (filePaths: string[]) => {
+      await setStorageItem("todo-txt-paths", JSON.stringify(filePaths));
+      const reorderedList = orderTaskList(filePaths);
+      setState((state) => ({ ...state, taskLists: reorderedList }));
+    },
+    [orderTaskList, setStorageItem]
+  );
+
   useEffect(() => {
     const setInitialState = async () => {
       await migrate1();
@@ -481,6 +501,7 @@ const [TaskProvider, useTask] = createContext(() => {
     activeTaskList,
     activeTask,
     findTaskListByTaskId,
+    reorderTaskList,
   };
 });
 

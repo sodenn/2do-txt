@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useCallback, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
@@ -65,9 +65,12 @@ const FileCreateDialog = () => {
 
     if (result) {
       setConfirmationDialog({
-        content: t("todo.txt already exists. Do you want to replace it?", {
-          fileName,
-        }),
+        content: (
+          <Trans
+            i18nKey="todo.txt already exists. Do you want to replace it?"
+            values={{ fileName }}
+          />
+        ),
         buttons: [
           {
             text: t("Cancel"),
