@@ -51,12 +51,14 @@ describe("SearchBar", () => {
       <TestContext text={todoTxt} storage={[todoTxtPaths]} />
     );
 
-    await screen.findByRole("search", {
+    const searchInput = await screen.findByRole("search", {
       name: "Search for tasks",
     });
 
+    expect(searchInput).not.toHaveFocus();
+
     fireEvent.keyDown(container, { key: "f", code: "KeyF" });
 
-    await expect(document.activeElement!.tagName).toBe("INPUT");
+    expect(searchInput).toHaveFocus();
   });
 });

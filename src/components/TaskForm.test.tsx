@@ -114,6 +114,7 @@ describe("TaskEditor", () => {
     const dueDatePicker = await screen.findByRole("input", {
       name: "Due date",
     });
+    // eslint-disable-next-line testing-library/no-node-access
     expect(dueDatePicker.querySelector("input")?.value).toBe("11/11/2021");
   });
 });
