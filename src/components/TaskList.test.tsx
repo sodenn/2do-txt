@@ -64,7 +64,7 @@ describe("TaskList", () => {
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
     ).toBe(1);
 
-    expect(listItems.indexOf(document.activeElement as HTMLElement)).toBe(0);
+    expect(listItems[0]).toHaveFocus();
 
     userEvent.tab();
 
@@ -72,7 +72,7 @@ describe("TaskList", () => {
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
     ).toBe(1);
 
-    expect(listItems.indexOf(document.activeElement as HTMLElement)).toBe(1);
+    expect(listItems[1]).toHaveFocus();
   });
 
   it("should navigate through task list by using the arrow keys", async () => {
@@ -94,7 +94,7 @@ describe("TaskList", () => {
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
     ).toBe(1);
 
-    expect(listItems.indexOf(document.activeElement as HTMLElement)).toBe(0);
+    expect(listItems[0]).toHaveFocus();
 
     fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
 
@@ -102,7 +102,7 @@ describe("TaskList", () => {
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
     ).toBe(1);
 
-    expect(listItems.indexOf(document.activeElement as HTMLElement)).toBe(1);
+    expect(listItems[1]).toHaveFocus();
   });
 
   it("should complete a task by clicking the checkbox", async () => {
@@ -210,6 +210,7 @@ Task E @Test @Feature`;
       current: true,
     });
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     getByText(focusedTask, /Task B/);
 
     fireEvent.keyDown(focusedTask, {
@@ -221,6 +222,7 @@ Task E @Test @Feature`;
       name: "Task dialog",
     });
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     getByText(taskDialog, /Task B/);
   });
 
@@ -259,9 +261,7 @@ Task E @Test @Feature`;
       </EmptyTestContext>
     );
 
-    const menuButtons = await screen.findAllByRole("button", {
-      name: "Task menu",
-    });
+    const menuButtons = await screen.findAllByLabelText("Task menu");
 
     expect(menuButtons.length).toBe(2);
 
@@ -282,7 +282,9 @@ Task E @Test @Feature`;
     await waitFor(async () => {
       const taskList = screen.queryByRole("list", { name: "Task list" });
       expect(taskList).toBeNull();
+    });
 
+    await waitFor(async () => {
       const taskDialog = screen.queryByRole("presentation", {
         name: "Task dialog",
       });

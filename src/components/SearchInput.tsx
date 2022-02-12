@@ -1,4 +1,4 @@
-import { CloseOutlined } from "@mui/icons-material";
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   alpha,
