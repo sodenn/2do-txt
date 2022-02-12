@@ -68,12 +68,13 @@
   "No tasks": "No tasks",
   "The file already exists": "The file already exists",
   "Import todo.txt": "Import todo.txt",
-  "todo.txt already exists. Do you want to replace it?": "\"{{fileName}}\" already exists. Do you want to replace it?",
+  "todo.txt already exists. Do you want to replace it?": "<strong>{{fileName}}</strong> already exists. Do you want to replace it?",
   "Replace": "Replace",
   "Manage todo.txt": "Manage todo.txt",
   "Open files": "Open files",
   "Closed files": "Closed files",
   "Click on the list items to copy the file content to the clipboard": "Click on the list items to copy the file content to the clipboard.",
   "Copied to clipboard": "Copied to clipboard",
-  "Select todo.txt": "Select todo.txt"
+  "Select todo.txt": "Select todo.txt",
+  "Delete file": "Delete file <strong>{{fileName}}</strong>?"
 }
