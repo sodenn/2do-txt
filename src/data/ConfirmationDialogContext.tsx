@@ -66,7 +66,9 @@ const ConfirmationDialog = () => {
         <DialogTitle>{confirmationDialog?.title}</DialogTitle>
       )}
       <DialogContent>
-        <DialogContentText>{confirmationDialog?.content}</DialogContentText>
+        <DialogContentText sx={{ overflow: "hidden", wordBreak: "break-word" }}>
+          {confirmationDialog?.content}
+        </DialogContentText>
       </DialogContent>
       <DialogActions>
         {confirmationDialog?.buttons.map((button, idx) => (

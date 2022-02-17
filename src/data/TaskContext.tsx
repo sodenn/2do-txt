@@ -5,7 +5,7 @@ import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
 import { todayDate } from "../utils/date";
 import { getFilenameFromPath, useFilesystem } from "../utils/filesystem";
@@ -27,6 +27,8 @@ import {
   TaskListParseResult,
 } from "../utils/task-list";
 import { generateId } from "../utils/uuid";
+import { useCloudStorage } from "./CloudStorageContext";
+import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
 import { useMigration } from "./MigrationContext";
 import { useSettings } from "./SettingsContext";
@@ -48,10 +50,13 @@ export interface TaskListState extends TaskListParseResult {
 }
 
 const [TaskProvider, useTask] = createContext(() => {
-  const { getUri, readFile, writeFile, deleteFile } = useFilesystem();
+  const { getUri, readFile, writeFile, deleteFile, isFile } = useFilesystem();
   const { setStorageItem } = useStorage();
   const { migrate1 } = useMigration();
   const { enqueueSnackbar } = useSnackbar();
+  const { setConfirmationDialog } = useConfirmationDialog();
+  const { addTodoFilePath } = useSettings();
+  const { syncFile, removeCloudFile, cloudStorageEnabled } = useCloudStorage();
   const {
     scheduleNotifications,
     cancelNotifications,
@@ -170,9 +175,10 @@ const [TaskProvider, useTask] = createContext(() => {
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
+      syncFile({ filePath, text });
       return loadTodoFile(filePath, text);
     },
-    [loadTodoFile, writeFile]
+    [loadTodoFile, syncFile, writeFile]
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -346,6 +352,10 @@ const [TaskProvider, useTask] = createContext(() => {
         await deleteTodoFile(taskList.filePath);
       }
 
+      if (cloudStorageEnabled) {
+        removeCloudFile(filePath);
+      }
+
       taskList.items.forEach((task) =>
         cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] })
       );
@@ -380,8 +390,10 @@ const [TaskProvider, useTask] = createContext(() => {
     [
       activeTaskListPath,
       cancelNotifications,
+      cloudStorageEnabled,
       deleteTodoFile,
       platform,
+      removeCloudFile,
       removeTodoFilePath,
       setActiveTaskListPath,
       taskLists,
@@ -434,6 +446,62 @@ const [TaskProvider, useTask] = createContext(() => {
     [orderTaskList, setStorageItem]
   );
 
+  const createNewTodoFile = useCallback(
+    async (fileName: string, text = "") => {
+      const result = await isFile({
+        directory: Directory.Documents,
+        path: fileName,
+      });
+
+      if (result) {
+        return new Promise<string | undefined>(async (resolve, reject) => {
+          try {
+            setConfirmationDialog({
+              content: (
+                <Trans
+                  i18nKey="todo.txt already exists. Do you want to replace it"
+                  values={{ fileName }}
+                />
+              ),
+              buttons: [
+                {
+                  text: t("Cancel"),
+                  handler: () => {
+                    resolve(undefined);
+                  },
+                },
+                {
+                  text: t("Replace"),
+                  handler: async () => {
+                    await addTodoFilePath(fileName);
+                    const taskList = await saveTodoFile(fileName, text);
+                    scheduleDueTaskNotifications(taskList);
+                    resolve(fileName);
+                  },
+                },
+              ],
+            });
+          } catch (error) {
+            reject();
+          }
+        });
+      } else {
+        await addTodoFilePath(fileName);
+        const taskList = await saveTodoFile(fileName, text);
+        scheduleDueTaskNotifications(taskList);
+        return fileName;
+      }
+    },
+    [
+      addTodoFilePath,
+      isFile,
+      saveTodoFile,
+      scheduleDueTaskNotifications,
+      setConfirmationDialog,
+      t,
+    ]
+  );
+
   useEffect(() => {
     const setInitialState = async () => {
       await migrate1();
@@ -455,7 +523,12 @@ const [TaskProvider, useTask] = createContext(() => {
             })
         )
       ).then((list) =>
-        list.filter((i) => !!i).map((i) => toTaskList(i!.path, i!.file.data))
+        list
+          .filter((i) => !!i)
+          .map((i) => {
+            syncFile({ filePath: i!.path, text: i!.file.data });
+            return toTaskList(i!.path, i!.file.data);
+          })
       );
 
       if (taskLists) {
@@ -502,6 +575,7 @@ const [TaskProvider, useTask] = createContext(() => {
     activeTask,
     findTaskListByTaskId,
     reorderTaskList,
+    createNewTodoFile,
   };
 });
 

@@ -1,8 +1,6 @@
 import { Clipboard } from "@capacitor/clipboard";
 import { Directory, Encoding } from "@capacitor/filesystem";
-import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import {
   Dialog,
@@ -10,159 +8,28 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemIcon,
   ListSubheader,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { memo, MouseEvent, useCallback, useEffect, useState } from "react";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from "react-beautiful-dnd";
+import React, { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
-import { useFileManagementDialog } from "../data/FileManagementContext";
-import { useFilter } from "../data/FilterContext";
-import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
-import { getFilenameFromPath, useFilesystem } from "../utils/filesystem";
-import { usePlatform } from "../utils/platform";
-import StartEllipsis from "./StartEllipsis";
+import { useConfirmationDialog } from "../../data/ConfirmationDialogContext";
+import { useFileManagementDialog } from "../../data/FileManagementContext";
+import { useFilter } from "../../data/FilterContext";
+import { useSettings } from "../../data/SettingsContext";
+import { useTask } from "../../data/TaskContext";
+import { getFilenameFromPath, useFilesystem } from "../../utils/filesystem";
+import { usePlatform } from "../../utils/platform";
+import StartEllipsis from "../StartEllipsis";
+import OpenFileList from "./OpenFileList";
 
 interface CloseOptions {
   event: MouseEvent<HTMLButtonElement>;
   filePath: string;
   deleteFile: boolean;
 }
-
-export type DraggableListProps = {
-  subheader: boolean;
-  onClick: (filePath: string) => void;
-  onClose: (options: CloseOptions) => void;
-};
-
-export type DraggableListItemProps = {
-  filePath: string;
-  index: number;
-  onClick: (filePath: string) => void;
-  onClose: (options: CloseOptions) => void;
-};
-
-const TaskListItem = (props: DraggableListItemProps) => {
-  const { filePath, index, onClick, onClose } = props;
-  const { t } = useTranslation();
-  const platform = usePlatform();
-
-  return (
-    <Draggable draggableId={filePath} index={index}>
-      {(provided, snapshot) => (
-        <ListItem
-          button
-          onClick={() => onClick(filePath)}
-          secondaryAction={
-            platform === "web" ||
-            platform === "ios" ||
-            platform === "android" ? (
-              <Tooltip title={t("Delete") as string}>
-                <IconButton
-                  edge="end"
-                  aria-label="Delete file"
-                  onClick={(event) =>
-                    onClose({ event, filePath, deleteFile: true })
-                  }
-                >
-                  <DeleteOutlineOutlinedIcon />
-                </IconButton>
-              </Tooltip>
-            ) : (
-              <Tooltip title={t("Close") as string}>
-                <IconButton
-                  edge="end"
-                  aria-label="Close file"
-                  onClick={(event) =>
-                    onClose({ event, filePath, deleteFile: false })
-                  }
-                >
-                  <CloseOutlinedIcon />
-                </IconButton>
-              </Tooltip>
-            )
-          }
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          sx={{
-            ...(snapshot.isDragging && { bgcolor: "action.hover" }),
-          }}
-        >
-          <ListItemIcon>
-            <DragIndicatorIcon />
-          </ListItemIcon>
-          <StartEllipsis sx={{ my: 0.5 }} variant="inherit" noWrap>
-            {filePath}
-          </StartEllipsis>
-        </ListItem>
-      )}
-    </Draggable>
-  );
-};
-
-const TaskList = memo((props: DraggableListProps) => {
-  const { subheader, onClick, onClose } = props;
-  const { taskLists, reorderTaskList } = useTask();
-  const { t } = useTranslation();
-
-  if (taskLists.length === 0) {
-    return null;
-  }
-
-  const handleDragEnd = ({ destination, source }: DropResult) => {
-    if (destination) {
-      const startIndex = source.index;
-      const endIndex = destination.index;
-      const filePaths = taskLists.map((t) => t.filePath);
-      const [removed] = filePaths.splice(startIndex, 1);
-      filePaths.splice(endIndex, 0, removed);
-      reorderTaskList(filePaths);
-    }
-  };
-
-  return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="droppable-list">
-        {(provided) => (
-          <List
-            sx={{ pt: 0 }}
-            subheader={
-              subheader ? (
-                <ListSubheader sx={{ bgcolor: "inherit" }} component="div">
-                  {t("Open files")}
-                </ListSubheader>
-              ) : undefined
-            }
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {taskLists.map((item, index) => (
-              <TaskListItem
-                filePath={item.filePath}
-                index={index}
-                key={item.filePath}
-                onClick={onClick}
-                onClose={onClose}
-              />
-            ))}
-            {provided.placeholder}
-          </List>
-        )}
-      </Droppable>
-    </DragDropContext>
-  );
-});
 
 const FileManagementDialog = () => {
   const platform = usePlatform();
@@ -283,7 +150,7 @@ const FileManagementDialog = () => {
   return (
     <Dialog maxWidth="xs" open={open} onClose={handleClose}>
       <DialogTitle sx={{ px: 2 }}>{t("Manage todo.txt")}</DialogTitle>
-      <TaskList
+      <OpenFileList
         subheader={closedFiles.length > 0}
         onClick={handleCopyToClipboard}
         onClose={handleCloseFile}
@@ -325,7 +192,7 @@ const FileManagementDialog = () => {
                 </>
               }
             >
-              <StartEllipsis sx={{ my: 0.5 }} variant="inherit" noWrap>
+              <StartEllipsis sx={{ my: 0.5 }} variant="inherit">
                 {file}
               </StartEllipsis>
             </ListItem>

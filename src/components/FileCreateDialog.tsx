@@ -67,7 +67,7 @@ const FileCreateDialog = () => {
       setConfirmationDialog({
         content: (
           <Trans
-            i18nKey="todo.txt already exists. Do you want to replace it?"
+            i18nKey="todo.txt already exists. Do you want to replace it"
             values={{ fileName }}
           />
         ),

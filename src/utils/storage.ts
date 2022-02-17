@@ -1,5 +1,5 @@
 import { Storage } from "@capacitor/storage";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export type Keys =
   | "language"
@@ -10,22 +10,38 @@ export type Keys =
   | "create-completion-date"
   | "received-notifications"
   | "sort-by"
-  | "hide-completed-tasks";
+  | "hide-completed-tasks"
+  | "cloud-storage"
+  | "Dropbox-files";
 
 export function useStorage() {
-  const getStorageItem = useCallback(async (key: Keys) => {
-    const result = await Storage.get({ key });
-    if (result) {
-      return result.value;
-    }
-    return null;
-  }, []);
+  const [trigger, setTrigger] = useState(0);
 
-  const setStorageItem = useCallback((key: Keys, value: string) => {
-    return Storage.set({ key, value: value });
-  }, []);
+  const getStorageItem = useCallback(
+    async <T extends string>(key: Keys) => {
+      const result = await Storage.get({ key });
+      if (result) {
+        return result.value as T;
+      }
+      return null;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [trigger]
+  );
+
+  const setStorageItem = useCallback(
+    async (key: Keys, value: string) => {
+      const currentValue = await getStorageItem(key);
+      if (currentValue !== value) {
+        setTrigger((val) => val + 1);
+      }
+      return Storage.set({ key, value: value });
+    },
+    [getStorageItem]
+  );
 
   const removeStorageItem = useCallback((key: Keys) => {
+    setTrigger((val) => val + 1);
     return Storage.remove({ key });
   }, []);
 

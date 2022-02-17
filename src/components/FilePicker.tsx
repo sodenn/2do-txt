@@ -1,15 +1,12 @@
-import { Directory } from "@capacitor/filesystem";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { LoadingButton } from "@mui/lab";
 import { styled } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { ChangeEvent, PropsWithChildren, ReactNode, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
+import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
-import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
 import { generateId } from "../utils/uuid";
 
@@ -26,7 +23,7 @@ const FilePicker = (props: PropsWithChildren<FilePickerProps>) => {
 
   const {
     loadTodoFile,
-    saveTodoFile,
+    createNewTodoFile,
     scheduleDueTaskNotifications,
     taskLists,
   } = useTask();
@@ -36,67 +33,21 @@ const FilePicker = (props: PropsWithChildren<FilePickerProps>) => {
   const id = generateId();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { isFile } = useFilesystem();
-  const { setConfirmationDialog } = useConfirmationDialog();
   const [loading, setLoading] = useState(false);
 
   const openTodoFile = async (content: string, file: File) => {
-    return new Promise<string | undefined>(async (resolve, reject) => {
-      try {
-        if (platform === "electron") {
-          // Note: Electron adds a path property to the file object
-          const filePath = (file as any).path;
-          const taskList = await loadTodoFile(filePath, content);
-          await addTodoFilePath(filePath);
-          scheduleDueTaskNotifications(taskList);
-          resolve(filePath);
-        } else {
-          // Other platforms does not allow to access the file storage. For this reason, a copy of
-          // the selected file is created in the app's document directory.
-          const fileName = file.name;
-
-          const result = await isFile({
-            directory: Directory.Documents,
-            path: fileName,
-          });
-
-          if (result) {
-            setConfirmationDialog({
-              content: (
-                <Trans
-                  i18nKey="todo.txt already exists. Do you want to replace it?"
-                  values={{ fileName }}
-                />
-              ),
-              buttons: [
-                {
-                  text: t("Cancel"),
-                  handler: () => {
-                    resolve(undefined);
-                  },
-                },
-                {
-                  text: t("Replace"),
-                  handler: async () => {
-                    await addTodoFilePath(fileName);
-                    const taskList = await saveTodoFile(fileName, content);
-                    scheduleDueTaskNotifications(taskList);
-                    resolve(fileName);
-                  },
-                },
-              ],
-            });
-          } else {
-            await addTodoFilePath(fileName);
-            const taskList = await saveTodoFile(fileName, content);
-            scheduleDueTaskNotifications(taskList);
-            resolve(fileName);
-          }
-        }
-      } catch (e) {
-        reject();
-      }
-    });
+    if (platform === "electron") {
+      // Note: Electron adds a path property to the file object
+      const filePath = (file as any).path;
+      const taskList = await loadTodoFile(filePath, content);
+      await addTodoFilePath(filePath);
+      scheduleDueTaskNotifications(taskList);
+      return filePath;
+    } else {
+      // Other platforms does not allow to access the file storage. For this reason, a copy of
+      // the selected file is created in the app's document directory.
+      return createNewTodoFile(file.name, content);
+    }
   };
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {

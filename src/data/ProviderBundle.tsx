@@ -1,6 +1,7 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import React, { FC, Suspense } from "react";
+import { CloudStorageProvider } from "./CloudStorageContext";
 import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
 import { FileManagementProvider } from "./FileManagementContext";
 import { FilterProvider } from "./FilterContext";
@@ -23,15 +24,19 @@ const ProviderBundle: FC = ({ children }) => {
       <Suspense fallback={null}>
         <MigrationProvider>
           <ConfirmationDialogProvider>
-            <SettingsProvider>
-              <FilterProvider>
-                <SideSheetProvider>
-                  <TaskProvider>
-                    <FileManagementProvider>{children}</FileManagementProvider>
-                  </TaskProvider>
-                </SideSheetProvider>
-              </FilterProvider>
-            </SettingsProvider>
+            <CloudStorageProvider>
+              <SettingsProvider>
+                <FilterProvider>
+                  <SideSheetProvider>
+                    <TaskProvider>
+                      <FileManagementProvider>
+                        {children}
+                      </FileManagementProvider>
+                    </TaskProvider>
+                  </SideSheetProvider>
+                </FilterProvider>
+              </SettingsProvider>
+            </CloudStorageProvider>
           </ConfirmationDialogProvider>
         </MigrationProvider>
       </Suspense>
