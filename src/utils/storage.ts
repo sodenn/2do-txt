@@ -40,8 +40,11 @@ export function useStorage() {
     [getStorageItem]
   );
 
-  const removeStorageItem = useCallback((key: Keys) => {
-    setTrigger((val) => val + 1);
+  const removeStorageItem = useCallback(async (key: Keys) => {
+    const currentValue = await getStorageItem(key);
+    if (!!currentValue) {
+      setTrigger((val) => val + 1);
+    }
     return Storage.remove({ key });
   }, []);
 

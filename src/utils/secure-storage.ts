@@ -60,7 +60,10 @@ function useWebSecureStorage() {
   );
 
   const removeSecureStorageItem = useCallback(async (key: Keys) => {
-    setTrigger((val) => val + 1);
+    const currentValue = await getSecureStorageItem(key);
+    if (!!currentValue) {
+      setTrigger((val) => val + 1);
+    }
     await sessionStorage.removeItem(prefix + key);
   }, []);
 
