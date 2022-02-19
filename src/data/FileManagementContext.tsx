@@ -1,6 +1,6 @@
 import { FC, useCallback, useState } from "react";
-import FileManagementDialog from "../../components/FileManagementDialog";
-import { createContext } from "../../utils/Context";
+import FileManagementDialog from "../components/FileManagementDialog";
+import { createContext } from "../utils/Context";
 
 export interface FileManagementDialogProps {
   open: boolean;

@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
+import { useCloudStorage } from "../data/CloudStorageContext/CloudStorageContext";
 import { CloudStorage } from "../types/cloud-storage.types";
 
 interface CloudStorageFileManagerProps {
