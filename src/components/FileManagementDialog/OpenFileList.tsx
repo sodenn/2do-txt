@@ -36,7 +36,7 @@ const OpenFileList = memo((props: OpenFileListProps) => {
       <Droppable droppableId="droppable-list">
         {(provided) => (
           <List
-            sx={{ pt: 0 }}
+            sx={{ py: 0 }}
             subheader={
               subheader ? (
                 <ListSubheader sx={{ bgcolor: "inherit" }} component="div">

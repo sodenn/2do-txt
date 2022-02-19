@@ -4,6 +4,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import {
   Dialog,
+  DialogContent,
   DialogTitle,
   IconButton,
   List,
@@ -151,58 +152,62 @@ const FileManagementDialog = () => {
   return (
     <Dialog maxWidth="xs" open={fileManagementDialogOpen} onClose={handleClose}>
       <DialogTitle sx={{ px: 2 }}>{t("Manage todo.txt")}</DialogTitle>
-      <OpenFileList
-        subheader={closedFiles.length > 0}
-        onClick={handleCopyToClipboard}
-        onClose={handleCloseFile}
-      />
-      {closedFiles.length > 0 && (
-        <List
-          sx={{ pt: 0 }}
-          subheader={
-            <ListSubheader sx={{ bgcolor: "inherit" }} component="div">
-              {t("Closed files")}
-            </ListSubheader>
-          }
-        >
-          {closedFiles.map((file, idx) => (
-            <ListItem
-              key={idx}
-              button
-              sx={{ pr: 12 }}
-              onClick={() => handleCopyToClipboard(file)}
-              secondaryAction={
-                <>
-                  <Tooltip title={t("Open") as string}>
-                    <IconButton
-                      aria-label="Open file"
-                      onClick={(event) => handleOpenFile(event, file)}
-                    >
-                      <OpenInNewOutlinedIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title={t("Delete") as string}>
-                    <IconButton
-                      edge="end"
-                      aria-label="Delete file"
-                      onClick={(event) => handleDeleteFile(event, file)}
-                    >
-                      <DeleteOutlineOutlinedIcon />
-                    </IconButton>
-                  </Tooltip>
-                </>
-              }
-            >
-              <StartEllipsis sx={{ my: 0.5 }} variant="inherit">
-                {file}
-              </StartEllipsis>
-            </ListItem>
-          ))}
-        </List>
-      )}
-      <Typography variant="caption" color="text.secondary" sx={{ p: 2 }}>
-        {t("Click on the list items to copy the file content to the clipboard")}
-      </Typography>
+      <DialogContent sx={{ p: 0 }}>
+        <OpenFileList
+          subheader={closedFiles.length > 0}
+          onClick={handleCopyToClipboard}
+          onClose={handleCloseFile}
+        />
+        {closedFiles.length > 0 && (
+          <List
+            sx={{ py: 0 }}
+            subheader={
+              <ListSubheader sx={{ bgcolor: "inherit" }} component="div">
+                {t("Closed files")}
+              </ListSubheader>
+            }
+          >
+            {closedFiles.map((file, idx) => (
+              <ListItem
+                key={idx}
+                button
+                sx={{ pr: 12 }}
+                onClick={() => handleCopyToClipboard(file)}
+                secondaryAction={
+                  <>
+                    <Tooltip title={t("Open") as string}>
+                      <IconButton
+                        aria-label="Open file"
+                        onClick={(event) => handleOpenFile(event, file)}
+                      >
+                        <OpenInNewOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t("Delete") as string}>
+                      <IconButton
+                        edge="end"
+                        aria-label="Delete file"
+                        onClick={(event) => handleDeleteFile(event, file)}
+                      >
+                        <DeleteOutlineOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                }
+              >
+                <StartEllipsis sx={{ my: 0.5 }} variant="inherit">
+                  {file}
+                </StartEllipsis>
+              </ListItem>
+            ))}
+          </List>
+        )}
+        <Typography variant="caption" color="text.secondary" sx={{ p: 2 }}>
+          {t(
+            "Click on the list items to copy the file content to the clipboard"
+          )}
+        </Typography>
+      </DialogContent>
     </Dialog>
   );
 };

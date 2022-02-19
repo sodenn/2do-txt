@@ -2,8 +2,10 @@ import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
   List,
   ListItem,
@@ -78,44 +80,58 @@ const CloudStorageFileDialog = () => {
   );
 
   useEffect(() => {
-    handleLoadItems(root);
+    if (cloudStorageFileDialogOpen) {
+      handleLoadItems(root);
+    }
   }, [handleLoadItems, cloudStorageFileDialogOpen]);
 
   return (
-    <Dialog open={cloudStorageFileDialogOpen} onClose={handleClose}>
+    <Dialog
+      maxWidth="xs"
+      scroll="paper"
+      open={cloudStorageFileDialogOpen}
+      onClose={handleClose}
+    >
       <DialogTitle sx={{ px: 2 }}>
         {t(`Choose from ${cloudStorage}`)}
       </DialogTitle>
-      {files && files.items.length > 0 && (
-        <List sx={{ pt: 0 }} dense>
-          {files.items
-            .filter((i) => !i.directory)
-            .map((item, idx) => (
-              <ListItem
-                button
-                key={idx}
-                onClick={() => setSelectedFile(item)}
-                selected={selectedFile && item.path === selectedFile.path}
-              >
-                <Box sx={{ overflow: "hidden" }}>
-                  <StartEllipsis sx={{ my: 0.5 }}>{item.name}</StartEllipsis>
-                  <StartEllipsis
-                    sx={{ my: 0.5 }}
-                    variant="body2"
-                    color="text.secondary"
-                  >
-                    {item.path}
-                  </StartEllipsis>
-                </Box>
+      <DialogContent sx={{ p: 0 }}>
+        {!files && (
+          <Box sx={{ textAlign: "center", my: 2 }}>
+            <CircularProgress />
+          </Box>
+        )}
+        {files && files.items.length > 0 && (
+          <List sx={{ py: 0 }} dense>
+            {files.items
+              .filter((i) => !i.directory)
+              .map((item, idx) => (
+                <ListItem
+                  button
+                  key={idx}
+                  onClick={() => setSelectedFile(item)}
+                  selected={selectedFile && item.path === selectedFile.path}
+                >
+                  <Box sx={{ overflow: "hidden" }}>
+                    <StartEllipsis sx={{ my: 0.5 }}>{item.name}</StartEllipsis>
+                    <StartEllipsis
+                      sx={{ my: 0.5 }}
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      {item.path}
+                    </StartEllipsis>
+                  </Box>
+                </ListItem>
+              ))}
+            {files.hasMore && (
+              <ListItem button onClick={handleLoadMoreItems}>
+                <StartEllipsis sx={{ my: 0.5 }}>{t("Load more")}</StartEllipsis>
               </ListItem>
-            ))}
-          {files.hasMore && (
-            <ListItem button onClick={handleLoadMoreItems}>
-              <StartEllipsis sx={{ my: 0.5 }}>{t("Load more")}</StartEllipsis>
-            </ListItem>
-          )}
-        </List>
-      )}
+            )}
+          </List>
+        )}
+      </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t("Cancel")}</Button>
         <LoadingButton
