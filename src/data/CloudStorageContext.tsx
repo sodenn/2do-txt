@@ -8,7 +8,7 @@ import {
   ListCloudFilesOptions,
 } from "../types/cloud-storage.types";
 import { createContext } from "../utils/Context";
-import { useDropboxStorage } from "../utils/dropbox-storage";
+import { useDropboxStorage } from "./CloudStorageContext/dropbox-storage";
 import { getFilenameFromPath } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
 import { useSecureStorage } from "../utils/secure-storage";

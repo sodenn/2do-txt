@@ -14,12 +14,12 @@ import {
   NetworkError,
   SyncFileOptions,
   UploadFileOptions,
-} from "../types/cloud-storage.types";
-import { parseDate } from "./date";
-import { usePlatform } from "./platform";
-import { getBaseUrl } from "./routing";
-import { useSecureStorage } from "./secure-storage";
-import { useStorage } from "./storage";
+} from "../../types/cloud-storage.types";
+import { parseDate } from "../../utils/date";
+import { usePlatform } from "../../utils/platform";
+import { getBaseUrl } from "../../utils/routing";
+import { useSecureStorage } from "../../utils/secure-storage";
+import { useStorage } from "../../utils/storage";
 
 const cloudStorage = "Dropbox";
 const dropboxClientId = process.env.REACT_APP_DROPBOX_CLIENT_ID;
