@@ -15,6 +15,7 @@ import {
   SyncFileOptions,
   UploadFileOptions,
 } from "../../types/cloud-storage.types";
+import { createContext } from "../../utils/Context";
 import { parseDate } from "../../utils/date";
 import { usePlatform } from "../../utils/platform";
 import { getBaseUrl } from "../../utils/routing";
@@ -25,7 +26,7 @@ const cloudStorage = "Dropbox";
 const dropboxClientId = process.env.REACT_APP_DROPBOX_CLIENT_ID;
 const redirectUri = "https://www.dropbox.com/1/oauth2/redirect_receiver";
 
-export function useDropboxStorage() {
+export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const {
@@ -378,7 +379,7 @@ export function useDropboxStorage() {
         });
       }
     },
-    [getFileMetaData, dropboxUploadFile]
+    [dropboxUploadFile, getFileMetaData]
   );
 
   return {
@@ -390,4 +391,4 @@ export function useDropboxStorage() {
     dropboxUnlink,
     dropboxRequestTokens,
   };
-}
+});

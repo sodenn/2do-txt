@@ -1,5 +1,5 @@
 import { throttle } from "lodash";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import {
   CloudFile,
@@ -13,7 +13,10 @@ import { usePlatform } from "../../utils/platform";
 import { useSecureStorage } from "../../utils/secure-storage";
 import { useStorage } from "../../utils/storage";
 import { useConfirmationDialog } from "../ConfirmationDialogContext";
-import { useDropboxStorage } from "./dropbox-storage";
+import {
+  DropboxStorageProvider,
+  useDropboxStorage,
+} from "./DropboxStorageContext";
 
 interface SyncFileOptions {
   filePath: string;
@@ -30,7 +33,7 @@ export interface CloudFileRef extends CloudFile {
   localFilePath: string;
 }
 
-const [CloudStorageProvider, useCloudStorage] = createContext(() => {
+const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const platform = usePlatform();
   const { t } = useTranslation();
   const {
@@ -249,7 +252,14 @@ const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     ]
   );
 
-  const syncFile = useRef(throttle(_syncFile)).current;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const syncFile = useCallback(throttle(_syncFile, 5000), [
+    dropboxSyncFile,
+    getCloudFileByLocalFilePath,
+    getCloudStorage,
+    handleSyncError,
+    setCloudFile,
+  ]);
 
   const removeCloudFile = useCallback(
     async (filePath: string) => {
@@ -360,5 +370,13 @@ const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     setCloudStorageFileDialogOpen,
   };
 });
+
+const CloudStorageProvider: FC = ({ children }) => {
+  return (
+    <DropboxStorageProvider>
+      <CloudStorageProviderInternal>{children}</CloudStorageProviderInternal>
+    </DropboxStorageProvider>
+  );
+};
 
 export { CloudStorageProvider, useCloudStorage };
