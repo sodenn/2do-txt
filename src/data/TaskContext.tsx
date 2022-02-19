@@ -27,7 +27,7 @@ import {
   TaskListParseResult,
 } from "../utils/task-list";
 import { generateId } from "../utils/uuid";
-import { useCloudStorage } from "./CloudStorageContext/CloudStorageContext";
+import { useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
 import { useMigration } from "./MigrationContext";

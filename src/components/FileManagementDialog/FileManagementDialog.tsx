@@ -33,7 +33,8 @@ interface CloseOptions {
 
 const FileManagementDialog = () => {
   const platform = usePlatform();
-  const { open, setFileManagementDialog } = useFileManagementDialog();
+  const { fileManagementDialogOpen, setFileManagementDialogOpen } =
+    useFileManagementDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { enqueueSnackbar } = useSnackbar();
   const { readdir, deleteFile, readFile } = useFilesystem();
@@ -144,11 +145,11 @@ const FileManagementDialog = () => {
   };
 
   const handleClose = () => {
-    setFileManagementDialog({ open: false });
+    setFileManagementDialogOpen(false);
   };
 
   return (
-    <Dialog maxWidth="xs" open={open} onClose={handleClose}>
+    <Dialog maxWidth="xs" open={fileManagementDialogOpen} onClose={handleClose}>
       <DialogTitle sx={{ px: 2 }}>{t("Manage todo.txt")}</DialogTitle>
       <OpenFileList
         subheader={closedFiles.length > 0}

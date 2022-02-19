@@ -17,7 +17,7 @@ import {
 import React, { MouseEvent, useEffect, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../../data/CloudStorageContext/CloudStorageContext";
+import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useSettings } from "../../data/SettingsContext";
 import { CloudFile } from "../../types/cloud-storage.types";
 import { parseDate } from "../../utils/date";

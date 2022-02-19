@@ -29,7 +29,7 @@ const menuMaxWidth = 350;
 const FileMenu = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { openFileManagementDialog } = useFileManagementDialog();
+  const { setFileManagementDialogOpen } = useFileManagementDialog();
   const { taskLists, activeTaskList, openTodoFileCreateDialog } = useTask();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -55,7 +55,7 @@ const FileMenu = () => {
 
   const handleManageFile = () => {
     handleClose();
-    openFileManagementDialog();
+    setFileManagementDialogOpen(true);
   };
 
   const openFileMenuItem = (

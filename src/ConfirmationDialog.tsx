@@ -6,40 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { FC, ReactNode, useState } from "react";
-import { createContext } from "../utils/Context";
-
-interface ConfirmationButtonProps {
-  text: string;
-  handler?: () => void;
-}
-
-interface ConfirmationDialogProps {
-  title?: ReactNode;
-  content: ReactNode;
-  buttons: ConfirmationButtonProps[];
-}
-
-const [ConfirmationDialogProviderInternal, useConfirmationDialog] =
-  createContext(() => {
-    const [confirmationDialog, setConfirmationDialog] = useState<
-      ConfirmationDialogProps | undefined
-    >(undefined);
-
-    return {
-      confirmationDialog,
-      setConfirmationDialog,
-    };
-  });
-
-const ConfirmationDialogProvider: FC = ({ children }) => {
-  return (
-    <ConfirmationDialogProviderInternal>
-      {children}
-      <ConfirmationDialog />
-    </ConfirmationDialogProviderInternal>
-  );
-};
+import { useConfirmationDialog } from "./data/ConfirmationDialogContext";
 
 const ConfirmationDialog = () => {
   const { confirmationDialog, setConfirmationDialog } = useConfirmationDialog();
@@ -86,4 +53,4 @@ const ConfirmationDialog = () => {
   );
 };
 
-export { ConfirmationDialogProvider, useConfirmationDialog };
+export default ConfirmationDialog;

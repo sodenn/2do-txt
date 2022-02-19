@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext/CloudStorageContext";
+import { useCloudStorage } from "../data/CloudStorageContext";
 import { useTask } from "../data/TaskContext";
 import { CloudFile, ListCloudFilesResult } from "../types/cloud-storage.types";
 import StartEllipsis from "./StartEllipsis";
