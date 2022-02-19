@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
+import { Dictionary } from "../types/common";
 import { TaskFormData } from "../utils/task";
 import "../utils/testing";
-import { Dictionary } from "../utils/types";
 import { pasteText } from "./TaskEditor/TaskEditor.test";
 import TaskForm from "./TaskForm";
 

@@ -9,7 +9,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { SortKey, useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
-import { Dictionary } from "../utils/types";
+import { Dictionary } from "../types/common";
 import ChipList from "./ChipList";
 
 const Filter = () => {

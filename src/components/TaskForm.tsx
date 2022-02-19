@@ -2,6 +2,7 @@ import { Box, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskListState } from "../data/TaskContext";
+import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import { createDueDateRegex, parseTaskBody, TaskFormData } from "../utils/task";
@@ -11,7 +12,6 @@ import {
   taskProjectStyle,
   taskTagStyle,
 } from "../utils/task-styles";
-import { Dictionary } from "../utils/types";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";

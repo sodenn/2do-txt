@@ -1,5 +1,5 @@
 import { Badge, Chip, styled } from "@mui/material";
-import { Dictionary } from "../utils/types";
+import { Dictionary } from "../types/common";
 
 interface ChipListProps {
   list?: Dictionary<number>;

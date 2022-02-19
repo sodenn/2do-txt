@@ -7,7 +7,7 @@ import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Dictionary } from "../utils/types";
+import { Dictionary } from "../types/common";
 
 const localeMap: Dictionary<Locale> = {
   en: enLocale,
