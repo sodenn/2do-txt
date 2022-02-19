@@ -52,7 +52,7 @@ const CloudStorageFileDialog = () => {
     handleClose();
   };
 
-  const loadItems = useCallback(
+  const handleLoadItems = useCallback(
     (path = root) => {
       listFiles({ path }).then((result) => {
         if (result) {
@@ -78,8 +78,8 @@ const CloudStorageFileDialog = () => {
   );
 
   useEffect(() => {
-    loadItems(root);
-  }, [loadItems, cloudStorageFileDialogOpen]);
+    handleLoadItems(root);
+  }, [handleLoadItems, cloudStorageFileDialogOpen]);
 
   return (
     <Dialog open={cloudStorageFileDialogOpen} onClose={handleClose}>

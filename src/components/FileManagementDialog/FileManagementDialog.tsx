@@ -16,7 +16,7 @@ import { useSnackbar } from "notistack";
 import React, { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../../data/ConfirmationDialogContext";
-import { useFileManagementDialog } from "../../data/FileManagementContext";
+import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
 import { useFilter } from "../../data/FilterContext";
 import { useSettings } from "../../data/SettingsContext";
 import { useTask } from "../../data/TaskContext";

@@ -9,7 +9,7 @@ interface CloudStorageFileManagerProps {
   cloudStorage: CloudStorage;
 }
 
-const CloudStorageFilePicker = (props: CloudStorageFileManagerProps) => {
+const CloudStorageFileButton = (props: CloudStorageFileManagerProps) => {
   const { onClick, cloudStorage } = props;
   const { t } = useTranslation();
   const {
@@ -34,4 +34,4 @@ const CloudStorageFilePicker = (props: CloudStorageFileManagerProps) => {
   );
 };
 
-export default CloudStorageFilePicker;
+export default CloudStorageFileButton;

@@ -11,7 +11,7 @@ import { useSettings } from "../data/SettingsContext";
 import { useSideSheet } from "../data/SideSheetContext";
 import { useNotifications } from "../utils/notifications";
 import CloudStorageConnectButton from "./CloudStorageConnectButton";
-import CloudStorageFilePicker from "./CloudStorageFilePicker";
+import CloudStorageFileButton from "./CloudStorageFileButton";
 import LanguageSelect from "./LanguageSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
 
@@ -97,7 +97,7 @@ const Settings = () => {
             {t("Cloud storage")}
           </Typography>
           <Stack spacing={1} sx={{ mt: 1 }}>
-            <CloudStorageFilePicker
+            <CloudStorageFileButton
               cloudStorage="Dropbox"
               onClick={() => setSideSheetOpen(false)}
             />

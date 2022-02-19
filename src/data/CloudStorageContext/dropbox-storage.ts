@@ -50,7 +50,7 @@ export function useDropboxStorage() {
     await Promise.all([
       removeSecureStorageItem("Dropbox-code-verifier"),
       removeSecureStorageItem("Dropbox-refresh-token"),
-    ]);
+    ]).catch((e) => void e);
 
     // Don't annoy the user, so only show the message once
     if (!warningShown) {
