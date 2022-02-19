@@ -1,16 +1,10 @@
 import { Clipboard } from "@capacitor/clipboard";
 import { Directory, Encoding } from "@capacitor/filesystem";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import {
+  Box,
   Dialog,
   DialogContent,
   DialogTitle,
-  IconButton,
-  List,
-  ListItem,
-  ListSubheader,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
@@ -23,7 +17,7 @@ import { useSettings } from "../../data/SettingsContext";
 import { useTask } from "../../data/TaskContext";
 import { getFilenameFromPath, useFilesystem } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
-import StartEllipsis from "../StartEllipsis";
+import CloseFileList from "./CloseFileList";
 import OpenFileList from "./OpenFileList";
 
 interface CloseOptions {
@@ -150,7 +144,12 @@ const FileManagementDialog = () => {
   };
 
   return (
-    <Dialog maxWidth="xs" open={fileManagementDialogOpen} onClose={handleClose}>
+    <Dialog
+      maxWidth="xs"
+      scroll="paper"
+      open={fileManagementDialogOpen}
+      onClose={handleClose}
+    >
       <DialogTitle sx={{ px: 2 }}>{t("Manage todo.txt")}</DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <OpenFileList
@@ -158,55 +157,19 @@ const FileManagementDialog = () => {
           onClick={handleCopyToClipboard}
           onClose={handleCloseFile}
         />
-        {closedFiles.length > 0 && (
-          <List
-            sx={{ py: 0 }}
-            subheader={
-              <ListSubheader sx={{ bgcolor: "inherit" }} component="div">
-                {t("Closed files")}
-              </ListSubheader>
-            }
-          >
-            {closedFiles.map((file, idx) => (
-              <ListItem
-                key={idx}
-                button
-                sx={{ pr: 12 }}
-                onClick={() => handleCopyToClipboard(file)}
-                secondaryAction={
-                  <>
-                    <Tooltip title={t("Open") as string}>
-                      <IconButton
-                        aria-label="Open file"
-                        onClick={(event) => handleOpenFile(event, file)}
-                      >
-                        <OpenInNewOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title={t("Delete") as string}>
-                      <IconButton
-                        edge="end"
-                        aria-label="Delete file"
-                        onClick={(event) => handleDeleteFile(event, file)}
-                      >
-                        <DeleteOutlineOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </>
-                }
-              >
-                <StartEllipsis sx={{ my: 0.5 }} variant="inherit">
-                  {file}
-                </StartEllipsis>
-              </ListItem>
-            ))}
-          </List>
-        )}
-        <Typography variant="caption" color="text.secondary" sx={{ p: 2 }}>
-          {t(
-            "Click on the list items to copy the file content to the clipboard"
-          )}
-        </Typography>
+        <CloseFileList
+          list={closedFiles}
+          onClick={handleCopyToClipboard}
+          onOpen={handleOpenFile}
+          onDelete={handleDeleteFile}
+        />
+        <Box sx={{ p: 2 }}>
+          <Typography variant="caption" color="text.secondary">
+            {t(
+              "Click on the list items to copy the file content to the clipboard"
+            )}
+          </Typography>
+        </Box>
       </DialogContent>
     </Dialog>
   );
