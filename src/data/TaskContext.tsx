@@ -56,7 +56,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const { enqueueSnackbar } = useSnackbar();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { addTodoFilePath } = useSettings();
-  const { syncFile, removeCloudFile, cloudStorageEnabled } = useCloudStorage();
+  const { syncFile, unlinkFile, cloudStorageEnabled } = useCloudStorage();
   const {
     scheduleNotifications,
     cancelNotifications,
@@ -167,18 +167,34 @@ const [TaskProvider, useTask] = createContext(() => {
     [toTaskList]
   );
 
+  const syncTodoFileWithCloudStorage = useCallback(
+    async (filePath: string, text: string) => {
+      const result = await syncFile({ filePath, text });
+      if (result) {
+        await writeFile({
+          path: filePath,
+          data: result.text,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8,
+        });
+        return loadTodoFile(filePath, text);
+      }
+    },
+    [loadTodoFile, syncFile, writeFile]
+  );
+
   const saveTodoFile = useCallback(
     async (filePath: string, text = "") => {
       await writeFile({
-        path: filePath || defaultTodoFilePath,
+        path: filePath,
         data: text,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
-      syncFile({ filePath, text });
+      syncTodoFileWithCloudStorage(filePath, text).catch((e) => void e);
       return loadTodoFile(filePath, text);
     },
-    [loadTodoFile, syncFile, writeFile]
+    [loadTodoFile, syncTodoFileWithCloudStorage, writeFile]
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -353,7 +369,7 @@ const [TaskProvider, useTask] = createContext(() => {
       }
 
       if (cloudStorageEnabled) {
-        removeCloudFile(filePath);
+        unlinkFile(filePath);
       }
 
       taskList.items.forEach((task) =>
@@ -393,7 +409,7 @@ const [TaskProvider, useTask] = createContext(() => {
       cloudStorageEnabled,
       deleteTodoFile,
       platform,
-      removeCloudFile,
+      unlinkFile,
       removeTodoFilePath,
       setActiveTaskListPath,
       taskLists,
@@ -464,6 +480,7 @@ const [TaskProvider, useTask] = createContext(() => {
         return new Promise<string | undefined>(async (resolve, reject) => {
           try {
             setConfirmationDialog({
+              onClose: () => resolve(undefined),
               content: (
                 <Trans
                   i18nKey="todo.txt already exists. Do you want to replace it"
@@ -528,7 +545,7 @@ const [TaskProvider, useTask] = createContext(() => {
         list
           .filter((i) => !!i)
           .map((i) => {
-            syncFile({ filePath: i!.path, text: i!.file.data });
+            syncTodoFileWithCloudStorage(i!.path, i!.file.data);
             return toTaskList(i!.path, i!.file.data);
           })
       );

@@ -1,5 +1,7 @@
 export type CloudStorage = "Dropbox";
 
+export type UpdateMode = "create" | "update";
+
 export interface CloudFile {
   name: string;
   path: string;
@@ -20,7 +22,7 @@ export interface ListCloudFilesResult {
 }
 
 export interface UploadFileOptions {
-  mode: "create" | "update";
+  mode: UpdateMode;
   path: string;
   contents: any;
 }

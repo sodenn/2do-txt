@@ -87,5 +87,6 @@
   "Choose from Dropbox": "Choose from Dropbox",
   "Cloud storage": "Cloud storage",
   "Session has expired. Please login again": "{{cloudStorage}} session has expired. Please login again.",
-  "Unable to connect. Check network connection": "Unable to connect to {{cloudStorage}}. Check network connection."
+  "Unable to connect. Check network connection": "Unable to connect to {{cloudStorage}}. Check network connection.",
+  "The file could not be downloaded": "The file could not be downloaded from {{cloudStorage}}."
 }

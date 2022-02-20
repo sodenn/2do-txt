@@ -1,15 +1,16 @@
 import { ReactNode, useState } from "react";
 import { createContext } from "../utils/Context";
 
-interface ConfirmationButtonProps {
+export interface ConfirmationButtonProps {
   text: string;
   handler?: () => void;
 }
 
-interface ConfirmationDialogProps {
+export interface ConfirmationDialogProps {
   title?: ReactNode;
   content: ReactNode;
   buttons: ConfirmationButtonProps[];
+  onClose?: () => void;
 }
 
 const [ConfirmationDialogProvider, useConfirmationDialog] = createContext(

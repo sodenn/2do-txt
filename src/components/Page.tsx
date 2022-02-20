@@ -1,8 +1,8 @@
 import { Box, Container, styled } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import ConfirmationDialog from "../ConfirmationDialog";
 import { useTask } from "../data/TaskContext";
 import CloudStorageFileDialog from "./CloudStorageFileDialog";
+import ConfirmationDialog from "./ConfirmationDialog";
 import FileCreateDialog from "./FileCreateDialog";
 import FileManagementDialog from "./FileManagementDialog";
 import Header from "./Header";

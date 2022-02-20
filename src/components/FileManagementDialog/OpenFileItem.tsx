@@ -21,7 +21,7 @@ import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useSettings } from "../../data/SettingsContext";
 import { CloudFile } from "../../types/cloud-storage.types";
 import { parseDate } from "../../utils/date";
-import { getFilenameFromPath, useFilesystem } from "../../utils/filesystem";
+import { useFilesystem } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
 import StartEllipsis from "../StartEllipsis";
 
@@ -45,36 +45,44 @@ const OpenFileItem = (props: OpenFileItemProps) => {
   const platform = usePlatform();
   const { readFile } = useFilesystem();
   const {
-    uploadFile,
-    getCloudFileByLocalFilePath,
-    removeCloudFile,
+    getCloudFileByFilePath,
+    unlinkFile,
     cloudStorage,
     cloudStorageConnected,
+    uploadFileAndResolveConflict,
   } = useCloudStorage();
   const [cloudFile, setCloudFile] = useState<CloudFile>();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
 
   useEffect(() => {
-    getCloudFileByLocalFilePath(filePath).then(setCloudFile);
-  }, [filePath, getCloudFileByLocalFilePath]);
+    getCloudFileByFilePath(filePath).then(setCloudFile);
+  }, [filePath, getCloudFileByFilePath]);
 
   const handleCloudSync = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setCloudSyncLoading(true);
+
     if (!cloudFile) {
-      const result = await readFile({
+      const readFileResult = await readFile({
         path: filePath,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
-      await uploadFile({
+
+      const cloudFile = await uploadFileAndResolveConflict({
         filePath,
-        fileName: getFilenameFromPath(filePath),
-        text: result.data,
+        text: readFileResult.data,
+        mode: "create",
       });
+
+      if (cloudFile) {
+        setCloudFile(cloudFile);
+      }
     } else {
-      await removeCloudFile(filePath);
+      await unlinkFile(filePath);
+      setCloudFile(undefined);
     }
+
     setCloudSyncLoading(false);
   };
 

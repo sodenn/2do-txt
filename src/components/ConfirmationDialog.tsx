@@ -6,7 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { useConfirmationDialog } from "./data/ConfirmationDialogContext";
+import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 
 const ConfirmationDialog = () => {
   const { confirmationDialog, setConfirmationDialog } = useConfirmationDialog();
@@ -15,10 +15,13 @@ const ConfirmationDialog = () => {
     if (handler) {
       handler();
     }
-    handleClose();
+    setConfirmationDialog(undefined);
   };
 
   const handleClose = () => {
+    if (confirmationDialog && confirmationDialog.onClose) {
+      confirmationDialog.onClose();
+    }
     setConfirmationDialog(undefined);
   };
 

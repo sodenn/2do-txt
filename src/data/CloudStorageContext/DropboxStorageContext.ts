@@ -294,27 +294,24 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     ): Promise<CloudFile> => {
       const { path, contents, mode } = opt;
       const dbx = await getClient();
-
+      const dropboxPath = path.startsWith("/") ? path : `/${path}`;
       const {
         result: { name, path_lower, server_modified, rev },
       } = await dbx
         .filesUpload({
-          path: path.startsWith("/") ? path : `/${path}`,
+          path: dropboxPath,
           contents,
           mode: mode === "create" ? { ".tag": "add" } : { ".tag": "overwrite" },
         })
         .catch(async (error) => {
-          handleError(error).catch(() => {
-            // special error handling below
-          });
           if (error.status === 409) {
-            const cloudFile = await getFileMetaData(path);
+            const cloudFile = await getFileMetaData(dropboxPath);
             throw new CloudFileConflictError({
               cloudFile,
               contents,
             });
           } else {
-            throw error;
+            return handleError(error);
           }
         });
 

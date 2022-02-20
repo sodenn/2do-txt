@@ -26,7 +26,7 @@ const CloudStorageFileDialog = () => {
     listFiles,
     cloudStorage,
     downloadFile,
-    setCloudFile,
+    linkFile,
     cloudStorageFileDialogOpen,
     setCloudStorageFileDialogOpen,
   } = useCloudStorage();
@@ -49,7 +49,7 @@ const CloudStorageFileDialog = () => {
 
     const text = await downloadFile(selectedFile.path);
     await createNewTodoFile(selectedFile.name, text);
-    await setCloudFile({ ...selectedFile, localFilePath: selectedFile.name });
+    await linkFile({ ...selectedFile, localFilePath: selectedFile.name });
 
     handleClose();
   };
