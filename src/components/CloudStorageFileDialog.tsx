@@ -9,9 +9,10 @@ import {
   DialogTitle,
   List,
   ListItem,
+  Typography,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { CloudFileRef, useCloudStorage } from "../data/CloudStorageContext";
 import { useTask } from "../data/TaskContext";
 import { CloudFile, ListCloudFilesResult } from "../types/cloud-storage.types";
@@ -111,6 +112,11 @@ const CloudStorageFileDialog = () => {
           <Box sx={{ textAlign: "center", my: 2 }}>
             <CircularProgress />
           </Box>
+        )}
+        {files && files.items.length === 0 && (
+          <Typography sx={{ px: 2, fontStyle: "italic" }} color="text.disabled">
+            <Trans i18nKey="No todo.txt files uploaded yet" />
+          </Typography>
         )}
         {files && files.items.length > 0 && (
           <List sx={{ py: 0 }} dense>
