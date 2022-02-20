@@ -214,7 +214,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       return text;
     },
-    [dropboxDownloadFile, getCloudFileByFilePath, getCloudStorage]
+    [dropboxDownloadFile, getCloudStorage]
   );
 
   const openResolveConflictDialog = useCallback(
