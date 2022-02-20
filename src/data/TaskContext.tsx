@@ -453,6 +453,13 @@ const [TaskProvider, useTask] = createContext(() => {
         path: fileName,
       });
 
+      const saveFile = async (fileName: string, text: string) => {
+        await addTodoFilePath(fileName);
+        const taskList = await saveTodoFile(fileName, text);
+        scheduleDueTaskNotifications(taskList).catch((e) => void e);
+        return fileName;
+      };
+
       if (result) {
         return new Promise<string | undefined>(async (resolve, reject) => {
           try {
@@ -473,9 +480,7 @@ const [TaskProvider, useTask] = createContext(() => {
                 {
                   text: t("Replace"),
                   handler: async () => {
-                    await addTodoFilePath(fileName);
-                    const taskList = await saveTodoFile(fileName, text);
-                    scheduleDueTaskNotifications(taskList);
+                    await saveFile(fileName, text);
                     resolve(fileName);
                   },
                 },
@@ -486,10 +491,7 @@ const [TaskProvider, useTask] = createContext(() => {
           }
         });
       } else {
-        await addTodoFilePath(fileName);
-        const taskList = await saveTodoFile(fileName, text);
-        scheduleDueTaskNotifications(taskList);
-        return fileName;
+        return saveFile(fileName, text);
       }
     },
     [

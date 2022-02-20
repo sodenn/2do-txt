@@ -34,7 +34,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     getSecureStorageItem,
     removeSecureStorageItem,
   } = useSecureStorage();
-  const { setStorageItem, removeStorageItem } = useStorage();
+  const { removeStorageItem } = useStorage();
   const platform = usePlatform();
   const [warningShown, setWarningShown] = useState(false);
   const dbxRef: MutableRefObject<Dropbox | null> = createRef();
@@ -180,7 +180,6 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
               const authorizationCode = event.url.split("=")[1].split("&")[0];
               if (authorizationCode) {
                 await dropboxRequestTokens(codeVerifier, authorizationCode);
-                await setStorageItem("cloud-storage", cloudStorage);
                 resolve();
               } else {
                 reject();
@@ -194,23 +193,17 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       await setSecureStorageItem("Dropbox-code-verifier", codeVerifier);
       window.location.href = authUrl;
     }
-  }, [
-    getRedirectUrl,
-    platform,
-    dropboxRequestTokens,
-    setStorageItem,
-    setSecureStorageItem,
-  ]);
+  }, [getRedirectUrl, platform, dropboxRequestTokens, setSecureStorageItem]);
 
   const dropboxUnlink = useCallback(async () => {
     const dbx = await getClient();
-    await dbx.authTokenRevoke().catch(handleError);
+    dbx.authTokenRevoke().catch((e) => void e);
     await Promise.all([
-      removeStorageItem("cloud-storage"),
       removeStorageItem("Dropbox-files"),
       removeSecureStorageItem("Dropbox-code-verifier"),
+      removeSecureStorageItem("Dropbox-refresh-token"),
     ]);
-  }, [getClient, handleError, removeSecureStorageItem, removeStorageItem]);
+  }, [getClient, removeSecureStorageItem, removeStorageItem]);
 
   const dropboxListFiles = useCallback(
     async (opt: ListCloudFilesOptions): Promise<ListCloudFilesResult> => {

@@ -1,5 +1,5 @@
 import { Keychain } from "@awesome-cordova-plugins/keychain";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { usePlatform } from "./platform";
 
 export type Keys = "Dropbox-refresh-token" | "Dropbox-code-verifier";
@@ -33,7 +33,6 @@ export function useSecureStorage() {
 
 function useWebSecureStorage() {
   const prefix = "SecureStorage.";
-  const [trigger, setTrigger] = useState(0);
 
   const getSecureStorageItem = useCallback(
     async (key: Keys): Promise<string | null> => {
@@ -45,25 +44,14 @@ function useWebSecureStorage() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [trigger]
+    []
   );
 
-  const setSecureStorageItem = useCallback(
-    async (key: Keys, value: string) => {
-      const currentValue = await getSecureStorageItem(key);
-      if (currentValue !== value) {
-        setTrigger((val) => val + 1);
-      }
-      sessionStorage.setItem(prefix + key, btoa(value));
-    },
-    [getSecureStorageItem]
-  );
+  const setSecureStorageItem = useCallback(async (key: Keys, value: string) => {
+    sessionStorage.setItem(prefix + key, btoa(value));
+  }, []);
 
   const removeSecureStorageItem = useCallback(async (key: Keys) => {
-    const currentValue = await getSecureStorageItem(key);
-    if (!!currentValue) {
-      setTrigger((val) => val + 1);
-    }
     await sessionStorage.removeItem(prefix + key);
   }, []);
 
@@ -75,30 +63,19 @@ function useWebSecureStorage() {
 }
 
 function useIosSecureStorage() {
-  const [trigger, setTrigger] = useState(0);
-
   const getSecureStorageItem = useCallback(
     (key: Keys): Promise<string | null> => {
       return Keychain.get(key);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [trigger]
+    []
   );
 
-  const setSecureStorageItem = useCallback(
-    async (key: Keys, value: string) => {
-      setTrigger((val) => val + 1);
-      const currentValue = await getSecureStorageItem(key);
-      if (currentValue !== value) {
-        setTrigger((val) => val + 1);
-      }
-      await Keychain.set(key, value);
-    },
-    [getSecureStorageItem]
-  );
+  const setSecureStorageItem = useCallback(async (key: Keys, value: string) => {
+    await Keychain.set(key, value);
+  }, []);
 
   const removeSecureStorageItem = useCallback(async (key: Keys) => {
-    setTrigger((val) => val + 1);
     await Keychain.remove(key);
   }, []);
 
