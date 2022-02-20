@@ -1,7 +1,7 @@
 import { Storage } from "@capacitor/storage";
 import { useCallback } from "react";
 
-export type Keys =
+export type StorageKeys =
   | "language"
   | "theme-mode"
   | "todo-txt-paths"
@@ -16,7 +16,7 @@ export type Keys =
 
 export function useStorage() {
   const getStorageItem = useCallback(
-    async <T extends string>(key: Keys) => {
+    async <T extends string>(key: StorageKeys) => {
       const result = await Storage.get({ key });
       if (result) {
         return result.value as T;
@@ -27,11 +27,14 @@ export function useStorage() {
     []
   );
 
-  const setStorageItem = useCallback(async (key: Keys, value: string) => {
-    return Storage.set({ key, value: value });
-  }, []);
+  const setStorageItem = useCallback(
+    async (key: StorageKeys, value: string) => {
+      return Storage.set({ key, value: value });
+    },
+    []
+  );
 
-  const removeStorageItem = useCallback(async (key: Keys) => {
+  const removeStorageItem = useCallback(async (key: StorageKeys) => {
     return Storage.remove({ key });
   }, []);
 

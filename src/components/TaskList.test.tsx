@@ -13,6 +13,7 @@ import {
   TestContext,
   todoTxt,
 } from "../utils/testing";
+import ConfirmationDialog from "./ConfirmationDialog";
 import TaskLists from "./TaskLists";
 
 export const todoTxtPaths: StorageItem = {
@@ -258,6 +259,7 @@ Task E @Test @Feature`;
     render(
       <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
         <TaskLists />
+        <ConfirmationDialog />
       </EmptyTestContext>
     );
 

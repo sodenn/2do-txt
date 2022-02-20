@@ -28,7 +28,12 @@ const CloudStorageFileButton = (props: CloudStorageFileManagerProps) => {
   }
 
   return (
-    <Button variant="outlined" fullWidth onClick={handleClick}>
+    <Button
+      variant="outlined"
+      fullWidth
+      onClick={handleClick}
+      aria-label="Choose file from cloud storage"
+    >
       {t(`Choose from ${cloudStorage}`)}
     </Button>
   );

@@ -2,7 +2,9 @@ import { Keychain } from "@awesome-cordova-plugins/keychain";
 import { useCallback } from "react";
 import { usePlatform } from "./platform";
 
-export type Keys = "Dropbox-refresh-token" | "Dropbox-code-verifier";
+export type SecureStorageKeys =
+  | "Dropbox-refresh-token"
+  | "Dropbox-code-verifier";
 
 export function useSecureStorage() {
   const platform = usePlatform();
@@ -20,7 +22,6 @@ export function useSecureStorage() {
   return {
     getSecureStorageItem: async () => {
       console.debug(`useSecureStorage: Unsupported platform "${platform}"`);
-      //return process.env.REACT_APP_CLOUD_STORAGE_DEBUG_ACCESS_TOKEN;
     },
     setSecureStorageItem: async () => {
       console.debug(`useSecureStorage: Unsupported platform "${platform}"`);
@@ -35,7 +36,7 @@ function useWebSecureStorage() {
   const prefix = "SecureStorage.";
 
   const getSecureStorageItem = useCallback(
-    async (key: Keys): Promise<string | null> => {
+    async (key: SecureStorageKeys): Promise<string | null> => {
       const encodedData = sessionStorage.getItem(prefix + key);
       if (encodedData) {
         return atob(encodedData);
@@ -47,13 +48,19 @@ function useWebSecureStorage() {
     []
   );
 
-  const setSecureStorageItem = useCallback(async (key: Keys, value: string) => {
-    sessionStorage.setItem(prefix + key, btoa(value));
-  }, []);
+  const setSecureStorageItem = useCallback(
+    async (key: SecureStorageKeys, value: string) => {
+      sessionStorage.setItem(prefix + key, btoa(value));
+    },
+    []
+  );
 
-  const removeSecureStorageItem = useCallback(async (key: Keys) => {
-    await sessionStorage.removeItem(prefix + key);
-  }, []);
+  const removeSecureStorageItem = useCallback(
+    async (key: SecureStorageKeys) => {
+      await sessionStorage.removeItem(prefix + key);
+    },
+    []
+  );
 
   return {
     getSecureStorageItem,
@@ -64,20 +71,26 @@ function useWebSecureStorage() {
 
 function useIosSecureStorage() {
   const getSecureStorageItem = useCallback(
-    (key: Keys): Promise<string | null> => {
+    (key: SecureStorageKeys): Promise<string | null> => {
       return Keychain.get(key);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
-  const setSecureStorageItem = useCallback(async (key: Keys, value: string) => {
-    await Keychain.set(key, value);
-  }, []);
+  const setSecureStorageItem = useCallback(
+    async (key: SecureStorageKeys, value: string) => {
+      await Keychain.set(key, value);
+    },
+    []
+  );
 
-  const removeSecureStorageItem = useCallback(async (key: Keys) => {
-    await Keychain.remove(key);
-  }, []);
+  const removeSecureStorageItem = useCallback(
+    async (key: SecureStorageKeys) => {
+      await Keychain.remove(key);
+    },
+    []
+  );
 
   return {
     getSecureStorageItem,
