@@ -1,9 +1,9 @@
+import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Button,
   CircularProgress,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -12,9 +12,10 @@ import {
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
+import { CloudFileRef, useCloudStorage } from "../data/CloudStorageContext";
 import { useTask } from "../data/TaskContext";
 import { CloudFile, ListCloudFilesResult } from "../types/cloud-storage.types";
+import { ResponsiveDialog } from "./ResponsiveDialog";
 import StartEllipsis from "./StartEllipsis";
 
 const root = "";
@@ -27,12 +28,14 @@ const CloudStorageFileDialog = () => {
     cloudStorage,
     downloadFile,
     linkFile,
+    getCloudFileRefs,
     cloudStorageFileDialogOpen,
     setCloudStorageFileDialogOpen,
   } = useCloudStorage();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListCloudFilesResult | undefined>();
+  const [cloudFileRefs, setCloudFileRefs] = useState<CloudFileRef[]>([]);
 
   const handleClose = () => {
     setCloudStorageFileDialogOpen(false);
@@ -79,14 +82,22 @@ const CloudStorageFileDialog = () => {
     [files, listFiles]
   );
 
+  const disableItem = useCallback(
+    (cloudFile: CloudFile) => {
+      return cloudFileRefs.some((c) => c.path === cloudFile.path);
+    },
+    [cloudFileRefs]
+  );
+
   useEffect(() => {
     if (cloudStorageFileDialogOpen) {
       handleLoadItems(root);
+      getCloudFileRefs().then(setCloudFileRefs);
     }
-  }, [handleLoadItems, cloudStorageFileDialogOpen]);
+  }, [handleLoadItems, cloudStorageFileDialogOpen, getCloudFileRefs]);
 
   return (
-    <Dialog
+    <ResponsiveDialog
       maxWidth="xs"
       scroll="paper"
       open={cloudStorageFileDialogOpen}
@@ -105,23 +116,33 @@ const CloudStorageFileDialog = () => {
           <List sx={{ py: 0 }} dense>
             {files.items
               .filter((i) => !i.directory)
-              .map((item, idx) => (
+              .map((cloudFile, idx) => (
                 <ListItem
                   button
+                  disabled={disableItem(cloudFile)}
                   key={idx}
-                  onClick={() => setSelectedFile(item)}
-                  selected={selectedFile && item.path === selectedFile.path}
+                  onClick={() => setSelectedFile(cloudFile)}
+                  selected={
+                    selectedFile && cloudFile.path === selectedFile.path
+                  }
                 >
-                  <Box sx={{ overflow: "hidden" }}>
-                    <StartEllipsis sx={{ my: 0.5 }}>{item.name}</StartEllipsis>
+                  <Box sx={{ overflow: "hidden", flex: 1 }}>
+                    <StartEllipsis sx={{ my: 0.5 }}>
+                      {cloudFile.name}
+                    </StartEllipsis>
                     <StartEllipsis
                       sx={{ my: 0.5 }}
                       variant="body2"
                       color="text.secondary"
                     >
-                      {item.path}
+                      {cloudFile.path}
                     </StartEllipsis>
                   </Box>
+                  {disableItem(cloudFile) && (
+                    <Box sx={{ ml: 2 }}>
+                      <CloudOutlinedIcon color="disabled" />
+                    </Box>
+                  )}
                 </ListItem>
               ))}
             {files.hasMore && (
@@ -142,7 +163,7 @@ const CloudStorageFileDialog = () => {
           {t("Import")}
         </LoadingButton>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 };
 

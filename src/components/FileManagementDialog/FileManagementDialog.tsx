@@ -1,12 +1,6 @@
 import { Clipboard } from "@capacitor/clipboard";
 import { Directory, Encoding } from "@capacitor/filesystem";
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Typography,
-} from "@mui/material";
+import { Box, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React, { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -17,6 +11,7 @@ import { useSettings } from "../../data/SettingsContext";
 import { useTask } from "../../data/TaskContext";
 import { getFilenameFromPath, useFilesystem } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
+import { ResponsiveDialog } from "../ResponsiveDialog";
 import CloseFileList from "./CloseFileList";
 import OpenFileList from "./OpenFileList";
 
@@ -144,7 +139,7 @@ const FileManagementDialog = () => {
   };
 
   return (
-    <Dialog
+    <ResponsiveDialog
       maxWidth="xs"
       scroll="paper"
       open={fileManagementDialogOpen}
@@ -171,7 +166,7 @@ const FileManagementDialog = () => {
           </Typography>
         </Box>
       </DialogContent>
-    </Dialog>
+    </ResponsiveDialog>
   );
 };
 

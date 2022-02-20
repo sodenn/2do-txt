@@ -113,7 +113,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     [dropboxAuthenticate, setCloudStorage]
   );
 
-  const getCloudFiles = useCallback(async (): Promise<CloudFileRef[]> => {
+  const getCloudFileRefs = useCallback(async (): Promise<CloudFileRef[]> => {
     const cloudStorage = await getCloudStorage();
     if (!cloudStorage) {
       return [];
@@ -148,7 +148,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         return;
       }
 
-      const currentCloudFiles = await getCloudFiles();
+      const currentCloudFiles = await getCloudFileRefs();
 
       const newCloudFiles = [
         ...currentCloudFiles.filter((c) => c.path !== cloudFile.path),
@@ -160,7 +160,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         JSON.stringify(newCloudFiles)
       );
     },
-    [getCloudFiles, getCloudStorage, setStorageItem]
+    [getCloudFileRefs, getCloudStorage, setStorageItem]
   );
 
   const uploadFile = useCallback(
@@ -192,29 +192,22 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const getCloudFileByFilePath = useCallback(
     async (filePath: string) => {
-      const cloudFiles = await getCloudFiles();
+      const cloudFiles = await getCloudFileRefs();
       return cloudFiles.find((c) => c.localFilePath === filePath);
     },
-    [getCloudFiles]
+    [getCloudFileRefs]
   );
 
   const downloadFile = useCallback(
-    async (filePath: string) => {
+    async (cloudFilePath: string) => {
       const cloudStorage = await getCloudStorage();
       if (!cloudStorage) {
         throw new Error("Cloud storage is undefined");
       }
 
-      const cloudFile = await getCloudFileByFilePath(filePath);
-      if (!cloudFile) {
-        throw new Error(
-          `No cloud file found for the local file path ${filePath}`
-        );
-      }
-
       let text: string | undefined = undefined;
       if (cloudStorage === "Dropbox") {
-        text = await dropboxDownloadFile(cloudFile.path);
+        text = await dropboxDownloadFile(cloudFilePath);
       } else {
         throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
       }
@@ -398,7 +391,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         );
       }
 
-      const cloudFiles = await getCloudFiles();
+      const cloudFiles = await getCloudFileRefs();
 
       const newCloudFiles = cloudFiles.filter((c) => c.path !== cloudFile.path);
       await setStorageItem(
@@ -406,7 +399,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         JSON.stringify(newCloudFiles)
       );
     },
-    [getCloudFileByFilePath, getCloudFiles, getCloudStorage, setStorageItem]
+    [getCloudFileByFilePath, getCloudFileRefs, getCloudStorage, setStorageItem]
   );
 
   const requestTokens = useCallback(
@@ -481,6 +474,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     downloadFile,
     requestTokens,
     linkFile,
+    getCloudFileRefs,
     uploadFileAndResolveConflict,
     cloudStorageFileDialogOpen,
     setCloudStorageFileDialogOpen,

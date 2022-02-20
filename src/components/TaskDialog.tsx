@@ -1,18 +1,15 @@
-import { css } from "@emotion/css";
 import {
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Theme,
-  useTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
 import { TaskListState, useTask } from "../data/TaskContext";
 import { Task, TaskFormData } from "../utils/task";
+import { ResponsiveDialog } from "./ResponsiveDialog";
 import { isSuggestionsPopupOpen } from "./TaskEditor";
 import TaskForm from "./TaskForm";
 
@@ -21,15 +18,6 @@ const initialTaskFormData: TaskFormData = {
   creationDate: undefined,
   completionDate: undefined,
 };
-
-export const dialogPaperStyle = (theme: Theme) => css`
-  ${theme.breakpoints.down("sm")} {
-    &.MuiPaper-root {
-      margin: ${theme.spacing(2)};
-      width: 100%;
-    }
-  }
-`;
 
 const createFormData = (createCreationDate: boolean, activeTask?: Task) => {
   if (activeTask) {
@@ -49,7 +37,6 @@ const createFormData = (createCreationDate: boolean, activeTask?: Task) => {
 
 const TaskDialog = () => {
   const { t } = useTranslation();
-  const theme = useTheme();
   const {
     openTaskDialog,
     taskDialogOpen,
@@ -131,12 +118,11 @@ const TaskDialog = () => {
   };
 
   return (
-    <Dialog
+    <ResponsiveDialog
       aria-label="Task dialog"
       fullWidth
       maxWidth="sm"
       open={taskDialogOpen}
-      classes={{ paper: dialogPaperStyle(theme) }}
       onClose={handleClose}
     >
       <DialogTitle>
@@ -160,7 +146,7 @@ const TaskDialog = () => {
           {t("Save")}
         </Button>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 };
 

@@ -4,7 +4,7 @@ import CloudOffOutlinedIcon from "@mui/icons-material/CloudOffOutlined";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Box,
   CircularProgress,
@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useSettings } from "../../data/SettingsContext";
 import { CloudFile } from "../../types/cloud-storage.types";
-import { parseDate } from "../../utils/date";
+import { formatLocalDateTime, parseDate } from "../../utils/date";
 import { useFilesystem } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
 import StartEllipsis from "../StartEllipsis";
@@ -53,6 +53,9 @@ const OpenFileItem = (props: OpenFileItemProps) => {
   } = useCloudStorage();
   const [cloudFile, setCloudFile] = useState<CloudFile>();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
+  const cloudFileLastModified = cloudFile
+    ? parseDate(cloudFile.modifiedAt)
+    : undefined;
 
   useEffect(() => {
     getCloudFileByFilePath(filePath).then(setCloudFile);
@@ -171,9 +174,10 @@ const OpenFileItem = (props: OpenFileItemProps) => {
                   gap: 0.5,
                 }}
               >
-                <SyncOutlinedIcon color="inherit" fontSize="inherit" />
+                <EditIcon color="inherit" fontSize="inherit" />
                 <Typography variant="body2">
-                  {parseDate(cloudFile.modifiedAt)?.toLocaleString(language)}
+                  {cloudFileLastModified &&
+                    formatLocalDateTime(cloudFileLastModified, language)}
                 </Typography>
               </Box>
             )}
