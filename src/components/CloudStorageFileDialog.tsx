@@ -14,6 +14,7 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
+import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import {
   CloudFile,
@@ -28,6 +29,7 @@ const root = "";
 const CloudStorageFileDialog = () => {
   const { t } = useTranslation();
   const { createNewTodoFile } = useTask();
+  const { setActiveTaskListPath } = useFilter();
   const {
     listFiles,
     cloudStorage,
@@ -58,6 +60,7 @@ const CloudStorageFileDialog = () => {
     const text = await downloadFile(selectedFile.path);
     await createNewTodoFile(selectedFile.name, text);
     await linkFile({ ...selectedFile, localFilePath: selectedFile.name });
+    setActiveTaskListPath(selectedFile.name);
 
     handleClose();
   };

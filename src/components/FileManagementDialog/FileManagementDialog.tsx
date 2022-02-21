@@ -4,6 +4,7 @@ import { Box, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React, { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useConfirmationDialog } from "../../data/ConfirmationDialogContext";
 import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
 import { useFilter } from "../../data/FilterContext";
@@ -25,6 +26,7 @@ const FileManagementDialog = () => {
   const platform = usePlatform();
   const { fileManagementDialogOpen, setFileManagementDialogOpen } =
     useFileManagementDialog();
+  const { unlinkFile } = useCloudStorage();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { enqueueSnackbar } = useSnackbar();
   const { readdir, deleteFile, readFile } = useFilesystem();
@@ -79,12 +81,14 @@ const FileManagementDialog = () => {
           handleClose();
         }
         closeTodoFile(filePath).then(listFiles);
+        unlinkFile(filePath);
       });
     } else {
       if (taskLists.length === 1) {
         handleClose();
       }
       closeTodoFile(filePath).then(listFiles);
+      unlinkFile(filePath);
     }
   };
 
@@ -102,6 +106,7 @@ const FileManagementDialog = () => {
           console.debug(error);
         })
         .then(listFiles);
+      unlinkFile(filePath);
     });
   };
 
