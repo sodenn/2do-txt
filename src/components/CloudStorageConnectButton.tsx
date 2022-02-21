@@ -11,39 +11,22 @@ interface CloudStorageConnectButtonProps {
 const CloudStorageConnectButton = (props: CloudStorageConnectButtonProps) => {
   const { cloudStorage } = props;
   const { t } = useTranslation();
-  const {
-    cloudStorageEnabled,
-    cloudStorageConnected,
-    cloudStorage: currentCloudStorage,
-    authenticate,
-    unlink,
-  } = useCloudStorage();
+  const { cloudStorageEnabled, cloudStorageConnected, authenticate } =
+    useCloudStorage();
 
-  if (!cloudStorageEnabled) {
+  if (!cloudStorageEnabled || cloudStorageConnected) {
     return null;
   }
 
-  if (cloudStorageConnected && cloudStorage === currentCloudStorage) {
-    return (
-      <Button variant="outlined" fullWidth onClick={() => unlink()}>
-        {t(`Disconnect ${cloudStorage}`)}
-      </Button>
-    );
-  }
-
-  if (!cloudStorageConnected) {
-    return (
-      <Button
-        variant="outlined"
-        fullWidth
-        onClick={() => authenticate(cloudStorage)}
-      >
-        {t(`Connect ${cloudStorage}`)}
-      </Button>
-    );
-  }
-
-  return null;
+  return (
+    <Button
+      variant="outlined"
+      fullWidth
+      onClick={() => authenticate(cloudStorage)}
+    >
+      {t(`Connect ${cloudStorage}`)}
+    </Button>
+  );
 };
 
 export default CloudStorageConnectButton;

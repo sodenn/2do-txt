@@ -18,7 +18,7 @@ describe("CloudStorageFileButton", () => {
     await screen.findByTestId("page");
 
     const button = screen.queryByRole("button", {
-      name: "Choose file from cloud storage",
+      name: "Choose from Dropbox",
     });
 
     expect(button).not.toBeInTheDocument();
@@ -41,7 +41,7 @@ describe("CloudStorageFileButton", () => {
     await screen.findByTestId("page");
 
     const button = screen.queryByRole("button", {
-      name: "Choose file from cloud storage",
+      name: "Choose from Dropbox",
     });
 
     expect(button).not.toBeInTheDocument();
@@ -62,10 +62,8 @@ describe("CloudStorageFileButton", () => {
       </EmptyTestContext>
     );
 
-    await screen.findByTestId("page");
-
-    const button = screen.queryByRole("button", {
-      name: "Choose file from cloud storage",
+    const button = await screen.findByRole("button", {
+      name: "Choose from Dropbox",
     });
 
     expect(button).toBeInTheDocument();
@@ -90,7 +88,7 @@ describe("CloudStorageFileButton", () => {
     await screen.findByTestId("page");
 
     const button = screen.queryByRole("button", {
-      name: "Choose file from cloud storage",
+      name: "Choose from Dropbox",
     });
 
     expect(button).not.toBeInTheDocument();
