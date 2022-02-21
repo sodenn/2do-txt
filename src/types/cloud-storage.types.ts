@@ -10,6 +10,10 @@ export interface CloudFile {
   directory?: boolean;
 }
 
+export interface CloudFileRef extends CloudFile {
+  localFilePath: string;
+}
+
 export interface ListCloudFilesOptions {
   path?: string;
   cursor?: string;
@@ -28,9 +32,32 @@ export interface UploadFileOptions {
 }
 
 export interface SyncFileOptions {
-  localVersion: CloudFile;
+  localVersion: CloudFileRef;
   localContents: any;
 }
+
+interface SyncFileLocalResult {
+  type: "server";
+  cloudFile: CloudFile;
+}
+
+interface SyncFileServerResult {
+  type: "local";
+  cloudFile: CloudFile;
+  text: string;
+}
+
+interface SyncFileConflictResult {
+  type: "conflict";
+  cloudFile: CloudFile;
+  text: string;
+}
+
+export type SyncFileResult =
+  | SyncFileLocalResult
+  | SyncFileServerResult
+  | SyncFileConflictResult
+  | undefined;
 
 interface FileConflictData {
   cloudFile: CloudFile;

@@ -5,9 +5,11 @@ import { Trans, useTranslation } from "react-i18next";
 import {
   CloudFile,
   CloudFileConflictError,
+  CloudFileRef,
   CloudStorage,
   ListCloudFilesOptions,
   ListCloudFilesResult,
+  SyncFileResult,
   UpdateMode,
 } from "../../types/cloud-storage.types";
 import { createContext } from "../../utils/Context";
@@ -42,20 +44,6 @@ interface ResolveConflictResult {
   text: string;
   cloudFile: CloudFile;
   option: "local" | "cloud";
-}
-
-export interface CloudFileRef extends CloudFile {
-  localFilePath: string;
-}
-
-function isResolveConflictDialogResult(
-  value: any
-): value is ResolveConflictResult {
-  return (
-    (value.mode === "local" || value.mode === "cloud") &&
-    value.hasOwnProperty("cloudFile") &&
-    value.hasOwnProperty("text")
-  );
 }
 
 const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
@@ -183,7 +171,10 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
       }
 
-      await linkFile({ ...cloudFile, localFilePath: filePath });
+      await linkFile({
+        ...cloudFile,
+        localFilePath: filePath,
+      });
 
       return cloudFile;
     },
@@ -220,6 +211,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const openResolveConflictDialog = useCallback(
     async (opt: ResolveConflictOptions) => {
       const { filePath, cloudFile } = opt;
+      const cloudStorage = await getCloudStorage();
       return new Promise<ResolveConflictResult | undefined>((resolve) => {
         setConfirmationDialog({
           onClose: () => resolve(undefined),
@@ -284,9 +276,9 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       });
     },
     [
+      getCloudStorage,
       setConfirmationDialog,
       t,
-      cloudStorage,
       downloadFile,
       linkFile,
       enqueueSnackbar,
@@ -321,22 +313,12 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           return;
         }
 
-        let syncResult: CloudFile | ResolveConflictResult | undefined =
-          undefined;
+        let syncResult: SyncFileResult = undefined;
 
         if (cloudStorage === "Dropbox") {
           syncResult = await dropboxSyncFile({
             localContents: text,
             localVersion: cloudFile,
-          }).catch((error) => {
-            if (error instanceof CloudFileConflictError) {
-              return openResolveConflictDialog({
-                filePath: opt.filePath,
-                text: opt.text,
-                cloudFile: error.data.cloudFile,
-              });
-            }
-            throw error;
           });
         }
 
@@ -344,16 +326,28 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           return;
         }
 
-        if (isResolveConflictDialogResult(syncResult)) {
-          if (syncResult.option === "cloud") {
-            return syncResult;
-          } else {
-            return;
-          }
+        if (syncResult.type === "conflict") {
+          const result = await openResolveConflictDialog({
+            filePath: opt.filePath,
+            text: opt.text,
+            cloudFile: syncResult.cloudFile,
+          });
+          return result?.text;
         }
 
-        if (syncResult) {
-          await linkFile({ ...syncResult, localFilePath: filePath });
+        if (syncResult.type === "server") {
+          await linkFile({
+            ...syncResult.cloudFile,
+            localFilePath: filePath,
+          });
+        }
+
+        if (syncResult.type === "local") {
+          await linkFile({
+            ...syncResult.cloudFile,
+            localFilePath: filePath,
+          });
+          return syncResult.text;
         }
       } catch (error) {
         console.debug(error);

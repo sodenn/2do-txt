@@ -173,11 +173,11 @@ const [TaskProvider, useTask] = createContext(() => {
       if (result) {
         await writeFile({
           path: filePath,
-          data: result.text,
+          data: result,
           directory: Directory.Documents,
           encoding: Encoding.UTF8,
         });
-        return loadTodoFile(filePath, text);
+        return loadTodoFile(filePath, result);
       }
     },
     [loadTodoFile, syncFile, writeFile]

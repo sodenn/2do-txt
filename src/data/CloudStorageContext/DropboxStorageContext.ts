@@ -13,6 +13,7 @@ import {
   ListCloudFilesResult,
   NetworkError,
   SyncFileOptions,
+  SyncFileResult,
   UploadFileOptions,
 } from "../../types/cloud-storage.types";
 import { createContext } from "../../utils/Context";
@@ -36,7 +37,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   } = useSecureStorage();
   const { removeStorageItem } = useStorage();
   const platform = usePlatform();
-  const [warningShown, setWarningShown] = useState(false);
+  const [connectionIssue, setConnectionIssue] = useState(false);
   const dbxRef: MutableRefObject<Dropbox | null> = createRef();
 
   const getRedirectUrl = useCallback(() => {
@@ -54,16 +55,16 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     ]).catch((e) => void e);
 
     // Don't annoy the user, so only show the message once
-    if (!warningShown) {
+    if (!connectionIssue) {
       enqueueSnackbar(
         t("Session has expired. Please login again", { cloudStorage }),
         { variant: "warning" }
       );
-      setWarningShown(true);
+      setConnectionIssue(true);
     }
 
     throw new CloudFileUnauthorizedError();
-  }, [enqueueSnackbar, removeSecureStorageItem, t, warningShown]);
+  }, [enqueueSnackbar, removeSecureStorageItem, t, connectionIssue]);
 
   const handleError = useCallback(
     (error: any) => {
@@ -111,12 +112,16 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     // check network connection
     const status = await Network.getStatus();
     if (!status.connected) {
-      enqueueSnackbar(
-        t("Unable to connect. Check network connection", {
-          cloudStorage,
-        }),
-        { variant: "warning" }
-      );
+      // Don't annoy the user, so only show the message once
+      if (!connectionIssue) {
+        enqueueSnackbar(
+          t("Unable to connect. Check network connection", {
+            cloudStorage,
+          }),
+          { variant: "warning" }
+        );
+        setConnectionIssue(true);
+      }
       throw new NetworkError();
     }
 
@@ -137,7 +142,14 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     dbxRef.current = dbx;
 
     return dbx;
-  }, [dbxRef, enqueueSnackbar, getSecureStorageItem, resetTokens, t]);
+  }, [
+    connectionIssue,
+    dbxRef,
+    enqueueSnackbar,
+    getSecureStorageItem,
+    resetTokens,
+    t,
+  ]);
 
   const dropboxAuthenticate = useCallback(async () => {
     const dbxAuth = new DropboxAuth({
@@ -326,7 +338,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   );
 
   const dropboxSyncFile = useCallback(
-    async (opt: SyncFileOptions): Promise<CloudFile | undefined> => {
+    async (opt: SyncFileOptions): Promise<SyncFileResult> => {
       const { localVersion, localContents } = opt;
 
       const serverVersion = await getFileMetaData(localVersion.path).catch(
@@ -339,11 +351,15 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
 
       // re-create deleted file on Dropbox
       if (!serverVersion) {
-        return dropboxUploadFile({
+        const cloudFile = await dropboxUploadFile({
           path: localVersion.path,
           contents: localContents,
           mode: "create",
         });
+        return {
+          type: "server",
+          cloudFile,
+        };
       }
 
       const localDate = parseDate(localVersion.modifiedAt);
@@ -353,23 +369,35 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       const oldServerVersion =
         localDate && serverDate && localDate > serverDate;
       if (localVersion.rev === serverVersion.rev || oldServerVersion) {
-        return dropboxUploadFile({
+        const cloudFile = await dropboxUploadFile({
           path: localVersion.path,
           contents: localContents,
           mode: "update",
         });
+        return {
+          type: "server",
+          cloudFile,
+        };
       }
 
       // update local revision
       const oldLocalVersion = localDate && serverDate && localDate < serverDate;
-      if (oldLocalVersion) {
-        throw new CloudFileConflictError({
+      if (oldLocalVersion && connectionIssue) {
+        return {
+          type: "conflict",
           cloudFile: serverVersion,
-          contents: localContents,
-        });
+          text: localContents,
+        };
+      } else if (oldLocalVersion) {
+        const text = await dropboxDownloadFile(serverVersion.path);
+        return {
+          type: "local",
+          cloudFile: serverVersion,
+          text,
+        };
       }
     },
-    [dropboxUploadFile, getFileMetaData]
+    [getFileMetaData, connectionIssue, dropboxUploadFile, dropboxDownloadFile]
   );
 
   return {
