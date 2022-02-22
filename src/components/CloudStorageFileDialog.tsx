@@ -59,7 +59,11 @@ const CloudStorageFileDialog = () => {
 
     const text = await downloadFile(selectedFile.path);
     await createNewTodoFile(selectedFile.name, text);
-    await linkFile({ ...selectedFile, localFilePath: selectedFile.name });
+    await linkFile({
+      ...selectedFile,
+      localFilePath: selectedFile.name,
+      lastSync: new Date().toISOString(),
+    });
     setActiveTaskListPath(selectedFile.name);
 
     handleClose();

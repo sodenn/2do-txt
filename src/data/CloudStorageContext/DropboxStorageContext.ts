@@ -244,7 +244,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
             name: e.name,
             directory: e[".tag"] === "folder",
             path: e.path_lower as string,
-            modifiedAt: (e as any).server_modified,
+            lastModified: (e as any).server_modified,
             rev: (e as any).rev,
           })),
         cursor: res.result.cursor,
@@ -269,7 +269,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       return {
         name,
         path: path_lower as string,
-        modifiedAt: (rest as any).server_modified,
+        lastModified: (rest as any).server_modified,
         rev: (rest as any).rev,
       };
     },
@@ -330,7 +330,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       return {
         name,
         path: path_lower!,
-        modifiedAt: server_modified,
+        lastModified: server_modified,
         rev,
       };
     },
@@ -362,8 +362,8 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
         };
       }
 
-      const localDate = parseDate(localVersion.modifiedAt);
-      const serverDate = parseDate(serverVersion.modifiedAt);
+      const localDate = parseDate(localVersion.lastModified);
+      const serverDate = parseDate(serverVersion.lastModified);
 
       // update server revision
       const oldServerVersion =

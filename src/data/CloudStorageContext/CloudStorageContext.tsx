@@ -42,7 +42,7 @@ interface ResolveConflictOptions {
 
 interface ResolveConflictResult {
   text: string;
-  cloudFile: CloudFile;
+  cloudFile: CloudFileRef;
   option: "local" | "cloud";
 }
 
@@ -171,17 +171,20 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
       }
 
-      await linkFile({
+      const cloudFileRef: CloudFileRef = {
         ...cloudFile,
         localFilePath: filePath,
-      });
+        lastSync: new Date().toISOString(),
+      };
 
-      return cloudFile;
+      await linkFile(cloudFileRef);
+
+      return cloudFileRef;
     },
     [dropboxUploadFile, getCloudStorage, linkFile]
   );
 
-  const getCloudFileByFilePath = useCallback(
+  const getCloudFileRefByFilePath = useCallback(
     async (filePath: string) => {
       const cloudFiles = await getCloudFileRefs();
       return cloudFiles.find((c) => c.localFilePath === filePath);
@@ -243,9 +246,10 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
                   }
                 );
 
-                const value = {
+                const value: CloudFileRef = {
                   ...cloudFile,
                   localFilePath: filePath,
+                  lastSync: new Date().toISOString(),
                 };
 
                 await linkFile(value);
@@ -260,13 +264,13 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
             {
               text: t("Local"),
               handler: async () => {
-                await uploadFile({
+                const value = await uploadFile({
                   text: opt.text,
                   filePath,
                 });
                 resolve({
                   option: "local",
-                  cloudFile,
+                  cloudFile: value,
                   text: opt.text,
                 });
               },
@@ -308,7 +312,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       const { filePath, text } = opt;
       const cloudStorage = await getCloudStorage();
       try {
-        const cloudFile = await getCloudFileByFilePath(filePath);
+        const cloudFile = await getCloudFileRefByFilePath(filePath);
         if (!cloudFile) {
           return;
         }
@@ -339,6 +343,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           await linkFile({
             ...syncResult.cloudFile,
             localFilePath: filePath,
+            lastSync: new Date().toISOString(),
           });
         }
 
@@ -346,6 +351,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           await linkFile({
             ...syncResult.cloudFile,
             localFilePath: filePath,
+            lastSync: new Date().toISOString(),
           });
           return syncResult.text;
         }
@@ -355,7 +361,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     },
     [
       dropboxSyncFile,
-      getCloudFileByFilePath,
+      getCloudFileRefByFilePath,
       getCloudStorage,
       openResolveConflictDialog,
       linkFile,
@@ -365,7 +371,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const syncFile = useCallback(throttle(_syncFile, 5000), [
     dropboxSyncFile,
-    getCloudFileByFilePath,
+    getCloudFileRefByFilePath,
     getCloudStorage,
     openResolveConflictDialog,
     linkFile,
@@ -378,7 +384,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         throw new Error("Cloud storage is undefined");
       }
 
-      const cloudFile = await getCloudFileByFilePath(filePath);
+      const cloudFile = await getCloudFileRefByFilePath(filePath);
       if (!cloudFile) {
         throw new Error(
           `No cloud file found for the local file path ${filePath}`
@@ -393,7 +399,12 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         JSON.stringify(newCloudFiles)
       );
     },
-    [getCloudFileByFilePath, getCloudFileRefs, getCloudStorage, setStorageItem]
+    [
+      getCloudFileRefByFilePath,
+      getCloudFileRefs,
+      getCloudStorage,
+      setStorageItem,
+    ]
   );
 
   const requestTokens = useCallback(
@@ -455,7 +466,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   }, [cloudStorage, getSecureStorageItem]);
 
   return {
-    getCloudFileByFilePath,
+    getCloudFileRefByFilePath,
     cloudStorage,
     cloudStorageEnabled,
     cloudStorageConnected,

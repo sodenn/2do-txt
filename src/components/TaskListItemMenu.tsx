@@ -53,7 +53,7 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
           text: t("Cancel"),
         },
         {
-          text: t("Delete task"),
+          text: t("Delete"),
           handler: () => {
             deleteTask(task);
           },

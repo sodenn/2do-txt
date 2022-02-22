@@ -6,12 +6,13 @@ export interface CloudFile {
   name: string;
   path: string;
   rev: string;
-  modifiedAt: string;
+  lastModified: string;
   directory?: boolean;
 }
 
 export interface CloudFileRef extends CloudFile {
   localFilePath: string;
+  lastSync: string;
 }
 
 export interface ListCloudFilesOptions {

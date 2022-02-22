@@ -4,7 +4,7 @@ import CloudOffOutlinedIcon from "@mui/icons-material/CloudOffOutlined";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import EditIcon from "@mui/icons-material/Edit";
+import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import {
   Box,
   CircularProgress,
@@ -19,7 +19,7 @@ import { Draggable } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
 import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useSettings } from "../../data/SettingsContext";
-import { CloudFile } from "../../types/cloud-storage.types";
+import { CloudFileRef } from "../../types/cloud-storage.types";
 import { formatLocalDateTime, parseDate } from "../../utils/date";
 import { useFilesystem } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
@@ -45,27 +45,27 @@ const OpenFileItem = (props: OpenFileItemProps) => {
   const platform = usePlatform();
   const { readFile } = useFilesystem();
   const {
-    getCloudFileByFilePath,
+    getCloudFileRefByFilePath,
     unlinkFile,
     cloudStorage,
     cloudStorageConnected,
     uploadFileAndResolveConflict,
   } = useCloudStorage();
-  const [cloudFile, setCloudFile] = useState<CloudFile>();
+  const [cloudFileRef, setCloudFileRef] = useState<CloudFileRef>();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
-  const cloudFileLastModified = cloudFile
-    ? parseDate(cloudFile.modifiedAt)
+  const cloudFileLastModified = cloudFileRef
+    ? parseDate(cloudFileRef.lastSync)
     : undefined;
 
   useEffect(() => {
-    getCloudFileByFilePath(filePath).then(setCloudFile);
-  }, [filePath, getCloudFileByFilePath]);
+    getCloudFileRefByFilePath(filePath).then(setCloudFileRef);
+  }, [filePath, getCloudFileRefByFilePath]);
 
   const handleCloudSync = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setCloudSyncLoading(true);
 
-    if (!cloudFile) {
+    if (!cloudFileRef) {
       const readFileResult = await readFile({
         path: filePath,
         directory: Directory.Documents,
@@ -79,11 +79,11 @@ const OpenFileItem = (props: OpenFileItemProps) => {
       });
 
       if (cloudFile) {
-        setCloudFile(cloudFile);
+        setCloudFileRef(cloudFile);
       }
     } else {
       await unlinkFile(filePath);
-      setCloudFile(undefined);
+      setCloudFileRef(undefined);
     }
 
     setCloudSyncLoading(false);
@@ -100,7 +100,7 @@ const OpenFileItem = (props: OpenFileItemProps) => {
               {cloudStorageConnected && (
                 <Tooltip
                   title={
-                    !!cloudFile
+                    !!cloudFileRef
                       ? (t("Cloud Storage synchronization enabled", {
                           cloudStorage,
                         }) as string)
@@ -114,8 +114,10 @@ const OpenFileItem = (props: OpenFileItemProps) => {
                     onClick={handleCloudSync}
                   >
                     {cloudSyncLoading && <CircularProgress size={24} />}
-                    {!cloudSyncLoading && !!cloudFile && <CloudOutlinedIcon />}
-                    {!cloudSyncLoading && !cloudFile && (
+                    {!cloudSyncLoading && !!cloudFileRef && (
+                      <CloudOutlinedIcon />
+                    )}
+                    {!cloudSyncLoading && !cloudFileRef && (
                       <CloudOffOutlinedIcon />
                     )}
                   </IconButton>
@@ -165,7 +167,7 @@ const OpenFileItem = (props: OpenFileItemProps) => {
             <StartEllipsis sx={{ my: 0.5 }} variant="inherit">
               {filePath}
             </StartEllipsis>
-            {cloudFile && (
+            {cloudFileRef && (
               <Box
                 sx={{
                   display: "inline-flex",
@@ -174,7 +176,7 @@ const OpenFileItem = (props: OpenFileItemProps) => {
                   gap: 0.5,
                 }}
               >
-                <EditIcon color="inherit" fontSize="inherit" />
+                <SyncOutlinedIcon color="inherit" fontSize="inherit" />
                 <Typography variant="body2">
                   {cloudFileLastModified &&
                     formatLocalDateTime(cloudFileLastModified, language)}
