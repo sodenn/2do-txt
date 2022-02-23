@@ -2,7 +2,6 @@ import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useSettings } from "../data/SettingsContext";
-import { useSideSheet } from "../data/SideSheetContext";
 import { useNotifications } from "../utils/notifications";
 import CloudStorageButton from "./CloudStorageButton";
 import LanguageSelect from "./LanguageSelect";
@@ -10,7 +9,6 @@ import ThemeModeSelect from "./ThemeModeSelect";
 
 const Settings = () => {
   const { t } = useTranslation();
-  const { setSideSheetOpen } = useSideSheet();
   const { cloudStorageEnabled } = useCloudStorage();
   const { checkNotificationPermissions, requestNotificationPermissions } =
     useNotifications();
