@@ -1,17 +1,10 @@
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useSettings } from "../data/SettingsContext";
 import { useSideSheet } from "../data/SideSheetContext";
 import { useNotifications } from "../utils/notifications";
-import CloudStorageConnectButton from "./CloudStorageConnectButton";
-import CloudStorageFileButton from "./CloudStorageFileButton";
+import CloudStorageButton from "./CloudStorageButton";
 import LanguageSelect from "./LanguageSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
 
@@ -96,13 +89,9 @@ const Settings = () => {
           <Typography component="div" variant="subtitle1">
             {t("Cloud storage")}
           </Typography>
-          <Stack spacing={1} sx={{ mt: 1 }}>
-            <CloudStorageFileButton
-              cloudStorage="Dropbox"
-              onClick={() => setSideSheetOpen(false)}
-            />
-            <CloudStorageConnectButton cloudStorage="Dropbox" />
-          </Stack>
+          <Box sx={{ mt: 1 }}>
+            <CloudStorageButton cloudStorage="Dropbox" />
+          </Box>
         </Box>
       )}
     </>

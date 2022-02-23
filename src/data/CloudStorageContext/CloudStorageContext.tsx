@@ -23,9 +23,10 @@ import {
   useDropboxStorage,
 } from "./DropboxStorageContext";
 
-interface SyncFileOptions {
+export interface SyncFileOptions {
   filePath: string;
   text: string;
+  fromFile?: boolean;
 }
 
 interface UploadFileOptions {
@@ -164,7 +165,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       if (cloudStorage === "Dropbox") {
         cloudFile = await dropboxUploadFile({
           path: getFilenameFromPath(filePath),
-          contents: text,
+          content: text,
           mode,
         });
       } else {
@@ -309,7 +310,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const _syncFile = useCallback(
     async (opt: SyncFileOptions) => {
-      const { filePath, text } = opt;
+      const { filePath, text, fromFile } = opt;
       const cloudStorage = await getCloudStorage();
       try {
         const cloudFile = await getCloudFileRefByFilePath(filePath);
@@ -321,8 +322,9 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
         if (cloudStorage === "Dropbox") {
           syncResult = await dropboxSyncFile({
-            localContents: text,
+            localContent: text,
             localVersion: cloudFile,
+            fromFile,
           });
         }
 
@@ -353,7 +355,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
             localFilePath: filePath,
             lastSync: new Date().toISOString(),
           });
-          return syncResult.text;
+          return syncResult.content;
         }
       } catch (error) {
         console.debug(error);

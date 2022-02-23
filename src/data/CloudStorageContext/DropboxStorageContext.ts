@@ -304,7 +304,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     async (
       opt: Omit<UploadFileOptions, "cloudStorage">
     ): Promise<CloudFile> => {
-      const { path, contents, mode } = opt;
+      const { path, content, mode } = opt;
       const dbx = await getClient();
       const dropboxPath = path.startsWith("/") ? path : `/${path}`;
       const {
@@ -312,7 +312,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       } = await dbx
         .filesUpload({
           path: dropboxPath,
-          contents,
+          contents: content,
           mode: mode === "create" ? { ".tag": "add" } : { ".tag": "overwrite" },
         })
         .catch(async (error) => {
@@ -320,7 +320,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
             const cloudFile = await getFileMetaData(dropboxPath);
             throw new CloudFileConflictError({
               cloudFile,
-              contents,
+              content,
             });
           } else {
             return handleError(error);
@@ -339,7 +339,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
 
   const dropboxSyncFile = useCallback(
     async (opt: SyncFileOptions): Promise<SyncFileResult> => {
-      const { localVersion, localContents } = opt;
+      const { localVersion, localContent, fromFile } = opt;
 
       const serverVersion = await getFileMetaData(localVersion.path).catch(
         (error) => {
@@ -353,13 +353,17 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       if (!serverVersion) {
         const cloudFile = await dropboxUploadFile({
           path: localVersion.path,
-          contents: localContents,
+          content: localContent,
           mode: "create",
         });
         return {
           type: "server",
           cloudFile,
         };
+      }
+
+      if (localVersion.rev === serverVersion.rev && fromFile) {
+        return;
       }
 
       const localDate = parseDate(localVersion.lastModified);
@@ -371,7 +375,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       if (localVersion.rev === serverVersion.rev || oldServerVersion) {
         const cloudFile = await dropboxUploadFile({
           path: localVersion.path,
-          contents: localContents,
+          content: localContent,
           mode: "update",
         });
         return {
@@ -386,14 +390,14 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
         return {
           type: "conflict",
           cloudFile: serverVersion,
-          text: localContents,
+          content: localContent,
         };
       } else if (oldLocalVersion) {
-        const text = await dropboxDownloadFile(serverVersion.path);
+        const content = await dropboxDownloadFile(serverVersion.path);
         return {
           type: "local",
           cloudFile: serverVersion,
-          text,
+          content,
         };
       }
     },

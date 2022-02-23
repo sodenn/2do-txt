@@ -26,7 +26,7 @@ import StartEllipsis from "./StartEllipsis";
 
 const root = "";
 
-const CloudStorageFileDialog = () => {
+const CloudFileDialog = () => {
   const { t } = useTranslation();
   const { createNewTodoFile } = useTask();
   const { setActiveTaskListPath } = useFilter();
@@ -116,7 +116,7 @@ const CloudStorageFileDialog = () => {
       onClose={handleClose}
     >
       <DialogTitle sx={{ px: 2 }}>
-        {t(`Choose from ${cloudStorage}`)}
+        {t(`Import from Cloud Storage`, { cloudStorage })}
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         {!files && (
@@ -184,4 +184,4 @@ const CloudStorageFileDialog = () => {
   );
 };
 
-export default CloudStorageFileDialog;
+export default CloudFileDialog;

@@ -1,7 +1,7 @@
 import { Box, Container, styled } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useTask } from "../data/TaskContext";
-import CloudStorageFileDialog from "./CloudStorageFileDialog";
+import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
 import FileCreateDialog from "./FileCreateDialog";
 import FileManagementDialog from "./FileManagementDialog";
@@ -55,7 +55,7 @@ const Page = () => {
       </Box>
       <TaskDialog />
       <FileCreateDialog />
-      <CloudStorageFileDialog />
+      <CloudFileDialog />
       <FileManagementDialog />
       <ConfirmationDialog />
     </>

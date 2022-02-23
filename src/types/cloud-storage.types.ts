@@ -29,12 +29,13 @@ export interface ListCloudFilesResult {
 export interface UploadFileOptions {
   mode: UpdateMode;
   path: string;
-  contents: any;
+  content: string;
 }
 
 export interface SyncFileOptions {
   localVersion: CloudFileRef;
-  localContents: any;
+  localContent: string;
+  fromFile?: boolean;
 }
 
 interface SyncFileLocalResult {
@@ -45,13 +46,13 @@ interface SyncFileLocalResult {
 interface SyncFileServerResult {
   type: "local";
   cloudFile: CloudFile;
-  text: string;
+  content: string;
 }
 
 interface SyncFileConflictResult {
   type: "conflict";
   cloudFile: CloudFile;
-  text: string;
+  content: string;
 }
 
 export type SyncFileResult =
@@ -62,7 +63,7 @@ export type SyncFileResult =
 
 interface FileConflictData {
   cloudFile: CloudFile;
-  contents: any;
+  content: string;
 }
 
 export class CloudFileConflictError extends Error {

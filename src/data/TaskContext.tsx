@@ -27,7 +27,7 @@ import {
   TaskListParseResult,
 } from "../utils/task-list";
 import { generateId } from "../utils/uuid";
-import { useCloudStorage } from "./CloudStorageContext";
+import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
 import { useMigration } from "./MigrationContext";
@@ -168,16 +168,16 @@ const [TaskProvider, useTask] = createContext(() => {
   );
 
   const syncTodoFileWithCloudStorage = useCallback(
-    async (filePath: string, text: string) => {
-      const result = await syncFile({ filePath, text });
+    async (opt: SyncFileOptions) => {
+      const result = await syncFile(opt);
       if (result) {
         await writeFile({
-          path: filePath,
+          path: opt.filePath,
           data: result,
           directory: Directory.Documents,
           encoding: Encoding.UTF8,
         });
-        return loadTodoFile(filePath, result);
+        return loadTodoFile(opt.filePath, result);
       }
     },
     [loadTodoFile, syncFile, writeFile]
@@ -191,7 +191,7 @@ const [TaskProvider, useTask] = createContext(() => {
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
-      syncTodoFileWithCloudStorage(filePath, text).catch((e) => void e);
+      syncTodoFileWithCloudStorage({ filePath, text }).catch((e) => void e);
       return loadTodoFile(filePath, text);
     },
     [loadTodoFile, syncTodoFileWithCloudStorage, writeFile]
@@ -545,7 +545,11 @@ const [TaskProvider, useTask] = createContext(() => {
         list
           .filter((i) => !!i)
           .map((i) => {
-            syncTodoFileWithCloudStorage(i!.path, i!.file.data);
+            syncTodoFileWithCloudStorage({
+              filePath: i!.path,
+              text: i!.file.data,
+              fromFile: true,
+            });
             return toTaskList(i!.path, i!.file.data);
           })
       );

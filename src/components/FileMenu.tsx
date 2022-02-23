@@ -1,4 +1,5 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import InboxIcon from "@mui/icons-material/Inbox";
@@ -14,6 +15,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCloudStorage } from "../data/CloudStorageContext";
 import { useFileManagementDialog } from "../data/FileManagementDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
@@ -31,6 +33,12 @@ const FileMenu = () => {
   const platform = usePlatform();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const { taskLists, activeTaskList, openTodoFileCreateDialog } = useTask();
+  const {
+    cloudStorage,
+    setCloudStorageFileDialogOpen,
+    cloudStorageEnabled,
+    cloudStorageConnected,
+  } = useCloudStorage();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -56,6 +64,11 @@ const FileMenu = () => {
   const handleManageFile = () => {
     handleClose();
     setFileManagementDialogOpen(true);
+  };
+
+  const handleImportFromCloudStorage = () => {
+    handleClose();
+    setCloudStorageFileDialogOpen(true);
   };
 
   const openFileMenuItem = (
@@ -115,6 +128,16 @@ const FileMenu = () => {
             </MenuItem>
           ))}
         {taskLists.length > 1 && <Divider />}
+        {cloudStorageEnabled && cloudStorageConnected && (
+          <MenuItem onClick={handleImportFromCloudStorage}>
+            <ListItemIcon>
+              <CloudOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>
+              {t("Cloud Storage Import", { cloudStorage })}
+            </ListItemText>
+          </MenuItem>
+        )}
         <FilePicker component={openFileMenuItem} />
         <MenuItem onClick={handleCreateFile}>
           <ListItemIcon>
