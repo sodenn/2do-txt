@@ -276,7 +276,7 @@ Task E @Test @Feature`;
     fireEvent.click(deleteMenuItem);
 
     const deleteButton = await screen.findByRole("button", {
-      name: "Delete task",
+      name: "Delete",
     });
 
     fireEvent.click(deleteButton);
