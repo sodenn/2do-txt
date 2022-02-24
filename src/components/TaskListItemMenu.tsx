@@ -40,7 +40,7 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
 
   const handleEdit = () => {
     handleClose();
-    openTaskDialog(true, task);
+    openTaskDialog(task);
   };
 
   const handleDelete = () => {

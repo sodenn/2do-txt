@@ -31,7 +31,7 @@ const TaskLists = () => {
     () => {
       if (focusedTaskIndex !== -1) {
         const focusedTask = flatTaskList[focusedTaskIndex];
-        openTaskDialog(true, focusedTask);
+        openTaskDialog(focusedTask);
       }
     },
     "e",

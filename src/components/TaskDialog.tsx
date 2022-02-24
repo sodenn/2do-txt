@@ -38,7 +38,7 @@ const createFormData = (createCreationDate: boolean, activeTask?: Task) => {
 const TaskDialog = () => {
   const { t } = useTranslation();
   const {
-    openTaskDialog,
+    closeTaskDialog,
     taskDialogOpen,
     findTaskListByTaskId,
     taskLists,
@@ -89,7 +89,7 @@ const TaskDialog = () => {
     findTaskListByTaskId,
   ]);
 
-  const closeDialog = () => openTaskDialog(false);
+  const closeDialog = () => closeTaskDialog();
 
   const handleSave = () => {
     closeDialog();

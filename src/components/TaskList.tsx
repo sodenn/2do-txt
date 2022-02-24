@@ -65,7 +65,7 @@ const TaskList = (props: TaskListProps) => {
                       key={index}
                       task={task}
                       focused={focusedTaskIndex === index}
-                      onClick={() => openTaskDialog(true, task)}
+                      onClick={() => openTaskDialog(task)}
                       onCheckboxClick={() => completeTask(task)}
                       onFocus={() => onFocus(index)}
                       onBlur={onBlur}

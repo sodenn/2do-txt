@@ -9,9 +9,7 @@ const AddTaskButton = (props: IconButtonProps) => {
   const { t } = useTranslation();
   const { openTaskDialog } = useTask();
 
-  useAddShortcutListener(() => {
-    openTaskDialog(true);
-  }, "n");
+  useAddShortcutListener(() => openTaskDialog(), "n");
 
   return (
     <Tooltip
@@ -30,7 +28,7 @@ const AddTaskButton = (props: IconButtonProps) => {
         aria-label="Add task"
         size="large"
         color="inherit"
-        onClick={() => openTaskDialog(true)}
+        onClick={() => openTaskDialog()}
         {...props}
       >
         <AddIcon />

@@ -1,6 +1,7 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import { SplashScreen } from "@capacitor/splash-screen";
+import { useTheme } from "@mui/material";
 import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
@@ -56,6 +57,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const { enqueueSnackbar } = useSnackbar();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { addTodoFilePath } = useSettings();
+  const theme = useTheme();
   const { syncFile, unlinkFile, cloudStorageEnabled } = useCloudStorage();
   const {
     scheduleNotifications,
@@ -100,16 +102,29 @@ const [TaskProvider, useTask] = createContext(() => {
     ? taskLists[0]
     : undefined;
 
-  const openTaskDialog = useCallback((open: boolean, task?: Task) => {
+  const openTaskDialog = useCallback((task?: Task) => {
     setState((state) => {
       const { activeTaskId, ...rest } = state;
-      const newState: State = { ...rest, taskDialogOpen: open };
+      const newState: State = { ...rest, taskDialogOpen: true };
       if (task) {
         newState.activeTaskId = task._id;
       }
       return newState;
     });
   }, []);
+
+  const closeTaskDialog = useCallback(() => {
+    setState((state) => {
+      return { ...state, taskDialogOpen: false };
+    });
+    // wait until task dialog is closed to avoid flickering
+    setTimeout(() => {
+      setState((state) => {
+        const { activeTaskId, ...rest } = state;
+        return { ...rest };
+      });
+    }, theme.transitions.duration.standard);
+  }, [theme.transitions.duration.standard]);
 
   const openTodoFileCreateDialog = useCallback((open: boolean) => {
     setState((state) => {
@@ -592,6 +607,7 @@ const [TaskProvider, useTask] = createContext(() => {
     taskDialogOpen,
     todoFileCreateDialogOpen,
     openTaskDialog,
+    closeTaskDialog,
     openTodoFileCreateDialog,
     scheduleDueTaskNotifications,
     activeTaskList,

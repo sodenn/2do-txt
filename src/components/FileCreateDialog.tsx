@@ -39,7 +39,7 @@ const FileCreateDialog = () => {
           addTodoFilePath(filePath);
           setActiveTaskListPath(filePath);
           if (taskLists.length === 0) {
-            openTaskDialog(true);
+            openTaskDialog();
           }
         });
       }
