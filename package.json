@@ -48,6 +48,7 @@
     "cordova-plugin-inappbrowser": "^5.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566b",
     "crypto-browserify": "^3.12.0",
+    "crypto-js": "^4.1.1",
     "date-fns": "^2.27.0",
     "draft-js": "^0.11.7",
     "dropbox": "^10.24.0",

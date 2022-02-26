@@ -7,8 +7,17 @@ export interface CloudFile {
   path: string;
   rev: string;
   lastModified: string;
-  directory?: boolean;
+  contentHash: string;
+  type: "file";
 }
+
+export interface CloudFolder {
+  name: string;
+  path: string;
+  type: "folder";
+}
+
+export type CloudItem = CloudFile | CloudFolder;
 
 export interface CloudFileRef extends CloudFile {
   localFilePath: string;
@@ -20,8 +29,8 @@ export interface ListCloudFilesOptions {
   cursor?: string;
 }
 
-export interface ListCloudFilesResult {
-  items: CloudFile[];
+export interface ListCloudItemResult {
+  items: CloudItem[];
   cursor?: string;
   hasMore: boolean;
 }
@@ -35,7 +44,6 @@ export interface UploadFileOptions {
 export interface SyncFileOptions {
   localVersion: CloudFileRef;
   localContent: string;
-  fromFile?: boolean;
 }
 
 interface SyncFileLocalResult {

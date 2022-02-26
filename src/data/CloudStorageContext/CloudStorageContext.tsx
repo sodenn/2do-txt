@@ -8,7 +8,7 @@ import {
   CloudFileRef,
   CloudStorage,
   ListCloudFilesOptions,
-  ListCloudFilesResult,
+  ListCloudItemResult,
   SyncFileResult,
   UpdateMode,
 } from "../../types/cloud-storage.types";
@@ -26,7 +26,6 @@ import {
 export interface SyncFileOptions {
   filePath: string;
   text: string;
-  fromFile?: boolean;
 }
 
 interface UploadFileOptions {
@@ -46,6 +45,20 @@ interface ResolveConflictResult {
   cloudFile: CloudFileRef;
   option: "local" | "cloud";
 }
+
+interface UploadFileAndResolveConflict {
+  type: "conflict";
+  conflict: ResolveConflictResult | undefined;
+}
+
+interface UploadFileAndResolveNoConflict {
+  type: "no-conflict";
+  cloudFile: CloudFileRef;
+}
+
+type UploadFileAndResolveResult =
+  | UploadFileAndResolveConflict
+  | UploadFileAndResolveNoConflict;
 
 const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const platform = usePlatform();
@@ -292,25 +305,35 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   );
 
   const uploadFileAndResolveConflict = useCallback(
-    async (opt: UploadFileOptions) => {
-      return uploadFile(opt).catch(async (error) => {
-        if (error instanceof CloudFileConflictError) {
-          const res = await openResolveConflictDialog({
-            ...opt,
-            cloudFile: error.data.cloudFile,
-          });
-          if (res) {
-            return res.cloudFile;
+    async (opt: UploadFileOptions): Promise<UploadFileAndResolveResult> => {
+      return uploadFile(opt)
+        .then((cloudFile) => {
+          const result: UploadFileAndResolveResult = {
+            type: "no-conflict",
+            cloudFile,
+          };
+          return result;
+        })
+        .catch(async (error) => {
+          if (error instanceof CloudFileConflictError) {
+            const conflict = await openResolveConflictDialog({
+              ...opt,
+              cloudFile: error.data.cloudFile,
+            });
+            return {
+              type: "conflict",
+              conflict,
+            };
           }
-        }
-      });
+          throw error;
+        });
     },
     [openResolveConflictDialog, uploadFile]
   );
 
   const _syncFile = useCallback(
     async (opt: SyncFileOptions) => {
-      const { filePath, text, fromFile } = opt;
+      const { filePath, text } = opt;
       const cloudStorage = await getCloudStorage();
       try {
         const cloudFile = await getCloudFileRefByFilePath(filePath);
@@ -324,7 +347,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           syncResult = await dropboxSyncFile({
             localContent: text,
             localVersion: cloudFile,
-            fromFile,
           });
         }
 
@@ -436,7 +458,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   );
 
   const listFiles = useCallback(
-    async (opt: ListCloudFilesOptions): Promise<ListCloudFilesResult> => {
+    async (opt: ListCloudFilesOptions): Promise<ListCloudItemResult> => {
       const cloudStorage = await getCloudStorage();
       if (!cloudStorage) {
         return { hasMore: false, items: [] };

@@ -19,7 +19,7 @@ import { useTask } from "../data/TaskContext";
 import {
   CloudFile,
   CloudFileRef,
-  ListCloudFilesResult,
+  ListCloudItemResult,
 } from "../types/cloud-storage.types";
 import { ResponsiveDialog } from "./ResponsiveDialog";
 import StartEllipsis from "./StartEllipsis";
@@ -41,7 +41,7 @@ const CloudFileDialog = () => {
   } = useCloudStorage();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
-  const [files, setFiles] = useState<ListCloudFilesResult | undefined>();
+  const [files, setFiles] = useState<ListCloudItemResult | undefined>();
   const [cloudFileRefs, setCloudFileRefs] = useState<CloudFileRef[]>([]);
 
   const handleClose = () => {
@@ -132,7 +132,8 @@ const CloudFileDialog = () => {
         {files && files.items.length > 0 && (
           <List sx={{ py: 0 }} dense>
             {files.items
-              .filter((i) => !i.directory)
+              .filter((i) => i.type !== "folder")
+              .map((i) => i as CloudFile)
               .map((cloudFile, idx) => (
                 <ListItem
                   button

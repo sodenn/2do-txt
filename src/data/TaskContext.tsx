@@ -563,7 +563,6 @@ const [TaskProvider, useTask] = createContext(() => {
             syncTodoFileWithCloudStorage({
               filePath: i!.path,
               text: i!.file.data,
-              fromFile: true,
             });
             return toTaskList(i!.path, i!.file.data);
           })

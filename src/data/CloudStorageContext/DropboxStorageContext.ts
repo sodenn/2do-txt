@@ -10,7 +10,7 @@ import {
   CloudFileNotFoundError,
   CloudFileUnauthorizedError,
   ListCloudFilesOptions,
-  ListCloudFilesResult,
+  ListCloudItemResult,
   NetworkError,
   SyncFileOptions,
   SyncFileResult,
@@ -22,6 +22,7 @@ import { usePlatform } from "../../utils/platform";
 import { getBaseUrl } from "../../utils/routing";
 import { useSecureStorage } from "../../utils/secure-storage";
 import { useStorage } from "../../utils/storage";
+import DropboxContentHasher from "./DropboxContentHasher";
 
 const cloudStorage = "Dropbox";
 const dropboxClientId = process.env.REACT_APP_DROPBOX_CLIENT_ID;
@@ -218,7 +219,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   }, [getClient, removeSecureStorageItem, removeStorageItem]);
 
   const dropboxListFiles = useCallback(
-    async (opt: ListCloudFilesOptions): Promise<ListCloudFilesResult> => {
+    async (opt: ListCloudFilesOptions): Promise<ListCloudItemResult> => {
       const { path, cursor } = opt;
 
       const hasPath = typeof path === "string";
@@ -239,14 +240,34 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
 
       return {
         items: res.result.entries
-          .filter((e) => !!e.path_lower)
-          .map((e) => ({
-            name: e.name,
-            directory: e[".tag"] === "folder",
-            path: e.path_lower as string,
-            lastModified: (e as any).server_modified,
-            rev: (e as any).rev,
-          })),
+          .filter(
+            (e) =>
+              !!e.path_lower &&
+              (e[".tag"] === "folder" ||
+                (e[".tag"] === "file" && !!e.content_hash))
+          )
+          .map((e) => {
+            if (e[".tag"] === "folder") {
+              return {
+                name: e.name,
+                path: e.path_lower as string,
+                type: "folder",
+              };
+            } else if (e[".tag"] === "file") {
+              return {
+                name: e.name,
+                path: e.path_lower as string,
+                lastModified: e.server_modified,
+                contentHash: e.content_hash as string,
+                rev: e.rev,
+                type: "file",
+              };
+            } else {
+              throw new Error(
+                `Cannot map cloud item with path "${e.path_lower}"`
+              );
+            }
+          }),
         cursor: res.result.cursor,
         hasMore: res.result.has_more,
       };
@@ -258,19 +279,24 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     async (path: string): Promise<CloudFile> => {
       const dbx = await getClient();
 
-      const {
-        result: { name, path_lower, ...rest },
-      } = await dbx.filesGetMetadata({ path }).catch(handleError);
+      const result = await dbx.filesGetMetadata({ path }).catch(handleError);
+      const item = result.result;
 
-      if (!path_lower) {
-        throw new Error("File not mounted");
+      if (item[".tag"] !== "file") {
+        throw new Error(`Cloud item with path "${path}" is not a file`);
+      }
+
+      if (!item.path_lower) {
+        throw new Error(`File with path "${path}" not mounted`);
       }
 
       return {
-        name,
-        path: path_lower as string,
-        lastModified: (rest as any).server_modified,
-        rev: (rest as any).rev,
+        name: item.name,
+        path: item.path_lower,
+        lastModified: item.server_modified,
+        contentHash: item.content_hash!,
+        rev: item.rev,
+        type: "file",
       };
     },
     [getClient, handleError]
@@ -300,6 +326,12 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     [getClient, handleError]
   );
 
+  const generateContentHash = useCallback((text: string) => {
+    const hasher = new DropboxContentHasher();
+    hasher.update(text);
+    return hasher.digest();
+  }, []);
+
   const dropboxUploadFile = useCallback(
     async (
       opt: Omit<UploadFileOptions, "cloudStorage">
@@ -308,7 +340,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       const dbx = await getClient();
       const dropboxPath = path.startsWith("/") ? path : `/${path}`;
       const {
-        result: { name, path_lower, server_modified, rev },
+        result: { name, path_lower, server_modified, content_hash, rev },
       } = await dbx
         .filesUpload({
           path: dropboxPath,
@@ -331,15 +363,17 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
         name,
         path: path_lower!,
         lastModified: server_modified,
+        contentHash: content_hash || generateContentHash(content),
         rev,
+        type: "file",
       };
     },
-    [getClient, getFileMetaData, handleError]
+    [generateContentHash, getClient, getFileMetaData, handleError]
   );
 
   const dropboxSyncFile = useCallback(
     async (opt: SyncFileOptions): Promise<SyncFileResult> => {
-      const { localVersion, localContent, fromFile } = opt;
+      const { localVersion, localContent } = opt;
 
       const serverVersion = await getFileMetaData(localVersion.path).catch(
         (error) => {
@@ -362,7 +396,14 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
         };
       }
 
-      if (localVersion.rev === serverVersion.rev && fromFile) {
+      const localContentHash = generateContentHash(localContent);
+
+      const sameLocalContentHash =
+        localContentHash === localVersion.contentHash;
+      const sameServerContentHash =
+        localContentHash === serverVersion.contentHash;
+
+      if (localVersion.rev === serverVersion.rev && sameServerContentHash) {
         return;
       }
 
@@ -372,7 +413,10 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       // update server revision
       const oldServerVersion =
         localDate && serverDate && localDate > serverDate;
-      if (localVersion.rev === serverVersion.rev || oldServerVersion) {
+      if (
+        oldServerVersion ||
+        (localVersion.rev === serverVersion.rev && !sameServerContentHash)
+      ) {
         const cloudFile = await dropboxUploadFile({
           path: localVersion.path,
           content: localContent,
@@ -386,7 +430,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
 
       // update local revision
       const oldLocalVersion = localDate && serverDate && localDate < serverDate;
-      if (oldLocalVersion && connectionIssue) {
+      if (oldLocalVersion && !sameLocalContentHash) {
         return {
           type: "conflict",
           cloudFile: serverVersion,
@@ -401,7 +445,12 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
         };
       }
     },
-    [getFileMetaData, connectionIssue, dropboxUploadFile, dropboxDownloadFile]
+    [
+      getFileMetaData,
+      generateContentHash,
+      dropboxUploadFile,
+      dropboxDownloadFile,
+    ]
   );
 
   return {

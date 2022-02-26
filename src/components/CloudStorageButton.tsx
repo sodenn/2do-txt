@@ -6,10 +6,12 @@ import { CloudStorage } from "../types/cloud-storage.types";
 
 interface CloudStorageConnectButtonProps {
   cloudStorage: CloudStorage;
+  connect?: boolean;
+  disconnect?: boolean;
 }
 
 const CloudStorageButton = (props: CloudStorageConnectButtonProps) => {
-  const { cloudStorage } = props;
+  const { cloudStorage, connect = true, disconnect = true } = props;
   const { t } = useTranslation();
   const {
     cloudStorageEnabled,
@@ -23,7 +25,11 @@ const CloudStorageButton = (props: CloudStorageConnectButtonProps) => {
     return null;
   }
 
-  if (cloudStorageConnected && cloudStorage === currentCloudStorage) {
+  if (
+    disconnect &&
+    cloudStorageConnected &&
+    cloudStorage === currentCloudStorage
+  ) {
     return (
       <Button variant="outlined" fullWidth onClick={() => unlink()}>
         {t(`Disconnect ${cloudStorage}`)}
@@ -31,7 +37,7 @@ const CloudStorageButton = (props: CloudStorageConnectButtonProps) => {
     );
   }
 
-  if (!cloudStorageConnected) {
+  if (connect && !cloudStorageConnected) {
     return (
       <Button
         variant="outlined"

@@ -14,12 +14,17 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useSnackbar } from "notistack";
 import React, { MouseEvent, useEffect, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
 import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useSettings } from "../../data/SettingsContext";
-import { CloudFileRef } from "../../types/cloud-storage.types";
+import { useTask } from "../../data/TaskContext";
+import {
+  CloudFileRef,
+  CloudFileUnauthorizedError,
+} from "../../types/cloud-storage.types";
 import { formatLocalDateTime, parseDate } from "../../utils/date";
 import { useFilesystem } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
@@ -51,6 +56,8 @@ const OpenFileItem = (props: OpenFileItemProps) => {
     cloudStorageConnected,
     uploadFileAndResolveConflict,
   } = useCloudStorage();
+  const { saveTodoFile } = useTask();
+  const { enqueueSnackbar } = useSnackbar();
   const [cloudFileRef, setCloudFileRef] = useState<CloudFileRef>();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
   const cloudFileLastModified = cloudFileRef
@@ -63,30 +70,48 @@ const OpenFileItem = (props: OpenFileItemProps) => {
 
   const handleCloudSync = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    setCloudSyncLoading(true);
 
-    if (!cloudFileRef) {
-      const readFileResult = await readFile({
-        path: filePath,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-      });
+    try {
+      setCloudSyncLoading(true);
+      if (!cloudFileRef) {
+        const readFileResult = await readFile({
+          path: filePath,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8,
+        });
 
-      const cloudFile = await uploadFileAndResolveConflict({
-        filePath,
-        text: readFileResult.data,
-        mode: "create",
-      });
+        const result = await uploadFileAndResolveConflict({
+          filePath,
+          text: readFileResult.data,
+          mode: "create",
+        });
 
-      if (cloudFile) {
-        setCloudFileRef(cloudFile);
+        if (result && result.type === "no-conflict") {
+          setCloudFileRef(result.cloudFile);
+        } else if (result && result.type === "conflict" && result.conflict) {
+          if (result.conflict.option === "cloud") {
+            const text = result.conflict.text;
+            await saveTodoFile(filePath, text);
+          }
+          setCloudFileRef(result.conflict.cloudFile);
+        }
+      } else {
+        await unlinkFile(filePath);
+        setCloudFileRef(undefined);
       }
-    } else {
-      await unlinkFile(filePath);
-      setCloudFileRef(undefined);
+    } catch (e) {
+      if (!(e instanceof CloudFileUnauthorizedError)) {
+        console.debug(e);
+        enqueueSnackbar(
+          t(`Error syncing file to cloud storage`, { cloudStorage }),
+          {
+            variant: "warning",
+          }
+        );
+      }
+    } finally {
+      setCloudSyncLoading(false);
     }
-
-    setCloudSyncLoading(false);
   };
 
   return (
