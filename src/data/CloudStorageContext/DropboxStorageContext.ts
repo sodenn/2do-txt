@@ -1,4 +1,3 @@
-import { InAppBrowser } from "@awesome-cordova-plugins/in-app-browser";
 import { Network } from "@capacitor/network";
 import { Dropbox, DropboxAuth } from "dropbox";
 import { useSnackbar } from "notistack";
@@ -171,52 +170,65 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
 
     const codeVerifier = dbxAuth.getCodeVerifier();
 
+    // reset current dropbox client reference, since the token used will no longer be valid
+    dbxRef.current = null;
+
     if (platform === "ios" || platform === "android") {
       return new Promise<void>((resolve, reject) => {
-        const browser = InAppBrowser.create(authUrl, "_blank", {
-          location: "yes",
-        });
+        // @ts-ignore
+        const ref = cordova.InAppBrowser.open(
+          authUrl,
+          "_blank",
+          "location=yes"
+        );
 
-        const listener = browser
-          .on("loadstart")
-          .subscribe(async (event: any) => {
-            // Ignore the dropbox authorize screen
-            if (event && event.url.indexOf("oauth2/authorize") > -1) {
-              return;
-            }
+        const listener = async (event: any) => {
+          // Ignore the dropbox authorize screen
+          if (event && event.url.indexOf("oauth2/authorize") > -1) {
+            return;
+          }
 
-            listener.unsubscribe();
-            browser.close();
+          ref.removeEventListener("loadstart", listener);
+          ref.close();
 
-            // Check the redirect uri
-            if (event.url.indexOf(redirectUrl) > -1) {
-              const authorizationCode = event.url.split("=")[1].split("&")[0];
-              if (authorizationCode) {
-                await dropboxRequestTokens(codeVerifier, authorizationCode);
-                resolve();
-              } else {
-                reject();
-              }
+          // Check the redirect uri
+          if (event.url.indexOf(redirectUrl) > -1) {
+            const authorizationCode = event.url.split("=")[1].split("&")[0];
+            if (authorizationCode) {
+              await dropboxRequestTokens(codeVerifier, authorizationCode);
+              resolve();
             } else {
               reject();
             }
-          });
+          } else {
+            reject();
+          }
+        };
+
+        ref.addEventListener("loadstart", listener);
       });
     } else {
       await setSecureStorageItem("Dropbox-code-verifier", codeVerifier);
       window.location.href = authUrl;
     }
-  }, [getRedirectUrl, platform, dropboxRequestTokens, setSecureStorageItem]);
+  }, [
+    getRedirectUrl,
+    platform,
+    dropboxRequestTokens,
+    dbxRef,
+    setSecureStorageItem,
+  ]);
 
   const dropboxUnlink = useCallback(async () => {
     const dbx = await getClient();
     dbx.authTokenRevoke().catch((e) => void e);
+    dbxRef.current = null;
     await Promise.all([
       removeStorageItem("Dropbox-files"),
       removeSecureStorageItem("Dropbox-code-verifier"),
       removeSecureStorageItem("Dropbox-refresh-token"),
     ]);
-  }, [getClient, removeSecureStorageItem, removeStorageItem]);
+  }, [dbxRef, getClient, removeSecureStorageItem, removeStorageItem]);
 
   const dropboxListFiles = useCallback(
     async (opt: ListCloudFilesOptions): Promise<ListCloudItemResult> => {

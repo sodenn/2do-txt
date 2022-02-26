@@ -6,6 +6,7 @@ import {
   CloudFile,
   CloudFileConflictError,
   CloudFileRef,
+  CloudFileUnauthorizedError,
   CloudStorage,
   ListCloudFilesOptions,
   ListCloudItemResult,
@@ -85,6 +86,13 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     platform === "android" ||
     process.env.REACT_APP_ENABLE_WEB_CLOUD_STORAGE === "true";
 
+  const handleError = useCallback((error) => {
+    if (error instanceof CloudFileUnauthorizedError) {
+      setCloudStorageConnected(false);
+    }
+    throw error;
+  }, []);
+
   const getCloudStorage = useCallback(async () => {
     const cloudStorage = await getStorageItem("cloud-storage");
     return cloudStorage as CloudStorage | null;
@@ -104,13 +112,13 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const authenticate = useCallback(
     async (cloudStorage: CloudStorage) => {
-      await setCloudStorage(cloudStorage);
       if (cloudStorage === "Dropbox") {
-        await dropboxAuthenticate().catch(() => setCloudStorage(null));
+        await dropboxAuthenticate();
       } else {
-        await setCloudStorage(null);
         throw new Error(`Unknown cloud storage "${cloudStorage}"`);
       }
+      await setCloudStorage(cloudStorage);
+      setCloudStorageConnected(true);
     },
     [dropboxAuthenticate, setCloudStorage]
   );
@@ -180,7 +188,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           path: getFilenameFromPath(filePath),
           content: text,
           mode,
-        });
+        }).catch(handleError);
       } else {
         throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
       }
@@ -195,7 +203,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       return cloudFileRef;
     },
-    [dropboxUploadFile, getCloudStorage, linkFile]
+    [dropboxUploadFile, getCloudStorage, handleError, linkFile]
   );
 
   const getCloudFileRefByFilePath = useCallback(
@@ -215,14 +223,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       let text: string | undefined = undefined;
       if (cloudStorage === "Dropbox") {
-        text = await dropboxDownloadFile(cloudFilePath);
+        text = await dropboxDownloadFile(cloudFilePath).catch(handleError);
       } else {
         throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
       }
 
       return text;
     },
-    [dropboxDownloadFile, getCloudStorage]
+    [dropboxDownloadFile, getCloudStorage, handleError]
   );
 
   const openResolveConflictDialog = useCallback(
@@ -347,7 +355,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           syncResult = await dropboxSyncFile({
             localContent: text,
             localVersion: cloudFile,
-          });
+          }).catch(handleError);
         }
 
         if (!syncResult) {
@@ -384,9 +392,10 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       }
     },
     [
-      dropboxSyncFile,
-      getCloudFileRefByFilePath,
       getCloudStorage,
+      getCloudFileRefByFilePath,
+      dropboxSyncFile,
+      handleError,
       openResolveConflictDialog,
       linkFile,
     ]

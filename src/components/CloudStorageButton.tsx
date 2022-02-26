@@ -32,7 +32,7 @@ const CloudStorageButton = (props: CloudStorageConnectButtonProps) => {
   ) {
     return (
       <Button variant="outlined" fullWidth onClick={() => unlink()}>
-        {t(`Disconnect ${cloudStorage}`)}
+        {t(`Disconnect from ${cloudStorage}`)}
       </Button>
     );
   }
@@ -44,7 +44,7 @@ const CloudStorageButton = (props: CloudStorageConnectButtonProps) => {
         fullWidth
         onClick={() => authenticate(cloudStorage)}
       >
-        {t(`Connect ${cloudStorage}`)}
+        {t(`Connect to ${cloudStorage}`)}
       </Button>
     );
   }

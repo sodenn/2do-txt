@@ -33,7 +33,7 @@ const Onboarding = () => {
 
   return (
     <StyledBox sx={{ display: taskLists.length === 0 ? "flex" : "none" }}>
-      <Stack spacing={2}>
+      <Stack spacing={1}>
         <Box sx={{ py: 1, textAlign: "center" }}>
           <img src={logo} alt="Logo" height={96} style={{ opacity: 0.2 }} />
         </Box>

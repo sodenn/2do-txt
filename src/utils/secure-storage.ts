@@ -1,4 +1,3 @@
-import { Keychain } from "@awesome-cordova-plugins/keychain";
 import { useCallback } from "react";
 import { usePlatform } from "./platform";
 
@@ -72,22 +71,34 @@ function useWebSecureStorage() {
 function useIosSecureStorage() {
   const getSecureStorageItem = useCallback(
     (key: SecureStorageKeys): Promise<string | null> => {
-      return Keychain.get(key);
+      return new Promise((resolve) => {
+        // @ts-ignore
+        return Keychain.get(
+          (value: string) => resolve(value),
+          () => resolve(null),
+          key
+        );
+      });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
   const setSecureStorageItem = useCallback(
     async (key: SecureStorageKeys, value: string) => {
-      await Keychain.set(key, value);
+      return new Promise((resolve, reject) => {
+        // @ts-ignore
+        return Keychain.set(resolve, reject, key, value);
+      });
     },
     []
   );
 
   const removeSecureStorageItem = useCallback(
     async (key: SecureStorageKeys) => {
-      await Keychain.remove(key);
+      return new Promise((resolve) => {
+        // @ts-ignore
+        return Keychain.remove(resolve, () => resolve(null), key);
+      });
     },
     []
   );
