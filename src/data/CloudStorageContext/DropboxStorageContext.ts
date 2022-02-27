@@ -20,7 +20,6 @@ import { parseDate } from "../../utils/date";
 import { usePlatform } from "../../utils/platform";
 import { getBaseUrl } from "../../utils/routing";
 import { useSecureStorage } from "../../utils/secure-storage";
-import { useStorage } from "../../utils/storage";
 import DropboxContentHasher from "./DropboxContentHasher";
 
 const cloudStorage = "Dropbox";
@@ -35,7 +34,6 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     getSecureStorageItem,
     removeSecureStorageItem,
   } = useSecureStorage();
-  const { removeStorageItem } = useStorage();
   const platform = usePlatform();
   const [connectionIssue, setConnectionIssue] = useState(false);
   const dbxRef: MutableRefObject<Dropbox | null> = createRef();
@@ -63,7 +61,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       setConnectionIssue(true);
     }
 
-    throw new CloudFileUnauthorizedError();
+    throw new CloudFileUnauthorizedError("Dropbox");
   }, [enqueueSnackbar, removeSecureStorageItem, t, connectionIssue]);
 
   const handleError = useCallback(
@@ -224,11 +222,10 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     dbx.authTokenRevoke().catch((e) => void e);
     dbxRef.current = null;
     await Promise.all([
-      removeStorageItem("Dropbox-files"),
       removeSecureStorageItem("Dropbox-code-verifier"),
       removeSecureStorageItem("Dropbox-refresh-token"),
     ]);
-  }, [dbxRef, getClient, removeSecureStorageItem, removeStorageItem]);
+  }, [dbxRef, getClient, removeSecureStorageItem]);
 
   const dropboxListFiles = useCallback(
     async (opt: ListCloudFilesOptions): Promise<ListCloudItemResult> => {

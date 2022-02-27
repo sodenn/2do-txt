@@ -1,3 +1,4 @@
+import { Alert, CircularProgress } from "@mui/material";
 import { throttle } from "lodash";
 import { useSnackbar } from "notistack";
 import { FC, useCallback, useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import {
   CloudFileRef,
   CloudFileUnauthorizedError,
   CloudStorage,
+  cloudStorages,
   ListCloudFilesOptions,
   ListCloudItemResult,
   SyncFileResult,
@@ -33,12 +35,24 @@ interface UploadFileOptions {
   filePath: string;
   text: string;
   mode?: UpdateMode;
+  cloudStorage: CloudStorage;
+}
+
+interface DownloadFileOptions {
+  cloudFilePath: string;
+  cloudStorage: CloudStorage;
+}
+
+interface RequestTokenOptions {
+  authorizationCode: string;
+  cloudStorage: CloudStorage;
 }
 
 interface ResolveConflictOptions {
   filePath: string;
   text: string;
   cloudFile: CloudFile;
+  cloudStorage: CloudStorage;
 }
 
 interface ResolveConflictResult {
@@ -57,6 +71,17 @@ interface UploadFileAndResolveNoConflict {
   cloudFile: CloudFileRef;
 }
 
+interface CloudFileDialogOpen {
+  open: true;
+  cloudStorage: CloudStorage;
+}
+
+interface CloudFileDialogClosed {
+  open: false;
+}
+
+type CloudFileDialogOptions = CloudFileDialogOpen | CloudFileDialogClosed;
+
 type UploadFileAndResolveResult =
   | UploadFileAndResolveConflict
   | UploadFileAndResolveNoConflict;
@@ -64,7 +89,7 @@ type UploadFileAndResolveResult =
 const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const platform = usePlatform();
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const {
     dropboxAuthenticate,
     dropboxSyncFile,
@@ -74,13 +99,16 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     dropboxRequestTokens,
     dropboxListFiles,
   } = useDropboxStorage();
-  const [cloudStorageFileDialogOpen, setCloudStorageFileDialogOpen] =
-    useState(false);
+  const [cloudFileDialogOptions, setCloudFileDialogOptions] =
+    useState<CloudFileDialogOptions>({
+      open: false,
+    });
   const { getSecureStorageItem, removeSecureStorageItem } = useSecureStorage();
   const { setConfirmationDialog } = useConfirmationDialog();
-  const { getStorageItem, setStorageItem, removeStorageItem } = useStorage();
-  const [cloudStorage, _setCloudStorage] = useState<CloudStorage | null>(null);
-  const [cloudStorageConnected, setCloudStorageConnected] = useState(false);
+  const { getStorageItem, setStorageItem } = useStorage();
+  const [connectedCloudStorages, setConnectedCloudStorages] = useState<
+    Record<CloudStorage, boolean>
+  >({ Dropbox: false });
   const cloudStorageEnabled =
     platform === "ios" ||
     platform === "android" ||
@@ -88,7 +116,10 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const handleError = useCallback((error) => {
     if (error instanceof CloudFileUnauthorizedError) {
-      setCloudStorageConnected(false);
+      setConnectedCloudStorages((curr) => ({
+        ...curr,
+        [error.cloudStorage]: false,
+      }));
     }
     throw error;
   }, []);
@@ -98,18 +129,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     return cloudStorage as CloudStorage | null;
   }, [getStorageItem]);
 
-  const setCloudStorage = useCallback(
-    async (value: CloudStorage | null) => {
-      _setCloudStorage(value);
-      if (value) {
-        await setStorageItem("cloud-storage", value);
-      } else {
-        await removeStorageItem("cloud-storage");
-      }
-    },
-    [removeStorageItem, setStorageItem]
-  );
-
   const authenticate = useCallback(
     async (cloudStorage: CloudStorage) => {
       if (cloudStorage === "Dropbox") {
@@ -117,19 +136,16 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       } else {
         throw new Error(`Unknown cloud storage "${cloudStorage}"`);
       }
-      await setCloudStorage(cloudStorage);
-      setCloudStorageConnected(true);
+      setConnectedCloudStorages((curr) => ({
+        ...curr,
+        [cloudStorage]: true,
+      }));
     },
-    [dropboxAuthenticate, setCloudStorage]
+    [dropboxAuthenticate]
   );
 
   const getCloudFileRefs = useCallback(async (): Promise<CloudFileRef[]> => {
-    const cloudStorage = await getCloudStorage();
-    if (!cloudStorage) {
-      return [];
-    }
-
-    const cloudFilesStr = await getStorageItem(`${cloudStorage}-files`);
+    const cloudFilesStr = await getStorageItem("cloud-files");
 
     if (!cloudFilesStr) {
       return [];
@@ -138,26 +154,27 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     try {
       return JSON.parse(cloudFilesStr);
     } catch (error) {
-      await setStorageItem(`${cloudStorage}-files`, JSON.stringify([]));
+      await setStorageItem("cloud-files", JSON.stringify([]));
       return [];
     }
-  }, [getCloudStorage, getStorageItem, setStorageItem]);
+  }, [getStorageItem, setStorageItem]);
 
-  const unlink = useCallback(async () => {
-    const cloudStorage = await getCloudStorage();
-    if (cloudStorage === "Dropbox") {
-      await dropboxUnlink();
-    }
-    await setCloudStorage(null);
-  }, [dropboxUnlink, getCloudStorage, setCloudStorage]);
+  const unlink = useCallback(
+    async (cloudStorage: CloudStorage) => {
+      if (cloudStorage === "Dropbox") {
+        await dropboxUnlink();
+      }
+      const refs = await getCloudFileRefs();
+      await setStorageItem(
+        "cloud-files",
+        JSON.stringify(refs.filter((ref) => ref.cloudStorage !== cloudStorage))
+      );
+    },
+    [dropboxUnlink, getCloudFileRefs, setStorageItem]
+  );
 
   const linkFile = useCallback(
     async (cloudFile: CloudFileRef) => {
-      const cloudStorage = await getCloudStorage();
-      if (!cloudStorage) {
-        return;
-      }
-
       const currentCloudFiles = await getCloudFileRefs();
 
       const newCloudFiles = [
@@ -165,22 +182,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         { ...cloudFile },
       ];
 
-      await setStorageItem(
-        `${cloudStorage}-files`,
-        JSON.stringify(newCloudFiles)
-      );
+      await setStorageItem("cloud-files", JSON.stringify(newCloudFiles));
     },
-    [getCloudFileRefs, getCloudStorage, setStorageItem]
+    [getCloudFileRefs, setStorageItem]
   );
 
   const uploadFile = useCallback(
     async (opt: UploadFileOptions) => {
-      const { filePath, text, mode = "update" } = opt;
-
-      const cloudStorage = await getCloudStorage();
-      if (!cloudStorage) {
-        throw new Error("Cloud storage is undefined");
-      }
+      const { filePath, text, mode = "update", cloudStorage } = opt;
 
       let cloudFile: CloudFile | undefined = undefined;
       if (cloudStorage === "Dropbox") {
@@ -197,13 +206,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         ...cloudFile,
         localFilePath: filePath,
         lastSync: new Date().toISOString(),
+        cloudStorage,
       };
 
       await linkFile(cloudFileRef);
 
       return cloudFileRef;
     },
-    [dropboxUploadFile, getCloudStorage, handleError, linkFile]
+    [dropboxUploadFile, handleError, linkFile]
   );
 
   const getCloudFileRefByFilePath = useCallback(
@@ -215,12 +225,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   );
 
   const downloadFile = useCallback(
-    async (cloudFilePath: string) => {
-      const cloudStorage = await getCloudStorage();
-      if (!cloudStorage) {
-        throw new Error("Cloud storage is undefined");
-      }
-
+    async (opt: DownloadFileOptions) => {
+      const { cloudStorage, cloudFilePath } = opt;
       let text: string | undefined = undefined;
       if (cloudStorage === "Dropbox") {
         text = await dropboxDownloadFile(cloudFilePath).catch(handleError);
@@ -230,13 +236,12 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       return text;
     },
-    [dropboxDownloadFile, getCloudStorage, handleError]
+    [dropboxDownloadFile, handleError]
   );
 
   const openResolveConflictDialog = useCallback(
     async (opt: ResolveConflictOptions) => {
-      const { filePath, cloudFile } = opt;
-      const cloudStorage = await getCloudStorage();
+      const { filePath, cloudFile, cloudStorage, text } = opt;
       return new Promise<ResolveConflictResult | undefined>((resolve) => {
         setConfirmationDialog({
           onClose: () => resolve(undefined),
@@ -255,23 +260,25 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
             {
               text: cloudStorage!,
               handler: async () => {
-                const text = await downloadFile(cloudFile.path).catch(
-                  (error) => {
-                    enqueueSnackbar(
-                      t(`The file could not be downloaded`, { cloudStorage }),
-                      {
-                        variant: "warning",
-                      }
-                    );
-                    resolve(undefined);
-                    throw error;
-                  }
-                );
+                const text = await downloadFile({
+                  cloudFilePath: cloudFile.path,
+                  cloudStorage,
+                }).catch((error) => {
+                  enqueueSnackbar(
+                    t(`The file could not be downloaded`, { cloudStorage }),
+                    {
+                      variant: "warning",
+                    }
+                  );
+                  resolve(undefined);
+                  throw error;
+                });
 
                 const value: CloudFileRef = {
                   ...cloudFile,
                   localFilePath: filePath,
                   lastSync: new Date().toISOString(),
+                  cloudStorage,
                 };
 
                 await linkFile(value);
@@ -287,13 +294,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
               text: t("Local"),
               handler: async () => {
                 const value = await uploadFile({
-                  text: opt.text,
+                  text,
                   filePath,
+                  cloudStorage,
                 });
                 resolve({
                   option: "local",
                   cloudFile: value,
-                  text: opt.text,
+                  text,
                 });
               },
             },
@@ -302,7 +310,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       });
     },
     [
-      getCloudStorage,
       setConfirmationDialog,
       t,
       downloadFile,
@@ -342,15 +349,27 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const _syncFile = useCallback(
     async (opt: SyncFileOptions) => {
       const { filePath, text } = opt;
-      const cloudStorage = await getCloudStorage();
+
+      const cloudFile = await getCloudFileRefByFilePath(filePath);
+      if (!cloudFile) {
+        return;
+      }
+
+      const { cloudStorage } = cloudFile;
+
+      const snackbar = enqueueSnackbar("Sync", {
+        variant: "info",
+        preventDuplicate: true,
+        persist: true,
+        content: (
+          <Alert severity="info" icon={<CircularProgress size="1em" />}>
+            {t("Sync with Cloud Storage", { cloudStorage })}
+          </Alert>
+        ),
+      });
+
       try {
-        const cloudFile = await getCloudFileRefByFilePath(filePath);
-        if (!cloudFile) {
-          return;
-        }
-
         let syncResult: SyncFileResult = undefined;
-
         if (cloudStorage === "Dropbox") {
           syncResult = await dropboxSyncFile({
             localContent: text,
@@ -367,6 +386,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
             filePath: opt.filePath,
             text: opt.text,
             cloudFile: syncResult.cloudFile,
+            cloudStorage,
           });
           return result?.text;
         }
@@ -376,6 +396,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
             ...syncResult.cloudFile,
             localFilePath: filePath,
             lastSync: new Date().toISOString(),
+            cloudStorage,
           });
         }
 
@@ -384,20 +405,25 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
             ...syncResult.cloudFile,
             localFilePath: filePath,
             lastSync: new Date().toISOString(),
+            cloudStorage,
           });
           return syncResult.content;
         }
       } catch (error) {
         console.debug(error);
+      } finally {
+        closeSnackbar(snackbar);
       }
     },
     [
-      getCloudStorage,
       getCloudFileRefByFilePath,
+      enqueueSnackbar,
+      t,
       dropboxSyncFile,
       handleError,
       openResolveConflictDialog,
       linkFile,
+      closeSnackbar,
     ]
   );
 
@@ -412,11 +438,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const unlinkFile = useCallback(
     async (filePath: string) => {
-      const cloudStorage = await getCloudStorage();
-      if (!cloudStorage) {
-        throw new Error("Cloud storage is undefined");
-      }
-
       const cloudFile = await getCloudFileRefByFilePath(filePath);
       if (!cloudFile) {
         throw new Error(
@@ -427,25 +448,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       const cloudFiles = await getCloudFileRefs();
 
       const newCloudFiles = cloudFiles.filter((c) => c.path !== cloudFile.path);
-      await setStorageItem(
-        `${cloudStorage}-files`,
-        JSON.stringify(newCloudFiles)
-      );
+      await setStorageItem("cloud-files", JSON.stringify(newCloudFiles));
     },
-    [
-      getCloudFileRefByFilePath,
-      getCloudFileRefs,
-      getCloudStorage,
-      setStorageItem,
-    ]
+    [getCloudFileRefByFilePath, getCloudFileRefs, setStorageItem]
   );
 
   const requestTokens = useCallback(
-    async (authorizationCode: string) => {
-      const cloudStorage = await getCloudStorage();
-      if (!cloudStorage) {
-        throw new Error("Cloud storage is undefined");
-      }
+    async (opt: RequestTokenOptions) => {
+      const { cloudStorage, authorizationCode } = opt;
 
       const codeVerifier = await getSecureStorageItem(
         `${cloudStorage}-code-verifier`
@@ -453,56 +463,49 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       if (cloudStorage === "Dropbox" && codeVerifier) {
         await dropboxRequestTokens(codeVerifier, authorizationCode);
-        setCloudStorageConnected(true);
+        setConnectedCloudStorages((curr) => ({
+          ...curr,
+          [cloudStorage]: true,
+        }));
       }
 
       await removeSecureStorageItem(`${cloudStorage}-code-verifier`);
     },
-    [
-      dropboxRequestTokens,
-      getCloudStorage,
-      getSecureStorageItem,
-      removeSecureStorageItem,
-    ]
+    [dropboxRequestTokens, getSecureStorageItem, removeSecureStorageItem]
   );
 
   const listFiles = useCallback(
     async (opt: ListCloudFilesOptions): Promise<ListCloudItemResult> => {
-      const cloudStorage = await getCloudStorage();
-      if (!cloudStorage) {
-        return { hasMore: false, items: [] };
-      }
-
+      const { cloudStorage } = opt;
       if (cloudStorage === "Dropbox") {
         return dropboxListFiles(opt);
       } else {
         throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
       }
     },
-    [dropboxListFiles, getCloudStorage]
+    [dropboxListFiles]
   );
 
   useEffect(() => {
-    getStorageItem<CloudStorage>("cloud-storage").then(setCloudStorage);
-  }, [getStorageItem, setCloudStorage]);
-
-  useEffect(() => {
-    if (cloudStorage) {
-      getSecureStorageItem(`${cloudStorage}-refresh-token`).then(
-        (refreshToken) => {
-          setCloudStorageConnected(!!refreshToken);
-        }
-      );
-    } else {
-      setCloudStorageConnected(false);
-    }
-  }, [cloudStorage, getSecureStorageItem]);
+    Promise.all(
+      cloudStorages.map((cloudStorage) =>
+        getSecureStorageItem(`${cloudStorage}-refresh-token`).then(
+          (refreshToken) => ({ cloudStorage, connected: !!refreshToken })
+        )
+      )
+    ).then((result) => {
+      const value = result.reduce((prev, curr) => {
+        prev[curr.cloudStorage] = curr.connected;
+        return prev;
+      }, {} as Record<CloudStorage, boolean>);
+      setConnectedCloudStorages(value);
+    });
+  }, [getSecureStorageItem]);
 
   return {
     getCloudFileRefByFilePath,
-    cloudStorage,
     cloudStorageEnabled,
-    cloudStorageConnected,
+    connectedCloudStorages,
     uploadFile,
     unlinkFile,
     authenticate,
@@ -514,8 +517,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     linkFile,
     getCloudFileRefs,
     uploadFileAndResolveConflict,
-    cloudStorageFileDialogOpen,
-    setCloudStorageFileDialogOpen,
+    cloudFileDialogOptions,
+    setCloudFileDialogOptions,
   };
 });
 

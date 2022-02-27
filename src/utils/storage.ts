@@ -12,7 +12,7 @@ export type StorageKeys =
   | "sort-by"
   | "hide-completed-tasks"
   | "cloud-storage"
-  | "Dropbox-files";
+  | "cloud-files";
 
 export function useStorage() {
   const getStorageItem = useCallback(

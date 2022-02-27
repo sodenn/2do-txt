@@ -1,12 +1,11 @@
 import AddTaskIcon from "@mui/icons-material/AddTask";
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
-import CloudStorageButton from "./CloudStorageButton";
+import CloudFileImportButtons from "./CloudFileImportButtons";
+import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 import FilePicker from "./FilePicker";
 
 const StyledBox = styled("div")`
@@ -23,12 +22,6 @@ const StyledBox = styled("div")`
 const Onboarding = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const {
-    cloudStorage,
-    cloudStorageEnabled,
-    cloudStorageConnected,
-    setCloudStorageFileDialogOpen,
-  } = useCloudStorage();
   const { taskLists, openTodoFileCreateDialog } = useTask();
 
   return (
@@ -58,17 +51,8 @@ const Onboarding = () => {
         <FilePicker>
           {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
         </FilePicker>
-        {cloudStorageEnabled && cloudStorageConnected && (
-          <Button
-            aria-label="Import todo.txt from Cloud Storage"
-            onClick={() => setCloudStorageFileDialogOpen(true)}
-            startIcon={<CloudOutlinedIcon />}
-            variant="outlined"
-          >
-            {t("Import from Cloud Storage", { cloudStorage })}
-          </Button>
-        )}
-        <CloudStorageButton disconnect={false} cloudStorage="Dropbox" />
+        <CloudFileImportButtons />
+        <CloudStorageConnectionButtons disconnect={false} />
       </Stack>
     </StyledBox>
   );

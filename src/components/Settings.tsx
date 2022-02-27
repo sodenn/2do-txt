@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useSettings } from "../data/SettingsContext";
 import { useNotifications } from "../utils/notifications";
-import CloudStorageButton from "./CloudStorageButton";
+import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 import LanguageSelect from "./LanguageSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
 
@@ -88,7 +88,7 @@ const Settings = () => {
             {t("Cloud storage")}
           </Typography>
           <Box sx={{ mt: 1 }}>
-            <CloudStorageButton cloudStorage="Dropbox" />
+            <CloudStorageConnectionButtons />
           </Box>
         </Box>
       )}

@@ -1,0 +1,70 @@
+import { Button, Stack } from "@mui/material";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { useCloudStorage } from "../data/CloudStorageContext";
+import { CloudStorage, cloudStorages } from "../types/cloud-storage.types";
+
+interface CloudStorageConnectionButtonsProps {
+  connect?: boolean;
+  disconnect?: boolean;
+}
+
+interface CloudStorageConnectionButtonProps
+  extends CloudStorageConnectionButtonsProps {
+  cloudStorage: CloudStorage;
+}
+
+const CloudStorageConnectionButtons = (
+  props: CloudStorageConnectionButtonsProps
+) => {
+  return (
+    <Stack spacing={1}>
+      {cloudStorages.map((cloudStorage, idx) => (
+        <CloudStorageConnectionButton
+          key={idx}
+          {...props}
+          cloudStorage={cloudStorage}
+        />
+      ))}
+    </Stack>
+  );
+};
+
+const CloudStorageConnectionButton = (
+  props: CloudStorageConnectionButtonProps
+) => {
+  const { cloudStorage, connect = true, disconnect = true } = props;
+  const { t } = useTranslation();
+  const { cloudStorageEnabled, connectedCloudStorages, authenticate, unlink } =
+    useCloudStorage();
+
+  if (!cloudStorageEnabled) {
+    return null;
+  }
+
+  const cloudStorageConnected = connectedCloudStorages[cloudStorage];
+
+  if (disconnect && cloudStorageConnected) {
+    return (
+      <Button variant="outlined" fullWidth onClick={() => unlink(cloudStorage)}>
+        {t(`Disconnect from ${cloudStorage}`)}
+      </Button>
+    );
+  }
+
+  if (connect && !cloudStorageConnected) {
+    return (
+      <Button
+        variant="outlined"
+        fullWidth
+        onClick={() => authenticate(cloudStorage)}
+      >
+        {t(`Connect to ${cloudStorage}`)}
+      </Button>
+    );
+  }
+
+  return null;
+};
+
+export default CloudStorageConnectionButtons;

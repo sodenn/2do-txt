@@ -24,6 +24,7 @@ import { useTask } from "../../data/TaskContext";
 import {
   CloudFileRef,
   CloudFileUnauthorizedError,
+  CloudStorage,
 } from "../../types/cloud-storage.types";
 import { formatLocalDateTime, parseDate } from "../../utils/date";
 import { useFilesystem } from "../../utils/filesystem";
@@ -43,6 +44,8 @@ interface OpenFileItemProps {
   onClose: (options: CloseOptions) => void;
 }
 
+const cloudStorage: CloudStorage = "Dropbox";
+
 const OpenFileItem = (props: OpenFileItemProps) => {
   const { filePath, index, onClick, onClose } = props;
   const { t } = useTranslation();
@@ -52,8 +55,7 @@ const OpenFileItem = (props: OpenFileItemProps) => {
   const {
     getCloudFileRefByFilePath,
     unlinkFile,
-    cloudStorage,
-    cloudStorageConnected,
+    connectedCloudStorages,
     uploadFileAndResolveConflict,
   } = useCloudStorage();
   const { saveTodoFile } = useTask();
@@ -63,6 +65,7 @@ const OpenFileItem = (props: OpenFileItemProps) => {
   const cloudFileLastModified = cloudFileRef
     ? parseDate(cloudFileRef.lastSync)
     : undefined;
+  const cloudStorageConnected = connectedCloudStorages[cloudStorage];
 
   useEffect(() => {
     getCloudFileRefByFilePath(filePath).then(setCloudFileRef);
@@ -84,6 +87,7 @@ const OpenFileItem = (props: OpenFileItemProps) => {
           filePath,
           text: readFileResult.data,
           mode: "create",
+          cloudStorage,
         });
 
         if (result && result.type === "no-conflict") {
@@ -127,7 +131,7 @@ const OpenFileItem = (props: OpenFileItemProps) => {
                   title={
                     !!cloudFileRef
                       ? (t("Cloud Storage synchronization enabled", {
-                          cloudStorage,
+                          cloudStorage: cloudFileRef.cloudStorage,
                         }) as string)
                       : (t("Cloud Storage synchronization disabled", {
                           cloudStorage,

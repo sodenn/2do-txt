@@ -32,12 +32,11 @@ const CloudFileDialog = () => {
   const { setActiveTaskListPath } = useFilter();
   const {
     listFiles,
-    cloudStorage,
     downloadFile,
     linkFile,
     getCloudFileRefs,
-    cloudStorageFileDialogOpen,
-    setCloudStorageFileDialogOpen,
+    cloudFileDialogOptions,
+    setCloudFileDialogOptions,
   } = useCloudStorage();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
@@ -45,24 +44,30 @@ const CloudFileDialog = () => {
   const [cloudFileRefs, setCloudFileRefs] = useState<CloudFileRef[]>([]);
 
   const handleClose = () => {
-    setCloudStorageFileDialogOpen(false);
+    setCloudFileDialogOptions({ open: false });
     setLoading(false);
     setSelectedFile(undefined);
   };
 
   const handleSelect = async () => {
-    if (!selectedFile) {
+    if (!selectedFile || !cloudFileDialogOptions.open) {
       return;
     }
 
+    const { cloudStorage } = cloudFileDialogOptions;
+
     setLoading(true);
 
-    const text = await downloadFile(selectedFile.path);
+    const text = await downloadFile({
+      cloudFilePath: selectedFile.path,
+      cloudStorage,
+    });
     await createNewTodoFile(selectedFile.name, text);
     await linkFile({
       ...selectedFile,
       localFilePath: selectedFile.name,
       lastSync: new Date().toISOString(),
+      cloudStorage,
     });
     setActiveTaskListPath(selectedFile.name);
 
@@ -71,27 +76,38 @@ const CloudFileDialog = () => {
 
   const handleLoadItems = useCallback(
     (path = root) => {
-      listFiles({ path }).then((result) => {
-        if (result) {
-          setFiles(result);
-        }
-      });
-    },
-    [listFiles]
-  );
-
-  const handleLoadMoreItems = useCallback(
-    (path = root) => {
-      if (files && files.hasMore && files.cursor) {
-        listFiles({ path, cursor: files.cursor }).then((result) => {
+      if (cloudFileDialogOptions.open) {
+        const { cloudStorage } = cloudFileDialogOptions;
+        listFiles({ path, cloudStorage }).then((result) => {
           if (result) {
-            result.items = [...files.items, ...result.items];
             setFiles(result);
           }
         });
       }
     },
-    [files, listFiles]
+    [cloudFileDialogOptions, listFiles]
+  );
+
+  const handleLoadMoreItems = useCallback(
+    (path = root) => {
+      if (
+        cloudFileDialogOptions.open &&
+        files &&
+        files.hasMore &&
+        files.cursor
+      ) {
+        const { cloudStorage } = cloudFileDialogOptions;
+        listFiles({ path, cursor: files.cursor, cloudStorage }).then(
+          (result) => {
+            if (result) {
+              result.items = [...files.items, ...result.items];
+              setFiles(result);
+            }
+          }
+        );
+      }
+    },
+    [cloudFileDialogOptions, files, listFiles]
   );
 
   const disableItem = useCallback(
@@ -102,22 +118,29 @@ const CloudFileDialog = () => {
   );
 
   useEffect(() => {
-    if (cloudStorageFileDialogOpen) {
+    if (cloudFileDialogOptions.open) {
+      const { cloudStorage } = cloudFileDialogOptions;
       handleLoadItems(root);
-      getCloudFileRefs().then(setCloudFileRefs);
+      getCloudFileRefs()
+        .then((refs) => refs.filter((ref) => ref.cloudStorage === cloudStorage))
+        .then(setCloudFileRefs);
     }
-  }, [handleLoadItems, cloudStorageFileDialogOpen, getCloudFileRefs]);
+  }, [handleLoadItems, cloudFileDialogOptions, getCloudFileRefs]);
 
   return (
     <ResponsiveDialog
       maxWidth="xs"
       scroll="paper"
-      open={cloudStorageFileDialogOpen}
+      open={cloudFileDialogOptions.open}
       onClose={handleClose}
     >
-      <DialogTitle sx={{ px: 2 }}>
-        {t(`Import from Cloud Storage`, { cloudStorage })}
-      </DialogTitle>
+      {cloudFileDialogOptions.open && (
+        <DialogTitle sx={{ px: 2 }}>
+          {t(`Import from Cloud Storage`, {
+            cloudStorage: cloudFileDialogOptions.cloudStorage,
+          })}
+        </DialogTitle>
+      )}
       <DialogContent sx={{ p: 0 }}>
         {!files && (
           <Box sx={{ textAlign: "center", my: 2 }}>

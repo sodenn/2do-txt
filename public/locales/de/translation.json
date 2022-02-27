@@ -98,5 +98,6 @@
   "Unable to connect. Check network connection": "Es kann keine Verbindung zu {{cloudStorage}} aufgebaut werden. Überprüfe die Netzwerkverbindung.",
   "The file could not be downloaded": "Die Datei konnte nicht von {{cloudStorage}} heruntergeladen werden.",
   "No todo.txt files uploaded yet": "Noch keine todo.txt Dateien hochgeladen.\nDu kannst über <strong>todo.txt Verwalten</strong> die Cloudspeicher Synchronisation für jede Datei einzeln aktivieren.",
-  "Error syncing file to cloud storage": "Fehler beim Synchronisieren der Datei mit {{cloudStorage}}."
+  "Error syncing file to cloud storage": "Fehler beim Synchronisieren der Datei mit {{cloudStorage}}.",
+  "Sync with Cloud Storage": "Sync with {{cloudStorage}}"
 }

@@ -79,7 +79,7 @@ export const AppRouters = () => {
     const code = searchParams.get("code");
     if (code) {
       searchParams.delete("code");
-      requestTokens(code);
+      requestTokens({ cloudStorage: "Dropbox", authorizationCode: code });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

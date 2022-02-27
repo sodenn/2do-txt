@@ -1,5 +1,7 @@
 export type CloudStorage = "Dropbox";
 
+export const cloudStorages: CloudStorage[] = ["Dropbox"];
+
 export type UpdateMode = "create" | "update";
 
 export interface CloudFile {
@@ -22,11 +24,13 @@ export type CloudItem = CloudFile | CloudFolder;
 export interface CloudFileRef extends CloudFile {
   localFilePath: string;
   lastSync: string;
+  cloudStorage: CloudStorage;
 }
 
 export interface ListCloudFilesOptions {
   path?: string;
   cursor?: string;
+  cloudStorage: CloudStorage;
 }
 
 export interface ListCloudItemResult {
@@ -87,7 +91,7 @@ export class CloudFileNotFoundError extends Error {
 }
 
 export class CloudFileUnauthorizedError extends Error {
-  constructor() {
+  constructor(public cloudStorage: CloudStorage) {
     super("Unauthorized 401");
   }
 }
