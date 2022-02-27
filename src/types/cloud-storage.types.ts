@@ -8,7 +8,6 @@ export interface CloudFile {
   name: string;
   path: string;
   rev: string;
-  lastModified: string;
   contentHash: string;
   type: "file";
 }

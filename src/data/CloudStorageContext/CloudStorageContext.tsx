@@ -164,10 +164,20 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       if (cloudStorage === "Dropbox") {
         await dropboxUnlink();
       }
-      const refs = await getCloudFileRefs();
+
+      setConnectedCloudStorages((curr) => ({
+        ...curr,
+        [cloudStorage]: false,
+      }));
+
+      const cloudFiles = await getCloudFileRefs();
       await setStorageItem(
         "cloud-files",
-        JSON.stringify(refs.filter((ref) => ref.cloudStorage !== cloudStorage))
+        JSON.stringify(
+          cloudFiles.filter(
+            (cloudFile) => cloudFile.cloudStorage !== cloudStorage
+          )
+        )
       );
     },
     [dropboxUnlink, getCloudFileRefs, setStorageItem]
