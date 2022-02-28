@@ -120,8 +120,8 @@ const TaskDialog = () => {
   return (
     <ResponsiveDialog
       aria-label="Task dialog"
-      fullWidth
       maxWidth="sm"
+      fullWidth
       open={taskDialogOpen}
       onClose={handleClose}
     >

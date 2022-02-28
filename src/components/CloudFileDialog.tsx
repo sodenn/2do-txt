@@ -117,6 +117,7 @@ const CloudFileDialog = () => {
   return (
     <ResponsiveDialog
       maxWidth="xs"
+      fullWidth
       scroll="paper"
       open={cloudFileDialogOptions.open}
       onClose={handleClose}

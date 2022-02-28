@@ -146,6 +146,7 @@ const FileManagementDialog = () => {
   return (
     <ResponsiveDialog
       maxWidth="xs"
+      fullWidth
       scroll="paper"
       open={fileManagementDialogOpen}
       onClose={handleClose}
