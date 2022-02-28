@@ -17,6 +17,12 @@ interface CloudStorageConnectionButtonProps
 const CloudStorageConnectionButtons = (
   props: CloudStorageConnectionButtonsProps
 ) => {
+  const { cloudStorageEnabled } = useCloudStorage();
+
+  if (!cloudStorageEnabled) {
+    return null;
+  }
+
   return (
     <Stack spacing={1}>
       {cloudStorages.map((cloudStorage, idx) => (
@@ -35,12 +41,7 @@ const CloudStorageConnectionButton = (
 ) => {
   const { cloudStorage, connect = true, disconnect = true } = props;
   const { t } = useTranslation();
-  const { cloudStorageEnabled, connectedCloudStorages, authenticate, unlink } =
-    useCloudStorage();
-
-  if (!cloudStorageEnabled) {
-    return null;
-  }
+  const { connectedCloudStorages, authenticate, unlink } = useCloudStorage();
 
   const cloudStorageConnected = connectedCloudStorages[cloudStorage];
 

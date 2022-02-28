@@ -88,34 +88,21 @@ const CloudFileDialog = () => {
     [cloudFileDialogOptions, listFiles]
   );
 
-  const handleLoadMoreItems = useCallback(
-    (path = root) => {
-      if (
-        cloudFileDialogOptions.open &&
-        files &&
-        files.hasMore &&
-        files.cursor
-      ) {
-        const { cloudStorage } = cloudFileDialogOptions;
-        listFiles({ path, cursor: files.cursor, cloudStorage }).then(
-          (result) => {
-            if (result) {
-              result.items = [...files.items, ...result.items];
-              setFiles(result);
-            }
-          }
-        );
-      }
-    },
-    [cloudFileDialogOptions, files, listFiles]
-  );
+  const handleLoadMoreItems = (path = root) => {
+    if (cloudFileDialogOptions.open && files && files.hasMore && files.cursor) {
+      const { cloudStorage } = cloudFileDialogOptions;
+      listFiles({ path, cursor: files.cursor, cloudStorage }).then((result) => {
+        if (result) {
+          result.items = [...files.items, ...result.items];
+          setFiles(result);
+        }
+      });
+    }
+  };
 
-  const disableItem = useCallback(
-    (cloudFile: CloudFile) => {
-      return cloudFileRefs.some((c) => c.path === cloudFile.path);
-    },
-    [cloudFileRefs]
-  );
+  const disableItem = (cloudFile: CloudFile) => {
+    return cloudFileRefs.some((c) => c.path === cloudFile.path);
+  };
 
   useEffect(() => {
     if (cloudFileDialogOptions.open) {
@@ -187,7 +174,7 @@ const CloudFileDialog = () => {
                 </ListItem>
               ))}
             {files.hasMore && (
-              <ListItem button onClick={handleLoadMoreItems}>
+              <ListItem button onClick={() => handleLoadMoreItems()}>
                 <StartEllipsis sx={{ my: 0.5 }}>{t("Load more")}</StartEllipsis>
               </ListItem>
             )}

@@ -14,6 +14,12 @@ interface CloudFileImportMenuItemProps extends CloudFileImportMenuItemsProps {
 }
 
 const CloudFileImportMenuItems = (props: CloudFileImportMenuItemsProps) => {
+  const { cloudStorageEnabled } = useCloudStorage();
+
+  if (!cloudStorageEnabled) {
+    return null;
+  }
+
   return (
     <Stack spacing={1}>
       {cloudStorages.map((cloudStorage, idx) => (
@@ -32,13 +38,10 @@ const CloudFileImportMenuItem = ({
   onClick,
 }: CloudFileImportMenuItemProps) => {
   const { t } = useTranslation();
-  const {
-    setCloudFileDialogOptions,
-    cloudStorageEnabled,
-    connectedCloudStorages,
-  } = useCloudStorage();
+  const { setCloudFileDialogOptions, connectedCloudStorages } =
+    useCloudStorage();
 
-  if (!cloudStorageEnabled || !connectedCloudStorages[cloudStorage]) {
+  if (!connectedCloudStorages[cloudStorage]) {
     return null;
   }
 

@@ -6,6 +6,7 @@ import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
 import { FileManagementDialogProvider } from "./FileManagementDialogContext";
 import { FilterProvider } from "./FilterContext";
 import { MigrationProvider } from "./MigrationContext";
+import { NetworkProvider } from "./NetworkContext";
 import { SettingsProvider } from "./SettingsContext";
 import { SideSheetProvider } from "./SideSheetContext";
 import { TaskProvider } from "./TaskContext";
@@ -24,19 +25,21 @@ const ProviderBundle: FC = ({ children }) => {
       <Suspense fallback={null}>
         <MigrationProvider>
           <ConfirmationDialogProvider>
-            <CloudStorageProvider>
-              <SettingsProvider>
-                <FilterProvider>
-                  <SideSheetProvider>
-                    <TaskProvider>
-                      <FileManagementDialogProvider>
-                        {children}
-                      </FileManagementDialogProvider>
-                    </TaskProvider>
-                  </SideSheetProvider>
-                </FilterProvider>
-              </SettingsProvider>
-            </CloudStorageProvider>
+            <NetworkProvider>
+              <CloudStorageProvider>
+                <SettingsProvider>
+                  <FilterProvider>
+                    <SideSheetProvider>
+                      <TaskProvider>
+                        <FileManagementDialogProvider>
+                          {children}
+                        </FileManagementDialogProvider>
+                      </TaskProvider>
+                    </SideSheetProvider>
+                  </FilterProvider>
+                </SettingsProvider>
+              </CloudStorageProvider>
+            </NetworkProvider>
           </ConfirmationDialogProvider>
         </MigrationProvider>
       </Suspense>

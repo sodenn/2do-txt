@@ -21,6 +21,7 @@ import { usePlatform } from "../../utils/platform";
 import { useSecureStorage } from "../../utils/secure-storage";
 import { useStorage } from "../../utils/storage";
 import { useConfirmationDialog } from "../ConfirmationDialogContext";
+import { useNetwork } from "../NetworkContext";
 import {
   DropboxStorageProvider,
   useDropboxStorage,
@@ -106,6 +107,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const { getSecureStorageItem, removeSecureStorageItem } = useSecureStorage();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { getStorageItem, setStorageItem } = useStorage();
+  const { checkNetworkStatus } = useNetwork();
   const [connectedCloudStorages, setConnectedCloudStorages] = useState<
     Record<CloudStorage, boolean>
   >({ Dropbox: false });
@@ -123,11 +125,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     }
     throw error;
   }, []);
-
-  const getCloudStorage = useCallback(async () => {
-    const cloudStorage = await getStorageItem("cloud-storage");
-    return cloudStorage as CloudStorage | null;
-  }, [getStorageItem]);
 
   const authenticate = useCallback(
     async (cloudStorage: CloudStorage) => {
@@ -367,6 +364,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       const { cloudStorage } = cloudFile;
 
+      await checkNetworkStatus(cloudStorage);
+
       const snackbar = enqueueSnackbar("Sync", {
         variant: "info",
         preventDuplicate: true,
@@ -427,23 +426,28 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     },
     [
       getCloudFileRefByFilePath,
+      checkNetworkStatus,
       enqueueSnackbar,
-      t,
       dropboxSyncFile,
       handleError,
       openResolveConflictDialog,
       linkFile,
       closeSnackbar,
+      t,
     ]
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const syncFile = useCallback(throttle(_syncFile, 5000), [
-    dropboxSyncFile,
     getCloudFileRefByFilePath,
-    getCloudStorage,
+    checkNetworkStatus,
+    enqueueSnackbar,
+    dropboxSyncFile,
+    handleError,
     openResolveConflictDialog,
     linkFile,
+    closeSnackbar,
+    t,
   ]);
 
   const unlinkFile = useCallback(

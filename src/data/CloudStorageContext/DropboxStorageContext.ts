@@ -1,4 +1,3 @@
-import { Network } from "@capacitor/network";
 import { Dropbox, DropboxAuth } from "dropbox";
 import { useSnackbar } from "notistack";
 import { createRef, MutableRefObject, useCallback, useState } from "react";
@@ -10,7 +9,6 @@ import {
   CloudFileUnauthorizedError,
   ListCloudFilesOptions,
   ListCloudItemResult,
-  NetworkError,
   SyncFileOptions,
   SyncFileResult,
   UploadFileOptions,
@@ -19,6 +17,7 @@ import { createContext } from "../../utils/Context";
 import { usePlatform } from "../../utils/platform";
 import { getBaseUrl } from "../../utils/routing";
 import { useSecureStorage } from "../../utils/secure-storage";
+import { useNetwork } from "../NetworkContext";
 import DropboxContentHasher from "./DropboxContentHasher";
 
 const cloudStorage = "Dropbox";
@@ -34,7 +33,8 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     removeSecureStorageItem,
   } = useSecureStorage();
   const platform = usePlatform();
-  const [connectionIssue, setConnectionIssue] = useState(false);
+  const { checkNetworkStatus } = useNetwork();
+  const [authError, setAuthError] = useState(false);
   const dbxRef: MutableRefObject<Dropbox | null> = createRef();
 
   const getRedirectUrl = useCallback(() => {
@@ -52,16 +52,16 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     ]).catch((e) => void e);
 
     // Don't annoy the user, so only show the message once
-    if (!connectionIssue) {
+    if (!authError) {
       enqueueSnackbar(
         t("Session has expired. Please login again", { cloudStorage }),
         { variant: "warning" }
       );
-      setConnectionIssue(true);
+      setAuthError(true);
     }
 
     throw new CloudFileUnauthorizedError("Dropbox");
-  }, [enqueueSnackbar, removeSecureStorageItem, t, connectionIssue]);
+  }, [enqueueSnackbar, removeSecureStorageItem, t, authError]);
 
   const handleError = useCallback(
     (error: any) => {
@@ -106,21 +106,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   );
 
   const getClient = useCallback(async () => {
-    // check network connection
-    const status = await Network.getStatus();
-    if (!status.connected) {
-      // Don't annoy the user, so only show the message once
-      if (!connectionIssue) {
-        enqueueSnackbar(
-          t("Unable to connect. Check network connection", {
-            cloudStorage,
-          }),
-          { variant: "warning" }
-        );
-        setConnectionIssue(true);
-      }
-      throw new NetworkError();
-    }
+    await checkNetworkStatus(cloudStorage);
 
     if (dbxRef.current) {
       return dbxRef.current;
@@ -139,14 +125,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     dbxRef.current = dbx;
 
     return dbx;
-  }, [
-    connectionIssue,
-    dbxRef,
-    enqueueSnackbar,
-    getSecureStorageItem,
-    resetTokens,
-    t,
-  ]);
+  }, [checkNetworkStatus, dbxRef, getSecureStorageItem, resetTokens]);
 
   const dropboxAuthenticate = useCallback(async () => {
     const dbxAuth = new DropboxAuth({

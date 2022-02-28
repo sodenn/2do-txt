@@ -44,8 +44,8 @@ const FilePicker = (props: PropsWithChildren<FilePickerProps>) => {
       scheduleDueTaskNotifications(taskList);
       return filePath;
     } else {
-      // Other platforms does not allow to access the file storage. For this reason, a copy of
-      // the selected file is created in the app's document directory.
+      // Other platforms does not allow to access the file storage.
+      // -> create a copy of the selected file in the app's document directory
       return createNewTodoFile(file.name, content);
     }
   };
