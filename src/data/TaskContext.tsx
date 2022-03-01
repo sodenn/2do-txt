@@ -222,7 +222,11 @@ const [TaskProvider, useTask] = createContext(() => {
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
-      syncTodoFileWithCloudStorage({ filePath, text }).catch((e) => void e);
+      syncTodoFileWithCloudStorage({
+        filePath,
+        text,
+        showSnackbar: true,
+      }).catch((e) => void e);
       return loadTodoFile(filePath, text);
     },
     [loadTodoFile, syncTodoFileWithCloudStorage, writeFile]

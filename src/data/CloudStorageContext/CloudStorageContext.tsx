@@ -1,6 +1,6 @@
 import { Alert, CircularProgress } from "@mui/material";
 import { throttle } from "lodash";
-import { useSnackbar } from "notistack";
+import { SnackbarKey, useSnackbar } from "notistack";
 import { FC, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import {
@@ -30,6 +30,7 @@ import {
 export interface SyncFileOptions {
   filePath: string;
   text: string;
+  showSnackbar?: boolean;
 }
 
 interface UploadFileOptions {
@@ -355,7 +356,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const syncFile = useCallback(
     async (opt: SyncFileOptions) => {
-      const { filePath, text } = opt;
+      const { filePath, text, showSnackbar } = opt;
 
       const cloudFile = await getCloudFileRefByFilePath(filePath);
       if (!cloudFile) {
@@ -365,6 +366,20 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       const { cloudStorage } = cloudFile;
 
       await checkNetworkStatus(cloudStorage);
+
+      let snackbar: SnackbarKey | undefined;
+      if (showSnackbar) {
+        snackbar = enqueueSnackbar("", {
+          variant: "info",
+          preventDuplicate: true,
+          persist: true,
+          content: (
+            <Alert severity="info" icon={<CircularProgress size="1em" />}>
+              {t("Sync with cloud storage")}
+            </Alert>
+          ),
+        });
+      }
 
       try {
         let syncResult: SyncFileResult = undefined;
@@ -409,15 +424,22 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         }
       } catch (error) {
         console.debug(error);
+      } finally {
+        if (snackbar) {
+          closeSnackbar(snackbar);
+        }
       }
     },
     [
       getCloudFileRefByFilePath,
       checkNetworkStatus,
+      enqueueSnackbar,
       dropboxSyncFile,
       handleError,
       openResolveConflictDialog,
       linkFile,
+      closeSnackbar,
+      t,
     ]
   );
 
