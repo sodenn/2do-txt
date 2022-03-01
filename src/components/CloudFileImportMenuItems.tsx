@@ -55,7 +55,7 @@ const CloudFileImportMenuItem = ({
       <ListItemIcon>
         <CloudOutlinedIcon fontSize="small" />
       </ListItemIcon>
-      <ListItemText>{t("Cloud Storage Import", { cloudStorage })}</ListItemText>
+      <ListItemText>{t("Cloud storage Import", { cloudStorage })}</ListItemText>
     </MenuItem>
   );
 };

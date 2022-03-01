@@ -130,10 +130,10 @@ const OpenFileItem = (props: OpenFileItemProps) => {
                 <Tooltip
                   title={
                     !!cloudFileRef
-                      ? (t("Cloud Storage synchronization enabled", {
+                      ? (t("Cloud storage synchronization enabled", {
                           cloudStorage: cloudFileRef.cloudStorage,
                         }) as string)
-                      : (t("Cloud Storage synchronization disabled", {
+                      : (t("Cloud storage synchronization disabled", {
                           cloudStorage,
                         }) as string)
                   }

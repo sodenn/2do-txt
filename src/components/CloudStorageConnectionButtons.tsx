@@ -48,7 +48,7 @@ const CloudStorageConnectionButton = (
   if (disconnect && cloudStorageConnected) {
     return (
       <Button variant="outlined" fullWidth onClick={() => unlink(cloudStorage)}>
-        {t(`Disconnect from ${cloudStorage}`)}
+        {t("Disconnect from cloud storage", { cloudStorage })}
       </Button>
     );
   }
@@ -60,7 +60,7 @@ const CloudStorageConnectionButton = (
         fullWidth
         onClick={() => authenticate(cloudStorage)}
       >
-        {t(`Connect to ${cloudStorage}`)}
+        {t("Connect to cloud storage", { cloudStorage })}
       </Button>
     );
   }

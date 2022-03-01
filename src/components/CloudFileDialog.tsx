@@ -124,7 +124,7 @@ const CloudFileDialog = () => {
     >
       {cloudFileDialogOptions.open && (
         <DialogTitle sx={{ px: 2 }}>
-          {t(`Import from Cloud Storage`, {
+          {t(`Import from cloud storage`, {
             cloudStorage: cloudFileDialogOptions.cloudStorage,
           })}
         </DialogTitle>

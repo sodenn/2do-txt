@@ -43,7 +43,7 @@ const CloudFileImportButton = ({
       startIcon={<CloudOutlinedIcon />}
       variant="outlined"
     >
-      {t("Import from Cloud Storage", { cloudStorage })}
+      {t("Import from cloud storage", { cloudStorage })}
     </Button>
   );
 };

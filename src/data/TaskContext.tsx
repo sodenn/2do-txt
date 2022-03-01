@@ -58,7 +58,8 @@ const [TaskProvider, useTask] = createContext(() => {
   const { setConfirmationDialog } = useConfirmationDialog();
   const { addTodoFilePath } = useSettings();
   const theme = useTheme();
-  const { syncFile, unlinkFile, cloudStorageEnabled } = useCloudStorage();
+  const { syncAllFile, syncFileThrottled, unlinkFile, cloudStorageEnabled } =
+    useCloudStorage();
   const {
     scheduleNotifications,
     cancelNotifications,
@@ -184,7 +185,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const syncTodoFileWithCloudStorage = useCallback(
     async (opt: SyncFileOptions) => {
-      const result = await syncFile(opt);
+      const result = await syncFileThrottled(opt);
       if (result) {
         await writeFile({
           path: opt.filePath,
@@ -195,7 +196,22 @@ const [TaskProvider, useTask] = createContext(() => {
         return loadTodoFile(opt.filePath, result);
       }
     },
-    [loadTodoFile, syncFile, writeFile]
+    [loadTodoFile, syncFileThrottled, writeFile]
+  );
+
+  const syncAllTodoFileWithCloudStorage = useCallback(
+    async (opt: { filePath: string; text: string }[]) => {
+      const result = await syncAllFile(opt);
+      result.forEach((i) => {
+        writeFile({
+          path: i.filePath,
+          data: i.text,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8,
+        }).then(() => loadTodoFile(i.filePath, i.text));
+      });
+    },
+    [loadTodoFile, syncAllFile, writeFile]
   );
 
   const saveTodoFile = useCallback(
@@ -541,7 +557,7 @@ const [TaskProvider, useTask] = createContext(() => {
       await migrate1();
       const paths = await getTodoFilePaths();
 
-      const taskLists = await Promise.all(
+      const readFileResult = await Promise.all(
         paths.map((path) =>
           readFile({
             path: path,
@@ -560,13 +576,15 @@ const [TaskProvider, useTask] = createContext(() => {
         list
           .filter((i) => !!i)
           .map((i) => {
-            syncTodoFileWithCloudStorage({
-              filePath: i!.path,
-              text: i!.file.data,
-            });
-            return toTaskList(i!.path, i!.file.data);
+            const text = i!.file.data;
+            const filePath = i!.path;
+            return { taskList: toTaskList(filePath, text), filePath, text };
           })
       );
+
+      syncAllTodoFileWithCloudStorage(readFileResult).catch((e) => void e);
+
+      const taskLists = readFileResult.map((i) => i.taskList);
 
       if (taskLists) {
         setState((state) => ({

@@ -353,7 +353,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     [openResolveConflictDialog, uploadFile]
   );
 
-  const _syncFile = useCallback(
+  const syncFile = useCallback(
     async (opt: SyncFileOptions) => {
       const { filePath, text } = opt;
 
@@ -365,17 +365,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       const { cloudStorage } = cloudFile;
 
       await checkNetworkStatus(cloudStorage);
-
-      const snackbar = enqueueSnackbar("Sync", {
-        variant: "info",
-        preventDuplicate: true,
-        persist: true,
-        content: (
-          <Alert severity="info" icon={<CircularProgress size="1em" />}>
-            {t("Sync with Cloud Storage", { cloudStorage })}
-          </Alert>
-        ),
-      });
 
       try {
         let syncResult: SyncFileResult = undefined;
@@ -420,25 +409,48 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         }
       } catch (error) {
         console.debug(error);
-      } finally {
-        closeSnackbar(snackbar);
       }
     },
     [
       getCloudFileRefByFilePath,
       checkNetworkStatus,
-      enqueueSnackbar,
       dropboxSyncFile,
       handleError,
       openResolveConflictDialog,
       linkFile,
-      closeSnackbar,
-      t,
     ]
   );
 
+  const syncAllFile = useCallback(
+    async (opt: SyncFileOptions[]) => {
+      const snackbar = enqueueSnackbar("", {
+        variant: "info",
+        preventDuplicate: true,
+        persist: true,
+        content: (
+          <Alert severity="info" icon={<CircularProgress size="1em" />}>
+            {t("Sync with cloud storage")}
+          </Alert>
+        ),
+      });
+
+      const results: { text: string; filePath: string }[] = [];
+      for (const i of opt) {
+        const text = await syncFile(i);
+        if (text) {
+          results.push({ text, filePath: i.filePath });
+        }
+      }
+
+      closeSnackbar(snackbar);
+
+      return results;
+    },
+    [closeSnackbar, enqueueSnackbar, syncFile, t]
+  );
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const syncFile = useCallback(throttle(_syncFile, 5000), [
+  const syncFileThrottled = useCallback(throttle(syncFile, 5000), [
     getCloudFileRefByFilePath,
     checkNetworkStatus,
     enqueueSnackbar,
@@ -523,7 +535,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     uploadFile,
     unlinkFile,
     authenticate,
-    syncFile,
+    syncAllFile,
+    syncFileThrottled,
     unlink,
     listFiles,
     downloadFile,
