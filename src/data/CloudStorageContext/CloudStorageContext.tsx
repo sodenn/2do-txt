@@ -445,6 +445,10 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const syncAllFile = useCallback(
     async (opt: SyncFileOptions[]) => {
+      if (opt.length === 0) {
+        return [];
+      }
+
       const snackbar = enqueueSnackbar("", {
         variant: "info",
         preventDuplicate: true,
