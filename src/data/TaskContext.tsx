@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material";
 import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
 import { todayDate } from "../utils/date";
@@ -74,6 +74,7 @@ const [TaskProvider, useTask] = createContext(() => {
     getTodoFilePaths,
   } = useSettings();
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<State>({
     init: false,
     taskDialogOpen: false,
@@ -404,7 +405,7 @@ const [TaskProvider, useTask] = createContext(() => {
       }
 
       if (cloudStorageEnabled) {
-        unlinkFile(filePath);
+        unlinkFile(filePath).catch((e) => void e);
       }
 
       taskList.items.forEach((task) =>
@@ -556,6 +557,10 @@ const [TaskProvider, useTask] = createContext(() => {
     ]
   );
 
+  const openTodoFilePicker = useCallback(() => {
+    fileInputRef.current?.click();
+  }, [fileInputRef]);
+
   useEffect(() => {
     const setInitialState = async () => {
       await migrate1();
@@ -636,6 +641,8 @@ const [TaskProvider, useTask] = createContext(() => {
     findTaskListByTaskId,
     reorderTaskList,
     createNewTodoFile,
+    fileInputRef,
+    openTodoFilePicker,
   };
 });
 

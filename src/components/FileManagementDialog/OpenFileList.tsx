@@ -7,12 +7,11 @@ import OpenFileItem, { CloseOptions } from "./OpenFileItem";
 
 interface OpenFileListProps {
   subheader: boolean;
-  onClick: (filePath: string) => void;
   onClose: (options: CloseOptions) => void;
 }
 
 const OpenFileList = memo((props: OpenFileListProps) => {
-  const { subheader, onClick, onClose } = props;
+  const { subheader, onClose } = props;
   const { taskLists, reorderTaskList } = useTask();
   const { t } = useTranslation();
 
@@ -52,7 +51,6 @@ const OpenFileList = memo((props: OpenFileListProps) => {
                 filePath={item.filePath}
                 index={index}
                 key={item.filePath}
-                onClick={onClick}
                 onClose={onClose}
               />
             ))}

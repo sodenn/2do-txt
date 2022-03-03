@@ -1,4 +1,5 @@
 import AddTaskIcon from "@mui/icons-material/AddTask";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
@@ -6,7 +7,6 @@ import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
 import CloudFileImportButtons from "./CloudFileImportButtons";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
-import FilePicker from "./FilePicker";
 
 const StyledBox = styled("div")`
   display: flex;
@@ -22,7 +22,7 @@ const StyledBox = styled("div")`
 const Onboarding = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { taskLists, openTodoFileCreateDialog } = useTask();
+  const { taskLists, openTodoFileCreateDialog, openTodoFilePicker } = useTask();
 
   return (
     <StyledBox sx={{ display: taskLists.length === 0 ? "flex" : "none" }}>
@@ -48,9 +48,16 @@ const Onboarding = () => {
         >
           {t("Create Task")}
         </Button>
-        <FilePicker>
+        <Button
+          onClick={openTodoFilePicker}
+          aria-label="Open todo.txt"
+          startIcon={<FolderOpenOutlinedIcon />}
+          fullWidth
+          variant="outlined"
+          component="span"
+        >
           {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
-        </FilePicker>
+        </Button>
         <CloudFileImportButtons />
         <CloudStorageConnectionButtons disconnect={false} />
       </Stack>

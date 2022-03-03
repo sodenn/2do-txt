@@ -1,7 +1,7 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import InboxIcon from "@mui/icons-material/Inbox";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
@@ -19,8 +19,6 @@ import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
-import CloudFileImportMenuItems from "./CloudFileImportMenuItems";
-import FilePicker from "./FilePicker";
 import StartEllipsis from "./StartEllipsis";
 
 const buttonMaxWidthXs = 170;
@@ -31,7 +29,12 @@ const FileMenu = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
-  const { taskLists, activeTaskList, openTodoFileCreateDialog } = useTask();
+  const {
+    taskLists,
+    activeTaskList,
+    openTodoFileCreateDialog,
+    openTodoFilePicker,
+  } = useTask();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -59,16 +62,10 @@ const FileMenu = () => {
     setFileManagementDialogOpen(true);
   };
 
-  const openFileMenuItem = (
-    <MenuItem onClick={handleClose}>
-      <ListItemIcon>
-        <FolderOpenOutlinedIcon fontSize="small" />
-      </ListItemIcon>
-      <ListItemText>
-        {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
-      </ListItemText>
-    </MenuItem>
-  );
+  const handleOpenFile = () => {
+    handleClose();
+    openTodoFilePicker();
+  };
 
   return (
     <>
@@ -89,8 +86,27 @@ const FileMenu = () => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        keepMounted
       >
+        {taskLists.length === 0 && (
+          <MenuItem onClick={handleOpenFile}>
+            <ListItemIcon>
+              <FolderOpenOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>
+              {platform === "electron"
+                ? t("Open todo.txt")
+                : t("Import todo.txt")}
+            </ListItemText>
+          </MenuItem>
+        )}
+        {taskLists.length === 0 && (
+          <MenuItem onClick={handleCreateFile}>
+            <ListItemIcon>
+              <AddOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{t("Create todo.txt")}</ListItemText>
+          </MenuItem>
+        )}
         {taskLists.length > 1 && (
           <MenuItem
             selected={!activeTaskList}
@@ -116,20 +132,14 @@ const FileMenu = () => {
             </MenuItem>
           ))}
         {taskLists.length > 1 && <Divider />}
-        <CloudFileImportMenuItems onClick={handleClose} />
-        <FilePicker component={openFileMenuItem} />
-        <MenuItem onClick={handleCreateFile}>
-          <ListItemIcon>
-            <AddOutlinedIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>{t("Create todo.txt")}</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleManageFile}>
-          <ListItemIcon>
-            <InboxIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>{t("Manage todo.txt")}</ListItemText>
-        </MenuItem>
+        {taskLists.length > 0 && (
+          <MenuItem onClick={handleManageFile}>
+            <ListItemIcon>
+              <AllInboxRoundedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{t("Manage todo.txt")}</ListItemText>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );

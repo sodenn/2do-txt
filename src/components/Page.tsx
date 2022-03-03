@@ -5,6 +5,7 @@ import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
 import FileCreateDialog from "./FileCreateDialog";
 import FileManagementDialog from "./FileManagementDialog";
+import FilePicker from "./FilePicker";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
@@ -58,6 +59,7 @@ const Page = () => {
       <CloudFileDialog />
       <FileManagementDialog />
       <ConfirmationDialog />
+      <FilePicker />
     </>
   );
 };

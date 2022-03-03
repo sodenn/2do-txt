@@ -1,26 +1,39 @@
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
-import {
-  IconButton,
-  List,
-  ListItem,
-  ListSubheader,
-  Tooltip,
-} from "@mui/material";
-import { MouseEvent } from "react";
+import { Directory, Encoding } from "@capacitor/filesystem";
+import { List, ListItem, ListItemButton, ListSubheader } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useFilter } from "../../data/FilterContext";
+import { useSettings } from "../../data/SettingsContext";
+import { useTask } from "../../data/TaskContext";
+import { useFilesystem } from "../../utils/filesystem";
 import StartEllipsis from "../StartEllipsis";
+import CloseFileItemMenu from "./CloseFileItemMenu";
 
 interface CloseFileListProps {
   list: string[];
-  onClick: (filePath: string) => void;
-  onOpen: (event: MouseEvent<HTMLButtonElement>, filePath: string) => void;
-  onDelete: (event: MouseEvent<HTMLButtonElement>, filePath: string) => void;
+  onOpen: () => void;
+  onDelete: (filePath: string) => void;
 }
 
 const CloseFileList = (props: CloseFileListProps) => {
-  const { list, onClick, onOpen, onDelete } = props;
+  const { list, onOpen, onDelete } = props;
   const { t } = useTranslation();
+  const { readFile } = useFilesystem();
+  const { loadTodoFile } = useTask();
+  const { addTodoFilePath } = useSettings();
+  const { setActiveTaskListPath } = useFilter();
+
+  const handleOpen = async (filePath: string) => {
+    const result = await readFile({
+      path: filePath,
+      directory: Directory.Documents,
+      encoding: Encoding.UTF8,
+    });
+    loadTodoFile(filePath, result.data).then(() => {
+      setActiveTaskListPath(filePath);
+      addTodoFilePath(filePath);
+      onOpen();
+    });
+  };
 
   if (list.length === 0) {
     return null;
@@ -38,34 +51,18 @@ const CloseFileList = (props: CloseFileListProps) => {
       {list.map((filePath, idx) => (
         <ListItem
           key={idx}
-          button
-          sx={{ pr: 12 }}
-          onClick={() => onClick(filePath)}
+          disablePadding
           secondaryAction={
-            <>
-              <Tooltip title={t("Open") as string}>
-                <IconButton
-                  aria-label="Open file"
-                  onClick={(event) => onOpen(event, filePath)}
-                >
-                  <OpenInNewOutlinedIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={t("Delete") as string}>
-                <IconButton
-                  edge="end"
-                  aria-label="Delete file"
-                  onClick={(event) => onDelete(event, filePath)}
-                >
-                  <DeleteOutlineOutlinedIcon />
-                </IconButton>
-              </Tooltip>
-            </>
+            <CloseFileItemMenu
+              filePath={filePath}
+              onOpen={handleOpen}
+              onDelete={onDelete}
+            />
           }
         >
-          <StartEllipsis sx={{ my: 0.5 }} variant="inherit">
-            {filePath}
-          </StartEllipsis>
+          <ListItemButton sx={{ pl: 3, overflow: "hidden" }} role={undefined}>
+            <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
+          </ListItemButton>
         </ListItem>
       ))}
     </List>
