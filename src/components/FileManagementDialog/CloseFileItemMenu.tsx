@@ -32,13 +32,13 @@ const CloseFileItemMenu = (props: CloseFileItemMenuProps) => {
   };
 
   const handleOpen = () => {
-    handleClose();
     onOpen(filePath);
+    handleClose();
   };
 
   const handleDelete = () => {
-    handleClose();
     onDelete(filePath);
+    handleClose();
   };
 
   return (

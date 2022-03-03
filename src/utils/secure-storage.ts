@@ -10,6 +10,18 @@ export function useSecureStorage() {
   const iosSecureStorage = useIosSecureStorage();
   const webSecureStorage = useWebSecureStorage();
 
+  const getSecureStorageItem = useCallback(async () => {
+    console.debug(`useSecureStorage: Unsupported platform "${platform}"`);
+  }, [platform]);
+
+  const setSecureStorageItem = useCallback(async () => {
+    console.debug(`useSecureStorage: Unsupported platform "${platform}"`);
+  }, [platform]);
+
+  const removeSecureStorageItem = useCallback(async () => {
+    console.debug(`useSecureStorage: Unsupported platform "${platform}"`);
+  }, [platform]);
+
   if (platform === "ios") {
     return iosSecureStorage;
   }
@@ -19,15 +31,9 @@ export function useSecureStorage() {
   }
 
   return {
-    getSecureStorageItem: async () => {
-      console.debug(`useSecureStorage: Unsupported platform "${platform}"`);
-    },
-    setSecureStorageItem: async () => {
-      console.debug(`useSecureStorage: Unsupported platform "${platform}"`);
-    },
-    removeSecureStorageItem: async () => {
-      console.debug(`useSecureStorage: Unsupported platform "${platform}"`);
-    },
+    getSecureStorageItem,
+    setSecureStorageItem,
+    removeSecureStorageItem,
   };
 }
 

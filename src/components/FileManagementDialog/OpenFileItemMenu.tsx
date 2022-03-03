@@ -163,12 +163,11 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   };
 
   const handleCloseFile = () => {
-    handleClose();
     onClose({ filePath, deleteFile });
+    handleClose();
   };
 
   const handleCopyToClipboard = async () => {
-    handleClose();
     const result = await readFile({
       path: filePath,
       directory: Directory.Documents,
@@ -178,6 +177,7 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
       string: result.data,
     });
     enqueueSnackbar(t("Copied to clipboard"), { variant: "info" });
+    handleClose();
   };
 
   const deleteFile =
