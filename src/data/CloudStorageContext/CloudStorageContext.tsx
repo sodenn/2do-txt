@@ -443,9 +443,25 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     ]
   );
 
+  const isAuthenticationInProgress = useCallback(() => {
+    if (platform !== "ios" && platform !== "android") {
+      return Promise.all(
+        cloudStorages.map((cloudStorage) =>
+          getSecureStorageItem(`${cloudStorage}-code-verifier`)
+        )
+      ).then((result) => result.some((code) => !!code));
+    } else {
+      return false;
+    }
+  }, [getSecureStorageItem, platform]);
+
   const syncAllFile = useCallback(
     async (opt: SyncFileOptions[]) => {
       if (opt.length === 0) {
+        return [];
+      }
+
+      if (await isAuthenticationInProgress()) {
         return [];
       }
 
@@ -472,7 +488,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       return results;
     },
-    [closeSnackbar, enqueueSnackbar, syncFile, t]
+    [closeSnackbar, enqueueSnackbar, isAuthenticationInProgress, syncFile, t]
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

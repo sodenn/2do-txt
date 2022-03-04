@@ -91,5 +91,6 @@
   "The file could not be downloaded": "The file could not be downloaded from {{cloudStorage}}.",
   "No todo.txt files uploaded yet": "No todo.txt files uploaded yet.\nYou can activate cloud storage sync for each file individually via <strong>Manage todo.txt</strong>.",
   "Error syncing file to cloud storage": "Error syncing file to {{cloudStorage}}.",
-  "Sync with cloud storage": "Sync with cloud storage"
+  "Sync with cloud storage": "Sync with cloud storage",
+  "Connected to cloud storage": "Connected to {{cloudStorage}}"
 }

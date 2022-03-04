@@ -98,5 +98,6 @@
   "The file could not be downloaded": "Die Datei konnte nicht von {{cloudStorage}} heruntergeladen werden.",
   "No todo.txt files uploaded yet": "Noch keine todo.txt Dateien hochgeladen.\nDu kannst über <strong>todo.txt Verwalten</strong> die Cloud-Speicher Synchronisation für jede Datei einzeln aktivieren.",
   "Error syncing file to cloud storage": "Fehler beim Synchronisieren der Datei mit {{cloudStorage}}.",
-  "Sync with cloud storage": "Synchronisiere mit Cloud-Speicher"
+  "Sync with cloud storage": "Synchronisiere mit Cloud-Speicher",
+  "Connected to cloud storage": "Verbunden mit {{cloudStorage}}"
 }

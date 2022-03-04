@@ -100,9 +100,17 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       }
 
       await setSecureStorageItem("Dropbox-refresh-token", refreshToken);
+
+      enqueueSnackbar(
+        t("Connected to cloud storage", { cloudStorage: "Dropbox" }),
+        {
+          variant: "success",
+        }
+      );
+
       return { refreshToken };
     },
-    [getRedirectUrl, resetTokens, setSecureStorageItem]
+    [enqueueSnackbar, getRedirectUrl, resetTokens, setSecureStorageItem, t]
   );
 
   const getClient = useCallback(async () => {
