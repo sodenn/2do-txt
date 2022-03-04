@@ -58,6 +58,7 @@ const OpenFileItem = (props: OpenFileItemProps) => {
           {...provided.dragHandleProps}
           sx={{
             ...(snapshot.isDragging && { bgcolor: "action.hover" }),
+            outline: "none",
           }}
         >
           <ListItemButton sx={{ pl: 3, overflow: "hidden" }} role={undefined}>

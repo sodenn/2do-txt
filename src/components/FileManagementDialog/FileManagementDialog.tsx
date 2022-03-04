@@ -1,5 +1,5 @@
 import { Directory } from "@capacitor/filesystem";
-import { Box, DialogContent, DialogTitle } from "@mui/material";
+import { DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../../data/CloudStorageContext";
@@ -119,10 +119,10 @@ const FileManagementDialog = () => {
           onOpen={handleCloseDialog}
           onDelete={handleDeleteFile}
         />
-        <Box sx={{ px: 3, py: 2 }}>
-          <FileActionButton />
-        </Box>
       </DialogContent>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <FileActionButton />
+      </DialogActions>
     </ResponsiveDialog>
   );
 };

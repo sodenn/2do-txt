@@ -1,5 +1,6 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
+import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -14,6 +15,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCloudStorage } from "../data/CloudStorageContext";
 import { useFileManagementDialog } from "../data/FileManagementDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
@@ -35,6 +37,11 @@ const FileMenu = () => {
     openTodoFileCreateDialog,
     openTodoFilePicker,
   } = useTask();
+  const {
+    setCloudFileDialogOptions,
+    cloudStorageEnabled,
+    connectedCloudStorages,
+  } = useCloudStorage();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -50,6 +57,11 @@ const FileMenu = () => {
   const handleSetActiveList = (filePath: string) => {
     setActiveTaskListPath(filePath);
     handleClose();
+  };
+
+  const handleImportFromCloudStorage = () => {
+    handleClose();
+    setCloudFileDialogOptions({ open: true, cloudStorage: "Dropbox" });
   };
 
   const handleCreateFile = () => {
@@ -87,26 +99,6 @@ const FileMenu = () => {
         open={open}
         onClose={handleClose}
       >
-        {taskLists.length === 0 && (
-          <MenuItem onClick={handleOpenFile}>
-            <ListItemIcon>
-              <FolderOpenOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>
-              {platform === "electron"
-                ? t("Open todo.txt")
-                : t("Import todo.txt")}
-            </ListItemText>
-          </MenuItem>
-        )}
-        {taskLists.length === 0 && (
-          <MenuItem onClick={handleCreateFile}>
-            <ListItemIcon>
-              <AddOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>{t("Create todo.txt")}</ListItemText>
-          </MenuItem>
-        )}
         {taskLists.length > 1 && (
           <MenuItem
             selected={!activeTaskList}
@@ -132,6 +124,38 @@ const FileMenu = () => {
             </MenuItem>
           ))}
         {taskLists.length > 1 && <Divider />}
+        {taskLists.length < 4 && (
+          <MenuItem onClick={handleCreateFile}>
+            <ListItemIcon>
+              <AddOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{t("Create todo.txt")}</ListItemText>
+          </MenuItem>
+        )}
+        {taskLists.length < 4 && (
+          <MenuItem onClick={handleOpenFile}>
+            <ListItemIcon>
+              <FolderOpenOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>
+              {platform === "electron"
+                ? t("Open todo.txt")
+                : t("Import todo.txt")}
+            </ListItemText>
+          </MenuItem>
+        )}
+        {taskLists.length < 4 &&
+          cloudStorageEnabled &&
+          connectedCloudStorages["Dropbox"] && (
+            <MenuItem onClick={handleImportFromCloudStorage}>
+              <ListItemIcon>
+                <CloudOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>
+                {t("Import from cloud storage", { cloudStorage: "Dropbox" })}
+              </ListItemText>
+            </MenuItem>
+          )}
         {taskLists.length > 0 && (
           <MenuItem onClick={handleManageFile}>
             <ListItemIcon>
