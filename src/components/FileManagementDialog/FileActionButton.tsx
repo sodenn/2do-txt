@@ -1,6 +1,5 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import {
   Button,
@@ -14,9 +13,12 @@ import {
   Popper,
   useTheme,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React, { ReactNode, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../../data/CloudStorageContext";
+import {
+  cloudStorageIconsSmall,
+  useCloudStorage,
+} from "../../data/CloudStorageContext";
 import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
 import { useTask } from "../../data/TaskContext";
 import { cloudStorages } from "../../types/cloud-storage.types";
@@ -37,7 +39,7 @@ const FileActionButton = () => {
   const anchorRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
-  const options = [
+  const options: { label: string; icon: ReactNode; click: () => void }[] = [
     {
       label: t("Create todo.txt"),
       icon: <AddOutlinedIcon fontSize="small" />,
@@ -65,7 +67,7 @@ const FileActionButton = () => {
     .forEach((cloudStorage) => {
       options.push({
         label: t("Import from cloud storage", { cloudStorage }),
-        icon: <CloudOutlinedIcon fontSize="small" />,
+        icon: cloudStorageIconsSmall[cloudStorage],
         click: () => {
           setCloudFileDialogOptions({ open: true, cloudStorage });
           setFileManagementDialogOpen(false);

@@ -1,8 +1,9 @@
 import { Alert, CircularProgress } from "@mui/material";
 import { throttle } from "lodash";
 import { SnackbarKey, useSnackbar } from "notistack";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import DropboxIcon from "../../components/DropboxIcon";
 import {
   CloudFile,
   CloudFileConflictError,
@@ -88,6 +89,18 @@ type UploadFileAndResolveResult =
   | UploadFileAndResolveConflict
   | UploadFileAndResolveNoConflict;
 
+export const cloudStorageIcons: Record<CloudStorage, ReactNode> = {
+  Dropbox: <DropboxIcon />,
+};
+
+export const cloudStorageIconsSmall: Record<CloudStorage, ReactNode> = {
+  Dropbox: <DropboxIcon fontSize="small" />,
+};
+
+export const cloudStorageIconsDisabled: Record<CloudStorage, ReactNode> = {
+  Dropbox: <DropboxIcon color="disabled" />,
+};
+
 const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const platform = usePlatform();
   const { t } = useTranslation();
@@ -134,12 +147,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       } else {
         throw new Error(`Unknown cloud storage "${cloudStorage}"`);
       }
-      setConnectedCloudStorages((curr) => ({
-        ...curr,
-        [cloudStorage]: true,
-      }));
+      if (platform === "ios" || platform === "android") {
+        setConnectedCloudStorages((curr) => ({
+          ...curr,
+          [cloudStorage]: true,
+        }));
+      }
     },
-    [dropboxAuthenticate]
+    [dropboxAuthenticate, platform]
   );
 
   const getCloudFileRefs = useCallback(async (): Promise<CloudFileRef[]> => {

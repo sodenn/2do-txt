@@ -1,6 +1,5 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -21,6 +20,7 @@ import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
+import DropboxIcon from "./DropboxIcon";
 import StartEllipsis from "./StartEllipsis";
 
 const buttonMaxWidthXs = 170;
@@ -149,7 +149,7 @@ const FileMenu = () => {
           connectedCloudStorages["Dropbox"] && (
             <MenuItem onClick={handleImportFromCloudStorage}>
               <ListItemIcon>
-                <CloudOutlinedIcon fontSize="small" />
+                <DropboxIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText>
                 {t("Import from cloud storage", { cloudStorage: "Dropbox" })}

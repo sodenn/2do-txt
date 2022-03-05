@@ -1,8 +1,10 @@
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import { Button, Stack } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
+import {
+  cloudStorageIcons,
+  useCloudStorage,
+} from "../data/CloudStorageContext";
 import { CloudStorage, cloudStorages } from "../types/cloud-storage.types";
 
 interface CloudFileImportButtonProps {
@@ -12,7 +14,10 @@ interface CloudFileImportButtonProps {
 const CloudFileImportButtons = () => {
   const { cloudStorageEnabled, connectedCloudStorages } = useCloudStorage();
 
-  if (!cloudStorageEnabled) {
+  if (
+    !cloudStorageEnabled ||
+    cloudStorages.every((cloudStorage) => !connectedCloudStorages[cloudStorage])
+  ) {
     return null;
   }
 
@@ -37,7 +42,7 @@ const CloudFileImportButton = ({
     <Button
       aria-label={`Import todo.txt from ${cloudStorage}`}
       onClick={() => setCloudFileDialogOptions({ open: true, cloudStorage })}
-      startIcon={<CloudOutlinedIcon />}
+      startIcon={cloudStorageIcons[cloudStorage]}
       variant="outlined"
     >
       {t("Import from cloud storage", { cloudStorage })}

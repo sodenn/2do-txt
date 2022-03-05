@@ -1,4 +1,3 @@
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -13,7 +12,10 @@ import {
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
+import {
+  cloudStorageIconsDisabled,
+  useCloudStorage,
+} from "../data/CloudStorageContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import {
@@ -104,6 +106,11 @@ const CloudFileDialog = () => {
     return cloudFileRefs.some((c) => c.path === cloudFile.path);
   };
 
+  const getCloudStorage = (cloudFile: CloudFile) => {
+    const ref = cloudFileRefs.find((c) => c.path === cloudFile.path);
+    return ref!.cloudStorage;
+  };
+
   useEffect(() => {
     if (cloudFileDialogOptions.open) {
       const { cloudStorage } = cloudFileDialogOptions;
@@ -169,7 +176,7 @@ const CloudFileDialog = () => {
                   </Box>
                   {disableItem(cloudFile) && (
                     <Box sx={{ ml: 2 }}>
-                      <CloudOutlinedIcon color="disabled" />
+                      {cloudStorageIconsDisabled[getCloudStorage(cloudFile)]}
                     </Box>
                   )}
                 </ListItem>

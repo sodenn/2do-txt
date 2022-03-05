@@ -1,8 +1,6 @@
 import { Clipboard } from "@capacitor/clipboard";
 import { Directory, Encoding } from "@capacitor/filesystem";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import CloudOffOutlinedIcon from "@mui/icons-material/CloudOffOutlined";
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -17,7 +15,10 @@ import {
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../../data/CloudStorageContext";
+import {
+  cloudStorageIcons,
+  useCloudStorage,
+} from "../../data/CloudStorageContext";
 import { useTask } from "../../data/TaskContext";
 import {
   CloudFileRef,
@@ -123,8 +124,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
     <MenuItem onClick={handleCloudSync}>
       <ListItemIcon>
         {loading && <CircularProgress size={24} />}
-        {!loading && !cloudFileRef && <CloudOutlinedIcon />}
-        {!loading && !!cloudFileRef && <CloudOffOutlinedIcon />}
+        {!loading && cloudStorageIcons[cloudStorage]}
       </ListItemIcon>
       {cloudFileRef && (
         <Typography>

@@ -1,7 +1,10 @@
 import { Button, Stack } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
+import {
+  cloudStorageIcons,
+  useCloudStorage,
+} from "../data/CloudStorageContext";
 import { CloudStorage, cloudStorages } from "../types/cloud-storage.types";
 
 interface CloudStorageConnectionButtonsProps {
@@ -57,6 +60,7 @@ const CloudStorageConnectionButton = (
     return (
       <Button
         variant="outlined"
+        startIcon={cloudStorageIcons[cloudStorage]}
         fullWidth
         onClick={() => authenticate(cloudStorage)}
       >
