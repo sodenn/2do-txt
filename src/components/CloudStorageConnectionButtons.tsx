@@ -50,7 +50,12 @@ const CloudStorageConnectionButton = (
 
   if (disconnect && cloudStorageConnected) {
     return (
-      <Button variant="outlined" fullWidth onClick={() => unlink(cloudStorage)}>
+      <Button
+        variant="outlined"
+        startIcon={cloudStorageIcons[cloudStorage]}
+        fullWidth
+        onClick={() => unlink(cloudStorage)}
+      >
         {t("Disconnect from cloud storage", { cloudStorage })}
       </Button>
     );
