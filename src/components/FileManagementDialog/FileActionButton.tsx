@@ -19,6 +19,7 @@ import {
   cloudStorageIconsSmall,
   useCloudStorage,
 } from "../../data/CloudStorageContext";
+import { useFileCreateDialog } from "../../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
 import { useTask } from "../../data/TaskContext";
 import { cloudStorages } from "../../types/cloud-storage.types";
@@ -27,7 +28,8 @@ import { usePlatform } from "../../utils/platform";
 const FileActionButton = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { openTodoFilePicker, openTodoFileCreateDialog } = useTask();
+  const { openTodoFilePicker } = useTask();
+  const { setFileCreateDialogOpen } = useFileCreateDialog();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const {
     connectedCloudStorages,
@@ -44,7 +46,7 @@ const FileActionButton = () => {
       label: t("Create todo.txt"),
       icon: <AddOutlinedIcon fontSize="small" />,
       click: () => {
-        openTodoFileCreateDialog(true);
+        setFileCreateDialogOpen(true);
         setFileManagementDialogOpen(false);
       },
     },

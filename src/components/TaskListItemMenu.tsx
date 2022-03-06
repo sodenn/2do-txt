@@ -14,6 +14,7 @@ import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useTask } from "../data/TaskContext";
+import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
 import Kbd from "./Kbd";
 
@@ -30,7 +31,8 @@ interface TaskListItemMenuProps {
 const TaskListItemMenu = (props: TaskListItemMenuProps) => {
   const { task, menuRef, menuButtonRef } = props;
   const { t } = useTranslation();
-  const { openTaskDialog, deleteTask } = useTask();
+  const { deleteTask } = useTask();
+  const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
   const [open, setOpen] = useState(false);
 
@@ -40,7 +42,7 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
 
   const handleEdit = () => {
     handleClose();
-    openTaskDialog(task);
+    setTaskDialogOptions({ open: true, task });
   };
 
   const handleDelete = () => {

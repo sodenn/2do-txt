@@ -2,6 +2,7 @@ import AddTaskIcon from "@mui/icons-material/AddTask";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
@@ -22,7 +23,8 @@ const StyledBox = styled("div")`
 const Onboarding = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { taskLists, openTodoFileCreateDialog, openTodoFilePicker } = useTask();
+  const { setFileCreateDialogOpen } = useFileCreateDialog();
+  const { taskLists, openTodoFilePicker } = useTask();
 
   return (
     <StyledBox sx={{ display: taskLists.length === 0 ? "flex" : "none" }}>
@@ -42,7 +44,7 @@ const Onboarding = () => {
         </Typography>
         <Button
           aria-label="Create task"
-          onClick={() => openTodoFileCreateDialog(true)}
+          onClick={() => setFileCreateDialogOpen(true)}
           startIcon={<AddTaskIcon />}
           variant="contained"
         >

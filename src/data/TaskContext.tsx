@@ -1,7 +1,6 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { useTheme } from "@mui/material";
 import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
@@ -36,18 +35,15 @@ import { useSettings } from "./SettingsContext";
 
 export const defaultTodoFilePath = "todo.txt";
 
-interface State {
-  init: boolean;
-  taskDialogOpen: boolean;
-  todoFileCreateDialogOpen: boolean;
-  activeTaskId?: string;
-  taskLists: TaskListState[];
-}
-
 export interface TaskListState extends TaskListParseResult {
   tasksLoaded: boolean;
   filePath: string;
   fileName: string;
+}
+
+interface State {
+  init: boolean;
+  taskLists: TaskListState[];
 }
 
 const [TaskProvider, useTask] = createContext(() => {
@@ -57,7 +53,6 @@ const [TaskProvider, useTask] = createContext(() => {
   const { enqueueSnackbar } = useSnackbar();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { addTodoFilePath } = useSettings();
-  const theme = useTheme();
   const { syncAllFile, syncFileThrottled, unlinkFile, cloudStorageEnabled } =
     useCloudStorage();
   const {
@@ -77,62 +72,18 @@ const [TaskProvider, useTask] = createContext(() => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<State>({
     init: false,
-    taskDialogOpen: false,
-    todoFileCreateDialogOpen: false,
     taskLists: [],
   });
 
-  const {
-    init,
-    taskDialogOpen,
-    todoFileCreateDialogOpen,
-    taskLists,
-    activeTaskId,
-  } = state;
+  const { init, taskLists } = state;
 
   const commonTaskListAttributes = getCommonTaskListAttributes(taskLists);
-
-  const activeTask = activeTaskId
-    ? taskLists
-        .flatMap((list) => list.items)
-        .find((task) => task._id === activeTaskId)
-    : undefined;
 
   const activeTaskList = activeTaskListPath
     ? taskLists.find((list) => list.filePath === activeTaskListPath)
     : taskLists.length === 1
     ? taskLists[0]
     : undefined;
-
-  const openTaskDialog = useCallback((task?: Task) => {
-    setState((state) => {
-      const { activeTaskId, ...rest } = state;
-      const newState: State = { ...rest, taskDialogOpen: true };
-      if (task) {
-        newState.activeTaskId = task._id;
-      }
-      return newState;
-    });
-  }, []);
-
-  const closeTaskDialog = useCallback(() => {
-    setState((state) => {
-      return { ...state, taskDialogOpen: false };
-    });
-    // wait until task dialog is closed to avoid flickering
-    setTimeout(() => {
-      setState((state) => {
-        const { activeTaskId, ...rest } = state;
-        return { ...rest };
-      });
-    }, theme.transitions.duration.standard);
-  }, [theme.transitions.duration.standard]);
-
-  const openTodoFileCreateDialog = useCallback((open: boolean) => {
-    setState((state) => {
-      return { ...state, todoFileCreateDialogOpen: open };
-    });
-  }, []);
 
   const findTaskListByTaskId = useCallback(
     (taskId?: string) => {
@@ -433,9 +384,6 @@ const [TaskProvider, useTask] = createContext(() => {
         return {
           ...state,
           taskLists: state.taskLists.filter((l) => l !== taskList),
-          activeTaskId: taskList.items.some((i) => i._id === state.activeTaskId)
-            ? undefined
-            : state.activeTaskId,
         };
       });
     },
@@ -630,14 +578,8 @@ const [TaskProvider, useTask] = createContext(() => {
     completeTask,
     init,
     taskLists,
-    taskDialogOpen,
-    todoFileCreateDialogOpen,
-    openTaskDialog,
-    closeTaskDialog,
-    openTodoFileCreateDialog,
     scheduleDueTaskNotifications,
     activeTaskList,
-    activeTask,
     findTaskListByTaskId,
     reorderTaskList,
     createNewTodoFile,

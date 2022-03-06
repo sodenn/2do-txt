@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useTask } from "../data/TaskContext";
+import { useTaskDialog } from "../data/TaskDialogContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import { Task } from "../utils/task";
 import { useTaskGroups } from "../utils/task-list";
@@ -10,7 +11,8 @@ import TaskList from "./TaskList";
 
 const TaskLists = () => {
   const { t } = useTranslation();
-  const { activeTaskList, openTaskDialog, deleteTask } = useTask();
+  const { activeTaskList, deleteTask } = useTask();
+  const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
   const listItemsRef = useRef<HTMLDivElement[]>([]);
@@ -31,7 +33,7 @@ const TaskLists = () => {
     () => {
       if (focusedTaskIndex !== -1) {
         const focusedTask = flatTaskList[focusedTaskIndex];
-        openTaskDialog(focusedTask);
+        setTaskDialogOptions({ open: true, task: focusedTask });
       }
     },
     "e",

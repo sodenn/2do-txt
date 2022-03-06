@@ -3,6 +3,7 @@ import { SnackbarProvider } from "notistack";
 import React, { FC, Suspense } from "react";
 import { CloudStorageProvider } from "./CloudStorageContext";
 import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
+import { FileCreateDialogProvider } from "./FileCreateDialogContext";
 import { FileManagementDialogProvider } from "./FileManagementDialogContext";
 import { FilterProvider } from "./FilterContext";
 import { MigrationProvider } from "./MigrationContext";
@@ -10,6 +11,7 @@ import { NetworkProvider } from "./NetworkContext";
 import { SettingsProvider } from "./SettingsContext";
 import { SideSheetProvider } from "./SideSheetContext";
 import { TaskProvider } from "./TaskContext";
+import { TaskDialogProvider } from "./TaskDialogContext";
 
 const ProviderBundle: FC = ({ children }) => {
   return (
@@ -32,7 +34,9 @@ const ProviderBundle: FC = ({ children }) => {
                     <SideSheetProvider>
                       <TaskProvider>
                         <FileManagementDialogProvider>
-                          {children}
+                          <FileCreateDialogProvider>
+                            <TaskDialogProvider>{children}</TaskDialogProvider>
+                          </FileCreateDialogProvider>
                         </FileManagementDialogProvider>
                       </TaskProvider>
                     </SideSheetProvider>

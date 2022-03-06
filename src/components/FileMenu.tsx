@@ -15,6 +15,7 @@ import {
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
+import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../data/FileManagementDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
@@ -31,12 +32,8 @@ const FileMenu = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
-  const {
-    taskLists,
-    activeTaskList,
-    openTodoFileCreateDialog,
-    openTodoFilePicker,
-  } = useTask();
+  const { setFileCreateDialogOpen } = useFileCreateDialog();
+  const { taskLists, activeTaskList, openTodoFilePicker } = useTask();
   const {
     setCloudFileDialogOptions,
     cloudStorageEnabled,
@@ -65,7 +62,7 @@ const FileMenu = () => {
   };
 
   const handleCreateFile = () => {
-    openTodoFileCreateDialog(true);
+    setFileCreateDialogOpen(true);
     handleClose();
   };
 

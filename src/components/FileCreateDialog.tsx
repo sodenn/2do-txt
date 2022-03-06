@@ -1,18 +1,24 @@
 import { Directory } from "@capacitor/filesystem";
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   TextField,
 } from "@mui/material";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { useCloudStorage } from "../data/CloudStorageContext";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
+import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { defaultTodoFilePath, useTask } from "../data/TaskContext";
+import { useTaskDialog } from "../data/TaskDialogContext";
+import { CloudStorage } from "../types/cloud-storage.types";
 import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
 
@@ -24,13 +30,15 @@ const FileCreateDialog = () => {
   const platform = usePlatform();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { setActiveTaskListPath } = useFilter();
-  const {
-    taskLists,
-    saveTodoFile,
-    openTodoFileCreateDialog,
-    openTaskDialog,
-    todoFileCreateDialogOpen,
-  } = useTask();
+  const { uploadFileAndResolveConflict, connectedCloudStorages } =
+    useCloudStorage();
+  const { taskLists, saveTodoFile } = useTask();
+  const { fileCreateDialogOpen, setFileCreateDialogOpen } =
+    useFileCreateDialog();
+  const { setTaskDialogOptions } = useTaskDialog();
+  const [selectedCloudStorage, setSelectedCloudStorage] = useState<
+    CloudStorage | undefined
+  >("Dropbox");
 
   const createNewFile = useCallback(
     (filePath?: string) => {
@@ -39,19 +47,41 @@ const FileCreateDialog = () => {
           addTodoFilePath(filePath);
           setActiveTaskListPath(filePath);
           if (taskLists.length === 0) {
-            openTaskDialog();
+            setTaskDialogOptions({ open: true });
           }
         });
       }
     },
     [
       addTodoFilePath,
-      openTaskDialog,
+      setTaskDialogOptions,
       saveTodoFile,
       setActiveTaskListPath,
       taskLists.length,
     ]
   );
+
+  const createTodoFileAndSync = async () => {
+    setFileCreateDialogOpen(false);
+    createNewFile(fileName);
+    if (selectedCloudStorage && connectedCloudStorages[selectedCloudStorage]) {
+      const result = await uploadFileAndResolveConflict({
+        filePath: fileName,
+        text: "",
+        mode: "create",
+        cloudStorage: selectedCloudStorage,
+      });
+      if (
+        result &&
+        result.type === "conflict" &&
+        result.conflict &&
+        result.conflict.option === "cloud"
+      ) {
+        const text = result.conflict.text;
+        await saveTodoFile(fileName, text);
+      }
+    }
+  };
 
   const handleSave = async () => {
     if (!fileName) {
@@ -77,47 +107,49 @@ const FileCreateDialog = () => {
           },
           {
             text: t("Replace"),
-            handler: () => {
-              openTodoFileCreateDialog(false);
-              createNewFile(fileName);
-            },
+            handler: createTodoFileAndSync,
           },
         ],
       });
     } else {
-      openTodoFileCreateDialog(false);
-      createNewFile(fileName);
+      createTodoFileAndSync();
     }
   };
 
+  const handleSelectCloudStorage = (cloudStorage: CloudStorage) => {
+    setSelectedCloudStorage((currentValue) =>
+      currentValue === cloudStorage ? undefined : cloudStorage
+    );
+  };
+
   const handleCancel = () => {
-    openTodoFileCreateDialog(false);
+    setFileCreateDialogOpen(false);
   };
 
   useEffect(() => {
-    if (platform === "electron" && todoFileCreateDialogOpen) {
+    if (platform === "electron" && fileCreateDialogOpen) {
       getUniqueFilePath(defaultTodoFilePath).then(({ fileName }) => {
         window.electron.saveFile(fileName).then((filePath) => {
-          openTodoFileCreateDialog(false);
+          setFileCreateDialogOpen(false);
           createNewFile(filePath);
         });
       });
     }
   }, [
-    openTodoFileCreateDialog,
     getUniqueFilePath,
     createNewFile,
-    todoFileCreateDialogOpen,
+    fileCreateDialogOpen,
     platform,
+    setFileCreateDialogOpen,
   ]);
 
   useEffect(() => {
-    if (platform !== "electron" && todoFileCreateDialogOpen) {
+    if (platform !== "electron" && fileCreateDialogOpen) {
       getUniqueFilePath(defaultTodoFilePath).then(({ fileName }) =>
         setFileName(fileName)
       );
     }
-  }, [getUniqueFilePath, platform, todoFileCreateDialogOpen]);
+  }, [getUniqueFilePath, platform, fileCreateDialogOpen]);
 
   if (platform === "electron") {
     return null;
@@ -126,7 +158,7 @@ const FileCreateDialog = () => {
   return (
     <Dialog
       aria-label="File dialog"
-      open={todoFileCreateDialogOpen}
+      open={fileCreateDialogOpen}
       onClose={handleCancel}
     >
       <DialogTitle>{t("Create todo.txt")}</DialogTitle>
@@ -140,6 +172,22 @@ const FileCreateDialog = () => {
           fullWidth
           variant="outlined"
         />
+        {Object.entries(connectedCloudStorages)
+          .filter(([_, connected]) => connected)
+          .map(([cloudStorage]) => cloudStorage as CloudStorage)
+          .map((cloudStorage) => (
+            <FormControlLabel
+              key={cloudStorage}
+              control={
+                <Checkbox
+                  aria-label="Sync with cloud storage"
+                  checked={selectedCloudStorage === cloudStorage}
+                  onChange={() => handleSelectCloudStorage(cloudStorage)}
+                />
+              }
+              label={t("Sync with cloud storage", { cloudStorage }) as string}
+            />
+          ))}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCancel}>{t("Cancel")}</Button>

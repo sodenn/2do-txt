@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
 import { TaskListState, useTask } from "../data/TaskContext";
+import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task, TaskFormData } from "../utils/task";
 import { ResponsiveDialog } from "./ResponsiveDialog";
 import { isSuggestionsPopupOpen } from "./TaskEditor";
@@ -38,11 +39,8 @@ const createFormData = (createCreationDate: boolean, activeTask?: Task) => {
 const TaskDialog = () => {
   const { t } = useTranslation();
   const {
-    closeTaskDialog,
-    taskDialogOpen,
     findTaskListByTaskId,
     taskLists,
-    activeTask,
     activeTaskList,
     addTask,
     editTask,
@@ -50,13 +48,17 @@ const TaskDialog = () => {
     projects: commonProjects,
     tags: commonTags,
   } = useTask();
+  const {
+    taskDialogOptions: { open, task },
+    setTaskDialogOptions,
+  } = useTaskDialog();
   const { createCreationDate } = useSettings();
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskListState | undefined
   >(() => {
-    if (activeTask) {
-      return findTaskListByTaskId(activeTask._id);
+    if (task) {
+      return findTaskListByTaskId(task._id);
     } else if (activeTaskList) {
       return activeTaskList;
     }
@@ -68,28 +70,23 @@ const TaskDialog = () => {
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
 
   useEffect(() => {
-    if (!taskDialogOpen) {
+    if (!open) {
       return;
     }
-    setFormData(createFormData(createCreationDate, activeTask));
+    setFormData(createFormData(createCreationDate, task));
     setSelectedTaskList(() => {
-      if (activeTask) {
-        return findTaskListByTaskId(activeTask._id);
+      if (task) {
+        return findTaskListByTaskId(task._id);
       } else if (activeTaskList) {
         return activeTaskList;
       } else {
         return undefined;
       }
     });
-  }, [
-    createCreationDate,
-    activeTask,
-    taskDialogOpen,
-    activeTaskList,
-    findTaskListByTaskId,
-  ]);
+  }, [createCreationDate, task, open, activeTaskList, findTaskListByTaskId]);
 
-  const closeDialog = () => closeTaskDialog();
+  const closeDialog = () =>
+    setTaskDialogOptions((currentValue) => ({ ...currentValue, open: false }));
 
   const handleSave = () => {
     closeDialog();
@@ -122,8 +119,11 @@ const TaskDialog = () => {
       aria-label="Task dialog"
       maxWidth="sm"
       fullWidth
-      open={taskDialogOpen}
+      open={open}
       onClose={handleClose}
+      TransitionProps={{
+        onExited: () => setTaskDialogOptions({ open: false }),
+      }}
     >
       <DialogTitle>
         {!!formData._id ? t("Edit Task") : t("Create Task")}
@@ -134,7 +134,7 @@ const TaskDialog = () => {
           contexts={Object.keys(contexts)}
           projects={Object.keys(projects)}
           tags={tags}
-          taskLists={activeTaskList || activeTask ? [] : taskLists}
+          taskLists={activeTaskList || task ? [] : taskLists}
           onChange={handleChange}
           onFileListChange={handleFileListChange}
           onEnterPress={handleSave}

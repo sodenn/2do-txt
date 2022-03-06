@@ -74,16 +74,10 @@ interface UploadFileAndResolveNoConflict {
   cloudFile: CloudFileRef;
 }
 
-interface CloudFileDialogOpen {
-  open: true;
-  cloudStorage: CloudStorage;
+interface CloudFileDialogOptions {
+  open: boolean;
+  cloudStorage?: CloudStorage;
 }
-
-interface CloudFileDialogClosed {
-  open: false;
-}
-
-type CloudFileDialogOptions = CloudFileDialogOpen | CloudFileDialogClosed;
 
 type UploadFileAndResolveResult =
   | UploadFileAndResolveConflict
@@ -390,7 +384,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           persist: true,
           content: (
             <Alert severity="info" icon={<CircularProgress size="1em" />}>
-              {t("Sync with cloud storage")}
+              {t("Syncing with cloud storage")}
             </Alert>
           ),
         });
@@ -472,7 +466,10 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const syncAllFile = useCallback(
     async (opt: SyncFileOptions[]) => {
-      if (opt.length === 0) {
+      const syncNeeded = await Promise.all(
+        opt.map((i) => getCloudFileRefByFilePath(i.filePath))
+      ).then((result) => result.some((i) => !!i));
+      if (!syncNeeded) {
         return [];
       }
 
@@ -486,7 +483,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         persist: true,
         content: (
           <Alert severity="info" icon={<CircularProgress size="1em" />}>
-            {t("Sync with cloud storage")}
+            {t("Syncing with cloud storage")}
           </Alert>
         ),
       });
@@ -503,7 +500,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       return results;
     },
-    [closeSnackbar, enqueueSnackbar, isAuthenticationInProgress, syncFile, t]
+    [
+      closeSnackbar,
+      enqueueSnackbar,
+      getCloudFileRefByFilePath,
+      isAuthenticationInProgress,
+      syncFile,
+      t,
+    ]
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -2,6 +2,7 @@ import { Box, List, Typography } from "@mui/material";
 import { MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
+import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
 import { TaskGroup } from "../utils/task-list";
 import TaskListHeader from "./TaskListHeader";
@@ -33,7 +34,8 @@ const TaskList = (props: TaskListProps) => {
     onBlur,
   } = props;
   const { t } = useTranslation();
-  const { completeTask, openTaskDialog } = useTask();
+  const { completeTask } = useTask();
+  const { setTaskDialogOptions } = useTaskDialog();
   const hasItems = taskGroups.some((g) => g.items.length > 0);
 
   return (
@@ -65,7 +67,7 @@ const TaskList = (props: TaskListProps) => {
                       key={index}
                       task={task}
                       focused={focusedTaskIndex === index}
-                      onClick={() => openTaskDialog(task)}
+                      onClick={() => setTaskDialogOptions({ open: true, task })}
                       onCheckboxClick={() => completeTask(task)}
                       onFocus={() => onFocus(index)}
                       onBlur={onBlur}
