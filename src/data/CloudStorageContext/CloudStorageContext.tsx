@@ -374,7 +374,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       const { cloudStorage } = cloudFile;
 
-      await checkNetworkStatus(cloudStorage);
+      await checkNetworkStatus();
 
       let snackbar: SnackbarKey | undefined;
       if (showSnackbar) {
@@ -472,6 +472,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       if (!syncNeeded) {
         return [];
       }
+
+      await checkNetworkStatus();
 
       if (await isAuthenticationInProgress()) {
         return [];

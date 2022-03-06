@@ -94,7 +94,7 @@
   "Import from cloud storage": "Aus {{cloudStorage}} importieren",
   "Cloud storage": "Cloud-Speicher",
   "Session has expired. Please login again": "{{cloudStorage}} Sitzung abgelaufen. Bitte melden dich erneut an.",
-  "Unable to connect. Check network connection": "Es kann keine Verbindung zu {{cloudStorage}} aufgebaut werden. Überprüfe die Netzwerkverbindung.",
+  "Unable to connect. Check network connection": "Es kann keine Verbindung zu Cloud-Speicher aufgebaut werden. Überprüfe die Netzwerkverbindung.",
   "The file could not be downloaded": "Die Datei konnte nicht von {{cloudStorage}} heruntergeladen werden.",
   "There are no todo.txt files": "Keine todo.txt Dateien vorhanden",
   "Existing todo.txt files can be synchronized": "Bereits existierende todo.txt Dateien können jederzeit unter <strong>todo.txt verwalten</strong> synchronisiert werden.",

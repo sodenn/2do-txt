@@ -114,7 +114,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   );
 
   const getClient = useCallback(async () => {
-    await checkNetworkStatus(cloudStorage);
+    await checkNetworkStatus();
 
     if (dbxRef.current) {
       return dbxRef.current;
