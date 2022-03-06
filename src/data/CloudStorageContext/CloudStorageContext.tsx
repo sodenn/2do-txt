@@ -503,6 +503,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       return results;
     },
     [
+      checkNetworkStatus,
       closeSnackbar,
       enqueueSnackbar,
       getCloudFileRefByFilePath,
