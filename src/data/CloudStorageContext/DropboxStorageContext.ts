@@ -67,7 +67,10 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     (error: any) => {
       if (error.status === 401) {
         return resetTokens();
-      } else if (error.status === 404) {
+      } else if (
+        error.status === 404 ||
+        error.error?.error_summary?.includes("path/not_found")
+      ) {
         throw new CloudFileNotFoundError();
       }
       dbxRef.current = null;
