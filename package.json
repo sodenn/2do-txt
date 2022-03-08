@@ -78,8 +78,7 @@
     "ios:res": "cordova-res ios --skip-config --copy",
     "electron:sync": "npx cap sync @capacitor-community/electron",
     "electron:start": "yarn build && yarn electron:sync && npx cap open @capacitor-community/electron",
-    "semantic-release": "semantic-release",
-    "postinstall": "playwright install --with-deps"
+    "semantic-release": "semantic-release"
   },
   "jest": {
     "moduleNameMapper": {
