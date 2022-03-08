@@ -27,7 +27,7 @@ export interface SecureStorageItem {
   value: string;
 }
 
-interface TestContextProps {
+export interface TestContextProps {
   text?: string;
   storage?: StorageItem[];
   secureStorage?: SecureStorageItem[];
@@ -42,6 +42,27 @@ i18n.use(initReactI18next).init({
 
 window.scrollTo = jest.fn();
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
+// @ts-ignore
+global.Keychain = {
+  get: (success: (key: string) => string, error: () => any, key: string) => {
+    const value = sessionStorage.getItem("SecureStorage." + key);
+    success(value!);
+  },
+  set: (
+    success: () => string,
+    error: () => any,
+    key: string,
+    value: string
+  ) => {
+    sessionStorage.setItem("SecureStorage." + key, value);
+    success();
+  },
+  remove: (success: () => string, error: () => any, key: string) => {
+    sessionStorage.removeItem("SecureStorage." + key);
+    success();
+  },
+};
 
 const mocks = {
   Filesystem: {

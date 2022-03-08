@@ -11,7 +11,6 @@ export type StorageKeys =
   | "received-notifications"
   | "sort-by"
   | "hide-completed-tasks"
-  | "cloud-storage"
   | "cloud-files";
 
 export function useStorage() {

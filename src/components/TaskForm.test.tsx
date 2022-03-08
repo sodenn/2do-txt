@@ -111,10 +111,10 @@ describe("TaskEditor", () => {
     await screen.findByText("due:2021-11-11");
 
     // make sure the date picker includes the due date
-    const dueDatePicker = await screen.findByRole("input", {
+    const dueDatePicker = await screen.findByRole("textbox", {
       name: "Due date",
     });
     // xeslint-disable-next-line testing-library/no-node-access
-    expect(dueDatePicker.querySelector("input")?.value).toBe("11/11/2021");
+    expect(dueDatePicker.getAttribute("value")).toBe("11/11/2021");
   });
 });

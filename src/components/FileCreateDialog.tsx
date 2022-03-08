@@ -171,6 +171,9 @@ const FileCreateDialog = () => {
           label={t("File Name")}
           fullWidth
           variant="outlined"
+          inputProps={{
+            "aria-label": "File name",
+          }}
         />
         {Object.entries(connectedCloudStorages)
           .filter(([_, connected]) => connected)

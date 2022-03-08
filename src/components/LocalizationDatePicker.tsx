@@ -52,7 +52,6 @@ const LocalizationDatePicker = forwardRef<
       <DatePicker
         {...rest}
         ref={ref}
-        InputProps={{ role: "input", "aria-label": ariaLabel }}
         value={value}
         clearable
         allowSameDateSelection
@@ -83,7 +82,13 @@ const LocalizationDatePicker = forwardRef<
             : undefined
         }
         mask={maskMap[resolvedLanguage]}
-        renderInput={(params) => <TextField {...params} fullWidth />}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            fullWidth
+            inputProps={{ ...params.inputProps, "aria-label": ariaLabel }}
+          />
+        )}
       />
     </LocalizationProvider>
   );

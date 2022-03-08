@@ -63,7 +63,12 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
       <Select
         value={selectedPriority}
         MenuProps={MenuProps}
-        input={<OutlinedInput label={t("Priority")} />}
+        input={
+          <OutlinedInput
+            label={t("Priority")}
+            inputProps={{ "aria-label": "Select task priority" }}
+          />
+        }
         onChange={(event) => {
           const priority = event.target.value;
           if (onChange) {

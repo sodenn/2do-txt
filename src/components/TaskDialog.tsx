@@ -142,7 +142,11 @@ const TaskDialog = () => {
       </DialogContent>
       <DialogActions>
         <Button onClick={closeDialog}>{t("Cancel")}</Button>
-        <Button disabled={formDisabled} onClick={handleSave}>
+        <Button
+          aria-label="Save task"
+          disabled={formDisabled}
+          onClick={handleSave}
+        >
           {t("Save")}
         </Button>
       </DialogActions>

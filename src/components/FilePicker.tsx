@@ -83,6 +83,7 @@ const FilePicker = () => {
 
   return (
     <Input
+      id="file-picker"
       ref={fileInputRef}
       accept="text/plain"
       type="file"
