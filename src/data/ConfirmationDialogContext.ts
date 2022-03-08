@@ -8,16 +8,16 @@ export interface ConfirmationButtonProps {
 
 export interface ConfirmationDialogProps {
   title?: ReactNode;
-  content: ReactNode;
-  buttons: ConfirmationButtonProps[];
+  content?: ReactNode;
+  buttons?: ConfirmationButtonProps[];
+  open: boolean;
   onClose?: () => void;
 }
 
 const [ConfirmationDialogProvider, useConfirmationDialog] = createContext(
   () => {
-    const [confirmationDialog, setConfirmationDialog] = useState<
-      ConfirmationDialogProps | undefined
-    >(undefined);
+    const [confirmationDialog, setConfirmationDialog] =
+      useState<ConfirmationDialogProps>({ open: false });
 
     return {
       confirmationDialog,

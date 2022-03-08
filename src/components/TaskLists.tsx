@@ -45,6 +45,7 @@ const TaskLists = () => {
       if (focusedTaskIndex !== -1) {
         const focusedTask = flatTaskList[focusedTaskIndex];
         setConfirmationDialog({
+          open: true,
           title: t("Delete task"),
           content: t("Are you sure you want to delete this task?"),
           buttons: [

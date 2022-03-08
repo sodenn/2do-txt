@@ -464,6 +464,7 @@ const [TaskProvider, useTask] = createContext(() => {
         return new Promise<string | undefined>(async (resolve, reject) => {
           try {
             setConfirmationDialog({
+              open: true,
               onClose: () => resolve(undefined),
               content: (
                 <Trans

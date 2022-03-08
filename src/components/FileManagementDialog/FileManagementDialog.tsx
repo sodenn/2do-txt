@@ -48,6 +48,7 @@ const FileManagementDialog = () => {
     handler: () => void
   ) => {
     setConfirmationDialog({
+      open: true,
       title: t("Delete"),
       content: (
         <Trans

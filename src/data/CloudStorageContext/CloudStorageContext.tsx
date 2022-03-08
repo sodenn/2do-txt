@@ -261,6 +261,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       const { filePath, cloudFile, cloudStorage, text } = opt;
       return new Promise<ResolveConflictResult | undefined>((resolve) => {
         setConfirmationDialog({
+          open: true,
           onClose: () => resolve(undefined),
           title: t("Resolve file conflict"),
           content: (

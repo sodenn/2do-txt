@@ -9,39 +9,43 @@ import {
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 
 const ConfirmationDialog = () => {
-  const { confirmationDialog, setConfirmationDialog } = useConfirmationDialog();
+  const {
+    confirmationDialog: { open, title, content, buttons, onClose },
+    setConfirmationDialog,
+  } = useConfirmationDialog();
 
   const handleClick = (handler?: () => void) => {
     if (handler) {
       handler();
     }
-    setConfirmationDialog(undefined);
+    setConfirmationDialog((currentValue) => ({ ...currentValue, open: false }));
   };
 
   const handleClose = () => {
-    if (confirmationDialog && confirmationDialog.onClose) {
-      confirmationDialog.onClose();
+    if (onClose) {
+      onClose();
     }
-    setConfirmationDialog(undefined);
+    setConfirmationDialog((currentValue) => ({ ...currentValue, open: false }));
   };
 
   return (
     <Dialog
       maxWidth="xs"
       aria-label="Confirmation Dialog"
-      open={!!confirmationDialog}
+      open={open}
       onClose={handleClose}
+      TransitionProps={{
+        onExited: () => setConfirmationDialog({ open: false }),
+      }}
     >
-      {confirmationDialog?.title && (
-        <DialogTitle>{confirmationDialog?.title}</DialogTitle>
-      )}
+      {title && <DialogTitle>{title}</DialogTitle>}
       <DialogContent>
         <DialogContentText sx={{ overflow: "hidden", wordBreak: "break-word" }}>
-          {confirmationDialog?.content}
+          {content}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        {confirmationDialog?.buttons.map((button, idx) => (
+        {buttons?.map((button, idx) => (
           <Button
             aria-label={button.text}
             autoFocus

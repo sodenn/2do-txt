@@ -48,6 +48,7 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
   const handleDelete = () => {
     handleClose();
     setConfirmationDialog({
+      open: true,
       title: t("Delete task"),
       content: t("Are you sure you want to delete this task?"),
       buttons: [
