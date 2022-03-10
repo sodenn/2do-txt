@@ -1,7 +1,9 @@
 import { Box, Button, Grid, Stack } from "@mui/material";
+import { isValid } from "date-fns";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskListState } from "../data/TaskContext";
+import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import { createDueDateRegex, parseTaskBody, TaskFormData } from "../utils/task";
@@ -11,7 +13,6 @@ import {
   taskProjectStyle,
   taskTagStyle,
 } from "../utils/task-styles";
-import { Dictionary } from "../utils/types";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
@@ -64,16 +65,22 @@ const TaskForm = (props: TaskDialogForm) => {
   };
 
   const handleDueDateChange = (value: Date | null) => {
-    let newBody: string;
+    if (value && !isValid(value)) {
+      return;
+    }
+
     const bodyWithoutDueDate = formData.body
       .replace(createDueDateRegex(), "")
       .trim();
+
+    let newBody: string;
     if (value) {
       const dueDateTag = `due:${formatDate(value)}`;
       newBody = `${bodyWithoutDueDate} ${dueDateTag} `.trimStart();
     } else {
       newBody = bodyWithoutDueDate;
     }
+
     onChange({ ...formData, body: newBody, dueDate: value ?? undefined });
     rerenderEditor(newBody);
   };
@@ -167,25 +174,29 @@ const TaskForm = (props: TaskDialogForm) => {
             onChange={(priority) => onChange({ ...formData, priority })}
           />
         </Grid>
-        {(formData.creationDate || formData._id) && (
-          <Grid item xs={12} sm={6}>
-            <LocalizationDatePicker
-              label={t("Creation Date")}
-              value={formData.creationDate}
-              onChange={(value) =>
-                onChange({ ...formData, creationDate: value ?? undefined })
+        <Grid item xs={12} sm={6}>
+          <LocalizationDatePicker
+            ariaLabel="Creation date"
+            label={t("Creation Date")}
+            value={formData.creationDate}
+            onChange={(value) => {
+              if (!value || isValid(value)) {
+                onChange({ ...formData, creationDate: value ?? undefined });
               }
-            />
-          </Grid>
-        )}
-        {(formData.completionDate || formData._id) && (
+            }}
+          />
+        </Grid>
+        {formData._id && (
           <Grid item xs={12} sm={6}>
             <LocalizationDatePicker
+              ariaLabel="Completion date"
               label={t("Completion Date")}
               value={formData.completionDate}
-              onChange={(value) =>
-                onChange({ ...formData, completionDate: value ?? undefined })
-              }
+              onChange={(value) => {
+                if (!value || isValid(value)) {
+                  onChange({ ...formData, completionDate: value ?? undefined });
+                }
+              }}
             />
           </Grid>
         )}

@@ -1,10 +1,13 @@
 import AddTaskIcon from "@mui/icons-material/AddTask";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
-import FilePicker from "./FilePicker";
+import CloudFileImportButtons from "./CloudFileImportButtons";
+import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 
 const StyledBox = styled("div")`
   display: flex;
@@ -20,15 +23,12 @@ const StyledBox = styled("div")`
 const Onboarding = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { taskLists, openTodoFileCreateDialog } = useTask();
-
-  const handleClick = async () => {
-    openTodoFileCreateDialog(true);
-  };
+  const { setFileCreateDialogOpen } = useFileCreateDialog();
+  const { taskLists, openTodoFilePicker } = useTask();
 
   return (
     <StyledBox sx={{ display: taskLists.length === 0 ? "flex" : "none" }}>
-      <Stack spacing={2}>
+      <Stack spacing={1}>
         <Box sx={{ py: 1, textAlign: "center" }}>
           <img src={logo} alt="Logo" height={96} style={{ opacity: 0.2 }} />
         </Box>
@@ -44,15 +44,24 @@ const Onboarding = () => {
         </Typography>
         <Button
           aria-label="Create task"
-          onClick={handleClick}
+          onClick={() => setFileCreateDialogOpen(true)}
           startIcon={<AddTaskIcon />}
           variant="contained"
         >
           {t("Create Task")}
         </Button>
-        <FilePicker>
+        <Button
+          onClick={openTodoFilePicker}
+          aria-label="Open todo.txt"
+          startIcon={<FolderOpenOutlinedIcon />}
+          fullWidth
+          variant="outlined"
+          component="span"
+        >
           {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
-        </FilePicker>
+        </Button>
+        <CloudFileImportButtons />
+        <CloudStorageConnectionButtons disconnect={false} />
       </Stack>
     </StyledBox>
   );

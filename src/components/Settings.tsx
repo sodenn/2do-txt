@@ -1,12 +1,15 @@
 import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useCloudStorage } from "../data/CloudStorageContext";
 import { useSettings } from "../data/SettingsContext";
 import { useNotifications } from "../utils/notifications";
+import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 import LanguageSelect from "./LanguageSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
 
 const Settings = () => {
   const { t } = useTranslation();
+  const { cloudStorageEnabled } = useCloudStorage();
   const { checkNotificationPermissions, requestNotificationPermissions } =
     useNotifications();
   const {
@@ -79,6 +82,16 @@ const Settings = () => {
           label={t("Due tasks") as string}
         />
       </Box>
+      {cloudStorageEnabled && (
+        <Box sx={{ mb: 2 }}>
+          <Typography component="div" variant="subtitle1">
+            {t("Cloud storage")}
+          </Typography>
+          <Box sx={{ mt: 1 }}>
+            <CloudStorageConnectionButtons />
+          </Box>
+        </Box>
+      )}
     </>
   );
 };

@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 import { Filesystem, ReadFileResult } from "@capacitor/filesystem";
 import { GetOptions, GetResult, Storage } from "@capacitor/storage";
 import i18n from "i18next";
@@ -6,7 +7,8 @@ import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouters } from "../components/AppRouter";
 import ProviderBundle from "../data/ProviderBundle";
-import { Keys } from "./storage";
+import { SecureStorageKeys } from "./secure-storage";
+import { StorageKeys } from "./storage";
 
 jest.setTimeout(15000);
 
@@ -16,13 +18,20 @@ jest.mock("../utils/platform", () => ({
 }));
 
 export interface StorageItem {
-  key: Keys;
+  key: StorageKeys;
   value: string;
 }
 
-interface TestContextProps {
+export interface SecureStorageItem {
+  key: SecureStorageKeys;
+  value: string;
+}
+
+export interface TestContextProps {
   text?: string;
   storage?: StorageItem[];
+  secureStorage?: SecureStorageItem[];
+  platform?: string;
 }
 
 i18n.use(initReactI18next).init({
@@ -33,6 +42,27 @@ i18n.use(initReactI18next).init({
 
 window.scrollTo = jest.fn();
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
+// @ts-ignore
+global.Keychain = {
+  get: (success: (key: string) => string, error: () => any, key: string) => {
+    const value = sessionStorage.getItem("SecureStorage." + key);
+    success(value!);
+  },
+  set: (
+    success: () => string,
+    error: () => any,
+    key: string,
+    value: string
+  ) => {
+    sessionStorage.setItem("SecureStorage." + key, value);
+    success();
+  },
+  remove: (success: () => string, error: () => any, key: string) => {
+    sessionStorage.removeItem("SecureStorage." + key);
+    success();
+  },
+};
 
 const mocks = {
   Filesystem: {
@@ -57,6 +87,18 @@ const mocks = {
         });
     },
   },
+  SecureStorage: {
+    setItems: (storage: SecureStorageItem[]) => {
+      storage.forEach((item) => {
+        sessionStorage.setItem("SecureStorage." + item.key, item.value);
+      });
+    },
+  },
+  Platform: {
+    getPlatform: (platform: string) => {
+      Capacitor.getPlatform = jest.fn().mockImplementation(() => platform);
+    },
+  },
 };
 
 export const todoTxt = `First task @Test
@@ -69,13 +111,19 @@ export const todoTxtPaths: StorageItem = {
 };
 
 export const TestContext = (props: TestContextProps) => {
-  const { text, storage } = props;
+  const { text, storage, secureStorage, platform } = props;
 
   if (text) {
     mocks.Filesystem.readFile(text);
   }
   if (storage) {
     mocks.Storage.get(storage);
+  }
+  if (secureStorage) {
+    mocks.SecureStorage.setItems(secureStorage);
+  }
+  if (platform) {
+    mocks.Platform.getPlatform(platform);
   }
 
   return (
@@ -90,7 +138,7 @@ export const TestContext = (props: TestContextProps) => {
 export const EmptyTestContext = (
   props: PropsWithChildren<TestContextProps>
 ) => {
-  const { text, storage, children } = props;
+  const { text, storage, secureStorage, platform, children } = props;
 
   if (text) {
     mocks.Filesystem.readFile(text);
@@ -98,6 +146,16 @@ export const EmptyTestContext = (
   if (storage) {
     mocks.Storage.get(storage);
   }
+  if (secureStorage) {
+    mocks.SecureStorage.setItems(secureStorage);
+  }
+  if (platform) {
+    mocks.Platform.getPlatform(platform);
+  }
 
-  return <ProviderBundle>{children}</ProviderBundle>;
+  return (
+    <ProviderBundle>
+      <div data-testid="page">{children}</div>
+    </ProviderBundle>
+  );
 };

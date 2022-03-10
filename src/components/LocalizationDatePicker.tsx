@@ -7,7 +7,7 @@ import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Dictionary } from "../utils/types";
+import { Dictionary } from "../types/common";
 
 const localeMap: Dictionary<Locale> = {
   en: enLocale,
@@ -52,7 +52,6 @@ const LocalizationDatePicker = forwardRef<
       <DatePicker
         {...rest}
         ref={ref}
-        InputProps={{ role: "input", "aria-label": ariaLabel }}
         value={value}
         clearable
         allowSameDateSelection
@@ -83,7 +82,13 @@ const LocalizationDatePicker = forwardRef<
             : undefined
         }
         mask={maskMap[resolvedLanguage]}
-        renderInput={(params) => <TextField {...params} fullWidth />}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            fullWidth
+            inputProps={{ ...params.inputProps, "aria-label": ariaLabel }}
+          />
+        )}
       />
     </LocalizationProvider>
   );

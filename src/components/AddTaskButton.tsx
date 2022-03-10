@@ -1,17 +1,15 @@
 import AddIcon from "@mui/icons-material/Add";
 import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useTask } from "../data/TaskContext";
+import { useTaskDialog } from "../data/TaskDialogContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import Kbd from "./Kbd";
 
 const AddTaskButton = (props: IconButtonProps) => {
   const { t } = useTranslation();
-  const { openTaskDialog } = useTask();
+  const { setTaskDialogOptions } = useTaskDialog();
 
-  useAddShortcutListener(() => {
-    openTaskDialog(true);
-  }, "n");
+  useAddShortcutListener(() => setTaskDialogOptions({ open: true }), "n");
 
   return (
     <Tooltip
@@ -30,7 +28,7 @@ const AddTaskButton = (props: IconButtonProps) => {
         aria-label="Add task"
         size="large"
         color="inherit"
-        onClick={() => openTaskDialog(true)}
+        onClick={() => setTaskDialogOptions({ open: true })}
         {...props}
       >
         <AddIcon />

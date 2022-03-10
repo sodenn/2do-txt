@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
+import { Dictionary } from "../types/common";
 import { TaskFormData } from "../utils/task";
 import "../utils/testing";
-import { Dictionary } from "../utils/types";
 import { pasteText } from "./TaskEditor/TaskEditor.test";
 import TaskForm from "./TaskForm";
 
@@ -111,10 +111,10 @@ describe("TaskEditor", () => {
     await screen.findByText("due:2021-11-11");
 
     // make sure the date picker includes the due date
-    const dueDatePicker = await screen.findByRole("input", {
+    const dueDatePicker = await screen.findByRole("textbox", {
       name: "Due date",
     });
-    // eslint-disable-next-line testing-library/no-node-access
-    expect(dueDatePicker.querySelector("input")?.value).toBe("11/11/2021");
+    // xeslint-disable-next-line testing-library/no-node-access
+    expect(dueDatePicker.getAttribute("value")).toBe("11/11/2021");
   });
 });

@@ -3,10 +3,10 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { SortKey, useFilter } from "../data/FilterContext";
 import { TaskListState, useTask } from "../data/TaskContext";
+import { Dictionary } from "../types/common";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
-import { Dictionary } from "./types";
 
 export interface TaskListParseResult extends TaskListAttributes {
   items: Task[];

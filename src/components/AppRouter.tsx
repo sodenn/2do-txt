@@ -5,6 +5,7 @@ import {
   Routes,
   useSearchParams,
 } from "react-router-dom";
+import { useCloudStorage } from "../data/CloudStorageContext";
 import { useFilter } from "../data/FilterContext";
 import Page from "./Page";
 
@@ -27,6 +28,7 @@ const AppRouter = () => {
 
 export const AppRouters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { requestTokens } = useCloudStorage();
 
   const {
     searchTerm,
@@ -72,6 +74,12 @@ export const AppRouters = () => {
     const tags = searchParams.get("tags");
     if (tags) {
       setActiveTags(tags.split(","));
+    }
+
+    const code = searchParams.get("code");
+    if (code) {
+      searchParams.delete("code");
+      requestTokens({ cloudStorage: "Dropbox", authorizationCode: code });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

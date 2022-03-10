@@ -1,7 +1,11 @@
 import { Box, Container, styled } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTask } from "../data/TaskContext";
+import CloudFileDialog from "./CloudFileDialog";
+import ConfirmationDialog from "./ConfirmationDialog";
 import FileCreateDialog from "./FileCreateDialog";
+import FileManagementDialog from "./FileManagementDialog";
+import FilePicker from "./FilePicker";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
@@ -52,6 +56,10 @@ const Page = () => {
       </Box>
       <TaskDialog />
       <FileCreateDialog />
+      <CloudFileDialog />
+      <FileManagementDialog />
+      <ConfirmationDialog />
+      <FilePicker />
     </>
   );
 };

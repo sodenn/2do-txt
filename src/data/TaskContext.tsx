@@ -4,8 +4,8 @@ import { SplashScreen } from "@capacitor/splash-screen";
 import { isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
 import { todayDate } from "../utils/date";
 import { getFilenameFromPath, useFilesystem } from "../utils/filesystem";
@@ -27,19 +27,13 @@ import {
   TaskListParseResult,
 } from "../utils/task-list";
 import { generateId } from "../utils/uuid";
+import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
+import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
 import { useMigration } from "./MigrationContext";
 import { useSettings } from "./SettingsContext";
 
 export const defaultTodoFilePath = "todo.txt";
-
-interface State {
-  init: boolean;
-  taskDialogOpen: boolean;
-  todoFileCreateDialogOpen: boolean;
-  activeTaskId?: string;
-  taskLists: TaskListState[];
-}
 
 export interface TaskListState extends TaskListParseResult {
   tasksLoaded: boolean;
@@ -47,11 +41,20 @@ export interface TaskListState extends TaskListParseResult {
   fileName: string;
 }
 
+interface State {
+  init: boolean;
+  taskLists: TaskListState[];
+}
+
 const [TaskProvider, useTask] = createContext(() => {
-  const { getUri, readFile, writeFile, deleteFile } = useFilesystem();
+  const { getUri, readFile, writeFile, deleteFile, isFile } = useFilesystem();
   const { setStorageItem } = useStorage();
   const { migrate1 } = useMigration();
   const { enqueueSnackbar } = useSnackbar();
+  const { setConfirmationDialog } = useConfirmationDialog();
+  const { addTodoFilePath } = useSettings();
+  const { syncAllFile, syncFileThrottled, unlinkFile, cloudStorageEnabled } =
+    useCloudStorage();
   const {
     scheduleNotifications,
     cancelNotifications,
@@ -66,51 +69,21 @@ const [TaskProvider, useTask] = createContext(() => {
     getTodoFilePaths,
   } = useSettings();
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<State>({
     init: false,
-    taskDialogOpen: false,
-    todoFileCreateDialogOpen: false,
     taskLists: [],
   });
 
-  const {
-    init,
-    taskDialogOpen,
-    todoFileCreateDialogOpen,
-    taskLists,
-    activeTaskId,
-  } = state;
+  const { init, taskLists } = state;
 
   const commonTaskListAttributes = getCommonTaskListAttributes(taskLists);
-
-  const activeTask = activeTaskId
-    ? taskLists
-        .flatMap((list) => list.items)
-        .find((task) => task._id === activeTaskId)
-    : undefined;
 
   const activeTaskList = activeTaskListPath
     ? taskLists.find((list) => list.filePath === activeTaskListPath)
     : taskLists.length === 1
     ? taskLists[0]
     : undefined;
-
-  const openTaskDialog = useCallback((open: boolean, task?: Task) => {
-    setState((state) => {
-      const { activeTaskId, ...rest } = state;
-      const newState: State = { ...rest, taskDialogOpen: open };
-      if (task) {
-        newState.activeTaskId = task._id;
-      }
-      return newState;
-    });
-  }, []);
-
-  const openTodoFileCreateDialog = useCallback((open: boolean) => {
-    setState((state) => {
-      return { ...state, todoFileCreateDialogOpen: open };
-    });
-  }, []);
 
   const findTaskListByTaskId = useCallback(
     (taskId?: string) => {
@@ -162,17 +135,53 @@ const [TaskProvider, useTask] = createContext(() => {
     [toTaskList]
   );
 
+  const syncTodoFileWithCloudStorage = useCallback(
+    async (opt: SyncFileOptions) => {
+      const result = await syncFileThrottled(opt);
+      if (result) {
+        await writeFile({
+          path: opt.filePath,
+          data: result,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8,
+        });
+        return loadTodoFile(opt.filePath, result);
+      }
+    },
+    [loadTodoFile, syncFileThrottled, writeFile]
+  );
+
+  const syncAllTodoFileWithCloudStorage = useCallback(
+    async (opt: { filePath: string; text: string }[]) => {
+      const result = await syncAllFile(opt);
+      result.forEach((i) => {
+        writeFile({
+          path: i.filePath,
+          data: i.text,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8,
+        }).then(() => loadTodoFile(i.filePath, i.text));
+      });
+    },
+    [loadTodoFile, syncAllFile, writeFile]
+  );
+
   const saveTodoFile = useCallback(
     async (filePath: string, text = "") => {
       await writeFile({
-        path: filePath || defaultTodoFilePath,
+        path: filePath,
         data: text,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
+      syncTodoFileWithCloudStorage({
+        filePath,
+        text,
+        showSnackbar: true,
+      }).catch((e) => void e);
       return loadTodoFile(filePath, text);
     },
-    [loadTodoFile, writeFile]
+    [loadTodoFile, syncTodoFileWithCloudStorage, writeFile]
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -346,6 +355,10 @@ const [TaskProvider, useTask] = createContext(() => {
         await deleteTodoFile(taskList.filePath);
       }
 
+      if (cloudStorageEnabled) {
+        unlinkFile(filePath).catch((e) => void e);
+      }
+
       taskList.items.forEach((task) =>
         cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] })
       );
@@ -371,17 +384,16 @@ const [TaskProvider, useTask] = createContext(() => {
         return {
           ...state,
           taskLists: state.taskLists.filter((l) => l !== taskList),
-          activeTaskId: taskList.items.some((i) => i._id === state.activeTaskId)
-            ? undefined
-            : state.activeTaskId,
         };
       });
     },
     [
       activeTaskListPath,
       cancelNotifications,
+      cloudStorageEnabled,
       deleteTodoFile,
       platform,
+      unlinkFile,
       removeTodoFilePath,
       setActiveTaskListPath,
       taskLists,
@@ -434,12 +446,76 @@ const [TaskProvider, useTask] = createContext(() => {
     [orderTaskList, setStorageItem]
   );
 
+  const createNewTodoFile = useCallback(
+    async (fileName: string, text = "") => {
+      const result = await isFile({
+        directory: Directory.Documents,
+        path: fileName,
+      });
+
+      const saveFile = async (fileName: string, text: string) => {
+        await addTodoFilePath(fileName);
+        const taskList = await saveTodoFile(fileName, text);
+        scheduleDueTaskNotifications(taskList).catch((e) => void e);
+        return fileName;
+      };
+
+      if (result) {
+        return new Promise<string | undefined>(async (resolve, reject) => {
+          try {
+            setConfirmationDialog({
+              open: true,
+              onClose: () => resolve(undefined),
+              content: (
+                <Trans
+                  i18nKey="todo.txt already exists. Do you want to replace it"
+                  values={{ fileName }}
+                />
+              ),
+              buttons: [
+                {
+                  text: t("Cancel"),
+                  handler: () => {
+                    resolve(undefined);
+                  },
+                },
+                {
+                  text: t("Replace"),
+                  handler: async () => {
+                    await saveFile(fileName, text);
+                    resolve(fileName);
+                  },
+                },
+              ],
+            });
+          } catch (error) {
+            reject();
+          }
+        });
+      } else {
+        return saveFile(fileName, text);
+      }
+    },
+    [
+      addTodoFilePath,
+      isFile,
+      saveTodoFile,
+      scheduleDueTaskNotifications,
+      setConfirmationDialog,
+      t,
+    ]
+  );
+
+  const openTodoFilePicker = useCallback(() => {
+    fileInputRef.current?.click();
+  }, [fileInputRef]);
+
   useEffect(() => {
     const setInitialState = async () => {
       await migrate1();
       const paths = await getTodoFilePaths();
 
-      const taskLists = await Promise.all(
+      const readFileResult = await Promise.all(
         paths.map((path) =>
           readFile({
             path: path,
@@ -455,8 +531,18 @@ const [TaskProvider, useTask] = createContext(() => {
             })
         )
       ).then((list) =>
-        list.filter((i) => !!i).map((i) => toTaskList(i!.path, i!.file.data))
+        list
+          .filter((i) => !!i)
+          .map((i) => {
+            const text = i!.file.data;
+            const filePath = i!.path;
+            return { taskList: toTaskList(filePath, text), filePath, text };
+          })
       );
+
+      syncAllTodoFileWithCloudStorage(readFileResult).catch((e) => void e);
+
+      const taskLists = readFileResult.map((i) => i.taskList);
 
       if (taskLists) {
         setState((state) => ({
@@ -476,7 +562,7 @@ const [TaskProvider, useTask] = createContext(() => {
         }));
       }
     };
-    setInitialState().then(() => SplashScreen.hide().catch((e) => void e));
+    setInitialState().finally(() => SplashScreen.hide());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -493,15 +579,13 @@ const [TaskProvider, useTask] = createContext(() => {
     completeTask,
     init,
     taskLists,
-    taskDialogOpen,
-    todoFileCreateDialogOpen,
-    openTaskDialog,
-    openTodoFileCreateDialog,
     scheduleDueTaskNotifications,
     activeTaskList,
-    activeTask,
     findTaskListByTaskId,
     reorderTaskList,
+    createNewTodoFile,
+    fileInputRef,
+    openTodoFilePicker,
   };
 });
 

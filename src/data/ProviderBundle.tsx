@@ -1,13 +1,17 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import React, { FC, Suspense } from "react";
+import { CloudStorageProvider } from "./CloudStorageContext";
 import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
-import { FileManagementProvider } from "./FileManagementContext";
+import { FileCreateDialogProvider } from "./FileCreateDialogContext";
+import { FileManagementDialogProvider } from "./FileManagementDialogContext";
 import { FilterProvider } from "./FilterContext";
 import { MigrationProvider } from "./MigrationContext";
+import { NetworkProvider } from "./NetworkContext";
 import { SettingsProvider } from "./SettingsContext";
 import { SideSheetProvider } from "./SideSheetContext";
 import { TaskProvider } from "./TaskContext";
+import { TaskDialogProvider } from "./TaskDialogContext";
 
 const ProviderBundle: FC = ({ children }) => {
   return (
@@ -23,15 +27,23 @@ const ProviderBundle: FC = ({ children }) => {
       <Suspense fallback={null}>
         <MigrationProvider>
           <ConfirmationDialogProvider>
-            <SettingsProvider>
-              <FilterProvider>
-                <SideSheetProvider>
-                  <TaskProvider>
-                    <FileManagementProvider>{children}</FileManagementProvider>
-                  </TaskProvider>
-                </SideSheetProvider>
-              </FilterProvider>
-            </SettingsProvider>
+            <NetworkProvider>
+              <CloudStorageProvider>
+                <SettingsProvider>
+                  <FilterProvider>
+                    <SideSheetProvider>
+                      <TaskProvider>
+                        <FileManagementDialogProvider>
+                          <FileCreateDialogProvider>
+                            <TaskDialogProvider>{children}</TaskDialogProvider>
+                          </FileCreateDialogProvider>
+                        </FileManagementDialogProvider>
+                      </TaskProvider>
+                    </SideSheetProvider>
+                  </FilterProvider>
+                </SettingsProvider>
+              </CloudStorageProvider>
+            </NetworkProvider>
           </ConfirmationDialogProvider>
         </MigrationProvider>
       </Suspense>
