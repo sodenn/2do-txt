@@ -81,7 +81,7 @@ const FileMenu = () => {
       <Button
         sx={{ maxWidth: { xs: buttonMaxWidthXs, md: buttonMaxWidth }, pl: 1 }}
         size="large"
-        id="task-list-menu"
+        aria-label="File menu"
         startIcon={<img src={logo} alt="Logo" height={22} />}
         endIcon={<KeyboardArrowDownIcon />}
         onClick={handleClick}

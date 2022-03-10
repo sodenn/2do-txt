@@ -138,6 +138,7 @@ const Filter = () => {
             onChange={(event, checked) => setHideCompletedTasks(checked)}
           />
         }
+        aria-label="Hide completed tasks"
         label={t("Hide completed tasks") as string}
       />
       {showSortBy && (
@@ -151,6 +152,7 @@ const Filter = () => {
             defaultValue=""
             displayEmpty
             value={sortBy}
+            aria-label="Sort tasks"
             onChange={(event) => setSortBy(event.target.value as SortKey)}
           >
             <MenuItem value="">{t("No sorting")}</MenuItem>
