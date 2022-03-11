@@ -28,7 +28,15 @@ test.describe("Task editor", () => {
     );
   });
 
-  test("should allow me to add a task with a due date", async ({ page }) => {
+  test("should allow me to add a task with a due date", async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === "firefox",
+      "date cannot be entered because the mobile version of the date picker is being used"
+    );
+
     await page.locator("button[aria-label='Add task']").click();
 
     await expect(page.locator("div[aria-label='Text editor']")).toBeFocused();
