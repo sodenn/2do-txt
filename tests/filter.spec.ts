@@ -6,42 +6,100 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("Search", () => {
-  test("should allow me to search for tasks", async ({ page }) => {
+  test("should allow me to search for tasks", async ({ page, isMobile }) => {
     await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
 
-    await Promise.all([
-      page.waitForNavigation({ url: "http://localhost:3000/?term=invoice" }),
-      page.locator('input[placeholder="Search…"]').fill("invoice"),
-    ]);
+    if (isMobile) {
+      await page.locator("[aria-label='Expand search bar']").click();
+      await Promise.all([
+        page.waitForNavigation({ url: "http://localhost:3000/?term=invoice" }),
+        page.locator('[aria-label="Search for tasks"]').nth(1).fill("invoice"),
+      ]);
+    } else {
+      await Promise.all([
+        page.waitForNavigation({ url: "http://localhost:3000/?term=invoice" }),
+        page.locator('[aria-label="Search for tasks"]').fill("invoice"),
+      ]);
+    }
 
     await expect(page.locator("[aria-label='Task']")).toHaveCount(1);
   });
 
   test("should allow me to use a shortcut to start searching", async ({
     page,
+    isMobile,
   }) => {
+    // eslint-disable-next-line jest/valid-title
+    test.skip(!!isMobile, "desktop only");
+
     await expect(
-      page.locator('input[placeholder="Search…"]')
+      page.locator('[aria-label="Search for tasks"]')
     ).not.toBeFocused();
+
     await page.keyboard.press("f");
-    await expect(page.locator('input[placeholder="Search…"]')).toBeFocused();
+
+    await expect(page.locator('[aria-label="Search for tasks"]')).toBeFocused();
+
     await page.keyboard.press("Escape");
+
     await expect(
-      page.locator('input[placeholder="Search…"]')
+      page.locator('[aria-label="Search for tasks"]')
     ).not.toBeFocused();
-    await page.keyboard.press("f");
   });
 
-  test("should allow me to clear the search input field", async ({ page }) => {
-    await page.locator('input[placeholder="Search…"]').fill("invoice");
-    await expect(page.locator('input[placeholder="Search…"]')).not.toBeEmpty();
+  test("should allow me to clear the search input field", async ({
+    page,
+    isMobile,
+  }) => {
+    // eslint-disable-next-line jest/valid-title
+    test.skip(!!isMobile, "desktop only");
+
+    await page.locator('[aria-label="Search for tasks"]').fill("invoice");
+
+    await expect(
+      page.locator('[aria-label="Search for tasks"]')
+    ).not.toBeEmpty();
+
     await page.locator('button[aria-label="Clear search term"]').click();
-    await expect(page.locator('input[placeholder="Search…"]')).toBeEmpty();
+
+    await expect(page.locator('[aria-label="Search for tasks"]')).toBeEmpty();
     await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
   });
 
-  test("should show info text if no tasks was found", async ({ page }) => {
-    await page.locator('input[placeholder="Search…"]').fill("---");
+  test("should allow me to clear the search input field (mobile)", async ({
+    page,
+    isMobile,
+  }) => {
+    // eslint-disable-next-line jest/valid-title
+    test.skip(!isMobile, "mobile only");
+
+    await page.locator("[aria-label='Expand search bar']").click();
+    await page
+      .locator('[aria-label="Search for tasks"]')
+      .nth(1)
+      .fill("invoice");
+
+    await expect(
+      page.locator('[aria-label="Search for tasks"]').nth(1)
+    ).not.toBeEmpty();
+
+    await page.locator('button[aria-label="Clear search term"]').nth(1).click();
+    await expect(
+      page.locator('[aria-label="Search for tasks"]').nth(1)
+    ).toBeEmpty();
+    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
+  });
+
+  test("should show info text if no tasks was found", async ({
+    page,
+    isMobile,
+  }) => {
+    if (isMobile) {
+      await page.locator("[aria-label='Expand search bar']").click();
+      await page.locator('[aria-label="Search for tasks"]').nth(1).fill("---");
+    } else {
+      await page.locator('[aria-label="Search for tasks"]').fill("---");
+    }
     await expect(page.locator("text=No tasks")).toBeVisible();
   });
 });
