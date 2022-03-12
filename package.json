@@ -26,7 +26,7 @@
     "@capacitor/storage": "^1.2.5",
     "@date-io/date-fns": "^2.11.0",
     "@draft-js-plugins/editor": "^4.1.0",
-    "@draft-js-plugins/mention": "^5.0.0",
+    "@draft-js-plugins/mention": "^5.1.2",
     "@emotion/css": "^11.7.1",
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
