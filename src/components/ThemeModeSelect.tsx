@@ -10,6 +10,7 @@ const ThemeModeSelect = () => {
       fullWidth
       size="small"
       value={themeMode}
+      aria-label="Select theme mode"
       onChange={(event) => setThemeMode(event.target.value as ThemeMode)}
     >
       <MenuItem value="light">{t("Light")}</MenuItem>

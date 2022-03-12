@@ -7,6 +7,7 @@ const LanguageSelect = () => {
   const { language, changeLanguage } = useSettings();
   return (
     <Select
+      aria-label="Select language"
       fullWidth
       size="small"
       value={language}

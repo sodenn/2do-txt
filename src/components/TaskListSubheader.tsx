@@ -27,6 +27,7 @@ const TaskListSubheader = ({ title }: TaskListSubheaderProps) => {
           size="small"
           label={title}
           variant="outlined"
+          aria-label="Task group"
           color={sortBy === "dueDate" ? "warning" : "secondary"}
         />
       </StyledListSubheader>
