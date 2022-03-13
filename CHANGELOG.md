@@ -1,3 +1,11 @@
+# [1.7.0](https://github.com/sodenn/2do-txt/compare/v1.6.0...v1.7.0) (2022-03-13)
+
+
+### Features
+
+* dropbox file sync ([#234](https://github.com/sodenn/2do-txt/issues/234)) ([48917ba](https://github.com/sodenn/2do-txt/commit/48917ba2a5e5bf1d01e31e56e8f32e78cf759b8f))
+* improved file management ([#223](https://github.com/sodenn/2do-txt/issues/223)) ([0258665](https://github.com/sodenn/2do-txt/commit/02586655dd19bdf5158ad844fbb4d7bfcf77d7b9))
+
 # [1.6.0](https://github.com/sodenn/2do-txt/compare/v1.5.0...v1.6.0) (2022-02-10)
 
 
