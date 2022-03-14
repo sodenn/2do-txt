@@ -4,7 +4,7 @@ import { styled, useTheme } from "@mui/material";
 import "draft-js/dist/Draft.css";
 import { FC, useEffect, useRef } from "react";
 import { Trans } from "react-i18next";
-import { SuggestionData, useTodoEditor } from "./task-editor-hook";
+import { SuggestionData, useTaskEditor } from "./task-editor-hook";
 
 interface TodoEditorProps {
   label?: string;
@@ -86,14 +86,16 @@ const TaskEditor = (props: TodoEditorProps) => {
     focus,
     setFocus,
     editorState,
-    setEditorState,
-    suggestionData,
+    mentionSuggestionsData,
     components,
+    handleChange,
+    handleKeyBind,
     handlePastedText,
-    handleOpenSuggestions,
-    handleSearch,
+    handleOpenMentionSuggestions,
+    handleSearchMention,
+    handleAddMention,
     plugins,
-  } = useTodoEditor({
+  } = useTaskEditor({
     value,
     suggestions,
     onChange,
@@ -111,6 +113,7 @@ const TaskEditor = (props: TodoEditorProps) => {
     <div>
       <Fieldset
         ref={editorContainerRef}
+        onClick={() => ref.current?.focus()}
         style={
           focus
             ? {
@@ -131,7 +134,8 @@ const TaskEditor = (props: TodoEditorProps) => {
           placeholder={placeholder}
           editorKey="editor"
           editorState={editorState}
-          onChange={setEditorState}
+          onChange={handleChange}
+          keyBindingFn={handleKeyBind}
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
           handlePastedText={handlePastedText}
@@ -151,15 +155,20 @@ const TaskEditor = (props: TodoEditorProps) => {
         />
         {components.map((item, index) => {
           const { trigger, comp: Comp } = item;
-          const data = suggestionData.find((s) => s.trigger === trigger);
+          const data = mentionSuggestionsData.find(
+            (s) => s.trigger === trigger
+          );
           if (data) {
             return (
               <Comp
                 key={index}
                 open={data.open}
                 suggestions={data.suggestions}
-                onOpenChange={(open) => handleOpenSuggestions(data, open)}
-                onSearchChange={(val) => handleSearch(data, val)}
+                onOpenChange={(open) =>
+                  handleOpenMentionSuggestions(data.trigger, open)
+                }
+                onSearchChange={(val) => handleSearchMention(data, val)}
+                onAddMention={handleAddMention}
                 entryComponent={EntryComponent}
               />
             );

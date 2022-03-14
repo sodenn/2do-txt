@@ -65,7 +65,10 @@ const TaskForm = (props: TaskDialogForm) => {
   };
 
   const handleDueDateChange = (value: Date | null) => {
-    if (value && !isValid(value)) {
+    if (
+      (value && !isValid(value)) ||
+      value?.getDate() === formData.dueDate?.getDate()
+    ) {
       return;
     }
 

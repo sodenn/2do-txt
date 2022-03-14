@@ -43,20 +43,20 @@ const getEntityRanges = (text: string, searchStr: string, key: number) => {
   }
 };
 
+export const getTypeByTrigger = (trigger: string) => {
+  const isDefault = trigger === "@";
+  if (isDefault) {
+    return "mention";
+  } else {
+    return trigger + "mention";
+  }
+};
+
 export const createMentionEntities = (
   text: string,
   suggestions: Suggestion[]
 ) => {
   const rawContent = convertToRaw(ContentState.createFromText(text));
-
-  const getType = (trigger: string) => {
-    const isDefault = trigger === "@";
-    if (isDefault) {
-      return "mention";
-    } else {
-      return trigger + "mention";
-    }
-  };
 
   (rawContent as any).entityMap = [];
 
@@ -73,7 +73,7 @@ export const createMentionEntities = (
         if (entityRanges) {
           entityRanges.forEach((entityRange) => {
             (rawContent as any).entityMap.push({
-              type: getType(item.trigger),
+              type: getTypeByTrigger(item.trigger),
               mutability: "IMMUTABLE",
               data: { mention: { name: suggestion } },
             });
