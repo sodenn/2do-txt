@@ -1,9 +1,9 @@
 import { MentionData } from "@draft-js-plugins/mention";
 import { ContentState, convertFromRaw, convertToRaw } from "draft-js";
 
-export interface Suggestion {
+export interface MentionGroup {
   trigger: string;
-  suggestions: string[];
+  items: string[];
 }
 
 const getIndicesOf = (
@@ -54,7 +54,7 @@ export const getTypeByTrigger = (trigger: string) => {
 
 export const createMentionEntities = (
   text: string,
-  suggestions: Suggestion[]
+  mentionGroups: MentionGroup[]
 ) => {
   const rawContent = convertToRaw(ContentState.createFromText(text));
 
@@ -62,9 +62,9 @@ export const createMentionEntities = (
 
   rawContent.blocks = rawContent.blocks.map((block) => {
     const ranges: { key: number; length: number; offset: number }[] = [];
-    suggestions.forEach((item) => {
-      item.suggestions.forEach((suggestion) => {
-        const searchStr = item.trigger + suggestion;
+    mentionGroups.forEach((group) => {
+      group.items.forEach((item) => {
+        const searchStr = group.trigger + item;
         const entityRanges = getEntityRanges(
           block.text,
           searchStr,
@@ -73,9 +73,9 @@ export const createMentionEntities = (
         if (entityRanges) {
           entityRanges.forEach((entityRange) => {
             (rawContent as any).entityMap.push({
-              type: getTypeByTrigger(item.trigger),
+              type: getTypeByTrigger(group.trigger),
               mutability: "IMMUTABLE",
-              data: { mention: { name: suggestion } },
+              data: { mention: { name: item } },
             });
             ranges.push(entityRange);
           });
@@ -90,7 +90,7 @@ export const createMentionEntities = (
 
 export const getNewSuggestions = (
   text: string,
-  oldSuggestions: Suggestion[]
+  oldMentionGroups: MentionGroup[]
 ) => {
   const regExp = new RegExp(`(@|\\+|\\S+:)(\\S+)`, "gm");
   const matches: RegExpMatchArray[] = [];
@@ -100,42 +100,41 @@ export const getNewSuggestions = (
     matches.push(match);
   }
 
-  const newSuggestions: Suggestion[] = [];
+  const newMentionGroups: MentionGroup[] = [];
 
   matches.forEach((match) => {
     const trigger = match[1];
-    const suggestions = [match[2]];
-    const item = newSuggestions.find((i) => i.trigger === trigger);
-    if (item && suggestions.length > 0) {
-      item.suggestions = [...item.suggestions, ...suggestions];
-    } else if (suggestions.length > 0) {
-      newSuggestions.push({ trigger, suggestions });
+    const items = [match[2]];
+    const group = newMentionGroups.find((i) => i.trigger === trigger);
+    if (group && items.length > 0) {
+      group.items = [...group.items, ...items];
+    } else if (items.length > 0) {
+      newMentionGroups.push({ trigger, items });
     }
   });
 
-  const filteredSuggestions: Suggestion[] = [];
+  const filteredMentionGroup: MentionGroup[] = [];
 
-  newSuggestions.forEach((newSuggestion) => {
-    const oldSuggestion = oldSuggestions.find(
-      (i) => i.trigger === newSuggestion.trigger
+  newMentionGroups.forEach((newGroup) => {
+    const oldGroup = oldMentionGroups.find(
+      (i) => i.trigger === newGroup.trigger
     );
     if (
-      oldSuggestion &&
-      JSON.stringify(oldSuggestion.suggestions) !==
-        JSON.stringify(newSuggestion.suggestions)
+      oldGroup &&
+      JSON.stringify(oldGroup.items) !== JSON.stringify(newGroup.items)
     ) {
-      const suggestions = newSuggestion.suggestions.filter(
-        (i) => !oldSuggestion.suggestions.includes(i)
+      const newItems = newGroup.items.filter(
+        (i) => !oldGroup.items.includes(i)
       );
-      if (suggestions.length > 0) {
-        filteredSuggestions.push({ ...newSuggestion, suggestions });
+      if (newItems.length > 0) {
+        filteredMentionGroup.push({ ...newGroup, items: newItems });
       }
-    } else if (!oldSuggestion) {
-      filteredSuggestions.push(newSuggestion);
+    } else if (!oldGroup) {
+      filteredMentionGroup.push(newGroup);
     }
   });
 
-  return filteredSuggestions;
+  return filteredMentionGroup;
 };
 
 export const mapMentionData = (str: string): MentionData => {

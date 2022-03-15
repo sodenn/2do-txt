@@ -41,34 +41,30 @@ import {
   mapMentionData,
 } from "./mention-utils";
 
-export interface SuggestionData {
-  suggestions: string[];
+export interface MentionGroup {
+  items: string[];
   trigger: string;
   styleClass?: string;
 }
 
+interface MentionSuggestionGroup {
+  items: MentionData[];
+  trigger: string;
+  open: boolean;
+}
+
 interface TaskEditorOptions {
   value?: string;
-  onChange?: (value?: string) => void;
-  suggestions: SuggestionData[];
+  onChange?: (value: string) => void;
+  mentions: MentionGroup[];
   themeMode: "light" | "dark";
 }
 
-interface MentionSuggestionsProps {
-  open: boolean;
-  suggestions: MentionData[];
-}
-
-type MentionSuggestionsData = MentionSuggestionsProps &
-  Pick<SuggestionData, "trigger">;
-
 export const useTaskEditor = (props: TaskEditorOptions) => {
   const { value, onChange, themeMode } = props;
-  const suggestions = props.suggestions.map((item) => ({
-    ...item,
-    suggestions: item.suggestions.filter(
-      (i, pos, self) => self.indexOf(i) === pos
-    ),
+  const mentions = props.mentions.map((group) => ({
+    ...group,
+    items: group.items.filter((i, pos, self) => self.indexOf(i) === pos),
   }));
   const ref = useRef<Editor>(null);
   const [focus, setFocus] = useState(false);
@@ -76,15 +72,15 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
     useState<{ trigger: string; value: string }>();
   const [editorState, setEditorState] = useState(() =>
     value
-      ? EditorState.createWithContent(createMentionEntities(value, suggestions))
+      ? EditorState.createWithContent(createMentionEntities(value, mentions))
       : EditorState.createEmpty()
   );
-  const [mentionSuggestionsData, setMentionSuggestionsData] = useState<
-    MentionSuggestionsData[]
+  const [mentionSuggestionGroups, setMentionSuggestionGroups] = useState<
+    MentionSuggestionGroup[]
   >(
-    suggestions.map((item) => ({
-      ...item,
-      suggestions: item.suggestions.map(mapMentionData),
+    mentions.map((group) => ({
+      ...group,
+      items: group.items.map(mapMentionData),
       open: false,
     }))
   );
@@ -127,7 +123,7 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
       },
     };
 
-    const plugins = suggestions.map((item) => ({
+    const plugins = mentions.map((item) => ({
       trigger: item.trigger,
       plugin: createMentionPlugin({
         ...mentionPluginConfig,
@@ -152,16 +148,16 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
       })),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(suggestions), themeMode]);
+  }, [JSON.stringify(mentions), themeMode]);
 
   const handleOpenMentionSuggestions = useCallback(
     (trigger: string, open: boolean) => {
-      const newMentionSuggestionsData: MentionSuggestionsData[] =
-        mentionSuggestionsData.map((item) => {
-          if (item.trigger === trigger) {
-            const newSuggestions = suggestions
-              .filter((i) => i.trigger === item.trigger)
-              .flatMap((i) => i.suggestions)
+      const newMentionSuggestionsData: MentionSuggestionGroup[] =
+        mentionSuggestionGroups.map((mentionSuggestion) => {
+          if (mentionSuggestion.trigger === trigger) {
+            const items = mentions
+              .filter((i) => i.trigger === mentionSuggestion.trigger)
+              .flatMap((i) => i.items)
               .filter((i) =>
                 !searchValue || !searchValue.value
                   ? true
@@ -171,69 +167,81 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
             if (
               searchValue &&
               searchValue.value &&
-              newSuggestions.every((i) => i.name !== searchValue.value)
+              items.every((i) => i.name !== searchValue.value)
             ) {
-              newSuggestions.push({ name: searchValue.value, id: "new" });
+              items.push({ name: searchValue.value, id: "new" });
             }
             return {
               trigger,
-              suggestions: newSuggestions,
+              items,
               open,
             };
           } else {
-            return item;
+            return mentionSuggestion;
           }
         });
-      setMentionSuggestionsData(newMentionSuggestionsData);
+      setMentionSuggestionGroups(newMentionSuggestionsData);
     },
-    [searchValue, mentionSuggestionsData, suggestions]
+    /* eslint-disable react-hooks/exhaustive-deps */
+    [
+      JSON.stringify(mentions),
+      JSON.stringify(mentionSuggestionGroups),
+      searchValue,
+    ]
+    /* eslint-enable react-hooks/exhaustive-deps */
   );
 
   const handleSearchMention = useCallback(
     (
-      data: MentionSuggestionsData,
+      data: MentionSuggestionGroup,
       { value: searchValue }: { value: string }
     ) => {
       setSearchValue({ value: searchValue, trigger: data.trigger });
 
-      const newMentionSuggestionsData = mentionSuggestionsData.map((item) => {
-        const mentionDataList = uniqueListBy(
-          suggestions
-            .filter((i) => i.trigger === item.trigger)
-            .flatMap((i) => i.suggestions)
-            .map(mapMentionData),
-          "name"
-        );
-        if (
-          item.trigger === data.trigger &&
-          searchValue &&
-          !searchValue.includes(" ")
-        ) {
-          if (mentionDataList.every((i) => i.name !== searchValue)) {
-            mentionDataList.push({ name: searchValue, id: "new" });
+      const newMentionSuggestionsData = mentionSuggestionGroups.map(
+        (mentionSuggestions) => {
+          const suggestionItems = uniqueListBy(
+            mentions
+              .filter((i) => i.trigger === mentionSuggestions.trigger)
+              .flatMap((i) => i.items)
+              .map(mapMentionData),
+            "name"
+          );
+          if (
+            mentionSuggestions.trigger === data.trigger &&
+            searchValue &&
+            !searchValue.includes(" ")
+          ) {
+            if (suggestionItems.every((i) => i.name !== searchValue)) {
+              suggestionItems.push({ name: searchValue, id: "new" });
+            }
+            return {
+              ...mentionSuggestions,
+              items: defaultSuggestionsFilter(searchValue, suggestionItems),
+            };
+          } else if (
+            mentionSuggestions.trigger === data.trigger &&
+            searchValue
+          ) {
+            return {
+              ...mentionSuggestions,
+              items: defaultSuggestionsFilter(searchValue, suggestionItems),
+            };
+          } else if (mentionSuggestions.trigger === data.trigger) {
+            return {
+              ...mentionSuggestions,
+              items: suggestionItems,
+            };
+          } else {
+            return { ...mentionSuggestions };
           }
-          return {
-            ...item,
-            suggestions: defaultSuggestionsFilter(searchValue, mentionDataList),
-          };
-        } else if (item.trigger === data.trigger && searchValue) {
-          return {
-            ...item,
-            suggestions: defaultSuggestionsFilter(searchValue, mentionDataList),
-          };
-        } else if (item.trigger === data.trigger) {
-          return {
-            ...item,
-            suggestions: mentionDataList,
-          };
-        } else {
-          return { ...item };
         }
-      });
+      );
 
-      setMentionSuggestionsData(newMentionSuggestionsData);
+      setMentionSuggestionGroups(newMentionSuggestionsData);
     },
-    [mentionSuggestionsData, setSearchValue, suggestions]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(mentions), JSON.stringify(mentionSuggestionGroups)]
   );
 
   const handleAddMention = useCallback(() => {
@@ -313,15 +321,16 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
         );
         setEditorState(newEditorState);
         setSearchValue(undefined);
-        setMentionSuggestionsData(
-          mentionSuggestionsData.map((i) =>
+        setMentionSuggestionGroups(
+          mentionSuggestionGroups.map((i) =>
             i.trigger === searchValue.trigger ? { ...i, open: false } : i
           )
         );
         return "add-mention";
       }
     },
-    [editorState, mentionSuggestionsData, searchValue]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(mentionSuggestionGroups), editorState, searchValue]
   );
 
   const handlePastedText = useCallback(
@@ -363,7 +372,7 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
     setEditorState,
     focus,
     setFocus,
-    mentionSuggestionsData,
+    mentionSuggestionGroups,
     handlePastedText,
     handleOpenMentionSuggestions,
     handleSearchMention,
