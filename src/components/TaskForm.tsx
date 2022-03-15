@@ -65,7 +65,10 @@ const TaskForm = (props: TaskDialogForm) => {
   };
 
   const handleDueDateChange = (value: Date | null) => {
-    if (value && !isValid(value)) {
+    if (
+      (value && !isValid(value)) ||
+      value?.getDate() === formData.dueDate?.getDate()
+    ) {
       return;
     }
 
@@ -85,8 +88,8 @@ const TaskForm = (props: TaskDialogForm) => {
     rerenderEditor(newBody);
   };
 
-  const handleAddTag = (key: string) => {
-    const newBody = `${formData.body} ${key}`.trimStart();
+  const handleOpenMentionSuggestions = (trigger: string) => {
+    const newBody = `${formData.body} ${trigger}`.trimStart();
     onChange({ ...formData, body: newBody });
     rerenderEditor(newBody);
   };
@@ -116,20 +119,20 @@ const TaskForm = (props: TaskDialogForm) => {
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           value={formData.body}
-          suggestions={[
+          mentions={[
             {
               trigger: "+",
-              suggestions: state.projects,
+              items: state.projects,
               styleClass: taskProjectStyle,
             },
             {
               trigger: "@",
-              suggestions: state.contexts,
+              items: state.contexts,
               styleClass: taskContextStyle,
             },
             ...Object.entries(state.tags).map(([key, value]) => ({
               trigger: `${key}:`,
-              suggestions: value,
+              items: value,
               styleClass: key === "due" ? taskDudDateStyle : taskTagStyle,
             })),
           ]}
@@ -147,7 +150,7 @@ const TaskForm = (props: TaskDialogForm) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => handleAddTag("@")}
+                onClick={() => handleOpenMentionSuggestions("@")}
               >
                 {t("@Context")}
               </Button>
@@ -156,7 +159,7 @@ const TaskForm = (props: TaskDialogForm) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => handleAddTag("+")}
+                onClick={() => handleOpenMentionSuggestions("+")}
               >
                 {t("+Project")}
               </Button>
