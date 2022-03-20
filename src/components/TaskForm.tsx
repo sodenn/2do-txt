@@ -50,17 +50,17 @@ const TaskForm = (props: TaskDialogForm) => {
     tags,
   });
 
-  const rerenderEditor = (body: string) => {
-    const { projects, contexts, tags } = parseTaskBody(body);
+  const setTaskFormState = (body: string) => {
+    const result = parseTaskBody(body);
     setState((state) => ({
       key: state.key + 1,
-      projects: [...state.projects, ...projects].filter(
+      projects: [...projects, ...result.projects].filter(
         (item, i, ar) => ar.indexOf(item) === i
       ),
-      contexts: [...state.contexts, ...contexts].filter(
+      contexts: [...contexts, ...result.contexts].filter(
         (item, i, ar) => ar.indexOf(item) === i
       ),
-      tags: Object.assign(state.tags, tags),
+      tags: Object.assign(tags, result.tags),
     }));
   };
 
@@ -76,25 +76,26 @@ const TaskForm = (props: TaskDialogForm) => {
       .replace(createDueDateRegex(), "")
       .trim();
 
-    let newBody: string;
+    let body: string;
     if (value) {
       const dueDateTag = `due:${formatDate(value)}`;
-      newBody = `${bodyWithoutDueDate} ${dueDateTag} `.trimStart();
+      body = `${bodyWithoutDueDate} ${dueDateTag} `.trimStart();
     } else {
-      newBody = bodyWithoutDueDate;
+      body = bodyWithoutDueDate;
     }
 
-    onChange({ ...formData, body: newBody, dueDate: value ?? undefined });
-    rerenderEditor(newBody);
+    onChange({ ...formData, body, dueDate: value ?? undefined });
+    setTaskFormState(body);
   };
 
   const handleOpenMentionSuggestions = (trigger: string) => {
-    const newBody = `${formData.body} ${trigger}`.trimStart();
-    onChange({ ...formData, body: newBody });
-    rerenderEditor(newBody);
+    const body = `${formData.body} ${trigger}`.trimStart();
+    onChange({ ...formData, body });
+    setTaskFormState(body);
   };
 
   useEffect(() => {
+    // set value in due date picker depending on text changes
     const match = formData.body.match(createDueDateRegex());
     if (formData.dueDate && !match) {
       onChange({ ...formData, dueDate: undefined });
@@ -137,6 +138,7 @@ const TaskForm = (props: TaskDialogForm) => {
             })),
           ]}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
+          onAddMention={(body) => setTaskFormState(body)}
           onEnterPress={onEnterPress}
         />
       </Box>

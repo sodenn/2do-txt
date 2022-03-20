@@ -56,12 +56,13 @@ interface MentionSuggestionGroup {
 interface TaskEditorOptions {
   value?: string;
   onChange?: (value: string) => void;
+  onAddMention?: (plainText: string) => void;
   mentions: MentionGroup[];
   themeMode: "light" | "dark";
 }
 
 export const useTaskEditor = (props: TaskEditorOptions) => {
-  const { value, onChange, themeMode } = props;
+  const { value, onChange, onAddMention, themeMode } = props;
   const mentions = props.mentions.map((group) => ({
     ...group,
     items: group.items.filter((i, pos, self) => self.indexOf(i) === pos),
@@ -248,6 +249,13 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
     if (searchValue) {
       setSearchValue(undefined);
     }
+    if (onAddMention) {
+      // execute in the next event loop tick otherwise the dropdown menu keeps open
+      setTimeout(() => {
+        onAddMention(editorState.getCurrentContent().getPlainText());
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue, setSearchValue]);
 
   const handleChange = useCallback(
@@ -267,6 +275,8 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
         currentPlainText === newPlainText &&
         currentStartOffset !== newStartOffset
       ) {
+        // add mention if the selection has changed
+
         const stateWithEntity = editorState
           .getCurrentContent()
           .createEntity(getTypeByTrigger(searchValue.trigger), "IMMUTABLE", {
@@ -302,6 +312,9 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
 
         setEditorState(newEditorState);
         setSearchValue(undefined);
+        setMentionSuggestionGroups((groups) =>
+          groups.map((g) => ({ ...g, open: false }))
+        );
       } else {
         setEditorState(state);
       }
@@ -311,6 +324,7 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
 
   const handleKeyBind = useCallback(
     (e: KeyboardEvent<{}>) => {
+      // add mention via space key
       if (searchValue && searchValue.value && e.code === "Space") {
         const newEditorState = addMention(
           editorState,
