@@ -56,12 +56,13 @@ interface MentionSuggestionGroup {
 interface TaskEditorOptions {
   value?: string;
   onChange?: (value: string) => void;
+  onAddMention?: (plainText: string) => void;
   mentions: MentionGroup[];
   themeMode: "light" | "dark";
 }
 
 export const useTaskEditor = (props: TaskEditorOptions) => {
-  const { value, onChange, themeMode } = props;
+  const { value, onChange, onAddMention, themeMode } = props;
   const mentions = props.mentions.map((group) => ({
     ...group,
     items: group.items.filter((i, pos, self) => self.indexOf(i) === pos),
@@ -248,6 +249,13 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
     if (searchValue) {
       setSearchValue(undefined);
     }
+    if (onAddMention) {
+      // execute in the next event loop tick otherwise the dropdown menu keeps open
+      setTimeout(() => {
+        onAddMention(editorState.getCurrentContent().getPlainText());
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue, setSearchValue]);
 
   const handleChange = useCallback(

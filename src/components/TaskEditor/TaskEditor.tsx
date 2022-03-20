@@ -11,6 +11,7 @@ interface TaskEditorProps {
   value?: string;
   onChange?: (value: string) => void;
   onEnterPress?: () => void;
+  onAddMention?: (plainText: string) => void;
   placeholder?: string;
   mentions: MentionGroup[];
 }
@@ -77,6 +78,7 @@ const TaskEditor = (props: TaskEditorProps) => {
     placeholder,
     label,
     onChange,
+    onAddMention,
     onEnterPress,
     mentions = [],
   } = props;
@@ -99,6 +101,7 @@ const TaskEditor = (props: TaskEditorProps) => {
     value,
     mentions,
     onChange,
+    onAddMention,
     themeMode: theme.palette.mode,
   });
 

@@ -196,4 +196,21 @@ test.describe("Task editor", () => {
       1
     );
   });
+
+  test("should suggest newly added contexts", async ({ page }) => {
+    await page.locator('button[aria-label="Add task"]').click();
+
+    await page.type(
+      '[aria-label="Text editor"]',
+      "Play soccer with friends @Hobby"
+    );
+
+    await page.keyboard.press("Enter");
+
+    await page.type('[aria-label="Text editor"]', " @");
+
+    await expect(page.locator('[role="option"] >> text="Hobby"')).toHaveCount(
+      1
+    );
+  });
 });
