@@ -2,6 +2,8 @@ import { Storage } from "@capacitor/storage";
 import { useCallback } from "react";
 
 export type StorageKeys =
+  | "app-rate-counter"
+  | "app-rate-date"
   | "language"
   | "theme-mode"
   | "todo-txt-paths"

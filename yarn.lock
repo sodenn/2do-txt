@@ -5194,6 +5194,11 @@ caniuse-lite@^1.0.30001286:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001311.tgz#682ef3f4e617f1a177ad943de59775ed3032e511"
   integrity sha512-mleTFtFKfykEeW34EyfhGIFjGCqzhh38Y0LhdQ9aWF+HorZTtdgKV/1hEE0NlFkG2ubvisPV6l400tlbPys98A==
 
+capacitor-rate-app@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/capacitor-rate-app/-/capacitor-rate-app-2.0.0.tgz#2d7c6a39e6c1cece04698f2c54e005304a92e931"
+  integrity sha512-wqtmK7/mb34o5gp7eaWKudqx1xGwmXne4M2cPOdeO64ikfUXTHLtTfWd6kx2kzgm7yh9tNIXkKnqEwLvNT8cKQ==
+
 capture-exit@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/capture-exit/-/capture-exit-2.0.0.tgz#fb953bfaebeb781f62898239dabb426d08a509a4"

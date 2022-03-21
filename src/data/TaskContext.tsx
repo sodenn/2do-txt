@@ -6,6 +6,7 @@ import FileSaver from "file-saver";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppRate } from "../utils/app-rate";
 import { createContext } from "../utils/Context";
 import { todayDate } from "../utils/date";
 import { getFilenameFromPath, useFilesystem } from "../utils/filesystem";
@@ -47,6 +48,7 @@ interface State {
 }
 
 const [TaskProvider, useTask] = createContext(() => {
+  const { promptForRating } = useAppRate();
   const { getUri, readFile, writeFile, deleteFile, isFile } = useFilesystem();
   const { setStorageItem } = useStorage();
   const { migrate1 } = useMigration();
@@ -179,9 +181,10 @@ const [TaskProvider, useTask] = createContext(() => {
         text,
         showSnackbar: true,
       }).catch((e) => void e);
+      promptForRating().catch((e) => void e);
       return loadTodoFile(filePath, text);
     },
-    [loadTodoFile, syncTodoFileWithCloudStorage, writeFile]
+    [loadTodoFile, promptForRating, syncTodoFileWithCloudStorage, writeFile]
   );
 
   const scheduleDueTaskNotification = useCallback(
