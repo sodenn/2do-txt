@@ -101,5 +101,6 @@
   "Error syncing file to cloud storage": "Fehler beim Synchronisieren der Datei mit {{cloudStorage}}.",
   "Syncing with cloud storage": "Synchronisiere mit Cloud-Speicher",
   "Sync with cloud storage": "Mit {{cloudStorage}} synchronisieren",
-  "Connected to cloud storage": "Verbunden mit {{cloudStorage}}"
+  "Connected to cloud storage": "Verbunden mit {{cloudStorage}}",
+  "Drop todo.txt file here": "todo.txt Datei hier ablegen"
 }

@@ -4,7 +4,7 @@ import { formatDate } from "../src/utils/date";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:3000");
-  await page.setInputFiles("input#file-picker", "resources/todo.txt");
+  await page.setInputFiles('[data-testid="file-picker"]', "resources/todo.txt");
 });
 
 test.describe("Task editor", () => {

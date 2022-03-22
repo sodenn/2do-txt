@@ -94,5 +94,6 @@
   "Error syncing file to cloud storage": "Error syncing file to {{cloudStorage}}.",
   "Syncing with cloud storage": "Sync with cloud storage",
   "Sync with cloud storage": "Sync with {{cloudStorage}}",
-  "Connected to cloud storage": "Connected to {{cloudStorage}}"
+  "Connected to cloud storage": "Connected to {{cloudStorage}}",
+  "Drop todo.txt file here": "Drop todo.txt file here"
 }

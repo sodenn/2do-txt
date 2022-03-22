@@ -48,7 +48,7 @@ test.describe("File import", () => {
 
     await expect(page.locator("text=Import todo.txt")).toBeVisible();
 
-    await page.setInputFiles("input#file-picker", {
+    await page.setInputFiles('[data-testid="file-picker"]', {
       name: "todo1.txt",
       mimeType: "text/plain",
       buffer: Buffer.from(content),
@@ -58,7 +58,7 @@ test.describe("File import", () => {
       "todo1.txt"
     );
 
-    await page.setInputFiles("input#file-picker", {
+    await page.setInputFiles('[data-testid="file-picker"]', {
       name: "todo2.txt",
       mimeType: "text/plain",
       buffer: Buffer.from(content),
@@ -73,5 +73,27 @@ test.describe("File import", () => {
     await page.locator("text=All").click();
 
     await expect(page.locator("[aria-label='Task']")).toHaveCount(16);
+  });
+
+  test("should allow me to import files via drag and drop", async ({
+    page,
+  }) => {
+    const content = readFileSync("resources/todo.txt");
+
+    const dataTransfer = await page.evaluateHandle((text) => {
+      const dt = new DataTransfer();
+      const file = new File([text], "todo.txt", {
+        type: "text/plain",
+      });
+      dt.items.add(file);
+      return dt;
+    }, content.toString());
+
+    // dispatch drop event
+    await page.dispatchEvent('[data-testid="dropzone"]', "drop", {
+      dataTransfer,
+    });
+
+    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
   });
 });
