@@ -60,7 +60,7 @@
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:e2e": "playwright test tests/onboarding.spec.ts --project=chromium --headed",
+    "test:e2e": "playwright test",
     "test:record": "playwright codegen localhost:3000",
     "eject": "react-scripts eject",
     "lint": "eslint ./src --max-warnings=0 --ext .ts,.tsx",
