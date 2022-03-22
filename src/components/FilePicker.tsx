@@ -1,17 +1,51 @@
-import { styled } from "@mui/material";
+import { Fade, Paper, styled, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { ChangeEvent } from "react";
+import React, {
+  ChangeEvent,
+  FC,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { DropzoneInputProps, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { usePlatform } from "../utils/platform";
 
-const Input = styled("input")({
-  display: "none",
-});
+const Root = styled("div")(() => ({
+  height: "100%",
+  display: "flex",
+  flexDirection: "column",
+}));
 
-const FilePicker = () => {
+const Overlay = styled("div")(({ theme }) => ({
+  position: "fixed",
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  zIndex: theme.zIndex.modal + 1,
+  padding: theme.spacing(2),
+  background: theme.palette.background.default,
+}));
+
+const StyledPaper = styled(Paper)(() => ({
+  width: "100%",
+  height: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+interface FileInputProps {
+  files: File[];
+  clearFiles: () => void;
+  dropzoneInputProps: DropzoneInputProps;
+}
+
+const FileInput = (props: FileInputProps) => {
   const {
     fileInputRef,
     loadTodoFile,
@@ -19,77 +53,148 @@ const FilePicker = () => {
     scheduleDueTaskNotifications,
     taskLists,
   } = useTask();
+  const { files, clearFiles, dropzoneInputProps } = props;
   const { setActiveTaskListPath } = useFilter();
   const { addTodoFilePath } = useSettings();
   const platform = usePlatform();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const openTodoFile = async (content: string, file: File) => {
-    if (platform === "electron") {
-      // Note: Electron adds a path property to the file object
-      const filePath = (file as any).path;
-      const taskList = await loadTodoFile(filePath, content);
-      await addTodoFilePath(filePath);
-      scheduleDueTaskNotifications(taskList);
-      return filePath;
-    } else {
-      // Other platforms does not allow to access the file storage.
-      // -> create a copy of the selected file in the app's document directory
-      return createNewTodoFile(file.name, content);
-    }
-  };
+  const openTodoFile = useCallback(
+    async (content: string, file: File) => {
+      if (platform === "electron") {
+        // Note: Electron adds a path property to the file object
+        const filePath = (file as any).path;
+        const taskList = await loadTodoFile(filePath, content);
+        await addTodoFilePath(filePath);
+        scheduleDueTaskNotifications(taskList);
+        return filePath;
+      } else {
+        // Other platforms does not allow to access the file storage.
+        // -> create a copy of the selected file in the app's document directory
+        return createNewTodoFile(file.name, content);
+      }
+    },
+    [
+      addTodoFilePath,
+      createNewTodoFile,
+      loadTodoFile,
+      platform,
+      scheduleDueTaskNotifications,
+    ]
+  );
 
-  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files || event.target.files.length === 0) {
-      return;
-    }
-
-    const file = event.target.files[0];
-    const fileReader = new FileReader();
-
-    fileReader.onloadend = async () => {
-      const content = fileReader.result;
-
-      if (typeof content !== "string") {
+  const processFiles = useCallback(
+    (files: File[]) => {
+      if (!files || files.length === 0) {
         return;
       }
 
-      const updateFilePath = taskLists.length > 0;
+      const file = files[0];
+      const fileReader = new FileReader();
 
-      const filePath = await openTodoFile(content, file).catch(() => {
+      fileReader.onloadend = async () => {
+        const content = fileReader.result;
+
+        if (typeof content !== "string") {
+          return;
+        }
+
+        const updateFilePath = taskLists.length > 0;
+
+        const filePath = await openTodoFile(content, file).catch(() => {
+          enqueueSnackbar(t("The file could not be opened"), {
+            variant: "error",
+          });
+        });
+
+        if (updateFilePath && filePath) {
+          setActiveTaskListPath(filePath);
+        }
+      };
+
+      fileReader.onerror = () => {
         enqueueSnackbar(t("The file could not be opened"), {
           variant: "error",
         });
-      });
+      };
 
-      if (updateFilePath && filePath) {
-        setActiveTaskListPath(filePath);
-      }
-    };
+      fileReader.readAsText(file);
+    },
+    [enqueueSnackbar, openTodoFile, setActiveTaskListPath, t, taskLists.length]
+  );
 
-    fileReader.onerror = () => {
-      enqueueSnackbar(t("The file could not be opened"), {
-        variant: "error",
-      });
-    };
-
-    fileReader.readAsText(file);
+  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      processFiles(event.target.files as any);
+    }
   };
 
   const handleClick = (event: any) => {
     event.target.value = null;
   };
 
+  useEffect(() => {
+    if (files.length > 0) {
+      processFiles(files);
+      clearFiles();
+    }
+  }, [clearFiles, files, processFiles]);
+
   return (
-    <Input
-      id="file-picker"
-      ref={fileInputRef}
-      accept="text/plain"
-      type="file"
-      onChange={handleChange}
-      onClick={handleClick}
-    />
+    <>
+      <input {...dropzoneInputProps} />
+      <input
+        data-testid="file-picker"
+        style={{ display: "none" }}
+        ref={fileInputRef}
+        accept="text/plain"
+        type="file"
+        onChange={handleChange}
+        onClick={handleClick}
+      />
+    </>
+  );
+};
+
+const FilePicker: FC = ({ children }) => {
+  const { t } = useTranslation();
+  const [files, setFiles] = useState<File[]>([]);
+
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      setFiles([...files, ...acceptedFiles]);
+    },
+    [files]
+  );
+
+  const clearFiles = useCallback(() => setFiles([]), []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    noClick: true,
+    multiple: false,
+    accept: "text/plain",
+  });
+
+  return (
+    <Root data-testid="dropzone" {...getRootProps()}>
+      <FileInput
+        files={files}
+        clearFiles={clearFiles}
+        dropzoneInputProps={getInputProps()}
+      />
+      <Fade in={isDragActive}>
+        <Overlay>
+          <StyledPaper>
+            <Typography variant="h5" component="div">
+              {t("Drop todo.txt file here")}
+            </Typography>
+          </StyledPaper>
+        </Overlay>
+      </Fade>
+      {children}
+    </Root>
   );
 };
 

@@ -41,7 +41,7 @@ const Page = () => {
   }
 
   return (
-    <>
+    <FilePicker>
       <Header divider={scrollTop > 12} />
       <SideSheet />
       <Box
@@ -59,8 +59,7 @@ const Page = () => {
       <CloudFileDialog />
       <FileManagementDialog />
       <ConfirmationDialog />
-      <FilePicker />
-    </>
+    </FilePicker>
   );
 };
 
