@@ -31,20 +31,15 @@ import { generateId } from "../utils/uuid";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
+import { useLoading } from "./LoadingContext";
 import { useMigration } from "./MigrationContext";
 import { useSettings } from "./SettingsContext";
 
 export const defaultTodoFilePath = "todo.txt";
 
 export interface TaskListState extends TaskListParseResult {
-  tasksLoaded: boolean;
   filePath: string;
   fileName: string;
-}
-
-interface State {
-  init: boolean;
-  taskLists: TaskListState[];
 }
 
 const [TaskProvider, useTask] = createContext(() => {
@@ -55,6 +50,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const { enqueueSnackbar } = useSnackbar();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { addTodoFilePath } = useSettings();
+  const { setTaskContextLoading } = useLoading();
   const { syncAllFile, syncFileThrottled, unlinkFile, cloudStorageEnabled } =
     useCloudStorage();
   const {
@@ -72,12 +68,7 @@ const [TaskProvider, useTask] = createContext(() => {
   } = useSettings();
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [state, setState] = useState<State>({
-    init: false,
-    taskLists: [],
-  });
-
-  const { init, taskLists } = state;
+  const [taskLists, setTaskLists] = useState<TaskListState[]>([]);
 
   const commonTaskListAttributes = getCommonTaskListAttributes(taskLists);
 
@@ -106,7 +97,6 @@ const [TaskProvider, useTask] = createContext(() => {
       ...parseResult,
       filePath,
       fileName,
-      tasksLoaded: true,
     };
 
     return taskList;
@@ -115,22 +105,10 @@ const [TaskProvider, useTask] = createContext(() => {
   const loadTodoFile = useCallback(
     async (filePath: string, text: string) => {
       const taskList = toTaskList(filePath, text);
-      setState((state) => {
-        const taskLists = state.taskLists.some(
-          (t) => t.filePath === taskList.filePath
-        )
-          ? state.taskLists.map((t) =>
-              t.filePath === taskList.filePath ? taskList : t
-            )
-          : [
-              ...state.taskLists.filter((i) => i.filePath !== filePath),
-              taskList,
-            ];
-        const newValue: State = {
-          ...state,
-          taskLists,
-        };
-        return newValue;
+      setTaskLists((value) => {
+        return value.some((t) => t.filePath === filePath)
+          ? value.map((t) => (t.filePath === filePath ? taskList : t))
+          : [...value, taskList];
       });
       return taskList.items;
     },
@@ -383,12 +361,7 @@ const [TaskProvider, useTask] = createContext(() => {
         }
       }
 
-      setState((state) => {
-        return {
-          ...state,
-          taskLists: state.taskLists.filter((l) => l !== taskList),
-        };
-      });
+      setTaskLists((state) => state.filter((l) => l !== taskList));
     },
     [
       activeTaskListPath,
@@ -431,22 +404,15 @@ const [TaskProvider, useTask] = createContext(() => {
     [scheduleDueTaskNotification]
   );
 
-  const orderTaskList = useCallback(
-    (filePaths: string[]) => {
-      return taskLists.sort(
-        (a, b) => filePaths.indexOf(a.filePath) - filePaths.indexOf(b.filePath)
-      );
-    },
-    [taskLists]
-  );
-
   const reorderTaskList = useCallback(
     async (filePaths: string[]) => {
       await setStorageItem("todo-txt-paths", JSON.stringify(filePaths));
-      const reorderedList = orderTaskList(filePaths);
-      setState((state) => ({ ...state, taskLists: reorderedList }));
+      const reorderedList = [...taskLists].sort(
+        (a, b) => filePaths.indexOf(a.filePath) - filePaths.indexOf(b.filePath)
+      );
+      setTaskLists(reorderedList);
     },
-    [orderTaskList, setStorageItem]
+    [setStorageItem, taskLists]
   );
 
   const createNewTodoFile = useCallback(
@@ -514,12 +480,12 @@ const [TaskProvider, useTask] = createContext(() => {
   }, [fileInputRef]);
 
   useEffect(() => {
-    const setInitialState = async () => {
+    const initialize = async () => {
       await migrate1();
-      const paths = await getTodoFilePaths();
+      const filePaths = await getTodoFilePaths();
 
       const readFileResult = await Promise.all(
-        paths.map((path) =>
+        filePaths.map((path) =>
           readFile({
             path: path,
             directory: Directory.Documents,
@@ -533,8 +499,8 @@ const [TaskProvider, useTask] = createContext(() => {
               removeTodoFilePath(path);
             })
         )
-      ).then((list) =>
-        list
+      ).then((result) =>
+        result
           .filter((i) => !!i)
           .map((i) => {
             const text = i!.file.data;
@@ -548,24 +514,16 @@ const [TaskProvider, useTask] = createContext(() => {
       const taskLists = readFileResult.map((i) => i.taskList);
 
       if (taskLists) {
-        setState((state) => ({
-          ...state,
-          taskLists,
-          init: true,
-        }));
+        setTaskLists(taskLists);
         if (shouldNotificationsBeRescheduled()) {
           taskLists.forEach((taskList) =>
             scheduleDueTaskNotifications(taskList.items)
           );
         }
-      } else {
-        setState((state) => ({
-          ...state,
-          init: true,
-        }));
       }
+      setTaskContextLoading(false);
     };
-    setInitialState().finally(() => SplashScreen.hide());
+    initialize().finally(() => SplashScreen.hide());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -580,7 +538,6 @@ const [TaskProvider, useTask] = createContext(() => {
     editTask,
     deleteTask,
     completeTask,
-    init,
     taskLists,
     scheduleDueTaskNotifications,
     activeTaskList,

@@ -15,26 +15,26 @@ test.describe("New file", () => {
   test("should allow me to create a new file and add a task", async ({
     page,
   }) => {
-    await page.locator("button[aria-label='Create task']").click();
+    await page.locator('[aria-label="Create task"]').click();
 
-    await expect(page.locator("input[aria-label='File name']")).toHaveValue(
+    await expect(page.locator('[aria-label="File name"]')).toHaveValue(
       "todo.txt"
     );
 
-    await page.locator("button[aria-label='Create file']").click();
+    await page.locator('[aria-label="Create file"]').click();
 
     await expect(page).toHaveURL("http://localhost:3000/?active=todo.txt");
 
-    await expect(page.locator("div[aria-label='Text editor']")).toBeFocused();
+    await expect(page.locator('[aria-label="Text editor"]')).toBeFocused();
 
     await page.type(
-      "div[aria-label='Text editor']",
+      '[aria-label="Text editor"]',
       "Play soccer with friends @Private"
     );
 
-    await page.locator('div[role="option"]:has-text("Add Private")').click();
+    await page.locator('[role="option"]:has-text("Add Private")').click();
 
-    await page.locator("button[aria-label='Save task']").click();
+    await page.locator('[aria-label="Save task"]').click();
   });
 });
 
@@ -54,7 +54,7 @@ test.describe("File import", () => {
       buffer: Buffer.from(content),
     });
 
-    await expect(page.locator("button[aria-label='File menu']")).toHaveText(
+    await expect(page.locator('[aria-label="File menu"]')).toHaveText(
       "todo1.txt"
     );
 
@@ -64,11 +64,11 @@ test.describe("File import", () => {
       buffer: Buffer.from(content),
     });
 
-    await expect(page.locator("button[aria-label='File menu']")).toHaveText(
+    await expect(page.locator('[aria-label="File menu"]')).toHaveText(
       "todo2.txt"
     );
 
-    await page.locator('button:has-text("todo2.txt")').click();
+    await page.locator('[aria-label="File menu"]').click();
 
     await page.locator("text=All").click();
 

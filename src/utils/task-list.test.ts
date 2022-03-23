@@ -142,7 +142,6 @@ x 2. task +ProjB
         ...parseResult,
         filePath: "todo.txt",
         fileName: "todo.txt",
-        tasksLoaded: true,
       },
     ];
 
@@ -162,13 +161,11 @@ x 2. task +ProjB
         ...parseResult,
         filePath: "todo1.txt",
         fileName: "todo1.txt",
-        tasksLoaded: true,
       },
       {
         ...parseResult,
         filePath: "todo2.txt",
         fileName: "todo2.txt",
-        tasksLoaded: true,
       },
     ];
 
