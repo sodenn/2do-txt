@@ -114,7 +114,7 @@
     "@types/node": "^16.11.12",
     "@types/react": "^17.0.37",
     "@types/react-beautiful-dnd": "^13.1.2",
-    "@types/react-dom": "^17.0.13",
+    "@types/react-dom": "^17.0.14",
     "cordova-res": "^0.15.4",
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.5.1",
