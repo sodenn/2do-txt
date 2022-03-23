@@ -15399,10 +15399,10 @@ typeface-roboto@^1.1.13:
   resolved "https://registry.yarnpkg.com/typeface-roboto/-/typeface-roboto-1.1.13.tgz#9c4517cb91e311706c74823e857b4bac9a764ae5"
   integrity sha512-YXvbd3a1QTREoD+FJoEkl0VQNJoEjewR2H11IjVv4bp6ahuIcw0yyw/3udC4vJkHw3T3cUh85FTg8eWef3pSaw==
 
-typescript@^4.5.4:
-  version "4.5.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.4.tgz#a17d3a0263bf5c8723b9c52f43c5084edf13c2e8"
-  integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
+typescript@^4.6.2:
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.2.tgz#fe12d2727b708f4eef40f51598b3398baa9611d4"
+  integrity sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==
 
 ua-parser-js@^0.7.18:
   version "0.7.28"
