@@ -1,6 +1,6 @@
 import { Box, Container, styled } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import { useTask } from "../data/TaskContext";
+import { useLoading } from "../data/LoadingContext";
 import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
 import FileCreateDialog from "./FileCreateDialog";
@@ -19,24 +19,22 @@ const StyledContainer = styled(Container)`
 `;
 
 const Page = () => {
-  const { init } = useTask();
+  const { loading } = useLoading();
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
 
   useEffect(() => {
-    const element = scrollContainer?.current;
+    const element = scrollContainer.current;
     if (element) {
-      const listener = () => {
-        setScrollTop(element.scrollTop);
-      };
+      const listener = () => setScrollTop(element.scrollTop);
       element.addEventListener("scroll", listener);
       return () => {
         element.removeEventListener("scroll", listener);
       };
     }
-  }, [scrollContainer, init]);
+  }, [scrollContainer, loading]);
 
-  if (!init) {
+  if (loading) {
     return null;
   }
 
