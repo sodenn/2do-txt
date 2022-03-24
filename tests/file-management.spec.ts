@@ -42,11 +42,11 @@ test.describe("Reorder Files", () => {
 
     // swap order of the two files via drag & drop
 
-    const source = await page.locator(
+    const source = page.locator(
       '[data-rbd-drag-handle-draggable-id="todo2.txt"]'
     );
 
-    const destination = await page.locator(
+    const destination = page.locator(
       '[data-rbd-drag-handle-draggable-id="todo1.txt"]'
     );
 
