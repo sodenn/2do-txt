@@ -1,4 +1,6 @@
+import { LoadingButton } from "@mui/lab";
 import { Button, Stack } from "@mui/material";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   cloudStorageIcons,
@@ -43,9 +45,15 @@ const CloudStorageConnectionButton = (
 ) => {
   const { cloudStorage, connect = true, disconnect = true } = props;
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const { connectedCloudStorages, authenticate, unlink } = useCloudStorage();
 
   const cloudStorageConnected = connectedCloudStorages[cloudStorage];
+
+  const handleAuthenticate = async () => {
+    setLoading(true);
+    authenticate(cloudStorage).finally(() => setLoading(false));
+  };
 
   if (disconnect && cloudStorageConnected) {
     return (
@@ -62,14 +70,15 @@ const CloudStorageConnectionButton = (
 
   if (connect && !cloudStorageConnected) {
     return (
-      <Button
+      <LoadingButton
+        loading={loading}
         variant="outlined"
         startIcon={cloudStorageIcons[cloudStorage]}
         fullWidth
-        onClick={() => authenticate(cloudStorage)}
+        onClick={handleAuthenticate}
       >
         {t("Connect to cloud storage", { cloudStorage })}
-      </Button>
+      </LoadingButton>
     );
   }
 
