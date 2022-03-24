@@ -1,5 +1,5 @@
 import { Box, Container, styled } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLoading } from "../data/LoadingContext";
 import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";

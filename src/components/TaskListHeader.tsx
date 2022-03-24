@@ -1,6 +1,5 @@
 import LaunchIcon from "@mui/icons-material/Launch";
 import { Box, ListItemButton, styled } from "@mui/material";
-import React from "react";
 import { useFilter } from "../data/FilterContext";
 import StartEllipsis from "./StartEllipsis";
 

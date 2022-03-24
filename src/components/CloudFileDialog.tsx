@@ -10,7 +10,7 @@ import {
   ListItem,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import {
   cloudStorageIconsDisabled,

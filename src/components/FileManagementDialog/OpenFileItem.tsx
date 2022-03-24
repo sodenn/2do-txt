@@ -7,7 +7,7 @@ import {
   ListItemIcon,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useSettings } from "../../data/SettingsContext";

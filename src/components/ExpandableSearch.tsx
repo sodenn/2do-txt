@@ -1,6 +1,6 @@
 import SearchIcon from "@mui/icons-material/Search";
 import { Box, Fade, IconButton, InputBaseProps } from "@mui/material";
-import React, { forwardRef, useRef, useState } from "react";
+import { forwardRef, useRef, useState } from "react";
 import SearchInput from "./SearchInput";
 
 interface ExpandableSearchProps extends InputBaseProps {

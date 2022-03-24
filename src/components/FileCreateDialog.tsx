@@ -9,7 +9,7 @@ import {
   FormControlLabel,
   TextField,
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
@@ -26,7 +26,7 @@ const FileCreateDialog = () => {
   const { t } = useTranslation();
   const { isFile, getUniqueFilePath } = useFilesystem();
   const { addTodoFilePath } = useSettings();
-  const [fileName, setFileName] = React.useState("");
+  const [fileName, setFileName] = useState("");
   const platform = usePlatform();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { setActiveTaskListPath } = useFilter();

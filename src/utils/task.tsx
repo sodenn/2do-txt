@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { Dictionary } from "../types/common";
@@ -210,7 +210,7 @@ export function useFormatBody() {
     return (
       <span className={completedClass}>
         {formattedTokens
-          .map<React.ReactNode>((e) => e)
+          .map<ReactNode>((e) => e)
           .reduce((prev, curr) => [prev, " ", curr])}
       </span>
     );

@@ -1,6 +1,6 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
-import React, { FC, Suspense } from "react";
+import { FC, Suspense } from "react";
 import { CloudStorageProvider } from "./CloudStorageContext";
 import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
 import { FileCreateDialogProvider } from "./FileCreateDialogContext";

@@ -7,7 +7,6 @@ import {
   InputBaseProps,
   styled,
 } from "@mui/material";
-import React from "react";
 import { useTranslation } from "react-i18next";
 
 const Search = styled("div")(({ theme }) => {
