@@ -1,5 +1,7 @@
 import {
   DeleteFileOptions,
+  ReaddirOptions,
+  ReaddirResult,
   ReadFileOptions,
   ReadFileResult,
   WriteFileOptions,
@@ -13,4 +15,9 @@ export const Filesystem = {
   },
   async writeFile(options: WriteFileOptions): Promise<void> {},
   async deleteFile(options: DeleteFileOptions): Promise<void> {},
+  async readdir(options: ReaddirOptions): Promise<ReaddirResult> {
+    return {
+      files: [],
+    };
+  },
 };

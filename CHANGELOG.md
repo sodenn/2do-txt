@@ -1,3 +1,30 @@
+# [1.7.0](https://github.com/sodenn/2do-txt/compare/v1.6.0...v1.7.0) (2022-03-13)
+
+
+### Features
+
+* dropbox file sync ([#234](https://github.com/sodenn/2do-txt/issues/234)) ([48917ba](https://github.com/sodenn/2do-txt/commit/48917ba2a5e5bf1d01e31e56e8f32e78cf759b8f))
+* improved file management ([#223](https://github.com/sodenn/2do-txt/issues/223)) ([0258665](https://github.com/sodenn/2do-txt/commit/02586655dd19bdf5158ad844fbb4d7bfcf77d7b9))
+
+# [1.6.0](https://github.com/sodenn/2do-txt/compare/v1.5.0...v1.6.0) (2022-02-10)
+
+
+### Features
+
+* work with multiple todo.txt files ([#218](https://github.com/sodenn/2do-txt/issues/218)) ([4814280](https://github.com/sodenn/2do-txt/commit/4814280e15e144d31a68be1b15b353aaeaacd41a))
+
+# [1.5.0](https://github.com/sodenn/2do-txt/compare/v1.4.0...v1.5.0) (2022-01-03)
+
+
+### Bug Fixes
+
+* **Filter:** only show filters for incomplete tasks when completed tasks are hidden ([#197](https://github.com/sodenn/2do-txt/issues/197)) ([5f75c6a](https://github.com/sodenn/2do-txt/commit/5f75c6a6ac7c77e324f5fcce38d25285b3a51610))
+
+
+### Features
+
+* **i18n:** improve German translation ([#199](https://github.com/sodenn/2do-txt/issues/199)) ([7b9eb7c](https://github.com/sodenn/2do-txt/commit/7b9eb7c259ea186c4ae4a0860dc979c54c039376))
+
 # [1.4.0](https://github.com/sodenn/2do-txt/compare/v1.3.0...v1.4.0) (2021-12-13)
 
 

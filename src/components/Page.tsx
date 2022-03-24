@@ -1,11 +1,16 @@
 import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
+import { useLoading } from "../data/LoadingContext";
+import CloudFileDialog from "./CloudFileDialog";
+import ConfirmationDialog from "./ConfirmationDialog";
+import FileCreateDialog from "./FileCreateDialog";
+import FileManagementDialog from "./FileManagementDialog";
+import FilePicker from "./FilePicker";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
 import SideSheet from "./SideSheet";
 import TaskDialog from "./TaskDialog";
-import TaskList from "./TaskList/TaskList";
+import TaskLists from "./TaskLists";
 
 const StyledContainer = styled(Container)`
   padding-right: env(safe-area-inset-right);
@@ -14,38 +19,45 @@ const StyledContainer = styled(Container)`
 `;
 
 const Page = () => {
+  const { loading } = useLoading();
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
 
   useEffect(() => {
-    const element = scrollContainer?.current;
+    const element = scrollContainer.current;
     if (element) {
-      const listener = () => {
-        setScrollTop(element.scrollTop);
-      };
+      const listener = () => setScrollTop(element.scrollTop);
       element.addEventListener("scroll", listener);
       return () => {
         element.removeEventListener("scroll", listener);
       };
     }
-  }, [scrollContainer]);
+  }, [scrollContainer, loading]);
+
+  if (loading) {
+    return null;
+  }
 
   return (
-    <>
+    <FilePicker>
       <Header divider={scrollTop > 12} />
       <SideSheet />
       <Box
+        data-testid="page"
         ref={scrollContainer}
         sx={{ overflowY: "auto", flex: "auto", px: { sm: 1 } }}
       >
         <StyledContainer disableGutters>
-          <TaskList />
+          <TaskLists />
           <Onboarding />
         </StyledContainer>
       </Box>
       <TaskDialog />
-      <DeleteConfirmationDialog />
-    </>
+      <FileCreateDialog />
+      <CloudFileDialog />
+      <FileManagementDialog />
+      <ConfirmationDialog />
+    </FilePicker>
   );
 };
 

@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { TestContext } from "../utils/testing";
 
 describe("Onboarding", () => {
-  it("should display the onboarding screen", async () => {
+  it("should open the task dialog via the onboarding screen", async () => {
     render(<TestContext />);
 
     await screen.findByRole("heading", { name: "Onboarding" });
@@ -16,6 +16,18 @@ describe("Onboarding", () => {
     });
 
     fireEvent.click(createTaskButton);
+
+    const fileDialog = await screen.findByRole("presentation", {
+      name: "File dialog",
+    });
+
+    expect(fileDialog).toBeInTheDocument();
+
+    const createFile = await screen.findByRole("button", {
+      name: "Create file",
+    });
+
+    fireEvent.click(createFile);
 
     const taskDialog = await screen.findByRole("presentation", {
       name: "Task dialog",

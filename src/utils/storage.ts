@@ -1,32 +1,41 @@
 import { Storage } from "@capacitor/storage";
 import { useCallback } from "react";
 
-export type Keys =
+export type StorageKeys =
+  | "app-rate-counter"
+  | "app-rate-date"
   | "language"
   | "theme-mode"
-  | "todo-txt-path"
+  | "todo-txt-paths"
   | "create-creation-date"
-  | "line-ending"
   | "show-notifications"
   | "create-completion-date"
   | "received-notifications"
   | "sort-by"
-  | "hide-completed-tasks";
+  | "hide-completed-tasks"
+  | "cloud-files";
 
 export function useStorage() {
-  const getStorageItem = useCallback(async (key: Keys) => {
-    const result = await Storage.get({ key });
-    if (result) {
-      return result.value;
-    }
-    return null;
-  }, []);
+  const getStorageItem = useCallback(
+    async <T extends string>(key: StorageKeys) => {
+      const result = await Storage.get({ key });
+      if (result) {
+        return result.value as T;
+      }
+      return null;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
-  const setStorageItem = useCallback((key: Keys, value: string) => {
-    return Storage.set({ key, value: value });
-  }, []);
+  const setStorageItem = useCallback(
+    async (key: StorageKeys, value: string) => {
+      return Storage.set({ key, value: value });
+    },
+    []
+  );
 
-  const removeStorageItem = useCallback((key: Keys) => {
+  const removeStorageItem = useCallback(async (key: StorageKeys) => {
     return Storage.remove({ key });
   }, []);
 

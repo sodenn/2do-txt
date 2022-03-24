@@ -6,15 +6,25 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { EmptyTestContext, TestContext, todoTxt } from "../../utils/testing";
-import DeleteConfirmationDialog from "../DeleteConfirmationDialog";
-import TaskList from "./TaskList";
+import {
+  EmptyTestContext,
+  StorageItem,
+  TestContext,
+  todoTxt,
+} from "../utils/testing";
+import ConfirmationDialog from "./ConfirmationDialog";
+import TaskLists from "./TaskLists";
+
+export const todoTxtPaths: StorageItem = {
+  key: "todo-txt-paths",
+  value: JSON.stringify(["todo1.txt", "todo2.txt"]),
+};
 
 describe("TaskList", () => {
   it("should render an empty task list", async () => {
     render(
       <EmptyTestContext>
-        <TaskList />
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -25,8 +35,8 @@ describe("TaskList", () => {
 
   it("should render a task list with items", async () => {
     render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -37,8 +47,8 @@ describe("TaskList", () => {
 
   it("should navigate through task list by using the tab key", async () => {
     render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -54,7 +64,7 @@ describe("TaskList", () => {
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
     ).toBe(1);
 
-    expect(listItems.indexOf(document.activeElement as HTMLElement)).toBe(0);
+    expect(listItems[0]).toHaveFocus();
 
     userEvent.tab();
 
@@ -62,13 +72,13 @@ describe("TaskList", () => {
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
     ).toBe(1);
 
-    expect(listItems.indexOf(document.activeElement as HTMLElement)).toBe(1);
+    expect(listItems[1]).toHaveFocus();
   });
 
   it("should navigate through task list by using the arrow keys", async () => {
     const { container } = render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -84,7 +94,7 @@ describe("TaskList", () => {
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
     ).toBe(1);
 
-    expect(listItems.indexOf(document.activeElement as HTMLElement)).toBe(0);
+    expect(listItems[0]).toHaveFocus();
 
     fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
 
@@ -92,27 +102,30 @@ describe("TaskList", () => {
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
     ).toBe(1);
 
-    expect(listItems.indexOf(document.activeElement as HTMLElement)).toBe(1);
+    expect(listItems[1]).toHaveFocus();
   });
 
   it("should complete a task by clicking the checkbox", async () => {
     const todoTxt = "First task";
     render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TaskLists />
       </EmptyTestContext>
     );
 
-    const checkbox = await screen.findByRole("checkbox", {
+    let checkboxes = await screen.findAllByRole("checkbox", {
       name: "Complete task",
+      checked: false,
     });
+    expect(checkboxes.length).toBe(2);
 
-    expect(checkbox.getAttribute("aria-checked")).toBe("false");
+    fireEvent.click(checkboxes[0]);
 
-    fireEvent.click(checkbox);
-    await screen.findByRole("checkbox", { name: "Complete task" });
-
-    expect(checkbox.getAttribute("aria-checked")).toBe("true");
+    checkboxes = await screen.findAllByRole("checkbox", {
+      name: "Complete task",
+      checked: true,
+    });
+    expect(checkboxes.length).toBe(1);
 
     // make sure that the click did not open the task dialog
     await expect(() =>
@@ -123,8 +136,8 @@ describe("TaskList", () => {
   it("should complete a task by pressing space key", async () => {
     const todoTxt = "First task";
     const { container } = render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TaskLists />
       </EmptyTestContext>
     );
 
@@ -150,9 +163,11 @@ describe("TaskList", () => {
   it("should edit task by pressing enter", async () => {
     const todoTxt = "First task";
 
-    const { container } = render(<TestContext text={todoTxt} />);
+    const { container } = render(
+      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
+    );
 
-    await screen.findByRole("list", { name: "Task list" });
+    await screen.findAllByRole("list", { name: "Task list" });
 
     fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
 
@@ -182,11 +197,11 @@ Task E @Test @Feature`;
     const { container } = render(
       <TestContext
         text={todoTxt}
-        storage={[{ key: "sort-by", value: "context" }]}
+        storage={[todoTxtPaths, { key: "sort-by", value: "context" }]}
       />
     );
 
-    await screen.findByRole("list", { name: "Task list" });
+    await screen.findAllByRole("list", { name: "Task list" });
 
     fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
 
@@ -195,6 +210,7 @@ Task E @Test @Feature`;
       current: true,
     });
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     getByText(focusedTask, /Task B/);
 
     fireEvent.keyDown(focusedTask, {
@@ -206,6 +222,7 @@ Task E @Test @Feature`;
       name: "Task dialog",
     });
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     getByText(taskDialog, /Task B/);
   });
 
@@ -214,40 +231,42 @@ Task E @Test @Feature`;
     render(
       <EmptyTestContext
         text={todoTxt}
-        storage={[{ key: "hide-completed-tasks", value: "true" }]}
+        storage={[todoTxtPaths, { key: "hide-completed-tasks", value: "true" }]}
       >
-        <TaskList />
+        <TaskLists />
       </EmptyTestContext>
     );
 
     const listItems = await screen.findAllByRole("button", { name: "Task" });
-    expect(listItems.length).toBe(1);
+    expect(listItems.length).toBe(2);
 
-    const checkbox = await screen.findByRole("checkbox", {
+    const checkboxes = await screen.findAllByRole("checkbox", {
       name: "Complete task",
     });
 
-    fireEvent.click(checkbox);
+    expect(checkboxes.length).toBe(2);
+    fireEvent.click(checkboxes[0]);
 
-    await expect(() =>
-      screen.findAllByRole("button", { name: "Task" })
-    ).rejects.toThrow('Unable to find role="button"');
+    await waitFor(async () => {
+      const taskElements = screen.queryAllByRole("button", { name: "Task" });
+      await expect(taskElements.length).toBe(1);
+    });
   });
 
   it("should delete task via menu", async () => {
     const todoTxt = "First task";
     render(
-      <EmptyTestContext text={todoTxt}>
-        <TaskList />
-        <DeleteConfirmationDialog />
+      <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
+        <TaskLists />
+        <ConfirmationDialog />
       </EmptyTestContext>
     );
 
-    const menuButton = await screen.findByRole("button", {
-      name: "Task menu",
-    });
+    const menuButtons = await screen.findAllByLabelText("Task menu");
 
-    fireEvent.click(menuButton);
+    expect(menuButtons.length).toBe(2);
+
+    fireEvent.click(menuButtons[0]);
 
     const deleteMenuItem = await screen.findByRole("menuitem", {
       name: "Delete task",
@@ -256,7 +275,7 @@ Task E @Test @Feature`;
     fireEvent.click(deleteMenuItem);
 
     const deleteButton = await screen.findByRole("button", {
-      name: "Delete task",
+      name: "Delete",
     });
 
     fireEvent.click(deleteButton);
@@ -264,7 +283,9 @@ Task E @Test @Feature`;
     await waitFor(async () => {
       const taskList = screen.queryByRole("list", { name: "Task list" });
       expect(taskList).toBeNull();
+    });
 
+    await waitFor(async () => {
       const taskDialog = screen.queryByRole("presentation", {
         name: "Task dialog",
       });

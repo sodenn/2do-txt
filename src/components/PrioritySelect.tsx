@@ -55,8 +55,7 @@ interface PrioritySelectProps {
 const PrioritySelect: FC<PrioritySelectProps> = (props) => {
   const { value, onChange } = props;
   const { t } = useTranslation();
-
-  const [selectedPriority, setSelectedPriority] = useState(value ?? "");
+  const [selectedPriority, setActivePriority] = useState(value ?? "");
 
   return (
     <FormControl fullWidth sx={{ minWidth: 110 }}>
@@ -64,13 +63,18 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
       <Select
         value={selectedPriority}
         MenuProps={MenuProps}
-        input={<OutlinedInput label={t("Priority")} />}
+        input={
+          <OutlinedInput
+            label={t("Priority")}
+            inputProps={{ "aria-label": "Select task priority" }}
+          />
+        }
         onChange={(event) => {
           const priority = event.target.value;
           if (onChange) {
             onChange(priority);
           }
-          setSelectedPriority(priority);
+          setActivePriority(priority);
         }}
       >
         <MenuItem value="">{t("None")}</MenuItem>

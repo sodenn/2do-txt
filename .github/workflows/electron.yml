@@ -1,8 +1,7 @@
 name: Electron
 
-on: push
-#on:
-#  workflow_dispatch:
+on:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -35,7 +34,7 @@ jobs:
     strategy:
       matrix:
         # ubuntu-latest, macos-latest, windows-latest
-        os: [ macos-latest ]
+        os: [macos-latest]
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -69,5 +68,7 @@ jobs:
           name: electron
       - uses: actions/upload-artifact@v2
         with:
-          name: dist
-          path: dist/
+          name: ${{ runner.os }}-dist
+          path: |
+            dist/
+            !dist/mac/

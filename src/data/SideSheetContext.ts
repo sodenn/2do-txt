@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createContext } from "../utils/Context";
 
-const [SideSheetContextProvider, useSideSheet] = createContext(() => {
+const [SideSheetProvider, useSideSheet] = createContext(() => {
   const [sideSheetOpen, setSideSheetOpen] = useState(false);
   return {
     sideSheetOpen,
@@ -9,4 +9,4 @@ const [SideSheetContextProvider, useSideSheet] = createContext(() => {
   };
 });
 
-export { SideSheetContextProvider, useSideSheet };
+export { SideSheetProvider, useSideSheet };

@@ -32,9 +32,12 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 - Search for tasks
 - Shortcuts for the most important functions
 - Due date notifications
+- Supports working with multiple todo.txt files
 - Autocompletion for projects, contexts and tags
+- Dropbox sync (iOS)
 - Dark mode
 - Responsive Design
+- Drag and drop support for todo.txt files
 
 ## Supported Platforms
 - [Webbrowser](https://sodenn.github.io/2do-txt/)

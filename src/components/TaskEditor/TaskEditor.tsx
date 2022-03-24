@@ -4,15 +4,16 @@ import { styled, useTheme } from "@mui/material";
 import "draft-js/dist/Draft.css";
 import { FC, useEffect, useRef } from "react";
 import { Trans } from "react-i18next";
-import { SuggestionData, useTodoEditor } from "./task-editor-hook";
+import { MentionGroup, useTaskEditor } from "./task-editor-hook";
 
-interface TodoEditorProps {
+interface TaskEditorProps {
   label?: string;
   value?: string;
-  onChange?: (value?: string) => void;
+  onChange?: (value: string) => void;
   onEnterPress?: () => void;
+  onAddMention?: (plainText: string) => void;
   placeholder?: string;
-  suggestions: SuggestionData[];
+  mentions: MentionGroup[];
 }
 
 const Fieldset = styled("fieldset")(({ theme }) => {
@@ -69,7 +70,7 @@ export const isSuggestionsPopupOpen = (
   return !!popover;
 };
 
-const TaskEditor = (props: TodoEditorProps) => {
+const TaskEditor = (props: TaskEditorProps) => {
   const theme = useTheme();
   const editorContainerRef = useRef<HTMLFieldSetElement>(null);
   const {
@@ -77,8 +78,9 @@ const TaskEditor = (props: TodoEditorProps) => {
     placeholder,
     label,
     onChange,
+    onAddMention,
     onEnterPress,
-    suggestions = [],
+    mentions = [],
   } = props;
 
   const {
@@ -86,17 +88,20 @@ const TaskEditor = (props: TodoEditorProps) => {
     focus,
     setFocus,
     editorState,
-    setEditorState,
-    suggestionData,
+    mentionSuggestionGroups,
     components,
+    handleChange,
+    handleKeyBind,
     handlePastedText,
-    handleOpenSuggestions,
-    handleSearch,
+    handleOpenMentionSuggestions,
+    handleSearchMention,
+    handleAddMention,
     plugins,
-  } = useTodoEditor({
+  } = useTaskEditor({
     value,
-    suggestions,
+    mentions,
     onChange,
+    onAddMention,
     themeMode: theme.palette.mode,
   });
 
@@ -111,6 +116,7 @@ const TaskEditor = (props: TodoEditorProps) => {
     <div>
       <Fieldset
         ref={editorContainerRef}
+        onClick={() => ref.current?.focus()}
         style={
           focus
             ? {
@@ -131,7 +137,8 @@ const TaskEditor = (props: TodoEditorProps) => {
           placeholder={placeholder}
           editorKey="editor"
           editorState={editorState}
-          onChange={setEditorState}
+          onChange={handleChange}
+          keyBindingFn={handleKeyBind}
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
           handlePastedText={handlePastedText}
@@ -151,15 +158,22 @@ const TaskEditor = (props: TodoEditorProps) => {
         />
         {components.map((item, index) => {
           const { trigger, comp: Comp } = item;
-          const data = suggestionData.find((s) => s.trigger === trigger);
-          if (data) {
+          const mentionSuggestions = mentionSuggestionGroups.find(
+            (s) => s.trigger === trigger
+          );
+          if (mentionSuggestions) {
             return (
               <Comp
                 key={index}
-                open={data.open}
-                suggestions={data.suggestions}
-                onOpenChange={(open) => handleOpenSuggestions(data, open)}
-                onSearchChange={(val) => handleSearch(data, val)}
+                open={mentionSuggestions.open}
+                suggestions={mentionSuggestions.items}
+                onOpenChange={(open) =>
+                  handleOpenMentionSuggestions(mentionSuggestions.trigger, open)
+                }
+                onSearchChange={(val) =>
+                  handleSearchMention(mentionSuggestions, val)
+                }
+                onAddMention={handleAddMention}
                 entryComponent={EntryComponent}
               />
             );

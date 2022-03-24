@@ -1,6 +1,9 @@
 import { Box, Button, Grid, Stack } from "@mui/material";
+import { isValid } from "date-fns";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { TaskListState } from "../data/TaskContext";
+import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import { createDueDateRegex, parseTaskBody, TaskFormData } from "../utils/task";
@@ -10,7 +13,7 @@ import {
   taskProjectStyle,
   taskTagStyle,
 } from "../utils/task-styles";
-import { Dictionary } from "../utils/types";
+import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
 import TaskEditor from "./TaskEditor/TaskEditor";
@@ -20,14 +23,25 @@ interface TaskDialogForm {
   projects: string[];
   contexts: string[];
   tags: Dictionary<string[]>;
+  taskLists: TaskListState[];
   onChange: (value: TaskFormData) => void;
+  onFileListChange: (value?: TaskListState) => void;
   onEnterPress: () => void;
 }
 
 const TaskForm = (props: TaskDialogForm) => {
   const platform = usePlatform();
   const hasTouchScreen = useTouchScreen();
-  const { formData, projects, tags, contexts, onChange, onEnterPress } = props;
+  const {
+    formData,
+    projects,
+    tags,
+    contexts,
+    taskLists,
+    onChange,
+    onFileListChange,
+    onEnterPress,
+  } = props;
   const { t } = useTranslation();
   const [state, setState] = useState({
     key: 0,
@@ -36,42 +50,52 @@ const TaskForm = (props: TaskDialogForm) => {
     tags,
   });
 
-  const rerenderEditor = (body: string) => {
-    const { projects, contexts, tags } = parseTaskBody(body);
+  const setTaskFormState = (body: string) => {
+    const result = parseTaskBody(body);
     setState((state) => ({
       key: state.key + 1,
-      projects: [...state.projects, ...projects].filter(
+      projects: [...projects, ...result.projects].filter(
         (item, i, ar) => ar.indexOf(item) === i
       ),
-      contexts: [...state.contexts, ...contexts].filter(
+      contexts: [...contexts, ...result.contexts].filter(
         (item, i, ar) => ar.indexOf(item) === i
       ),
-      tags: Object.assign(state.tags, tags),
+      tags: Object.assign(tags, result.tags),
     }));
   };
 
   const handleDueDateChange = (value: Date | null) => {
-    let newBody: string;
+    if (
+      (value && !isValid(value)) ||
+      value?.getDate() === formData.dueDate?.getDate()
+    ) {
+      return;
+    }
+
     const bodyWithoutDueDate = formData.body
       .replace(createDueDateRegex(), "")
       .trim();
+
+    let body: string;
     if (value) {
       const dueDateTag = `due:${formatDate(value)}`;
-      newBody = `${bodyWithoutDueDate} ${dueDateTag} `.trimStart();
+      body = `${bodyWithoutDueDate} ${dueDateTag} `.trimStart();
     } else {
-      newBody = bodyWithoutDueDate;
+      body = bodyWithoutDueDate;
     }
-    onChange({ ...formData, body: newBody, dueDate: value ?? undefined });
-    rerenderEditor(newBody);
+
+    onChange({ ...formData, body, dueDate: value ?? undefined });
+    setTaskFormState(body);
   };
 
-  const handleAddTag = (key: string) => {
-    const newBody = `${formData.body} ${key}`.trimStart();
-    onChange({ ...formData, body: newBody });
-    rerenderEditor(newBody);
+  const handleOpenMentionSuggestions = (trigger: string) => {
+    const body = `${formData.body} ${trigger}`.trimStart();
+    onChange({ ...formData, body });
+    setTaskFormState(body);
   };
 
   useEffect(() => {
+    // set value in due date picker depending on text changes
     const match = formData.body.match(createDueDateRegex());
     if (formData.dueDate && !match) {
       onChange({ ...formData, dueDate: undefined });
@@ -96,24 +120,25 @@ const TaskForm = (props: TaskDialogForm) => {
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           value={formData.body}
-          suggestions={[
+          mentions={[
             {
               trigger: "+",
-              suggestions: state.projects,
+              items: state.projects,
               styleClass: taskProjectStyle,
             },
             {
               trigger: "@",
-              suggestions: state.contexts,
+              items: state.contexts,
               styleClass: taskContextStyle,
             },
             ...Object.entries(state.tags).map(([key, value]) => ({
               trigger: `${key}:`,
-              suggestions: value,
+              items: value,
               styleClass: key === "due" ? taskDudDateStyle : taskTagStyle,
             })),
           ]}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
+          onAddMention={(body) => setTaskFormState(body)}
           onEnterPress={onEnterPress}
         />
       </Box>
@@ -127,7 +152,7 @@ const TaskForm = (props: TaskDialogForm) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => handleAddTag("@")}
+                onClick={() => handleOpenMentionSuggestions("@")}
               >
                 {t("@Context")}
               </Button>
@@ -136,11 +161,16 @@ const TaskForm = (props: TaskDialogForm) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => handleAddTag("+")}
+                onClick={() => handleOpenMentionSuggestions("+")}
               >
                 {t("+Project")}
               </Button>
             </Box>
+          </Grid>
+        )}
+        {taskLists.length > 0 && (
+          <Grid item xs={12} sm={6}>
+            <FileSelect value={taskLists} onChange={onFileListChange} />
           </Grid>
         )}
         <Grid item xs={12} sm={6}>
@@ -149,25 +179,29 @@ const TaskForm = (props: TaskDialogForm) => {
             onChange={(priority) => onChange({ ...formData, priority })}
           />
         </Grid>
-        {(formData.creationDate || formData._id) && (
-          <Grid item xs={12} sm={6}>
-            <LocalizationDatePicker
-              label={t("Creation Date")}
-              value={formData.creationDate}
-              onChange={(value) =>
-                onChange({ ...formData, creationDate: value ?? undefined })
+        <Grid item xs={12} sm={6}>
+          <LocalizationDatePicker
+            ariaLabel="Creation date"
+            label={t("Creation Date")}
+            value={formData.creationDate}
+            onChange={(value) => {
+              if (!value || isValid(value)) {
+                onChange({ ...formData, creationDate: value ?? undefined });
               }
-            />
-          </Grid>
-        )}
-        {(formData.completionDate || formData._id) && (
+            }}
+          />
+        </Grid>
+        {formData._id && (
           <Grid item xs={12} sm={6}>
             <LocalizationDatePicker
+              ariaLabel="Completion date"
               label={t("Completion Date")}
               value={formData.completionDate}
-              onChange={(value) =>
-                onChange({ ...formData, completionDate: value ?? undefined })
-              }
+              onChange={(value) => {
+                if (!value || isValid(value)) {
+                  onChange({ ...formData, completionDate: value ?? undefined });
+                }
+              }}
             />
           </Grid>
         )}

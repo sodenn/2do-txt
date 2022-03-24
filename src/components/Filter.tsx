@@ -9,26 +9,34 @@ import {
 import { useTranslation } from "react-i18next";
 import { SortKey, useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
-import { Dictionary } from "../utils/types";
+import { Dictionary } from "../types/common";
 import ChipList from "./ChipList";
 
 const Filter = () => {
   const { t } = useTranslation();
-  const { priorities, projects, contexts, tags, taskList } = useTask();
+  const { taskLists, activeTaskList, ...rest } = useTask();
   const {
     sortBy,
     setSortBy,
-    selectedPriorities,
-    selectedProjects,
-    selectedContexts,
-    selectedTags,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
     hideCompletedTasks,
-    setSelectedPriorities,
-    setSelectedProjects,
-    setSelectedContexts,
-    setSelectedTags,
+    setActivePriorities,
+    setActiveProjects,
+    setActiveContexts,
+    setActiveTags,
     setHideCompletedTasks,
   } = useFilter();
+
+  const attributes = activeTaskList ? activeTaskList : rest;
+
+  const { priorities, projects, contexts, tags } = hideCompletedTasks
+    ? attributes.incomplete
+    : attributes;
+
+  const showSortBy = taskLists.some((list) => list.items.length > 0);
 
   return (
     <>
@@ -40,9 +48,9 @@ const Filter = () => {
           <Box sx={{ mb: 2 }}>
             <ChipList
               list={priorities}
-              selected={selectedPriorities}
+              active={activePriorities}
               onClick={(item) =>
-                setSelectedPriorities((items) =>
+                setActivePriorities((items) =>
                   items.includes(item)
                     ? items.filter((i) => i !== item)
                     : [...items, item]
@@ -61,9 +69,9 @@ const Filter = () => {
           <Box sx={{ mb: 2 }}>
             <ChipList
               list={projects}
-              selected={selectedProjects}
+              active={activeProjects}
               onClick={(item) =>
-                setSelectedProjects((items) =>
+                setActiveProjects((items) =>
                   items.includes(item)
                     ? items.filter((i) => i !== item)
                     : [...items, item]
@@ -82,9 +90,9 @@ const Filter = () => {
           <Box sx={{ mb: 2 }}>
             <ChipList
               list={contexts}
-              selected={selectedContexts}
+              active={activeContexts}
               onClick={(item) =>
-                setSelectedContexts((items) =>
+                setActiveContexts((items) =>
                   items.includes(item)
                     ? items.filter((i) => i !== item)
                     : [...items, item]
@@ -106,9 +114,9 @@ const Filter = () => {
                 acc[key] = tags[key].length;
                 return acc;
               }, {})}
-              selected={selectedTags}
+              active={activeTags}
               onClick={(item) =>
-                setSelectedTags((items) =>
+                setActiveTags((items) =>
                   items.includes(item)
                     ? items.filter((i) => i !== item)
                     : [...items, item]
@@ -119,25 +127,21 @@ const Filter = () => {
           </Box>
         </>
       )}
-      {taskList.filter((t) => t.completed).length > 0 &&
-        taskList.filter((t) => !t.completed).length > 0 && (
-          <>
-            <Typography component="div" variant="subtitle1">
-              {t("Status")}
-            </Typography>
-            <FormControlLabel
-              sx={{ mb: 2 }}
-              control={
-                <Checkbox
-                  checked={hideCompletedTasks}
-                  onChange={(event, checked) => setHideCompletedTasks(checked)}
-                />
-              }
-              label={t("Hide completed tasks") as string}
-            />
-          </>
-        )}
-      {taskList.length > 0 && (
+      <Typography component="div" variant="subtitle1">
+        {t("Status")}
+      </Typography>
+      <FormControlLabel
+        sx={{ mb: 2 }}
+        control={
+          <Checkbox
+            checked={hideCompletedTasks}
+            onChange={(event, checked) => setHideCompletedTasks(checked)}
+          />
+        }
+        aria-label="Hide completed tasks"
+        label={t("Hide completed tasks") as string}
+      />
+      {showSortBy && (
         <>
           <Typography component="div" variant="subtitle1" gutterBottom>
             {t("Sort by")}
@@ -148,6 +152,7 @@ const Filter = () => {
             defaultValue=""
             displayEmpty
             value={sortBy}
+            aria-label="Sort tasks"
             onChange={(event) => setSortBy(event.target.value as SortKey)}
           >
             <MenuItem value="">{t("No sorting")}</MenuItem>

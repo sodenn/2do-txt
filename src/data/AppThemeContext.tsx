@@ -54,11 +54,11 @@ const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
 });
 
 const getPaletteMode = (
-  selectedMode: ThemeMode,
+  themeMode: ThemeMode,
   prefersDarkMode: boolean
 ): PaletteMode => {
-  if (selectedMode === "light" || selectedMode === "dark") {
-    return selectedMode;
+  if (themeMode === "light" || themeMode === "dark") {
+    return themeMode;
   } else {
     return prefersDarkMode ? "dark" : "light";
   }

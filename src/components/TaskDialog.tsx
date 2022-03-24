@@ -1,18 +1,16 @@
-import { css } from "@emotion/css";
 import {
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Theme,
-  useTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
-import { TaskFormData } from "../utils/task";
+import { TaskListState, useTask } from "../data/TaskContext";
+import { useTaskDialog } from "../data/TaskDialogContext";
+import { Task, TaskFormData } from "../utils/task";
+import { ResponsiveDialog } from "./ResponsiveDialog";
 import { isSuggestionsPopupOpen } from "./TaskEditor";
 import TaskForm from "./TaskForm";
 
@@ -22,60 +20,89 @@ const initialTaskFormData: TaskFormData = {
   completionDate: undefined,
 };
 
-export const dialogPaperStyle = (theme: Theme) => css`
-  ${theme.breakpoints.down("sm")} {
-    &.MuiPaper-root {
-      margin: ${theme.spacing(2)};
-      width: 100%;
-    }
+const createFormData = (createCreationDate: boolean, activeTask?: Task) => {
+  if (activeTask) {
+    return {
+      _id: activeTask._id,
+      body: activeTask.body,
+      priority: activeTask.priority,
+      creationDate: activeTask.creationDate,
+      completionDate: activeTask.completionDate,
+      dueDate: activeTask.dueDate,
+    };
+  } else {
+    const creationDate = createCreationDate ? new Date() : undefined;
+    return { ...initialTaskFormData, creationDate };
   }
-`;
+};
 
 const TaskDialog = () => {
   const { t } = useTranslation();
-  const theme = useTheme();
   const {
-    openTaskDialog,
-    taskDialogOpen,
-    projects,
-    contexts,
-    tags,
-    selectedTask,
+    findTaskListByTaskId,
+    taskLists,
+    activeTaskList,
     addTask,
     editTask,
+    contexts: commonContexts,
+    projects: commonProjects,
+    tags: commonTags,
   } = useTask();
+  const {
+    taskDialogOptions: { open, task },
+    setTaskDialogOptions,
+  } = useTaskDialog();
   const { createCreationDate } = useSettings();
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
+  const [selectedTaskList, setSelectedTaskList] = useState<
+    TaskListState | undefined
+  >(() => {
+    if (task) {
+      return findTaskListByTaskId(task._id);
+    } else if (activeTaskList) {
+      return activeTaskList;
+    }
+  });
+
+  const formDisabled = !formData.body || (!activeTaskList && !selectedTaskList);
+  const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
+  const projects = activeTaskList ? activeTaskList.projects : commonProjects;
+  const tags = activeTaskList ? activeTaskList.tags : commonTags;
 
   useEffect(() => {
-    if (taskDialogOpen && selectedTask) {
-      setFormData({
-        _id: selectedTask._id,
-        body: selectedTask.body,
-        priority: selectedTask.priority,
-        creationDate: selectedTask.creationDate,
-        completionDate: selectedTask.completionDate,
-        dueDate: selectedTask.dueDate,
-      });
-    } else if (taskDialogOpen) {
-      const creationDate = createCreationDate ? new Date() : undefined;
-      setFormData({ ...initialTaskFormData, creationDate });
+    if (!open) {
+      return;
     }
-  }, [taskDialogOpen, selectedTask, createCreationDate]);
+    setFormData(createFormData(createCreationDate, task));
+    setSelectedTaskList(() => {
+      if (task) {
+        return findTaskListByTaskId(task._id);
+      } else if (activeTaskList) {
+        return activeTaskList;
+      } else {
+        return undefined;
+      }
+    });
+  }, [createCreationDate, task, open, activeTaskList, findTaskListByTaskId]);
 
-  const closeDialog = () => openTaskDialog(false);
+  const closeDialog = () =>
+    setTaskDialogOptions((currentValue) => ({ ...currentValue, open: false }));
 
   const handleSave = () => {
+    closeDialog();
     if (formData._id) {
       editTask(formData);
-    } else {
-      addTask(formData);
+    } else if (selectedTaskList) {
+      addTask(formData, selectedTaskList);
     }
-    closeDialog();
   };
 
   const handleChange = (data: TaskFormData) => {
     setFormData((task) => ({ ...task, ...data }));
+  };
+
+  const handleFileListChange = (taskList?: TaskListState) => {
+    setSelectedTaskList(taskList);
   };
 
   const handleClose = (
@@ -88,13 +115,15 @@ const TaskDialog = () => {
   };
 
   return (
-    <Dialog
+    <ResponsiveDialog
       aria-label="Task dialog"
-      fullWidth
       maxWidth="sm"
-      open={taskDialogOpen}
-      classes={{ paper: dialogPaperStyle(theme) }}
+      fullWidth
+      open={open}
       onClose={handleClose}
+      TransitionProps={{
+        onExited: () => setTaskDialogOptions({ open: false }),
+      }}
     >
       <DialogTitle>
         {!!formData._id ? t("Edit Task") : t("Create Task")}
@@ -105,17 +134,23 @@ const TaskDialog = () => {
           contexts={Object.keys(contexts)}
           projects={Object.keys(projects)}
           tags={tags}
+          taskLists={activeTaskList || task ? [] : taskLists}
           onChange={handleChange}
+          onFileListChange={handleFileListChange}
           onEnterPress={handleSave}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={closeDialog}>{t("Cancel")}</Button>
-        <Button disabled={!formData.body} onClick={handleSave}>
+        <Button
+          aria-label="Save task"
+          disabled={formDisabled}
+          onClick={handleSave}
+        >
           {t("Save")}
         </Button>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 };
 

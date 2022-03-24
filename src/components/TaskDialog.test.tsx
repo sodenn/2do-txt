@@ -1,9 +1,13 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { TestContext } from "../utils/testing";
+import { TestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 
 describe("TaskDialog", () => {
   it("should open task dialog via shortcut", async () => {
-    const { container } = render(<TestContext />);
+    const { container } = render(
+      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
+    );
+
+    await screen.findByTestId("page");
 
     await expect(() =>
       screen.findByRole("presentation", { name: "Task dialog" })
@@ -17,7 +21,11 @@ describe("TaskDialog", () => {
   });
 
   it("should not open task dialog via shortcut when menu is open", async () => {
-    const { container } = render(<TestContext />);
+    const { container } = render(
+      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
+    );
+
+    await screen.findByTestId("page");
 
     await expect(() =>
       screen.findByRole("presentation", { name: "Task dialog" })

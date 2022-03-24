@@ -8,6 +8,17 @@ export function formatLocaleDate(date: Date, locale?: string) {
   });
 }
 
+export function formatLocalDateTime(date: Date, locale?: string) {
+  return date.toLocaleString(locale, {
+    day: "numeric",
+    month: "numeric",
+    year: "2-digit",
+    hour: "numeric",
+    minute: "numeric",
+    second: undefined,
+  });
+}
+
 export function formatDate(date: Date): string {
   return format(date, "yyyy-MM-dd");
 }

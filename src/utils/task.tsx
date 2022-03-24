@@ -1,7 +1,8 @@
 import clsx from "clsx";
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
+import { Dictionary } from "../types/common";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import {
   taskChipStyle,
@@ -13,7 +14,6 @@ import {
   taskProjectStyle,
   taskTagStyle,
 } from "./task-styles";
-import { Dictionary } from "./types";
 import { generateId } from "./uuid";
 
 export type Priority = "A" | "B" | "C" | "D" | string;
@@ -210,7 +210,7 @@ export function useFormatBody() {
     return (
       <span className={completedClass}>
         {formattedTokens
-          .map<React.ReactNode>((e) => e)
+          .map<ReactNode>((e) => e)
           .reduce((prev, curr) => [prev, " ", curr])}
       </span>
     );
