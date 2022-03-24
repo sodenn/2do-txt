@@ -16,6 +16,7 @@ import {
   cloudStorageIconsDisabled,
   useCloudStorage,
 } from "../data/CloudStorageContext";
+import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import {
@@ -40,11 +41,11 @@ const CloudFileDialog = () => {
     cloudFileDialogOptions: { open, cloudStorage },
     setCloudFileDialogOptions,
   } = useCloudStorage();
+  const { setFileCreateDialogOpen } = useFileCreateDialog();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListCloudItemResult | undefined>();
   const [cloudFileRefs, setCloudFileRefs] = useState<CloudFileRef[]>([]);
-  const createNewFile = files && files.items.length === 0;
 
   const handleClose = () => {
     setLoading(false);
@@ -61,7 +62,7 @@ const CloudFileDialog = () => {
     setCloudFileRefs([]);
   };
 
-  const handleSelect = async () => {
+  const handleSelect = async (selectedFile?: CloudFile) => {
     if (!selectedFile || !open || !cloudStorage) {
       return;
     }
@@ -82,6 +83,11 @@ const CloudFileDialog = () => {
     setActiveTaskListPath(selectedFile.name);
 
     handleClose();
+  };
+
+  const handleCreateFile = () => {
+    handleClose();
+    setFileCreateDialogOpen(true);
   };
 
   const handleLoadItems = useCallback(
@@ -148,12 +154,12 @@ const CloudFileDialog = () => {
             <CircularProgress />
           </Box>
         )}
-        {createNewFile && (
+        {files && files.items.length === 0 && (
           <Typography sx={{ px: 2, mb: 1 }}>
-            <Trans i18nKey="There are no todo.txt files" />
+            {t("There are no todo.txt files", { cloudStorage })}
           </Typography>
         )}
-        {createNewFile && taskLists.length > 0 && (
+        {files && files.items.length === 0 && taskLists.length > 0 && (
           <Typography variant="body2" sx={{ px: 2 }} color="text.disabled">
             <Trans i18nKey="Existing todo.txt files can be synchronized" />
           </Typography>
@@ -169,6 +175,7 @@ const CloudFileDialog = () => {
                   disabled={disableItem(cloudFile)}
                   key={idx}
                   onClick={() => setSelectedFile(cloudFile)}
+                  onDoubleClick={() => handleSelect(cloudFile)}
                   selected={
                     selectedFile && cloudFile.path === selectedFile.path
                   }
@@ -202,14 +209,17 @@ const CloudFileDialog = () => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t("Cancel")}</Button>
-        {!createNewFile && (
+        {files && files.items.length > 0 && (
           <LoadingButton
-            onClick={handleSelect}
+            onClick={() => handleSelect(selectedFile)}
             disabled={!selectedFile}
             loading={loading}
           >
             {t("Import")}
           </LoadingButton>
+        )}
+        {files && files.items.length === 0 && taskLists.length === 0 && (
+          <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
         )}
       </DialogActions>
     </ResponsiveDialog>

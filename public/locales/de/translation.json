@@ -96,7 +96,7 @@
   "Session has expired. Please login again": "{{cloudStorage}} Sitzung abgelaufen. Bitte melden dich erneut an.",
   "Unable to connect. Check network connection": "Es kann keine Verbindung zu Cloud-Speicher aufgebaut werden. Überprüfe die Netzwerkverbindung.",
   "The file could not be downloaded": "Die Datei konnte nicht von {{cloudStorage}} heruntergeladen werden.",
-  "There are no todo.txt files": "Keine todo.txt Dateien vorhanden",
+  "There are no todo.txt files": "Keine todo.txt Dateien auf {{cloudStorage}} vorhanden.",
   "Existing todo.txt files can be synchronized": "Bereits existierende todo.txt Dateien können jederzeit unter <strong>todo.txt verwalten</strong> synchronisiert werden.",
   "Error syncing file to cloud storage": "Fehler beim Synchronisieren der Datei mit {{cloudStorage}}.",
   "Syncing with cloud storage": "Synchronisiere mit Cloud-Speicher",
