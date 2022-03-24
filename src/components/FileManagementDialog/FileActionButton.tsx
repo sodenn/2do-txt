@@ -13,7 +13,7 @@ import {
   Popper,
   useTheme,
 } from "@mui/material";
-import React, { ReactNode, useRef, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   cloudStorageIconsSmall,
@@ -39,7 +39,7 @@ const FileActionButton = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const options: { label: string; icon: ReactNode; click: () => void }[] = [
     {

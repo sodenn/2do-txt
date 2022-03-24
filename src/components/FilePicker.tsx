@@ -1,12 +1,6 @@
 import { Fade, Paper, styled, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
-import React, {
-  ChangeEvent,
-  FC,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import { DropzoneInputProps, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";

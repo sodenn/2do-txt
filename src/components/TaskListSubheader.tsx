@@ -1,5 +1,5 @@
 import { alpha, Chip, ListSubheader, styled } from "@mui/material";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { useFilter } from "../data/FilterContext";
 
 const StyledListSubheader = styled(ListSubheader)`

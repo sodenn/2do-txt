@@ -1,6 +1,6 @@
 import { Directory } from "@capacitor/filesystem";
 import { DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useConfirmationDialog } from "../../data/ConfirmationDialogContext";

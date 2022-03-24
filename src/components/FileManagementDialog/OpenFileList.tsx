@@ -1,5 +1,5 @@
 import { List, ListSubheader } from "@mui/material";
-import React, { memo } from "react";
+import { memo } from "react";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../../data/TaskContext";

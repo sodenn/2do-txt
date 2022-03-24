@@ -1,5 +1,5 @@
 import { Stack } from "@mui/material";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useTask } from "../data/TaskContext";
@@ -79,28 +79,26 @@ const TaskLists = () => {
   };
 
   return (
-    <>
-      <Stack spacing={1}>
-        {taskGroups
-          .filter((i) =>
-            activeTaskList ? i.filePath === activeTaskList.filePath : i
-          )
-          .map((i, idx) => (
-            <TaskList
-              key={idx}
-              fileName={i.fileName}
-              filePath={i.filePath}
-              taskGroups={i.groups}
-              flatTaskList={flatTaskList}
-              focusedTaskIndex={focusedTaskIndex}
-              listItemsRef={listItemsRef}
-              showHeader={!activeTaskList}
-              onFocus={(index) => setFocusedTaskIndex(index)}
-              onBlur={() => setFocusedTaskIndex(-1)}
-            />
-          ))}
-      </Stack>
-    </>
+    <Stack spacing={1}>
+      {taskGroups
+        .filter((i) =>
+          activeTaskList ? i.filePath === activeTaskList.filePath : i
+        )
+        .map((i, idx) => (
+          <TaskList
+            key={idx}
+            fileName={i.fileName}
+            filePath={i.filePath}
+            taskGroups={i.groups}
+            flatTaskList={flatTaskList}
+            focusedTaskIndex={focusedTaskIndex}
+            listItemsRef={listItemsRef}
+            showHeader={!activeTaskList}
+            onFocus={(index) => setFocusedTaskIndex(index)}
+            onBlur={() => setFocusedTaskIndex(-1)}
+          />
+        ))}
+    </Stack>
   );
 };
 
