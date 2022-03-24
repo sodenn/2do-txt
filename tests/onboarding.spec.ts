@@ -72,7 +72,7 @@ test.describe("File import", () => {
 
     await page.locator("text=All").click();
 
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(16);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(16);
   });
 
   test("should allow me to import files via drag and drop", async ({
@@ -94,6 +94,6 @@ test.describe("File import", () => {
       dataTransfer,
     });
 
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
   });
 });

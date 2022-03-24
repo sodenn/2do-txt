@@ -7,10 +7,10 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("Search", () => {
   test("should allow me to search for tasks", async ({ page, isMobile }) => {
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
 
     if (isMobile) {
-      await page.locator("[aria-label='Expand search bar']").click();
+      await page.locator('[aria-label="Expand search bar"]').click();
       await Promise.all([
         page.waitForNavigation({ url: "http://localhost:3000/?term=invoice" }),
         page.locator('[aria-label="Search for tasks"]').nth(1).fill("invoice"),
@@ -22,7 +22,7 @@ test.describe("Search", () => {
       ]);
     }
 
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(1);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(1);
   });
 
   test("should allow me to use a shortcut to start searching", async ({
@@ -63,7 +63,7 @@ test.describe("Search", () => {
     await page.locator('button[aria-label="Clear search term"]').click();
 
     await expect(page.locator('[aria-label="Search for tasks"]')).toBeEmpty();
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
   });
 
   test("should allow me to clear the search input field (mobile)", async ({
@@ -73,7 +73,7 @@ test.describe("Search", () => {
     // eslint-disable-next-line jest/valid-title
     test.skip(!isMobile, "mobile only");
 
-    await page.locator("[aria-label='Expand search bar']").click();
+    await page.locator('[aria-label="Expand search bar"]').click();
     await page
       .locator('[aria-label="Search for tasks"]')
       .nth(1)
@@ -87,7 +87,7 @@ test.describe("Search", () => {
     await expect(
       page.locator('[aria-label="Search for tasks"]').nth(1)
     ).toBeEmpty();
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
   });
 
   test("should show info text if no tasks was found", async ({
@@ -106,11 +106,11 @@ test.describe("Search", () => {
 
 test.describe("Priority", () => {
   test("should allow me to filter tasks by priority", async ({ page }) => {
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
     await page.locator('[aria-label="A is used 2 times"]').click();
     await expect(page).toHaveURL("http://localhost:3000/?priorities=A");
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(2);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(2);
     await page.locator('[aria-label="A is used 2 times"]').click();
     await expect(page).toHaveURL("http://localhost:3000");
   });
@@ -118,11 +118,11 @@ test.describe("Priority", () => {
 
 test.describe("Project", () => {
   test("should allow me to filter tasks by project", async ({ page }) => {
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
     await page.locator('[aria-label="CompanyA is used 1 times"]').click();
     await expect(page).toHaveURL("http://localhost:3000/?projects=CompanyA");
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(1);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(1);
     await page.locator('[aria-label="CompanyA is used 1 times"]').click();
     await expect(page).toHaveURL("http://localhost:3000");
   });
@@ -130,11 +130,11 @@ test.describe("Project", () => {
 
 test.describe("Context", () => {
   test("should allow me to filter tasks by context", async ({ page }) => {
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
     await page.locator('[aria-label="Private is used 4 times"]').click();
     await expect(page).toHaveURL("http://localhost:3000/?contexts=Private");
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(4);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(4);
     await page.locator('[aria-label="Private is used 4 times"]').click();
     await expect(page).toHaveURL("http://localhost:3000");
   });
@@ -142,7 +142,7 @@ test.describe("Context", () => {
 
 test.describe("Status", () => {
   test("should allow me to hide completed tasks", async ({ page }) => {
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(8);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
     await expect(
       page.locator('[aria-label="Holiday is used 2 times"]')
@@ -151,7 +151,7 @@ test.describe("Status", () => {
     await expect(
       page.locator('[aria-label="Holiday is used 1 times"]')
     ).toBeVisible();
-    await expect(page.locator("[aria-label='Task']")).toHaveCount(6);
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(6);
   });
 });
 
@@ -176,11 +176,11 @@ test.describe("Menu", () => {
   test("should allow me to close the menu via Escape key", async ({ page }) => {
     await page.keyboard.press("m");
     await expect(
-      page.locator("[role='presentation'][aria-label='Menu']")
+      page.locator('[role="presentation"][aria-label="Menu"]')
     ).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(
-      page.locator("[role='presentation'][aria-label='Menu']")
+      page.locator('[role="presentation"][aria-label="Menu"]')
     ).not.toBeVisible();
   });
 });
