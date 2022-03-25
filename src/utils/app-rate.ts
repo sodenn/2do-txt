@@ -1,5 +1,5 @@
 import { RateApp } from "capacitor-rate-app";
-import { addDays, isAfter } from "date-fns";
+import { addWeeks, isAfter } from "date-fns";
 import { useCallback } from "react";
 import { parseDate } from "./date";
 import { usePlatform } from "./platform";
@@ -10,7 +10,7 @@ export function useAppRate() {
   const platform = usePlatform();
 
   const getNextRatingRequestDate = useCallback(
-    () => addDays(new Date(), 7),
+    () => addWeeks(new Date(), 2),
     []
   );
 
