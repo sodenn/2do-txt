@@ -33,7 +33,7 @@
     "hardenedRuntime" : true,
     "gatekeeperAssess": false,
     "entitlements": "./mac/entitlements.mas.plist",
-    "entitlementsInherit": "./mac/entitlements.mas.inherit.plist",
+    "entitlementsInherit": "./mac/entitlements.mas.plist",
     "target": ["dmg", "zip"],
     "icon": "assets/appIcon.icns"
   },
