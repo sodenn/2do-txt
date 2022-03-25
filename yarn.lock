@@ -6488,10 +6488,10 @@ draft-js@^0.11.7:
     immutable "~3.7.4"
     object-assign "^4.1.1"
 
-dropbox@^10.26.0:
-  version "10.26.0"
-  resolved "https://registry.yarnpkg.com/dropbox/-/dropbox-10.26.0.tgz#d336942b5c5e68f70f7becf407a0c7b076f57b0b"
-  integrity sha512-4zqsn62ptU937muWqdAKPLlnZqFIv1BtXkHTPo+sqz4z7HR/kgne1cfYDxO8MKSepBSj2f5iXmpvV8NkGQ/igA==
+dropbox@^10.26.1:
+  version "10.26.1"
+  resolved "https://registry.yarnpkg.com/dropbox/-/dropbox-10.26.1.tgz#66c717d80b450f0838251eb797555db879c02386"
+  integrity sha512-QXD3R+TPGWo3zEVU62fx28hu0sNCLR/04QLGtfaq0RZxnWOG6MUbyEnsJRS6XaK5lBkEQmtkIfnaKWZWGYbLrg==
   dependencies:
     node-fetch "^2.6.1"
 
