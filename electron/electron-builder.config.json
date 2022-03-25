@@ -35,7 +35,7 @@
     "entitlements": "./mac/entitlements.mas.plist",
     "entitlementsInherit": "./mac/entitlements.mas.plist",
     "target": ["dmg", "zip"],
-    "icon": "assets/appIcon.png"
+    "icon": "assets/appIcon.icns"
   },
   "afterSign": "./afterSign.js"
 }
