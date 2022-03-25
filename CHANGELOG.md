@@ -1,3 +1,17 @@
+# [1.8.0](https://github.com/sodenn/2do-txt/compare/v1.7.0...v1.8.0) (2022-03-25)
+
+
+### Bug Fixes
+
+* reduce rating prompts ([#281](https://github.com/sodenn/2do-txt/issues/281)) ([bd9609b](https://github.com/sodenn/2do-txt/commit/bd9609b10182d6e8a69facc153aa1a52990a566a))
+* **TaskEditor:** dropdown remains open ([#259](https://github.com/sodenn/2do-txt/issues/259)) ([cb661b9](https://github.com/sodenn/2do-txt/commit/cb661b983805a42c825b02f38e8527f3df7d2716))
+
+
+### Features
+
+* drag and drop support for todo.txt files ([#265](https://github.com/sodenn/2do-txt/issues/265)) ([a813970](https://github.com/sodenn/2do-txt/commit/a813970de99d4912d1e776ee25ecd10ef1a85a23))
+* **TaskEditor:** improve suggestions of contexts, projects and tags ([#255](https://github.com/sodenn/2do-txt/issues/255)) ([f3d1646](https://github.com/sodenn/2do-txt/commit/f3d164660dbbeedf189ac36d1507b76eb080d030))
+
 # [1.7.0](https://github.com/sodenn/2do-txt/compare/v1.6.0...v1.7.0) (2022-03-13)
 
 
