@@ -11,7 +11,7 @@ import { TaskListState, useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task, TaskFormData } from "../utils/task";
 import { ResponsiveDialog } from "./ResponsiveDialog";
-import { isSuggestionsPopupOpen } from "./TaskEditor";
+import { isMentionSuggestionsPopoverOpen } from "./TaskEditor";
 import TaskForm from "./TaskForm";
 
 const initialTaskFormData: TaskFormData = {
@@ -109,7 +109,7 @@ const TaskDialog = () => {
     event: any,
     reason: "backdropClick" | "escapeKeyDown"
   ) => {
-    return reason !== "backdropClick" && !isSuggestionsPopupOpen()
+    return reason !== "backdropClick" && !isMentionSuggestionsPopoverOpen()
       ? closeDialog()
       : undefined;
   };

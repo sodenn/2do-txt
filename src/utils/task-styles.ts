@@ -38,7 +38,7 @@ export const taskChipStyle = css`
   margin-bottom: 2px;
   padding: 1px 0;
   border-radius: 4px;
-  white-space: nowrap;
+  word-break: break-word;
   text-decoration: inherit;
   &:before,
   &:after {

@@ -142,7 +142,9 @@ test.describe("Task editor", () => {
     await expect(page.locator(".mentionSuggestions")).toHaveCount(0);
   });
 
-  test("should add new contexts when selection changed", async ({ page }) => {
+  test("should add new contexts when cursor position changed", async ({
+    page,
+  }) => {
     await page.locator('button[aria-label="Add task"]').click();
 
     await page.type(
