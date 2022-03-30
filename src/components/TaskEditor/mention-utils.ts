@@ -150,3 +150,8 @@ export const sortMentionData = (a: MentionData, b: MentionData): -1 | 0 | 1 => {
     return 0;
   }
 };
+
+export const isMentionSuggestionsPopoverOpen = () => {
+  const popover = document.body.querySelector(".mentionSuggestions");
+  return !!popover;
+};

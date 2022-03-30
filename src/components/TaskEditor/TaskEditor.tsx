@@ -1,10 +1,23 @@
 import Editor from "@draft-js-plugins/editor";
 import { EntryComponentProps } from "@draft-js-plugins/mention/lib/MentionSuggestions/Entry/Entry";
-import { styled, useTheme } from "@mui/material";
+import { PopoverProps } from "@draft-js-plugins/mention/lib/MentionSuggestions/Popover";
+import {
+  Box,
+  MenuItem,
+  MenuList,
+  Paper,
+  styled,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import "draft-js/dist/Draft.css";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Trans } from "react-i18next";
+import { usePopper } from "react-popper";
+import { isMentionSuggestionsPopoverOpen } from "./mention-utils";
 import { MentionGroup, useTaskEditor } from "./task-editor-hook";
+import "./TaskEditor.css";
 
 interface TaskEditorProps {
   label?: string;
@@ -15,6 +28,12 @@ interface TaskEditorProps {
   placeholder?: string;
   mentions: MentionGroup[];
 }
+
+const Legend = styled("legend")`
+  margin-left: -5px;
+  font-size: 12px;
+  padding: 0 4px;
+`;
 
 const Fieldset = styled("fieldset")(({ theme }) => {
   const borderColor =
@@ -34,40 +53,58 @@ const Fieldset = styled("fieldset")(({ theme }) => {
   };
 });
 
-const Legend = styled("legend")`
-  margin-left: -5px;
-  font-size: 12px;
-  padding: 0 4px;
-`;
+const PopoverContainer: FC<PopoverProps> = (props) => {
+  const { store, children, popperOptions } = props;
+  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
+
+  const { styles, attributes } = usePopper(
+    store.getReferenceElement(),
+    popperElement,
+    popperOptions
+  );
+
+  return createPortal(
+    <Box
+      ref={setPopperElement}
+      style={styles.popper}
+      {...attributes.popper}
+      className="mentionSuggestions"
+      sx={{
+        maxWidth: { xs: 300, sm: 500, md: 700 },
+        borderRadius: 1,
+        zIndex: "modal",
+      }}
+    >
+      <Paper elevation={8}>
+        <MenuList>{children}</MenuList>
+      </Paper>
+    </Box>,
+    document.body
+  );
+};
 
 const EntryComponent: FC<EntryComponentProps> = (props) => {
   const {
     mention,
     theme,
     isFocused,
+    className,
     searchValue,
     selectMention,
     ...parentProps
   } = props;
 
   return (
-    <div {...parentProps}>
-      <span className={theme?.mentionSuggestionsEntryText}>
+    <MenuItem {...parentProps} selected={isFocused}>
+      <Typography variant="inherit" noWrap>
         {mention.id === "new" ? (
           <Trans i18nKey="Add tag" values={{ name: mention.name }} />
         ) : (
           mention.name
         )}
-      </span>
-    </div>
+      </Typography>
+    </MenuItem>
   );
-};
-
-export const isSuggestionsPopupOpen = (
-  elem: ParentNode | null | undefined = document
-) => {
-  const popover = elem?.querySelector(".mentionSuggestions");
-  return !!popover;
 };
 
 const TaskEditor = (props: TaskEditorProps) => {
@@ -143,14 +180,12 @@ const TaskEditor = (props: TaskEditorProps) => {
           onBlur={() => setFocus(false)}
           handlePastedText={handlePastedText}
           handleReturn={() => {
-            const suggestionsPopupOpen = isSuggestionsPopupOpen(
-              editorContainerRef.current
-            );
-            if (!suggestionsPopupOpen && onEnterPress && value) {
+            const open = isMentionSuggestionsPopoverOpen();
+            if (!open && onEnterPress && value) {
               onEnterPress();
               return "handled";
             } else {
-              return suggestionsPopupOpen ? "not-handled" : "handled";
+              return open ? "not-handled" : "handled";
             }
           }}
           plugins={plugins}
@@ -174,6 +209,7 @@ const TaskEditor = (props: TaskEditorProps) => {
                   handleSearchMention(mentionSuggestions, val)
                 }
                 onAddMention={handleAddMention}
+                popoverContainer={PopoverContainer}
                 entryComponent={EntryComponent}
               />
             );
