@@ -1,5 +1,6 @@
+import { Button } from "@mui/material";
 import { Dropbox, DropboxAuth } from "dropbox";
-import { useSnackbar } from "notistack";
+import { SnackbarKey, useSnackbar } from "notistack";
 import { createRef, MutableRefObject, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -26,7 +27,7 @@ const redirectUri = "https://www.dropbox.com/1/oauth2/redirect_receiver";
 
 export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const {
     setSecureStorageItem,
     getSecureStorageItem,
@@ -51,16 +52,34 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
       removeSecureStorageItem("Dropbox-refresh-token"),
     ]).catch((e) => void e);
 
+    const handleLogin = (key: SnackbarKey) => {
+      closeSnackbar(key);
+      dropboxAuthenticate();
+    };
+
     // Don't annoy the user, so only show the message once
     if (!authError) {
       enqueueSnackbar(
         t("Session has expired. Please login again", { cloudStorage }),
-        { variant: "warning" }
+        {
+          variant: "warning",
+          action: (key) => (
+            <>
+              <Button color="inherit" onClick={() => closeSnackbar(key)}>
+                {t("Close")}
+              </Button>
+              <Button color="inherit" onClick={() => handleLogin(key)}>
+                {t("Login")}
+              </Button>
+            </>
+          ),
+        }
       );
       setAuthError(true);
     }
 
     throw new CloudFileUnauthorizedError("Dropbox");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enqueueSnackbar, removeSecureStorageItem, t, authError]);
 
   const handleError = useCallback(
