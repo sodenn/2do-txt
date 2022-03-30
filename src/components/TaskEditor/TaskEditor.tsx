@@ -5,6 +5,7 @@ import {
   Box,
   MenuItem,
   MenuList,
+  Paper,
   styled,
   Typography,
   useTheme,
@@ -70,14 +71,13 @@ const PopoverContainer: FC<PopoverProps> = (props) => {
       className="mentionSuggestions"
       sx={{
         maxWidth: { xs: 300, sm: 500, md: 700 },
-        boxShadow: 8,
         borderRadius: 1,
         zIndex: "modal",
       }}
     >
-      <MenuList sx={{ bgcolor: "background.paper", borderRadius: 1 }}>
-        {children}
-      </MenuList>
+      <Paper elevation={8}>
+        <MenuList>{children}</MenuList>
+      </Paper>
     </Box>,
     document.body
   );
