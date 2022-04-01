@@ -7,9 +7,16 @@ import {
   ThemeProvider,
   useMediaQuery,
 } from "@mui/material";
+import { deDE, enUS, Localization } from "@mui/material/locale";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
 import { useStorage } from "../utils/storage";
+
+const translations: Record<string, Localization> = {
+  en: enUS,
+  de: deDE,
+};
 
 export type ThemeMode = PaletteMode | "system";
 
@@ -38,7 +45,7 @@ const commonThemeOptions: ThemeOptions = {
   },
 };
 
-const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
+const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
   ...commonThemeOptions,
   palette: {
     mode,
@@ -66,12 +73,15 @@ const getPaletteMode = (
 
 const [AppThemeProvider, useAppTheme] = createContext(() => {
   const { getStorageItem, setStorageItem } = useStorage();
+  const {
+    i18n: { language },
+  } = useTranslation();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [themeMode, _setThemeMode] = useState<ThemeMode>("system");
   const paletteMode = getPaletteMode(themeMode, prefersDarkMode);
   const theme = useMemo(
-    () => createTheme(getDesignTokens(paletteMode)),
-    [paletteMode]
+    () => createTheme(getThemeOptions(paletteMode), translations[language]),
+    [language, paletteMode]
   );
 
   const setThemeMode = useCallback(
