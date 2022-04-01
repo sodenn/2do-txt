@@ -26,7 +26,7 @@ export interface TaskGroup {
   items: Task[];
 }
 
-interface TaskListFilter {
+export interface TaskListFilter {
   searchTerm: string;
   activePriorities: string[];
   activeProjects: string[];
@@ -155,53 +155,46 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
     hideCompletedTasks,
   } = filter;
 
-  const activeFilter =
-    searchTerm.length > 1 ||
-    activePriorities.length > 0 ||
-    activeProjects.length > 0 ||
-    activeContexts.length > 0 ||
-    activeTags.length > 0;
-
   const filteredList = taskList.filter((task) => {
-    const searchMatch =
-      searchTerm.length > 1 &&
-      task.body.toLowerCase().includes(searchTerm.toLowerCase());
-
     if (hideCompletedTasks && task.completed) {
       return false;
     }
 
-    const priorityMatch =
-      activePriorities.length > 0 &&
+    const searchCondition =
+      searchTerm.length === 0 ||
+      task.body.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const priorityCondition =
+      activePriorities.length === 0 ||
       activePriorities.some(
         (activePriority) => task.priority === activePriority
       );
 
-    const projectMatch =
-      activeProjects.length > 0 &&
-      activeProjects.some((activeProject) =>
+    const projectCondition =
+      activeProjects.length === 0 ||
+      activeProjects.every((activeProject) =>
         task.projects.includes(activeProject)
       );
 
-    const contextMatch =
-      activeContexts.length > 0 &&
-      activeContexts.some((activeContext) =>
+    const contextCondition =
+      activeContexts.length === 0 ||
+      activeContexts.every((activeContext) =>
         task.contexts.includes(activeContext)
       );
 
-    const tagsMatch =
-      activeTags.length > 0 &&
-      activeTags.some((activeTag) =>
+    const tagsCondition =
+      activeTags.length === 0 ||
+      activeTags.every((activeTag) =>
         Object.keys(task.tags).includes(activeTag)
       );
 
-    return activeFilter
-      ? searchMatch ||
-          priorityMatch ||
-          projectMatch ||
-          contextMatch ||
-          tagsMatch
-      : true;
+    return (
+      searchCondition &&
+      priorityCondition &&
+      projectCondition &&
+      contextCondition &&
+      tagsCondition
+    );
   });
 
   return filteredList.sort(sortByOriginalOrder);

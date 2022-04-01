@@ -44,7 +44,7 @@ test.describe("Task editor", () => {
     }
 
     const today = new Date();
-    const selector = `[aria-label="${format(today, "MMM dd, yyyy")}"]`;
+    const selector = `[aria-label="${format(today, "MMM d, yyyy")}"]`;
     const dueDateTag = `due:${formatDate(today)}`;
 
     await page.locator(selector).click();
@@ -86,7 +86,7 @@ test.describe("Task editor", () => {
     // make sure priority is set
     await expect(
       page.locator('[aria-label="Select task priority"]')
-    ).toHaveText("A");
+    ).toHaveValue("A");
   });
 
   test("should continue selecting a context after blur from input", async ({
