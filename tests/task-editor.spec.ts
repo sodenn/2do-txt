@@ -135,10 +135,10 @@ test.describe("Task editor", () => {
       "Play soccer with friends @pr "
     );
 
-    // make sure mention was added
+    // make sure context was added
     await expect(page.locator('[data-testid="mentionText"]')).toHaveText("@pr");
 
-    // make sure there is no open dropdown menu with mention suggestions
+    // make sure there is no open dropdown menu with suggestions
     await expect(page.locator(".mentionSuggestions")).toHaveCount(0);
   });
 
@@ -154,10 +154,10 @@ test.describe("Task editor", () => {
 
     await page.keyboard.press("ArrowLeft");
 
-    // make sure mention was added
+    // make sure context was added
     await expect(page.locator('[data-testid="mentionText"]')).toHaveText("@pr");
 
-    // make sure there is no open dropdown menu with mention suggestions
+    // make sure there is no open dropdown menu with suggestions
     await expect(page.locator(".mentionSuggestions")).toHaveCount(0);
   });
 
