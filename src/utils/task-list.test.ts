@@ -2,8 +2,10 @@ import { TaskListState } from "../data/TaskContext";
 import { arrayMove } from "./array";
 import {
   convertToTaskGroups,
+  filterTaskList,
   getCommonTaskListAttributes,
   parseTaskList,
+  TaskListFilter,
 } from "./task-list";
 
 describe("task-list", () => {
@@ -189,5 +191,72 @@ x 2. task +ProjB
     const commonAttributes = getCommonTaskListAttributes(taskLists);
 
     expect(attributes).toEqual(commonAttributes);
+  });
+
+  it("should ANDed multiple filter conditions", async () => {
+    const todoTxt = `1. task @CtxA
+2. task @CtxB
+3. task +ProjA @CtxA @CtxC @CtxD`;
+
+    const { items } = parseTaskList(todoTxt);
+
+    const filter: TaskListFilter = {
+      searchTerm: "",
+      activeContexts: ["CtxA", "CtxD"],
+      activePriorities: [],
+      activeProjects: ["ProjA"],
+      activeTags: [],
+      hideCompletedTasks: false,
+    };
+
+    const filteredList = filterTaskList(items, filter);
+
+    expect(filteredList.length).toBe(1);
+
+    expect(filteredList[0].body).toBe("3. task +ProjA @CtxA @CtxC @CtxD");
+  });
+
+  it("should combine filter including search term", async () => {
+    const todoTxt = `1. task @CtxA
+2. task @CtxB
+3. task +ProjA @CtxC`;
+
+    const { items } = parseTaskList(todoTxt);
+
+    const filter: TaskListFilter = {
+      searchTerm: "3. task",
+      activeContexts: [],
+      activePriorities: [],
+      activeProjects: ["ProjA"],
+      activeTags: [],
+      hideCompletedTasks: false,
+    };
+
+    const filteredList = filterTaskList(items, filter);
+
+    expect(filteredList.length).toBe(1);
+
+    expect(filteredList[0].body).toBe("3. task +ProjA @CtxC");
+  });
+
+  it("should hide completed tasks", async () => {
+    const todoTxt = `x 1. task +ProjA
+2. task +ProjB
+3. task +ProjA`;
+
+    const { items } = parseTaskList(todoTxt);
+
+    const filter: TaskListFilter = {
+      searchTerm: "",
+      activeContexts: [],
+      activePriorities: [],
+      activeProjects: [],
+      activeTags: [],
+      hideCompletedTasks: true,
+    };
+
+    const filteredList = filterTaskList(items, filter);
+
+    expect(filteredList.length).toBe(2);
   });
 });
