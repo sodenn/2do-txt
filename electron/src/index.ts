@@ -24,6 +24,7 @@ const trayMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [
 ];
 const appMenuBarMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [
   { role: process.platform === "darwin" ? "appMenu" : "fileMenu" },
+  { role: "editMenu" },
   { role: "viewMenu" },
 ];
 
