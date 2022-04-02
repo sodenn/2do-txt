@@ -25,7 +25,7 @@ interface TaskDialogForm {
   tags: Dictionary<string[]>;
   taskLists: TaskListState[];
   onChange: (value: TaskFormData) => void;
-  onFileListChange: (value?: TaskListState) => void;
+  onFileSelect: (value?: TaskListState) => void;
   onEnterPress: () => void;
 }
 
@@ -39,7 +39,7 @@ const TaskForm = (props: TaskDialogForm) => {
     contexts,
     taskLists,
     onChange,
-    onFileListChange,
+    onFileSelect,
     onEnterPress,
   } = props;
   const { t } = useTranslation();
@@ -169,8 +169,8 @@ const TaskForm = (props: TaskDialogForm) => {
           </Grid>
         )}
         {taskLists.length > 0 && (
-          <Grid item xs={12} sm={6}>
-            <FileSelect value={taskLists} onChange={onFileListChange} />
+          <Grid item xs={12}>
+            <FileSelect options={taskLists} onSelect={onFileSelect} />
           </Grid>
         )}
         <Grid item xs={12} sm={6}>
@@ -179,18 +179,20 @@ const TaskForm = (props: TaskDialogForm) => {
             onChange={(priority) => onChange({ ...formData, priority })}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <LocalizationDatePicker
-            ariaLabel="Creation date"
-            label={t("Creation Date")}
-            value={formData.creationDate}
-            onChange={(value) => {
-              if (!value || isValid(value)) {
-                onChange({ ...formData, creationDate: value ?? undefined });
-              }
-            }}
-          />
-        </Grid>
+        {formData._id && (
+          <Grid item xs={12} sm={6}>
+            <LocalizationDatePicker
+              ariaLabel="Creation date"
+              label={t("Creation Date")}
+              value={formData.creationDate}
+              onChange={(value) => {
+                if (!value || isValid(value)) {
+                  onChange({ ...formData, creationDate: value ?? undefined });
+                }
+              }}
+            />
+          </Grid>
+        )}
         {formData._id && (
           <Grid item xs={12} sm={6}>
             <LocalizationDatePicker

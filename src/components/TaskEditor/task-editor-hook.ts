@@ -6,12 +6,7 @@ import createMentionPlugin, {
   MentionPluginConfig,
 } from "@draft-js-plugins/mention";
 import clsx from "clsx";
-import {
-  ContentState,
-  DraftHandleValue,
-  EditorState,
-  Modifier,
-} from "draft-js";
+import { DraftHandleValue, EditorState, Modifier } from "draft-js";
 import {
   KeyboardEvent,
   useCallback,
@@ -309,8 +304,10 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
       editorState: EditorState
     ): DraftHandleValue => {
       const singleLineText = text.replace(/(\r\n|\n|\r)/gm, " ");
-      const pastedBlocks =
-        ContentState.createFromText(singleLineText).getBlockMap();
+      const pastedBlocks = createMentionEntities(
+        singleLineText,
+        mentions
+      ).getBlockMap();
       const newState = Modifier.replaceWithFragment(
         editorState.getCurrentContent(),
         editorState.getSelection(),
@@ -324,7 +321,7 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
       setEditorState(newEditorState);
       return "handled";
     },
-    []
+    [mentions]
   );
 
   useEffect(() => {

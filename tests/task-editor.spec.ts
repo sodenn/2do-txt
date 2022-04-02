@@ -44,7 +44,7 @@ test.describe("Task editor", () => {
     }
 
     const today = new Date();
-    const selector = `[aria-label="${format(today, "MMM dd, yyyy")}"]`;
+    const selector = `[aria-label="${format(today, "MMM d, yyyy")}"]`;
     const dueDateTag = `due:${formatDate(today)}`;
 
     await page.locator(selector).click();
@@ -86,7 +86,7 @@ test.describe("Task editor", () => {
     // make sure priority is set
     await expect(
       page.locator('[aria-label="Select task priority"]')
-    ).toHaveText("A");
+    ).toHaveValue("A");
   });
 
   test("should continue selecting a context after blur from input", async ({
@@ -135,10 +135,10 @@ test.describe("Task editor", () => {
       "Play soccer with friends @pr "
     );
 
-    // make sure mention was added
+    // make sure context was added
     await expect(page.locator('[data-testid="mentionText"]')).toHaveText("@pr");
 
-    // make sure there is no open dropdown menu with mention suggestions
+    // make sure there is no open dropdown menu with suggestions
     await expect(page.locator(".mentionSuggestions")).toHaveCount(0);
   });
 
@@ -154,10 +154,10 @@ test.describe("Task editor", () => {
 
     await page.keyboard.press("ArrowLeft");
 
-    // make sure mention was added
+    // make sure context was added
     await expect(page.locator('[data-testid="mentionText"]')).toHaveText("@pr");
 
-    // make sure there is no open dropdown menu with mention suggestions
+    // make sure there is no open dropdown menu with suggestions
     await expect(page.locator(".mentionSuggestions")).toHaveCount(0);
   });
 
