@@ -40,7 +40,7 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
   const { value: initialValue, onChange } = props;
   const { t } = useTranslation();
   const [value, setValue] = useState(initialValue ?? null);
-  const [autoHighlight, setAutoHighlight] = useState(false);
+  const [autoSelect, setAutoSelect] = useState(false);
 
   const handleChange = (val: string | null) => {
     if (onChange) {
@@ -50,13 +50,13 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
   };
 
   const handleInputChange = (val: string) => {
-    setAutoHighlight(options.includes(val.toUpperCase()));
+    setAutoSelect(options.includes(val.toUpperCase()));
   };
 
   return (
     <Autocomplete
-      autoSelect
-      autoHighlight={autoHighlight}
+      autoSelect={autoSelect}
+      autoHighlight={autoSelect}
       value={value}
       options={options}
       renderInput={(params) => (
