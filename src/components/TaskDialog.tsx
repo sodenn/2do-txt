@@ -101,7 +101,7 @@ const TaskDialog = () => {
     setFormData((task) => ({ ...task, ...data }));
   };
 
-  const handleFileListChange = (taskList?: TaskListState) => {
+  const handleFileSelect = (taskList?: TaskListState) => {
     setSelectedTaskList(taskList);
   };
 
@@ -136,7 +136,7 @@ const TaskDialog = () => {
           tags={tags}
           taskLists={activeTaskList || task ? [] : taskLists}
           onChange={handleChange}
-          onFileListChange={handleFileListChange}
+          onFileSelect={handleFileSelect}
           onEnterPress={handleSave}
         />
       </DialogContent>
