@@ -179,18 +179,20 @@ const TaskForm = (props: TaskDialogForm) => {
             onChange={(priority) => onChange({ ...formData, priority })}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <LocalizationDatePicker
-            ariaLabel="Creation date"
-            label={t("Creation Date")}
-            value={formData.creationDate}
-            onChange={(value) => {
-              if (!value || isValid(value)) {
-                onChange({ ...formData, creationDate: value ?? undefined });
-              }
-            }}
-          />
-        </Grid>
+        {formData._id && (
+          <Grid item xs={12} sm={6}>
+            <LocalizationDatePicker
+              ariaLabel="Creation date"
+              label={t("Creation Date")}
+              value={formData.creationDate}
+              onChange={(value) => {
+                if (!value || isValid(value)) {
+                  onChange({ ...formData, creationDate: value ?? undefined });
+                }
+              }}
+            />
+          </Grid>
+        )}
         {formData._id && (
           <Grid item xs={12} sm={6}>
             <LocalizationDatePicker
