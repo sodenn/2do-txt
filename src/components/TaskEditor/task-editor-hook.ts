@@ -6,12 +6,7 @@ import createMentionPlugin, {
   MentionPluginConfig,
 } from "@draft-js-plugins/mention";
 import clsx from "clsx";
-import {
-  ContentState,
-  DraftHandleValue,
-  EditorState,
-  Modifier,
-} from "draft-js";
+import { DraftHandleValue, EditorState, Modifier } from "draft-js";
 import {
   KeyboardEvent,
   useCallback,
@@ -21,20 +16,7 @@ import {
   useState,
 } from "react";
 import { uniqueListBy } from "../../utils/array";
-import {
-  mentionClassStyle,
-  mentionStyles,
-  mentionSuggestionsDarkStyle,
-  mentionSuggestionsEntryContainerStyle,
-  mentionSuggestionsEntryFocusedDarkStyle,
-  mentionSuggestionsEntryFocusedLightStyle,
-  mentionSuggestionsEntryFocusedStyle,
-  mentionSuggestionsEntryStyle,
-  mentionSuggestionsEntryTextDarkStyle,
-  mentionSuggestionsEntryTextLightStyle,
-  mentionSuggestionsEntryTextStyle,
-  mentionSuggestionsLightStyle,
-} from "./mention-styles";
+import { mentionClass } from "./mention-styles";
 import {
   createMentionEntities,
   getTypeByTrigger,
@@ -47,7 +29,7 @@ export interface MentionGroup {
   styleClass?: string;
 }
 
-interface MentionSuggestionGroup {
+export interface MentionSuggestionGroup {
   items: MentionData[];
   trigger: string;
   open: boolean;
@@ -90,38 +72,6 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
     const mentionPluginConfig: MentionPluginConfig = {
       entityMutability: "IMMUTABLE",
       supportWhitespace: false,
-      theme: {
-        mentionSuggestions: clsx(
-          "mentionSuggestions",
-          mentionStyles,
-          {
-            [mentionSuggestionsLightStyle]: themeMode === "light",
-          },
-          {
-            [mentionSuggestionsDarkStyle]: themeMode !== "light",
-          }
-        ),
-        mentionSuggestionsEntryContainer: mentionSuggestionsEntryContainerStyle,
-        mentionSuggestionsEntry: mentionSuggestionsEntryStyle,
-        mentionSuggestionsEntryFocused: clsx(
-          mentionSuggestionsEntryFocusedStyle,
-          {
-            [mentionSuggestionsEntryFocusedLightStyle]: themeMode === "light",
-          },
-          {
-            [mentionSuggestionsEntryFocusedDarkStyle]: themeMode !== "light",
-          }
-        ),
-        mentionSuggestionsEntryText: clsx(
-          mentionSuggestionsEntryTextStyle,
-          {
-            [mentionSuggestionsEntryTextLightStyle]: themeMode === "light",
-          },
-          {
-            [mentionSuggestionsEntryTextDarkStyle]: themeMode !== "light",
-          }
-        ),
-      },
     };
 
     const plugins = mentions.map((item) => ({
@@ -135,7 +85,7 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
         mentionPrefix: item.trigger,
         mentionTrigger: item.trigger,
         theme: {
-          mention: clsx(mentionClassStyle, item.styleClass),
+          mention: clsx(mentionClass, item.styleClass),
           ...mentionPluginConfig.theme,
         },
       }),
@@ -354,8 +304,10 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
       editorState: EditorState
     ): DraftHandleValue => {
       const singleLineText = text.replace(/(\r\n|\n|\r)/gm, " ");
-      const pastedBlocks =
-        ContentState.createFromText(singleLineText).getBlockMap();
+      const pastedBlocks = createMentionEntities(
+        singleLineText,
+        mentions
+      ).getBlockMap();
       const newState = Modifier.replaceWithFragment(
         editorState.getCurrentContent(),
         editorState.getSelection(),
@@ -369,7 +321,7 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
       setEditorState(newEditorState);
       return "handled";
     },
-    []
+    [mentions]
   );
 
   useEffect(() => {

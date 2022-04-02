@@ -13,11 +13,13 @@ export const taskContextStyle = css`
 export const taskDudDateStyle = css`
   color: #a14205;
   background-color: #fddac3;
+  white-space: nowrap;
 `;
 
 export const taskTagStyle = css`
   color: #4b4b4b;
   background-color: #dfdfdf;
+  white-space: nowrap;
 `;
 
 export const taskPriorityStyle = css`
@@ -38,7 +40,7 @@ export const taskChipStyle = css`
   margin-bottom: 2px;
   padding: 1px 0;
   border-radius: 4px;
-  white-space: nowrap;
+  word-break: break-word;
   text-decoration: inherit;
   &:before,
   &:after {

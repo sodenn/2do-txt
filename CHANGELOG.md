@@ -1,3 +1,18 @@
+# [1.9.0](https://github.com/sodenn/2do-txt/compare/v1.8.0...v1.9.0) (2022-04-02)
+
+
+### Bug Fixes
+
+* **PrioritySelect:** deactivate auto-selection if no priority was entered with the keyboard ([#312](https://github.com/sodenn/2do-txt/issues/312)) ([db918c8](https://github.com/sodenn/2do-txt/commit/db918c8d120415b0a7284ae7edf84a025c3bcd0b))
+* **TaskEditor:** render mentions after copy & paste task text ([#309](https://github.com/sodenn/2do-txt/issues/309)) ([2e05282](https://github.com/sodenn/2do-txt/commit/2e0528217f24a3ff287879238eaec38cef7bb6b0))
+
+
+### Features
+
+* **CloudStorage:** extend "Session expired" toast with an action to login again ([#294](https://github.com/sodenn/2do-txt/issues/294)) ([653b4d0](https://github.com/sodenn/2do-txt/commit/653b4d06e6a89fcef1732bbb0031863526d3267e))
+* **PrioritySelect:** better keyboard support for task priority selection ([#308](https://github.com/sodenn/2do-txt/issues/308)) ([103819e](https://github.com/sodenn/2do-txt/commit/103819e77bd2f0ee7e1b1233a58639f6f493a051))
+* **TaskList:** multiple filter conditions are ANDed together ([#301](https://github.com/sodenn/2do-txt/issues/301)) ([6a71f0f](https://github.com/sodenn/2do-txt/commit/6a71f0f571d303bdfa899c0344bd52acaf295a20))
+
 # [1.8.0](https://github.com/sodenn/2do-txt/compare/v1.7.0...v1.8.0) (2022-03-25)
 
 
