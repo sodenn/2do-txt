@@ -13,11 +13,13 @@ export const taskContextStyle = css`
 export const taskDudDateStyle = css`
   color: #a14205;
   background-color: #fddac3;
+  white-space: nowrap;
 `;
 
 export const taskTagStyle = css`
   color: #4b4b4b;
   background-color: #dfdfdf;
+  white-space: nowrap;
 `;
 
 export const taskPriorityStyle = css`
