@@ -1,8 +1,10 @@
 import { StatusBar, Style } from "@capacitor/status-bar";
 import {
+  alpha,
   createTheme,
   CssBaseline,
   PaletteMode,
+  Theme,
   ThemeOptions,
   ThemeProvider,
   useMediaQuery,
@@ -20,20 +22,48 @@ const translations: Record<string, Localization> = {
 
 export type ThemeMode = PaletteMode | "system";
 
-const commonThemeOptions: ThemeOptions = {
+const buttonFocusStyle = (theme: Theme) => ({
+  backgroundColor: alpha(
+    theme.palette.text.primary,
+    theme.palette.action.hoverOpacity
+  ),
+});
+
+const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
   components: {
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true,
       },
     },
+    MuiIconButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          "&:focus": buttonFocusStyle(theme),
+        }),
+      },
+    },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          "&.Mui-focusVisible": buttonFocusStyle(theme),
+        }),
+      },
+    },
     MuiButton: {
       defaultProps: {
-        disableRipple: true,
         disableElevation: true,
         style: {
           textTransform: "none",
         },
+      },
+      styleOverrides: {
+        outlined: ({ theme }) => ({
+          "&:focus": buttonFocusStyle(theme),
+        }),
+        text: ({ theme }) => ({
+          "&:focus": buttonFocusStyle(theme),
+        }),
       },
     },
     MuiButtonGroup: {
@@ -43,10 +73,6 @@ const commonThemeOptions: ThemeOptions = {
       },
     },
   },
-};
-
-const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
-  ...commonThemeOptions,
   palette: {
     mode,
     ...(mode === "light"

@@ -42,12 +42,13 @@ const TestComp = (props: TestCompProps) => {
 
   return (
     <TaskForm
+      completed={false}
       projects={projects}
       contexts={contexts}
       tags={tags}
       formData={_formData}
       taskLists={[]}
-      onFileListChange={() => undefined}
+      onFileSelect={() => undefined}
       onChange={handleChange}
       onEnterPress={handleEnterPress}
     />

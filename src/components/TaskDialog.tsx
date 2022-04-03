@@ -130,6 +130,7 @@ const TaskDialog = () => {
       </DialogTitle>
       <DialogContent>
         <TaskForm
+          completed={!!task?.completed}
           formData={formData}
           contexts={Object.keys(contexts)}
           projects={Object.keys(projects)}
@@ -141,7 +142,9 @@ const TaskDialog = () => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={closeDialog}>{t("Cancel")}</Button>
+        <Button tabIndex={-1} onClick={closeDialog}>
+          {t("Cancel")}
+        </Button>
         <Button
           aria-label="Save task"
           disabled={formDisabled}
