@@ -130,6 +130,7 @@ const TaskDialog = () => {
       </DialogTitle>
       <DialogContent>
         <TaskForm
+          completed={!!task?.completed}
           formData={formData}
           contexts={Object.keys(contexts)}
           projects={Object.keys(projects)}
