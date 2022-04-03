@@ -18,18 +18,19 @@ import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
 import TaskEditor from "./TaskEditor/TaskEditor";
 
-interface TaskDialogForm {
+interface TaskFormProps {
   formData: TaskFormData;
   projects: string[];
   contexts: string[];
   tags: Dictionary<string[]>;
   taskLists: TaskListState[];
+  completed: boolean;
   onChange: (value: TaskFormData) => void;
   onFileSelect: (value?: TaskListState) => void;
   onEnterPress: () => void;
 }
 
-const TaskForm = (props: TaskDialogForm) => {
+const TaskForm = (props: TaskFormProps) => {
   const platform = usePlatform();
   const hasTouchScreen = useTouchScreen();
   const {
@@ -38,11 +39,19 @@ const TaskForm = (props: TaskDialogForm) => {
     tags,
     contexts,
     taskLists,
+    completed,
     onChange,
     onFileSelect,
     onEnterPress,
   } = props;
   const { t } = useTranslation();
+  const showCreationDate = !!formData._id;
+  const showCompletionDate = !!formData._id && completed;
+  const mdGridItems =
+    (showCreationDate || showCompletionDate) &&
+    !(showCreationDate && showCompletionDate)
+      ? 4
+      : 6;
   const [state, setState] = useState({
     key: 0,
     projects,
@@ -173,14 +182,14 @@ const TaskForm = (props: TaskDialogForm) => {
             <FileSelect options={taskLists} onSelect={onFileSelect} />
           </Grid>
         )}
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6} md={mdGridItems}>
           <PrioritySelect
             value={formData.priority}
             onChange={(priority) => onChange({ ...formData, priority })}
           />
         </Grid>
-        {formData._id && (
-          <Grid item xs={12} sm={6}>
+        {showCreationDate && (
+          <Grid item xs={12} sm={6} md={mdGridItems}>
             <LocalizationDatePicker
               ariaLabel="Creation date"
               label={t("Creation Date")}
@@ -193,8 +202,8 @@ const TaskForm = (props: TaskDialogForm) => {
             />
           </Grid>
         )}
-        {formData._id && (
-          <Grid item xs={12} sm={6}>
+        {showCompletionDate && (
+          <Grid item xs={12} sm={6} md={mdGridItems}>
             <LocalizationDatePicker
               ariaLabel="Completion date"
               label={t("Completion Date")}
@@ -207,7 +216,7 @@ const TaskForm = (props: TaskDialogForm) => {
             />
           </Grid>
         )}
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6} md={mdGridItems}>
           <LocalizationDatePicker
             ariaLabel="Due date"
             label={t("Due Date")}
