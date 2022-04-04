@@ -98,7 +98,7 @@ const TaskForm = (props: TaskFormProps) => {
   };
 
   const handleOpenMentionSuggestions = (trigger: string) => {
-    const body = `${formData.body.trimEnd()} ${trigger}`;
+    const body = `${formData.body.trimEnd()} ${trigger}`.trimStart();
     onChange({ ...formData, body });
     setTaskFormState(body);
   };
