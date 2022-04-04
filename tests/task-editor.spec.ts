@@ -218,7 +218,13 @@ test.describe("Task editor", () => {
 
   test("should allow me to create a new task by keyboard only", async ({
     page,
+    isMobile,
   }) => {
+    /* eslint-disable jest/valid-title */
+    // @ts-ignore
+    test.skip(isMobile, "not relevant for mobile browser");
+    /* eslint-enable jest/valid-title */
+
     await page.locator('button[aria-label="Add task"]').click();
 
     // type task description
