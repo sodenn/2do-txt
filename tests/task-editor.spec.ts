@@ -215,4 +215,50 @@ test.describe("Task editor", () => {
       1
     );
   });
+
+  test("should allow me to create a new task by keyboard only", async ({
+    page,
+    isMobile,
+  }) => {
+    /* eslint-disable jest/valid-title */
+    // @ts-ignore
+    test.skip(isMobile, "not relevant for mobile browser");
+    /* eslint-enable jest/valid-title */
+
+    await page.locator('button[aria-label="Add task"]').click();
+
+    // type task description
+    await page.type('[aria-label="Text editor"]', "Play soccer with friends");
+
+    // navigate to priority input
+    await page.keyboard.press("Tab");
+
+    // select priority
+    await page.keyboard.press("A");
+
+    // make sure priority was selected
+    await expect(
+      page.locator('[aria-label="Select task priority"]')
+    ).toHaveValue("A");
+
+    // navigate to due date input
+    await page.keyboard.press("Tab");
+
+    // navigate to date picker button
+    await page.keyboard.press("Tab");
+
+    // open the date picker
+    await page.keyboard.press("Enter");
+
+    // apply due date selection
+    await page.keyboard.press("Enter");
+
+    // make sure due date was selected
+    await expect(page.locator('[aria-label="Due date"]')).toHaveValue(
+      format(new Date(), "MM/dd/yyyy")
+    );
+
+    // navigate to save button
+    await page.keyboard.press("Tab");
+  });
 });
