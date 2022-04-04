@@ -48,7 +48,6 @@ const ConfirmationDialog = () => {
         {buttons?.map((button, idx) => (
           <Button
             aria-label={button.text}
-            autoFocus
             onClick={() => handleClick(button.handler)}
             key={idx}
           >
