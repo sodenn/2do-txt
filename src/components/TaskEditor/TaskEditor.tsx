@@ -27,6 +27,7 @@ interface TaskEditorProps {
   onAddMention?: (plainText: string) => void;
   placeholder?: string;
   mentions: MentionGroup[];
+  autoFocus?: boolean;
 }
 
 const Legend = styled("legend")`
@@ -118,6 +119,7 @@ const TaskEditor = (props: TaskEditorProps) => {
     onAddMention,
     onEnterPress,
     mentions = [],
+    autoFocus = false,
   } = props;
 
   const {
@@ -143,11 +145,13 @@ const TaskEditor = (props: TaskEditorProps) => {
   });
 
   useEffect(() => {
-    setTimeout(() => {
-      ref.current?.focus();
-    });
+    if (autoFocus) {
+      setTimeout(() => {
+        ref.current?.focus();
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [autoFocus]);
 
   return (
     <div>
