@@ -1,3 +1,17 @@
+# [1.10.0](https://github.com/sodenn/2do-txt/compare/v1.9.0...v1.10.0) (2022-04-05)
+
+
+### Bug Fixes
+
+* **TaskForm:** do not focus the task description field after selecting a due date ([#324](https://github.com/sodenn/2do-txt/issues/324)) ([13d2ba1](https://github.com/sodenn/2do-txt/commit/13d2ba10212dc51ac92fbd1de414ce589193f304))
+* **TaskForm:** prevent multiple spaces from being inserted into the task text when mention chooser is opened (mobile) ([#320](https://github.com/sodenn/2do-txt/issues/320)) ([02e2d63](https://github.com/sodenn/2do-txt/commit/02e2d636271b448b1973e6268e442db55e20894b))
+* **TaskForm:** trim task text when adding mention trigger ([#323](https://github.com/sodenn/2do-txt/issues/323)) ([66f9e2d](https://github.com/sodenn/2do-txt/commit/66f9e2d5909d1e2c9152ba8eae0ad79e50dabfbb))
+
+
+### Features
+
+* **TaskDialog:** disable tab focus on cancel button to avoid accidental cancellation ([#319](https://github.com/sodenn/2do-txt/issues/319)) ([05558fe](https://github.com/sodenn/2do-txt/commit/05558fedc0ea975d4fe096d780c9f7f8ea0dc9b1))
+
 # [1.9.0](https://github.com/sodenn/2do-txt/compare/v1.8.0...v1.9.0) (2022-04-02)
 
 
