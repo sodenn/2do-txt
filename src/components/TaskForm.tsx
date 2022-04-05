@@ -53,15 +53,17 @@ const TaskForm = (props: TaskFormProps) => {
       ? 4
       : 6;
   const [state, setState] = useState({
+    autoFocus: true,
     key: 0,
     projects,
     contexts,
     tags,
   });
 
-  const setTaskFormState = (body: string) => {
+  const setTaskFormState = (body: string, autoFocus = true) => {
     const result = parseTaskBody(body);
     setState((state) => ({
+      autoFocus,
       key: state.key + 1,
       projects: [...projects, ...result.projects].filter(
         (item, i, ar) => ar.indexOf(item) === i
@@ -88,17 +90,17 @@ const TaskForm = (props: TaskFormProps) => {
     let body: string;
     if (value) {
       const dueDateTag = `due:${formatDate(value)}`;
-      body = `${bodyWithoutDueDate} ${dueDateTag} `.trimStart();
+      body = `${bodyWithoutDueDate} ${dueDateTag}`.trimStart();
     } else {
       body = bodyWithoutDueDate;
     }
 
     onChange({ ...formData, body, dueDate: value ?? undefined });
-    setTaskFormState(body);
+    setTaskFormState(body, false);
   };
 
   const handleOpenMentionSuggestions = (trigger: string) => {
-    const body = `${formData.body.trimEnd()} ${trigger}`;
+    const body = `${formData.body.trimEnd()} ${trigger}`.trimStart();
     onChange({ ...formData, body });
     setTaskFormState(body);
   };
@@ -149,6 +151,7 @@ const TaskForm = (props: TaskFormProps) => {
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           onAddMention={(body) => setTaskFormState(body)}
           onEnterPress={onEnterPress}
+          autoFocus={state.autoFocus}
         />
       </Box>
       <Grid spacing={2} container>

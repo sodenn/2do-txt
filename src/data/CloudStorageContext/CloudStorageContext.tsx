@@ -91,10 +91,6 @@ export const cloudStorageIconsSmall: Record<CloudStorage, ReactNode> = {
   Dropbox: <DropboxIcon fontSize="small" />,
 };
 
-export const cloudStorageIconsDisabled: Record<CloudStorage, ReactNode> = {
-  Dropbox: <DropboxIcon color="disabled" />,
-};
-
 const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const platform = usePlatform();
   const { t } = useTranslation();
