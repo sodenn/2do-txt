@@ -1,7 +1,7 @@
 import { Fade, Paper, styled, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
-import { DropzoneInputProps, useDropzone } from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
@@ -36,7 +36,6 @@ const StyledPaper = styled(Paper)(() => ({
 interface FileInputProps {
   files: File[];
   clearFiles: () => void;
-  dropzoneInputProps: DropzoneInputProps;
 }
 
 const FileInput = (props: FileInputProps) => {
@@ -47,7 +46,7 @@ const FileInput = (props: FileInputProps) => {
     scheduleDueTaskNotifications,
     taskLists,
   } = useTask();
-  const { files, clearFiles, dropzoneInputProps } = props;
+  const { files, clearFiles } = props;
   const { setActiveTaskListPath } = useFilter();
   const { addTodoFilePath } = useSettings();
   const platform = usePlatform();
@@ -136,48 +135,38 @@ const FileInput = (props: FileInputProps) => {
   }, [clearFiles, files, processFiles]);
 
   return (
-    <>
-      <input {...dropzoneInputProps} />
-      <input
-        data-testid="file-picker"
-        style={{ display: "none" }}
-        ref={fileInputRef}
-        accept="text/plain"
-        type="file"
-        onChange={handleChange}
-        onClick={handleClick}
-      />
-    </>
+    <input
+      data-testid="file-picker"
+      style={{ display: "none" }}
+      ref={fileInputRef}
+      accept="text/plain"
+      type="file"
+      onChange={handleChange}
+      onClick={handleClick}
+    />
   );
 };
 
 const FilePicker: FC = ({ children }) => {
   const { t } = useTranslation();
-  const [files, setFiles] = useState<File[]>([]);
+  const [file, setFile] = useState<File[]>([]);
 
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      setFiles([...files, ...acceptedFiles]);
-    },
-    [files]
-  );
+  const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles.length === 1 && acceptedFiles[0].type === "text/plain") {
+      setFile(acceptedFiles);
+    }
+  }, []);
 
-  const clearFiles = useCallback(() => setFiles([]), []);
+  const clearFiles = useCallback(() => setFile([]), []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, isDragActive } = useDropzone({
     onDrop,
     noClick: true,
-    multiple: false,
-    accept: "text/plain",
   });
 
   return (
     <Root data-testid="dropzone" {...getRootProps()}>
-      <FileInput
-        files={files}
-        clearFiles={clearFiles}
-        dropzoneInputProps={getInputProps()}
-      />
+      <FileInput files={file} clearFiles={clearFiles} />
       <Fade in={isDragActive}>
         <Overlay>
           <StyledPaper>
