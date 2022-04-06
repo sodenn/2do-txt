@@ -31,7 +31,7 @@
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.5.0",
-    "@mui/lab": "^5.0.0-alpha.72",
+    "@mui/lab": "^5.0.0-alpha.76",
     "@mui/material": "^5.5.0",
     "capacitor-rate-app": "^2.0.0",
     "clsx": "^1.1.1",
