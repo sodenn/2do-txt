@@ -51,8 +51,10 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
   }));
   const ref = useRef<Editor>(null);
   const [focus, setFocus] = useState(false);
-  const [searchValue, setSearchValue] =
-    useState<{ trigger: string; value: string }>();
+  const [searchValue, setSearchValue] = useState<{
+    trigger: string;
+    value: string;
+  }>();
   const [editorState, setEditorState] = useState(() =>
     value
       ? EditorState.createWithContent(createMentionEntities(value, mentions))
