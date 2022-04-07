@@ -16,7 +16,7 @@ describe("TaskEditor", () => {
   it("should remove line breaks from pasted text", async () => {
     const handleChange = jest.fn();
 
-    render(<TaskEditor suggestions={[]} onChange={handleChange} />);
+    render(<TaskEditor mentions={[]} onChange={handleChange} />);
 
     const editor = await screen.findByRole("textbox", { name: "Text editor" });
 
