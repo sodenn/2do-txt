@@ -27,74 +27,96 @@ const FileManagementDialog = () => {
   const { readdir, deleteFile } = useFilesystem();
   const { t } = useTranslation();
   const { taskLists, closeTodoFile } = useTask();
-  const [files, setFiles] = useState<string[]>([]);
-  const closedFiles = files.filter((f) =>
-    taskLists.every((t) => t.filePath !== f)
-  );
+  const [closedFiles, setClosedFiles] = useState<string[]>([]);
 
-  const listFiles = useCallback(() => {
+  const listAllFiles = useCallback(async () => {
     if (platform !== "electron") {
-      readdir({
+      return readdir({
         path: "",
         directory: Directory.Documents,
-      }).then((result) => setFiles(result.files));
+      }).then((result) => {
+        return result.files;
+      });
+    } else {
+      return [];
     }
   }, [platform, readdir]);
 
-  useEffect(listFiles, [listFiles, platform]);
+  const listClosedFiles = useCallback(
+    (files: string[]) => {
+      const closedFiles = files.filter((f) =>
+        taskLists.every((t) => t.filePath !== f)
+      );
+      setClosedFiles(closedFiles);
+      return closedFiles;
+    },
+    [taskLists]
+  );
 
-  const openDeleteConfirmationDialog = (
-    filePath: string,
-    handler: () => void
-  ) => {
-    setConfirmationDialog({
-      open: true,
-      title: t("Delete"),
-      content: (
-        <Trans
-          i18nKey="Delete file"
-          values={{ fileName: getFilenameFromPath(filePath) }}
-        />
-      ),
-      buttons: [
-        { text: t("Cancel") },
-        {
-          text: t("Delete"),
-          handler,
-        },
-      ],
+  const listFiles = useCallback(() => {
+    listAllFiles().then(listClosedFiles);
+  }, [listAllFiles, listClosedFiles]);
+
+  useEffect(listFiles, [listFiles]);
+
+  const openDeleteConfirmationDialog = (filePath: string) => {
+    return new Promise<boolean>((resolve) => {
+      setConfirmationDialog({
+        open: true,
+        title: t("Delete"),
+        onClose: () => resolve(false),
+        content: (
+          <Trans
+            i18nKey="Delete file"
+            values={{ fileName: getFilenameFromPath(filePath) }}
+          />
+        ),
+        buttons: [
+          { text: t("Cancel"), handler: () => resolve(false) },
+          {
+            text: t("Delete"),
+            handler: () => resolve(true),
+          },
+        ],
+      });
     });
   };
 
-  const handleCloseFile = (options: CloseOptions) => {
+  const handleCloseFile = async (options: CloseOptions) => {
     const { filePath, deleteFile } = options;
-    if (deleteFile) {
-      openDeleteConfirmationDialog(filePath, () => {
-        if (taskLists.length === 1) {
-          handleCloseDialog();
-        }
-        closeTodoFile(filePath).then(listFiles);
-      });
-    } else {
+
+    const closeFile = () => {
       if (taskLists.length === 1) {
         handleCloseDialog();
       }
       closeTodoFile(filePath).then(listFiles);
+    };
+
+    if (deleteFile) {
+      const confirmed = await openDeleteConfirmationDialog(filePath);
+      if (!confirmed) {
+        return;
+      }
+      closeFile();
+    } else {
+      closeFile();
     }
   };
 
-  const handleDeleteFile = (filePath: string) => {
-    openDeleteConfirmationDialog(filePath, () => {
-      deleteFile({
-        path: filePath,
-        directory: Directory.Documents,
+  const handleDeleteFile = async (filePath: string) => {
+    const confirmed = await openDeleteConfirmationDialog(filePath);
+    if (!confirmed) {
+      return;
+    }
+    deleteFile({
+      path: filePath,
+      directory: Directory.Documents,
+    })
+      .catch((error) => {
+        console.debug(error);
       })
-        .catch((error) => {
-          console.debug(error);
-        })
-        .then(listFiles);
-      unlinkFile(filePath).catch((e) => void e);
-    });
+      .then(listFiles);
+    unlinkFile(filePath).catch((e) => void e);
   };
 
   const handleCloseDialog = () => {
