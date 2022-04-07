@@ -58,7 +58,7 @@ describe("TaskList", () => {
       listItems.every((i) => i.getAttribute("aria-current") === "false")
     ).toBe(true);
 
-    userEvent.tab();
+    await userEvent.tab();
 
     expect(
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
@@ -66,7 +66,7 @@ describe("TaskList", () => {
 
     expect(listItems[0]).toHaveFocus();
 
-    userEvent.tab();
+    await userEvent.tab();
 
     expect(
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
@@ -147,12 +147,7 @@ describe("TaskList", () => {
 
     fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
 
-    const focusedTask = await screen.findByRole("button", {
-      name: "Task",
-      current: true,
-    });
-
-    userEvent.type(focusedTask, "{space}");
+    await userEvent.keyboard("[Space]");
 
     await screen.findByRole("checkbox", {
       name: "Complete task",
