@@ -126,6 +126,27 @@ const Filter = () => {
       {showSortBy && (
         <Box>
           <Typography component="div" variant="subtitle1" gutterBottom>
+            {t("Filter type")}
+          </Typography>
+          <Select
+            fullWidth
+            size="small"
+            defaultValue="strict"
+            value={filterType}
+            aria-label="Filter type"
+            onChange={(event) =>
+              setFilterType(event.target.value as FilterType)
+            }
+          >
+            <MenuItem value="strict">{t("Strict")}</MenuItem>
+            <MenuItem value="focus">{t("Focus")}</MenuItem>
+            <MenuItem value="any">{t("Any")}</MenuItem>
+          </Select>
+        </Box>
+      )}
+      {showSortBy && (
+        <Box>
+          <Typography component="div" variant="subtitle1" gutterBottom>
             {t("Sort by")}
           </Typography>
           <Select
@@ -143,27 +164,6 @@ const Filter = () => {
             <MenuItem value="context">{t("Context")}</MenuItem>
             <MenuItem value="project">{t("Project")}</MenuItem>
             <MenuItem value="tag">{t("Tag")}</MenuItem>
-          </Select>
-        </Box>
-      )}
-      {showSortBy && (
-        <Box>
-          <Typography component="div" variant="subtitle1" gutterBottom>
-            {t("Filter type")}
-          </Typography>
-          <Select
-            fullWidth
-            size="small"
-            defaultValue="strict"
-            value={filterType}
-            aria-label="Filter type"
-            onChange={(event) =>
-              setFilterType(event.target.value as FilterType)
-            }
-          >
-            <MenuItem value="strict">{t("Strict")}</MenuItem>
-            <MenuItem value="focus">{t("Focus")}</MenuItem>
-            <MenuItem value="any">{t("Any")}</MenuItem>
           </Select>
         </Box>
       )}
