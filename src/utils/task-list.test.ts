@@ -193,7 +193,7 @@ x 2. task +ProjB
     expect(attributes).toEqual(commonAttributes);
   });
 
-  it("should ANDed multiple filter conditions", async () => {
+  it("should ANDed multiple filter conditions when using the strict filter type", async () => {
     const todoTxt = `1. task @CtxA
 2. task @CtxB
 3. task +ProjA @CtxA @CtxC @CtxD`;
@@ -201,6 +201,7 @@ x 2. task +ProjB
     const { items } = parseTaskList(todoTxt);
 
     const filter: TaskListFilter = {
+      type: "strict",
       searchTerm: "",
       activeContexts: ["CtxA", "CtxD"],
       activePriorities: [],
@@ -216,7 +217,7 @@ x 2. task +ProjB
     expect(filteredList[0].body).toBe("3. task +ProjA @CtxA @CtxC @CtxD");
   });
 
-  it("should combine filter including search term", async () => {
+  it("should combine filter including search term when using the strict filter type", async () => {
     const todoTxt = `1. task @CtxA
 2. task @CtxB
 3. task +ProjA @CtxC`;
@@ -224,6 +225,7 @@ x 2. task +ProjB
     const { items } = parseTaskList(todoTxt);
 
     const filter: TaskListFilter = {
+      type: "strict",
       searchTerm: "3. task",
       activeContexts: [],
       activePriorities: [],
@@ -239,6 +241,30 @@ x 2. task +ProjB
     expect(filteredList[0].body).toBe("3. task +ProjA @CtxC");
   });
 
+  it("should include only the given projects when using the focus filter type", async () => {
+    const todoTxt = `1. task @CtxA
+2. task +ProjA @CtxB
+3. task +ProjB @CtxA @CtxB`;
+
+    const { items } = parseTaskList(todoTxt);
+
+    const filter: TaskListFilter = {
+      type: "focus",
+      searchTerm: "",
+      activeContexts: ["CtxA", "CtxB"],
+      activePriorities: [],
+      activeProjects: ["ProjA", "ProjB"],
+      activeTags: [],
+      hideCompletedTasks: false,
+    };
+
+    const filteredList = filterTaskList(items, filter);
+
+    expect(filteredList.length).toBe(1);
+
+    expect(filteredList[0].body).toBe("3. task +ProjB @CtxA @CtxB");
+  });
+
   it("should hide completed tasks", async () => {
     const todoTxt = `x 1. task +ProjA
 2. task +ProjB
@@ -247,6 +273,7 @@ x 2. task +ProjB
     const { items } = parseTaskList(todoTxt);
 
     const filter: TaskListFilter = {
+      type: "strict",
       searchTerm: "",
       activeContexts: [],
       activePriorities: [],

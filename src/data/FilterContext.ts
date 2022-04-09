@@ -10,11 +10,14 @@ export type SortKey =
   | "tag"
   | "";
 
+export type FilterType = "strict" | "focus" | "any";
+
 const [FilterProvider, useFilter] = createContext(() => {
   const { getStorageItem, setStorageItem } = useStorage();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTaskListPath, setActiveTaskListPath] = useState("");
   const [sortBy, _setSortBy] = useState<SortKey>("");
+  const [filterType, _setFilterType] = useState<FilterType>("strict");
   const [activePriorities, setActivePriorities] = useState<string[]>([]);
   const [activeProjects, setActiveProjects] = useState<string[]>([]);
   const [activeContexts, setActiveContexts] = useState<string[]>([]);
@@ -29,6 +32,18 @@ const [FilterProvider, useFilter] = createContext(() => {
     [setStorageItem]
   );
 
+  const setFilterType = useCallback(
+    (value: FilterType) => {
+      _setFilterType(value);
+      setStorageItem("filter-type", value);
+
+      if (activePriorities.length > 1) {
+        setActivePriorities([]);
+      }
+    },
+    [activePriorities.length, setStorageItem]
+  );
+
   const setHideCompletedTasks = useCallback(
     (value: boolean) => {
       _setHideCompletedTasks(value);
@@ -39,10 +54,12 @@ const [FilterProvider, useFilter] = createContext(() => {
 
   useEffect(() => {
     Promise.all([
-      getStorageItem("sort-by"),
+      getStorageItem<SortKey>("sort-by"),
+      getStorageItem<FilterType>("filter-type"),
       getStorageItem("hide-completed-tasks"),
-    ]).then(([sortBy, hideCompletedTasks]) => {
-      _setSortBy((sortBy as SortKey) || "");
+    ]).then(([sortBy, filterType, hideCompletedTasks]) => {
+      _setSortBy(sortBy || "");
+      _setFilterType(filterType || "strict");
       _setHideCompletedTasks(hideCompletedTasks === "true");
     });
   }, [getStorageItem]);
@@ -54,6 +71,8 @@ const [FilterProvider, useFilter] = createContext(() => {
     setActiveTaskListPath,
     sortBy,
     setSortBy,
+    filterType,
+    setFilterType,
     activePriorities,
     setActivePriorities,
     activeProjects,

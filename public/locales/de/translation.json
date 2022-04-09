@@ -103,5 +103,9 @@
   "Syncing with cloud storage": "Synchronisiere mit Cloud-Speicher",
   "Sync with cloud storage": "Mit {{cloudStorage}} synchronisieren",
   "Connected to cloud storage": "Verbunden mit {{cloudStorage}}",
-  "Drop todo.txt file here": "todo.txt Datei hier ablegen"
+  "Drop todo.txt file here": "todo.txt Datei hier ablegen",
+  "Filter type": "Filter type",
+  "Strict": "Strikt",
+  "Focus": "Focus",
+  "Any": "Alle"
 }

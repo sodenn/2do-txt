@@ -12,6 +12,7 @@ export type StorageKeys =
   | "create-completion-date"
   | "received-notifications"
   | "sort-by"
+  | "filter-type"
   | "hide-completed-tasks"
   | "cloud-files";
 

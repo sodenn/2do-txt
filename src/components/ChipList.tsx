@@ -2,8 +2,9 @@ import { Badge, Chip, styled } from "@mui/material";
 import { Dictionary } from "../types/common";
 
 interface ChipListProps {
-  list?: Dictionary<number>;
-  active?: string[];
+  items?: Dictionary<number>;
+  activeItems?: string[];
+  multiple?: boolean;
   onClick?: (item: string) => void;
   color?: "info" | "success" | "warning" | "secondary";
 }
@@ -20,11 +21,17 @@ const List = styled("ul")`
 `;
 
 const ChipList = (props: ChipListProps) => {
-  const { list = {}, active = [], onClick, color } = props;
+  const {
+    items = {},
+    activeItems = [],
+    multiple = true,
+    onClick,
+    color,
+  } = props;
 
   return (
     <List>
-      {Object.entries(list).map(([item, usages], index) => (
+      {Object.entries(items).map(([item, usages], index) => (
         <li key={index}>
           <Badge
             aria-label={`${item} is used ${usages} times`}
@@ -37,7 +44,12 @@ const ChipList = (props: ChipListProps) => {
           >
             <Chip
               sx={{ px: 1 }}
-              variant={active.includes(item) ? "filled" : "outlined"}
+              disabled={
+                multiple
+                  ? false
+                  : activeItems.length > 0 && !activeItems.includes(item)
+              }
+              variant={activeItems.includes(item) ? "filled" : "outlined"}
               label={item}
               color={color}
               onClick={() => onClick && onClick(item)}

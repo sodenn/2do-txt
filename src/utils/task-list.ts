@@ -1,7 +1,7 @@
 import { isAfter, isBefore } from "date-fns";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { SortKey, useFilter } from "../data/FilterContext";
+import { FilterType, SortKey, useFilter } from "../data/FilterContext";
 import { TaskListState, useTask } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
 import { groupBy } from "./array";
@@ -27,6 +27,7 @@ export interface TaskGroup {
 }
 
 export interface TaskListFilter {
+  type: FilterType;
   searchTerm: string;
   activePriorities: string[];
   activeProjects: string[];
@@ -80,35 +81,6 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
     .join(lineEnding);
 }
 
-export function useFilterTaskList(taskList: Task[]) {
-  const {
-    searchTerm,
-    activePriorities,
-    activeProjects,
-    activeContexts,
-    activeTags,
-    hideCompletedTasks,
-  } = useFilter();
-  return useMemo(() => {
-    return filterTaskList(taskList, {
-      searchTerm,
-      activePriorities,
-      activeProjects,
-      activeContexts,
-      activeTags,
-      hideCompletedTasks,
-    });
-  }, [
-    taskList,
-    searchTerm,
-    activePriorities,
-    activeProjects,
-    activeContexts,
-    activeTags,
-    hideCompletedTasks,
-  ]);
-}
-
 export function useTaskGroups() {
   const { taskLists: _taskLists, activeTaskList } = useTask();
   const taskLists = activeTaskList ? [activeTaskList] : _taskLists;
@@ -123,9 +95,12 @@ export function useTaskGroups() {
     hideCompletedTasks,
   } = useFilter();
 
+  const { filterType } = useFilter();
+
   const filteredTaskLists = taskLists.map((taskList) => ({
     ...taskList,
     items: filterTaskList(taskList.items, {
+      type: filterType,
       searchTerm,
       activePriorities,
       activeProjects,
@@ -145,17 +120,15 @@ export function useTaskGroups() {
   }));
 }
 
-export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
-  const {
-    searchTerm,
-    activePriorities,
-    activeProjects,
-    activeContexts,
-    activeTags,
-    hideCompletedTasks,
-  } = filter;
-
-  const filteredList = taskList.filter((task) => {
+function focusTypePredicate(
+  hideCompletedTasks: boolean,
+  searchTerm: string,
+  activePriorities: string[],
+  activeProjects: string[],
+  activeContexts: string[],
+  activeTags: string[]
+) {
+  return (task: Task) => {
     if (hideCompletedTasks && task.completed) {
       return false;
     }
@@ -166,7 +139,72 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
 
     const priorityCondition =
       activePriorities.length === 0 ||
-      activePriorities.some(
+      activePriorities.every(
+        (activePriority) => task.priority === activePriority
+      );
+
+    const contextCondition =
+      activeContexts.length === 0 ||
+      activeContexts.every((activeContext) =>
+        task.contexts.includes(activeContext)
+      );
+
+    const tagsCondition =
+      activeTags.length === 0 ||
+      activeTags.every((activeTag) =>
+        Object.keys(task.tags).includes(activeTag)
+      );
+
+    if (activeProjects.length > 0) {
+      const filterDisabled =
+        searchTerm.length === 0 &&
+        activePriorities.length === 0 &&
+        activeContexts.length === 0 &&
+        activeTags.length === 0;
+
+      const projectCondition = activeProjects.some((activeProject) =>
+        task.projects.includes(activeProject)
+      );
+
+      return (
+        projectCondition &&
+        (filterDisabled ||
+          (searchCondition &&
+            priorityCondition &&
+            contextCondition &&
+            tagsCondition))
+      );
+    } else {
+      return (
+        searchCondition &&
+        priorityCondition &&
+        contextCondition &&
+        tagsCondition
+      );
+    }
+  };
+}
+
+function strictTypePredicate(
+  hideCompletedTasks: boolean,
+  searchTerm: string,
+  activePriorities: string[],
+  activeProjects: string[],
+  activeContexts: string[],
+  activeTags: string[]
+) {
+  return (task: Task) => {
+    if (hideCompletedTasks && task.completed) {
+      return false;
+    }
+
+    const searchCondition =
+      searchTerm.length === 0 ||
+      task.body.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const priorityCondition =
+      activePriorities.length === 0 ||
+      activePriorities.every(
         (activePriority) => task.priority === activePriority
       );
 
@@ -195,7 +233,102 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
       contextCondition &&
       tagsCondition
     );
-  });
+  };
+}
+
+function anyTypePredicate(
+  hideCompletedTasks: boolean,
+  searchTerm: string,
+  activePriorities: string[],
+  activeProjects: string[],
+  activeContexts: string[],
+  activeTags: string[]
+) {
+  return (task: Task) => {
+    const filterDisabled =
+      searchTerm.length === 0 &&
+      activePriorities.length === 0 &&
+      activeProjects.length === 0 &&
+      activeContexts.length === 0 &&
+      activeTags.length === 0;
+
+    if (filterDisabled) {
+      return true;
+    }
+
+    if (hideCompletedTasks && task.completed) {
+      return false;
+    }
+
+    const searchCondition =
+      searchTerm.length > 0 &&
+      task.body.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const priorityCondition = activePriorities.some(
+      (activePriority) => task.priority === activePriority
+    );
+
+    const projectCondition = activeProjects.some((activeProject) =>
+      task.projects.includes(activeProject)
+    );
+
+    const contextCondition = activeContexts.some((activeContext) =>
+      task.contexts.includes(activeContext)
+    );
+
+    const tagsCondition = activeTags.some((activeTag) =>
+      Object.keys(task.tags).includes(activeTag)
+    );
+
+    return (
+      searchCondition ||
+      priorityCondition ||
+      projectCondition ||
+      contextCondition ||
+      tagsCondition
+    );
+  };
+}
+
+export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
+  const {
+    type,
+    searchTerm,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
+    hideCompletedTasks,
+  } = filter;
+
+  const filteredList = taskList.filter(
+    type === "focus"
+      ? focusTypePredicate(
+          hideCompletedTasks,
+          searchTerm,
+          activePriorities,
+          activeProjects,
+          activeContexts,
+          activeTags
+        )
+      : type === "strict"
+      ? strictTypePredicate(
+          hideCompletedTasks,
+          searchTerm,
+          activePriorities,
+          activeProjects,
+          activeContexts,
+          activeTags
+        )
+      : anyTypePredicate(
+          hideCompletedTasks,
+          searchTerm,
+          activePriorities,
+          activeProjects,
+          activeContexts,
+          activeTags
+        )
+  );
 
   return filteredList.sort(sortByOriginalOrder);
 }

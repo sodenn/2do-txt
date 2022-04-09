@@ -96,5 +96,9 @@
   "Syncing with cloud storage": "Sync with cloud storage",
   "Sync with cloud storage": "Sync with {{cloudStorage}}",
   "Connected to cloud storage": "Connected to {{cloudStorage}}",
-  "Drop todo.txt file here": "Drop todo.txt file here"
+  "Drop todo.txt file here": "Drop todo.txt file here",
+  "Filter type": "Filter type",
+  "Strict": "Strict",
+  "Focus": "Focus",
+  "Any": "Any"
 }

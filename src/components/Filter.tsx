@@ -4,10 +4,11 @@ import {
   FormControlLabel,
   MenuItem,
   Select,
+  Stack,
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { SortKey, useFilter } from "../data/FilterContext";
+import { FilterType, SortKey, useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
 import ChipList from "./ChipList";
@@ -18,6 +19,8 @@ const Filter = () => {
   const {
     sortBy,
     setSortBy,
+    filterType,
+    setFilterType,
     activePriorities,
     activeProjects,
     activeContexts,
@@ -39,110 +42,89 @@ const Filter = () => {
   const showSortBy = taskLists.some((list) => list.items.length > 0);
 
   return (
-    <>
+    <Stack spacing={2}>
       {Object.keys(priorities).length > 0 && (
-        <>
+        <Box>
           <Typography component="div" variant="subtitle1" gutterBottom>
             {t("Priorities")}
           </Typography>
-          <Box sx={{ mb: 2 }}>
-            <ChipList
-              list={priorities}
-              active={activePriorities}
-              onClick={(item) =>
-                setActivePriorities((items) =>
-                  items.includes(item)
-                    ? items.filter((i) => i !== item)
-                    : [...items, item]
-                )
-              }
-              color="secondary"
-            />
-          </Box>
-        </>
+          <ChipList
+            multiple={filterType === "any"}
+            items={priorities}
+            activeItems={activePriorities}
+            onClick={(item) =>
+              setActivePriorities((items) =>
+                items.includes(item)
+                  ? items.filter((i) => i !== item)
+                  : [...items, item]
+              )
+            }
+            color="secondary"
+          />
+        </Box>
       )}
       {Object.keys(projects).length > 0 && (
-        <>
+        <Box>
           <Typography component="div" variant="subtitle1" gutterBottom>
             {t("Projects")}
           </Typography>
-          <Box sx={{ mb: 2 }}>
-            <ChipList
-              list={projects}
-              active={activeProjects}
-              onClick={(item) =>
-                setActiveProjects((items) =>
-                  items.includes(item)
-                    ? items.filter((i) => i !== item)
-                    : [...items, item]
-                )
-              }
-              color="info"
-            />
-          </Box>
-        </>
+          <ChipList
+            items={projects}
+            activeItems={activeProjects}
+            onClick={(item) =>
+              setActiveProjects((items) =>
+                items.includes(item)
+                  ? items.filter((i) => i !== item)
+                  : [...items, item]
+              )
+            }
+            color="info"
+          />
+        </Box>
       )}
       {Object.keys(contexts).length > 0 && (
-        <>
+        <Box>
           <Typography component="div" variant="subtitle1" gutterBottom>
             {t("Contexts")}
           </Typography>
-          <Box sx={{ mb: 2 }}>
-            <ChipList
-              list={contexts}
-              active={activeContexts}
-              onClick={(item) =>
-                setActiveContexts((items) =>
-                  items.includes(item)
-                    ? items.filter((i) => i !== item)
-                    : [...items, item]
-                )
-              }
-              color="success"
-            />
-          </Box>
-        </>
+          <ChipList
+            items={contexts}
+            activeItems={activeContexts}
+            onClick={(item) =>
+              setActiveContexts((items) =>
+                items.includes(item)
+                  ? items.filter((i) => i !== item)
+                  : [...items, item]
+              )
+            }
+            color="success"
+          />
+        </Box>
       )}
       {Object.keys(tags).length > 0 && (
-        <>
+        <Box>
           <Typography component="div" variant="subtitle1" gutterBottom>
             {t("Tags")}
           </Typography>
-          <Box sx={{ mb: 2 }}>
-            <ChipList
-              list={Object.keys(tags).reduce<Dictionary<number>>((acc, key) => {
-                acc[key] = tags[key].length;
-                return acc;
-              }, {})}
-              active={activeTags}
-              onClick={(item) =>
-                setActiveTags((items) =>
-                  items.includes(item)
-                    ? items.filter((i) => i !== item)
-                    : [...items, item]
-                )
-              }
-              color="warning"
-            />
-          </Box>
-        </>
-      )}
-      <Typography component="div" variant="subtitle1">
-        {t("Status")}
-      </Typography>
-      <FormControlLabel
-        sx={{ mb: 2 }}
-        control={
-          <Checkbox
-            checked={hideCompletedTasks}
-            onChange={(event, checked) => setHideCompletedTasks(checked)}
+          <ChipList
+            items={Object.keys(tags).reduce<Dictionary<number>>((acc, key) => {
+              acc[key] = tags[key].length;
+              return acc;
+            }, {})}
+            activeItems={activeTags}
+            onClick={(item) =>
+              setActiveTags((items) =>
+                items.includes(item)
+                  ? items.filter((i) => i !== item)
+                  : [...items, item]
+              )
+            }
+            color="warning"
           />
-        }
-        aria-label="Hide completed tasks"
-        label={t("Hide completed tasks") as string}
-      />
+        </Box>
+      )}
       {showSortBy && (
-        <>
+        <Box>
           <Typography component="div" variant="subtitle1" gutterBottom>
             {t("Sort by")}
           </Typography>
@@ -162,9 +144,45 @@ const Filter = () => {
             <MenuItem value="project">{t("Project")}</MenuItem>
             <MenuItem value="tag">{t("Tag")}</MenuItem>
           </Select>
-        </>
+        </Box>
       )}
-    </>
+      {showSortBy && (
+        <Box>
+          <Typography component="div" variant="subtitle1" gutterBottom>
+            {t("Filter type")}
+          </Typography>
+          <Select
+            fullWidth
+            size="small"
+            defaultValue="strict"
+            value={filterType}
+            aria-label="Filter type"
+            onChange={(event) =>
+              setFilterType(event.target.value as FilterType)
+            }
+          >
+            <MenuItem value="strict">{t("Strict")}</MenuItem>
+            <MenuItem value="focus">{t("Focus")}</MenuItem>
+            <MenuItem value="any">{t("Any")}</MenuItem>
+          </Select>
+        </Box>
+      )}
+      <Box>
+        <Typography component="div" variant="subtitle1">
+          {t("Status")}
+        </Typography>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={hideCompletedTasks}
+              onChange={(event, checked) => setHideCompletedTasks(checked)}
+            />
+          }
+          aria-label="Hide completed tasks"
+          label={t("Hide completed tasks") as string}
+        />
+      </Box>
+    </Stack>
   );
 };
 
