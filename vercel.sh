@@ -3,7 +3,7 @@
 echo "VERCEL_GIT_COMMIT_AUTHOR_LOGIN: $VERCEL_GIT_COMMIT_AUTHOR_LOGIN"
 echo "VERCEL_GIT_COMMIT_REF: $VERCEL_GIT_COMMIT_REF"
 
-if [[ "$VERCEL_GIT_COMMIT_AUTHOR_LOGIN" == "dependabot[bot]" ]] ; then
+if [[ "$VERCEL_GIT_COMMIT_AUTHOR_LOGIN" == "dependabot[bot]" ]] || [[ $VERCEL_GIT_COMMIT_REF != feat* ]] ; then
   # Don't build
   echo "🛑 - Build cancelled"
   exit 0;
