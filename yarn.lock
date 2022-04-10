@@ -1932,13 +1932,13 @@
     immutable "~3.7.4"
     prop-types "^15.8.1"
 
-"@draft-js-plugins/mention@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/@draft-js-plugins/mention/-/mention-5.1.2.tgz#00d366ee590c1162cb26c2062b94495b8657668c"
-  integrity sha512-yGizU3ppa8MXzb44Byc9jvTbSekWD/KHeE7GGSH2sg1O0bHz8FyShaeZy55ZAD7d6BSb/gJnZJQB8KE1gvsQFw==
+"@draft-js-plugins/mention@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@draft-js-plugins/mention/-/mention-5.2.0.tgz#dfa94931307d4de55e03cf8a057fd8909a00415e"
+  integrity sha512-kcV8N2bGExQ/eNcsByfBB2fSSSx09WYdZCLPuqYUbTYGJtjC33qsbbT0VGVjVJjUGYJFktT8E327l5St5cUknA==
   dependencies:
-    "@popperjs/core" "^2.11.2"
-    "@types/lodash" "^4.14.179"
+    "@popperjs/core" "^2.11.4"
+    "@types/lodash" "^4.14.181"
     clsx "^1.0.4"
     immutable "~3.7.4"
     lodash "^4.17.21"
@@ -2902,11 +2902,6 @@
     schema-utils "^2.6.5"
     source-map "^0.7.3"
 
-"@popperjs/core@^2.11.2":
-  version "2.11.3"
-  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.3.tgz#f327fcb4f2576bf0b0ea0e65e773495cdf40188b"
-  integrity sha512-8U7hIl7+30XbIrJ0deQMXpXESM1L4yrt6BHok5hzcR0LivivuNkk+tHU1iRVScOwCmQcrOr6kvtIr29MNbQHqQ==
-
 "@popperjs/core@^2.11.4":
   version "2.11.5"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.5.tgz#db5a11bf66bdab39569719555b0f76e138d7bd64"
@@ -3372,10 +3367,10 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
-"@types/lodash@^4.14.179":
-  version "4.14.179"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.179.tgz#490ec3288088c91295780237d2497a3aa9dfb5c5"
-  integrity sha512-uwc1x90yCKqGcIOAT6DwOSuxnrAbpkdPsUOZtwrXb4D/6wZs+6qG7QnIawDuZWg0sWpxl+ltIKCaLoMlna678w==
+"@types/lodash@^4.14.181":
+  version "4.14.181"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.181.tgz#d1d3740c379fda17ab175165ba04e2d03389385d"
+  integrity sha512-n3tyKthHJbkiWhDZs3DkhkCzt2MexYHXlX0td5iMplyfwketaOeKboEVBqzceH7juqvEg3q5oUoBFxSLu7zFag==
 
 "@types/minimatch@*":
   version "3.0.5"
