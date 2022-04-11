@@ -193,7 +193,7 @@ x 2. task +ProjB
     expect(attributes).toEqual(commonAttributes);
   });
 
-  it("should ANDed multiple filter conditions when using the strict filter type", async () => {
+  it("should ANDed multiple filter conditions when using the AND filter type", async () => {
     const todoTxt = `1. task @CtxA
 2. task @CtxB
 3. task +ProjA @CtxA @CtxC @CtxD`;
@@ -201,7 +201,7 @@ x 2. task +ProjB
     const { items } = parseTaskList(todoTxt);
 
     const filter: TaskListFilter = {
-      type: "strict",
+      type: "AND",
       searchTerm: "",
       activeContexts: ["CtxA", "CtxD"],
       activePriorities: [],
@@ -217,7 +217,7 @@ x 2. task +ProjB
     expect(filteredList[0].body).toBe("3. task +ProjA @CtxA @CtxC @CtxD");
   });
 
-  it("should combine filter including search term when using the strict filter type", async () => {
+  it("should combine filter including search term when using the AND filter type", async () => {
     const todoTxt = `1. task @CtxA
 2. task @CtxB
 3. task +ProjA @CtxC`;
@@ -225,7 +225,7 @@ x 2. task +ProjB
     const { items } = parseTaskList(todoTxt);
 
     const filter: TaskListFilter = {
-      type: "strict",
+      type: "AND",
       searchTerm: "3. task",
       activeContexts: [],
       activePriorities: [],
@@ -241,7 +241,7 @@ x 2. task +ProjB
     expect(filteredList[0].body).toBe("3. task +ProjA @CtxC");
   });
 
-  it("should include only the given projects when using the focus filter type", async () => {
+  it("should combine multiple filters when using the OR filter type", async () => {
     const todoTxt = `1. task @CtxA
 2. task +ProjA @CtxB
 3. task +ProjB @CtxA @CtxB`;
@@ -249,20 +249,18 @@ x 2. task +ProjB
     const { items } = parseTaskList(todoTxt);
 
     const filter: TaskListFilter = {
-      type: "focus",
+      type: "OR",
       searchTerm: "",
       activeContexts: ["CtxA", "CtxB"],
       activePriorities: [],
-      activeProjects: ["ProjA", "ProjB"],
+      activeProjects: ["ProjB"],
       activeTags: [],
       hideCompletedTasks: false,
     };
 
     const filteredList = filterTaskList(items, filter);
 
-    expect(filteredList.length).toBe(1);
-
-    expect(filteredList[0].body).toBe("3. task +ProjB @CtxA @CtxB");
+    expect(filteredList.length).toBe(3);
   });
 
   it("should hide completed tasks", async () => {
@@ -273,7 +271,7 @@ x 2. task +ProjB
     const { items } = parseTaskList(todoTxt);
 
     const filter: TaskListFilter = {
-      type: "strict",
+      type: "AND",
       searchTerm: "",
       activeContexts: [],
       activePriorities: [],

@@ -49,7 +49,7 @@ const Filter = () => {
             {t("Priorities")}
           </Typography>
           <ChipList
-            multiple={filterType === "any"}
+            multiple={filterType === "OR"}
             items={priorities}
             activeItems={activePriorities}
             onClick={(item) =>
@@ -138,9 +138,8 @@ const Filter = () => {
               setFilterType(event.target.value as FilterType)
             }
           >
-            <MenuItem value="strict">{t("Strict")}</MenuItem>
-            <MenuItem value="focus">{t("Focus")}</MenuItem>
-            <MenuItem value="any">{t("Any")}</MenuItem>
+            <MenuItem value="AND">{t("AND")}</MenuItem>
+            <MenuItem value="OR">{t("OR")}</MenuItem>
           </Select>
         </Box>
       )}
