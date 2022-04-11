@@ -98,7 +98,6 @@
   "Connected to cloud storage": "Connected to {{cloudStorage}}",
   "Drop todo.txt file here": "Drop todo.txt file here",
   "Filter type": "Filter type",
-  "Strict": "Strict",
-  "Focus": "Focus",
-  "Any": "Any"
+  "AND": "AND",
+  "OR": "OR"
 }
