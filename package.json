@@ -42,7 +42,7 @@
     "draft-js": "^0.11.7",
     "dropbox": "^10.27.0",
     "file-saver": "^2.0.5",
-    "i18next": "^21.6.14",
+    "i18next": "^21.6.16",
     "i18next-browser-languagedetector": "^6.1.4",
     "i18next-http-backend": "^1.4.0",
     "lodash.throttle": "^4.1.1",
