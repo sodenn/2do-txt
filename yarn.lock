@@ -6501,10 +6501,10 @@ draft-js@^0.11.7:
     immutable "~3.7.4"
     object-assign "^4.1.1"
 
-dropbox@^10.26.1:
-  version "10.26.1"
-  resolved "https://registry.yarnpkg.com/dropbox/-/dropbox-10.26.1.tgz#66c717d80b450f0838251eb797555db879c02386"
-  integrity sha512-QXD3R+TPGWo3zEVU62fx28hu0sNCLR/04QLGtfaq0RZxnWOG6MUbyEnsJRS6XaK5lBkEQmtkIfnaKWZWGYbLrg==
+dropbox@^10.27.0:
+  version "10.27.0"
+  resolved "https://registry.yarnpkg.com/dropbox/-/dropbox-10.27.0.tgz#0158e3d89ea0d4fbf4ae2e073a7c2c23f51bb2f2"
+  integrity sha512-ZLzOoul390JB/bsP2V5bDLLVvp1Hx9+30U7qdY5bURwgkrFU5JARvvMuG2nsGR9v/CjofB/hfn+YDnwhB9l5bA==
   dependencies:
     node-fetch "^2.6.1"
 
@@ -10833,17 +10833,10 @@ node-emoji@^1.11.0:
   dependencies:
     lodash "^4.17.21"
 
-node-fetch@2.6.7:
+node-fetch@2.6.7, node-fetch@^2.6.1:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
-  dependencies:
-    whatwg-url "^5.0.0"
-
-node-fetch@^2.6.1:
-  version "2.6.6"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.6.tgz#1751a7c01834e8e1697758732e9efb6eeadfaf89"
-  integrity sha512-Z8/6vRlTUChSdIgMa51jxQ4lrw/Jy5SOW10ObaA47/RElsAN2c5Pn8bTgFGWn/ibwzXTE8qwr1Yzx28vsecXEA==
   dependencies:
     whatwg-url "^5.0.0"
 
