@@ -1,5 +1,14 @@
 import { TabContext, TabPanel } from "@mui/lab";
-import { Box, Paper, styled, SwipeableDrawer, Tab, Tabs } from "@mui/material";
+import {
+  Box,
+  styled,
+  SwipeableDrawer,
+  Tab,
+  Tabs,
+  Toolbar,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSideSheet } from "../data/SideSheetContext";
@@ -7,17 +16,58 @@ import { useTask } from "../data/TaskContext";
 import Filter from "./Filter";
 import Settings from "./Settings";
 
-const StyledPaper = styled(Paper)`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  width: 320px;
-`;
+const drawerWidth = 320;
 
-const SaveAreaHeader = styled("div")`
+export const SideSheetHeaderContainer = styled("div", {
+  shouldForwardProp: (prop) => prop !== "open",
+})<{ open: boolean }>(({ theme, open }) => ({
+  [theme.breakpoints.up("lg")]: {
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(open && {
+      marginLeft: `${drawerWidth}px`,
+      transition: theme.transitions.create(["margin", "width"], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    }),
+  },
+}));
+
+export const SideSheetMainContainer = styled("main", {
+  shouldForwardProp: (prop) => prop !== "open",
+})<{
+  open: boolean;
+}>(({ theme, open }) => ({
+  overflowY: "auto",
+  flex: "auto",
+  [theme.breakpoints.up("sm")]: {
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+  },
+  [theme.breakpoints.up("lg")]: {
+    flexGrow: 1,
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: `-${drawerWidth}px`,
+    ...(open && {
+      transition: theme.transitions.create("margin", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginLeft: 0,
+    }),
+  },
+}));
+
+const SaveAreaHeader = styled(Toolbar)`
   padding-top: env(safe-area-inset-top);
   padding-left: env(safe-area-inset-left);
+  align-items: flex-end;
 `;
 
 const SaveAreaContent = styled("div")`
@@ -27,6 +77,8 @@ const SaveAreaContent = styled("div")`
 
 const SideSheet = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up("lg"));
   const { sideSheetOpen, setSideSheetOpen } = useSideSheet();
   const { taskLists, activeTaskList, ...rest } = useTask();
 
@@ -63,34 +115,46 @@ const SideSheet = () => {
     <SwipeableDrawer
       aria-label="Menu"
       anchor="left"
+      variant={matches ? "persistent" : undefined}
       open={sideSheetOpen}
+      sx={{
+        "& .MuiDrawer-paper": {
+          backgroundImage: "unset",
+          boxSizing: "border-box",
+        },
+        ...(matches && {
+          width: drawerWidth,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+          },
+        }),
+      }}
       onOpen={() => setSideSheetOpen(true)}
       onClose={() => setSideSheetOpen(false)}
     >
-      <StyledPaper elevation={0} square>
-        <TabContext value={tab}>
-          <Box sx={{ flex: "none", borderBottom: 1, borderColor: "divider" }}>
-            <SaveAreaHeader>
-              <Tabs value={tab} onChange={handleChange}>
-                {!hideFilter && <Tab label={t("Filter")} value="filter" />}
-                <Tab label={t("Settings")} value="settings" />
-              </Tabs>
-            </SaveAreaHeader>
-          </Box>
-          <Box sx={{ overflowY: "auto", flex: "auto" }}>
-            <SaveAreaContent>
-              {!hideFilter && (
-                <TabPanel value="filter">
-                  <Filter />
-                </TabPanel>
-              )}
-              <TabPanel value="settings">
-                <Settings />
+      <TabContext value={tab}>
+        <Box sx={{ flex: "none", borderBottom: 1, borderColor: "divider" }}>
+          <SaveAreaHeader>
+            <Tabs value={tab} onChange={handleChange}>
+              {!hideFilter && <Tab label={t("Filter")} value="filter" />}
+              <Tab label={t("Settings")} value="settings" />
+            </Tabs>
+          </SaveAreaHeader>
+        </Box>
+        <Box sx={{ overflowY: "auto", flex: "auto" }}>
+          <SaveAreaContent>
+            {!hideFilter && (
+              <TabPanel value="filter">
+                <Filter />
               </TabPanel>
-            </SaveAreaContent>
-          </Box>
-        </TabContext>
-      </StyledPaper>
+            )}
+            <TabPanel value="settings">
+              <Settings />
+            </TabPanel>
+          </SaveAreaContent>
+        </Box>
+      </TabContext>
     </SwipeableDrawer>
   );
 };
