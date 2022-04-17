@@ -21,21 +21,22 @@ import { useSettings } from "./SettingsContext";
 
 type SaveTodoFile = (filePath: string, text: string) => Promise<void>;
 
-export interface TaskList extends TaskListParseResult {
+interface TaskList extends TaskListParseResult {
   filePath: string;
   fileName: string;
 }
 
-export interface SyncAllTodoFileWithCloudStorageProps {
-  items: { filePath: string; text: string }[];
+interface SyncItem {
+  filePath: string;
+  text: string;
 }
 
-export interface ArchiveAllTaskOptions {
+interface ArchiveAllTaskOptions {
   taskLists: TaskList[];
   onSaveTodoFile: SaveTodoFile;
 }
 
-export interface RestoreTaskOptions {
+interface RestoreTaskOptions {
   taskList: TaskList;
   task: Task;
   onSaveTodoFile: SaveTodoFile;
@@ -61,7 +62,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
   const { t } = useTranslation();
 
   const syncAllDoneFilesWithCloudStorage = useCallback(
-    async ({ items }: SyncAllTodoFileWithCloudStorageProps) => {
+    async (items: SyncItem[]) => {
       const syncOptions: SyncFileOptions[] = [];
 
       const updateArchivalMode = await Promise.all(
@@ -196,28 +197,28 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         return;
       }
 
-      const result = await syncFileThrottled({
+      await writeFile({
+        path: doneFilePath,
+        data: text,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+      });
+
+      syncFileThrottled({
         filePath,
         text,
         showSnackbar: false,
         archival: true,
+      })?.then((result) => {
+        if (result) {
+          writeFile({
+            path: doneFilePath,
+            data: result,
+            directory: Directory.Documents,
+            encoding: Encoding.UTF8,
+          });
+        }
       });
-
-      if (result) {
-        await writeFile({
-          path: doneFilePath,
-          data: result,
-          directory: Directory.Documents,
-          encoding: Encoding.UTF8,
-        });
-      } else {
-        await writeFile({
-          path: doneFilePath,
-          data: text,
-          directory: Directory.Documents,
-          encoding: Encoding.UTF8,
-        });
-      }
     },
     [syncFileThrottled, writeFile]
   );
@@ -250,7 +251,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
   const restoreTask = useCallback(
     async ({ taskList, task, onSaveTodoFile }: RestoreTaskOptions) => {
-      const filePath = taskList.filePath;
+      const { filePath, lineEnding, items } = taskList;
 
       const doneFilePath = getArchivalFilePath(filePath);
       if (!doneFilePath) {
@@ -266,13 +267,25 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         (i) => i.raw !== task.raw
       );
 
-      const todoFileText = stringifyTaskList(
-        [
-          ...taskList.items,
-          { ...task, completed: false, completionDate: undefined },
-        ],
-        taskList.lineEnding
-      );
+      const todoFileText =
+        archivalMode === "automatic"
+          ? stringifyTaskList(
+              [
+                ...items,
+                { ...task, completed: false, completionDate: undefined },
+              ].map((i, index) => ({
+                ...i,
+                _order: index,
+              })),
+              lineEnding
+            )
+          : stringifyTaskList(
+              [...items, task].map((i, index) => ({
+                ...i,
+                _order: index,
+              })),
+              lineEnding
+            );
 
       const doneFileText = stringifyTaskList(
         completedTasks,
@@ -286,12 +299,12 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         });
         deleteCloudFile(filePath, true).catch((e) => void e);
       } else {
-        await saveDoneFile(taskList.filePath, doneFileText);
+        await saveDoneFile(filePath, doneFileText);
       }
 
-      return onSaveTodoFile(taskList.filePath, todoFileText);
+      return onSaveTodoFile(filePath, todoFileText);
     },
-    [deleteCloudFile, deleteFile, loadDoneFile, saveDoneFile]
+    [archivalMode, deleteCloudFile, deleteFile, loadDoneFile, saveDoneFile]
   );
 
   const archiveTask = useCallback(
@@ -385,14 +398,19 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             taskList.lineEnding
           );
 
-          const completedTasks = taskList.items.filter((i) => i.completed);
+          const completedTasks = await loadDoneFile(taskList.filePath);
+          const newCompletedTasks = taskList.items.filter((i) => i.completed);
+          const allCompletedTasks = [
+            ...(completedTasks?.items || []),
+            ...newCompletedTasks,
+          ];
 
           const doneFileText = stringifyTaskList(
-            completedTasks,
-            taskList.lineEnding
+            allCompletedTasks,
+            completedTasks ? completedTasks.lineEnding : taskList.lineEnding
           );
 
-          if (completedTasks.length === 0) {
+          if (allCompletedTasks.length === 0) {
             return;
           }
 
@@ -402,7 +420,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               filePath: taskList.filePath,
               text: doneFileText,
               cloudStorage: fileRef.cloudStorage,
-              mode: "create",
+              mode: "update",
               archival: true,
             });
             if (
@@ -424,7 +442,12 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         })
       );
     },
-    [getCloudFileRefByFilePath, saveDoneFile, uploadFileAndResolveConflict]
+    [
+      getCloudFileRefByFilePath,
+      loadDoneFile,
+      saveDoneFile,
+      uploadFileAndResolveConflict,
+    ]
   );
 
   const restoreAllArchivedTask = useCallback(
