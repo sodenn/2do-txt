@@ -16,7 +16,6 @@ import {
 } from "../../types/cloud-storage.types";
 import { createContext } from "../../utils/Context";
 import { usePlatform } from "../../utils/platform";
-import { getBaseUrl } from "../../utils/routing";
 import { useSecureStorage } from "../../utils/secure-storage";
 import { useNetwork } from "../NetworkContext";
 import DropboxContentHasher from "./DropboxContentHasher";
@@ -42,7 +41,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     if (platform === "ios" || platform === "android") {
       return redirectUri;
     } else {
-      return getBaseUrl();
+      return window.location.origin + process.env.PUBLIC_URL;
     }
   }, [platform]);
 
