@@ -2,7 +2,7 @@ import { Box, Button, Grid, Stack } from "@mui/material";
 import { isValid } from "date-fns";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TaskListState } from "../data/TaskContext";
+import { TaskList } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
 import { usePlatform, useTouchScreen } from "../utils/platform";
@@ -23,10 +23,10 @@ interface TaskFormProps {
   projects: string[];
   contexts: string[];
   tags: Dictionary<string[]>;
-  taskLists: TaskListState[];
+  taskLists: TaskList[];
   completed: boolean;
   onChange: (value: TaskFormData) => void;
-  onFileSelect: (value?: TaskListState) => void;
+  onFileSelect: (value?: TaskList) => void;
   onEnterPress: () => void;
 }
 

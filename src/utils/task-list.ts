@@ -2,7 +2,7 @@ import { isAfter, isBefore } from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
-import { TaskListState, useTask } from "../data/TaskContext";
+import { TaskList, useTask } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
@@ -318,7 +318,7 @@ function getTaskListAttributes(
   };
 }
 
-export function getCommonTaskListAttributes(taskLists: TaskListState[]) {
+export function getCommonTaskListAttributes(taskLists: TaskList[]) {
   const projects = reduceDictionaries(taskLists.map((l) => l.projects));
   const tags = reduceDictionaries(taskLists.map((l) => l.tags));
   const contexts = reduceDictionaries(taskLists.map((l) => l.contexts));

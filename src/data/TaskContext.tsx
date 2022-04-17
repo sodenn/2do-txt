@@ -28,10 +28,7 @@ import {
   TaskListParseResult,
 } from "../utils/task-list";
 import { generateId } from "../utils/uuid";
-import {
-  SyncAllTodoFileWithCloudStorageProps,
-  useArchivedTask,
-} from "./ArchivedTaskContext";
+import { useArchivedTask } from "./ArchivedTaskContext";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
@@ -41,7 +38,12 @@ import { useSettings } from "./SettingsContext";
 
 export const defaultTodoFilePath = "todo.txt";
 
-export interface TaskListState extends TaskListParseResult {
+interface SyncItem {
+  filePath: string;
+  text: string;
+}
+
+export interface TaskList extends TaskListParseResult {
   filePath: string;
   fileName: string;
 }
@@ -78,7 +80,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const platform = usePlatform();
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [taskLists, setTaskLists] = useState<TaskListState[]>([]);
+  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const {
     syncAllDoneFilesWithCloudStorage,
     saveDoneFile,
@@ -112,7 +114,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
     const fileName = getFilenameFromPath(filePath);
 
-    const taskList: TaskListState = {
+    const taskList: TaskList = {
       ...parseResult,
       filePath,
       fileName,
@@ -151,8 +153,8 @@ const [TaskProvider, useTask] = createContext(() => {
   );
 
   const syncAllTodoFilesWithCloudStorage = useCallback(
-    async (opt: SyncAllTodoFileWithCloudStorageProps) => {
-      syncAllFiles(opt.items.map((i) => ({ ...i, archival: false }))).then(
+    async (items: SyncItem[]) => {
+      syncAllFiles(items.map((i) => ({ ...i, archival: false }))).then(
         (syncResult) =>
           syncResult.forEach((i) => {
             writeFile({
@@ -163,7 +165,7 @@ const [TaskProvider, useTask] = createContext(() => {
             }).then(() => loadTodoFile(i.filePath, i.text));
           })
       );
-      await syncAllDoneFilesWithCloudStorage(opt);
+      syncAllDoneFilesWithCloudStorage(items);
     },
     [syncAllDoneFilesWithCloudStorage, loadTodoFile, syncAllFiles, writeFile]
   );
@@ -218,7 +220,7 @@ const [TaskProvider, useTask] = createContext(() => {
   );
 
   const addTask = useCallback(
-    (data: TaskFormData, taskList: TaskListState) => {
+    (data: TaskFormData, taskList: TaskList) => {
       const { items, lineEnding } = taskList;
       const { priority, completionDate, creationDate, dueDate, ...rest } = data;
       const { projects, contexts, tags } = parseTaskBody(rest.body);
@@ -516,7 +518,7 @@ const [TaskProvider, useTask] = createContext(() => {
   }, [fileInputRef]);
 
   const restoreTask = useCallback(
-    (filePathOrTaskList: string | TaskListState, task: Task) => {
+    (filePathOrTaskList: string | TaskList, task: Task) => {
       const taskList =
         typeof filePathOrTaskList === "string"
           ? taskLists.find((t) => t.filePath === filePathOrTaskList)
@@ -590,9 +592,7 @@ const [TaskProvider, useTask] = createContext(() => {
           })
       );
 
-      syncAllTodoFilesWithCloudStorage({
-        items: readFileResult,
-      }).catch((e) => void e);
+      syncAllTodoFilesWithCloudStorage(readFileResult).catch((e) => void e);
 
       const taskLists = readFileResult.map((i) => i.taskList);
 

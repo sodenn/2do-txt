@@ -7,7 +7,7 @@ import {
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
-import { TaskListState, useTask } from "../data/TaskContext";
+import { TaskList, useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task, TaskFormData } from "../utils/task";
 import { ResponsiveDialog } from "./ResponsiveDialog";
@@ -55,7 +55,7 @@ const TaskDialog = () => {
   const { createCreationDate } = useSettings();
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
   const [selectedTaskList, setSelectedTaskList] = useState<
-    TaskListState | undefined
+    TaskList | undefined
   >(() => {
     if (task) {
       return findTaskListByTaskId(task._id);
@@ -101,7 +101,7 @@ const TaskDialog = () => {
     setFormData((task) => ({ ...task, ...data }));
   };
 
-  const handleFileSelect = (taskList?: TaskListState) => {
+  const handleFileSelect = (taskList?: TaskList) => {
     setSelectedTaskList(taskList);
   };
 
