@@ -161,6 +161,17 @@ const CloudFileDialog = () => {
     return cloudFileRefs.some((c) => c.path === cloudFile.path);
   };
 
+  const listItemTitle = (cloudFile: CloudFile) => {
+    const doneFile = files?.items.find(
+      (i) => i.path === getArchivalFilePath(cloudFile.path)
+    );
+    if (doneFile) {
+      return `${cloudFile.name} + ${doneFile.name}`;
+    } else {
+      return cloudFile.name;
+    }
+  };
+
   useEffect(() => {
     if (open) {
       handleLoadItems(root);
@@ -219,7 +230,7 @@ const CloudFileDialog = () => {
                 >
                   <Box sx={{ overflow: "hidden", flex: 1 }}>
                     <StartEllipsis sx={{ my: 0.5 }}>
-                      {cloudFile.name}
+                      {listItemTitle(cloudFile)}
                     </StartEllipsis>
                     <StartEllipsis
                       sx={{ my: 0.5 }}
