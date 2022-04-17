@@ -5,8 +5,11 @@ import { useStorage } from "../utils/storage";
 
 export type Language = "de" | "en";
 
+export type ArchivalMode = "no-archiving" | "automatic" | "manual";
+
 const [SettingsProvider, useSettings] = createContext(() => {
   const { i18n } = useTranslation();
+  const [settingsInitialized, setSettingsInitialized] = useState(false);
   const [language, setLanguage] = useState<Language>(
     (i18n.resolvedLanguage as Language) || "en"
   );
@@ -14,6 +17,8 @@ const [SettingsProvider, useSettings] = createContext(() => {
   const [createCreationDate, setCreateCreationDate] = useState(true);
   const [createCompletionDate, setCreateCompletionDate] = useState(true);
   const [showNotifications, _setShowNotifications] = useState(false);
+  const [archivalMode, _setArchivalMode] =
+    useState<ArchivalMode>("no-archiving");
 
   const changeLanguage = useCallback(
     (language: Language) => {
@@ -46,6 +51,14 @@ const [SettingsProvider, useSettings] = createContext(() => {
     (value: boolean) => {
       setStorageItem("show-notifications", value.toString());
       _setShowNotifications(value);
+    },
+    [setStorageItem]
+  );
+
+  const setArchivalMode = useCallback(
+    (value: ArchivalMode) => {
+      setStorageItem("archival-mode", value);
+      _setArchivalMode(value);
     },
     [setStorageItem]
   );
@@ -115,12 +128,14 @@ const [SettingsProvider, useSettings] = createContext(() => {
       getStorageItem("show-notifications"),
       getStorageItem("create-creation-date"),
       getStorageItem("create-completion-date"),
-      getStorageItem("language"),
+      getStorageItem<ArchivalMode>("archival-mode"),
+      getStorageItem<Language>("language"),
     ]).then(
       ([
         showNotifications,
         createCreationDate,
         createCompletionDate,
+        archivalMode,
         language,
       ]) => {
         _setShowNotifications(showNotifications === "true");
@@ -130,16 +145,20 @@ const [SettingsProvider, useSettings] = createContext(() => {
         setCreateCompletionDate(
           createCompletionDate === null ? true : createCompletionDate === "true"
         );
-        changeLanguage(language as Language);
+        setArchivalMode(archivalMode || "no-archiving");
+        changeLanguage(language || "en");
+        setSettingsInitialized(true);
       }
     );
-  }, [changeLanguage, getStorageItem]);
+  }, [changeLanguage, getStorageItem, setArchivalMode]);
 
   return {
     language,
     changeLanguage,
     createCreationDate,
     createCompletionDate,
+    archivalMode,
+    setArchivalMode,
     toggleCreateCompletionDate,
     toggleCreateCreationDate,
     showNotifications,
@@ -147,6 +166,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
     getTodoFilePaths,
     addTodoFilePath,
     removeTodoFilePath,
+    settingsInitialized,
   };
 });
 

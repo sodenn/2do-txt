@@ -272,15 +272,14 @@ function getTaskListAttributes(
   taskList: Task[],
   incompleteTasksOnly: boolean
 ): TaskListAttributes {
-  const priorities = (
-    taskList
-      .filter((i) => !incompleteTasksOnly || !i.completed)
-      .map((task) => task.priority)
-      .filter((priority) => !!priority) as string[]
-  ).reduce<Dictionary<number>>((prev, cur) => {
-    prev[cur] = (prev[cur] || 0) + 1;
-    return prev;
-  }, {});
+  const priorities = taskList
+    .filter((i) => !incompleteTasksOnly || !i.completed)
+    .map((task) => task.priority)
+    .filter((priority): priority is string => !!priority)
+    .reduce<Dictionary<number>>((prev, cur) => {
+      prev[cur] = (prev[cur] || 0) + 1;
+      return prev;
+    }, {});
 
   const projects = taskList
     .filter((i) => !incompleteTasksOnly || !i.completed)

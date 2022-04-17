@@ -46,7 +46,8 @@ const CloudStorageConnectionButton = (
   const { cloudStorage, connect = true, disconnect = true } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const { connectedCloudStorages, authenticate, unlink } = useCloudStorage();
+  const { connectedCloudStorages, authenticate, unlinkCloudStorage } =
+    useCloudStorage();
 
   const cloudStorageConnected = connectedCloudStorages[cloudStorage];
 
@@ -61,7 +62,7 @@ const CloudStorageConnectionButton = (
         variant="outlined"
         startIcon={cloudStorageIcons[cloudStorage]}
         fullWidth
-        onClick={() => unlink(cloudStorage)}
+        onClick={() => unlinkCloudStorage(cloudStorage)}
       >
         {t("Disconnect from cloud storage", { cloudStorage })}
       </Button>

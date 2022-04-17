@@ -77,7 +77,7 @@
   "Enable cloud storage sync": "{{cloudStorage}} Sync aktivieren",
   "Disable cloud storage sync": "{{cloudStorage}} Sync deaktivieren",
   "Resolve file conflict": "Dateikonflikt",
-  "The file already exists": "Die Datei existiert bereits auf <strong>{{cloudStorage}}</strong>. Welche Version soll verwendet werden?",
+  "The file already exists": "Die Datei <strong>{{fileName}}</strong> existiert bereits auf <strong>{{cloudStorage}}</strong>. Welche Version soll verwendet werden?",
   "Local": "Lokal",
   "Load more": "Mehr laden",
   "Import todo.txt": "todo.txt importieren",
@@ -106,5 +106,18 @@
   "Drop todo.txt file here": "todo.txt Datei hier ablegen",
   "Filter type": "Filtertyp",
   "AND": "UND",
-  "OR": "ODER"
+  "OR": "ODER",
+  "Task Archiving": "Aufgabenarchivierung",
+  "Completed tasks are archived in a second file called done.txt": "Erledigte Aufgaben werden in einer zweite Datei mit dem Namen <strong>done.txt</strong> archiviert.",
+  "Task archived": "Aufgabe archiviert in {{fileName}}",
+  "Archived tasks": "Archivierte Aufgaben",
+  "Undo": "Rückgängig machen",
+  "Restore task": "Aufgabe wiederherstellen",
+  "Task restored": "Aufgabe wiederherstellt",
+  "Archival Mode": "Archivierungsmodus",
+  "No archiving": "Keine archivierung",
+  "Archive automatically": "Automatisch archivieren",
+  "Archive manually": "Manuell archivieren",
+  "Archive now": "Jetzt archivieren",
+  "Task archiving was turned on because a done.txt file was found": "Aufgabenarchivierung wurde eingeschaltet da eine done.txt Datei gefunden wurde."
 }

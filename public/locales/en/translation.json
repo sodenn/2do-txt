@@ -70,7 +70,7 @@
   "Enable cloud storage sync": "Enable {{cloudStorage}} sync",
   "Disable cloud storage sync": "Disable {{cloudStorage}} sync",
   "Resolve file conflict": "File conflict",
-  "The file already exists": "The file already exists on <strong>{{cloudStorage}}</strong>. Which version to use?",
+  "The file already exists": "The file <strong>{{fileName}}</strong> already exists on <strong>{{cloudStorage}}</strong>. Which version to use?",
   "Local": "Lokal",
   "Load more": "Load more",
   "Import todo.txt": "Import todo.txt",
@@ -99,5 +99,18 @@
   "Drop todo.txt file here": "Drop todo.txt file here",
   "Filter type": "Filter type",
   "AND": "AND",
-  "OR": "OR"
+  "OR": "OR",
+  "Task Archiving": "Task Archiving",
+  "Completed tasks are archived in a second file called done.txt": "Completed tasks are archived in a second file called <strong>done.txt</strong>.",
+  "Task archived": "Task archived in {{fileName}}",
+  "Archived tasks": "Archived tasks",
+  "Undo": "Undo",
+  "Restore task": "Restore task",
+  "Task restored": "Task restored",
+  "Archival Mode": "Archival Mode",
+  "No archiving": "No archiving",
+  "Archive automatically": "Archive automatically",
+  "Archive manually": "Archive manually",
+  "Archive now": "Archive now",
+  "Task archiving was turned on because a done.txt file was found": "Task archiving was turned on because a done.txt file was found."
 }

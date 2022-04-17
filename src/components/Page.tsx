@@ -1,6 +1,7 @@
 import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useLoading } from "../data/LoadingContext";
+import ArchivedTasksDialog from "./ArchivedTasksDialog";
 import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
 import FileCreateDialog from "./FileCreateDialog";
@@ -57,6 +58,7 @@ const Page = () => {
       <CloudFileDialog />
       <FileManagementDialog />
       <ConfirmationDialog />
+      <ArchivedTasksDialog />
     </FilePicker>
   );
 };

@@ -25,7 +25,7 @@ import {
   CloudFileUnauthorizedError,
   CloudStorage,
 } from "../../types/cloud-storage.types";
-import { useFilesystem } from "../../utils/filesystem";
+import { getArchivalFilePath, useFilesystem } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
 
 interface CloseOptions {
@@ -54,14 +54,14 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
     props;
   const { t } = useTranslation();
   const {
-    unlinkFile,
+    unlinkCloudFile,
     uploadFileAndResolveConflict,
     connectedCloudStorages,
     cloudStorageEnabled,
   } = useCloudStorage();
-  const { saveTodoFile } = useTask();
+  const { saveTodoFile, saveDoneFile } = useTask();
   const { enqueueSnackbar } = useSnackbar();
-  const { readFile } = useFilesystem();
+  const { readFile, isFile } = useFilesystem();
   const [loading, setLoading] = useState(false);
 
   const handleCloudSync = async () => {
@@ -69,6 +69,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
     try {
       setLoading(true);
       onLoad(true);
+
       if (!cloudFileRef) {
         const readFileResult = await readFile({
           path: filePath,
@@ -76,24 +77,58 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
           encoding: Encoding.UTF8,
         });
 
-        const result = await uploadFileAndResolveConflict({
+        const uploadResult = await uploadFileAndResolveConflict({
           filePath,
           text: readFileResult.data,
           mode: "create",
           cloudStorage,
+          archival: false,
         });
 
-        if (result && result.type === "no-conflict") {
-          onChange(result.cloudFile);
-        } else if (result && result.type === "conflict" && result.conflict) {
-          if (result.conflict.option === "cloud") {
-            const text = result.conflict.text;
+        const archivalFilePath = getArchivalFilePath(filePath);
+        if (archivalFilePath) {
+          const localArchivalFileExists = await isFile({
+            path: archivalFilePath,
+            directory: Directory.Documents,
+          });
+
+          if (localArchivalFileExists) {
+            const readArchivalFileResult = await readFile({
+              path: filePath,
+              directory: Directory.Documents,
+              encoding: Encoding.UTF8,
+            });
+
+            const uploadArchivalResult = await uploadFileAndResolveConflict({
+              filePath,
+              text: readArchivalFileResult.data,
+              mode: "create",
+              cloudStorage,
+              archival: true,
+            }).catch((e) => void e);
+
+            if (
+              uploadArchivalResult &&
+              uploadArchivalResult.type === "conflict" &&
+              uploadArchivalResult.conflict.option === "cloud"
+            ) {
+              const text = uploadArchivalResult.conflict.text;
+              await saveDoneFile(filePath, text);
+            }
+          }
+        }
+
+        if (uploadResult && uploadResult.type === "no-conflict") {
+          onChange(uploadResult.ref as CloudFileRef);
+        } else if (uploadResult && uploadResult.type === "conflict") {
+          if (uploadResult.conflict.option === "cloud") {
+            const text = uploadResult.conflict.text;
             await saveTodoFile(filePath, text);
           }
-          onChange(result.conflict.cloudFile);
+          onChange(uploadResult.conflict.ref as CloudFileRef);
         }
       } else {
-        await unlinkFile(filePath);
+        await unlinkCloudFile(filePath);
         onChange(undefined);
       }
     } catch (e) {
@@ -153,6 +188,8 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   const { enqueueSnackbar } = useSnackbar();
   const { readFile } = useFilesystem();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
+  const deleteFile =
+    platform === "web" || platform === "ios" || platform === "android";
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -179,9 +216,6 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
     enqueueSnackbar(t("Copied to clipboard"), { variant: "info" });
     handleClose();
   };
-
-  const deleteFile =
-    platform === "web" || platform === "ios" || platform === "android";
 
   return (
     <>

@@ -1,8 +1,18 @@
-import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useSettings } from "../data/SettingsContext";
 import { useNotifications } from "../utils/notifications";
+import ArchivalModeSelect from "./ArchivalModeSelect";
+import ArchiveNowButton from "./ArchiveNowButton";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 import LanguageSelect from "./LanguageSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
@@ -17,6 +27,7 @@ const Settings = () => {
     setShowNotifications,
     createCompletionDate,
     createCreationDate,
+    archivalMode,
     toggleCreateCompletionDate,
     toggleCreateCreationDate,
   } = useSettings();
@@ -32,20 +43,20 @@ const Settings = () => {
   };
 
   return (
-    <>
-      <Box sx={{ mb: 2 }}>
+    <Stack spacing={2}>
+      <div>
         <Typography component="div" variant="subtitle1" gutterBottom>
           {t("Appearance")}
         </Typography>
         <ThemeModeSelect />
-      </Box>
-      <Box sx={{ mb: 2 }}>
+      </div>
+      <div>
         <Typography component="div" variant="subtitle1" gutterBottom>
           {t("Language")}
         </Typography>
         <LanguageSelect />
-      </Box>
-      <Box sx={{ mb: 2 }}>
+      </div>
+      <div>
         <Typography component="div" variant="subtitle1">
           {t("Dates")}
         </Typography>
@@ -67,8 +78,8 @@ const Settings = () => {
           }
           label={t("Set completion date") as string}
         />
-      </Box>
-      <Box sx={{ mb: 2 }}>
+      </div>
+      <div>
         <Typography component="div" variant="subtitle1">
           {t("Notifications")}
         </Typography>
@@ -81,18 +92,41 @@ const Settings = () => {
           }
           label={t("Due tasks") as string}
         />
-      </Box>
+      </div>
+      <div>
+        <Stack
+          spacing={1}
+          direction="row"
+          alignItems="center"
+          sx={{ mb: "0.35em" }}
+        >
+          <Typography component="div" variant="subtitle1">
+            {t("Task Archiving")}
+          </Typography>
+          <Tooltip
+            title={
+              <Trans i18nKey="Completed tasks are archived in a second file called done.txt" />
+            }
+          >
+            <HelpOutlineIcon />
+          </Tooltip>
+        </Stack>
+        <Stack spacing={1}>
+          <ArchivalModeSelect />
+          {archivalMode === "manual" && <ArchiveNowButton />}
+        </Stack>
+      </div>
       {cloudStorageEnabled && (
-        <Box sx={{ mb: 2 }}>
+        <div>
           <Typography component="div" variant="subtitle1">
             {t("Cloud storage")}
           </Typography>
           <Box sx={{ mt: 1 }}>
             <CloudStorageConnectionButtons />
           </Box>
-        </Box>
+        </div>
       )}
-    </>
+    </Stack>
   );
 };
 

@@ -70,11 +70,11 @@ const FileCreateDialog = () => {
         text: "",
         mode: "create",
         cloudStorage: selectedCloudStorage,
+        archival: false,
       });
       if (
         result &&
         result.type === "conflict" &&
-        result.conflict &&
         result.conflict.option === "cloud"
       ) {
         const text = result.conflict.text;
@@ -88,12 +88,12 @@ const FileCreateDialog = () => {
       return;
     }
 
-    const result = await isFile({
+    const exists = await isFile({
       directory: Directory.Documents,
       path: fileName,
     });
 
-    if (result) {
+    if (exists) {
       setConfirmationDialog({
         open: true,
         content: (
