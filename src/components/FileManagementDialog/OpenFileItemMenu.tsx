@@ -25,7 +25,7 @@ import {
   CloudFileUnauthorizedError,
   CloudStorage,
 } from "../../types/cloud-storage.types";
-import { getArchivalFilePath, useFilesystem } from "../../utils/filesystem";
+import { getArchiveFilePath, useFilesystem } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
 
 interface CloseOptions {
@@ -82,37 +82,37 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
           text: readFileResult.data,
           mode: "create",
           cloudStorage,
-          archival: false,
+          archive: false,
         });
 
-        const archivalFilePath = getArchivalFilePath(filePath);
-        if (archivalFilePath) {
-          const localArchivalFileExists = await isFile({
-            path: archivalFilePath,
+        const archiveFilePath = getArchiveFilePath(filePath);
+        if (archiveFilePath) {
+          const localArchiveFileExists = await isFile({
+            path: archiveFilePath,
             directory: Directory.Documents,
           });
 
-          if (localArchivalFileExists) {
-            const readArchivalFileResult = await readFile({
+          if (localArchiveFileExists) {
+            const readArchiveFileResult = await readFile({
               path: filePath,
               directory: Directory.Documents,
               encoding: Encoding.UTF8,
             });
 
-            const uploadArchivalResult = await uploadFileAndResolveConflict({
+            const uploadArchiveResult = await uploadFileAndResolveConflict({
               filePath,
-              text: readArchivalFileResult.data,
+              text: readArchiveFileResult.data,
               mode: "create",
               cloudStorage,
-              archival: true,
+              archive: true,
             }).catch((e) => void e);
 
             if (
-              uploadArchivalResult &&
-              uploadArchivalResult.type === "conflict" &&
-              uploadArchivalResult.conflict.option === "cloud"
+              uploadArchiveResult &&
+              uploadArchiveResult.type === "conflict" &&
+              uploadArchiveResult.conflict.option === "cloud"
             ) {
-              const text = uploadArchivalResult.conflict.text;
+              const text = uploadArchiveResult.conflict.text;
               await saveDoneFile(filePath, text);
             }
           }

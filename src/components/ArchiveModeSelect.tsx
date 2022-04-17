@@ -1,16 +1,16 @@
 import { MenuItem, Select } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ArchivalMode, useSettings } from "../data/SettingsContext";
+import { ArchiveMode, useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 
-const ArchivalModeSelect = () => {
+const ArchiveModeSelect = () => {
   const { t } = useTranslation();
-  const { archivalMode, setArchivalMode } = useSettings();
+  const { archiveMode, setArchiveMode } = useSettings();
   const { archiveAllTask, restoreAllArchivedTask } = useTask();
 
-  const handleChange = (value: ArchivalMode) => {
-    setArchivalMode(value);
+  const handleChange = (value: ArchiveMode) => {
+    setArchiveMode(value);
     if (value === "automatic") {
       archiveAllTask();
     } else if (value === "no-archiving") {
@@ -22,9 +22,9 @@ const ArchivalModeSelect = () => {
     <Select
       fullWidth
       size="small"
-      value={archivalMode}
-      aria-label="Select archival mode"
-      onChange={(event) => handleChange(event.target.value as ArchivalMode)}
+      value={archiveMode}
+      aria-label="Select archive mode"
+      onChange={(event) => handleChange(event.target.value as ArchiveMode)}
     >
       <MenuItem value="no-archiving">{t("No archiving")}</MenuItem>
       <MenuItem value="manual">{t("Archive manually")}</MenuItem>
@@ -33,4 +33,4 @@ const ArchivalModeSelect = () => {
   );
 };
 
-export default ArchivalModeSelect;
+export default ArchiveModeSelect;

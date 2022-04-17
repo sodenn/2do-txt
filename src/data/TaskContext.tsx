@@ -60,7 +60,7 @@ const [TaskProvider, useTask] = createContext(() => {
     settingsInitialized,
     showNotifications,
     createCompletionDate,
-    archivalMode,
+    archiveMode,
     removeTodoFilePath,
     getTodoFilePaths,
   } = useSettings();
@@ -154,7 +154,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const syncAllTodoFilesWithCloudStorage = useCallback(
     async (items: SyncItem[]) => {
-      syncAllFiles(items.map((i) => ({ ...i, archival: false }))).then(
+      syncAllFiles(items.map((i) => ({ ...i, archive: false }))).then(
         (syncResult) =>
           syncResult.forEach((i) => {
             writeFile({
@@ -182,7 +182,7 @@ const [TaskProvider, useTask] = createContext(() => {
         filePath,
         text,
         showSnackbar: true,
-        archival: false,
+        archive: false,
       }).catch((e) => void e);
       promptForRating().catch((e) => void e);
       return loadTodoFile(filePath, text);
@@ -325,14 +325,14 @@ const [TaskProvider, useTask] = createContext(() => {
       }
 
       const updatedList =
-        archivalMode === "automatic"
+        archiveMode === "automatic"
           ? taskList.items.filter((i) => i._id !== task._id)
           : taskList.items.map((i) => (i._id === task._id ? updatedTask : i));
 
       const text = stringifyTaskList(updatedList, taskList.lineEnding);
       const newTaskList = await saveTodoFile(taskList.filePath, text);
 
-      if (archivalMode === "automatic") {
+      if (archiveMode === "automatic") {
         await archiveTask({
           taskList: newTaskList,
           task: updatedTask,
@@ -346,7 +346,7 @@ const [TaskProvider, useTask] = createContext(() => {
       cancelNotifications,
       createCompletionDate,
       findTaskListByTaskId,
-      archivalMode,
+      archiveMode,
       archiveTask,
       saveTodoFile,
     ]

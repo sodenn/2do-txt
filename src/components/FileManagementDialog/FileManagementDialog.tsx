@@ -22,7 +22,7 @@ const FileManagementDialog = () => {
   const platform = usePlatform();
   const { fileManagementDialogOpen, setFileManagementDialogOpen } =
     useFileManagementDialog();
-  const { unlinkCloudFile, unlinkCloudArchivalFile } = useCloudStorage();
+  const { unlinkCloudFile, unlinkCloudArchiveFile } = useCloudStorage();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { readdir, deleteFile } = useFilesystem();
   const { t } = useTranslation();
@@ -95,7 +95,7 @@ const FileManagementDialog = () => {
       }
       closeTodoFile(filePath).then(listFiles);
       unlinkCloudFile(filePath).catch((e) => void e);
-      unlinkCloudArchivalFile(filePath).catch((e) => void e);
+      unlinkCloudArchiveFile(filePath).catch((e) => void e);
     };
 
     if (deleteFile) {
@@ -123,7 +123,7 @@ const FileManagementDialog = () => {
       })
       .then(listFiles);
     unlinkCloudFile(filePath).catch((e) => void e);
-    unlinkCloudArchivalFile(filePath).catch((e) => void e);
+    unlinkCloudArchiveFile(filePath).catch((e) => void e);
   };
 
   const handleCloseDialog = () => {

@@ -5,7 +5,7 @@ import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import DropboxIcon from "../../components/DropboxIcon";
 import {
-  CloudArchivalFileRef,
+  CloudArchiveFileRef,
   CloudFile,
   CloudFileConflictError,
   CloudFileNotFoundError,
@@ -20,7 +20,7 @@ import {
 } from "../../types/cloud-storage.types";
 import { createContext } from "../../utils/Context";
 import {
-  getArchivalFilePath,
+  getArchiveFilePath,
   getFilenameFromPath,
 } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
@@ -36,7 +36,7 @@ import {
 export interface SyncFileOptions {
   filePath: string;
   text: string;
-  archival: boolean;
+  archive: boolean;
   showSnackbar?: boolean;
 }
 
@@ -45,7 +45,7 @@ interface UploadFileOptions {
   text: string;
   mode?: UpdateMode;
   cloudStorage: CloudStorage;
-  archival: boolean;
+  archive: boolean;
 }
 
 interface DownloadFileOptions {
@@ -63,12 +63,12 @@ interface ResolveConflictOptions {
   text: string;
   cloudFile: CloudFile;
   cloudStorage: CloudStorage;
-  cloudArchivalFile?: CloudFile;
+  cloudArchiveFile?: CloudFile;
 }
 
 interface ResolveConflictResult {
   text: string;
-  ref: CloudFileRef | CloudArchivalFileRef;
+  ref: CloudFileRef | CloudArchiveFileRef;
   option: "local" | "cloud";
 }
 
@@ -79,7 +79,7 @@ interface UploadFileAndResolveConflict {
 
 interface UploadFileAndResolveNoConflict {
   type: "no-conflict";
-  ref: CloudFileRef | CloudArchivalFileRef;
+  ref: CloudFileRef | CloudArchiveFileRef;
 }
 
 interface CloudFileDialogOptions {
@@ -173,19 +173,19 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     }
   }, [getStorageItem, setStorageItem]);
 
-  const getCloudArchivalFileRefs = useCallback(async (): Promise<
-    CloudArchivalFileRef[]
+  const getCloudArchiveFileRefs = useCallback(async (): Promise<
+    CloudArchiveFileRef[]
   > => {
-    const cloudArchivalFilesStr = await getStorageItem("cloud-archival-files");
+    const cloudArchiveFilesStr = await getStorageItem("cloud-archive-files");
 
-    if (!cloudArchivalFilesStr) {
+    if (!cloudArchiveFilesStr) {
       return [];
     }
 
     try {
-      return JSON.parse(cloudArchivalFilesStr);
+      return JSON.parse(cloudArchiveFilesStr);
     } catch (error) {
-      await setStorageItem("cloud-archival-files", JSON.stringify([]));
+      await setStorageItem("cloud-archive-files", JSON.stringify([]));
       return [];
     }
   }, [getStorageItem, setStorageItem]);
@@ -228,21 +228,21 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     [getCloudFileRefs, setStorageItem]
   );
 
-  const linkCloudArchivalFile = useCallback(
-    async (cloudArchivalFile: CloudArchivalFileRef) => {
-      const cloudArchivalFiles = await getCloudArchivalFileRefs();
+  const linkCloudArchiveFile = useCallback(
+    async (cloudArchiveFile: CloudArchiveFileRef) => {
+      const cloudArchiveFiles = await getCloudArchiveFileRefs();
 
-      const newArchivalCloudFiles = [
-        ...cloudArchivalFiles.filter((c) => c.path !== cloudArchivalFile.path),
-        { ...cloudArchivalFile },
+      const newArchiveCloudFiles = [
+        ...cloudArchiveFiles.filter((c) => c.path !== cloudArchiveFile.path),
+        { ...cloudArchiveFile },
       ];
 
       await setStorageItem(
-        "cloud-archival-files",
-        JSON.stringify(newArchivalCloudFiles)
+        "cloud-archive-files",
+        JSON.stringify(newArchiveCloudFiles)
       );
     },
-    [getCloudArchivalFileRefs, setStorageItem]
+    [getCloudArchiveFileRefs, setStorageItem]
   );
 
   const getCloudFileRefByFilePath = useCallback(
@@ -253,30 +253,28 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     [getCloudFileRefs]
   );
 
-  const getCloudArchivalFileRefByFilePath = useCallback(
+  const getCloudArchiveFileRefByFilePath = useCallback(
     async (filePath: string) => {
-      const cloudArchivalFiles = await getCloudArchivalFileRefs();
-      return cloudArchivalFiles.find((c) => c.localFilePath === filePath);
+      const cloudArchiveFiles = await getCloudArchiveFileRefs();
+      return cloudArchiveFiles.find((c) => c.localFilePath === filePath);
     },
-    [getCloudArchivalFileRefs]
+    [getCloudArchiveFileRefs]
   );
 
   const uploadFile = useCallback(
     async (opt: UploadFileOptions) => {
-      const { filePath, text, mode = "update", cloudStorage, archival } = opt;
+      const { filePath, text, mode = "update", cloudStorage, archive } = opt;
 
-      if (archival) {
-        const archivalFilePath = getArchivalFilePath(filePath);
-        if (!archivalFilePath) {
-          throw new Error(
-            `Unable to get archival file path from "${filePath}"`
-          );
+      if (archive) {
+        const archiveFilePath = getArchiveFilePath(filePath);
+        if (!archiveFilePath) {
+          throw new Error(`Unable to get archive file path from "${filePath}"`);
         }
 
-        let archivalFile: CloudFile | undefined = undefined;
+        let archiveFile: CloudFile | undefined = undefined;
         if (cloudStorage === "Dropbox") {
-          archivalFile = await dropboxUploadFile({
-            path: getFilenameFromPath(archivalFilePath),
+          archiveFile = await dropboxUploadFile({
+            path: getFilenameFromPath(archiveFilePath),
             content: text,
             mode,
           }).catch(handleError);
@@ -284,15 +282,15 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
         }
 
-        const cloudArchivalFileRef = {
-          ...archivalFile,
+        const cloudArchiveFileRef = {
+          ...archiveFile,
           localFilePath: filePath,
           cloudStorage,
         };
 
-        await linkCloudArchivalFile(cloudArchivalFileRef);
+        await linkCloudArchiveFile(cloudArchiveFileRef);
 
-        return cloudArchivalFileRef;
+        return cloudArchiveFileRef;
       } else {
         let cloudFile: CloudFile | undefined = undefined;
         if (cloudStorage === "Dropbox") {
@@ -317,7 +315,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         return cloudFileRef;
       }
     },
-    [dropboxUploadFile, handleError, linkCloudArchivalFile, linkCloudFile]
+    [dropboxUploadFile, handleError, linkCloudArchiveFile, linkCloudFile]
   );
 
   const downloadFile = useCallback(
@@ -337,8 +335,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const openResolveConflictDialog = useCallback(
     async (opt: ResolveConflictOptions) => {
-      const { filePath, cloudFile, cloudArchivalFile, cloudStorage, text } =
-        opt;
+      const { filePath, cloudFile, cloudArchiveFile, cloudStorage, text } = opt;
       return new Promise<ResolveConflictResult | undefined>((resolve) => {
         const buttons = [
           {
@@ -349,8 +346,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
             text: cloudStorage!,
             handler: async () => {
               const text = await downloadFile({
-                cloudFilePath: !!cloudArchivalFile
-                  ? cloudArchivalFile.path
+                cloudFilePath: !!cloudArchiveFile
+                  ? cloudArchiveFile.path
                   : cloudFile.path,
                 cloudStorage,
               }).catch((error) => {
@@ -364,13 +361,13 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
                 throw error;
               });
 
-              if (!!cloudArchivalFile) {
-                const ref: CloudArchivalFileRef = {
-                  ...cloudArchivalFile,
+              if (!!cloudArchiveFile) {
+                const ref: CloudArchiveFileRef = {
+                  ...cloudArchiveFile,
                   localFilePath: filePath,
                   cloudStorage,
                 };
-                await linkCloudArchivalFile(ref);
+                await linkCloudArchiveFile(ref);
                 resolve({
                   option: "cloud",
                   ref,
@@ -399,7 +396,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
                 text,
                 filePath,
                 cloudStorage,
-                archival: !!cloudArchivalFile,
+                archive: !!cloudArchiveFile,
               });
               resolve({
                 option: "local",
@@ -418,8 +415,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
               i18nKey="The file already exists"
               values={{
                 cloudStorage,
-                fileName: !!cloudArchivalFile
-                  ? cloudArchivalFile.name
+                fileName: !!cloudArchiveFile
+                  ? cloudArchiveFile.name
                   : cloudFile.name,
               }}
             />
@@ -432,7 +429,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       setConfirmationDialog,
       downloadFile,
       enqueueSnackbar,
-      linkCloudArchivalFile,
+      linkCloudArchiveFile,
       linkCloudFile,
       uploadFile,
       t,
@@ -470,13 +467,13 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   const syncFile = useCallback(
     async (opt: SyncFileOptions) => {
-      const { filePath, text, showSnackbar, archival } = opt;
+      const { filePath, text, showSnackbar, archive } = opt;
       const cloudFileRef = await getCloudFileRefByFilePath(filePath);
-      const cloudArchivalFileRef = await getCloudArchivalFileRefByFilePath(
+      const cloudArchiveFileRef = await getCloudArchiveFileRefByFilePath(
         filePath
       );
 
-      const _ref = archival ? cloudArchivalFileRef : cloudFileRef;
+      const _ref = archive ? cloudArchiveFileRef : cloudFileRef;
       if (!_ref) {
         return;
       }
@@ -512,11 +509,11 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
           return;
         }
 
-        const newCloudFile = !archival ? syncResult.cloudFile : cloudFileRef;
+        const newCloudFile = !archive ? syncResult.cloudFile : cloudFileRef;
 
-        const newCloudArchivalFile = archival
+        const newCloudArchiveFile = archive
           ? syncResult.cloudFile
-          : cloudArchivalFileRef;
+          : cloudArchiveFileRef;
 
         if (syncResult.type === "conflict" && newCloudFile) {
           const result = await openResolveConflictDialog({
@@ -524,7 +521,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
             text: opt.text,
             cloudStorage,
             cloudFile: newCloudFile,
-            cloudArchivalFile: newCloudArchivalFile,
+            cloudArchiveFile: newCloudArchiveFile,
           });
           return result?.text;
         }
@@ -537,9 +534,9 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
               lastSync: new Date().toISOString(),
               cloudStorage,
             });
-          } else if (newCloudArchivalFile) {
-            await linkCloudArchivalFile({
-              ...newCloudArchivalFile,
+          } else if (newCloudArchiveFile) {
+            await linkCloudArchiveFile({
+              ...newCloudArchiveFile,
               localFilePath: filePath,
               cloudStorage,
             });
@@ -559,14 +556,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     },
     [
       getCloudFileRefByFilePath,
-      getCloudArchivalFileRefByFilePath,
+      getCloudArchiveFileRefByFilePath,
       checkNetworkStatus,
       enqueueSnackbar,
       dropboxSyncFile,
       handleError,
       openResolveConflictDialog,
       linkCloudFile,
-      linkCloudArchivalFile,
+      linkCloudArchiveFile,
       closeSnackbar,
       t,
     ]
@@ -589,8 +586,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       const optFiltered: SyncFileOptions[] = [];
 
       for (const i of opt) {
-        const ref = i.archival
-          ? await getCloudArchivalFileRefByFilePath(i.filePath)
+        const ref = i.archive
+          ? await getCloudArchiveFileRefByFilePath(i.filePath)
           : await getCloudFileRefByFilePath(i.filePath);
         if (ref) {
           optFiltered.push(i);
@@ -634,7 +631,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       checkNetworkStatus,
       closeSnackbar,
       enqueueSnackbar,
-      getCloudArchivalFileRefByFilePath,
+      getCloudArchiveFileRefByFilePath,
       getCloudFileRefByFilePath,
       isAuthenticationInProgress,
       syncFile,
@@ -674,39 +671,35 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     [getCloudFileRefByFilePath, getCloudFileRefs, setStorageItem]
   );
 
-  const unlinkCloudArchivalFile = useCallback(
+  const unlinkCloudArchiveFile = useCallback(
     async (filePath: string) => {
-      const archivalFile = await getCloudArchivalFileRefByFilePath(filePath);
-      if (!archivalFile) {
+      const archiveFile = await getCloudArchiveFileRefByFilePath(filePath);
+      if (!archiveFile) {
         throw new Error(
-          `No cloud archival file found for local file path "${filePath}"`
+          `No cloud archive file found for local file path "${filePath}"`
         );
       }
 
-      const cloudArchivalFiles = await getCloudArchivalFileRefs();
+      const cloudArchiveFiles = await getCloudArchiveFileRefs();
 
-      const newCloudArchivalFiles = cloudArchivalFiles.filter(
-        (c) => c.path !== archivalFile.path
+      const newCloudArchiveFiles = cloudArchiveFiles.filter(
+        (c) => c.path !== archiveFile.path
       );
       await setStorageItem(
-        "cloud-archival-files",
-        JSON.stringify(newCloudArchivalFiles)
+        "cloud-archive-files",
+        JSON.stringify(newCloudArchiveFiles)
       );
     },
-    [
-      getCloudArchivalFileRefByFilePath,
-      getCloudArchivalFileRefs,
-      setStorageItem,
-    ]
+    [getCloudArchiveFileRefByFilePath, getCloudArchiveFileRefs, setStorageItem]
   );
 
   const deleteCloudFile = useCallback(
-    async (filePath: string, archival = false) => {
+    async (filePath: string, archive = false) => {
       const cloudFileRef = await getCloudFileRefByFilePath(filePath);
-      const cloudArchivalFileRef = await getCloudArchivalFileRefByFilePath(
+      const cloudArchiveFileRef = await getCloudArchiveFileRefByFilePath(
         filePath
       );
-      const ref = archival ? cloudArchivalFileRef : cloudFileRef;
+      const ref = archive ? cloudArchiveFileRef : cloudFileRef;
 
       if (!ref) {
         return;
@@ -715,34 +708,34 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       const { cloudStorage } = ref;
 
       if (cloudStorage === "Dropbox") {
-        if (archival) {
+        if (archive) {
           await dropboxDeleteFile(ref.path);
         } else {
           await dropboxDeleteFile(ref.path);
-          if (cloudArchivalFileRef) {
-            await dropboxDeleteFile(cloudArchivalFileRef.path);
+          if (cloudArchiveFileRef) {
+            await dropboxDeleteFile(cloudArchiveFileRef.path);
           }
         }
       } else {
         throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
       }
 
-      if (archival) {
-        await unlinkCloudArchivalFile(filePath);
+      if (archive) {
+        await unlinkCloudArchiveFile(filePath);
       } else {
         await unlinkCloudFile(filePath);
       }
     },
     [
       dropboxDeleteFile,
-      getCloudArchivalFileRefByFilePath,
+      getCloudArchiveFileRefByFilePath,
       getCloudFileRefByFilePath,
-      unlinkCloudArchivalFile,
+      unlinkCloudArchiveFile,
       unlinkCloudFile,
     ]
   );
 
-  const getCloudArchivalFileMetaData = useCallback(
+  const getCloudArchiveFileMetaData = useCallback(
     async (filePath: string) => {
       const cloudFile = await getCloudFileRefByFilePath(filePath);
       if (!cloudFile) {
@@ -751,14 +744,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       const { cloudStorage } = cloudFile;
 
-      const archivalFilePath = await getArchivalFilePath(cloudFile.path);
-      if (!archivalFilePath) {
+      const archiveFilePath = await getArchiveFilePath(cloudFile.path);
+      if (!archiveFilePath) {
         return;
       }
 
       try {
         if (cloudStorage === "Dropbox") {
-          const metaData = await getFileMetaData(archivalFilePath);
+          const metaData = await getFileMetaData(archiveFilePath);
           return { ...metaData, cloudStorage };
         }
       } catch (error) {
@@ -821,12 +814,12 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   return {
     getCloudFileRefByFilePath,
-    getCloudArchivalFileRefByFilePath,
+    getCloudArchiveFileRefByFilePath,
     cloudStorageEnabled,
     connectedCloudStorages,
     uploadFile,
     unlinkCloudFile,
-    unlinkCloudArchivalFile,
+    unlinkCloudArchiveFile,
     authenticate,
     syncAllFiles,
     syncFileThrottled,
@@ -836,8 +829,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     deleteCloudFile,
     requestTokens,
     linkCloudFile,
-    linkCloudArchivalFile,
-    getCloudArchivalFileMetaData,
+    linkCloudArchiveFile,
+    getCloudArchiveFileMetaData,
     getCloudFileRefs,
     uploadFileAndResolveConflict,
     cloudFileDialogOptions,

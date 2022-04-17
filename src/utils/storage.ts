@@ -8,7 +8,7 @@ export type StorageKeys =
   | "theme-mode"
   | "todo-txt-paths"
   | "create-creation-date"
-  | "archival-mode"
+  | "archive-mode"
   | "show-notifications"
   | "create-completion-date"
   | "received-notifications"
@@ -16,7 +16,7 @@ export type StorageKeys =
   | "filter-type"
   | "hide-completed-tasks"
   | "cloud-files"
-  | "cloud-archival-files";
+  | "cloud-archive-files";
 
 export function useStorage() {
   const getStorageItem = useCallback(

@@ -26,7 +26,7 @@ export interface CloudFileRef extends CloudFile {
   cloudStorage: CloudStorage;
 }
 
-export interface CloudArchivalFileRef extends CloudFile {
+export interface CloudArchiveFileRef extends CloudFile {
   localFilePath: string;
   cloudStorage: CloudStorage;
 }

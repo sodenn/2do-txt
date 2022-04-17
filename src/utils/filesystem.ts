@@ -38,7 +38,7 @@ export function getFilenameFromPath(filePath: string) {
   return filePath.replace(/^.*[\\/]/, "");
 }
 
-export function getArchivalFilePath(filePath: string) {
+export function getArchiveFilePath(filePath: string) {
   const fileName = getFilenameFromPath(filePath);
   const fileNameWithoutEnding = fileName.match(/(.+?)(\.[^.]*$|$)/);
 

@@ -5,7 +5,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
 import {
-  getArchivalFilePath,
+  getArchiveFilePath,
   getFilenameFromPath,
   useFilesystem,
 } from "../utils/filesystem";
@@ -46,17 +46,17 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
   const { readFile, writeFile, deleteFile, isFile } = useFilesystem();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { setArchivedTasksDialog } = useArchivedTasksDialog();
-  const { archivalMode, setArchivalMode } = useSettings();
+  const { archiveMode, setArchiveMode } = useSettings();
   const {
     syncAllFiles,
     syncFileThrottled,
-    unlinkCloudArchivalFile,
-    linkCloudArchivalFile,
+    unlinkCloudArchiveFile,
+    linkCloudArchiveFile,
     deleteCloudFile,
     getCloudFileRefByFilePath,
-    getCloudArchivalFileRefByFilePath,
+    getCloudArchiveFileRefByFilePath,
     uploadFileAndResolveConflict,
-    getCloudArchivalFileMetaData,
+    getCloudArchiveFileMetaData,
     downloadFile,
   } = useCloudStorage();
   const { t } = useTranslation();
@@ -65,11 +65,11 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     async (items: SyncItem[]) => {
       const syncOptions: SyncFileOptions[] = [];
 
-      const updateArchivalMode = await Promise.all(
+      const updateArchiveMode = await Promise.all(
         items.map(async ({ filePath }) => {
-          const doneFilePath = getArchivalFilePath(filePath);
-          const ref = await getCloudArchivalFileRefByFilePath(filePath);
-          const metaData = await getCloudArchivalFileMetaData(filePath);
+          const doneFilePath = getArchiveFilePath(filePath);
+          const ref = await getCloudArchiveFileRefByFilePath(filePath);
+          const metaData = await getCloudArchiveFileMetaData(filePath);
 
           if (!doneFilePath) {
             return "do-nothing";
@@ -85,32 +85,32 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               syncOptions.push({
                 filePath: doneFilePath,
                 text: readResult.data,
-                archival: true,
+                archive: true,
               });
             }
           };
 
           if (ref && !metaData) {
-            // archival file was deleted in the cloud, so delete the file reference
+            // archive file was deleted in the cloud, so delete the file reference
             await Promise.all([
-              unlinkCloudArchivalFile(filePath),
+              unlinkCloudArchiveFile(filePath),
               deleteFile({
                 path: doneFilePath,
                 directory: Directory.Documents,
               }),
             ]);
-            return archivalMode !== "no-archiving" ? "disable" : "do-nothing";
+            return archiveMode !== "no-archiving" ? "disable" : "do-nothing";
           } else if (ref) {
-            // local archival file and cloud archival file available, add sync options
+            // local archive file and cloud archive file available, add sync options
             await addSyncOption();
-            return archivalMode === "no-archiving" ? "enable" : "do-nothing";
+            return archiveMode === "no-archiving" ? "enable" : "do-nothing";
           } else if (!metaData) {
-            // local archival file and cloud archival file do not exist, no sync needed
-            return archivalMode !== "no-archiving" ? "disable" : "do-nothing";
+            // local archive file and cloud archive file do not exist, no sync needed
+            return archiveMode !== "no-archiving" ? "disable" : "do-nothing";
           }
 
-          // download cloud archival file
-          if (archivalMode === "no-archiving") {
+          // download cloud archive file
+          if (archiveMode === "no-archiving") {
             const text = await downloadFile({
               cloudFilePath: metaData.path,
               cloudStorage: metaData.cloudStorage,
@@ -123,7 +123,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               encoding: Encoding.UTF8,
             });
 
-            await linkCloudArchivalFile({
+            await linkCloudArchiveFile({
               localFilePath: filePath,
               ...metaData,
             });
@@ -136,21 +136,21 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         })
       );
 
-      if (updateArchivalMode.some((i) => i === "enable")) {
-        setArchivalMode("manual");
+      if (updateArchiveMode.some((i) => i === "enable")) {
+        setArchiveMode("manual");
         enqueueSnackbar(
           t("Task archiving was turned on because a done.txt file was found"),
           { variant: "info" }
         );
       }
 
-      if (updateArchivalMode.every((i) => i === "disable")) {
-        setArchivalMode("no-archiving");
+      if (updateArchiveMode.every((i) => i === "disable")) {
+        setArchiveMode("no-archiving");
       }
 
       syncAllFiles(syncOptions).then((syncResult) =>
         syncResult.map(async (i) => {
-          const path = getArchivalFilePath(i.filePath);
+          const path = getArchiveFilePath(i.filePath);
           if (!path) {
             return;
           }
@@ -174,16 +174,16 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     },
     [
       syncAllFiles,
-      getCloudArchivalFileRefByFilePath,
-      getCloudArchivalFileMetaData,
+      getCloudArchiveFileRefByFilePath,
+      getCloudArchiveFileMetaData,
       readFile,
-      archivalMode,
-      unlinkCloudArchivalFile,
+      archiveMode,
+      unlinkCloudArchiveFile,
       deleteFile,
       downloadFile,
       writeFile,
-      linkCloudArchivalFile,
-      setArchivalMode,
+      linkCloudArchiveFile,
+      setArchiveMode,
       enqueueSnackbar,
       isFile,
       t,
@@ -192,7 +192,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
   const saveDoneFile = useCallback(
     async (filePath: string, text: string) => {
-      const doneFilePath = getArchivalFilePath(filePath);
+      const doneFilePath = getArchiveFilePath(filePath);
       if (!doneFilePath) {
         return;
       }
@@ -208,7 +208,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         filePath,
         text,
         showSnackbar: false,
-        archival: true,
+        archive: true,
       })?.then((result) => {
         if (result) {
           writeFile({
@@ -225,7 +225,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
   const loadDoneFile = useCallback(
     async (filePath: string) => {
-      const doneFilePath = getArchivalFilePath(filePath);
+      const doneFilePath = getArchiveFilePath(filePath);
       if (!doneFilePath) {
         return;
       }
@@ -253,7 +253,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     async ({ taskList, task, onSaveTodoFile }: RestoreTaskOptions) => {
       const { filePath, lineEnding, items } = taskList;
 
-      const doneFilePath = getArchivalFilePath(filePath);
+      const doneFilePath = getArchiveFilePath(filePath);
       if (!doneFilePath) {
         return;
       }
@@ -268,7 +268,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       );
 
       const todoFileText =
-        archivalMode === "automatic"
+        archiveMode === "automatic"
           ? stringifyTaskList(
               [
                 ...items,
@@ -304,7 +304,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
       return onSaveTodoFile(filePath, todoFileText);
     },
-    [archivalMode, deleteCloudFile, deleteFile, loadDoneFile, saveDoneFile]
+    [archiveMode, deleteCloudFile, deleteFile, loadDoneFile, saveDoneFile]
   );
 
   const archiveTask = useCallback(
@@ -327,7 +327,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           text: text,
           cloudStorage: fileRef.cloudStorage,
           mode: "update",
-          archival: true,
+          archive: true,
         });
         if (
           result &&
@@ -421,7 +421,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               text: doneFileText,
               cloudStorage: fileRef.cloudStorage,
               mode: "update",
-              archival: true,
+              archive: true,
             });
             if (
               result &&
@@ -459,7 +459,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             return;
           }
 
-          const doneFilePath = getArchivalFilePath(taskList.filePath);
+          const doneFilePath = getArchiveFilePath(taskList.filePath);
           if (!doneFilePath) {
             return;
           }

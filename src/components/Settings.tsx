@@ -11,7 +11,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useSettings } from "../data/SettingsContext";
 import { useNotifications } from "../utils/notifications";
-import ArchivalModeSelect from "./ArchivalModeSelect";
+import ArchiveModeSelect from "./ArchiveModeSelect";
 import ArchiveNowButton from "./ArchiveNowButton";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 import LanguageSelect from "./LanguageSelect";
@@ -27,7 +27,7 @@ const Settings = () => {
     setShowNotifications,
     createCompletionDate,
     createCreationDate,
-    archivalMode,
+    archiveMode,
     toggleCreateCompletionDate,
     toggleCreateCreationDate,
   } = useSettings();
@@ -112,8 +112,8 @@ const Settings = () => {
           </Tooltip>
         </Stack>
         <Stack spacing={1}>
-          <ArchivalModeSelect />
-          {archivalMode === "manual" && <ArchiveNowButton />}
+          <ArchiveModeSelect />
+          {archiveMode === "manual" && <ArchiveNowButton />}
         </Stack>
       </div>
       {cloudStorageEnabled && (

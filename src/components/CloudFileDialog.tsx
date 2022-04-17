@@ -24,7 +24,7 @@ import {
   CloudFileRef,
   ListCloudItemResult,
 } from "../types/cloud-storage.types";
-import { getArchivalFilePath } from "../utils/filesystem";
+import { getArchiveFilePath } from "../utils/filesystem";
 import { ResponsiveDialog } from "./ResponsiveDialog";
 import StartEllipsis from "./StartEllipsis";
 
@@ -38,7 +38,7 @@ const CloudFileDialog = () => {
     listCloudFiles,
     downloadFile,
     linkCloudFile,
-    linkCloudArchivalFile,
+    linkCloudArchiveFile,
     getCloudFileRefs,
     cloudFileDialogOptions: { open, cloudStorage },
     setCloudFileDialogOptions,
@@ -48,7 +48,7 @@ const CloudFileDialog = () => {
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListCloudItemResult | undefined>();
   const [cloudFileRefs, setCloudFileRefs] = useState<CloudFileRef[]>([]);
-  const { archivalMode, setArchivalMode } = useSettings();
+  const { archiveMode, setArchiveMode } = useSettings();
   const { enqueueSnackbar } = useSnackbar();
   const listItems = !files
     ? []
@@ -89,25 +89,25 @@ const CloudFileDialog = () => {
 
     await createNewTodoFile(selectedFile.name, text);
 
-    const archivalFilePath = getArchivalFilePath(selectedFile.path);
+    const archiveFilePath = getArchiveFilePath(selectedFile.path);
 
-    const archivalFile = files?.items.find(
-      (i) => i.path === archivalFilePath
-    ) as CloudFile | undefined;
+    const archiveFile = files?.items.find((i) => i.path === archiveFilePath) as
+      | CloudFile
+      | undefined;
 
-    if (archivalFile && archivalFilePath) {
-      const archivalText = await downloadFile({
-        cloudFilePath: archivalFile.path,
+    if (archiveFile && archiveFilePath) {
+      const archiveText = await downloadFile({
+        cloudFilePath: archiveFile.path,
         cloudStorage,
       });
-      await saveDoneFile(selectedFile.name, archivalText);
-      await linkCloudArchivalFile({
-        ...archivalFile,
+      await saveDoneFile(selectedFile.name, archiveText);
+      await linkCloudArchiveFile({
+        ...archiveFile,
         localFilePath: selectedFile.name,
         cloudStorage,
       });
-      if (archivalMode === "no-archiving") {
-        await setArchivalMode("manual");
+      if (archiveMode === "no-archiving") {
+        await setArchiveMode("manual");
         enqueueSnackbar(
           t("Task archiving was turned on because a done.txt file was found"),
           { variant: "info" }
@@ -163,7 +163,7 @@ const CloudFileDialog = () => {
 
   const listItemTitle = (cloudFile: CloudFile) => {
     const doneFile = files?.items.find(
-      (i) => i.path === getArchivalFilePath(cloudFile.path)
+      (i) => i.path === getArchiveFilePath(cloudFile.path)
     );
     if (doneFile) {
       return `${cloudFile.name} + ${doneFile.name}`;

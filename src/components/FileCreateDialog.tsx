@@ -70,7 +70,7 @@ const FileCreateDialog = () => {
         text: "",
         mode: "create",
         cloudStorage: selectedCloudStorage,
-        archival: false,
+        archive: false,
       });
       if (
         result &&
