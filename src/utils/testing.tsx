@@ -107,7 +107,7 @@ X 2012-01-01 Second task
 
 export const todoTxtPaths: StorageItem = {
   key: "todo-txt-paths",
-  value: JSON.stringify(["todo.txt"]),
+  value: JSON.stringify([process.env.REACT_APP_DEFAULT_FILE_NAME]),
 };
 
 export const TestContext = (props: TestContextProps) => {

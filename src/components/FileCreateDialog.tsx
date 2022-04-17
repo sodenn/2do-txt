@@ -16,11 +16,13 @@ import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
-import { defaultTodoFilePath, useTask } from "../data/TaskContext";
+import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { CloudStorage } from "../types/cloud-storage.types";
 import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
+
+const defaultTodoFilePath = process.env.REACT_APP_DEFAULT_FILE_NAME;
 
 const FileCreateDialog = () => {
   const { t } = useTranslation();

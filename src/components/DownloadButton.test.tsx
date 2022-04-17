@@ -27,7 +27,7 @@ describe("DownloadButton", () => {
 
     expect(FileSaver.saveAs).toHaveBeenCalledWith(
       { content: [todoTxt], options: { type: "text/plain;charset=utf-8" } },
-      "todo.txt"
+      process.env.REACT_APP_DEFAULT_FILE_NAME
     );
   });
 });

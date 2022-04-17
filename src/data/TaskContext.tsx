@@ -36,8 +36,6 @@ import { useLoading } from "./LoadingContext";
 import { useMigration } from "./MigrationContext";
 import { useSettings } from "./SettingsContext";
 
-export const defaultTodoFilePath = "todo.txt";
-
 interface SyncItem {
   filePath: string;
   text: string;
@@ -421,7 +419,7 @@ const [TaskProvider, useTask] = createContext(() => {
         activeTaskList.lineEnding
       );
       const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-      FileSaver.saveAs(blob, "todo.txt");
+      FileSaver.saveAs(blob, process.env.REACT_APP_DEFAULT_FILE_NAME);
     }
   }, [activeTaskList]);
 

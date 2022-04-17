@@ -2,13 +2,13 @@ import { getArchiveFilePath } from "./filesystem";
 
 describe("filesystem", () => {
   it("should get archive file path from long source path", async () => {
-    const filePath = "/Documents/todo.txt";
+    const filePath = `/Documents/${process.env.REACT_APP_DEFAULT_FILE_NAME}`;
     const archiveFilePath = getArchiveFilePath(filePath);
     expect(archiveFilePath).toBe("/Documents/done.txt");
   });
 
   it("should get archive file path from short source path", async () => {
-    const filePath = "todo.txt";
+    const filePath = process.env.REACT_APP_DEFAULT_FILE_NAME;
     const archiveFilePath = getArchiveFilePath(filePath);
     expect(archiveFilePath).toBe("done.txt");
   });
