@@ -20,7 +20,7 @@ interface SearchParams {
 
 const AppRouter = () => {
   return (
-    <Router basename={process.env.REACT_APP_BASE_PATH}>
+    <Router basename={process.env.PUBLIC_URL}>
       <AppRouters />
     </Router>
   );

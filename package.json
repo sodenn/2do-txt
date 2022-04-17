@@ -57,7 +57,7 @@
     "typeface-roboto": "^1.1.13"
   },
   "scripts": {
-    "start": "GENERATE_SOURCEMAP=false react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:e2e": "playwright test",
