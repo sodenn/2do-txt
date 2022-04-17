@@ -53,11 +53,11 @@ export function getArchiveFilePath(filePath: string) {
   return fileName === process.env.REACT_APP_DEFAULT_FILE_NAME
     ? filePath.replace(
         new RegExp(`${fileName}$`),
-        process.env.REACT_APP_ARCHIVAL_FILE_NAME
+        process.env.REACT_APP_ARCHIVE_FILE_NAME
       )
     : filePath.replace(
         new RegExp(`${fileName}$`),
-        `${fileNameWithoutEnding[1]}_${process.env.REACT_APP_ARCHIVAL_FILE_NAME}`
+        `${fileNameWithoutEnding[1]}_${process.env.REACT_APP_ARCHIVE_FILE_NAME}`
       );
 }
 
