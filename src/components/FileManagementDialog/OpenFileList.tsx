@@ -1,7 +1,8 @@
 import { List, ListSubheader } from "@mui/material";
-import { memo } from "react";
-import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
+import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { arrayMove, List as MovableList } from "react-movable";
+import { OnChangeMeta } from "react-movable/lib/types";
 import { useTask } from "../../data/TaskContext";
 import OpenFileItem, { CloseOptions } from "./OpenFileItem";
 
@@ -12,28 +13,34 @@ interface OpenFileListProps {
 
 const OpenFileList = memo((props: OpenFileListProps) => {
   const { subheader, onClose } = props;
+  const wrapper = useRef<HTMLDivElement>(null);
+  const [container, setContainer] = useState<Element | null>(null);
   const { taskLists, reorderTaskList } = useTask();
+  const [items, setItems] = useState(taskLists.map((t) => t.filePath));
   const { t } = useTranslation();
 
-  if (taskLists.length === 0) {
+  useEffect(() => {
+    setContainer(wrapper.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wrapper.current]);
+
+  if (items.length === 0) {
     return null;
   }
 
-  const handleDragEnd = ({ destination, source }: DropResult) => {
-    if (destination) {
-      const startIndex = source.index;
-      const endIndex = destination.index;
-      const filePaths = taskLists.map((t) => t.filePath);
-      const [removed] = filePaths.splice(startIndex, 1);
-      filePaths.splice(endIndex, 0, removed);
-      reorderTaskList(filePaths);
-    }
+  const handleChange = ({ oldIndex, newIndex }: OnChangeMeta) => {
+    const newItems = arrayMove(items, oldIndex, newIndex);
+    setItems(newItems);
+    reorderTaskList(newItems);
   };
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="droppable-list">
-        {(provided) => (
+    <div ref={wrapper}>
+      <MovableList
+        lockVertically
+        values={items}
+        container={container}
+        renderList={({ children, props }) => (
           <List
             sx={{ py: 0 }}
             subheader={
@@ -43,22 +50,17 @@ const OpenFileList = memo((props: OpenFileListProps) => {
                 </ListSubheader>
               ) : undefined
             }
-            ref={provided.innerRef}
-            {...provided.droppableProps}
+            {...props}
           >
-            {taskLists.map((item, index) => (
-              <OpenFileItem
-                filePath={item.filePath}
-                index={index}
-                key={item.filePath}
-                onClose={onClose}
-              />
-            ))}
-            {provided.placeholder}
+            {children}
           </List>
         )}
-      </Droppable>
-    </DragDropContext>
+        renderItem={({ value, props }) => (
+          <OpenFileItem filePath={value} onClose={onClose} {...props} />
+        )}
+        onChange={handleChange}
+      />
+    </div>
   );
 });
 
