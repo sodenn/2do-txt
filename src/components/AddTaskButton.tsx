@@ -16,7 +16,7 @@ const AddTaskButton = (props: IconButtonProps) => {
       disableTouchListener
       title={
         <>
-          {t("Create Task")}{" "}
+          {t("Create Task")}
           <Box component="span" sx={{ ml: 0.5 }}>
             <Kbd>N</Kbd>
           </Box>

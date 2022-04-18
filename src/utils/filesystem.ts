@@ -38,8 +38,7 @@ export function getFilenameFromPath(filePath: string) {
   return filePath.replace(/^.*[\\/]/, "");
 }
 
-export function getArchiveFilePath(filePath: string) {
-  const fileName = getFilenameFromPath(filePath);
+export function getFileNameWithoutEnding(fileName: string) {
   const fileNameWithoutEnding = fileName.match(/(.+?)(\.[^.]*$|$)/);
 
   if (
@@ -50,6 +49,16 @@ export function getArchiveFilePath(filePath: string) {
     return;
   }
 
+  return fileNameWithoutEnding[1];
+}
+
+export function getArchiveFilePath(filePath: string) {
+  const fileName = getFilenameFromPath(filePath);
+  const fileNameWithoutEnding = getFileNameWithoutEnding(fileName);
+  if (!fileNameWithoutEnding) {
+    return;
+  }
+
   return fileName === process.env.REACT_APP_DEFAULT_FILE_NAME
     ? filePath.replace(
         new RegExp(`${fileName}$`),
@@ -57,7 +66,7 @@ export function getArchiveFilePath(filePath: string) {
       )
     : filePath.replace(
         new RegExp(`${fileName}$`),
-        `${fileNameWithoutEnding[1]}_${process.env.REACT_APP_ARCHIVE_FILE_NAME}`
+        `${fileNameWithoutEnding}_${process.env.REACT_APP_ARCHIVE_FILE_NAME}`
       );
 }
 

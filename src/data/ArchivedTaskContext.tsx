@@ -244,6 +244,8 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       return {
         items: parseResult.items,
         lineEnding: parseResult.lineEnding,
+        doneFileName: getFilenameFromPath(doneFilePath),
+        doneFilePath,
       };
     },
     [readFile]
@@ -287,10 +289,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               lineEnding
             );
 
-      const doneFileText = stringifyTaskList(
-        completedTasks,
-        taskList.lineEnding
-      );
+      const doneFileText = stringifyTaskList(completedTasks, lineEnding);
 
       if (completedTasks.length === 0) {
         await deleteFile({
@@ -393,13 +392,15 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     async ({ onSaveTodoFile, taskLists }: ArchiveAllTaskOptions) => {
       return Promise.all(
         taskLists.map(async (taskList) => {
+          const { filePath, items, lineEnding } = taskList;
+
           const todoFileText = stringifyTaskList(
-            taskList.items.filter((i) => !i.completed),
-            taskList.lineEnding
+            items.filter((i) => !i.completed),
+            lineEnding
           );
 
-          const completedTasks = await loadDoneFile(taskList.filePath);
-          const newCompletedTasks = taskList.items.filter((i) => i.completed);
+          const completedTasks = await loadDoneFile(filePath);
+          const newCompletedTasks = items.filter((i) => i.completed);
           const allCompletedTasks = [
             ...(completedTasks?.items || []),
             ...newCompletedTasks,
@@ -407,17 +408,17 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
           const doneFileText = stringifyTaskList(
             allCompletedTasks,
-            completedTasks ? completedTasks.lineEnding : taskList.lineEnding
+            completedTasks ? completedTasks.lineEnding : lineEnding
           );
 
           if (allCompletedTasks.length === 0) {
             return;
           }
 
-          const fileRef = await getCloudFileRefByFilePath(taskList.filePath);
+          const fileRef = await getCloudFileRefByFilePath(filePath);
           if (fileRef) {
             const result = await uploadFileAndResolveConflict({
-              filePath: taskList.filePath,
+              filePath,
               text: doneFileText,
               cloudStorage: fileRef.cloudStorage,
               mode: "update",
@@ -429,24 +430,34 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               result.conflict.option === "cloud"
             ) {
               await Promise.all([
-                onSaveTodoFile(taskList.filePath, todoFileText),
-                saveDoneFile(taskList.filePath, result.conflict.text),
+                onSaveTodoFile(filePath, todoFileText),
+                saveDoneFile(filePath, result.conflict.text),
               ]);
             }
           }
 
           await Promise.all([
-            onSaveTodoFile(taskList.filePath, todoFileText),
-            saveDoneFile(taskList.filePath, doneFileText),
+            onSaveTodoFile(filePath, todoFileText),
+            saveDoneFile(filePath, doneFileText),
           ]);
+
+          const doneFilePath = getArchiveFilePath(filePath);
+          if (doneFilePath) {
+            enqueueSnackbar(
+              t("All completed tasks have been archived", { doneFilePath }),
+              { variant: "success" }
+            );
+          }
         })
       );
     },
     [
+      enqueueSnackbar,
       getCloudFileRefByFilePath,
       loadDoneFile,
       saveDoneFile,
       uploadFileAndResolveConflict,
+      t,
     ]
   );
 
@@ -480,11 +491,16 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             }),
           ]);
 
+          enqueueSnackbar(
+            t("All completed tasks have been restored", { doneFilePath }),
+            { variant: "success" }
+          );
+
           deleteCloudFile(taskList.filePath, true).catch((e) => void e);
         })
       );
     },
-    [deleteCloudFile, deleteFile, loadDoneFile]
+    [deleteCloudFile, deleteFile, enqueueSnackbar, loadDoneFile, t]
   );
 
   return {

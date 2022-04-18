@@ -1,15 +1,20 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { isBefore, subHours } from "date-fns";
+import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
+import JSZip, { OutputType } from "jszip";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppRate } from "../utils/app-rate";
 import { createContext } from "../utils/Context";
 import { todayDate } from "../utils/date";
-import { getFilenameFromPath, useFilesystem } from "../utils/filesystem";
+import {
+  getFilenameFromPath,
+  getFileNameWithoutEnding,
+  useFilesystem,
+} from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
 import { useNotifications } from "../utils/notifications";
 import { usePlatform } from "../utils/platform";
@@ -412,26 +417,77 @@ const [TaskProvider, useTask] = createContext(() => {
     ]
   );
 
-  const downloadTodoFile = useCallback(() => {
+  const generateZipFile = useCallback(
+    async (taskList: TaskList, outputType: OutputType = "blob") => {
+      const { items, lineEnding, filePath, fileName } = taskList;
+
+      const doneFile = await loadDoneFile(filePath);
+      if (!doneFile) {
+        return;
+      }
+      const fileNameWithoutEnding = getFileNameWithoutEnding(fileName);
+      const todoFileText = stringifyTaskList(items, lineEnding);
+
+      if (doneFile) {
+        const doneFileText = stringifyTaskList(doneFile.items, lineEnding);
+        const zip = new JSZip();
+        zip.file(fileName, todoFileText);
+        zip.file(doneFile.doneFileName, doneFileText);
+        const blob = await zip.generateAsync({ type: outputType });
+        const date = format(new Date(), "yyyy-MM-dd_HH-mm-ss");
+        return {
+          zipContent: blob,
+          zipFilename: `${fileNameWithoutEnding}_${date}.zip`,
+        };
+      }
+    },
+    [loadDoneFile]
+  );
+
+  const downloadTodoFile = useCallback(async () => {
     if (activeTaskList) {
-      const content = stringifyTaskList(
-        activeTaskList.items,
-        activeTaskList.lineEnding
-      );
-      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-      FileSaver.saveAs(blob, process.env.REACT_APP_DEFAULT_FILE_NAME);
+      const { items, lineEnding, fileName } = activeTaskList;
+
+      const zip = await generateZipFile(activeTaskList);
+
+      if (zip) {
+        FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
+      } else {
+        const content = stringifyTaskList(items, lineEnding);
+        const blob = new Blob([content], {
+          type: "text/plain;charset=utf-8",
+        });
+        FileSaver.saveAs(blob, fileName);
+      }
     }
-  }, [activeTaskList]);
+  }, [activeTaskList, generateZipFile]);
 
   const shareTodoFile = useCallback(async () => {
     if (activeTaskList) {
-      const { uri } = await getUri({
-        directory: Directory.Documents,
-        path: activeTaskList.filePath,
-      });
-      await Share.share({ url: uri });
+      const zip = await generateZipFile(activeTaskList, "base64");
+
+      if (zip) {
+        const result = await writeFile({
+          data: zip.zipContent as string,
+          path: zip.zipFilename,
+          directory: Directory.Documents,
+        });
+        const uri = result.uri;
+        await Share.share({ url: uri });
+        await deleteFile({
+          path: zip.zipFilename,
+          directory: Directory.Documents,
+        });
+      } else {
+        const result = await getUri({
+          directory: Directory.Documents,
+          path: activeTaskList.filePath,
+        });
+        const uri = result.uri;
+        await Share.share({ url: uri });
+      }
     }
-  }, [activeTaskList, getUri]);
+  }, [activeTaskList, deleteFile, generateZipFile, getUri, writeFile]);
 
   const scheduleDueTaskNotifications = useCallback(
     async (taskList: Task[]) => {
