@@ -1932,12 +1932,12 @@
     immutable "~3.7.4"
     prop-types "^15.8.1"
 
-"@draft-js-plugins/mention@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@draft-js-plugins/mention/-/mention-5.2.0.tgz#dfa94931307d4de55e03cf8a057fd8909a00415e"
-  integrity sha512-kcV8N2bGExQ/eNcsByfBB2fSSSx09WYdZCLPuqYUbTYGJtjC33qsbbT0VGVjVJjUGYJFktT8E327l5St5cUknA==
+"@draft-js-plugins/mention@^5.2.1":
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/@draft-js-plugins/mention/-/mention-5.2.1.tgz#d641b68f7db2b168d479c9164a4b11f3bb0b206c"
+  integrity sha512-toegJW/iY+/SVsbLtfGC46ApJ7EhTyd1iN47iYVOp+fMuFMC18GNeu4uJxz49hZ6qHkhxOFeEFevJ2TcK1CBhQ==
   dependencies:
-    "@popperjs/core" "^2.11.4"
+    "@popperjs/core" "^2.11.5"
     "@types/lodash" "^4.14.181"
     clsx "^1.0.4"
     immutable "~3.7.4"
@@ -2902,7 +2902,7 @@
     schema-utils "^2.6.5"
     source-map "^0.7.3"
 
-"@popperjs/core@^2.11.4":
+"@popperjs/core@^2.11.4", "@popperjs/core@^2.11.5":
   version "2.11.5"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.5.tgz#db5a11bf66bdab39569719555b0f76e138d7bd64"
   integrity sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==
