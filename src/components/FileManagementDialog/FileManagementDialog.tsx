@@ -22,7 +22,7 @@ const FileManagementDialog = () => {
   const platform = usePlatform();
   const { fileManagementDialogOpen, setFileManagementDialogOpen } =
     useFileManagementDialog();
-  const { unlinkFile } = useCloudStorage();
+  const { unlinkCloudFile, unlinkCloudArchiveFile } = useCloudStorage();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { readdir, deleteFile } = useFilesystem();
   const { t } = useTranslation();
@@ -44,9 +44,13 @@ const FileManagementDialog = () => {
 
   const listClosedFiles = useCallback(
     (files: string[]) => {
-      const closedFiles = files.filter((f) =>
-        taskLists.every((t) => t.filePath !== f)
-      );
+      const closedFiles = files
+        .filter((f) => taskLists.every((t) => t.filePath !== f))
+        .filter(
+          (filePath) =>
+            filePath !== process.env.REACT_APP_ARCHIVE_FILE_NAME &&
+            !filePath.endsWith(`_${process.env.REACT_APP_ARCHIVE_FILE_NAME}`)
+        );
       setClosedFiles(closedFiles);
       return closedFiles;
     },
@@ -90,6 +94,8 @@ const FileManagementDialog = () => {
         handleCloseDialog();
       }
       closeTodoFile(filePath).then(listFiles);
+      unlinkCloudFile(filePath).catch((e) => void e);
+      unlinkCloudArchiveFile(filePath).catch((e) => void e);
     };
 
     if (deleteFile) {
@@ -116,7 +122,8 @@ const FileManagementDialog = () => {
         console.debug(error);
       })
       .then(listFiles);
-    unlinkFile(filePath).catch((e) => void e);
+    unlinkCloudFile(filePath).catch((e) => void e);
+    unlinkCloudArchiveFile(filePath).catch((e) => void e);
   };
 
   const handleCloseDialog = () => {

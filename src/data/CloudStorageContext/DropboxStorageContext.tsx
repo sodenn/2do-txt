@@ -384,6 +384,14 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     [generateContentHash, getClient, getFileMetaData, handleError]
   );
 
+  const dropboxDeleteFile = useCallback(
+    async (path: string) => {
+      const dbx = await getClient();
+      await dbx.filesDeleteV2({ path });
+    },
+    [getClient]
+  );
+
   const dropboxSyncFile = useCallback(
     async (opt: SyncFileOptions): Promise<SyncFileResult> => {
       const { localVersion, localContent } = opt;
@@ -465,5 +473,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     dropboxUploadFile,
     dropboxUnlink,
     dropboxRequestTokens,
+    getFileMetaData,
+    dropboxDeleteFile,
   };
 });

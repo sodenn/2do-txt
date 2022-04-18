@@ -60,7 +60,7 @@ const FileInput = (props: FileInputProps) => {
         const filePath = (file as any).path;
         const taskList = await loadTodoFile(filePath, content);
         await addTodoFilePath(filePath);
-        scheduleDueTaskNotifications(taskList);
+        scheduleDueTaskNotifications(taskList.items);
         return filePath;
       } else {
         // Other platforms does not allow to access the file storage.

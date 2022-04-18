@@ -2,6 +2,8 @@ import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { FC, Suspense } from "react";
 import { AppTheme } from "./AppThemeContext";
+import { ArchivedTaskProvider } from "./ArchivedTaskContext";
+import { ArchivedTasksDialogProvider } from "./ArchivedTasksDialogContext";
 import { CloudStorageProvider } from "./CloudStorageContext";
 import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
 import { FileCreateDialogProvider } from "./FileCreateDialogContext";
@@ -36,15 +38,19 @@ const ProviderBundle: FC = ({ children }) => {
                     <SettingsProvider>
                       <FilterProvider>
                         <SideSheetProvider>
-                          <TaskProvider>
-                            <FileManagementDialogProvider>
-                              <FileCreateDialogProvider>
-                                <TaskDialogProvider>
-                                  {children}
-                                </TaskDialogProvider>
-                              </FileCreateDialogProvider>
-                            </FileManagementDialogProvider>
-                          </TaskProvider>
+                          <ArchivedTasksDialogProvider>
+                            <ArchivedTaskProvider>
+                              <TaskProvider>
+                                <FileManagementDialogProvider>
+                                  <FileCreateDialogProvider>
+                                    <TaskDialogProvider>
+                                      {children}
+                                    </TaskDialogProvider>
+                                  </FileCreateDialogProvider>
+                                </FileManagementDialogProvider>
+                              </TaskProvider>
+                            </ArchivedTaskProvider>
+                          </ArchivedTasksDialogProvider>
                         </SideSheetProvider>
                       </FilterProvider>
                     </SettingsProvider>

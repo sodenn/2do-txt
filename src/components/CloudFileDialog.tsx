@@ -11,17 +11,20 @@ import {
   ListItem,
   Typography,
 } from "@mui/material";
+import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFilter } from "../data/FilterContext";
+import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import {
   CloudFile,
   CloudFileRef,
   ListCloudItemResult,
 } from "../types/cloud-storage.types";
+import { getArchiveFilePath } from "../utils/filesystem";
 import { ResponsiveDialog } from "./ResponsiveDialog";
 import StartEllipsis from "./StartEllipsis";
 
@@ -29,12 +32,13 @@ const root = "";
 
 const CloudFileDialog = () => {
   const { t } = useTranslation();
-  const { createNewTodoFile, taskLists } = useTask();
+  const { createNewTodoFile, saveDoneFile, taskLists } = useTask();
   const { setActiveTaskListPath } = useFilter();
   const {
-    listFiles,
+    listCloudFiles,
     downloadFile,
-    linkFile,
+    linkCloudFile,
+    linkCloudArchiveFile,
     getCloudFileRefs,
     cloudFileDialogOptions: { open, cloudStorage },
     setCloudFileDialogOptions,
@@ -44,6 +48,17 @@ const CloudFileDialog = () => {
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListCloudItemResult | undefined>();
   const [cloudFileRefs, setCloudFileRefs] = useState<CloudFileRef[]>([]);
+  const { archiveMode, setArchiveMode } = useSettings();
+  const { enqueueSnackbar } = useSnackbar();
+  const listItems = !files
+    ? []
+    : files.items
+        .filter((i) => i.type !== "folder")
+        .filter(
+          (i) =>
+            i.name !== process.env.REACT_APP_ARCHIVE_FILE_NAME &&
+            !i.name.endsWith(`_${process.env.REACT_APP_ARCHIVE_FILE_NAME}`)
+        );
 
   const handleClose = () => {
     setLoading(false);
@@ -71,8 +86,36 @@ const CloudFileDialog = () => {
       cloudFilePath: selectedFile.path,
       cloudStorage,
     });
+
     await createNewTodoFile(selectedFile.name, text);
-    await linkFile({
+
+    const archiveFilePath = getArchiveFilePath(selectedFile.path);
+
+    const archiveFile = files?.items.find((i) => i.path === archiveFilePath) as
+      | CloudFile
+      | undefined;
+
+    if (archiveFile && archiveFilePath) {
+      const archiveText = await downloadFile({
+        cloudFilePath: archiveFile.path,
+        cloudStorage,
+      });
+      await saveDoneFile(selectedFile.name, archiveText);
+      await linkCloudArchiveFile({
+        ...archiveFile,
+        localFilePath: selectedFile.name,
+        cloudStorage,
+      });
+      if (archiveMode === "no-archiving") {
+        await setArchiveMode("manual");
+        enqueueSnackbar(
+          t("Task archiving was turned on because a done.txt file was found"),
+          { variant: "info" }
+        );
+      }
+    }
+
+    await linkCloudFile({
       ...selectedFile,
       localFilePath: selectedFile.name,
       lastSync: new Date().toISOString(),
@@ -91,29 +134,42 @@ const CloudFileDialog = () => {
   const handleLoadItems = useCallback(
     (path = root) => {
       if (cloudStorage) {
-        listFiles({ path, cloudStorage }).then((result) => {
+        listCloudFiles({ path, cloudStorage }).then((result) => {
           if (result) {
             setFiles(result);
           }
         });
       }
     },
-    [cloudStorage, listFiles]
+    [cloudStorage, listCloudFiles]
   );
 
   const handleLoadMoreItems = (path = root) => {
     if (cloudStorage && files && files.hasMore && files.cursor) {
-      listFiles({ path, cursor: files.cursor, cloudStorage }).then((result) => {
-        if (result) {
-          result.items = [...files.items, ...result.items];
-          setFiles(result);
+      listCloudFiles({ path, cursor: files.cursor, cloudStorage }).then(
+        (result) => {
+          if (result) {
+            result.items = [...files.items, ...result.items];
+            setFiles(result);
+          }
         }
-      });
+      );
     }
   };
 
   const disableItem = (cloudFile: CloudFile) => {
     return cloudFileRefs.some((c) => c.path === cloudFile.path);
+  };
+
+  const listItemTitle = (cloudFile: CloudFile) => {
+    const doneFile = files?.items.find(
+      (i) => i.path === getArchiveFilePath(cloudFile.path)
+    );
+    if (doneFile) {
+      return `${cloudFile.name} + ${doneFile.name}`;
+    } else {
+      return cloudFile.name;
+    }
   };
 
   useEffect(() => {
@@ -157,10 +213,9 @@ const CloudFileDialog = () => {
             <Trans i18nKey="Existing todo.txt files can be synchronized" />
           </Typography>
         )}
-        {files && files.items.length > 0 && (
+        {listItems.length > 0 && (
           <List sx={{ py: 0 }} dense>
-            {files.items
-              .filter((i) => i.type !== "folder")
+            {listItems
               .map((i) => i as CloudFile)
               .map((cloudFile, idx) => (
                 <ListItem
@@ -175,7 +230,7 @@ const CloudFileDialog = () => {
                 >
                   <Box sx={{ overflow: "hidden", flex: 1 }}>
                     <StartEllipsis sx={{ my: 0.5 }}>
-                      {cloudFile.name}
+                      {listItemTitle(cloudFile)}
                     </StartEllipsis>
                     <StartEllipsis
                       sx={{ my: 0.5 }}
@@ -192,7 +247,7 @@ const CloudFileDialog = () => {
                   )}
                 </ListItem>
               ))}
-            {files.hasMore && (
+            {files?.hasMore && (
               <ListItem button onClick={() => handleLoadMoreItems()}>
                 <StartEllipsis sx={{ my: 0.5 }}>{t("Load more")}</StartEllipsis>
               </ListItem>

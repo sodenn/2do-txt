@@ -1,4 +1,4 @@
-import { TaskListState } from "../data/TaskContext";
+import { TaskList } from "../data/TaskContext";
 import { arrayMove } from "./array";
 import {
   convertToTaskGroups,
@@ -139,11 +139,11 @@ x 2. task +ProjB
       incomplete: parseResult.incomplete,
     };
 
-    const taskLists: TaskListState[] = [
+    const taskLists: TaskList[] = [
       {
         ...parseResult,
-        filePath: "todo.txt",
-        fileName: "todo.txt",
+        filePath: process.env.REACT_APP_DEFAULT_FILE_NAME,
+        fileName: process.env.REACT_APP_DEFAULT_FILE_NAME,
       },
     ];
 
@@ -158,7 +158,7 @@ x 2. task +ProjB
 
     const parseResult = parseTaskList(todoTxt);
 
-    const taskLists: TaskListState[] = [
+    const taskLists: TaskList[] = [
       {
         ...parseResult,
         filePath: "todo1.txt",

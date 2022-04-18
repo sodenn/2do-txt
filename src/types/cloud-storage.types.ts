@@ -26,6 +26,11 @@ export interface CloudFileRef extends CloudFile {
   cloudStorage: CloudStorage;
 }
 
+export interface CloudArchiveFileRef extends CloudFile {
+  localFilePath: string;
+  cloudStorage: CloudStorage;
+}
+
 export interface ListCloudFilesOptions {
   path?: string;
   cursor?: string;
@@ -45,7 +50,7 @@ export interface UploadFileOptions {
 }
 
 export interface SyncFileOptions {
-  localVersion: CloudFileRef;
+  localVersion: CloudFile;
   localContent: string;
 }
 
