@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { TestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 
 describe("SideSheetButton", () => {
@@ -15,7 +16,7 @@ describe("SideSheetButton", () => {
       name: "Menu",
     });
 
-    fireEvent.click(menuButton);
+    await userEvent.click(menuButton);
 
     expect(
       screen.getByRole("presentation", { name: "Menu" })
@@ -23,9 +24,7 @@ describe("SideSheetButton", () => {
   });
 
   it("should open the menu via shortcut", async () => {
-    const { container } = render(
-      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
-    );
+    render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
     await screen.findByTestId("page");
 
@@ -33,7 +32,7 @@ describe("SideSheetButton", () => {
       screen.findByRole("presentation", { name: "Menu" })
     ).rejects.toThrow('Unable to find role="presentation"');
 
-    fireEvent.keyDown(container, { key: "m", code: "KeyM" });
+    await userEvent.keyboard("m");
 
     expect(
       screen.getByRole("presentation", { name: "Menu" })
@@ -41,24 +40,17 @@ describe("SideSheetButton", () => {
   });
 
   it("should close the menu via esc key", async () => {
-    const { container } = render(
-      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
-    );
+    render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
     await screen.findByTestId("page");
 
-    fireEvent.keyDown(container, { key: "m", code: "KeyM" });
+    await userEvent.keyboard("m");
 
     expect(
       screen.getByRole("presentation", { name: "Menu" })
     ).toBeInTheDocument();
 
-    fireEvent.keyDown(screen.getByRole("presentation", { name: "Menu" }), {
-      key: "Escape",
-      code: "Escape",
-      keyCode: 27,
-      charCode: 27,
-    });
+    await userEvent.keyboard("{Escape}");
 
     await expect(() =>
       screen.findByRole("presentation", { name: "Menu" })

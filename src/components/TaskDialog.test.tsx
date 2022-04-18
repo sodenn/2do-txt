@@ -1,11 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { TestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 
 describe("TaskDialog", () => {
   it("should open task dialog via shortcut", async () => {
-    const { container } = render(
-      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
-    );
+    render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
     await screen.findByTestId("page");
 
@@ -13,7 +12,7 @@ describe("TaskDialog", () => {
       screen.findByRole("presentation", { name: "Task dialog" })
     ).rejects.toThrow('Unable to find role="presentation"');
 
-    fireEvent.keyDown(container, { key: "n", code: "KeyN" });
+    await userEvent.keyboard("n");
 
     await expect(
       screen.getByRole("presentation", { name: "Task dialog" })
@@ -21,9 +20,7 @@ describe("TaskDialog", () => {
   });
 
   it("should not open task dialog via shortcut when menu is open", async () => {
-    const { container } = render(
-      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
-    );
+    render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
     await screen.findByTestId("page");
 
@@ -31,13 +28,13 @@ describe("TaskDialog", () => {
       screen.findByRole("presentation", { name: "Task dialog" })
     ).rejects.toThrow('Unable to find role="presentation"');
 
-    fireEvent.keyDown(container, { key: "m", code: "KeyM" });
+    await userEvent.keyboard("m");
 
     expect(
       screen.getByRole("presentation", { name: "Menu" })
     ).toBeInTheDocument();
 
-    fireEvent.keyDown(container, { key: "n", code: "KeyN" });
+    await userEvent.keyboard("n");
 
     await expect(() =>
       screen.findByRole("presentation", { name: "Task dialog" })

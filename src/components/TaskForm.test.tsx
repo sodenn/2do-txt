@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { Dictionary } from "../types/common";
 import { TaskFormData } from "../utils/task";
@@ -58,9 +59,7 @@ const TestComp = (props: TestCompProps) => {
 describe("TaskForm", () => {
   const selectSuggestion = async (text: string) => {
     const menuItem = await screen.findByText(text);
-    fireEvent.mouseEnter(menuItem);
-    fireEvent.mouseDown(menuItem);
-    fireEvent.mouseUp(menuItem);
+    await userEvent.click(menuItem);
   };
 
   it("should render a popover with due date suggestion", async () => {

@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { TestContext } from "../utils/testing";
 
 describe("Onboarding", () => {
@@ -20,17 +19,29 @@ describe("Onboarding", () => {
 
     fireEvent.click(createTaskButton);
 
+    await waitFor(() => {
+      const input = screen.queryByRole("textbox", { name: "File name" });
+      expect(input).toHaveValue("todo.txt");
+    });
+
     const fileDialog = await screen.findByRole("presentation", {
       name: "File dialog",
     });
 
     expect(fileDialog).toBeInTheDocument();
 
-    const createFile = await screen.findByRole("button", {
+    const createButton = await screen.findByRole("button", {
       name: "Create file",
     });
 
-    await waitFor(() => userEvent.click(createFile));
+    fireEvent.click(createButton);
+
+    await waitFor(() => {
+      const fileDialog = screen.queryByRole("presentation", {
+        name: "File dialog",
+      });
+      expect(fileDialog).toBeNull();
+    });
 
     const taskDialog = await screen.findByRole("presentation", {
       name: "Task dialog",

@@ -1,10 +1,4 @@
-import {
-  fireEvent,
-  getByText,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { getByText, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   EmptyTestContext,
@@ -82,7 +76,7 @@ describe("TaskList", () => {
   });
 
   it("should navigate through task list by using the arrow keys", async () => {
-    const { container } = render(
+    render(
       <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
         <TaskLists />
       </EmptyTestContext>
@@ -96,7 +90,7 @@ describe("TaskList", () => {
       listItems.every((i) => i.getAttribute("aria-current") === "false")
     ).toBe(true);
 
-    fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
+    await userEvent.keyboard("{ArrowDown}");
 
     expect(
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
@@ -104,7 +98,7 @@ describe("TaskList", () => {
 
     expect(listItems[0]).toHaveFocus();
 
-    fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
+    await userEvent.keyboard("{ArrowDown}");
 
     expect(
       listItems.filter((i) => i.getAttribute("aria-current") === "true").length
@@ -129,7 +123,7 @@ describe("TaskList", () => {
     });
     expect(checkboxes.length).toBe(2);
 
-    fireEvent.click(checkboxes[0]);
+    await userEvent.click(checkboxes[0]);
 
     checkboxes = await screen.findAllByRole("checkbox", {
       name: "Complete task",
@@ -145,7 +139,7 @@ describe("TaskList", () => {
 
   it("should complete a task by pressing space key", async () => {
     const todoTxt = "First task";
-    const { container } = render(
+    render(
       <EmptyTestContext text={todoTxt} storage={[todoTxtPaths]}>
         <TaskLists />
       </EmptyTestContext>
@@ -157,7 +151,7 @@ describe("TaskList", () => {
       screen.findByRole("checkbox", { name: "Complete task", checked: true })
     ).rejects.toThrow('Unable to find role="checkbox"');
 
-    fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
+    await userEvent.keyboard("{ArrowDown}");
 
     await userEvent.keyboard("[Space]");
 
@@ -170,26 +164,20 @@ describe("TaskList", () => {
   it("should edit task by pressing enter", async () => {
     const todoTxt = "First task";
 
-    const { container } = render(
-      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
-    );
+    render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
     await screen.findByTestId("page");
 
     await screen.findAllByRole("list", { name: "Task list" });
 
-    fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
+    await userEvent.keyboard("{ArrowDown}");
 
-    const focusedTask = await screen.findByRole("button", {
+    await screen.findByRole("button", {
       name: "Task",
       current: true,
     });
 
-    fireEvent.keyDown(focusedTask, {
-      key: "Enter",
-      code: "Enter",
-      charCode: 13,
-    });
+    await userEvent.keyboard("{Enter}");
 
     await screen.findByRole("presentation", {
       name: "Task dialog",
@@ -203,7 +191,7 @@ Task C
 Task D @Test
 Task E @Test @Feature`;
 
-    const { container } = render(
+    render(
       <TestContext
         text={todoTxt}
         storage={[todoTxtPaths, { key: "sort-by", value: "context" }]}
@@ -214,7 +202,7 @@ Task E @Test @Feature`;
 
     await screen.findAllByRole("list", { name: "Task list" });
 
-    fireEvent.keyDown(container, { key: "ArrowDown", code: 40, charCode: 40 });
+    await userEvent.keyboard("{ArrowDown}");
 
     const focusedTask = await screen.findByRole("button", {
       name: "Task",
@@ -224,10 +212,7 @@ Task E @Test @Feature`;
     // eslint-disable-next-line testing-library/prefer-screen-queries
     getByText(focusedTask, /Task B/);
 
-    fireEvent.keyDown(focusedTask, {
-      key: "e",
-      code: "KeyE",
-    });
+    await userEvent.keyboard("e");
 
     const taskDialog = await screen.findByRole("presentation", {
       name: "Task dialog",
@@ -258,7 +243,7 @@ Task E @Test @Feature`;
     });
 
     expect(checkboxes.length).toBe(2);
-    fireEvent.click(checkboxes[0]);
+    await userEvent.click(checkboxes[0]);
 
     await waitFor(async () => {
       const taskElements = screen.queryAllByRole("button", { name: "Task" });
@@ -281,13 +266,13 @@ Task E @Test @Feature`;
 
     expect(menuButtons.length).toBe(2);
 
-    fireEvent.click(menuButtons[0]);
+    await userEvent.click(menuButtons[0]);
 
     const deleteMenuItem = await screen.findByRole("menuitem", {
       name: "Delete task",
     });
 
-    fireEvent.click(deleteMenuItem);
+    await userEvent.click(deleteMenuItem);
 
     const deleteButton = await screen.findByRole("button", {
       name: "Delete",
