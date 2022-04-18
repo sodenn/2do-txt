@@ -7,14 +7,7 @@ import createMentionPlugin, {
 } from "@draft-js-plugins/mention";
 import clsx from "clsx";
 import { DraftHandleValue, EditorState, Modifier } from "draft-js";
-import {
-  KeyboardEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { KeyboardEvent, useCallback, useMemo, useRef, useState } from "react";
 import { uniqueListBy } from "../../utils/array";
 import { mentionClass } from "./mention-styles";
 import {
@@ -270,8 +263,12 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
       } else {
         setEditorState(state);
       }
+
+      if (onChange && currentPlainText !== newPlainText) {
+        onChange(newPlainText);
+      }
     },
-    [editorState, searchValue]
+    [editorState, onChange, searchValue]
   );
 
   const handleKeyBind = useCallback(
@@ -321,18 +318,15 @@ export const useTaskEditor = (props: TaskEditorOptions) => {
         "insert-fragment"
       );
       setEditorState(newEditorState);
+
+      const newText = newEditorState.getCurrentContent().getPlainText();
+      if (onChange && newText) {
+        onChange(newText);
+      }
       return "handled";
     },
-    [mentions]
+    [mentions, onChange]
   );
-
-  useEffect(() => {
-    const plainText = editorState.getCurrentContent().getPlainText();
-    if (onChange) {
-      onChange(plainText);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorState.getCurrentContent().getPlainText()]);
 
   return {
     ref,

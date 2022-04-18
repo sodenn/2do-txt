@@ -28,6 +28,8 @@ describe("TaskList", () => {
       </EmptyTestContext>
     );
 
+    await screen.findByTestId("page");
+
     await expect(() => screen.findByRole("list")).rejects.toThrow(
       'Unable to find role="list"'
     );
@@ -40,6 +42,8 @@ describe("TaskList", () => {
       </EmptyTestContext>
     );
 
+    await screen.findByTestId("page");
+
     const listItems = await screen.findAllByRole("button", { name: "Task" });
 
     expect(listItems.length).toBeGreaterThan(0);
@@ -51,6 +55,8 @@ describe("TaskList", () => {
         <TaskLists />
       </EmptyTestContext>
     );
+
+    await screen.findByTestId("page");
 
     const listItems = await screen.findAllByRole("button", { name: "Task" });
 
@@ -81,6 +87,8 @@ describe("TaskList", () => {
         <TaskLists />
       </EmptyTestContext>
     );
+
+    await screen.findByTestId("page");
 
     const listItems = await screen.findAllByRole("button", { name: "Task" });
 
@@ -113,6 +121,8 @@ describe("TaskList", () => {
       </EmptyTestContext>
     );
 
+    await screen.findByTestId("page");
+
     let checkboxes = await screen.findAllByRole("checkbox", {
       name: "Complete task",
       checked: false,
@@ -141,6 +151,8 @@ describe("TaskList", () => {
       </EmptyTestContext>
     );
 
+    await screen.findByTestId("page");
+
     await expect(() =>
       screen.findByRole("checkbox", { name: "Complete task", checked: true })
     ).rejects.toThrow('Unable to find role="checkbox"');
@@ -161,6 +173,8 @@ describe("TaskList", () => {
     const { container } = render(
       <TestContext text={todoTxt} storage={[todoTxtPaths]} />
     );
+
+    await screen.findByTestId("page");
 
     await screen.findAllByRole("list", { name: "Task list" });
 
@@ -195,6 +209,8 @@ Task E @Test @Feature`;
         storage={[todoTxtPaths, { key: "sort-by", value: "context" }]}
       />
     );
+
+    await screen.findByTestId("page");
 
     await screen.findAllByRole("list", { name: "Task list" });
 
@@ -232,6 +248,8 @@ Task E @Test @Feature`;
       </EmptyTestContext>
     );
 
+    await screen.findByTestId("page");
+
     const listItems = await screen.findAllByRole("button", { name: "Task" });
     expect(listItems.length).toBe(2);
 
@@ -257,6 +275,8 @@ Task E @Test @Feature`;
       </EmptyTestContext>
     );
 
+    await screen.findByTestId("page");
+
     const menuButtons = await screen.findAllByLabelText("Task menu");
 
     expect(menuButtons.length).toBe(2);
@@ -273,7 +293,7 @@ Task E @Test @Feature`;
       name: "Delete",
     });
 
-    fireEvent.click(deleteButton);
+    await userEvent.click(deleteButton);
 
     await waitFor(async () => {
       const taskList = screen.queryByRole("list", { name: "Task list" });

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Dictionary } from "../types/common";
 import { TaskFormData } from "../utils/task";
 import "../utils/testing";
-import { pasteText } from "./TaskEditor/TaskEditor.test";
+import { pasteText } from "../utils/testing";
 import TaskForm from "./TaskForm";
 
 interface TestCompProps {
@@ -55,7 +55,7 @@ const TestComp = (props: TestCompProps) => {
   );
 };
 
-describe("TaskEditor", () => {
+describe("TaskForm", () => {
   const selectSuggestion = async (text: string) => {
     const menuItem = await screen.findByText(text);
     fireEvent.mouseEnter(menuItem);

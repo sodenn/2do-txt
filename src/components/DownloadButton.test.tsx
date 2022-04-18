@@ -27,6 +27,8 @@ describe("DownloadButton", () => {
       </EmptyTestContext>
     );
 
+    await screen.findByTestId("page");
+
     const downloadButton = await screen.findByRole("button", {
       name: "Download todo.txt",
     });
@@ -53,6 +55,8 @@ describe("DownloadButton", () => {
         <DownloadButton />
       </EmptyTestContext>
     );
+
+    await screen.findByTestId("page");
 
     const downloadButton = await screen.findByRole("button", {
       name: "Download todo.txt",

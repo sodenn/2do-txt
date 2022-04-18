@@ -54,6 +54,7 @@ const TaskDialog = () => {
   } = useTaskDialog();
   const { createCreationDate } = useSettings();
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
+  const [renderForm, setRenderForm] = useState(false);
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >(() => {
@@ -79,10 +80,9 @@ const TaskDialog = () => {
         return findTaskListByTaskId(task._id);
       } else if (activeTaskList) {
         return activeTaskList;
-      } else {
-        return undefined;
       }
     });
+    setRenderForm(true);
   }, [createCreationDate, task, open, activeTaskList, findTaskListByTaskId]);
 
   const closeDialog = () =>
@@ -105,6 +105,11 @@ const TaskDialog = () => {
     setSelectedTaskList(taskList);
   };
 
+  const handleExit = () => {
+    setRenderForm(false);
+    setTaskDialogOptions({ open: false });
+  };
+
   const handleClose = (
     event: any,
     reason: "backdropClick" | "escapeKeyDown"
@@ -122,24 +127,26 @@ const TaskDialog = () => {
       open={open}
       onClose={handleClose}
       TransitionProps={{
-        onExited: () => setTaskDialogOptions({ open: false }),
+        onExited: handleExit,
       }}
     >
       <DialogTitle>
         {!!formData._id ? t("Edit Task") : t("Create Task")}
       </DialogTitle>
       <DialogContent>
-        <TaskForm
-          completed={!!task?.completed}
-          formData={formData}
-          contexts={Object.keys(contexts)}
-          projects={Object.keys(projects)}
-          tags={tags}
-          taskLists={activeTaskList || task ? [] : taskLists}
-          onChange={handleChange}
-          onFileSelect={handleFileSelect}
-          onEnterPress={handleSave}
-        />
+        {renderForm && (
+          <TaskForm
+            completed={!!task?.completed}
+            formData={formData}
+            contexts={Object.keys(contexts)}
+            projects={Object.keys(projects)}
+            tags={tags}
+            taskLists={activeTaskList || task ? [] : taskLists}
+            onChange={handleChange}
+            onFileSelect={handleFileSelect}
+            onEnterPress={handleSave}
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button tabIndex={-1} onClick={closeDialog}>

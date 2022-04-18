@@ -1,9 +1,12 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { TestContext } from "../utils/testing";
 
 describe("Onboarding", () => {
   it("should open the task dialog via the onboarding screen", async () => {
     render(<TestContext />);
+
+    await screen.findByTestId("page");
 
     await screen.findByRole("heading", { name: "Onboarding" });
 
@@ -27,7 +30,7 @@ describe("Onboarding", () => {
       name: "Create file",
     });
 
-    fireEvent.click(createFile);
+    await waitFor(() => userEvent.click(createFile));
 
     const taskDialog = await screen.findByRole("presentation", {
       name: "Task dialog",

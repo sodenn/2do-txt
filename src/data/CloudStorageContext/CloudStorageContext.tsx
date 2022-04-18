@@ -1,7 +1,7 @@
 import { Alert, CircularProgress } from "@mui/material";
 import { throttle } from "lodash";
 import { SnackbarKey, useSnackbar } from "notistack";
-import { FC, ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import DropboxIcon from "../../components/DropboxIcon";
 import {
@@ -18,6 +18,7 @@ import {
   SyncFileResult,
   UpdateMode,
 } from "../../types/cloud-storage.types";
+import { WithChildren } from "../../types/common";
 import { createContext } from "../../utils/Context";
 import {
   getArchiveFilePath,
@@ -131,7 +132,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     platform === "android" ||
     process.env.REACT_APP_ENABLE_WEB_CLOUD_STORAGE === "true";
 
-  const handleError = useCallback((error) => {
+  const handleError = useCallback((error: any) => {
     if (error instanceof CloudFileUnauthorizedError) {
       setConnectedCloudStorages((curr) => ({
         ...curr,
@@ -838,7 +839,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   };
 });
 
-const CloudStorageProvider: FC = ({ children }) => {
+const CloudStorageProvider = ({ children }: WithChildren) => {
   return (
     <DropboxStorageProvider>
       <CloudStorageProviderInternal>{children}</CloudStorageProviderInternal>

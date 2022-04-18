@@ -2,12 +2,15 @@ import { Capacitor } from "@capacitor/core";
 import { Filesystem, ReadFileResult } from "@capacitor/filesystem";
 import { ReadFileOptions } from "@capacitor/filesystem/dist/esm/definitions";
 import { GetOptions, GetResult, Storage } from "@capacitor/storage";
+import { createEvent, fireEvent } from "@testing-library/react";
 import i18n from "i18next";
 import { PropsWithChildren } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouters } from "../components/AppRouter";
+import { useLoading } from "../data/LoadingContext";
 import ProviderBundle from "../data/ProviderBundle";
+import { WithChildren } from "../types/common";
 import { SecureStorageKeys } from "./secure-storage";
 import { StorageKeys } from "./storage";
 
@@ -119,6 +122,16 @@ const mocks = {
   },
 };
 
+export const pasteText = (editor: HTMLElement, text: string) => {
+  const event = createEvent.paste(editor, {
+    clipboardData: {
+      types: ["text/plain"],
+      getData: () => text,
+    },
+  });
+  fireEvent(editor, event);
+};
+
 export const todoTxt = `First task @Test
 X 2012-01-01 Second task
 (A) x Third task @Test`;
@@ -158,6 +171,11 @@ export const TestContext = (props: TestContextProps) => {
   );
 };
 
+const Page = ({ children }: WithChildren) => {
+  const { loading } = useLoading();
+  return <div data-testid={loading ? "loading" : "page"}>{children}</div>;
+};
+
 export const EmptyTestContext = (
   props: PropsWithChildren<TestContextProps>
 ) => {
@@ -181,7 +199,7 @@ export const EmptyTestContext = (
 
   return (
     <ProviderBundle>
-      <div data-testid="page">{children}</div>
+      <Page>{children}</Page>
     </ProviderBundle>
   );
 };

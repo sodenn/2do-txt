@@ -1,16 +1,7 @@
-import { createEvent, fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "../../utils/testing";
+import { pasteText } from "../../utils/testing";
 import TaskEditor from "./TaskEditor";
-
-export const pasteText = (editor: HTMLElement, text: string) => {
-  const event = createEvent.paste(editor, {
-    clipboardData: {
-      types: ["text/plain"],
-      getData: () => text,
-    },
-  });
-  fireEvent(editor, event);
-};
 
 describe("TaskEditor", () => {
   it("should remove line breaks from pasted text", async () => {

@@ -79,8 +79,11 @@
     "moduleNameMapper": {
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js"
     },
+    "transform": {
+      "node_modules/react-movable/.+\\.(j|t)sx?$": "babel-jest"
+    },
     "transformIgnorePatterns": [
-      "node_modules/(?!@awesome-cordova-plugins/.*)"
+      "node_modules/(?!react-movable/.*)"
     ]
   },
   "eslintConfig": {
@@ -103,18 +106,18 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^3.4.3",
-    "@playwright/test": "^1.20.2",
+    "@playwright/test": "^1.21.0",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^12.1.4",
-    "@testing-library/user-event": "^14.0.4",
+    "@testing-library/react": "^13.1.1",
+    "@testing-library/user-event": "^14.1.1",
     "@types/draft-js": "^0.11.9",
     "@types/file-saver": "^2.0.5",
     "@types/jest": "^27.4.1",
     "@types/node": "^16.11.12",
-    "@types/react": "^17.0.43",
-    "@types/react-dom": "^17.0.14",
+    "@types/react": "^18.0.5",
+    "@types/react-dom": "^18.0.1",
     "cordova-res": "^0.15.4",
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.6.2",
