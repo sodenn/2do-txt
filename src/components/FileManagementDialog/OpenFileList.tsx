@@ -24,6 +24,10 @@ const OpenFileList = memo((props: OpenFileListProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wrapper.current]);
 
+  useEffect(() => {
+    setItems(taskLists.map((t) => t.filePath));
+  }, [taskLists]);
+
   if (items.length === 0) {
     return null;
   }

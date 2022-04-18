@@ -52,6 +52,7 @@ const OpenFileItem = forwardRef<HTMLLIElement, OpenFileItemProps>(
           />
         }
         {...rest}
+        aria-label={`Draggable file ${filePath}`}
       >
         <ListItemButton sx={{ pl: 3, overflow: "hidden" }} role={undefined}>
           <ListItemIcon sx={{ minWidth: 36 }}>

@@ -139,6 +139,7 @@ const FileManagementDialog = () => {
       maxWidth="xs"
       fullWidth
       scroll="paper"
+      aria-label="File management"
       open={fileManagementDialogOpen}
       onClose={handleCloseDialog}
     >

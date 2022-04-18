@@ -219,12 +219,15 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
 
   return (
     <>
-      <IconButton aria-label="more" aria-haspopup="true" onClick={handleClick}>
+      <IconButton
+        aria-label="File actions"
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
         {!cloudSyncLoading && <MoreVertIcon />}
         {cloudSyncLoading && <CircularProgress size={24} />}
       </IconButton>
       <Menu
-        keepMounted
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -245,7 +248,7 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
           </ListItemIcon>
           <Typography>{t("Copy to clipboard")}</Typography>
         </MenuItem>
-        <MenuItem onClick={handleCloseFile}>
+        <MenuItem onClick={handleCloseFile} aria-label="Delete file">
           <ListItemIcon>
             {deleteFile && <DeleteOutlineOutlinedIcon />}
             {!deleteFile && <CloseOutlinedIcon />}
