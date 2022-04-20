@@ -8,15 +8,15 @@ import { formatDate, parseDate } from "../utils/date";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import { createDueDateRegex, parseTaskBody, TaskFormData } from "../utils/task";
 import {
-  taskContextStyle,
-  taskDudDateStyle,
-  taskProjectStyle,
-  taskTagStyle,
+  contextStyle,
+  dueDateStyle,
+  projectStyle,
+  tagStyle,
 } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
+import MentionTextbox from "./MentionTextbox";
 import PrioritySelect from "./PrioritySelect";
-import TaskEditor from "./TaskEditor/TaskEditor";
 
 interface TaskFormProps {
   formData: TaskFormData;
@@ -42,7 +42,6 @@ const TaskForm = (props: TaskFormProps) => {
     completed,
     onChange,
     onFileSelect,
-    onEnterPress,
   } = props;
   const { t } = useTranslation();
   const showCreationDate = !!formData._id;
@@ -126,32 +125,34 @@ const TaskForm = (props: TaskFormProps) => {
   return (
     <Stack>
       <Box sx={{ mb: 2 }}>
-        <TaskEditor
-          key={state.key}
+        <MentionTextbox
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           value={formData.body}
-          mentions={[
+          onChange={(body) => onChange({ ...formData, body: body || "" })}
+          autoFocus={state.autoFocus}
+          triggers={[
+            { value: "+", style: contextStyle },
+            { value: "@", style: projectStyle },
+            ...Object.entries(state.tags).map(([key, value]) => ({
+              value: `${key}:`,
+              styleClass: key === "due" ? dueDateStyle : tagStyle,
+            })),
+          ]}
+          suggestions={[
             {
               trigger: "+",
               items: state.projects,
-              styleClass: taskProjectStyle,
             },
             {
               trigger: "@",
               items: state.contexts,
-              styleClass: taskContextStyle,
             },
             ...Object.entries(state.tags).map(([key, value]) => ({
               trigger: `${key}:`,
               items: value,
-              styleClass: key === "due" ? taskDudDateStyle : taskTagStyle,
             })),
           ]}
-          onChange={(body) => onChange({ ...formData, body: body || "" })}
-          onAddMention={(body) => setTaskFormState(body)}
-          onEnterPress={onEnterPress}
-          autoFocus={state.autoFocus}
         />
       </Box>
       <Grid spacing={2} container>
