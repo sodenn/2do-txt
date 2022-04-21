@@ -23,6 +23,7 @@ import { Suggestion, Trigger } from "./mention-types";
 import {
   getComboboxTarget,
   getDescendants,
+  getLasPath,
   getTriggers,
   insertMention,
   setComboboxPosition,
@@ -39,6 +40,7 @@ interface MentionTextboxProps {
   suggestions?: Suggestion[];
   onChange?: (value: string) => void;
   addMentionText?: (value: string) => string;
+  onEnterPress?: () => void;
 }
 
 const Legend = styled("legend")`
@@ -75,6 +77,7 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     suggestions,
     onChange,
     addMentionText,
+    onEnterPress,
   } = props;
   const theme = useTheme();
   const [focus, setFocus] = useState(false);
@@ -120,6 +123,9 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     (event: any) => {
       if (event.key === "Enter") {
         event.preventDefault();
+        if (!target && onEnterPress) {
+          onEnterPress();
+        }
       }
       if (target && trigger) {
         switch (event.key) {
@@ -148,7 +154,16 @@ const MentionTextbox = (props: MentionTextboxProps) => {
         }
       }
     },
-    [target, trigger, index, chars, editor, search, closeSuggestions]
+    [
+      target,
+      trigger,
+      onEnterPress,
+      index,
+      chars,
+      editor,
+      search,
+      closeSuggestions,
+    ]
   );
 
   const openSuggestions = useCallback(() => {
@@ -198,7 +213,8 @@ const MentionTextbox = (props: MentionTextboxProps) => {
   useEffect(() => {
     if (autoFocus) {
       ReactEditor.focus(editor);
-      Transforms.select(editor, { path: [0, 0], offset: 0 });
+      const path = getLasPath(editor);
+      Transforms.select(editor, path);
     }
   }, [autoFocus, editor]);
 

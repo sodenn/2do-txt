@@ -128,6 +128,24 @@ export function getComboboxTarget(editor: Editor, triggers: Trigger[]) {
   }
 }
 
+function getLastChild(
+  children: Descendant[]
+): MentionElement | CustomText | undefined {
+  if (children.length > 0) {
+    const lastChild = children[children.length - 1];
+    if (isParagraph(lastChild)) {
+      return getLastChild(lastChild.children);
+    } else {
+      return lastChild;
+    }
+  }
+}
+
+export function getLasPath(editor: Editor) {
+  const lastChild = getLastChild(editor.children);
+  return ReactEditor.findPath(editor, lastChild as any);
+}
+
 export function setComboboxPosition(
   editor: Editor,
   elem: HTMLElement,

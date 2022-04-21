@@ -42,6 +42,7 @@ const TaskForm = (props: TaskFormProps) => {
     completed,
     onChange,
     onFileSelect,
+    onEnterPress,
   } = props;
   const { t } = useTranslation();
   const showCreationDate = !!formData._id;
@@ -130,6 +131,7 @@ const TaskForm = (props: TaskFormProps) => {
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           initialValue={formData.body}
+          onEnterPress={onEnterPress}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           autoFocus={state.autoFocus}
           triggers={[
@@ -137,7 +139,7 @@ const TaskForm = (props: TaskFormProps) => {
             { value: "@", style: projectStyle },
             ...Object.entries(state.tags).map(([key, value]) => ({
               value: `${key}:`,
-              styleClass: key === "due" ? dueDateStyle : tagStyle,
+              style: key === "due" ? dueDateStyle : tagStyle,
             })),
           ]}
           suggestions={[
