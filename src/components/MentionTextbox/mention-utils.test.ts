@@ -77,7 +77,7 @@ describe("mention-utils", () => {
     ]);
   });
 
-  it("should append an empty text element to focus the text box", () => {
+  it("should append an empty text element to focus the text field", () => {
     let descendant = getDescendants("This is a test", [
       { value: "@", style: { backgroundColor: "green" } },
       { value: "+", style: { backgroundColor: "blue" } },

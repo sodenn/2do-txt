@@ -215,10 +215,8 @@ test.describe("Task editor", () => {
     page,
     isMobile,
   }) => {
-    /* eslint-disable jest/valid-title */
-    // @ts-ignore
-    test.skip(isMobile, "not relevant for mobile browser");
-    /* eslint-enable jest/valid-title */
+    // eslint-disable-next-line jest/valid-title
+    test.skip(!!isMobile, "not relevant for mobile browser");
 
     await page.locator('button[aria-label="Add task"]').click();
 

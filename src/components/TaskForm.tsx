@@ -2,6 +2,8 @@ import { Box, Button, Grid, Stack } from "@mui/material";
 import { isValid } from "date-fns";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Editor } from "slate";
+import { ReactEditor } from "slate-react";
 import { TaskList } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
@@ -15,7 +17,8 @@ import {
 } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
-import MentionTextbox from "./MentionTextbox";
+import MentionTextField from "./MentionTextbox";
+import { useMentionTextField } from "./MentionTextbox/MentionTextField";
 import PrioritySelect from "./PrioritySelect";
 
 interface TaskFormProps {
@@ -59,6 +62,7 @@ const TaskForm = (props: TaskFormProps) => {
     contexts,
     tags,
   });
+  const editor = useMentionTextField();
 
   const setTaskFormState = (body: string, autoFocus = true) => {
     const result = parseTaskBody(body);
@@ -100,9 +104,8 @@ const TaskForm = (props: TaskFormProps) => {
   };
 
   const handleOpenMentionSuggestions = (trigger: string) => {
-    const body = `${formData.body.trimEnd()} ${trigger}`.trimStart();
-    onChange({ ...formData, body });
-    setTaskFormState(body);
+    ReactEditor.focus(editor);
+    Editor.insertText(editor, trigger);
   };
 
   useEffect(() => {
@@ -126,11 +129,12 @@ const TaskForm = (props: TaskFormProps) => {
   return (
     <Stack>
       <Box sx={{ mb: 2 }}>
-        <MentionTextbox
+        <MentionTextField
           key={state.key}
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           aria-label="Text editor"
+          editor={editor}
           initialValue={formData.body}
           onEnterPress={onEnterPress}
           onChange={(body) => onChange({ ...formData, body: body || "" })}

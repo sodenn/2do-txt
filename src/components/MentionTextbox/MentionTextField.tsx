@@ -16,7 +16,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { createEditor, Descendant, Range, Transforms } from "slate";
+import { createEditor, Descendant, Editor, Range, Transforms } from "slate";
 import { withHistory } from "slate-history";
 import {
   Editable,
@@ -38,12 +38,13 @@ import {
   withMentions,
 } from "./mention-utils";
 
-interface MentionTextboxProps {
+interface MentionTextFieldProps {
   triggers: Trigger[];
   autoFocus?: boolean;
   label?: string;
   placeholder?: string;
   initialValue?: string;
+  editor: Editor;
   suggestions?: Suggestion[];
   onChange?: (value: string) => void;
   addMentionText?: (value: string) => string;
@@ -76,13 +77,21 @@ const Fieldset = styled("fieldset")(({ theme }) => {
   };
 });
 
-const MentionTextbox = (props: MentionTextboxProps) => {
+export function useMentionTextField() {
+  return useMemo(
+    () => withMentions(withReact(withHistory(createEditor()))),
+    []
+  );
+}
+
+const MentionTextField = (props: MentionTextFieldProps) => {
   const {
     triggers: _triggers,
     autoFocus,
     label,
     placeholder,
     initialValue = "",
+    editor,
     suggestions,
     onChange,
     addMentionText,
@@ -113,10 +122,6 @@ const MentionTextbox = (props: MentionTextboxProps) => {
       },
     ],
     [initialValue, triggers]
-  );
-  const editor = useMemo(
-    () => withMentions(withReact(withHistory(createEditor()))),
-    []
   );
   const chars = useMemo(() => {
     const list =
@@ -368,4 +373,4 @@ const MentionTextbox = (props: MentionTextboxProps) => {
   );
 };
 
-export default MentionTextbox;
+export default MentionTextField;
