@@ -78,12 +78,29 @@ describe("mention-utils", () => {
   });
 
   it("should append an empty text element to focus the text box", () => {
-    const descendant = getDescendants("This is a test", [
+    let descendant = getDescendants("This is a test", [
       { value: "@", style: { backgroundColor: "green" } },
       { value: "+", style: { backgroundColor: "blue" } },
     ]);
     expect(descendant).toStrictEqual([
       { text: "This is a test" },
+      { text: "" },
+    ]);
+
+    descendant = getDescendants("This is a @small test", [
+      { value: "@", style: { backgroundColor: "green" } },
+      { value: "+", style: { backgroundColor: "blue" } },
+    ]);
+    expect(descendant).toStrictEqual([
+      { text: "This is a " },
+      {
+        type: "mention",
+        trigger: "@",
+        character: "small",
+        style: { backgroundColor: "green" },
+        children: [{ text: "" }],
+      },
+      { text: " test" },
       { text: "" },
     ]);
   });

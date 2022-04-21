@@ -135,8 +135,8 @@ const TaskForm = (props: TaskFormProps) => {
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           autoFocus={state.autoFocus}
           triggers={[
-            { value: "+", style: contextStyle },
-            { value: "@", style: projectStyle },
+            { value: "+", style: projectStyle },
+            { value: "@", style: contextStyle },
             ...Object.entries(state.tags).map(([key, value]) => ({
               value: `${key}:`,
               style: key === "due" ? dueDateStyle : tagStyle,

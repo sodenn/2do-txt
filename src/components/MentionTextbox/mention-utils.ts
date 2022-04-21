@@ -44,6 +44,14 @@ export function withMentions(editor: Editor) {
   return editor;
 }
 
+export function removeZeroWidthChars(text: string) {
+  return text.replace(/[\u200B-\u200D\uFEFF]/g, "");
+}
+
+export function hasZeroWidthChars(text: string) {
+  return /[\u200B-\u200D\uFEFF]/g.test(text);
+}
+
 export function toPlainText(editor: Editor) {
   const children = editor.children.flatMap((c) =>
     isParagraph(c) ? c.children : []
@@ -58,7 +66,7 @@ export function toPlainText(editor: Editor) {
     }
   });
 
-  return plainText;
+  return removeZeroWidthChars(plainText);
 }
 
 export function insertMention(
@@ -82,10 +90,14 @@ export function getComboboxTarget(editor: Editor, triggers: Trigger[]) {
 
   if (selection && Range.isCollapsed(selection)) {
     const [start] = Range.edges(selection);
-    const textBefore = Editor.string(
+    let textBefore = Editor.string(
       editor,
       Editor.range(editor, { path: [0, 0], offset: 0 }, start)
     );
+    const hadZeroWidthChars = hasZeroWidthChars(textBefore);
+    textBefore = hadZeroWidthChars
+      ? removeZeroWidthChars(textBefore)
+      : textBefore;
     const escapedTriggers = triggers
       .map((t) => t.value)
       .map(escapeRegExp)
@@ -103,7 +115,8 @@ export function getComboboxTarget(editor: Editor, triggers: Trigger[]) {
           offset:
             start.offset -
             beforeMatch[0].length +
-            (beforeMatch[0].startsWith(" ") ? 1 : 0),
+            (beforeMatch[0].startsWith(" ") ? 1 : 0) +
+            (hadZeroWidthChars ? -1 : 0),
         },
         start
       );
@@ -222,9 +235,11 @@ export function getDescendants(value = "", triggers: Trigger[]) {
 
     if (!mentionAfter) {
       const textAfter = value.substring(end + 1, value.length);
-      descendant.push({
-        text: textAfter,
-      });
+      if (textAfter) {
+        descendant.push({
+          text: textAfter,
+        });
+      }
     }
   }
 
@@ -232,14 +247,11 @@ export function getDescendants(value = "", triggers: Trigger[]) {
     descendant.push({
       text: value,
     });
-    descendant.push({
-      text: "",
-    });
-  } else if (mentions.length === 0) {
-    descendant.push({
-      text: "",
-    });
   }
+
+  descendant.push({
+    text: "",
+  });
 
   return descendant;
 }

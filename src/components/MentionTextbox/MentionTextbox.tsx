@@ -210,12 +210,7 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     openSuggestions();
     if (onChange) {
       const plainText = toPlainText(editor);
-      // remove possible zero-width characters
-      const plainTextWithoutZeroWidthCharacters = plainText.replace(
-        /[\u200B-\u200D\uFEFF]/g,
-        ""
-      );
-      onChange(plainTextWithoutZeroWidthCharacters);
+      onChange(plainText);
     }
   }, [openSuggestions, editor, onChange]);
 
@@ -256,7 +251,7 @@ const MentionTextbox = (props: MentionTextboxProps) => {
         return;
       }
       const result = getComboboxTarget(editor, triggers);
-      if (result) {
+      if (result && result.search) {
         Transforms.select(editor, result.target);
         insertMention(editor, result.search, result.trigger);
       }
