@@ -1,7 +1,7 @@
-import { Descendant, BaseEditor } from "slate";
-import { ReactEditor } from "slate-react";
-import { HistoryEditor } from "slate-history";
 import { CSSProperties } from "react";
+import { BaseEditor, Descendant } from "slate";
+import { HistoryEditor } from "slate-history";
+import { ReactEditor } from "slate-react";
 
 interface Trigger {
   value: string;
