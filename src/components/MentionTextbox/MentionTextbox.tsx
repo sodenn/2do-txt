@@ -8,8 +8,14 @@ import {
   styled,
   useTheme,
 } from "@mui/material";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { createEditor, Range, Transforms } from "slate";
+import React, {
+  ClipboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { createEditor, Descendant, Range, Transforms } from "slate";
 import { withHistory } from "slate-history";
 import {
   Editable,
@@ -96,8 +102,13 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     ),
     []
   );
-  const descendants = useMemo(
-    () => getDescendants(initialValue, triggers),
+  const descendants = useMemo<Descendant[]>(
+    () => [
+      {
+        type: "paragraph",
+        children: getDescendants(initialValue, triggers),
+      },
+    ],
     [initialValue, triggers]
   );
   const editor = useMemo(
@@ -119,39 +130,67 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     setTrigger(null);
   }, []);
 
+  const openSuggestions = useCallback(() => {
+    const result = getComboboxTarget(editor, triggers);
+    if (result) {
+      setTarget(result.target);
+      setSearch(result.search);
+      setTrigger(result.trigger);
+      setIndex(0);
+    } else {
+      closeSuggestions();
+    }
+  }, [editor, triggers, closeSuggestions]);
+
   const handleKeyDown = useCallback(
     (event: any) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        if (!target && onEnterPress) {
-          onEnterPress();
-        }
-      }
-      if (target && trigger) {
-        switch (event.key) {
-          case "ArrowDown":
+      switch (event.key) {
+        case "ArrowDown":
+          if (target) {
             event.preventDefault();
             const prevIndex = index >= chars.length - 1 ? 0 : index + 1;
             setIndex(prevIndex);
-            break;
-          case "ArrowUp":
+          }
+          break;
+        case "ArrowUp":
+          if (target) {
             event.preventDefault();
             const nextIndex = index <= 0 ? chars.length - 1 : index - 1;
             setIndex(nextIndex);
-            break;
-          case "Tab":
-          case "Enter":
+          }
+          break;
+        case "Tab":
+          if (target && trigger) {
             Transforms.select(editor, target);
             const character = index < chars.length ? chars[index] : search;
             insertMention(editor, character, trigger);
             closeSuggestions();
-            break;
-          case "Escape":
-            event.preventDefault();
-            event.stopPropagation();
+          }
+          break;
+        case "Enter":
+          event.preventDefault();
+          if (target && trigger) {
+            Transforms.select(editor, target);
+            const character = index < chars.length ? chars[index] : search;
+            insertMention(editor, character, trigger);
             closeSuggestions();
-            break;
-        }
+          } else if (!target && onEnterPress) {
+            onEnterPress();
+          }
+          break;
+        case "Escape":
+          event.preventDefault();
+          event.stopPropagation();
+          closeSuggestions();
+          break;
+        case " ":
+          if (target && trigger) {
+            Transforms.select(editor, target);
+            const character = search.trim();
+            insertMention(editor, character, trigger);
+            closeSuggestions();
+          }
+          break;
       }
     },
     [
@@ -165,18 +204,6 @@ const MentionTextbox = (props: MentionTextboxProps) => {
       closeSuggestions,
     ]
   );
-
-  const openSuggestions = useCallback(() => {
-    const result = getComboboxTarget(editor, triggers);
-    if (result) {
-      setTarget(result.target);
-      setSearch(result.search);
-      setTrigger(result.trigger);
-      setIndex(0);
-    } else {
-      closeSuggestions();
-    }
-  }, [editor, triggers, closeSuggestions]);
 
   const handleChange = useCallback(() => {
     openSuggestions();
@@ -204,8 +231,30 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     [target, trigger, editor, chars, search, closeSuggestions]
   );
 
+  const handlePaste = useCallback(
+    (event: ClipboardEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const data = event.clipboardData.getData("text");
+      const text = data.replace(/(\r\n|\n|\r)/gm, "");
+      const descendants = getDescendants(text, triggers);
+      Transforms.insertNodes(editor, descendants);
+      Transforms.move(editor);
+      editor.onChange();
+    },
+    [editor, triggers]
+  );
+
+  const handleBlur = useCallback(() => {
+    const result = getComboboxTarget(editor, triggers);
+    if (result) {
+      Transforms.select(editor, result.target);
+      insertMention(editor, result.search, result.trigger);
+    }
+    setFocus(false);
+  }, [editor, triggers]);
+
   useEffect(() => {
-    if (target && elem && chars.length > 0) {
+    if (target && elem && (chars.length > 0 || search.length > 0)) {
       setComboboxPosition(editor, elem, target);
     }
   }, [chars.length, editor, index, search, target, elem]);
@@ -246,14 +295,8 @@ const MentionTextbox = (props: MentionTextboxProps) => {
           onClick={handleClick}
           onKeyDown={handleKeyDown}
           onFocus={() => setFocus(true)}
-          onBlur={() => setFocus(false)}
-          onPaste={(event) => {
-            event.preventDefault();
-            const data = event.clipboardData.getData("text");
-            const text = data.replace(/(\r\n|\n|\r)/gm, "");
-            editor.insertText(text);
-            editor.onChange();
-          }}
+          onBlur={handleBlur}
+          onPaste={handlePaste}
           placeholder={placeholder}
         />
         {target && (chars.length > 0 || search.length > 0) && (

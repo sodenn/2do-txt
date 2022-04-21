@@ -188,7 +188,7 @@ export function getMentionsFromPlaintext(text: string, triggers: string[]) {
 }
 
 export function getDescendants(value = "", triggers: Trigger[]) {
-  const children: Descendant[] = [];
+  const Descendant: Descendant[] = [];
 
   const mentions = getMentionsFromPlaintext(
     value,
@@ -205,14 +205,14 @@ export function getDescendants(value = "", triggers: Trigger[]) {
       : value.substring(0, start);
 
     if (textBefore) {
-      children.push({
+      Descendant.push({
         text: textBefore,
       });
     }
 
     const style = triggers.find((t) => t.value === trigger)?.style;
 
-    children.push({
+    Descendant.push({
       type: "mention",
       trigger,
       character: character,
@@ -222,26 +222,19 @@ export function getDescendants(value = "", triggers: Trigger[]) {
 
     if (!mentionAfter) {
       const textAfter = value.substring(end + 1, value.length);
-      children.push({
+      Descendant.push({
         text: textAfter,
       });
     }
   }
 
   if (mentions.length === 0) {
-    children.push({
+    Descendant.push({
       text: value,
     });
   }
 
-  const descendants: Descendant[] = [
-    {
-      type: "paragraph",
-      children,
-    },
-  ];
-
-  return descendants;
+  return Descendant;
 }
 
 function escapeRegExp(string: string) {
