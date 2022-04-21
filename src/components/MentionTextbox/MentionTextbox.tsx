@@ -35,9 +35,9 @@ interface MentionTextboxProps {
   autoFocus?: boolean;
   label?: string;
   placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
+  initialValue?: string;
   suggestions?: Suggestion[];
+  onChange?: (value: string) => void;
   addMentionText?: (value: string) => string;
 }
 
@@ -68,12 +68,12 @@ const Fieldset = styled("fieldset")(({ theme }) => {
 const MentionTextbox = (props: MentionTextboxProps) => {
   const {
     triggers: _triggers,
+    autoFocus,
     label,
     placeholder,
-    value,
-    autoFocus,
-    onChange,
+    initialValue = "",
     suggestions,
+    onChange,
     addMentionText,
   } = props;
   const theme = useTheme();
@@ -87,14 +87,15 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     () => getTriggers(_triggers, suggestions),
     [_triggers, suggestions]
   );
-  const [descendants, setDescendants] = useState(
-    getDescendants(value || "", triggers)
-  );
   const renderElement = useCallback(
     ({ children, ...rest }: RenderElementProps) => (
       <Element {...rest}>{children}</Element>
     ),
     []
+  );
+  const descendants = useMemo(
+    () => getDescendants(initialValue, triggers),
+    [initialValue, triggers]
   );
   const editor = useMemo(
     () => withMentions(withReact(withHistory(createEditor()))),
@@ -147,7 +148,7 @@ const MentionTextbox = (props: MentionTextboxProps) => {
         }
       }
     },
-    [chars, editor, index, closeSuggestions, target, trigger]
+    [target, trigger, index, chars, editor, search, closeSuggestions]
   );
 
   const openSuggestions = useCallback(() => {
@@ -166,11 +167,9 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     openSuggestions();
     if (onChange) {
       const plainText = toPlainText(editor);
-      if (plainText !== value) {
-        onChange(plainText);
-      }
+      onChange(plainText);
     }
-  }, [openSuggestions, editor, onChange, value]);
+  }, [openSuggestions, editor, onChange]);
 
   const handleClick = useCallback(() => openSuggestions(), [openSuggestions]);
 
@@ -197,13 +196,9 @@ const MentionTextbox = (props: MentionTextboxProps) => {
   }, [chars.length, editor, index, search, target, elem]);
 
   useEffect(() => {
-    setDescendants(getDescendants(value, triggers));
-  }, [triggers, value]);
-
-  useEffect(() => {
     if (autoFocus) {
-      // ReactEditor.focus(editor);
-      // Transforms.select(editor, { path: [0, 0], offset: 0 });
+      ReactEditor.focus(editor);
+      Transforms.select(editor, { path: [0, 0], offset: 0 });
     }
   }, [autoFocus, editor]);
 

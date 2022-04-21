@@ -52,8 +52,8 @@ const TaskDialog = () => {
     setTaskDialogOptions,
   } = useTaskDialog();
   const { createCreationDate } = useSettings();
+
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
-  const [renderForm, setRenderForm] = useState(false);
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >(() => {
@@ -81,7 +81,6 @@ const TaskDialog = () => {
         return activeTaskList;
       }
     });
-    setRenderForm(true);
   }, [createCreationDate, task, open, activeTaskList, findTaskListByTaskId]);
 
   const closeDialog = () =>
@@ -105,7 +104,6 @@ const TaskDialog = () => {
   };
 
   const handleExit = () => {
-    setRenderForm(false);
     setTaskDialogOptions({ open: false });
   };
 
@@ -131,19 +129,17 @@ const TaskDialog = () => {
         {!!formData._id ? t("Edit Task") : t("Create Task")}
       </DialogTitle>
       <DialogContent>
-        {renderForm && (
-          <TaskForm
-            completed={!!task?.completed}
-            formData={formData}
-            contexts={Object.keys(contexts)}
-            projects={Object.keys(projects)}
-            tags={tags}
-            taskLists={activeTaskList || task ? [] : taskLists}
-            onChange={handleChange}
-            onFileSelect={handleFileSelect}
-            onEnterPress={handleSave}
-          />
-        )}
+        <TaskForm
+          completed={!!task?.completed}
+          formData={formData}
+          contexts={Object.keys(contexts)}
+          projects={Object.keys(projects)}
+          tags={tags}
+          taskLists={activeTaskList || task ? [] : taskLists}
+          onChange={handleChange}
+          onFileSelect={handleFileSelect}
+          onEnterPress={handleSave}
+        />
       </DialogContent>
       <DialogActions>
         <Button tabIndex={-1} onClick={closeDialog}>

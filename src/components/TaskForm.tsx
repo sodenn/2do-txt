@@ -52,6 +52,7 @@ const TaskForm = (props: TaskFormProps) => {
       ? 4
       : 6;
   const [state, setState] = useState({
+    key: 0,
     autoFocus: true,
     projects,
     contexts,
@@ -60,8 +61,9 @@ const TaskForm = (props: TaskFormProps) => {
 
   const setTaskFormState = (body: string, autoFocus = true) => {
     const result = parseTaskBody(body);
-    setState({
+    setState((state) => ({
       autoFocus,
+      key: state.key + 1,
       projects: [...projects, ...result.projects].filter(
         (item, i, ar) => ar.indexOf(item) === i
       ),
@@ -69,7 +71,7 @@ const TaskForm = (props: TaskFormProps) => {
         (item, i, ar) => ar.indexOf(item) === i
       ),
       tags: Object.assign(tags, result.tags),
-    });
+    }));
   };
 
   const handleDueDateChange = (value: Date | null) => {
@@ -124,9 +126,10 @@ const TaskForm = (props: TaskFormProps) => {
     <Stack>
       <Box sx={{ mb: 2 }}>
         <MentionTextbox
+          key={state.key}
           label={t("Description")}
           placeholder={t("Enter text and tags")}
-          value={formData.body}
+          initialValue={formData.body}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           autoFocus={state.autoFocus}
           triggers={[
