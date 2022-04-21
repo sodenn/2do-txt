@@ -48,6 +48,7 @@ interface MentionTextboxProps {
   onChange?: (value: string) => void;
   addMentionText?: (value: string) => string;
   onEnterPress?: () => void;
+  "aria-label"?: string | undefined;
 }
 
 const Legend = styled("legend")`
@@ -116,15 +117,23 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     () => withMentions(withReact(withHistory(createEditor()))),
     []
   );
-  const chars = useMemo(
-    () =>
+  const chars = useMemo(() => {
+    const arr =
       suggestions
         ?.find((s) => s.trigger === trigger?.value)
         ?.items.filter((c) =>
           c.toLowerCase().startsWith(search.toLowerCase())
-        ) || [],
-    [suggestions, search, trigger]
-  );
+        ) || [];
+    if (!!search && arr.every((c) => c !== search)) {
+      arr.push(search);
+    }
+    return arr;
+  }, [suggestions, search, trigger]);
+  const showAddMenuItem =
+    !!search &&
+    suggestions
+      ?.find((s) => s.trigger === trigger?.value)
+      ?.items.every((c) => c !== search);
 
   const closeSuggestions = useCallback(() => {
     setTarget(null);
@@ -180,9 +189,11 @@ const MentionTextbox = (props: MentionTextboxProps) => {
           }
           break;
         case "Escape":
-          event.preventDefault();
-          event.stopPropagation();
-          closeSuggestions();
+          if (target && trigger) {
+            event.preventDefault();
+            event.stopPropagation();
+            closeSuggestions();
+          }
           break;
         case " ":
           if (target && trigger) {
@@ -298,6 +309,7 @@ const MentionTextbox = (props: MentionTextboxProps) => {
       )}
       <Slate editor={editor} value={descendants} onChange={handleChange}>
         <Editable
+          aria-label={props["aria-label"]}
           renderElement={renderElement}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
@@ -322,23 +334,25 @@ const MentionTextbox = (props: MentionTextboxProps) => {
                 <ClickAwayListener onClickAway={closeSuggestions}>
                   <Paper elevation={2}>
                     <MenuList>
-                      {chars.length === 0 && (
-                        <MenuItem
-                          onClick={() => handleClickSuggestion()}
-                          selected
-                        >
-                          {addMentionText && search
-                            ? addMentionText(search)
-                            : `Add "${search}"`}
-                        </MenuItem>
-                      )}
                       {chars.map((char, i) => (
                         <MenuItem
-                          onClick={() => handleClickSuggestion(i)}
+                          onClick={() =>
+                            showAddMenuItem && char === search
+                              ? handleClickSuggestion()
+                              : handleClickSuggestion(i)
+                          }
                           key={char}
                           selected={i === index}
                         >
-                          {char}
+                          {showAddMenuItem &&
+                            char === search &&
+                            addMentionText &&
+                            addMentionText(search)}
+                          {showAddMenuItem &&
+                            char === search &&
+                            !addMentionText &&
+                            `Add "${search}"`}
+                          {(!showAddMenuItem || char !== search) && char}
                         </MenuItem>
                       ))}
                     </MenuList>

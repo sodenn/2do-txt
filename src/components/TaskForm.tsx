@@ -130,6 +130,7 @@ const TaskForm = (props: TaskFormProps) => {
           key={state.key}
           label={t("Description")}
           placeholder={t("Enter text and tags")}
+          aria-label="Text editor"
           initialValue={formData.body}
           onEnterPress={onEnterPress}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
