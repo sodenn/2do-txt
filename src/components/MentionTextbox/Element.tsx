@@ -31,10 +31,10 @@ const Mention = ({ attributes, children, element }: RenderElementProps) => {
       contentEditable={false}
       selected={selected ? 1 : 0}
       focused={focused ? 1 : 0}
-      data-testid={`mention-${element.character.replace(" ", "-")}`}
+      data-testid={`mention-${element.value.replace(" ", "-")}`}
     >
       {element.trigger}
-      {element.character}
+      {element.value}
       {children}
     </Span>
   );

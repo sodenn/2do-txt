@@ -20,7 +20,7 @@ interface Mention {
 
 export interface MentionElement {
   type: "mention";
-  character: string;
+  value: string;
   trigger: string;
   style?: CSSProperties;
   children: CustomText[];

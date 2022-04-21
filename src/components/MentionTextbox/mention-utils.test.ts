@@ -29,7 +29,7 @@ describe("mention-utils", () => {
       {
         type: "mention",
         trigger: "+",
-        character: "Proj1",
+        value: "Proj1",
         style: { backgroundColor: "blue" },
         children: [{ text: "" }],
       },
@@ -37,7 +37,7 @@ describe("mention-utils", () => {
       {
         type: "mention",
         trigger: "@",
-        character: "Ctx1",
+        value: "Ctx1",
         style: { backgroundColor: "green" },
         children: [{ text: "" }],
       },
@@ -45,7 +45,7 @@ describe("mention-utils", () => {
       {
         type: "mention",
         trigger: "@",
-        character: "Ctx1",
+        value: "Ctx1",
         style: { backgroundColor: "green" },
         children: [{ text: "" }],
       },
@@ -53,7 +53,7 @@ describe("mention-utils", () => {
       {
         type: "mention",
         trigger: "@",
-        character: "Ctx2",
+        value: "Ctx2",
         style: { backgroundColor: "green" },
         children: [{ text: "" }],
       },
@@ -61,7 +61,7 @@ describe("mention-utils", () => {
       {
         type: "mention",
         trigger: "@",
-        character: "Ctx3",
+        value: "Ctx3",
         style: { backgroundColor: "green" },
         children: [{ text: "" }],
       },
@@ -69,7 +69,7 @@ describe("mention-utils", () => {
       {
         type: "mention",
         trigger: "due:",
-        character: "2022-01-01",
+        value: "2022-01-01",
         style: { backgroundColor: "red" },
         children: [{ text: "" }],
       },
@@ -96,7 +96,7 @@ describe("mention-utils", () => {
       {
         type: "mention",
         trigger: "@",
-        character: "small",
+        value: "small",
         style: { backgroundColor: "green" },
         children: [{ text: "" }],
       },

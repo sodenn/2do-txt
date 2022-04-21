@@ -22,7 +22,7 @@ export function isMentionElement(element: any): element is MentionElement {
   return element.type === "mention";
 }
 
-export function isParagraph(element: any): element is ParagraphElement {
+export function isParagraphElement(element: any): element is ParagraphElement {
   return element.type === "paragraph";
 }
 
@@ -52,15 +52,15 @@ export function hasZeroWidthChars(text: string) {
   return /[\u200B-\u200D\uFEFF]/g.test(text);
 }
 
-export function toPlainText(editor: Editor) {
+export function getPlainText(editor: Editor) {
   const children = editor.children.flatMap((c) =>
-    isParagraph(c) ? c.children : []
+    isParagraphElement(c) ? c.children : []
   );
 
   let plainText = "";
   children.forEach((c) => {
     if (isMentionElement(c)) {
-      plainText += `${c.trigger}${c.character}`;
+      plainText += `${c.trigger}${c.value}`;
     } else if (isTextElement(c)) {
       plainText += c.text;
     }
@@ -71,21 +71,22 @@ export function toPlainText(editor: Editor) {
 
 export function insertMention(
   editor: Editor,
-  character: string,
+  value: string,
   { value: trigger, style }: Trigger
 ) {
   const mention: MentionElement = {
     type: "mention",
     trigger,
     style,
-    character,
+    value,
     children: [{ text: "" }],
   };
   Transforms.insertNodes(editor, mention);
   Transforms.move(editor);
+  Transforms.insertText(editor, " ");
 }
 
-export function getComboboxTarget(editor: Editor, triggers: Trigger[]) {
+export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
   const { selection } = editor;
 
   if (selection && Range.isCollapsed(selection)) {
@@ -146,7 +147,7 @@ function getLastChild(
 ): MentionElement | CustomText | undefined {
   if (children.length > 0) {
     const lastChild = children[children.length - 1];
-    if (isParagraph(lastChild)) {
+    if (isParagraphElement(lastChild)) {
       return getLastChild(lastChild.children);
     } else {
       return lastChild;
@@ -159,7 +160,7 @@ export function getLasPath(editor: Editor) {
   return ReactEditor.findPath(editor, lastChild as any);
 }
 
-export function setComboboxPosition(
+export function setSuggestionsPosition(
   editor: Editor,
   elem: HTMLElement,
   target: BaseRange
@@ -200,22 +201,22 @@ export function getMentionsFromPlaintext(text: string, triggers: string[]) {
   return result;
 }
 
-export function getDescendants(value = "", triggers: Trigger[]) {
+export function getDescendants(text = "", triggers: Trigger[]) {
   const descendant: Descendant[] = [];
 
   const mentions = getMentionsFromPlaintext(
-    value,
+    text,
     triggers.map((t) => t.value)
   );
 
   for (let index = 0; index < mentions.length; index++) {
-    const { value: character, start, end, trigger } = mentions[index];
+    const { value, start, end, trigger } = mentions[index];
     const mentionBefore = index - 1 >= 0 ? mentions[index - 1] : undefined;
     const mentionAfter =
       index + 1 < mentions.length ? mentions[index + 1] : undefined;
     const textBefore = mentionBefore
-      ? value.substring(mentionBefore.end + 1, start)
-      : value.substring(0, start);
+      ? text.substring(mentionBefore.end + 1, start)
+      : text.substring(0, start);
 
     if (textBefore) {
       descendant.push({
@@ -228,13 +229,13 @@ export function getDescendants(value = "", triggers: Trigger[]) {
     descendant.push({
       type: "mention",
       trigger,
-      character: character,
+      value,
       style,
       children: [{ text: "" }],
     });
 
     if (!mentionAfter) {
-      const textAfter = value.substring(end + 1, value.length);
+      const textAfter = text.substring(end + 1, text.length);
       if (textAfter) {
         descendant.push({
           text: textAfter,
@@ -243,9 +244,9 @@ export function getDescendants(value = "", triggers: Trigger[]) {
     }
   }
 
-  if (mentions.length === 0 && value) {
+  if (mentions.length === 0 && text) {
     descendant.push({
-      text: value,
+      text,
     });
   }
 

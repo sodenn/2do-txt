@@ -28,13 +28,13 @@ import {
 import Element from "./Element";
 import { Suggestion, Trigger } from "./mention-types";
 import {
-  getComboboxTarget,
   getDescendants,
   getLasPath,
+  getPlainText,
   getTriggers,
+  getUserInputAtSelection,
   insertMention,
-  setComboboxPosition,
-  toPlainText,
+  setSuggestionsPosition,
   withMentions,
 } from "./mention-utils";
 
@@ -119,16 +119,16 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     []
   );
   const chars = useMemo(() => {
-    const arr =
+    const list =
       suggestions
         ?.find((s) => s.trigger === trigger?.value)
         ?.items.filter((c) =>
           c.toLowerCase().startsWith(search.toLowerCase())
         ) || [];
-    if (!!search && arr.every((c) => c !== search)) {
-      arr.push(search);
+    if (!!search && list.every((c) => c !== search)) {
+      list.push(search);
     }
-    return arr;
+    return list;
   }, [suggestions, search, trigger]);
   const showAddMenuItem =
     !!search &&
@@ -142,7 +142,7 @@ const MentionTextbox = (props: MentionTextboxProps) => {
   }, []);
 
   const openSuggestions = useCallback(() => {
-    const result = getComboboxTarget(editor, triggers);
+    const result = getUserInputAtSelection(editor, triggers);
     if (result) {
       setTarget(result.target);
       setSearch(result.search);
@@ -173,8 +173,8 @@ const MentionTextbox = (props: MentionTextboxProps) => {
         case "Tab":
           if (target && trigger) {
             Transforms.select(editor, target);
-            const character = index < chars.length ? chars[index] : search;
-            insertMention(editor, character, trigger);
+            const value = index < chars.length ? chars[index] : search;
+            insertMention(editor, value, trigger);
             closeSuggestions();
           }
           break;
@@ -182,8 +182,8 @@ const MentionTextbox = (props: MentionTextboxProps) => {
           event.preventDefault();
           if (target && trigger) {
             Transforms.select(editor, target);
-            const character = index < chars.length ? chars[index] : search;
-            insertMention(editor, character, trigger);
+            const value = index < chars.length ? chars[index] : search;
+            insertMention(editor, value, trigger);
             closeSuggestions();
           } else if (!target && onEnterPress) {
             onEnterPress();
@@ -199,8 +199,8 @@ const MentionTextbox = (props: MentionTextboxProps) => {
         case " ":
           if (target && trigger) {
             Transforms.select(editor, target);
-            const character = search.trim();
-            insertMention(editor, character, trigger);
+            const value = search.trim();
+            insertMention(editor, value, trigger);
             closeSuggestions();
           }
           break;
@@ -221,7 +221,7 @@ const MentionTextbox = (props: MentionTextboxProps) => {
   const handleChange = useCallback(() => {
     openSuggestions();
     if (onChange) {
-      const plainText = toPlainText(editor);
+      const plainText = getPlainText(editor);
       onChange(plainText);
     }
   }, [openSuggestions, editor, onChange]);
@@ -232,11 +232,11 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     (index?: number) => {
       if (target && trigger) {
         Transforms.select(editor, target);
-        const character =
+        const value =
           typeof index !== "undefined" && index < chars.length
             ? chars[index]
             : search;
-        insertMention(editor, character, trigger);
+        insertMention(editor, value, trigger);
         closeSuggestions();
         ReactEditor.focus(editor);
       }
@@ -262,7 +262,7 @@ const MentionTextbox = (props: MentionTextboxProps) => {
       if (elem?.contains(event.relatedTarget)) {
         return;
       }
-      const result = getComboboxTarget(editor, triggers);
+      const result = getUserInputAtSelection(editor, triggers);
       if (result && result.search) {
         Transforms.select(editor, result.target);
         insertMention(editor, result.search, result.trigger);
@@ -274,7 +274,7 @@ const MentionTextbox = (props: MentionTextboxProps) => {
 
   useEffect(() => {
     if (target && elem && (chars.length > 0 || search.length > 0)) {
-      setComboboxPosition(editor, elem, target);
+      setSuggestionsPosition(editor, elem, target);
     }
   }, [chars.length, editor, index, search, target, elem]);
 
