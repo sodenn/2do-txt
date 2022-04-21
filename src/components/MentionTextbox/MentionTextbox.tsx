@@ -135,7 +135,8 @@ const MentionTextbox = (props: MentionTextboxProps) => {
           case "Tab":
           case "Enter":
             Transforms.select(editor, target);
-            insertMention(editor, chars[index], trigger);
+            const character = index < chars.length ? chars[index] : search;
+            insertMention(editor, character, trigger);
             closeSuggestions();
             break;
           case "Escape":
@@ -174,25 +175,20 @@ const MentionTextbox = (props: MentionTextboxProps) => {
   const handleClick = useCallback(() => openSuggestions(), [openSuggestions]);
 
   const handleClickSuggestion = useCallback(
-    (index: number) => {
+    (index?: number) => {
       if (target && trigger) {
         Transforms.select(editor, target);
-        insertMention(editor, chars[index], trigger);
+        const character =
+          typeof index !== "undefined" && index < chars.length
+            ? chars[index]
+            : search;
+        insertMention(editor, character, trigger);
         closeSuggestions();
         ReactEditor.focus(editor);
       }
     },
-    [chars, editor, closeSuggestions, target, trigger]
+    [target, trigger, editor, chars, search, closeSuggestions]
   );
-
-  const handleClickAddMention = useCallback(() => {
-    if (target && trigger) {
-      Transforms.select(editor, target);
-      insertMention(editor, search, trigger);
-      closeSuggestions();
-      ReactEditor.focus(editor);
-    }
-  }, [target, trigger, editor, search, closeSuggestions]);
 
   useEffect(() => {
     if (target && elem && chars.length > 0) {
@@ -206,17 +202,10 @@ const MentionTextbox = (props: MentionTextboxProps) => {
 
   useEffect(() => {
     if (autoFocus) {
-      //ReactEditor.focus(editor);
-      // document
-      //   .querySelector<HTMLDivElement>('[data-slate-editor="true"]')
-      //   ?.focus();
-      // document
-      //   .querySelector<HTMLDivElement>('[data-slate-editor="true"]')
-      //   ?.firstChild// @ts-ignore
-      //   ?.focus();
+      // ReactEditor.focus(editor);
+      // Transforms.select(editor, { path: [0, 0], offset: 0 });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoFocus]);
+  }, [autoFocus, editor]);
 
   return (
     <Fieldset
@@ -273,7 +262,10 @@ const MentionTextbox = (props: MentionTextboxProps) => {
                   <Paper elevation={2}>
                     <MenuList>
                       {chars.length === 0 && (
-                        <MenuItem onClick={handleClickAddMention} selected>
+                        <MenuItem
+                          onClick={() => handleClickSuggestion()}
+                          selected
+                        >
                           {addMentionText && search
                             ? addMentionText(search)
                             : `Add "${search}"`}

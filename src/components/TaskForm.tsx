@@ -53,7 +53,6 @@ const TaskForm = (props: TaskFormProps) => {
       : 6;
   const [state, setState] = useState({
     autoFocus: true,
-    key: 0,
     projects,
     contexts,
     tags,
@@ -61,9 +60,8 @@ const TaskForm = (props: TaskFormProps) => {
 
   const setTaskFormState = (body: string, autoFocus = true) => {
     const result = parseTaskBody(body);
-    setState((state) => ({
+    setState({
       autoFocus,
-      key: state.key + 1,
       projects: [...projects, ...result.projects].filter(
         (item, i, ar) => ar.indexOf(item) === i
       ),
@@ -71,7 +69,7 @@ const TaskForm = (props: TaskFormProps) => {
         (item, i, ar) => ar.indexOf(item) === i
       ),
       tags: Object.assign(tags, result.tags),
-    }));
+    });
   };
 
   const handleDueDateChange = (value: Date | null) => {

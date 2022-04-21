@@ -90,7 +90,7 @@ export function getComboboxTarget(editor: Editor, triggers: Trigger[]) {
       .map((t) => t.value)
       .map(escapeRegExp)
       .join("|");
-    const pattern = `(?<=\\s|^)(${escapedTriggers})(|\\S+)$`;
+    const pattern = `(^|\\s)(${escapedTriggers})(|\\S+)$`;
     const beforeMatch = textBefore.match(new RegExp(pattern));
     const beforeRange =
       beforeMatch &&
@@ -98,7 +98,13 @@ export function getComboboxTarget(editor: Editor, triggers: Trigger[]) {
       typeof beforeMatch[0] !== "undefined" &&
       Editor.range(
         editor,
-        { ...start, offset: start.offset - beforeMatch[0].length },
+        {
+          ...start,
+          offset:
+            start.offset -
+            beforeMatch[0].length +
+            (beforeMatch[0].startsWith(" ") ? 1 : 0),
+        },
         start
       );
 
@@ -109,14 +115,14 @@ export function getComboboxTarget(editor: Editor, triggers: Trigger[]) {
 
     const trigger =
       beforeMatch &&
-      beforeMatch.length > 1 &&
-      triggers.find((t) => t.value === beforeMatch[1]);
+      beforeMatch.length > 2 &&
+      triggers.find((t) => t.value === beforeMatch[2]);
 
     if (beforeMatch && afterMatch && beforeRange && trigger) {
       return {
         target: beforeRange,
         trigger: trigger,
-        search: beforeMatch[2],
+        search: beforeMatch[3],
       };
     }
   }
@@ -138,7 +144,7 @@ export function setComboboxPosition(
 }
 
 export function getMentionsFromPlaintext(text: string, triggers: string[]) {
-  const pattern = `(?<=\\s|^)(${triggers.map(escapeRegExp).join("|")})\\S+`;
+  const pattern = `(\\s|^)(${triggers.map(escapeRegExp).join("|")})\\S+`;
 
   const result: {
     value: string;
@@ -148,12 +154,12 @@ export function getMentionsFromPlaintext(text: string, triggers: string[]) {
   }[] = [];
 
   for (let match of text.matchAll(new RegExp(pattern, "g"))) {
-    const value = match[0];
-    const trigger = match[1];
-    const start = match.index!;
-    const end = start + value.length - 1;
+    const trigger = match[2];
+    const value = match[0].trim().substring(trigger.length);
+    const start = match[0].startsWith(" ") ? match.index! + 1 : match.index!;
+    const end = start + match[0].trim().length - 1;
     result.push({
-      value: value.substring(trigger.length),
+      value: value,
       trigger,
       start,
       end,
