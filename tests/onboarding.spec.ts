@@ -32,7 +32,7 @@ test.describe("New file", () => {
       "Play soccer with friends @Private"
     );
 
-    await page.locator('[role="option"]:has-text("Add Private")').click();
+    await page.locator('[role="menuitem"] >> text=Private').click();
 
     await page.locator('[aria-label="Save task"]').click();
   });

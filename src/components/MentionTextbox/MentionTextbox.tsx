@@ -63,6 +63,7 @@ const Fieldset = styled("fieldset")(({ theme }) => {
       ? "rgba(0, 0, 0, 0.23)"
       : "rgba(255, 255, 255, 0.23)";
   return {
+    userSelect: "auto",
     margin: 0,
     borderRadius: theme.shape.borderRadius,
     borderWidth: 1,
