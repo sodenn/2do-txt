@@ -27,58 +27,64 @@ describe("mention-utils", () => {
     );
     expect(descendant).toStrictEqual([
       {
-        type: "paragraph",
-        children: [
-          {
-            type: "mention",
-            trigger: "+",
-            character: "Proj1",
-            style: { backgroundColor: "blue" },
-            children: [{ text: "" }],
-          },
-          { text: " lorem+Proj2 ipsum " },
-          {
-            type: "mention",
-            trigger: "@",
-            character: "Ctx1",
-            style: { backgroundColor: "green" },
-            children: [{ text: "" }],
-          },
-          { text: " dolor " },
-          {
-            type: "mention",
-            trigger: "@",
-            character: "Ctx1",
-            style: { backgroundColor: "green" },
-            children: [{ text: "" }],
-          },
-          { text: " sit amet " },
-          {
-            type: "mention",
-            trigger: "@",
-            character: "Ctx2",
-            style: { backgroundColor: "green" },
-            children: [{ text: "" }],
-          },
-          { text: " " },
-          {
-            type: "mention",
-            trigger: "@",
-            character: "Ctx3",
-            style: { backgroundColor: "green" },
-            children: [{ text: "" }],
-          },
-          { text: " " },
-          {
-            type: "mention",
-            trigger: "due:",
-            character: "2022-01-01",
-            style: { backgroundColor: "red" },
-            children: [{ text: "" }],
-          },
-          { text: "" },
-        ],
+        type: "mention",
+        trigger: "+",
+        character: "Proj1",
+        style: { backgroundColor: "blue" },
+        children: [{ text: "" }],
       },
+      { text: " lorem+Proj2 ipsum " },
+      {
+        type: "mention",
+        trigger: "@",
+        character: "Ctx1",
+        style: { backgroundColor: "green" },
+        children: [{ text: "" }],
+      },
+      { text: " dolor " },
+      {
+        type: "mention",
+        trigger: "@",
+        character: "Ctx1",
+        style: { backgroundColor: "green" },
+        children: [{ text: "" }],
+      },
+      { text: " sit amet " },
+      {
+        type: "mention",
+        trigger: "@",
+        character: "Ctx2",
+        style: { backgroundColor: "green" },
+        children: [{ text: "" }],
+      },
+      { text: " " },
+      {
+        type: "mention",
+        trigger: "@",
+        character: "Ctx3",
+        style: { backgroundColor: "green" },
+        children: [{ text: "" }],
+      },
+      { text: " " },
+      {
+        type: "mention",
+        trigger: "due:",
+        character: "2022-01-01",
+        style: { backgroundColor: "red" },
+        children: [{ text: "" }],
+      },
+      { text: "" },
+    ]);
+  });
+
+  it("should append an empty text element to focus the text box", () => {
+    const descendant = getDescendants("This is a test", [
+      { value: "@", style: { backgroundColor: "green" } },
+      { value: "+", style: { backgroundColor: "blue" } },
+    ]);
+    expect(descendant).toStrictEqual([
+      { text: "This is a test" },
+      { text: "" },
     ]);
   });
 });

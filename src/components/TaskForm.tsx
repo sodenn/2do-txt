@@ -160,7 +160,7 @@ const TaskForm = (props: TaskFormProps) => {
       </Box>
       <Grid spacing={2} container>
         {(hasTouchScreen || platform === "ios" || platform === "android") && (
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <Box sx={{ display: "flex", flex: 1, height: "100%" }}>
               <Button
                 sx={{ mr: 1 }}

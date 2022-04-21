@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import React, {
   ClipboardEvent,
+  FocusEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -209,7 +210,12 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     openSuggestions();
     if (onChange) {
       const plainText = toPlainText(editor);
-      onChange(plainText);
+      // remove possible zero-width characters
+      const plainTextWithoutZeroWidthCharacters = plainText.replace(
+        /[\u200B-\u200D\uFEFF]/g,
+        ""
+      );
+      onChange(plainTextWithoutZeroWidthCharacters);
     }
   }, [openSuggestions, editor, onChange]);
 
@@ -244,14 +250,20 @@ const MentionTextbox = (props: MentionTextboxProps) => {
     [editor, triggers]
   );
 
-  const handleBlur = useCallback(() => {
-    const result = getComboboxTarget(editor, triggers);
-    if (result) {
-      Transforms.select(editor, result.target);
-      insertMention(editor, result.search, result.trigger);
-    }
-    setFocus(false);
-  }, [editor, triggers]);
+  const handleBlur = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      if (elem?.contains(event.relatedTarget)) {
+        return;
+      }
+      const result = getComboboxTarget(editor, triggers);
+      if (result) {
+        Transforms.select(editor, result.target);
+        insertMention(editor, result.search, result.trigger);
+      }
+      setFocus(false);
+    },
+    [editor, elem, triggers]
+  );
 
   useEffect(() => {
     if (target && elem && (chars.length > 0 || search.length > 0)) {
