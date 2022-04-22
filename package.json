@@ -51,7 +51,7 @@
     "react-movable": "^3.0.4",
     "react-router-dom": "^6.3.0",
     "react-scripts": "4.0.3",
-    "slate": "0.77.0",
+    "slate": "0.77.2",
     "slate-history": "^0.66.0",
     "slate-react": "0.77.3",
     "typeface-roboto": "^1.1.13"
