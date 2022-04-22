@@ -4,14 +4,13 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
 import { TaskList, useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task, TaskFormData } from "../utils/task";
 import { ResponsiveDialog } from "./ResponsiveDialog";
-import { isMentionSuggestionsPopoverOpen } from "./TaskEditor";
 import TaskForm from "./TaskForm";
 
 const initialTaskFormData: TaskFormData = {
@@ -53,42 +52,22 @@ const TaskDialog = () => {
     setTaskDialogOptions,
   } = useTaskDialog();
   const { createCreationDate } = useSettings();
+  const [key, setKey] = useState(0);
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
-  >(() => {
-    if (task) {
-      return findTaskListByTaskId(task._id);
-    } else if (activeTaskList) {
-      return activeTaskList;
-    }
-  });
-
+  >();
   const formDisabled = !formData.body || (!activeTaskList && !selectedTaskList);
   const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    setFormData(createFormData(createCreationDate, task));
-    setSelectedTaskList(() => {
-      if (task) {
-        return findTaskListByTaskId(task._id);
-      } else if (activeTaskList) {
-        return activeTaskList;
-      } else {
-        return undefined;
-      }
-    });
-  }, [createCreationDate, task, open, activeTaskList, findTaskListByTaskId]);
-
-  const closeDialog = () =>
-    setTaskDialogOptions((currentValue) => ({ ...currentValue, open: false }));
+  const closeDialog = () => setTaskDialogOptions({ open: false });
 
   const handleSave = () => {
+    if (formDisabled) {
+      return;
+    }
     closeDialog();
     if (formData._id) {
       editTask(formData);
@@ -98,20 +77,36 @@ const TaskDialog = () => {
   };
 
   const handleChange = (data: TaskFormData) => {
-    setFormData((task) => ({ ...task, ...data }));
+    setFormData((currentValue) => ({ ...currentValue, ...data }));
   };
 
   const handleFileSelect = (taskList?: TaskList) => {
     setSelectedTaskList(taskList);
   };
 
+  const handleEnter = () => {
+    setFormData(createFormData(createCreationDate, task));
+    setSelectedTaskList(() => {
+      if (task) {
+        return findTaskListByTaskId(task._id);
+      } else if (activeTaskList) {
+        return activeTaskList;
+      }
+    });
+    setKey(key + 1);
+  };
+
+  const handleExit = () => {
+    setTaskDialogOptions({ open: false });
+    setFormData(createFormData(createCreationDate));
+    setSelectedTaskList(undefined);
+  };
+
   const handleClose = (
     event: any,
     reason: "backdropClick" | "escapeKeyDown"
   ) => {
-    return reason !== "backdropClick" && !isMentionSuggestionsPopoverOpen()
-      ? closeDialog()
-      : undefined;
+    return reason !== "backdropClick" ? closeDialog() : undefined;
   };
 
   return (
@@ -122,7 +117,8 @@ const TaskDialog = () => {
       open={open}
       onClose={handleClose}
       TransitionProps={{
-        onExited: () => setTaskDialogOptions({ open: false }),
+        onEnter: handleEnter,
+        onExited: handleExit,
       }}
     >
       <DialogTitle>
@@ -130,6 +126,7 @@ const TaskDialog = () => {
       </DialogTitle>
       <DialogContent>
         <TaskForm
+          key={key}
           completed={!!task?.completed}
           formData={formData}
           contexts={Object.keys(contexts)}

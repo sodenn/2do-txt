@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { TestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 
 describe("AddTaskButton", () => {
@@ -9,7 +10,7 @@ describe("AddTaskButton", () => {
       name: "Add task",
     });
 
-    fireEvent.click(addTaskButton);
+    await userEvent.click(addTaskButton);
 
     const taskDialog = await screen.findByRole("presentation", {
       name: "Task dialog",

@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import FileSaver from "file-saver";
 import {
   EmptyTestContext,
@@ -27,11 +28,13 @@ describe("DownloadButton", () => {
       </EmptyTestContext>
     );
 
+    await screen.findByTestId("page");
+
     const downloadButton = await screen.findByRole("button", {
       name: "Download todo.txt",
     });
 
-    fireEvent.click(downloadButton);
+    await userEvent.click(downloadButton);
 
     await waitFor(() => {
       expect(FileSaver.saveAs).toHaveBeenCalledWith(
@@ -54,11 +57,13 @@ describe("DownloadButton", () => {
       </EmptyTestContext>
     );
 
+    await screen.findByTestId("page");
+
     const downloadButton = await screen.findByRole("button", {
       name: "Download todo.txt",
     });
 
-    fireEvent.click(downloadButton);
+    await userEvent.click(downloadButton);
 
     await waitFor(() => {
       expect(FileSaver.saveAs).toHaveBeenCalledWith(

@@ -1,6 +1,7 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
-import { FC, Suspense } from "react";
+import { Suspense } from "react";
+import { WithChildren } from "../types/common";
 import { AppTheme } from "./AppThemeContext";
 import { ArchivedTaskProvider } from "./ArchivedTaskContext";
 import { ArchivedTasksDialogProvider } from "./ArchivedTasksDialogContext";
@@ -17,7 +18,7 @@ import { SideSheetProvider } from "./SideSheetContext";
 import { TaskProvider } from "./TaskContext";
 import { TaskDialogProvider } from "./TaskDialogContext";
 
-const ProviderBundle: FC = ({ children }) => {
+const ProviderBundle = ({ children }: WithChildren) => {
   return (
     <Suspense fallback={null}>
       <AppTheme>

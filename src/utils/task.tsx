@@ -1,18 +1,17 @@
-import clsx from "clsx";
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { Dictionary } from "../types/common";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import {
+  completedStyle,
+  contextStyle,
+  disabledStyle,
+  dueDateStyle,
+  priorityStyle,
+  projectStyle,
+  tagStyle,
   taskChipStyle,
-  taskCompletedStyle,
-  taskContextStyle,
-  taskDisabledStyle,
-  taskDudDateStyle,
-  taskPriorityStyle,
-  taskProjectStyle,
-  taskTagStyle,
 } from "./task-styles";
 import { generateId } from "./uuid";
 
@@ -155,13 +154,13 @@ export function useFormatBody() {
     let formattedTokens = tokens.map((token, index) => {
       if (/^@[\S]+/.test(token)) {
         return (
-          <span key={index} className={clsx(taskContextStyle, taskChipStyle)}>
+          <span key={index} className={taskChipStyle} style={contextStyle}>
             {token}
           </span>
         );
       } else if (/^\+[\S]+/.test(token)) {
         return (
-          <span key={index} className={clsx(taskProjectStyle, taskChipStyle)}>
+          <span key={index} className={taskChipStyle} style={projectStyle}>
             {token}
           </span>
         );
@@ -178,13 +177,8 @@ export function useFormatBody() {
         return (
           <span
             key={index}
-            className={clsx(
-              {
-                [taskDudDateStyle]: key === "due",
-                [taskTagStyle]: key !== "due",
-              },
-              taskChipStyle
-            )}
+            style={key === "due" ? dueDateStyle : tagStyle}
+            className={taskChipStyle}
           >
             {text}
           </span>
@@ -196,19 +190,19 @@ export function useFormatBody() {
 
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <span key={task._id} className={clsx(taskChipStyle, taskPriorityStyle)}>
+        <span key={task._id} className={taskChipStyle} style={priorityStyle}>
           {task.priority}
         </span>
       );
       formattedTokens = [priorityElement, ...formattedTokens];
     }
 
-    const completedClass = task.completed
-      ? clsx(taskCompletedStyle, taskDisabledStyle)
-      : undefined;
-
     return (
-      <span className={completedClass}>
+      <span
+        style={
+          task.completed ? { ...completedStyle, ...disabledStyle } : undefined
+        }
+      >
         {formattedTokens
           .map<ReactNode>((e) => e)
           .reduce((prev, curr) => [prev, " ", curr])}

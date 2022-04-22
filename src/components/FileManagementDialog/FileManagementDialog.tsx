@@ -61,7 +61,11 @@ const FileManagementDialog = () => {
     listAllFiles().then(listClosedFiles);
   }, [listAllFiles, listClosedFiles]);
 
-  useEffect(listFiles, [listFiles]);
+  useEffect(() => {
+    if (fileManagementDialogOpen) {
+      listFiles();
+    }
+  }, [listFiles, fileManagementDialogOpen]);
 
   const openDeleteConfirmationDialog = (filePath: string) => {
     return new Promise<boolean>((resolve) => {
@@ -135,6 +139,7 @@ const FileManagementDialog = () => {
       maxWidth="xs"
       fullWidth
       scroll="paper"
+      aria-label="File management"
       open={fileManagementDialogOpen}
       onClose={handleCloseDialog}
     >
