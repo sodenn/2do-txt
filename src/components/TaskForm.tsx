@@ -15,7 +15,7 @@ import {
 } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
-import MentionTextField, { useMentionTextField } from "./MentionTextbox";
+import MentionTextField, { useMentionTextField } from "./MentionTextField";
 import PrioritySelect from "./PrioritySelect";
 
 interface TaskFormProps {
