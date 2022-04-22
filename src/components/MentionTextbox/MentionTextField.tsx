@@ -16,15 +16,8 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { createEditor, Descendant, Editor, Range, Transforms } from "slate";
-import { withHistory } from "slate-history";
-import {
-  Editable,
-  ReactEditor,
-  RenderElementProps,
-  Slate,
-  withReact,
-} from "slate-react";
+import { Descendant, Editor, Range, Transforms } from "slate";
+import { Editable, ReactEditor, RenderElementProps, Slate } from "slate-react";
 import Element from "./Element";
 import { Suggestion, Trigger } from "./mention-types";
 import {
@@ -35,7 +28,6 @@ import {
   getUserInputAtSelection,
   insertMention,
   setSuggestionsPosition,
-  withMentions,
 } from "./mention-utils";
 
 interface MentionTextFieldProps {
@@ -76,13 +68,6 @@ const Fieldset = styled("fieldset")(({ theme }) => {
     },
   };
 });
-
-export function useMentionTextField() {
-  return useMemo(
-    () => withMentions(withReact(withHistory(createEditor()))),
-    []
-  );
-}
 
 const MentionTextField = (props: MentionTextFieldProps) => {
   const {

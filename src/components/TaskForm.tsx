@@ -1,14 +1,12 @@
 import { Box, Button, Grid, Stack } from "@mui/material";
 import { isValid } from "date-fns";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Editor } from "slate";
-import { ReactEditor } from "slate-react";
 import { TaskList } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
 import { usePlatform, useTouchScreen } from "../utils/platform";
-import { createDueDateRegex, parseTaskBody, TaskFormData } from "../utils/task";
+import { createDueDateRegex, TaskFormData } from "../utils/task";
 import {
   contextStyle,
   dueDateStyle,
@@ -17,8 +15,7 @@ import {
 } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
-import MentionTextField from "./MentionTextbox";
-import { useMentionTextField } from "./MentionTextbox/MentionTextField";
+import MentionTextField, { useMentionTextField } from "./MentionTextbox";
 import PrioritySelect from "./PrioritySelect";
 
 interface TaskFormProps {
@@ -55,29 +52,8 @@ const TaskForm = (props: TaskFormProps) => {
     !(showCreationDate && showCompletionDate)
       ? 4
       : 6;
-  const [state, setState] = useState({
-    key: 0,
-    autoFocus: true,
-    projects,
-    contexts,
-    tags,
-  });
-  const editor = useMentionTextField();
-
-  const setTaskFormState = (body: string, autoFocus = true) => {
-    const result = parseTaskBody(body);
-    setState((state) => ({
-      autoFocus,
-      key: state.key + 1,
-      projects: [...projects, ...result.projects].filter(
-        (item, i, ar) => ar.indexOf(item) === i
-      ),
-      contexts: [...contexts, ...result.contexts].filter(
-        (item, i, ar) => ar.indexOf(item) === i
-      ),
-      tags: Object.assign(tags, result.tags),
-    }));
-  };
+  const { editor, openSuggestions, removeMention, insertMention } =
+    useMentionTextField();
 
   const handleDueDateChange = (value: Date | null) => {
     if (
@@ -86,26 +62,11 @@ const TaskForm = (props: TaskFormProps) => {
     ) {
       return;
     }
-
-    const bodyWithoutDueDate = formData.body
-      .replace(createDueDateRegex(), "")
-      .trim();
-
-    let body: string;
     if (value) {
-      const dueDateTag = `due:${formatDate(value)}`;
-      body = `${bodyWithoutDueDate} ${dueDateTag}`.trimStart();
+      insertMention({ value: "due:", style: dueDateStyle }, formatDate(value));
     } else {
-      body = bodyWithoutDueDate;
+      removeMention("due:");
     }
-
-    onChange({ ...formData, body, dueDate: value ?? undefined });
-    setTaskFormState(body, false);
-  };
-
-  const handleOpenMentionSuggestions = (trigger: string) => {
-    ReactEditor.focus(editor);
-    Editor.insertText(editor, trigger);
   };
 
   useEffect(() => {
@@ -130,7 +91,6 @@ const TaskForm = (props: TaskFormProps) => {
     <Stack>
       <Box sx={{ mb: 2 }}>
         <MentionTextField
-          key={state.key}
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           aria-label="Text editor"
@@ -138,11 +98,11 @@ const TaskForm = (props: TaskFormProps) => {
           initialValue={formData.body}
           onEnterPress={onEnterPress}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
-          autoFocus={state.autoFocus}
+          autoFocus={true}
           triggers={[
             { value: "+", style: projectStyle },
             { value: "@", style: contextStyle },
-            ...Object.entries(state.tags).map(([key, value]) => ({
+            ...Object.entries(tags).map(([key, value]) => ({
               value: `${key}:`,
               style: key === "due" ? dueDateStyle : tagStyle,
             })),
@@ -150,13 +110,13 @@ const TaskForm = (props: TaskFormProps) => {
           suggestions={[
             {
               trigger: "+",
-              items: state.projects,
+              items: projects,
             },
             {
               trigger: "@",
-              items: state.contexts,
+              items: contexts,
             },
-            ...Object.entries(state.tags).map(([key, value]) => ({
+            ...Object.entries(tags).map(([key, value]) => ({
               trigger: `${key}:`,
               items: value,
             })),
@@ -173,7 +133,7 @@ const TaskForm = (props: TaskFormProps) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => handleOpenMentionSuggestions("@")}
+                onClick={() => openSuggestions("@")}
               >
                 {t("@Context")}
               </Button>
@@ -182,7 +142,7 @@ const TaskForm = (props: TaskFormProps) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => handleOpenMentionSuggestions("+")}
+                onClick={() => openSuggestions("+")}
               >
                 {t("+Project")}
               </Button>

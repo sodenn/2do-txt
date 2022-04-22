@@ -1,5 +1,14 @@
-import { BaseRange, Descendant, Editor, Range, Transforms } from "slate";
-import { ReactEditor } from "slate-react";
+import { useCallback, useMemo } from "react";
+import {
+  BaseRange,
+  createEditor,
+  Descendant,
+  Editor,
+  Range,
+  Transforms,
+} from "slate";
+import { withHistory } from "slate-history";
+import { ReactEditor, withReact } from "slate-react";
 import {
   CustomText,
   MentionElement,
@@ -7,6 +16,64 @@ import {
   Suggestion,
   Trigger,
 } from "./mention-types";
+
+export function useMentionTextField() {
+  const editor = useMemo(
+    () => withMentions(withReact(withHistory(createEditor()))),
+    []
+  );
+
+  const openSuggestions = useCallback(
+    (trigger: string) => {
+      ReactEditor.focus(editor);
+      Editor.insertText(editor, trigger);
+    },
+    [editor]
+  );
+
+  const insertMention = useCallback(
+    (trigger: Trigger, value: string) => {
+      const mentionElement: MentionElement = {
+        type: "mention",
+        trigger: trigger.value,
+        style: trigger.style,
+        value,
+        children: [{ text: "" }],
+      };
+      Transforms.insertNodes(editor, mentionElement);
+      Transforms.move(editor);
+    },
+    [editor]
+  );
+
+  const removeMention = useCallback(
+    (trigger: string, value?: string) => {
+      editor.children.forEach((element) => {
+        if (isParagraphElement(element)) {
+          element.children.forEach((child) => {
+            if (
+              isMentionElement(child) &&
+              child.trigger === trigger &&
+              (!value || value === child.value)
+            ) {
+              const path = ReactEditor.findPath(editor, child);
+              Transforms.removeNodes(editor, { at: path });
+            }
+          });
+        }
+      });
+      Transforms.move(editor);
+    },
+    [editor]
+  );
+
+  return {
+    editor,
+    openSuggestions,
+    insertMention,
+    removeMention,
+  };
+}
 
 export function getTriggers(triggers: Trigger[], suggestions?: Suggestion[]) {
   const allTriggers = [...triggers];

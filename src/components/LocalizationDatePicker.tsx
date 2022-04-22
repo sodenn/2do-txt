@@ -35,15 +35,6 @@ const LocalizationDatePicker = forwardRef<
     i18n: { resolvedLanguage },
   } = useTranslation();
 
-  const handleChange = (
-    date: Date | null,
-    keyboardInputValue?: string | undefined
-  ) => {
-    if (!keyboardInputValue) {
-      rest.onChange(date);
-    }
-  };
-
   return (
     <LocalizationProvider
       dateAdapter={AdapterDateFns}
@@ -55,7 +46,6 @@ const LocalizationDatePicker = forwardRef<
         value={value}
         clearable
         allowSameDateSelection
-        onAccept={handleChange}
         toolbarTitle={
           resolvedLanguage !== "en"
             ? (t("datePicker.toolbarTitle") as any)

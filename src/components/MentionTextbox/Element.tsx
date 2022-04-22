@@ -7,7 +7,7 @@ const Span = styled("span")<{ selected: number; focused: number }>(
     padding: "1px 4px 2px",
     margin: "0 1px",
     verticalAlign: "baseline",
-    display: "inline-block",
+    display: "inline",
     borderRadius: theme.spacing(1),
     backgroundColor: "#eee",
     wordBreak: "break-word",
@@ -51,7 +51,7 @@ const Element = (props: RenderElementProps) => {
       );
     default:
       return (
-        <p style={{ margin: 0, padding: 0, minHeight: 27 }} {...attributes}>
+        <p style={{ margin: 0, padding: 0 }} {...attributes}>
           {children}
         </p>
       );
