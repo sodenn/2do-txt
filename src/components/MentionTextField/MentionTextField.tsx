@@ -331,6 +331,9 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       <Slate editor={editor} value={initialValue} onChange={handleChange}>
         <Editable
           aria-label={props["aria-label"]}
+          autoCorrect="false"
+          autoCapitalize="false"
+          spellCheck={false}
           renderElement={renderElement}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
