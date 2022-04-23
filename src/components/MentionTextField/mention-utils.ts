@@ -166,18 +166,6 @@ export function insertMention(opt: InsertMentionOptions) {
     target,
   } = opt;
   Transforms.select(editor, target);
-
-  // Note: Normally, addSpaceAfterMention causes a space to be inserted before the mention.
-  // This doesn't work on mobile browsers because they contain a zero-width character.
-  const lastElement = getLastElement(editor.children);
-  if (
-    (!isTextElement(lastElement) || !lastElement.text.endsWith(" ")) &&
-    target.focus.offset - target.anchor.offset === 2 &&
-    target.focus.path[1] > 0
-  ) {
-    Transforms.insertText(editor, " ");
-  }
-
   const mention: MentionElement = {
     type: "mention",
     trigger,
@@ -222,22 +210,18 @@ export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
       editor,
       Editor.range(editor, { path: [0, 0], offset: 0 }, start)
     );
-    const zeroWidthChars = hasZeroWidthChars(textBefore);
-    // remove the zero-width characters otherwise the regex won't work
-    textBefore = zeroWidthChars ? removeZeroWidthChars(textBefore) : textBefore;
     const escapedTriggers = triggers
       .map((t) => t.value)
       .map(escapeRegExp)
       .join("|");
-    const pattern = `(^|\\s)(${escapedTriggers})(|\\S+)$`;
+    const pattern = `(^|\\s)(${escapedTriggers})(|\uFEFF|\\S+|\uFEFF\\S+)$`;
     const beforeMatch = textBefore.match(new RegExp(pattern));
     const beforeMatchExists =
       !!beforeMatch && beforeMatch.length > 2 && !!beforeMatch[0];
     const offset = beforeMatchExists
       ? start.offset -
         beforeMatch[0].length +
-        (beforeMatch[0].startsWith(" ") ? 1 : 0) +
-        (zeroWidthChars ? -1 : 0)
+        (beforeMatch[0].startsWith(" ") ? 1 : 0)
       : 0;
     const beforeRange =
       beforeMatch &&
@@ -261,7 +245,7 @@ export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
       return {
         target: beforeRange,
         trigger: trigger,
-        search: beforeMatch[3],
+        search: removeZeroWidthChars(beforeMatch[3]),
       };
     }
   }
