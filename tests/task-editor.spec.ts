@@ -38,15 +38,15 @@ test.describe("Task editor", () => {
     // open the date picker
     const datePickerButton = isMobile
       ? '[aria-label="Due date"]'
-      : '[aria-label="Choose date"]:right-of([aria-label="Due date"])';
+      : '[aria-label*="Choose date"]';
     await page.locator(datePickerButton).click();
 
     const today = new Date();
-    const selector = `[aria-label="${format(today, "MMM d, yyyy")}"]`;
+    const dueDateSelector = `[aria-label="${format(today, "MMM d, yyyy")}"]`;
     const dueDateTag = `due:${formatDate(today)}`;
 
     // choose date and confirm
-    await page.locator(selector).click();
+    await page.locator(dueDateSelector).click();
     if (isMobile) {
       await page.locator("button >> text=OK").click();
     }
@@ -65,10 +65,44 @@ test.describe("Task editor", () => {
     await page.locator('[aria-label="Text editor"]').click();
     await page.keyboard.press("End");
     await page.press('[aria-label="Text editor"]', "Backspace");
-    await page.press('[aria-label="Text editor"]', "Backspace");
 
     // make sure the date picker doesn't contain a value
     await expect(page.locator('[aria-label="Due date"]')).toHaveValue("");
+
+    // make sure the text field doesn't contain the due date
+    await expect(page.locator('[aria-label="Text editor"]')).not.toHaveText(
+      dueDateTag
+    );
+
+    // open the date picker
+    await page.locator(datePickerButton).click();
+
+    // choose date and confirm
+    await page.locator(dueDateSelector).click();
+    if (isMobile) {
+      await page.locator("button >> text=OK").click();
+    }
+
+    // make sure the date picker contain a value
+    await expect(page.locator('[aria-label="Due date"]')).toHaveValue(
+      format(today, "MM/dd/yyyy")
+    );
+
+    // make sure the text field contains the due date
+    await expect(page.locator('[aria-label="Text editor"]')).toHaveText(
+      dueDateTag
+    );
+
+    // open the date picker
+    await page.locator(datePickerButton).click();
+
+    // clear date selection
+    await page.locator("text=Clear").click();
+
+    // make sure the text field doesn't contain the due date
+    await expect(page.locator('[aria-label="Text editor"]')).not.toHaveText(
+      dueDateTag
+    );
   });
 
   test("should allow me to edit a task", async ({ page }) => {
@@ -274,5 +308,67 @@ test.describe("Task editor", () => {
 
     // make sure that the dialog is closed
     await expect(page.locator('[aria-label="Task dialog"]')).toHaveCount(0);
+  });
+
+  test("should insert spaces when adding mentions via keyboard", async ({
+    page,
+  }) => {
+    await page.locator('button[aria-label="Add task"]').click();
+
+    await page.type('[aria-label="Text editor"]', "@Private");
+
+    await page.keyboard.press("Enter");
+
+    await page.type('[aria-label="Text editor"]', "@Private");
+
+    await page.keyboard.press("Enter");
+
+    await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
+      2
+    );
+
+    // delete mention + space
+    await page.press('[aria-label="Text editor"]', "Backspace");
+    await page.press('[aria-label="Text editor"]', "Backspace");
+
+    await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
+      1
+    );
+  });
+
+  test("should insert spaces when adding mentions via mouse click", async ({
+    page,
+  }) => {
+    await page.locator('button[aria-label="Add task"]').click();
+
+    await page.type('[aria-label="Text editor"]', "@Private");
+
+    await page.locator('[role="menuitem"] >> text="Private"').click();
+
+    await page.type('[aria-label="Text editor"]', "@Private");
+
+    await page.locator('[role="menuitem"] >> text="Private"').click();
+
+    await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
+      2
+    );
+
+    // delete mention + space
+    await page.press('[aria-label="Text editor"]', "Backspace");
+    await page.press('[aria-label="Text editor"]', "Backspace");
+
+    await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
+      1
+    );
+  });
+
+  test("should insert a new mention", async ({ page }) => {
+    await page.locator('button[aria-label="Add task"]').click();
+
+    await page.type('[aria-label="Text editor"]', "@Test");
+
+    await page.locator('[role="menuitem"] >> text=Add "Test"').click();
+
+    await expect(page.locator('[data-testid="mention-Test"]')).toHaveCount(1);
   });
 });

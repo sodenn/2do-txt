@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { BaseEditor, Descendant } from "slate";
+import { BaseEditor, BaseRange, Descendant, Editor } from "slate";
 import { HistoryEditor } from "slate-history";
 import { ReactEditor } from "slate-react";
 
@@ -16,6 +16,13 @@ interface Suggestion {
 interface Mention {
   trigger: string;
   value: string;
+}
+
+interface InsertMentionOptions {
+  editor: Editor;
+  value: string;
+  trigger: Trigger;
+  target: BaseRange;
 }
 
 export interface MentionElement {
