@@ -104,7 +104,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^3.4.3",
+    "@capacitor/cli": "^3.5.0",
     "@playwright/test": "^1.21.1",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
