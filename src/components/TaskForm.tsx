@@ -63,7 +63,11 @@ const TaskForm = (props: TaskFormProps) => {
       return;
     }
     if (value) {
-      insertMention({ value: "due:", style: dueDateStyle }, formatDate(value));
+      insertMention(
+        { value: "due:", style: dueDateStyle },
+        formatDate(value),
+        true
+      );
     } else {
       removeMention("due:");
     }

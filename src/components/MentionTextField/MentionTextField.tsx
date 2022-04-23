@@ -21,12 +21,16 @@ import { Editable, ReactEditor, RenderElementProps, Slate } from "slate-react";
 import Element from "./Element";
 import { Suggestion, Trigger } from "./mention-types";
 import {
+  addSpaceAfterMention,
   getDescendants,
   getLasPath,
+  getLastElement,
   getPlainText,
   getTriggers,
   getUserInputAtSelection,
+  hasZeroWidthChars,
   insertMention,
+  isTextElement,
   setSuggestionsPosition,
 } from "./mention-utils";
 
@@ -75,7 +79,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     autoFocus,
     label,
     placeholder,
-    initialValue = "",
+    initialValue: _initialValue = "",
     editor,
     suggestions,
     onChange,
@@ -99,16 +103,17 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     ),
     []
   );
-  const descendants = useMemo<Descendant[]>(
+  const initialValue = useMemo<Descendant[]>(
     () => [
       {
         type: "paragraph",
-        children: getDescendants(initialValue, triggers),
+        children: getDescendants(_initialValue, triggers),
       },
     ],
-    [initialValue, triggers]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
-  const chars = useMemo(() => {
+  const filteredSuggestions = useMemo(() => {
     const list =
       suggestions
         ?.find((s) => s.trigger === trigger?.value)
@@ -149,31 +154,37 @@ const MentionTextField = (props: MentionTextFieldProps) => {
         case "ArrowDown":
           if (target) {
             event.preventDefault();
-            const prevIndex = index >= chars.length - 1 ? 0 : index + 1;
+            const prevIndex =
+              index >= filteredSuggestions.length - 1 ? 0 : index + 1;
             setIndex(prevIndex);
           }
           break;
         case "ArrowUp":
           if (target) {
             event.preventDefault();
-            const nextIndex = index <= 0 ? chars.length - 1 : index - 1;
+            const nextIndex =
+              index <= 0 ? filteredSuggestions.length - 1 : index - 1;
             setIndex(nextIndex);
           }
           break;
         case "Tab":
           if (target && trigger) {
-            Transforms.select(editor, target);
-            const value = index < chars.length ? chars[index] : search;
-            insertMention(editor, value, trigger);
+            const value =
+              index < filteredSuggestions.length
+                ? filteredSuggestions[index]
+                : search;
+            insertMention({ editor, value, trigger, target });
             closeSuggestions();
           }
           break;
         case "Enter":
           event.preventDefault();
           if (target && trigger) {
-            Transforms.select(editor, target);
-            const value = index < chars.length ? chars[index] : search;
-            insertMention(editor, value, trigger);
+            const value =
+              index < filteredSuggestions.length
+                ? filteredSuggestions[index]
+                : search;
+            insertMention({ editor, value, trigger, target });
             closeSuggestions();
           } else if (!target && onEnterPress) {
             onEnterPress();
@@ -187,11 +198,21 @@ const MentionTextField = (props: MentionTextFieldProps) => {
           }
           break;
         case " ":
-          if (target && trigger) {
-            Transforms.select(editor, target);
-            const value = search.trim();
-            insertMention(editor, value, trigger);
+          const value = search.trim();
+          if (target && trigger && value) {
+            insertMention({ editor, value, trigger, target });
             closeSuggestions();
+          }
+          break;
+        case "Backspace":
+          // (mobile) Prevent the user from having to press backspace twice
+          const lastElement = getLastElement(editor.children);
+          if (
+            isTextElement(lastElement) &&
+            hasZeroWidthChars(lastElement.text) &&
+            lastElement.text.length === 2
+          ) {
+            Editor.deleteBackward(editor, { unit: "character" });
           }
           break;
       }
@@ -201,7 +222,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       trigger,
       onEnterPress,
       index,
-      chars,
+      filteredSuggestions,
       editor,
       search,
       closeSuggestions,
@@ -221,17 +242,16 @@ const MentionTextField = (props: MentionTextFieldProps) => {
   const handleClickSuggestion = useCallback(
     (index?: number) => {
       if (target && trigger) {
-        Transforms.select(editor, target);
         const value =
-          typeof index !== "undefined" && index < chars.length
-            ? chars[index]
+          typeof index !== "undefined" && index < filteredSuggestions.length
+            ? filteredSuggestions[index]
             : search;
-        insertMention(editor, value, trigger);
+        insertMention({ editor, value, trigger, target });
         closeSuggestions();
         ReactEditor.focus(editor);
       }
     },
-    [target, trigger, editor, chars, search, closeSuggestions]
+    [target, trigger, editor, filteredSuggestions, search, closeSuggestions]
   );
 
   const handlePaste = useCallback(
@@ -254,8 +274,8 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       }
       const result = getUserInputAtSelection(editor, triggers);
       if (result && result.search) {
-        Transforms.select(editor, result.target);
-        insertMention(editor, result.search, result.trigger);
+        const { trigger, search, target } = result;
+        insertMention({ editor, value: search, trigger, target });
       }
       setFocus(false);
     },
@@ -263,10 +283,19 @@ const MentionTextField = (props: MentionTextFieldProps) => {
   );
 
   useEffect(() => {
-    if (target && elem && (chars.length > 0 || search.length > 0)) {
+    if (
+      target &&
+      elem &&
+      (filteredSuggestions.length > 0 || search.length > 0)
+    ) {
       setSuggestionsPosition(editor, elem, target);
     }
-  }, [chars.length, editor, index, search, target, elem]);
+  }, [filteredSuggestions.length, editor, index, search, target, elem]);
+
+  useEffect(() => {
+    addSpaceAfterMention(editor);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor.children]);
 
   useEffect(() => {
     if (autoFocus) {
@@ -274,7 +303,8 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       const path = getLasPath(editor);
       Transforms.select(editor, path);
     }
-  }, [autoFocus, editor]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFocus]);
 
   return (
     <Fieldset
@@ -298,7 +328,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
           {label}
         </Legend>
       )}
-      <Slate editor={editor} value={descendants} onChange={handleChange}>
+      <Slate editor={editor} value={initialValue} onChange={handleChange}>
         <Editable
           aria-label={props["aria-label"]}
           renderElement={renderElement}
@@ -309,7 +339,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
           onPaste={handlePaste}
           placeholder={placeholder}
         />
-        {target && (chars.length > 0 || search.length > 0) && (
+        {target && (filteredSuggestions.length > 0 || search.length > 0) && (
           <Portal>
             <Fade in>
               <div
@@ -325,7 +355,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
                 <ClickAwayListener onClickAway={closeSuggestions}>
                   <Paper elevation={2}>
                     <MenuList>
-                      {chars.map((char, i) => (
+                      {filteredSuggestions.map((char, i) => (
                         <MenuItem
                           onClick={() =>
                             showAddMenuItem && char === search

@@ -11,6 +11,7 @@ import { withHistory } from "slate-history";
 import { ReactEditor, withReact } from "slate-react";
 import {
   CustomText,
+  InsertMentionOptions,
   MentionElement,
   ParagraphElement,
   Suggestion,
@@ -26,22 +27,15 @@ export function useMentionTextField() {
   const openSuggestions = useCallback(
     (trigger: string) => {
       ReactEditor.focus(editor);
-      Editor.insertText(editor, trigger);
-    },
-    [editor]
-  );
-
-  const insertMention = useCallback(
-    (trigger: Trigger, value: string) => {
-      const mentionElement: MentionElement = {
-        type: "mention",
-        trigger: trigger.value,
-        style: trigger.style,
-        value,
-        children: [{ text: "" }],
-      };
-      Transforms.insertNodes(editor, mentionElement);
-      Transforms.move(editor);
+      const lastElement = getLastElement(editor.children);
+      if (
+        isMentionElement(lastElement) ||
+        (isTextElement(lastElement) && !!lastElement.text)
+      ) {
+        Editor.insertText(editor, ` ${trigger}`);
+      } else {
+        Editor.insertText(editor, trigger);
+      }
     },
     [editor]
   );
@@ -62,9 +56,37 @@ export function useMentionTextField() {
           });
         }
       });
-      Transforms.move(editor);
     },
     [editor]
+  );
+
+  const insertMention = useCallback(
+    (trigger: Trigger, value: string, uniqueTrigger = false) => {
+      if (uniqueTrigger) {
+        removeMention(trigger.value);
+      }
+
+      const startOfLine = isStartOfLine(editor.children);
+      const lastElement = getLastElement(editor.children);
+      if (
+        !startOfLine &&
+        (!isTextElement(lastElement) || !lastElement.text.endsWith(" "))
+      ) {
+        Transforms.insertNodes(editor, [{ text: " " }]);
+        Transforms.move(editor);
+      }
+
+      const mentionElement: MentionElement = {
+        type: "mention",
+        trigger: trigger.value,
+        style: trigger.style,
+        value,
+        children: [{ text: "" }],
+      };
+      Transforms.insertNodes(editor, mentionElement);
+      Transforms.move(editor);
+    },
+    [editor, removeMention]
   );
 
   return {
@@ -86,18 +108,18 @@ export function getTriggers(triggers: Trigger[], suggestions?: Suggestion[]) {
 }
 
 export function isMentionElement(element: any): element is MentionElement {
-  return element.type === "mention";
+  return element && element.type === "mention";
 }
 
-export function isParagraphElement(element: any): element is ParagraphElement {
-  return element.type === "paragraph";
+function isParagraphElement(element: any): element is ParagraphElement {
+  return element && element.type === "paragraph";
 }
 
 export function isTextElement(element: any): element is CustomText {
-  return element.hasOwnProperty("text");
+  return element && element.hasOwnProperty("text");
 }
 
-export function withMentions(editor: Editor) {
+function withMentions(editor: Editor) {
   const { isInline, isVoid } = editor;
 
   editor.isInline = (element) => {
@@ -111,7 +133,7 @@ export function withMentions(editor: Editor) {
   return editor;
 }
 
-export function removeZeroWidthChars(text: string) {
+function removeZeroWidthChars(text: string) {
   return text.replace(/[\u200B-\u200D\uFEFF]/g, "");
 }
 
@@ -136,11 +158,26 @@ export function getPlainText(editor: Editor) {
   return removeZeroWidthChars(plainText);
 }
 
-export function insertMention(
-  editor: Editor,
-  value: string,
-  { value: trigger, style }: Trigger
-) {
+export function insertMention(opt: InsertMentionOptions) {
+  const {
+    value,
+    trigger: { value: trigger, style },
+    editor,
+    target,
+  } = opt;
+  Transforms.select(editor, target);
+
+  // Note: Normally, addSpaceAfterMention causes a space to be inserted before the mention.
+  // This doesn't work on mobile browsers because they contain a zero-width character.
+  const lastElement = getLastElement(editor.children);
+  if (
+    (!isTextElement(lastElement) || !lastElement.text.endsWith(" ")) &&
+    target.focus.offset - target.anchor.offset === 2 &&
+    target.focus.path[1] > 0
+  ) {
+    Transforms.insertText(editor, " ");
+  }
+
   const mention: MentionElement = {
     type: "mention",
     trigger,
@@ -150,7 +187,30 @@ export function insertMention(
   };
   Transforms.insertNodes(editor, mention);
   Transforms.move(editor);
-  Transforms.insertText(editor, " ");
+}
+
+export function addSpaceAfterMention(editor: Editor) {
+  const elements = editor.children;
+  if (elements.length > 0) {
+    const paragraph = elements[elements.length - 1];
+    if (isParagraphElement(paragraph)) {
+      const children = paragraph.children;
+      if (children.length > 1) {
+        const secondLastElement = children[children.length - 2];
+        const lastElement = children[children.length - 1];
+        const textRightBeforeMention =
+          isMentionElement(secondLastElement) &&
+          isTextElement(lastElement) &&
+          /^\S$/.test(removeZeroWidthChars(lastElement.text));
+        if (textRightBeforeMention) {
+          Transforms.move(editor, { reverse: true });
+          Editor.insertText(editor, " ");
+          Transforms.move(editor);
+          return true;
+        }
+      }
+    }
+  }
 }
 
 export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
@@ -162,42 +222,40 @@ export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
       editor,
       Editor.range(editor, { path: [0, 0], offset: 0 }, start)
     );
-    const hadZeroWidthChars = hasZeroWidthChars(textBefore);
-    textBefore = hadZeroWidthChars
-      ? removeZeroWidthChars(textBefore)
-      : textBefore;
+    const zeroWidthChars = hasZeroWidthChars(textBefore);
+    // remove the zero-width characters otherwise the regex won't work
+    textBefore = zeroWidthChars ? removeZeroWidthChars(textBefore) : textBefore;
     const escapedTriggers = triggers
       .map((t) => t.value)
       .map(escapeRegExp)
       .join("|");
     const pattern = `(^|\\s)(${escapedTriggers})(|\\S+)$`;
     const beforeMatch = textBefore.match(new RegExp(pattern));
+    const beforeMatchExists =
+      !!beforeMatch && beforeMatch.length > 2 && !!beforeMatch[0];
+    const offset = beforeMatchExists
+      ? start.offset -
+        beforeMatch[0].length +
+        (beforeMatch[0].startsWith(" ") ? 1 : 0) +
+        (zeroWidthChars ? -1 : 0)
+      : 0;
     const beforeRange =
       beforeMatch &&
-      beforeMatch.length > 0 &&
-      typeof beforeMatch[0] !== "undefined" &&
       Editor.range(
         editor,
         {
           ...start,
-          offset:
-            start.offset -
-            beforeMatch[0].length +
-            (beforeMatch[0].startsWith(" ") ? 1 : 0) +
-            (hadZeroWidthChars ? -1 : 0),
+          offset,
         },
         start
       );
+    const trigger =
+      beforeMatchExists && triggers.find((t) => t.value === beforeMatch[2]);
 
     const after = Editor.after(editor, start);
     const afterRange = Editor.range(editor, start, after);
     const afterText = Editor.string(editor, afterRange);
     const afterMatch = afterText.match(/^(\s|$)/);
-
-    const trigger =
-      beforeMatch &&
-      beforeMatch.length > 2 &&
-      triggers.find((t) => t.value === beforeMatch[2]);
 
     if (beforeMatch && afterMatch && beforeRange && trigger) {
       return {
@@ -209,22 +267,42 @@ export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
   }
 }
 
-function getLastChild(
-  children: Descendant[]
+export function getLastElement(
+  elements: Descendant[]
 ): MentionElement | CustomText | undefined {
-  if (children.length > 0) {
-    const lastChild = children[children.length - 1];
-    if (isParagraphElement(lastChild)) {
-      return getLastChild(lastChild.children);
+  if (elements.length > 0) {
+    const lastElement = elements[elements.length - 1];
+    if (isParagraphElement(lastElement)) {
+      return getLastElement(lastElement.children);
     } else {
-      return lastChild;
+      return lastElement;
     }
   }
 }
 
+export function isStartOfLine(elements: Descendant[]): boolean {
+  if (elements.length > 0) {
+    const element = elements[elements.length - 1];
+    if (isParagraphElement(element)) {
+      if (element.children.length === 0) {
+        return true;
+      } else if (element.children.length === 1) {
+        const child = element.children[0];
+        return isTextElement(child) && !child.text;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+}
+
 export function getLasPath(editor: Editor) {
-  const lastChild = getLastChild(editor.children);
-  return ReactEditor.findPath(editor, lastChild as any);
+  const lastElement = getLastElement(editor.children);
+  return ReactEditor.findPath(editor, lastElement as any);
 }
 
 export function setSuggestionsPosition(
