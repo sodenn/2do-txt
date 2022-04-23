@@ -28,9 +28,9 @@
     "@emotion/css": "^11.9.0",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
-    "@mui/icons-material": "^5.6.0",
-    "@mui/lab": "^5.0.0-alpha.76",
-    "@mui/material": "^5.6.0",
+    "@mui/icons-material": "^5.6.2",
+    "@mui/lab": "^5.0.0-alpha.78",
+    "@mui/material": "^5.6.2",
     "capacitor-rate-app": "^2.0.0",
     "cordova-plugin-inappbrowser": "^5.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566b",
@@ -104,7 +104,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^3.4.3",
+    "@capacitor/cli": "^3.5.0",
     "@playwright/test": "^1.21.1",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
