@@ -104,6 +104,9 @@ const SearchInput = (props: SearchInputProps) => {
         placeholder={t("Search…")}
         inputProps={{
           "aria-label": "Search for tasks",
+          autoCorrect: "off",
+          autoCapitalize: "off",
+          spellCheck: "false",
           tabIndex: -1,
           role: "search",
         }}
