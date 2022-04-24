@@ -106,7 +106,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             return archiveMode === "no-archiving" ? "enable" : "do-nothing";
           } else if (!metaData) {
             // local archive file and cloud archive file do not exist, no sync needed
-            return archiveMode !== "no-archiving" ? "disable" : "do-nothing";
+            return "do-nothing";
           }
 
           // download cloud archive file
@@ -442,7 +442,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           ]);
 
           const doneFilePath = getArchiveFilePath(filePath);
-          if (doneFilePath) {
+          if (doneFilePath && newCompletedTasks.length > 0) {
             enqueueSnackbar(
               t("All completed tasks have been archived", { doneFilePath }),
               { variant: "success" }
