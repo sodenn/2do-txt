@@ -174,9 +174,12 @@ const TaskDialog = () => {
         >
           <FullScreenDialogTitle
             onClose={closeDialog}
-            onAccept={handleSave}
-            okText={t("Save")}
-            disabled={formDisabled}
+            accept={{
+              text: t("Save"),
+              disabled: formDisabled,
+              onClick: handleSave,
+              "aria-label": "Save task",
+            }}
           >
             {!!formData._id ? t("Edit Task") : t("Create Task")}
           </FullScreenDialogTitle>

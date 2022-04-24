@@ -12,9 +12,12 @@ import React, { PropsWithChildren, ReactNode } from "react";
 
 interface FullScreenDialogTitleProps {
   onClose: () => void;
-  onAccept?: () => void;
-  okText?: ReactNode;
-  disabled?: boolean;
+  accept: {
+    text?: ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    "aria-label"?: string;
+  };
 }
 
 export const StyledAppBar = styled(AppBar)`
@@ -26,7 +29,7 @@ export const StyledAppBar = styled(AppBar)`
 const FullScreenDialogTitle = (
   props: PropsWithChildren<FullScreenDialogTitleProps>
 ) => {
-  const { onClose, onAccept, okText, disabled, children } = props;
+  const { onClose, accept, children } = props;
   return (
     <Box style={{ flex: "none" }}>
       <StyledAppBar position="static" color="transparent" elevation={0}>
@@ -42,15 +45,16 @@ const FullScreenDialogTitle = (
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             {children}
           </Typography>
-          {okText && (
+          {accept && (
             <Button
               sx={{ mr: -1.5 }}
               autoFocus
               color="inherit"
-              onClick={onAccept}
-              disabled={disabled}
+              onClick={accept.onClick}
+              disabled={accept.disabled}
+              aria-label={accept["aria-label"]}
             >
-              {okText}
+              {accept.text}
             </Button>
           )}
         </Toolbar>
