@@ -10,8 +10,9 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { deDE, enUS, Localization } from "@mui/material/locale";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WithChildren } from "../types/common";
 import { createContext } from "../utils/Context";
 import { useStorage } from "../utils/storage";
 
@@ -150,7 +151,7 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
   };
 });
 
-const AppTheme: FC = ({ children }) => {
+const AppTheme = ({ children }: WithChildren) => {
   return (
     <AppThemeProvider>
       <AppThemeChild>{children}</AppThemeChild>
@@ -158,7 +159,7 @@ const AppTheme: FC = ({ children }) => {
   );
 };
 
-const AppThemeChild: FC = ({ children }) => {
+const AppThemeChild = ({ children }: WithChildren) => {
   const { theme } = useAppTheme();
   return (
     <ThemeProvider theme={theme}>

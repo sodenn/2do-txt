@@ -6,12 +6,12 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TaskListState } from "../data/TaskContext";
+import { TaskList } from "../data/TaskContext";
 import StartEllipsis from "./StartEllipsis";
 
 interface FileSelectProps {
-  options: TaskListState[];
-  onSelect: (value?: TaskListState) => void;
+  options: TaskList[];
+  onSelect: (value?: TaskList) => void;
 }
 
 const FileSelect = (props: FileSelectProps) => {

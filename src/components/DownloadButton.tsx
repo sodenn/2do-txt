@@ -36,7 +36,7 @@ const DownloadButton = (props: IconButtonProps) => {
       disableTouchListener
       title={
         <>
-          {t("Download todo.txt")}{" "}
+          {t("Download todo.txt")}
           <Box component="span" sx={{ ml: 0.5 }}>
             <Kbd>T</Kbd>
           </Box>

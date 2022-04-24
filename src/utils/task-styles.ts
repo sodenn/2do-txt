@@ -1,37 +1,46 @@
 import { css } from "@emotion/css";
+import { CSSProperties } from "react";
 
-export const taskProjectStyle = css`
-  color: #175fab;
-  background-color: #c4dcf7;
-`;
+export const contextStyle: CSSProperties = {
+  color: "#17501b",
+  backgroundColor: "#c8efcb",
+};
 
-export const taskContextStyle = css`
-  color: #17501b;
-  background-color: #c8efcb;
-`;
+export const projectStyle: CSSProperties = {
+  color: "#175fab",
+  backgroundColor: "#c4dcf7",
+};
 
-export const taskDudDateStyle = css`
-  color: #a14205;
-  background-color: #fddac3;
-  white-space: nowrap;
-`;
+export const dueDateStyle: CSSProperties = {
+  color: "#a14205",
+  backgroundColor: "#fddac3",
+  whiteSpace: "nowrap",
+};
 
-export const taskTagStyle = css`
-  color: #4b4b4b;
-  background-color: #dfdfdf;
-  white-space: nowrap;
-`;
+export const tagStyle: CSSProperties = {
+  color: "#4b4b4b",
+  backgroundColor: "#dfdfdf",
+  whiteSpace: "nowrap",
+};
 
-export const taskPriorityStyle = css`
-  color: #720daf;
-  background-color: #ecd2fb;
-  font-weight: bold;
-`;
+export const priorityStyle: CSSProperties = {
+  color: "#720daf",
+  backgroundColor: "#ecd2fb",
+  fontWeight: "bold",
+};
 
-export const taskDateStyle = css`
-  opacity: 0.5;
-  font-size: 0.75em;
-`;
+export const dateStyle: CSSProperties = {
+  opacity: 0.5,
+  fontSize: "0.75em",
+};
+
+export const completedStyle: CSSProperties = {
+  textDecoration: "line-through",
+};
+
+export const disabledStyle: CSSProperties = {
+  opacity: 0.6,
+};
 
 export const taskChipStyle = css`
   hyphens: none;
@@ -46,12 +55,4 @@ export const taskChipStyle = css`
   &:after {
     content: "\\00a0";
   }
-`;
-
-export const taskCompletedStyle = css`
-  text-decoration: line-through;
-`;
-
-export const taskDisabledStyle = css`
-  opacity: 0.6;
 `;

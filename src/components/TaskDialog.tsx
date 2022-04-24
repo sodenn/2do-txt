@@ -1,17 +1,21 @@
 import {
   Button,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
-import { TaskListState, useTask } from "../data/TaskContext";
+import { TaskList, useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task, TaskFormData } from "../utils/task";
-import { ResponsiveDialog } from "./ResponsiveDialog";
-import { isMentionSuggestionsPopoverOpen } from "./TaskEditor";
+import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
+import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
+import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 import TaskForm from "./TaskForm";
 
 const initialTaskFormData: TaskFormData = {
@@ -52,43 +56,26 @@ const TaskDialog = () => {
     taskDialogOptions: { open, task },
     setTaskDialogOptions,
   } = useTaskDialog();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const { createCreationDate } = useSettings();
+  const [key, setKey] = useState(0);
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
   const [selectedTaskList, setSelectedTaskList] = useState<
-    TaskListState | undefined
-  >(() => {
-    if (task) {
-      return findTaskListByTaskId(task._id);
-    } else if (activeTaskList) {
-      return activeTaskList;
-    }
-  });
-
+    TaskList | undefined
+  >();
   const formDisabled = !formData.body || (!activeTaskList && !selectedTaskList);
   const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    setFormData(createFormData(createCreationDate, task));
-    setSelectedTaskList(() => {
-      if (task) {
-        return findTaskListByTaskId(task._id);
-      } else if (activeTaskList) {
-        return activeTaskList;
-      } else {
-        return undefined;
-      }
-    });
-  }, [createCreationDate, task, open, activeTaskList, findTaskListByTaskId]);
-
   const closeDialog = () =>
-    setTaskDialogOptions((currentValue) => ({ ...currentValue, open: false }));
+    setTaskDialogOptions((value) => ({ ...value, open: false }));
 
   const handleSave = () => {
+    if (formDisabled) {
+      return;
+    }
     closeDialog();
     if (formData._id) {
       editTask(formData);
@@ -98,62 +85,121 @@ const TaskDialog = () => {
   };
 
   const handleChange = (data: TaskFormData) => {
-    setFormData((task) => ({ ...task, ...data }));
+    setFormData((currentValue) => ({ ...currentValue, ...data }));
   };
 
-  const handleFileSelect = (taskList?: TaskListState) => {
+  const handleFileSelect = (taskList?: TaskList) => {
     setSelectedTaskList(taskList);
+  };
+
+  const handleEnter = async () => {
+    setFormData(createFormData(createCreationDate, task));
+    setSelectedTaskList(() => {
+      if (task) {
+        return findTaskListByTaskId(task._id);
+      } else if (activeTaskList) {
+        return activeTaskList;
+      }
+    });
+    setKey(key + 1);
+  };
+
+  const handleExit = () => {
+    setTaskDialogOptions({ open: false });
+    setFormData(createFormData(createCreationDate));
+    setSelectedTaskList(undefined);
   };
 
   const handleClose = (
     event: any,
     reason: "backdropClick" | "escapeKeyDown"
   ) => {
-    return reason !== "backdropClick" && !isMentionSuggestionsPopoverOpen()
-      ? closeDialog()
-      : undefined;
+    return reason !== "backdropClick" ? closeDialog() : undefined;
   };
 
   return (
-    <ResponsiveDialog
-      aria-label="Task dialog"
-      maxWidth="sm"
-      fullWidth
-      open={open}
-      onClose={handleClose}
-      TransitionProps={{
-        onExited: () => setTaskDialogOptions({ open: false }),
-      }}
-    >
-      <DialogTitle>
-        {!!formData._id ? t("Edit Task") : t("Create Task")}
-      </DialogTitle>
-      <DialogContent>
-        <TaskForm
-          completed={!!task?.completed}
-          formData={formData}
-          contexts={Object.keys(contexts)}
-          projects={Object.keys(projects)}
-          tags={tags}
-          taskLists={activeTaskList || task ? [] : taskLists}
-          onChange={handleChange}
-          onFileSelect={handleFileSelect}
-          onEnterPress={handleSave}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button tabIndex={-1} onClick={closeDialog}>
-          {t("Cancel")}
-        </Button>
-        <Button
-          aria-label="Save task"
-          disabled={formDisabled}
-          onClick={handleSave}
+    <>
+      {!fullScreen && (
+        <Dialog
+          aria-label="Task dialog"
+          maxWidth="sm"
+          fullWidth
+          open={open}
+          onClose={handleClose}
+          TransitionProps={{
+            onEnter: handleEnter,
+            onExited: handleExit,
+          }}
         >
-          {t("Save")}
-        </Button>
-      </DialogActions>
-    </ResponsiveDialog>
+          <DialogTitle>
+            {!!formData._id ? t("Edit Task") : t("Create Task")}
+          </DialogTitle>
+          <DialogContent>
+            <TaskForm
+              key={key}
+              completed={!!task?.completed}
+              formData={formData}
+              contexts={Object.keys(contexts)}
+              projects={Object.keys(projects)}
+              tags={tags}
+              taskLists={activeTaskList || task ? [] : taskLists}
+              onChange={handleChange}
+              onFileSelect={handleFileSelect}
+              onEnterPress={handleSave}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button tabIndex={-1} onClick={closeDialog}>
+              {t("Cancel")}
+            </Button>
+            <Button
+              aria-label="Save task"
+              disabled={formDisabled}
+              onClick={handleSave}
+            >
+              {t("Save")}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {fullScreen && (
+        <FullScreenDialog
+          aria-label="Task dialog"
+          open={open}
+          onClose={closeDialog}
+          TransitionProps={{
+            onEnter: handleEnter,
+            onExited: handleExit,
+          }}
+        >
+          <FullScreenDialogTitle
+            onClose={closeDialog}
+            accept={{
+              text: t("Save"),
+              disabled: formDisabled,
+              onClick: handleSave,
+              "aria-label": "Save task",
+            }}
+          >
+            {!!formData._id ? t("Edit Task") : t("Create Task")}
+          </FullScreenDialogTitle>
+          <FullScreenDialogContent>
+            <TaskForm
+              key={key}
+              completed={!!task?.completed}
+              formData={formData}
+              contexts={Object.keys(contexts)}
+              projects={Object.keys(projects)}
+              tags={tags}
+              taskLists={activeTaskList || task ? [] : taskLists}
+              onChange={handleChange}
+              onFileSelect={handleFileSelect}
+              onEnterPress={handleSave}
+            />
+          </FullScreenDialogContent>
+        </FullScreenDialog>
+      )}
+    </>
   );
 };
 

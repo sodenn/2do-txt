@@ -19,7 +19,7 @@ const SideSheetButton = () => {
       disableTouchListener
       title={
         <>
-          {t("Menu")}{" "}
+          {t("Menu")}
           <Box component="span" sx={{ ml: 0.5 }}>
             <Kbd>M</Kbd>
           </Box>

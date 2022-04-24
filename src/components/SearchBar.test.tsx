@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { TestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 
 describe("SearchBar", () => {
@@ -15,7 +16,7 @@ describe("SearchBar", () => {
       name: "Search for tasks",
     });
 
-    fireEvent.change(searchBar, { target: { value: "first" } });
+    await userEvent.type(searchBar, "first");
 
     taskListItems = await screen.findAllByRole("button", {
       name: "Task",
@@ -27,7 +28,7 @@ describe("SearchBar", () => {
       name: "Clear search term",
     });
 
-    fireEvent.click(clearButton);
+    await userEvent.click(clearButton);
 
     taskListItems = await screen.findAllByRole("button", {
       name: "Task",
@@ -47,9 +48,7 @@ describe("SearchBar", () => {
   });
 
   it("should focus the search input via shortcut", async () => {
-    const { container } = render(
-      <TestContext text={todoTxt} storage={[todoTxtPaths]} />
-    );
+    render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
     const searchInput = await screen.findByRole("search", {
       name: "Search for tasks",
@@ -57,7 +56,7 @@ describe("SearchBar", () => {
 
     expect(searchInput).not.toHaveFocus();
 
-    fireEvent.keyDown(container, { key: "f", code: "KeyF" });
+    await userEvent.keyboard("f");
 
     expect(searchInput).toHaveFocus();
   });

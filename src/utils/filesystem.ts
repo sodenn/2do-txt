@@ -38,6 +38,38 @@ export function getFilenameFromPath(filePath: string) {
   return filePath.replace(/^.*[\\/]/, "");
 }
 
+export function getFileNameWithoutEnding(fileName: string) {
+  const fileNameWithoutEnding = fileName.match(/(.+?)(\.[^.]*$|$)/);
+
+  if (
+    !fileNameWithoutEnding ||
+    fileNameWithoutEnding.length < 2 ||
+    fileNameWithoutEnding[1].startsWith(".")
+  ) {
+    return;
+  }
+
+  return fileNameWithoutEnding[1];
+}
+
+export function getArchiveFilePath(filePath: string) {
+  const fileName = getFilenameFromPath(filePath);
+  const fileNameWithoutEnding = getFileNameWithoutEnding(fileName);
+  if (!fileNameWithoutEnding) {
+    return;
+  }
+
+  return fileName === process.env.REACT_APP_DEFAULT_FILE_NAME
+    ? filePath.replace(
+        new RegExp(`${fileName}$`),
+        process.env.REACT_APP_ARCHIVE_FILE_NAME
+      )
+    : filePath.replace(
+        new RegExp(`${fileName}$`),
+        `${fileNameWithoutEnding}_${process.env.REACT_APP_ARCHIVE_FILE_NAME}`
+      );
+}
+
 async function _getUniqueFilePath(
   filePath: string,
   isFile: (options: ReadFileOptions) => Promise<boolean>
@@ -130,8 +162,7 @@ function useElectronFilesystem() {
 
   const readFile = useCallback(
     async ({ path, encoding }: ReadFileOptions): Promise<ReadFileResult> => {
-      const { readFile } = window.electron;
-      const buffer = await readFile(path, {
+      const buffer = await window.electron.readFile(path, {
         encoding: encoding ? encoding.toString() : undefined,
       });
       return { data: buffer.toString() };
@@ -160,8 +191,7 @@ function useElectronFilesystem() {
 
   const deleteFile = useCallback(
     async ({ path }: DeleteFileOptions): Promise<void> => {
-      const { deleteFile } = window.electron;
-      await deleteFile(path);
+      await window.electron.deleteFile(path);
     },
     []
   );

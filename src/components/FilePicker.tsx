@@ -1,11 +1,12 @@
 import { Fade, Paper, styled, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
+import { WithChildren } from "../types/common";
 import { usePlatform } from "../utils/platform";
 
 const Root = styled("div")(() => ({
@@ -61,7 +62,7 @@ const FileInput = (props: FileInputProps) => {
         const filePath = (file as any).path;
         const taskList = await loadTodoFile(filePath, content);
         await addTodoFilePath(filePath);
-        scheduleDueTaskNotifications(taskList);
+        scheduleDueTaskNotifications(taskList.items);
         return filePath;
       } else {
         // Other platforms does not allow to access the file storage.
@@ -148,11 +149,11 @@ const FileInput = (props: FileInputProps) => {
   );
 };
 
-const FilePicker: FC = ({ children }) => {
+const FilePicker = ({ children }: WithChildren) => {
   const { t } = useTranslation();
   const [file, setFile] = useState<File[]>([]);
 
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length === 1 && acceptedFiles[0].type === "text/plain") {
       setFile(acceptedFiles);
     }

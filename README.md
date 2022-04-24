@@ -34,6 +34,7 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 - Due date notifications
 - Supports working with multiple todo.txt files
 - Autocompletion for projects, contexts and tags
+- Archive completed tasks to done.txt
 - Dropbox sync (iOS)
 - Dark mode
 - Responsive Design
@@ -46,25 +47,4 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 
 ## Known Issues
 
-**todo.txt** uses [Draft.js](https://github.com/facebook/draft-js) to provide autocomplete for projects, contexts and tags. The library does not officially support mobile browsers at this point. There are some known issues, especially for [Android](https://github.com/facebook/draft-js/labels/android).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `yarn start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn electron:start`
-
-Builds and opens the electron app in the development mode.
+**2do.txt** uses [Slate](https://github.com/ianstormtaylor/slate) to provide autocomplete for projects, contexts and tags. The library does not officially support the [Android browser](https://docs.slatejs.org/general/faq#what-browsers-and-devices-does-slate-support).

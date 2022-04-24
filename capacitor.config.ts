@@ -10,6 +10,9 @@ const config: CapacitorConfig = {
       launchAutoHide: false,
       backgroundColor: "#90caf9",
     },
+    Keyboard: {
+      resizeOnFullScreen: true,
+    },
   },
 };
 

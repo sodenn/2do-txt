@@ -1,12 +1,16 @@
 import { Capacitor } from "@capacitor/core";
 import { Filesystem, ReadFileResult } from "@capacitor/filesystem";
+import { ReadFileOptions } from "@capacitor/filesystem/dist/esm/definitions";
 import { GetOptions, GetResult, Storage } from "@capacitor/storage";
+import { createEvent, fireEvent } from "@testing-library/react";
 import i18n from "i18next";
 import { PropsWithChildren } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouters } from "../components/AppRouter";
+import { useLoading } from "../data/LoadingContext";
 import ProviderBundle from "../data/ProviderBundle";
+import { WithChildren } from "../types/common";
 import { SecureStorageKeys } from "./secure-storage";
 import { StorageKeys } from "./storage";
 
@@ -16,6 +20,11 @@ jest.mock("../utils/platform", () => ({
   ...jest.requireActual("../utils/platform"),
   useTouchScreen: jest.fn(),
 }));
+
+export interface FilesystemItem {
+  path: string;
+  value: string;
+}
 
 export interface StorageItem {
   key: StorageKeys;
@@ -29,6 +38,7 @@ export interface SecureStorageItem {
 
 export interface TestContextProps {
   text?: string;
+  filesystem?: FilesystemItem[];
   storage?: StorageItem[];
   secureStorage?: SecureStorageItem[];
   platform?: string;
@@ -66,15 +76,26 @@ global.Keychain = {
 
 const mocks = {
   Filesystem: {
-    readFile: (text: string) => {
+    readFile: (textOrItems: string | FilesystemItem[]) => {
       Filesystem.readFile = jest
         .fn()
-        .mockImplementation(async (): Promise<ReadFileResult> => {
-          if (!text) {
-            throw new Error("[Filesystem Mock] File does not exist");
+        .mockImplementation(
+          async (opt: ReadFileOptions): Promise<ReadFileResult> => {
+            if (!textOrItems) {
+              throw new Error("[Filesystem Mock] File does not exist");
+            }
+            if (typeof textOrItems === "string") {
+              return { data: textOrItems };
+            } else {
+              const data = textOrItems.find((i) => i.path === opt.path);
+              if (data) {
+                return { data: data.value };
+              } else {
+                throw new Error("[Filesystem Mock] File does not exist");
+              }
+            }
           }
-          return { data: text };
-        });
+        );
     },
   },
   Storage: {
@@ -101,13 +122,28 @@ const mocks = {
   },
 };
 
+export const pasteText = (editor: HTMLElement, text: string) => {
+  const event = createEvent.paste(editor, {
+    clipboardData: {
+      types: ["text/plain"],
+      getData: () => text,
+    },
+  });
+  fireEvent(editor, event);
+};
+
 export const todoTxt = `First task @Test
 X 2012-01-01 Second task
 (A) x Third task @Test`;
 
+export const todoTxtFilesystemItem: FilesystemItem = {
+  path: process.env.REACT_APP_DEFAULT_FILE_NAME,
+  value: todoTxt,
+};
+
 export const todoTxtPaths: StorageItem = {
   key: "todo-txt-paths",
-  value: JSON.stringify(["todo.txt"]),
+  value: JSON.stringify([process.env.REACT_APP_DEFAULT_FILE_NAME]),
 };
 
 export const TestContext = (props: TestContextProps) => {
@@ -135,12 +171,20 @@ export const TestContext = (props: TestContextProps) => {
   );
 };
 
+const Page = ({ children }: WithChildren) => {
+  const { loading } = useLoading();
+  return <div data-testid={loading ? "loading" : "page"}>{children}</div>;
+};
+
 export const EmptyTestContext = (
   props: PropsWithChildren<TestContextProps>
 ) => {
-  const { text, storage, secureStorage, platform, children } = props;
+  const { text, filesystem, storage, secureStorage, platform, children } =
+    props;
 
-  if (text) {
+  if (filesystem) {
+    mocks.Filesystem.readFile(filesystem);
+  } else if (text) {
     mocks.Filesystem.readFile(text);
   }
   if (storage) {
@@ -155,7 +199,7 @@ export const EmptyTestContext = (
 
   return (
     <ProviderBundle>
-      <div data-testid="page">{children}</div>
+      <Page>{children}</Page>
     </ProviderBundle>
   );
 };
