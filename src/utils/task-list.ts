@@ -187,12 +187,12 @@ function orTypePredicate(
       activeContexts.length === 0 &&
       activeTags.length === 0;
 
-    if (filterDisabled) {
-      return true;
-    }
-
     if (hideCompletedTasks && task.completed) {
       return false;
+    }
+
+    if (filterDisabled) {
+      return true;
     }
 
     const searchCondition =
