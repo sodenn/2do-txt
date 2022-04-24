@@ -69,7 +69,8 @@ const TaskDialog = () => {
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
 
-  const closeDialog = () => setTaskDialogOptions({ open: false });
+  const closeDialog = () =>
+    setTaskDialogOptions((value) => ({ ...value, open: false }));
 
   const handleSave = () => {
     if (formDisabled) {
