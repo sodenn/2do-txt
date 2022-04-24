@@ -9,7 +9,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { forwardRef, PropsWithChildren, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
@@ -36,7 +36,7 @@ export const SideSheetHeaderContainer = styled("div", {
   },
 }));
 
-export const SideSheetMainContainer = styled("main", {
+const SideSheetMain = styled("main", {
   shouldForwardProp: (prop) => prop !== "open",
 })<{
   open: boolean;
@@ -63,6 +63,18 @@ export const SideSheetMainContainer = styled("main", {
     }),
   },
 }));
+
+export const SideSheetMainContainer = forwardRef<
+  HTMLDivElement,
+  PropsWithChildren<{}>
+>(({ children }, ref) => {
+  const { sideSheetOpen } = useSideSheet();
+  return (
+    <SideSheetMain ref={ref} open={sideSheetOpen}>
+      {children}
+    </SideSheetMain>
+  );
+});
 
 const SaveAreaHeader = styled(Toolbar)`
   padding-top: env(safe-area-inset-top);
@@ -113,7 +125,8 @@ const SideSheet = () => {
 
   return (
     <SwipeableDrawer
-      aria-label="Menu"
+      data-testid="Menu"
+      aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
       anchor="left"
       variant={matches ? "persistent" : undefined}
       open={sideSheetOpen}
@@ -121,6 +134,9 @@ const SideSheet = () => {
         "& .MuiDrawer-paper": {
           backgroundImage: "unset",
           boxSizing: "border-box",
+          ...(!matches && {
+            width: drawerWidth,
+          }),
         },
         ...(matches && {
           width: drawerWidth,

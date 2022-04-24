@@ -10,7 +10,9 @@ export const useAddShortcutListener = (
       const sameKey = ev.key.toLowerCase() === key.toLowerCase();
       const isInput =
         ev.target.nodeName === "INPUT" || ev.target.isContentEditable;
-      const isBackdropOpen = !!document.querySelector('[role="presentation"]');
+      const isBackdropOpen = !!document.querySelector(
+        '[role="presentation"]:not([aria-label="Open menu"])'
+      );
       if (!isBackdropOpen && !isInput && sameKey) {
         ev.preventDefault();
         listener(key);

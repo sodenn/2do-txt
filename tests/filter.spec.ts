@@ -147,7 +147,7 @@ test.describe("Status", () => {
     await expect(
       page.locator('[aria-label="Holiday is used 2 times"]')
     ).toBeVisible();
-    await page.locator('[aria-label="Hide completed tasks"]').check();
+    await page.locator('[aria-label="Hide completed tasks"]').click();
     await expect(
       page.locator('[aria-label="Holiday is used 1 times"]')
     ).toBeVisible();
@@ -173,14 +173,14 @@ test.describe("Sorting", () => {
 });
 
 test.describe("Menu", () => {
-  test("should allow me to close the menu via Escape key", async ({ page }) => {
+  test("should allow me to toggle the menu via shortcut", async ({
+    page,
+    isMobile,
+  }) => {
+    // eslint-disable-next-line jest/valid-title
     await page.keyboard.press("m");
-    await expect(
-      page.locator('[role="presentation"][aria-label="Menu"]')
-    ).toBeVisible();
-    await page.keyboard.press("Escape");
-    await expect(
-      page.locator('[role="presentation"][aria-label="Menu"]')
-    ).not.toBeVisible();
+    await expect(page.locator('[aria-label="Open menu"]')).toBeVisible();
+    await page.keyboard.press("m");
+    await expect(page.locator('[aria-label="Closed menu"]')).toBeVisible();
   });
 });

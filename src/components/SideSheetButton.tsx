@@ -3,16 +3,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useSideSheet } from "../data/SideSheetContext";
-import { useAddShortcutListener } from "../utils/shortcuts";
 import Kbd from "./Kbd";
 
 const SideSheetButton = () => {
   const { t } = useTranslation();
-  const { sideSheetOpen, setSideSheetOpen } = useSideSheet();
-
-  useAddShortcutListener(() => setSideSheetOpen(!sideSheetOpen), "m", [
-    sideSheetOpen,
-  ]);
+  const { sideSheetOpen, toggleSideSheet } = useSideSheet();
 
   return (
     <Tooltip
@@ -28,11 +23,11 @@ const SideSheetButton = () => {
     >
       <IconButton
         tabIndex={-1}
-        onClick={() => setSideSheetOpen(!sideSheetOpen)}
+        onClick={() => toggleSideSheet()}
         size="large"
         edge="start"
         color="inherit"
-        aria-label="Menu"
+        aria-label="Toggle menu"
       >
         {!sideSheetOpen && <MenuIcon />}
         {sideSheetOpen && <ChevronLeftIcon />}

@@ -24,7 +24,8 @@ const Header = ({ divider = false }: HeaderProps) => {
   const platform = usePlatform();
   const { activeTaskList, taskLists } = useTask();
   const { sideSheetOpen } = useSideSheet();
-  const showTodoFileDownloadButton = platform !== "electron";
+  const showTodoFileDownloadButton =
+    platform !== "electron" && (activeTaskList || taskLists.length === 1);
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -49,10 +50,9 @@ const Header = ({ divider = false }: HeaderProps) => {
                 edge={!showTodoFileDownloadButton ? "end" : undefined}
               />
             )}
-            {showTodoFileDownloadButton &&
-              (activeTaskList || taskLists.length === 1) && (
-                <DownloadButton sx={{ flexGrow: 0 }} />
-              )}
+            {showTodoFileDownloadButton && (
+              <DownloadButton sx={{ flexGrow: 0 }} />
+            )}
           </Toolbar>
         </SafeAreaAppBar>
       </SideSheetHeaderContainer>

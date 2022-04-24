@@ -2,7 +2,6 @@ import { Box, Container, CssBaseline, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useLoading } from "../data/LoadingContext";
 import ArchivedTasksDialog from "./ArchivedTasksDialog";
-import { useSideSheet } from "../data/SideSheetContext";
 import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
 import FileCreateDialog from "./FileCreateDialog";
@@ -24,7 +23,6 @@ const Page = () => {
   const { loading } = useLoading();
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
-  const { sideSheetOpen } = useSideSheet();
 
   useEffect(() => {
     const element = scrollContainer.current;
@@ -44,14 +42,13 @@ const Page = () => {
   return (
     <FilePicker>
       <Header divider={scrollTop > 12} />
-      <Box sx={{ display: "flex", overflowY: "auto", flex: "auto" }}>
+      <Box
+        data-testid="page"
+        sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
+      >
         <CssBaseline />
         <SideSheet />
-        <SideSheetMainContainer
-          open={sideSheetOpen}
-          data-testid="page"
-          ref={scrollContainer}
-        >
+        <SideSheetMainContainer ref={scrollContainer}>
           <SafeAreaContainer disableGutters>
             <TaskLists />
             <Onboarding />
