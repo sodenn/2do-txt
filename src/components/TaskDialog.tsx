@@ -1,8 +1,11 @@
 import {
   Button,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,7 +13,9 @@ import { useSettings } from "../data/SettingsContext";
 import { TaskList, useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task, TaskFormData } from "../utils/task";
-import { ResponsiveDialog } from "./ResponsiveDialog";
+import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
+import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
+import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 import TaskForm from "./TaskForm";
 
 const initialTaskFormData: TaskFormData = {
@@ -51,6 +56,8 @@ const TaskDialog = () => {
     taskDialogOptions: { open, task },
     setTaskDialogOptions,
   } = useTaskDialog();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const { createCreationDate } = useSettings();
   const [key, setKey] = useState(0);
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
@@ -84,7 +91,7 @@ const TaskDialog = () => {
     setSelectedTaskList(taskList);
   };
 
-  const handleEnter = () => {
+  const handleEnter = async () => {
     setFormData(createFormData(createCreationDate, task));
     setSelectedTaskList(() => {
       if (task) {
@@ -110,47 +117,85 @@ const TaskDialog = () => {
   };
 
   return (
-    <ResponsiveDialog
-      aria-label="Task dialog"
-      maxWidth="sm"
-      fullWidth
-      open={open}
-      onClose={handleClose}
-      TransitionProps={{
-        onEnter: handleEnter,
-        onExited: handleExit,
-      }}
-    >
-      <DialogTitle>
-        {!!formData._id ? t("Edit Task") : t("Create Task")}
-      </DialogTitle>
-      <DialogContent>
-        <TaskForm
-          key={key}
-          completed={!!task?.completed}
-          formData={formData}
-          contexts={Object.keys(contexts)}
-          projects={Object.keys(projects)}
-          tags={tags}
-          taskLists={activeTaskList || task ? [] : taskLists}
-          onChange={handleChange}
-          onFileSelect={handleFileSelect}
-          onEnterPress={handleSave}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button tabIndex={-1} onClick={closeDialog}>
-          {t("Cancel")}
-        </Button>
-        <Button
-          aria-label="Save task"
-          disabled={formDisabled}
-          onClick={handleSave}
+    <>
+      {!fullScreen && (
+        <Dialog
+          aria-label="Task dialog"
+          maxWidth="sm"
+          fullWidth
+          open={open}
+          onClose={handleClose}
+          TransitionProps={{
+            onEnter: handleEnter,
+            onExited: handleExit,
+          }}
         >
-          {t("Save")}
-        </Button>
-      </DialogActions>
-    </ResponsiveDialog>
+          <DialogTitle>
+            {!!formData._id ? t("Edit Task") : t("Create Task")}
+          </DialogTitle>
+          <DialogContent>
+            <TaskForm
+              key={key}
+              completed={!!task?.completed}
+              formData={formData}
+              contexts={Object.keys(contexts)}
+              projects={Object.keys(projects)}
+              tags={tags}
+              taskLists={activeTaskList || task ? [] : taskLists}
+              onChange={handleChange}
+              onFileSelect={handleFileSelect}
+              onEnterPress={handleSave}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button tabIndex={-1} onClick={closeDialog}>
+              {t("Cancel")}
+            </Button>
+            <Button
+              aria-label="Save task"
+              disabled={formDisabled}
+              onClick={handleSave}
+            >
+              {t("Save")}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {fullScreen && (
+        <FullScreenDialog
+          aria-label="Task dialog"
+          open={open}
+          onClose={closeDialog}
+          TransitionProps={{
+            onEnter: handleEnter,
+            onExited: handleExit,
+          }}
+        >
+          <FullScreenDialogTitle
+            onClose={closeDialog}
+            onAccept={handleSave}
+            okText={t("Save")}
+            disabled={formDisabled}
+          >
+            {!!formData._id ? t("Edit Task") : t("Create Task")}
+          </FullScreenDialogTitle>
+          <FullScreenDialogContent>
+            <TaskForm
+              key={key}
+              completed={!!task?.completed}
+              formData={formData}
+              contexts={Object.keys(contexts)}
+              projects={Object.keys(projects)}
+              tags={tags}
+              taskLists={activeTaskList || task ? [] : taskLists}
+              onChange={handleChange}
+              onFileSelect={handleFileSelect}
+              onEnterPress={handleSave}
+            />
+          </FullScreenDialogContent>
+        </FullScreenDialog>
+      )}
+    </>
   );
 };
 

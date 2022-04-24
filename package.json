@@ -18,6 +18,7 @@
     "@capacitor/core": "^3.5.0",
     "@capacitor/filesystem": "^1.1.0",
     "@capacitor/ios": "^3.4.3",
+    "@capacitor/keyboard": "^1.2.2",
     "@capacitor/local-notifications": "^1.1.0",
     "@capacitor/network": "^1.0.7",
     "@capacitor/share": "^1.1.2",
