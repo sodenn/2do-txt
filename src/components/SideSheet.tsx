@@ -125,6 +125,7 @@ const SideSheet = () => {
 
   return (
     <SwipeableDrawer
+      data-shortcuts="m"
       data-testid="Menu"
       aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
       anchor="left"
@@ -153,18 +154,20 @@ const SideSheet = () => {
         <Box sx={{ flex: "none", borderBottom: 1, borderColor: "divider" }}>
           <SaveAreaHeader>
             <Tabs value={tab} onChange={handleChange}>
-              {!hideFilter && <Tab label={t("Filter")} value="filter" />}
+              <Tab
+                sx={{ display: hideFilter ? "none" : "inline-flex" }}
+                label={t("Filter")}
+                value="filter"
+              />
               <Tab label={t("Settings")} value="settings" />
             </Tabs>
           </SaveAreaHeader>
         </Box>
         <Box sx={{ overflowY: "auto", flex: "auto" }}>
           <SaveAreaContent>
-            {!hideFilter && (
-              <TabPanel value="filter">
-                <Filter />
-              </TabPanel>
-            )}
+            <TabPanel value="filter">
+              <Filter />
+            </TabPanel>
             <TabPanel value="settings">
               <Settings />
             </TabPanel>
