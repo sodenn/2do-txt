@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -25,7 +26,6 @@ import {
   ListCloudItemResult,
 } from "../types/cloud-storage.types";
 import { getArchiveFilePath } from "../utils/filesystem";
-import { ResponsiveDialog } from "./ResponsiveDialog";
 import StartEllipsis from "./StartEllipsis";
 
 const root = "";
@@ -182,7 +182,7 @@ const CloudFileDialog = () => {
   }, [handleLoadItems, open, getCloudFileRefs, cloudStorage]);
 
   return (
-    <ResponsiveDialog
+    <Dialog
       maxWidth="xs"
       fullWidth
       scroll="paper"
@@ -270,7 +270,7 @@ const CloudFileDialog = () => {
           <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
         )}
       </DialogActions>
-    </ResponsiveDialog>
+    </Dialog>
   );
 };
 
