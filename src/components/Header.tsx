@@ -21,8 +21,9 @@ export const StyledAppBar = styled(AppBar)`
 const Header = ({ divider = false }: HeaderProps) => {
   const platform = usePlatform();
   const { activeTaskList, taskLists } = useTask();
-  const showTodoFileDownloadButton = platform !== "electron";
   const [expanded, setExpanded] = useState(false);
+  const showTodoFileDownloadButton =
+    platform !== "electron" && (activeTaskList || taskLists.length === 1);
 
   return (
     <Box style={{ flex: "none", marginBottom: 2 }}>
