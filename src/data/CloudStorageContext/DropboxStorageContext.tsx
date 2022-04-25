@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { Dropbox, DropboxAuth } from "dropbox";
 import { SnackbarKey, useSnackbar } from "notistack";
-import { createRef, MutableRefObject, useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CloudFile,
@@ -35,7 +35,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   const platform = usePlatform();
   const { checkNetworkStatus } = useNetwork();
   const [authError, setAuthError] = useState(false);
-  const dbxRef: MutableRefObject<Dropbox | null> = createRef();
+  const dbxRef = useRef<Dropbox | null>(null);
 
   const getRedirectUrl = useCallback(() => {
     if (platform === "ios" || platform === "android") {
@@ -155,6 +155,11 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
 
     return dbx;
   }, [checkNetworkStatus, dbxRef, getSecureStorageItem, resetTokens]);
+
+  const dropboxInit = useCallback(async () => {
+    const client = await getClient();
+    await client.checkUser({ query: "check" }).catch((e) => void e); // trigger refresh of access token
+  }, [getClient]);
 
   const dropboxAuthenticate = useCallback(async () => {
     const dbxAuth = new DropboxAuth({
@@ -466,6 +471,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   );
 
   return {
+    dropboxInit,
     dropboxAuthenticate,
     dropboxDownloadFile,
     dropboxListFiles,
