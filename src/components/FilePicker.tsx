@@ -13,6 +13,7 @@ const Root = styled("div")(() => ({
   height: "100%",
   display: "flex",
   flexDirection: "column",
+  outline: "none",
 }));
 
 const Overlay = styled("div")(({ theme }) => ({
