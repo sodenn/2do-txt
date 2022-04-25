@@ -1,5 +1,10 @@
 import { Directory } from "@capacitor/filesystem";
-import { DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../../data/CloudStorageContext";
@@ -8,7 +13,6 @@ import { useFileManagementDialog } from "../../data/FileManagementDialogContext"
 import { useTask } from "../../data/TaskContext";
 import { getFilenameFromPath, useFilesystem } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
-import { ResponsiveDialog } from "../ResponsiveDialog";
 import CloseFileList from "./CloseFileList";
 import FileActionButton from "./FileActionButton";
 import OpenFileList from "./OpenFileList";
@@ -135,7 +139,7 @@ const FileManagementDialog = () => {
   };
 
   return (
-    <ResponsiveDialog
+    <Dialog
       maxWidth="xs"
       fullWidth
       scroll="paper"
@@ -158,7 +162,7 @@ const FileManagementDialog = () => {
       <DialogActions sx={{ px: 3, py: 2 }}>
         <FileActionButton />
       </DialogActions>
-    </ResponsiveDialog>
+    </Dialog>
   );
 };
 

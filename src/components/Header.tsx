@@ -24,9 +24,9 @@ const Header = ({ divider = false }: HeaderProps) => {
   const platform = usePlatform();
   const { activeTaskList, taskLists } = useTask();
   const { sideSheetOpen } = useSideSheet();
+  const [expanded, setExpanded] = useState(false);
   const showTodoFileDownloadButton =
     platform !== "electron" && (activeTaskList || taskLists.length === 1);
-  const [expanded, setExpanded] = useState(false);
 
   return (
     <Box style={{ flex: "none", marginBottom: 2 }}>
