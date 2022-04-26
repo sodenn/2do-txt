@@ -11,6 +11,7 @@ import {
 import React, {
   ClipboardEvent,
   FocusEvent,
+  MouseEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -31,7 +32,7 @@ import {
   setSuggestionsPosition,
 } from "./mention-utils";
 
-interface MentionTextFieldProps
+export interface MentionTextFieldProps
   extends Omit<React.TextareaHTMLAttributes<HTMLDivElement>, "onChange"> {
   editor: Editor;
   triggers: Trigger[];
@@ -82,6 +83,11 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     onChange,
     addMentionText,
     onEnterPress,
+    onPaste,
+    onClick,
+    onFocus,
+    onBlur,
+    onKeyDown,
     ...rest
   } = props;
   const theme = useTheme();
@@ -155,6 +161,8 @@ const MentionTextField = (props: MentionTextFieldProps) => {
             const prevIndex =
               index >= filteredSuggestions.length - 1 ? 0 : index + 1;
             setIndex(prevIndex);
+          } else {
+            onKeyDown && onKeyDown(event);
           }
           break;
         case "ArrowUp":
@@ -163,6 +171,8 @@ const MentionTextField = (props: MentionTextFieldProps) => {
             const nextIndex =
               index <= 0 ? filteredSuggestions.length - 1 : index - 1;
             setIndex(nextIndex);
+          } else {
+            onKeyDown && onKeyDown(event);
           }
           break;
         case "Tab":
@@ -174,6 +184,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
             insertMention({ editor, value, trigger, target });
             closeSuggestions();
           }
+          onKeyDown && onKeyDown(event);
           break;
         case "Enter":
           event.preventDefault();
@@ -193,6 +204,8 @@ const MentionTextField = (props: MentionTextFieldProps) => {
             event.preventDefault();
             event.stopPropagation();
             closeSuggestions();
+          } else {
+            onKeyDown && onKeyDown(event);
           }
           break;
         case " ":
@@ -201,6 +214,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
             insertMention({ editor, value, trigger, target });
             closeSuggestions();
           }
+          onKeyDown && onKeyDown(event);
           break;
       }
     },
@@ -212,6 +226,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       filteredSuggestions,
       editor,
       search,
+      onKeyDown,
       closeSuggestions,
     ]
   );
@@ -224,7 +239,15 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     }
   }, [openSuggestions, editor, onChange]);
 
-  const handleClick = useCallback(() => openSuggestions(), [openSuggestions]);
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      openSuggestions();
+      if (onClick) {
+        onClick(event);
+      }
+    },
+    [onClick, openSuggestions]
+  );
 
   const handleClickSuggestion = useCallback(
     (index?: number) => {
@@ -243,15 +266,26 @@ const MentionTextField = (props: MentionTextFieldProps) => {
 
   const handlePaste = useCallback(
     (event: ClipboardEvent<HTMLDivElement>) => {
-      event.preventDefault();
       const data = event.clipboardData.getData("text");
       const text = data.replace(/(\r\n|\n|\r)/gm, "");
       const descendants = getDescendants(text, triggers);
       Transforms.insertNodes(editor, descendants);
       Transforms.move(editor);
-      editor.onChange();
+      if (onPaste) {
+        onPaste(event);
+      }
     },
-    [editor, triggers]
+    [editor, onPaste, triggers]
+  );
+
+  const handleFocus = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      setFocus(true);
+      if (onFocus) {
+        onFocus(event);
+      }
+    },
+    [onFocus]
   );
 
   const handleBlur = useCallback(
@@ -265,8 +299,11 @@ const MentionTextField = (props: MentionTextFieldProps) => {
         insertMention({ editor, value: search, trigger, target });
       }
       setFocus(false);
+      if (onBlur) {
+        onBlur(event);
+      }
     },
-    [editor, elem, triggers]
+    [editor, elem, onBlur, triggers]
   );
 
   useEffect(() => {
@@ -325,7 +362,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
           renderElement={renderElement}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
-          onFocus={() => setFocus(true)}
+          onFocus={handleFocus}
           onBlur={handleBlur}
           onPaste={handlePaste}
           placeholder={placeholder}

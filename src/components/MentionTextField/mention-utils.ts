@@ -289,7 +289,7 @@ export function setSuggestionsPosition(
   }
 }
 
-function getMentionsFromPlaintext(text: string, triggers: string[]) {
+export function getMentionsFromPlaintext(text: string, triggers: string[]) {
   const pattern = `(\\s|^)(${triggers.map(escapeRegExp).join("|")})\\S+`;
 
   const result: {
