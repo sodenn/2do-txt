@@ -146,7 +146,7 @@ export function hasZeroWidthChars(text: string) {
 export function getPlainText(editor: Editor) {
   let plainText = "";
   getAllNodes(editor)
-    .filter(([node]) => Text.isText(node) && !!node.text)
+    .filter(([node]) => !Text.isText(node) || !!node.text)
     .forEach(([node]) => {
       if (isParagraphElement(node)) {
         plainText += "\n";
@@ -271,8 +271,19 @@ export function setSuggestionsPosition(
   try {
     const domRange = ReactEditor.toDOMRange(editor, target);
     const rect = domRange.getBoundingClientRect();
+
+    if (
+      elem.offsetWidth + rect.left + window.pageXOffset <
+      window.outerWidth - 16
+    ) {
+      elem.style.left = `${rect.left + window.pageXOffset}px`;
+      elem.style.right = "auto";
+    } else {
+      elem.style.left = "auto";
+      elem.style.right = "16px";
+    }
+
     elem.style.top = `${rect.top + window.pageYOffset + 24}px`;
-    elem.style.left = `${rect.left + window.pageXOffset}px`;
   } catch (e) {
     //
   }

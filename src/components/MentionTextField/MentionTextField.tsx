@@ -31,18 +31,18 @@ import {
   setSuggestionsPosition,
 } from "./mention-utils";
 
-interface MentionTextFieldProps {
+interface MentionTextFieldProps
+  extends Omit<React.TextareaHTMLAttributes<HTMLDivElement>, "onChange"> {
+  editor: Editor;
   triggers: Trigger[];
   autoFocus?: boolean;
   label?: string;
   placeholder?: string;
   initialValue?: string;
-  editor: Editor;
   suggestions?: Suggestion[];
   onChange?: (value: string) => void;
   addMentionText?: (value: string) => string;
   onEnterPress?: () => void;
-  "aria-label"?: string | undefined;
 }
 
 const Legend = styled("legend")`
@@ -82,6 +82,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     onChange,
     addMentionText,
     onEnterPress,
+    ...rest
   } = props;
   const theme = useTheme();
   const [focus, setFocus] = useState(false);
@@ -321,10 +322,6 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       )}
       <Slate editor={editor} value={initialValue} onChange={handleChange}>
         <Editable
-          aria-label={props["aria-label"]}
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
           renderElement={renderElement}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
@@ -332,6 +329,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
           onBlur={handleBlur}
           onPaste={handlePaste}
           placeholder={placeholder}
+          {...rest}
         />
         {target && (filteredSuggestions.length > 0 || search.length > 0) && (
           <Portal>

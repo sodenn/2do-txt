@@ -98,6 +98,9 @@ const TaskForm = (props: TaskFormProps) => {
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           aria-label="Text editor"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
           editor={editor}
           initialValue={formData.body}
           onEnterPress={onEnterPress}
