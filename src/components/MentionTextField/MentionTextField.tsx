@@ -16,21 +16,18 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Descendant, Editor, Range, Transforms } from "slate";
+import { Descendant, Editor, Range, Text, Transforms } from "slate";
 import { Editable, ReactEditor, RenderElementProps, Slate } from "slate-react";
 import Element from "./Element";
 import { Suggestion, Trigger } from "./mention-types";
 import {
   addSpaceAfterMention,
   getDescendants,
-  getLasPath,
-  getLastElement,
+  getLastNode,
   getPlainText,
   getTriggers,
   getUserInputAtSelection,
-  hasZeroWidthChars,
   insertMention,
-  isTextElement,
   setSuggestionsPosition,
 } from "./mention-utils";
 
@@ -204,17 +201,6 @@ const MentionTextField = (props: MentionTextFieldProps) => {
             closeSuggestions();
           }
           break;
-        case "Backspace":
-          // (mobile) Prevent the user from having to press backspace twice
-          const lastElement = getLastElement(editor.children);
-          if (
-            isTextElement(lastElement) &&
-            hasZeroWidthChars(lastElement.text) &&
-            lastElement.text.length === 2
-          ) {
-            Editor.deleteBackward(editor, { unit: "character" });
-          }
-          break;
       }
     },
     [
@@ -300,8 +286,13 @@ const MentionTextField = (props: MentionTextFieldProps) => {
   useEffect(() => {
     if (autoFocus) {
       ReactEditor.focus(editor);
-      const path = getLasPath(editor);
-      Transforms.select(editor, path);
+      const lastNode = getLastNode(editor);
+      if (lastNode) {
+        const [node, path] = lastNode;
+        if (node && Text.isText(node) && !node.text) {
+          Transforms.select(editor, path);
+        }
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoFocus]);

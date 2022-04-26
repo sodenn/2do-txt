@@ -4,7 +4,9 @@ import {
   createEditor,
   Descendant,
   Editor,
+  Element,
   Range,
+  Text,
   Transforms,
 } from "slate";
 import { withHistory } from "slate-history";
@@ -27,14 +29,23 @@ export function useMentionTextField() {
   const openSuggestions = useCallback(
     (trigger: string) => {
       ReactEditor.focus(editor);
-      const lastElement = getLastElement(editor.children);
-      if (
-        isMentionElement(lastElement) ||
-        (isTextElement(lastElement) && !!lastElement.text)
-      ) {
-        Editor.insertText(editor, ` ${trigger}`);
-      } else {
-        Editor.insertText(editor, trigger);
+      const { selection } = editor;
+      if (selection && Range.isCollapsed(selection)) {
+        const [start] = Range.edges(selection);
+        const before = Editor.before(editor, start);
+        if (before) {
+          const [node] = Editor.node(editor, before);
+          if (
+            isMentionElement(node) ||
+            (Text.isText(node) && !node.text.endsWith(" "))
+          ) {
+            Editor.insertText(editor, ` ${trigger}`);
+          } else {
+            Editor.insertText(editor, trigger);
+          }
+        } else {
+          Editor.insertText(editor, trigger);
+        }
       }
     },
     [editor]
@@ -42,18 +53,22 @@ export function useMentionTextField() {
 
   const removeMention = useCallback(
     (trigger: string, value?: string) => {
-      editor.children.forEach((element) => {
-        if (isParagraphElement(element)) {
-          element.children.forEach((child) => {
-            if (
-              isMentionElement(child) &&
-              child.trigger === trigger &&
-              (!value || value === child.value)
-            ) {
-              const path = ReactEditor.findPath(editor, child);
-              Transforms.removeNodes(editor, { at: path });
-            }
-          });
+      const mentionElements = Array.from(
+        Editor.nodes(editor, {
+          at: [],
+          match: (n) =>
+            !Editor.isEditor(n) && Element.isElement(n) && isMentionElement(n),
+        })
+      );
+      mentionElements.forEach((node) => {
+        const [element] = node;
+        if (
+          isMentionElement(element) &&
+          element.trigger === trigger &&
+          (!value || value === element.value)
+        ) {
+          const path = ReactEditor.findPath(editor, element);
+          Transforms.removeNodes(editor, { at: path });
         }
       });
     },
@@ -66,16 +81,6 @@ export function useMentionTextField() {
         removeMention(trigger.value);
       }
 
-      const startOfLine = isStartOfLine(editor.children);
-      const lastElement = getLastElement(editor.children);
-      if (
-        !startOfLine &&
-        (!isTextElement(lastElement) || !lastElement.text.endsWith(" "))
-      ) {
-        Transforms.insertNodes(editor, [{ text: " " }]);
-        Transforms.move(editor);
-      }
-
       const mentionElement: MentionElement = {
         type: "mention",
         trigger: trigger.value,
@@ -83,6 +88,7 @@ export function useMentionTextField() {
         value,
         children: [{ text: "" }],
       };
+
       Transforms.insertNodes(editor, mentionElement);
       Transforms.move(editor);
     },
@@ -115,10 +121,6 @@ function isParagraphElement(element: any): element is ParagraphElement {
   return element && element.type === "paragraph";
 }
 
-export function isTextElement(element: any): element is CustomText {
-  return element && element.hasOwnProperty("text");
-}
-
 function withMentions(editor: Editor) {
   const { isInline, isVoid } = editor;
 
@@ -142,19 +144,18 @@ export function hasZeroWidthChars(text: string) {
 }
 
 export function getPlainText(editor: Editor) {
-  const children = editor.children.flatMap((c) =>
-    isParagraphElement(c) ? c.children : []
-  );
-
   let plainText = "";
-  children.forEach((c) => {
-    if (isMentionElement(c)) {
-      plainText += `${c.trigger}${c.value}`;
-    } else if (isTextElement(c)) {
-      plainText += c.text;
-    }
-  });
-
+  getAllNodes(editor)
+    .filter(([node]) => Text.isText(node) && !!node.text)
+    .forEach(([node]) => {
+      if (isParagraphElement(node)) {
+        plainText += "\n";
+      } else if (isMentionElement(node)) {
+        plainText += `${node.trigger}${node.value}`;
+      } else if (Text.isText(node)) {
+        plainText += node.text;
+      }
+    });
   return removeZeroWidthChars(plainText);
 }
 
@@ -178,25 +179,19 @@ export function insertMention(opt: InsertMentionOptions) {
 }
 
 export function addSpaceAfterMention(editor: Editor) {
-  const elements = editor.children;
-  if (elements.length > 0) {
-    const paragraph = elements[elements.length - 1];
-    if (isParagraphElement(paragraph)) {
-      const children = paragraph.children;
-      if (children.length > 1) {
-        const secondLastElement = children[children.length - 2];
-        const lastElement = children[children.length - 1];
-        const textRightBeforeMention =
-          isMentionElement(secondLastElement) &&
-          isTextElement(lastElement) &&
-          /^\S$/.test(removeZeroWidthChars(lastElement.text));
-        if (textRightBeforeMention) {
-          Transforms.move(editor, { reverse: true });
-          Editor.insertText(editor, " ");
-          Transforms.move(editor);
-          return true;
-        }
-      }
+  const nodes = getAllNodes(editor);
+  for (let index = 0; index < nodes.length; index++) {
+    const node = nodes[index][0];
+    const nodeBefore = index > 0 ? nodes[index - 1][0] : undefined;
+    const textRightBeforeMention =
+      isMentionElement(nodeBefore) &&
+      Text.isText(node) &&
+      /^\S$/.test(removeZeroWidthChars(node.text));
+    if (textRightBeforeMention) {
+      Transforms.move(editor, { reverse: true });
+      Editor.insertText(editor, " ");
+      Transforms.move(editor);
+      return true;
     }
   }
 }
@@ -218,6 +213,7 @@ export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
     const beforeMatch = textBefore.match(new RegExp(pattern));
     const beforeMatchExists =
       !!beforeMatch && beforeMatch.length > 2 && !!beforeMatch[0];
+    // TODO check offset
     const offset = beforeMatchExists
       ? start.offset -
         beforeMatch[0].length +
@@ -251,42 +247,20 @@ export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
   }
 }
 
-export function getLastElement(
-  elements: Descendant[]
-): MentionElement | CustomText | undefined {
-  if (elements.length > 0) {
-    const lastElement = elements[elements.length - 1];
-    if (isParagraphElement(lastElement)) {
-      return getLastElement(lastElement.children);
-    } else {
-      return lastElement;
-    }
-  }
+export function getAllNodes(editor: Editor) {
+  return Array.from(
+    Editor.nodes<ParagraphElement | MentionElement | CustomText>(editor, {
+      at: [],
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        (isParagraphElement(n) || isMentionElement(n) || Text.isText(n)),
+    })
+  ).filter((node, index) => !(index === 0 && isParagraphElement(node[0])));
 }
 
-export function isStartOfLine(elements: Descendant[]): boolean {
-  if (elements.length > 0) {
-    const element = elements[elements.length - 1];
-    if (isParagraphElement(element)) {
-      if (element.children.length === 0) {
-        return true;
-      } else if (element.children.length === 1) {
-        const child = element.children[0];
-        return isTextElement(child) && !child.text;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-}
-
-export function getLasPath(editor: Editor) {
-  const lastElement = getLastElement(editor.children);
-  return ReactEditor.findPath(editor, lastElement as any);
+export function getLastNode(editor: Editor) {
+  const nodes = getAllNodes(editor);
+  return [...nodes].pop();
 }
 
 export function setSuggestionsPosition(
@@ -304,7 +278,7 @@ export function setSuggestionsPosition(
   }
 }
 
-export function getMentionsFromPlaintext(text: string, triggers: string[]) {
+function getMentionsFromPlaintext(text: string, triggers: string[]) {
   const pattern = `(\\s|^)(${triggers.map(escapeRegExp).join("|")})\\S+`;
 
   const result: {
@@ -320,7 +294,7 @@ export function getMentionsFromPlaintext(text: string, triggers: string[]) {
     const start = match[0].startsWith(" ") ? match.index! + 1 : match.index!;
     const end = start + match[0].trim().length - 1;
     result.push({
-      value: value,
+      value,
       trigger,
       start,
       end,
@@ -379,6 +353,7 @@ export function getDescendants(text = "", triggers: Trigger[]) {
     });
   }
 
+  // add empty text element at the end for autofocus
   descendant.push({
     text: "",
   });
