@@ -15,7 +15,8 @@ import {
 } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
-import MentionTextField, { useMentionTextField } from "./MentionTextField";
+import { useMentionTextField } from "./MentionTextField";
+import MuiMentionTextField from "./MentionTextField/MuiMentionTextField";
 import PrioritySelect from "./PrioritySelect";
 
 interface TaskFormProps {
@@ -94,7 +95,7 @@ const TaskForm = (props: TaskFormProps) => {
   return (
     <Stack>
       <Box sx={{ mb: 2 }}>
-        <MentionTextField
+        <MuiMentionTextField
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           aria-label="Text editor"

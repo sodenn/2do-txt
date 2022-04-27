@@ -1,7 +1,27 @@
-import { CSSProperties } from "react";
+import React, { CSSProperties, FunctionComponent } from "react";
 import { BaseEditor, BaseRange, Descendant, Editor } from "slate";
 import { HistoryEditor } from "slate-history";
 import { ReactEditor } from "slate-react";
+
+interface MentionTextFieldProps
+  extends Omit<React.TextareaHTMLAttributes<HTMLDivElement>, "onChange"> {
+  editor: Editor;
+  triggers: Trigger[];
+  autoFocus?: boolean;
+  placeholder?: string;
+  initialValue?: string;
+  suggestions?: Suggestion[];
+  onChange?: (value: string) => void;
+  addMentionText?: (value: string) => string;
+  onEnterPress?: () => void;
+  suggestionListComponent?: FunctionComponent;
+  suggestionListItemComponent?: FunctionComponent<SuggestionListItemProps>;
+}
+
+interface SuggestionListItemProps {
+  onClick: () => void;
+  selected: boolean;
+}
 
 interface Trigger {
   value: string;
@@ -43,7 +63,7 @@ interface CustomText {
   text: string;
 }
 
-export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
+type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
 
 declare module "slate" {
   interface CustomTypes {
@@ -52,3 +72,15 @@ declare module "slate" {
     Text: CustomText;
   }
 }
+
+export {
+  MentionTextFieldProps,
+  SuggestionListItemProps,
+  Trigger,
+  Mention,
+  Suggestion,
+  CustomEditor,
+  CustomText,
+  InsertMentionOptions,
+  ParagraphElement,
+};

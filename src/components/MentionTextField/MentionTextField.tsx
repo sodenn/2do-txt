@@ -1,26 +1,25 @@
-import {
-  ClickAwayListener,
-  Fade,
-  MenuItem,
-  MenuList,
-  Paper,
-  Portal,
-  styled,
-  useTheme,
-} from "@mui/material";
+import { ClickAwayListener, useTheme } from "@mui/material";
 import React, {
   ClipboardEvent,
   FocusEvent,
+  forwardRef,
   MouseEvent,
+  PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { Descendant, Editor, Range, Text, Transforms } from "slate";
+import { createPortal } from "react-dom";
+import { Descendant, Range, Text, Transforms } from "slate";
 import { Editable, ReactEditor, RenderElementProps, Slate } from "slate-react";
+import { WithChildren } from "../../types/common";
 import Element from "./Element";
-import { Suggestion, Trigger } from "./mention-types";
+import {
+  MentionTextFieldProps,
+  SuggestionListItemProps,
+  Trigger,
+} from "./mention-types";
 import {
   addSpaceAfterMention,
   getDescendants,
@@ -32,50 +31,24 @@ import {
   setSuggestionsPosition,
 } from "./mention-utils";
 
-export interface MentionTextFieldProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLDivElement>, "onChange"> {
-  editor: Editor;
-  triggers: Trigger[];
-  autoFocus?: boolean;
-  label?: string;
-  placeholder?: string;
-  initialValue?: string;
-  suggestions?: Suggestion[];
-  onChange?: (value: string) => void;
-  addMentionText?: (value: string) => string;
-  onEnterPress?: () => void;
-}
+const Portal = ({ children }: WithChildren) => {
+  return typeof document === "object"
+    ? createPortal(children, document.body)
+    : null;
+};
 
-const Legend = styled("legend")`
-  margin-left: -5px;
-  font-size: 12px;
-  padding: 0 4px;
-`;
+const SuggestionList = forwardRef<HTMLUListElement, WithChildren>(
+  ({ children }, ref) => <ul ref={ref}>{children}</ul>
+);
 
-const Fieldset = styled("fieldset")(({ theme }) => {
-  const borderColor =
-    theme.palette.mode === "light"
-      ? "rgba(0, 0, 0, 0.23)"
-      : "rgba(255, 255, 255, 0.23)";
-  return {
-    userSelect: "auto",
-    margin: 0,
-    borderRadius: theme.shape.borderRadius,
-    borderWidth: 1,
-    borderColor: borderColor,
-    borderStyle: "solid",
-    cursor: "text",
-    "&:hover": {
-      borderColor: theme.palette.text.primary,
-    },
-  };
-});
+const SuggestionListItem = (
+  props: PropsWithChildren<SuggestionListItemProps>
+) => <li {...props} />;
 
 const MentionTextField = (props: MentionTextFieldProps) => {
   const {
     triggers: _triggers,
     autoFocus,
-    label,
     placeholder,
     initialValue: _initialValue = "",
     editor,
@@ -83,6 +56,9 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     onChange,
     addMentionText,
     onEnterPress,
+    suggestionListComponent: SuggestionListComponent = SuggestionList,
+    suggestionListItemComponent:
+      SuggestionListItemComponent = SuggestionListItem,
     onPaste,
     onClick,
     onFocus,
@@ -91,7 +67,6 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     ...rest
   } = props;
   const theme = useTheme();
-  const [focus, setFocus] = useState(false);
   const [elem, setElem] = useState<HTMLDivElement | null>(null);
   const [target, setTarget] = useState<Range | null>(null);
   const [index, setIndex] = useState(0);
@@ -280,7 +255,6 @@ const MentionTextField = (props: MentionTextFieldProps) => {
 
   const handleFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
-      setFocus(true);
       if (onFocus) {
         onFocus(event);
       }
@@ -298,7 +272,6 @@ const MentionTextField = (props: MentionTextFieldProps) => {
         const { trigger, search, target } = result;
         insertMention({ editor, value: search, trigger, target });
       }
-      setFocus(false);
       if (onBlur) {
         onBlur(event);
       }
@@ -336,84 +309,58 @@ const MentionTextField = (props: MentionTextFieldProps) => {
   }, [autoFocus]);
 
   return (
-    <Fieldset
-      onClick={() => ReactEditor.focus(editor)}
-      style={
-        focus
-          ? {
-              borderColor: theme.palette.primary.main,
-              borderWidth: 2,
-              padding: "7px 13px 12px 13px",
-            }
-          : { padding: "7px 14px 13px 14px" }
-      }
-    >
-      {label && (
-        <Legend
-          sx={{
-            color: focus ? "primary.main" : "text.secondary",
-          }}
-        >
-          {label}
-        </Legend>
+    <Slate editor={editor} value={initialValue} onChange={handleChange}>
+      <Editable
+        renderElement={renderElement}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onPaste={handlePaste}
+        placeholder={placeholder}
+        {...rest}
+      />
+      {target && (filteredSuggestions.length > 0 || search.length > 0) && (
+        <Portal>
+          <div
+            ref={setElem}
+            style={{
+              top: "-9999px",
+              left: "-9999px",
+              position: "absolute",
+              zIndex: theme.zIndex.modal + 1,
+            }}
+            data-testid="mentions-portal"
+          >
+            <ClickAwayListener onClickAway={closeSuggestions}>
+              <SuggestionListComponent>
+                {filteredSuggestions.map((char, i) => (
+                  <SuggestionListItemComponent
+                    onClick={() =>
+                      showAddMenuItem && char === search
+                        ? handleClickSuggestion()
+                        : handleClickSuggestion(i)
+                    }
+                    key={char}
+                    selected={i === index}
+                  >
+                    {showAddMenuItem &&
+                      char === search &&
+                      addMentionText &&
+                      addMentionText(search)}
+                    {showAddMenuItem &&
+                      char === search &&
+                      !addMentionText &&
+                      `Add "${search}"`}
+                    {(!showAddMenuItem || char !== search) && char}
+                  </SuggestionListItemComponent>
+                ))}
+              </SuggestionListComponent>
+            </ClickAwayListener>
+          </div>
+        </Portal>
       )}
-      <Slate editor={editor} value={initialValue} onChange={handleChange}>
-        <Editable
-          renderElement={renderElement}
-          onClick={handleClick}
-          onKeyDown={handleKeyDown}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onPaste={handlePaste}
-          placeholder={placeholder}
-          {...rest}
-        />
-        {target && (filteredSuggestions.length > 0 || search.length > 0) && (
-          <Portal>
-            <Fade in>
-              <div
-                ref={setElem}
-                style={{
-                  top: "-9999px",
-                  left: "-9999px",
-                  position: "absolute",
-                  zIndex: theme.zIndex.modal + 1,
-                }}
-                data-testid="mentions-portal"
-              >
-                <ClickAwayListener onClickAway={closeSuggestions}>
-                  <Paper elevation={2}>
-                    <MenuList>
-                      {filteredSuggestions.map((char, i) => (
-                        <MenuItem
-                          onClick={() =>
-                            showAddMenuItem && char === search
-                              ? handleClickSuggestion()
-                              : handleClickSuggestion(i)
-                          }
-                          key={char}
-                          selected={i === index}
-                        >
-                          {showAddMenuItem &&
-                            char === search &&
-                            addMentionText &&
-                            addMentionText(search)}
-                          {showAddMenuItem &&
-                            char === search &&
-                            !addMentionText &&
-                            `Add "${search}"`}
-                          {(!showAddMenuItem || char !== search) && char}
-                        </MenuItem>
-                      ))}
-                    </MenuList>
-                  </Paper>
-                </ClickAwayListener>
-              </div>
-            </Fade>
-          </Portal>
-        )}
-      </Slate>
-    </Fieldset>
+    </Slate>
   );
 };
 
