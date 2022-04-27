@@ -60,7 +60,12 @@ const SuggestionList = forwardRef<HTMLDivElement, WithChildren>(
 );
 
 const MuiMentionTextField = (props: MuiMentionTextFieldProps) => {
-  const { editor, label, onFocus, onBlur } = props;
+  const {
+    state: { editor },
+    label,
+    onFocus,
+    onBlur,
+  } = props;
   const [focus, setFocus] = useState(false);
   const theme = useTheme();
 

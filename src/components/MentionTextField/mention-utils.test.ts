@@ -1,12 +1,12 @@
-import { getDescendants, getMentionsFromPlaintext } from "./mention-utils";
+import { getMentionElementData, getNodesFromPlainText } from "./mention-utils";
 
 describe("mention-utils", () => {
   it("should get mentions from plain text", () => {
-    const mentions = getMentionsFromPlaintext(
+    const data = getMentionElementData(
       "+Proj1 lorem+Proj2 ipsum @Ctx1 dolor @Ctx1 sit amet @Ctx2 @Ctx3 due:2022-01-01",
       ["@", "+", "due:"]
     );
-    expect(mentions).toStrictEqual([
+    expect(data).toStrictEqual([
       { start: 0, end: 5, value: "Proj1", trigger: "+" },
       { start: 25, end: 29, value: "Ctx1", trigger: "@" },
       { start: 37, end: 41, value: "Ctx1", trigger: "@" },
@@ -17,12 +17,12 @@ describe("mention-utils", () => {
   });
 
   it("should get descendant from plain text", () => {
-    const descendant = getDescendants(
+    const descendant = getNodesFromPlainText(
       "+Proj1 lorem+Proj2 ipsum @Ctx1 dolor @Ctx1 sit amet @Ctx2 @Ctx3 due:2022-01-01",
       [
-        { value: "@", style: { backgroundColor: "green" } },
-        { value: "+", style: { backgroundColor: "blue" } },
-        { value: "due:", style: { backgroundColor: "red" } },
+        { trigger: "@", suggestions: [], style: { backgroundColor: "green" } },
+        { trigger: "+", suggestions: [], style: { backgroundColor: "blue" } },
+        { trigger: "due:", suggestions: [], style: { backgroundColor: "red" } },
       ]
     );
     expect(descendant).toStrictEqual([
@@ -78,20 +78,17 @@ describe("mention-utils", () => {
   });
 
   it("should append an empty text element to focus the text field", () => {
-    let descendant = getDescendants("This is a test", [
-      { value: "@", style: { backgroundColor: "green" } },
-      { value: "+", style: { backgroundColor: "blue" } },
+    let nodes = getNodesFromPlainText("This is a test", [
+      { trigger: "@", suggestions: [], style: { backgroundColor: "green" } },
+      { trigger: "+", suggestions: [], style: { backgroundColor: "blue" } },
     ]);
-    expect(descendant).toStrictEqual([
-      { text: "This is a test" },
-      { text: "" },
-    ]);
+    expect(nodes).toStrictEqual([{ text: "This is a test" }, { text: "" }]);
 
-    descendant = getDescendants("This is a @small test", [
-      { value: "@", style: { backgroundColor: "green" } },
-      { value: "+", style: { backgroundColor: "blue" } },
+    nodes = getNodesFromPlainText("This is a @small test", [
+      { trigger: "@", suggestions: [], style: { backgroundColor: "green" } },
+      { trigger: "+", suggestions: [], style: { backgroundColor: "blue" } },
     ]);
-    expect(descendant).toStrictEqual([
+    expect(nodes).toStrictEqual([
       { text: "This is a " },
       {
         type: "mention",

@@ -1,117 +1,12 @@
-import { useCallback, useMemo } from "react";
-import {
-  BaseRange,
-  createEditor,
-  Descendant,
-  Editor,
-  Element,
-  Range,
-  Text,
-  Transforms,
-} from "slate";
-import { withHistory } from "slate-history";
-import { ReactEditor, withReact } from "slate-react";
+import { BaseRange, Descendant, Editor, Range, Text, Transforms } from "slate";
+import { ReactEditor } from "slate-react";
 import {
   CustomText,
   InsertMentionOptions,
+  Mention,
   MentionElement,
   ParagraphElement,
-  Suggestion,
-  Trigger,
 } from "./mention-types";
-
-export function useMentionTextField() {
-  const editor = useMemo(
-    () => withMentions(withReact(withHistory(createEditor()))),
-    []
-  );
-
-  const openSuggestions = useCallback(
-    (trigger: string) => {
-      ReactEditor.focus(editor);
-      const { selection } = editor;
-      if (selection && Range.isCollapsed(selection)) {
-        const [start] = Range.edges(selection);
-        const before = Editor.before(editor, start);
-        if (before) {
-          const [node] = Editor.node(editor, before);
-          if (
-            isMentionElement(node) ||
-            (Text.isText(node) && !node.text.endsWith(" "))
-          ) {
-            Editor.insertText(editor, ` ${trigger}`);
-          } else {
-            Editor.insertText(editor, trigger);
-          }
-        } else {
-          Editor.insertText(editor, trigger);
-        }
-      }
-    },
-    [editor]
-  );
-
-  const removeMention = useCallback(
-    (trigger: string, value?: string) => {
-      const mentionElements = Array.from(
-        Editor.nodes(editor, {
-          at: [],
-          match: (n) =>
-            !Editor.isEditor(n) && Element.isElement(n) && isMentionElement(n),
-        })
-      );
-      mentionElements.forEach((node) => {
-        const [element] = node;
-        if (
-          isMentionElement(element) &&
-          element.trigger === trigger &&
-          (!value || value === element.value)
-        ) {
-          const path = ReactEditor.findPath(editor, element);
-          Transforms.removeNodes(editor, { at: path });
-        }
-      });
-    },
-    [editor]
-  );
-
-  const insertMention = useCallback(
-    (trigger: Trigger, value: string, uniqueTrigger = false) => {
-      if (uniqueTrigger) {
-        removeMention(trigger.value);
-      }
-
-      const mentionElement: MentionElement = {
-        type: "mention",
-        trigger: trigger.value,
-        style: trigger.style,
-        value,
-        children: [{ text: "" }],
-      };
-
-      Transforms.insertNodes(editor, mentionElement);
-      Transforms.move(editor);
-    },
-    [editor, removeMention]
-  );
-
-  return {
-    editor,
-    openSuggestions,
-    insertMention,
-    removeMention,
-  };
-}
-
-export function getTriggers(triggers: Trigger[], suggestions?: Suggestion[]) {
-  const allTriggers = [...triggers];
-  suggestions?.forEach((s) => {
-    if (triggers.every((t) => t.value !== s.trigger)) {
-      allTriggers.push({ value: s.trigger });
-    }
-  });
-  return allTriggers;
-}
 
 export function isMentionElement(element: any): element is MentionElement {
   return element && element.type === "mention";
@@ -119,20 +14,6 @@ export function isMentionElement(element: any): element is MentionElement {
 
 function isParagraphElement(element: any): element is ParagraphElement {
   return element && element.type === "paragraph";
-}
-
-function withMentions(editor: Editor) {
-  const { isInline, isVoid } = editor;
-
-  editor.isInline = (element) => {
-    return element.type === "mention" ? true : isInline(element);
-  };
-
-  editor.isVoid = (element) => {
-    return element.type === "mention" ? true : isVoid(element);
-  };
-
-  return editor;
 }
 
 function removeZeroWidthChars(text: string) {
@@ -160,12 +41,7 @@ export function getPlainText(editor: Editor) {
 }
 
 export function insertMention(opt: InsertMentionOptions) {
-  const {
-    value,
-    trigger: { value: trigger, style },
-    editor,
-    target,
-  } = opt;
+  const { trigger, style, value, editor, target } = opt;
   Transforms.select(editor, target);
   const mention: MentionElement = {
     type: "mention",
@@ -196,7 +72,7 @@ export function addSpaceAfterMention(editor: Editor) {
   }
 }
 
-export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
+export function getUserInputAtSelection(editor: Editor, mentions: Mention[]) {
   const { selection } = editor;
 
   if (selection && Range.isCollapsed(selection)) {
@@ -205,8 +81,8 @@ export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
       editor,
       Editor.range(editor, { path: [0, 0], offset: 0 }, start)
     );
-    const escapedTriggers = triggers
-      .map((t) => t.value)
+    const escapedTriggers = mentions
+      .map((m) => m.trigger)
       .map(escapeRegExp)
       .join("|");
     const pattern = `(^|\\s)(${escapedTriggers})(|\uFEFF|\\S+|\uFEFF\\S+)$`;
@@ -229,18 +105,18 @@ export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
         },
         start
       );
-    const trigger =
-      beforeMatchExists && triggers.find((t) => t.value === beforeMatch[2]);
+    const mention =
+      beforeMatchExists && mentions.find((m) => m.trigger === beforeMatch[2]);
 
     const after = Editor.after(editor, start);
     const afterRange = Editor.range(editor, start, after);
     const afterText = Editor.string(editor, afterRange);
     const afterMatch = afterText.match(/^(\s|$)/);
 
-    if (beforeMatch && afterMatch && beforeRange && trigger) {
+    if (beforeMatch && afterMatch && beforeRange && mention) {
       return {
         target: beforeRange,
-        trigger: trigger,
+        mention,
         search: removeZeroWidthChars(beforeMatch[3]),
       };
     }
@@ -289,7 +165,7 @@ export function setSuggestionsPosition(
   }
 }
 
-export function getMentionsFromPlaintext(text: string, triggers: string[]) {
+export function getMentionElementData(text: string, triggers: string[]) {
   const pattern = `(\\s|^)(${triggers.map(escapeRegExp).join("|")})\\S+`;
 
   const result: {
@@ -315,32 +191,31 @@ export function getMentionsFromPlaintext(text: string, triggers: string[]) {
   return result;
 }
 
-export function getDescendants(text = "", triggers: Trigger[]) {
-  const descendant: Descendant[] = [];
+export function getNodesFromPlainText(text = "", triggers: Mention[]) {
+  const nodes: Descendant[] = [];
 
-  const mentions = getMentionsFromPlaintext(
+  const data = getMentionElementData(
     text,
-    triggers.map((t) => t.value)
+    triggers.map((m) => m.trigger)
   );
 
-  for (let index = 0; index < mentions.length; index++) {
-    const { value, start, end, trigger } = mentions[index];
-    const mentionBefore = index - 1 >= 0 ? mentions[index - 1] : undefined;
-    const mentionAfter =
-      index + 1 < mentions.length ? mentions[index + 1] : undefined;
+  for (let index = 0; index < data.length; index++) {
+    const { value, start, end, trigger } = data[index];
+    const mentionBefore = index - 1 >= 0 ? data[index - 1] : undefined;
+    const mentionAfter = index + 1 < data.length ? data[index + 1] : undefined;
     const textBefore = mentionBefore
       ? text.substring(mentionBefore.end + 1, start)
       : text.substring(0, start);
 
     if (textBefore) {
-      descendant.push({
+      nodes.push({
         text: textBefore,
       });
     }
 
-    const style = triggers.find((t) => t.value === trigger)?.style;
+    const style = triggers.find((m) => m.trigger === trigger)?.style;
 
-    descendant.push({
+    nodes.push({
       type: "mention",
       trigger,
       value,
@@ -351,25 +226,25 @@ export function getDescendants(text = "", triggers: Trigger[]) {
     if (!mentionAfter) {
       const textAfter = text.substring(end + 1, text.length);
       if (textAfter) {
-        descendant.push({
+        nodes.push({
           text: textAfter,
         });
       }
     }
   }
 
-  if (mentions.length === 0 && text) {
-    descendant.push({
+  if (data.length === 0 && text) {
+    nodes.push({
       text,
     });
   }
 
-  // add empty text element at the end for autofocus
-  descendant.push({
+  // add an empty text note at the end for autofocusing
+  nodes.push({
     text: "",
   });
 
-  return descendant;
+  return nodes;
 }
 
 function escapeRegExp(string: string) {

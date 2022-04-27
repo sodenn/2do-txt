@@ -3,14 +3,17 @@ import { BaseEditor, BaseRange, Descendant, Editor } from "slate";
 import { HistoryEditor } from "slate-history";
 import { ReactEditor } from "slate-react";
 
+interface MentionTextFieldState {
+  editor: Editor;
+  mentions: Mention[];
+}
+
 interface MentionTextFieldProps
   extends Omit<React.TextareaHTMLAttributes<HTMLDivElement>, "onChange"> {
-  editor: Editor;
-  triggers: Trigger[];
+  state: MentionTextFieldState;
   autoFocus?: boolean;
   placeholder?: string;
   initialValue?: string;
-  suggestions?: Suggestion[];
   onChange?: (value: string) => void;
   addMentionText?: (value: string) => string;
   onEnterPress?: () => void;
@@ -23,25 +26,20 @@ interface SuggestionListItemProps {
   selected: boolean;
 }
 
-interface Trigger {
-  value: string;
+interface Mention {
+  trigger: string;
+  suggestions: string[];
   style?: CSSProperties;
 }
 
-interface Suggestion {
-  trigger: string;
-  items: string[];
-}
-
-interface Mention {
-  trigger: string;
+interface InsertMentionHookOptions extends Omit<Mention, "suggestions"> {
   value: string;
+  unique: boolean;
 }
 
-interface InsertMentionOptions {
+interface InsertMentionOptions extends Omit<Mention, "suggestions"> {
   editor: Editor;
   value: string;
-  trigger: Trigger;
   target: BaseRange;
 }
 
@@ -74,13 +72,14 @@ declare module "slate" {
 }
 
 export {
+  MentionTextFieldState,
   MentionTextFieldProps,
   SuggestionListItemProps,
-  Trigger,
   Mention,
   Suggestion,
   CustomEditor,
   CustomText,
   InsertMentionOptions,
+  InsertMentionHookOptions,
   ParagraphElement,
 };

@@ -16,16 +16,15 @@ import { Editable, ReactEditor, RenderElementProps, Slate } from "slate-react";
 import { WithChildren } from "../../types/common";
 import Element from "./Element";
 import {
+  Mention,
   MentionTextFieldProps,
   SuggestionListItemProps,
-  Trigger,
 } from "./mention-types";
 import {
   addSpaceAfterMention,
-  getDescendants,
   getLastNode,
+  getNodesFromPlainText,
   getPlainText,
-  getTriggers,
   getUserInputAtSelection,
   insertMention,
   setSuggestionsPosition,
@@ -47,12 +46,10 @@ const SuggestionListItem = (
 
 const MentionTextField = (props: MentionTextFieldProps) => {
   const {
-    triggers: _triggers,
+    state: { editor, mentions },
     autoFocus,
     placeholder,
-    initialValue: _initialValue = "",
-    editor,
-    suggestions,
+    initialValue: initialTextValue = "",
     onChange,
     addMentionText,
     onEnterPress,
@@ -71,11 +68,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
   const [target, setTarget] = useState<Range | null>(null);
   const [index, setIndex] = useState(0);
   const [search, setSearch] = useState("");
-  const [trigger, setTrigger] = useState<Trigger | null>(null);
-  const triggers = useMemo(
-    () => getTriggers(_triggers, suggestions),
-    [_triggers, suggestions]
-  );
+  const [mention, setMention] = useState<Mention | null>(null);
   const renderElement = useCallback(
     ({ children, ...rest }: RenderElementProps) => (
       <Element {...rest}>{children}</Element>
@@ -86,46 +79,46 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     () => [
       {
         type: "paragraph",
-        children: getDescendants(_initialValue, triggers),
+        children: getNodesFromPlainText(initialTextValue, mentions),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
-  const filteredSuggestions = useMemo(() => {
+  const suggestions = useMemo(() => {
     const list =
-      suggestions
-        ?.find((s) => s.trigger === trigger?.value)
-        ?.items.filter((c) =>
-          c.toLowerCase().startsWith(search.toLowerCase())
+      mentions
+        ?.find((m) => m.trigger === mention?.trigger)
+        ?.suggestions.filter((s) =>
+          s.toLowerCase().startsWith(search.toLowerCase())
         ) || [];
     if (!!search && list.every((c) => c !== search)) {
       list.push(search);
     }
     return list;
-  }, [suggestions, search, trigger]);
+  }, [mentions, search, mention]);
   const showAddMenuItem =
     !!search &&
-    suggestions
-      ?.find((s) => s.trigger === trigger?.value)
-      ?.items.every((c) => c !== search);
+    mentions
+      ?.find((m) => m.trigger === mention?.trigger)
+      ?.suggestions.every((s) => s !== search);
 
   const closeSuggestions = useCallback(() => {
     setTarget(null);
-    setTrigger(null);
+    setMention(null);
   }, []);
 
   const openSuggestions = useCallback(() => {
-    const result = getUserInputAtSelection(editor, triggers);
+    const result = getUserInputAtSelection(editor, mentions);
     if (result) {
       setTarget(result.target);
       setSearch(result.search);
-      setTrigger(result.trigger);
+      setMention(result.mention);
       setIndex(0);
     } else {
       closeSuggestions();
     }
-  }, [editor, triggers, closeSuggestions]);
+  }, [editor, mentions, closeSuggestions]);
 
   const handleKeyDown = useCallback(
     (event: any) => {
@@ -133,8 +126,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
         case "ArrowDown":
           if (target) {
             event.preventDefault();
-            const prevIndex =
-              index >= filteredSuggestions.length - 1 ? 0 : index + 1;
+            const prevIndex = index >= suggestions.length - 1 ? 0 : index + 1;
             setIndex(prevIndex);
           } else {
             onKeyDown && onKeyDown(event);
@@ -143,39 +135,34 @@ const MentionTextField = (props: MentionTextFieldProps) => {
         case "ArrowUp":
           if (target) {
             event.preventDefault();
-            const nextIndex =
-              index <= 0 ? filteredSuggestions.length - 1 : index - 1;
+            const nextIndex = index <= 0 ? suggestions.length - 1 : index - 1;
             setIndex(nextIndex);
           } else {
             onKeyDown && onKeyDown(event);
           }
           break;
         case "Tab":
-          if (target && trigger) {
+          if (target && mention) {
             const value =
-              index < filteredSuggestions.length
-                ? filteredSuggestions[index]
-                : search;
-            insertMention({ editor, value, trigger, target });
+              index < suggestions.length ? suggestions[index] : search;
+            insertMention({ editor, value, target, ...mention });
             closeSuggestions();
           }
           onKeyDown && onKeyDown(event);
           break;
         case "Enter":
           event.preventDefault();
-          if (target && trigger) {
+          if (target && mention) {
             const value =
-              index < filteredSuggestions.length
-                ? filteredSuggestions[index]
-                : search;
-            insertMention({ editor, value, trigger, target });
+              index < suggestions.length ? suggestions[index] : search;
+            insertMention({ editor, value, target, ...mention });
             closeSuggestions();
           } else if (!target && onEnterPress) {
             onEnterPress();
           }
           break;
         case "Escape":
-          if (target && trigger) {
+          if (target && mention) {
             event.preventDefault();
             event.stopPropagation();
             closeSuggestions();
@@ -185,8 +172,8 @@ const MentionTextField = (props: MentionTextFieldProps) => {
           break;
         case " ":
           const value = search.trim();
-          if (target && trigger && value) {
-            insertMention({ editor, value, trigger, target });
+          if (target && mention && value) {
+            insertMention({ editor, value, target, ...mention });
             closeSuggestions();
           }
           onKeyDown && onKeyDown(event);
@@ -195,10 +182,10 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     },
     [
       target,
-      trigger,
+      mention,
       onEnterPress,
       index,
-      filteredSuggestions,
+      suggestions,
       editor,
       search,
       onKeyDown,
@@ -226,31 +213,31 @@ const MentionTextField = (props: MentionTextFieldProps) => {
 
   const handleClickSuggestion = useCallback(
     (index?: number) => {
-      if (target && trigger) {
+      if (target && mention) {
         const value =
-          typeof index !== "undefined" && index < filteredSuggestions.length
-            ? filteredSuggestions[index]
+          typeof index !== "undefined" && index < suggestions.length
+            ? suggestions[index]
             : search;
-        insertMention({ editor, value, trigger, target });
+        insertMention({ editor, value, target, ...mention });
         closeSuggestions();
         ReactEditor.focus(editor);
       }
     },
-    [target, trigger, editor, filteredSuggestions, search, closeSuggestions]
+    [target, mention, editor, suggestions, search, closeSuggestions]
   );
 
   const handlePaste = useCallback(
     (event: ClipboardEvent<HTMLDivElement>) => {
       const data = event.clipboardData.getData("text");
       const text = data.replace(/(\r\n|\n|\r)/gm, "");
-      const descendants = getDescendants(text, triggers);
-      Transforms.insertNodes(editor, descendants);
+      const nodes = getNodesFromPlainText(text, mentions);
+      Transforms.insertNodes(editor, nodes);
       Transforms.move(editor);
       if (onPaste) {
         onPaste(event);
       }
     },
-    [editor, onPaste, triggers]
+    [editor, onPaste, mentions]
   );
 
   const handleFocus = useCallback(
@@ -267,27 +254,23 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       if (elem?.contains(event.relatedTarget)) {
         return;
       }
-      const result = getUserInputAtSelection(editor, triggers);
+      const result = getUserInputAtSelection(editor, mentions);
       if (result && result.search) {
-        const { trigger, search, target } = result;
-        insertMention({ editor, value: search, trigger, target });
+        const { mention, search, target } = result;
+        insertMention({ editor, value: search, target, ...mention });
       }
       if (onBlur) {
         onBlur(event);
       }
     },
-    [editor, elem, onBlur, triggers]
+    [editor, elem, onBlur, mentions]
   );
 
   useEffect(() => {
-    if (
-      target &&
-      elem &&
-      (filteredSuggestions.length > 0 || search.length > 0)
-    ) {
+    if (target && elem && (suggestions.length > 0 || search.length > 0)) {
       setSuggestionsPosition(editor, elem, target);
     }
-  }, [filteredSuggestions.length, editor, index, search, target, elem]);
+  }, [suggestions.length, editor, index, search, target, elem]);
 
   useEffect(() => {
     addSpaceAfterMention(editor);
@@ -320,7 +303,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
         placeholder={placeholder}
         {...rest}
       />
-      {target && (filteredSuggestions.length > 0 || search.length > 0) && (
+      {target && (suggestions.length > 0 || search.length > 0) && (
         <Portal>
           <div
             ref={setElem}
@@ -334,7 +317,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
           >
             <ClickAwayListener onClickAway={closeSuggestions}>
               <SuggestionListComponent>
-                {filteredSuggestions.map((char, i) => (
+                {suggestions.map((char, i) => (
                   <SuggestionListItemComponent
                     onClick={() =>
                       showAddMenuItem && char === search

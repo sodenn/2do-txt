@@ -15,8 +15,7 @@ import {
 } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
-import { useMentionTextField } from "./MentionTextField";
-import MuiMentionTextField from "./MentionTextField/MuiMentionTextField";
+import { MuiMentionTextField, useMentionTextField } from "./MentionTextField";
 import PrioritySelect from "./PrioritySelect";
 
 interface TaskFormProps {
@@ -53,8 +52,24 @@ const TaskForm = (props: TaskFormProps) => {
     !(showCreationDate && showCompletionDate)
       ? 4
       : 6;
-  const { editor, openSuggestions, removeMention, insertMention } =
-    useMentionTextField();
+  const { state, openSuggestions, removeMention, insertMention } =
+    useMentionTextField([
+      {
+        trigger: "+",
+        suggestions: projects,
+        style: projectStyle,
+      },
+      {
+        trigger: "@",
+        suggestions: contexts,
+        style: contextStyle,
+      },
+      ...Object.entries(tags).map(([key, value]) => ({
+        trigger: `${key}:`,
+        suggestions: value,
+        style: key === "due" ? dueDateStyle : tagStyle,
+      })),
+    ]);
 
   const handleDueDateChange = (value: Date | null) => {
     if (
@@ -64,11 +79,11 @@ const TaskForm = (props: TaskFormProps) => {
       return;
     }
     if (value) {
-      insertMention(
-        { value: "due:", style: dueDateStyle },
-        formatDate(value),
-        true
-      );
+      insertMention({
+        value: formatDate(value),
+        trigger: "due:",
+        unique: true,
+      });
     } else {
       removeMention("due:");
     }
@@ -96,39 +111,17 @@ const TaskForm = (props: TaskFormProps) => {
     <Stack>
       <Box sx={{ mb: 2 }}>
         <MuiMentionTextField
+          state={state}
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           aria-label="Text editor"
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck={false}
-          editor={editor}
           initialValue={formData.body}
           onEnterPress={onEnterPress}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           autoFocus={true}
-          triggers={[
-            { value: "+", style: projectStyle },
-            { value: "@", style: contextStyle },
-            ...Object.entries(tags).map(([key, value]) => ({
-              value: `${key}:`,
-              style: key === "due" ? dueDateStyle : tagStyle,
-            })),
-          ]}
-          suggestions={[
-            {
-              trigger: "+",
-              items: projects,
-            },
-            {
-              trigger: "@",
-              items: contexts,
-            },
-            ...Object.entries(tags).map(([key, value]) => ({
-              trigger: `${key}:`,
-              items: value,
-            })),
-          ]}
         />
       </Box>
       <Grid spacing={2} container>
