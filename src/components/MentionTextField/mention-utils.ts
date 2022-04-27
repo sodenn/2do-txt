@@ -26,7 +26,7 @@ export function hasZeroWidthChars(text: string) {
 
 export function getPlainText(editor: Editor) {
   let plainText = "";
-  getAllNodes(editor)
+  getAllNodesEntries(editor)
     .filter(([node]) => !Text.isText(node) || !!node.text)
     .forEach(([node]) => {
       if (isParagraphElement(node)) {
@@ -55,10 +55,10 @@ export function insertMention(opt: InsertMentionOptions) {
 }
 
 export function addSpaceAfterMention(editor: Editor) {
-  const nodes = getAllNodes(editor);
+  const nodes = getAllNodesEntries(editor).map(([node]) => node);
   for (let index = 0; index < nodes.length; index++) {
-    const node = nodes[index][0];
-    const nodeBefore = index > 0 ? nodes[index - 1][0] : undefined;
+    const node = nodes[index];
+    const nodeBefore = index > 0 ? nodes[index - 1] : undefined;
     const textRightBeforeMention =
       isMentionElement(nodeBefore) &&
       Text.isText(node) &&
@@ -123,7 +123,7 @@ export function getUserInputAtSelection(editor: Editor, mentions: Mention[]) {
   }
 }
 
-export function getAllNodes(editor: Editor) {
+export function getAllNodesEntries(editor: Editor) {
   return Array.from(
     Editor.nodes<ParagraphElement | MentionElement | CustomText>(editor, {
       at: [],
@@ -134,9 +134,9 @@ export function getAllNodes(editor: Editor) {
   ).filter((node, index) => !(index === 0 && isParagraphElement(node[0])));
 }
 
-export function getLastNode(editor: Editor) {
-  const nodes = getAllNodes(editor);
-  return [...nodes].pop();
+export function getLastNodeEntry(editor: Editor) {
+  const nodeEntries = getAllNodesEntries(editor);
+  return [...nodeEntries].pop();
 }
 
 export function setSuggestionsPosition(

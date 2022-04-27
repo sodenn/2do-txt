@@ -22,7 +22,7 @@ import {
 } from "./mention-types";
 import {
   addSpaceAfterMention,
-  getLastNode,
+  getLastNodeEntry,
   getNodesFromPlainText,
   getPlainText,
   getUserInputAtSelection,
@@ -280,9 +280,9 @@ const MentionTextField = (props: MentionTextFieldProps) => {
   useEffect(() => {
     if (autoFocus) {
       ReactEditor.focus(editor);
-      const lastNode = getLastNode(editor);
-      if (lastNode) {
-        const [node, path] = lastNode;
+      const nodeEntry = getLastNodeEntry(editor);
+      if (nodeEntry) {
+        const [node, path] = nodeEntry;
         if (node && Text.isText(node) && !node.text) {
           Transforms.select(editor, path);
         }
