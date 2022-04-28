@@ -1,4 +1,4 @@
-import { ClickAwayListener, useTheme } from "@mui/material";
+import { ClickAwayListener } from "@mui/material";
 import React, {
   ClipboardEvent,
   FocusEvent,
@@ -27,7 +27,7 @@ import {
   getPlainText,
   getUserInputAtSelection,
   insertMention,
-  setSuggestionsPosition,
+  setSuggestionPopoverPosition,
 } from "./mention-utils";
 
 const Portal = ({ children }: WithChildren) => {
@@ -53,6 +53,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     onChange,
     addMentionText,
     onEnterPress,
+    suggestionPopoverZIndex = 1500,
     suggestionListComponent: SuggestionListComponent = SuggestionList,
     suggestionListItemComponent:
       SuggestionListItemComponent = SuggestionListItem,
@@ -63,8 +64,9 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     onKeyDown,
     ...rest
   } = props;
-  const theme = useTheme();
-  const [elem, setElem] = useState<HTMLDivElement | null>(null);
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(
+    null
+  );
   const [target, setTarget] = useState<Range | null>(null);
   const [index, setIndex] = useState(0);
   const [search, setSearch] = useState("");
@@ -235,7 +237,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
   const handlePaste = useCallback(
     (event: ClipboardEvent<HTMLDivElement>) => {
       const data = event.clipboardData.getData("text");
-      const text = data.replace(/(\r\n|\n|\r)/gm, "");
+      const text = singleLine ? data.replace(/(\r\n|\n|\r)/gm, "") : data;
       const nodes = getNodesFromPlainText(text, mentions);
       Transforms.insertNodes(editor, nodes);
       Transforms.move(editor);
@@ -243,7 +245,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
         onPaste(event);
       }
     },
-    [editor, onPaste, mentions]
+    [singleLine, mentions, editor, onPaste]
   );
 
   const handleFocus = useCallback(
@@ -257,7 +259,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
 
   const handleBlur = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
-      if (elem?.contains(event.relatedTarget)) {
+      if (popoverElement?.contains(event.relatedTarget)) {
         return;
       }
       const result = getUserInputAtSelection(editor, mentions);
@@ -269,14 +271,18 @@ const MentionTextField = (props: MentionTextFieldProps) => {
         onBlur(event);
       }
     },
-    [editor, elem, onBlur, mentions]
+    [editor, popoverElement, onBlur, mentions]
   );
 
   useEffect(() => {
-    if (target && elem && (suggestions.length > 0 || search.length > 0)) {
-      setSuggestionsPosition(editor, elem, target);
+    if (
+      target &&
+      popoverElement &&
+      (suggestions.length > 0 || search.length > 0)
+    ) {
+      setSuggestionPopoverPosition(editor, popoverElement, target);
     }
-  }, [suggestions.length, editor, index, search, target, elem]);
+  }, [suggestions.length, editor, search, target, popoverElement]);
 
   useEffect(() => {
     addSpaceAfterMention(editor);
@@ -312,12 +318,12 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       {target && (suggestions.length > 0 || search.length > 0) && (
         <Portal>
           <div
-            ref={setElem}
+            ref={setPopoverElement}
             style={{
               top: "-9999px",
               left: "-9999px",
               position: "absolute",
-              zIndex: theme.zIndex.modal + 1,
+              zIndex: suggestionPopoverZIndex,
             }}
             data-testid="mentions-portal"
           >

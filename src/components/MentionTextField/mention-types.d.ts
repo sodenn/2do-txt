@@ -18,6 +18,7 @@ interface MentionTextFieldProps
   onChange?: (value: string) => void;
   addMentionText?: (value: string) => string;
   onEnterPress?: () => void;
+  suggestionPopoverZIndex?: number;
   suggestionListComponent?: FunctionComponent;
   suggestionListItemComponent?: FunctionComponent<SuggestionListItemProps>;
 }

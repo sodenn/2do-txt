@@ -136,9 +136,9 @@ export function getLastNodeEntry(editor: Editor) {
   return [...nodeEntries].pop();
 }
 
-export function setSuggestionsPosition(
+export function setSuggestionPopoverPosition(
   editor: Editor,
-  elem: HTMLElement,
+  popoverElement: HTMLElement,
   target: BaseRange
 ) {
   try {
@@ -146,17 +146,17 @@ export function setSuggestionsPosition(
     const rect = domRange.getBoundingClientRect();
 
     if (
-      elem.offsetWidth + rect.left + window.pageXOffset <
+      popoverElement.offsetWidth + rect.left + window.pageXOffset <
       window.outerWidth - 16
     ) {
-      elem.style.left = `${rect.left + window.pageXOffset}px`;
-      elem.style.right = "auto";
+      popoverElement.style.left = `${rect.left + window.pageXOffset}px`;
+      popoverElement.style.right = "auto";
     } else {
-      elem.style.left = "auto";
-      elem.style.right = "16px";
+      popoverElement.style.left = "auto";
+      popoverElement.style.right = "16px";
     }
 
-    elem.style.top = `${rect.top + window.pageYOffset + 24}px`;
+    popoverElement.style.top = `${rect.top + window.pageYOffset + 24}px`;
   } catch (e) {
     //
   }

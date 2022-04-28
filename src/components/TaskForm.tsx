@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack } from "@mui/material";
+import { Box, Button, Grid, Stack, useTheme } from "@mui/material";
 import { isValid } from "date-fns";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,6 +32,7 @@ interface TaskFormProps {
 
 const TaskForm = (props: TaskFormProps) => {
   const platform = usePlatform();
+  const theme = useTheme();
   const hasTouchScreen = useTouchScreen();
   const {
     formData,
@@ -125,6 +126,7 @@ const TaskForm = (props: TaskFormProps) => {
           onEnterPress={onEnterPress}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           autoFocus={true}
+          suggestionPopoverZIndex={theme.zIndex.modal + 1}
         />
       </Box>
       <Grid spacing={2} container>
