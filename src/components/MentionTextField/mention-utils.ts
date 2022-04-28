@@ -77,10 +77,8 @@ export function getUserInputAtSelection(editor: Editor, mentions: Mention[]) {
 
   if (selection && Range.isCollapsed(selection)) {
     const [start] = Range.edges(selection);
-    let textBefore = Editor.string(
-      editor,
-      Editor.range(editor, { path: [0, 0], offset: 0 }, start)
-    );
+    let textBefore = Editor.string(editor, Editor.range(editor, [0, 0], start));
+    textBefore = textBefore.substring(textBefore.length - start.offset); // only the current line
     const escapedTriggers = mentions
       .map((m) => m.trigger)
       .map(escapeRegExp)
@@ -89,7 +87,6 @@ export function getUserInputAtSelection(editor: Editor, mentions: Mention[]) {
     const beforeMatch = textBefore.match(new RegExp(pattern));
     const beforeMatchExists =
       !!beforeMatch && beforeMatch.length > 2 && !!beforeMatch[0];
-    // TODO check offset
     const offset = beforeMatchExists
       ? start.offset -
         beforeMatch[0].length +
@@ -247,6 +244,6 @@ export function getNodesFromPlainText(text = "", triggers: Mention[]) {
   return nodes;
 }
 
-function escapeRegExp(string: string) {
+export function escapeRegExp(string: string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

@@ -1,14 +1,14 @@
 import { useCallback, useMemo } from "react";
-import { createEditor, Editor, Element, Range, Text, Transforms } from "slate";
+import { createEditor, Editor, Element, Range, Transforms } from "slate";
 import { withHistory } from "slate-history";
 import { ReactEditor, withReact } from "slate-react";
 import {
   InsertMentionHookOptions,
-  Mention,
   MentionElement,
+  MentionTextFieldHookOptions,
   MentionTextFieldState,
 } from "./mention-types";
-import { isMentionElement } from "./mention-utils";
+import { escapeRegExp, isMentionElement } from "./mention-utils";
 
 function withMentions(editor: Editor) {
   const { isInline, isVoid } = editor;
@@ -24,37 +24,89 @@ function withMentions(editor: Editor) {
   return editor;
 }
 
-export function useMentionTextField(mentions: Mention[]) {
+export function useMentionTextField(opt: MentionTextFieldHookOptions) {
+  const { mentions, singleLine } = opt;
+
   const editor = useMemo(
     () => withMentions(withReact(withHistory(createEditor()))),
     []
   );
 
-  const state: MentionTextFieldState = { editor, mentions };
+  const state: MentionTextFieldState = { editor, mentions, singleLine };
 
   const openSuggestions = useCallback(
     (trigger: string) => {
       ReactEditor.focus(editor);
       const { selection } = editor;
       if (selection && Range.isCollapsed(selection)) {
+        const prev = Editor.previous(editor);
+        const next = Editor.next(editor);
+
+        if (prev && isMentionElement(prev[0])) {
+          Editor.insertText(editor, ` ${trigger}`);
+          return;
+        }
+
+        if (next && isMentionElement(next[0])) {
+          Editor.insertText(editor, `${trigger} `);
+          Transforms.move(editor, {
+            distance: 1,
+            unit: "character",
+            reverse: true,
+          });
+          return;
+        }
+
         const [start] = Range.edges(selection);
-        const before = Editor.before(editor, start);
-        if (before) {
-          const [node] = Editor.node(editor, before);
-          if (
-            isMentionElement(node) ||
-            (Text.isText(node) && !node.text.endsWith(" "))
-          ) {
-            Editor.insertText(editor, ` ${trigger}`);
-          } else {
-            Editor.insertText(editor, trigger);
-          }
-        } else {
+
+        const charBefore = Editor.before(editor, start, { unit: "character" });
+        const beforeRange =
+          charBefore && Editor.range(editor, charBefore, start);
+        const beforeText = beforeRange && Editor.string(editor, beforeRange);
+
+        const charAfter = Editor.after(editor, start, { unit: "character" });
+        const afterRange = charAfter && Editor.range(editor, charAfter, start);
+        const afterText = afterRange && Editor.string(editor, afterRange);
+
+        const triggers = mentions
+          .map((m) => escapeRegExp(m.trigger))
+          .filter((t) => t.length === 1)
+          .join("");
+        const pattern = `[^\\s${triggers}]`;
+        const regex = new RegExp(pattern);
+
+        if (
+          beforeText &&
+          regex.test(beforeText) &&
+          (!afterText || afterText === " ")
+        ) {
+          Editor.insertText(editor, ` ${trigger}`);
+          return;
+        }
+
+        if (
+          (!beforeText || beforeText === " ") &&
+          afterText &&
+          regex.test(afterText)
+        ) {
+          Editor.insertText(editor, `${trigger} `);
+          Transforms.move(editor, {
+            distance: 1,
+            unit: "character",
+            reverse: true,
+          });
+          return;
+        }
+
+        if (
+          (!beforeText || beforeText === " ") &&
+          (!afterText || afterText === " ")
+        ) {
           Editor.insertText(editor, trigger);
         }
       }
     },
-    [editor]
+    [editor, mentions]
   );
 
   const removeMention = useCallback(

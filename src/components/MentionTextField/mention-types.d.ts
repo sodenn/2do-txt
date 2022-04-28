@@ -6,6 +6,7 @@ import { ReactEditor } from "slate-react";
 interface MentionTextFieldState {
   editor: Editor;
   mentions: Mention[];
+  singleLine?: boolean;
 }
 
 interface MentionTextFieldProps
@@ -19,6 +20,11 @@ interface MentionTextFieldProps
   onEnterPress?: () => void;
   suggestionListComponent?: FunctionComponent;
   suggestionListItemComponent?: FunctionComponent<SuggestionListItemProps>;
+}
+
+interface MentionTextFieldHookOptions {
+  mentions: Mention[];
+  singleLine?: boolean;
 }
 
 interface SuggestionListItemProps {
@@ -74,6 +80,7 @@ declare module "slate" {
 export {
   MentionTextFieldState,
   MentionTextFieldProps,
+  MentionTextFieldHookOptions,
   SuggestionListItemProps,
   Mention,
   Suggestion,

@@ -53,23 +53,26 @@ const TaskForm = (props: TaskFormProps) => {
       ? 4
       : 6;
   const { state, openSuggestions, removeMention, insertMention } =
-    useMentionTextField([
-      {
-        trigger: "+",
-        suggestions: projects,
-        style: projectStyle,
-      },
-      {
-        trigger: "@",
-        suggestions: contexts,
-        style: contextStyle,
-      },
-      ...Object.entries(tags).map(([key, value]) => ({
-        trigger: `${key}:`,
-        suggestions: value,
-        style: key === "due" ? dueDateStyle : tagStyle,
-      })),
-    ]);
+    useMentionTextField({
+      singleLine: true,
+      mentions: [
+        {
+          trigger: "+",
+          suggestions: projects,
+          style: projectStyle,
+        },
+        {
+          trigger: "@",
+          suggestions: contexts,
+          style: contextStyle,
+        },
+        ...Object.entries(tags).map(([key, value]) => ({
+          trigger: `${key}:`,
+          suggestions: value,
+          style: key === "due" ? dueDateStyle : tagStyle,
+        })),
+      ],
+    });
 
   const handleDueDateChange = (value: Date | null) => {
     if (

@@ -46,7 +46,7 @@ const SuggestionListItem = (
 
 const MentionTextField = (props: MentionTextFieldProps) => {
   const {
-    state: { editor, mentions },
+    state: { editor, mentions, singleLine },
     autoFocus,
     placeholder,
     initialValue: initialTextValue = "",
@@ -151,14 +151,19 @@ const MentionTextField = (props: MentionTextFieldProps) => {
           onKeyDown && onKeyDown(event);
           break;
         case "Enter":
-          event.preventDefault();
           if (target && mention) {
+            event.preventDefault();
             const value =
               index < suggestions.length ? suggestions[index] : search;
             insertMention({ editor, value, target, ...mention });
             closeSuggestions();
-          } else if (!target && onEnterPress) {
-            onEnterPress();
+          } else if (!target) {
+            if (singleLine) {
+              event.preventDefault();
+            }
+            if (onEnterPress) {
+              onEnterPress();
+            }
           }
           break;
         case "Escape":
@@ -184,6 +189,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       target,
       mention,
       onEnterPress,
+      singleLine,
       index,
       suggestions,
       editor,
