@@ -1,102 +1,76 @@
-import {
-  ClickAwayListener,
-  Fade,
-  MenuItem,
-  MenuList,
-  Paper,
-  Portal,
-  styled,
-  useTheme,
-} from "@mui/material";
+import { ClickAwayListener } from "@mui/material";
 import React, {
   ClipboardEvent,
   FocusEvent,
+  forwardRef,
+  MouseEvent,
+  PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { Descendant, Editor, Range, Transforms } from "slate";
+import { createPortal } from "react-dom";
+import { Descendant, Range, Text, Transforms } from "slate";
 import { Editable, ReactEditor, RenderElementProps, Slate } from "slate-react";
+import { WithChildren } from "../../types/common";
 import Element from "./Element";
-import { Suggestion, Trigger } from "./mention-types";
+import {
+  Mention,
+  MentionTextFieldProps,
+  SuggestionListItemProps,
+} from "./mention-types";
 import {
   addSpaceAfterMention,
-  getDescendants,
-  getLasPath,
-  getLastElement,
+  getLastNodeEntry,
+  getNodesFromPlainText,
   getPlainText,
-  getTriggers,
   getUserInputAtSelection,
-  hasZeroWidthChars,
   insertMention,
-  isTextElement,
-  setSuggestionsPosition,
+  setSuggestionPopoverPosition,
 } from "./mention-utils";
 
-interface MentionTextFieldProps {
-  triggers: Trigger[];
-  autoFocus?: boolean;
-  label?: string;
-  placeholder?: string;
-  initialValue?: string;
-  editor: Editor;
-  suggestions?: Suggestion[];
-  onChange?: (value: string) => void;
-  addMentionText?: (value: string) => string;
-  onEnterPress?: () => void;
-  "aria-label"?: string | undefined;
-}
+const Portal = ({ children }: WithChildren) => {
+  return typeof document === "object"
+    ? createPortal(children, document.body)
+    : null;
+};
 
-const Legend = styled("legend")`
-  margin-left: -5px;
-  font-size: 12px;
-  padding: 0 4px;
-`;
+const SuggestionList = forwardRef<HTMLUListElement, WithChildren>(
+  ({ children }, ref) => <ul ref={ref}>{children}</ul>
+);
 
-const Fieldset = styled("fieldset")(({ theme }) => {
-  const borderColor =
-    theme.palette.mode === "light"
-      ? "rgba(0, 0, 0, 0.23)"
-      : "rgba(255, 255, 255, 0.23)";
-  return {
-    userSelect: "auto",
-    margin: 0,
-    borderRadius: theme.shape.borderRadius,
-    borderWidth: 1,
-    borderColor: borderColor,
-    borderStyle: "solid",
-    cursor: "text",
-    "&:hover": {
-      borderColor: theme.palette.text.primary,
-    },
-  };
-});
+const SuggestionListItem = (
+  props: PropsWithChildren<SuggestionListItemProps>
+) => <li {...props} />;
 
 const MentionTextField = (props: MentionTextFieldProps) => {
   const {
-    triggers: _triggers,
+    state: { editor, mentions, singleLine },
     autoFocus,
-    label,
     placeholder,
-    initialValue: _initialValue = "",
-    editor,
-    suggestions,
+    initialValue: initialTextValue = "",
     onChange,
     addMentionText,
     onEnterPress,
+    suggestionPopoverZIndex = 1500,
+    suggestionListComponent: SuggestionListComponent = SuggestionList,
+    suggestionListItemComponent:
+      SuggestionListItemComponent = SuggestionListItem,
+    onPaste,
+    onClick,
+    onFocus,
+    onBlur,
+    onKeyDown,
+    ...rest
   } = props;
-  const theme = useTheme();
-  const [focus, setFocus] = useState(false);
-  const [elem, setElem] = useState<HTMLDivElement | null>(null);
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(
+    null
+  );
   const [target, setTarget] = useState<Range | null>(null);
   const [index, setIndex] = useState(0);
   const [search, setSearch] = useState("");
-  const [trigger, setTrigger] = useState<Trigger | null>(null);
-  const triggers = useMemo(
-    () => getTriggers(_triggers, suggestions),
-    [_triggers, suggestions]
-  );
+  const [mention, setMention] = useState<Mention | null>(null);
   const renderElement = useCallback(
     ({ children, ...rest }: RenderElementProps) => (
       <Element {...rest}>{children}</Element>
@@ -107,46 +81,46 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     () => [
       {
         type: "paragraph",
-        children: getDescendants(_initialValue, triggers),
+        children: getNodesFromPlainText(initialTextValue, mentions),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
-  const filteredSuggestions = useMemo(() => {
+  const suggestions = useMemo(() => {
     const list =
-      suggestions
-        ?.find((s) => s.trigger === trigger?.value)
-        ?.items.filter((c) =>
-          c.toLowerCase().startsWith(search.toLowerCase())
+      mentions
+        ?.find((m) => m.trigger === mention?.trigger)
+        ?.suggestions.filter((s) =>
+          s.toLowerCase().startsWith(search.toLowerCase())
         ) || [];
     if (!!search && list.every((c) => c !== search)) {
       list.push(search);
     }
     return list;
-  }, [suggestions, search, trigger]);
+  }, [mentions, search, mention]);
   const showAddMenuItem =
     !!search &&
-    suggestions
-      ?.find((s) => s.trigger === trigger?.value)
-      ?.items.every((c) => c !== search);
+    mentions
+      ?.find((m) => m.trigger === mention?.trigger)
+      ?.suggestions.every((s) => s !== search);
 
   const closeSuggestions = useCallback(() => {
     setTarget(null);
-    setTrigger(null);
+    setMention(null);
   }, []);
 
   const openSuggestions = useCallback(() => {
-    const result = getUserInputAtSelection(editor, triggers);
+    const result = getUserInputAtSelection(editor, mentions);
     if (result) {
       setTarget(result.target);
       setSearch(result.search);
-      setTrigger(result.trigger);
+      setMention(result.mention);
       setIndex(0);
     } else {
       closeSuggestions();
     }
-  }, [editor, triggers, closeSuggestions]);
+  }, [editor, mentions, closeSuggestions]);
 
   const handleKeyDown = useCallback(
     (event: any) => {
@@ -154,77 +128,75 @@ const MentionTextField = (props: MentionTextFieldProps) => {
         case "ArrowDown":
           if (target) {
             event.preventDefault();
-            const prevIndex =
-              index >= filteredSuggestions.length - 1 ? 0 : index + 1;
+            const prevIndex = index >= suggestions.length - 1 ? 0 : index + 1;
             setIndex(prevIndex);
+          } else {
+            onKeyDown && onKeyDown(event);
           }
           break;
         case "ArrowUp":
           if (target) {
             event.preventDefault();
-            const nextIndex =
-              index <= 0 ? filteredSuggestions.length - 1 : index - 1;
+            const nextIndex = index <= 0 ? suggestions.length - 1 : index - 1;
             setIndex(nextIndex);
+          } else {
+            onKeyDown && onKeyDown(event);
           }
           break;
         case "Tab":
-          if (target && trigger) {
+          if (target && mention) {
             const value =
-              index < filteredSuggestions.length
-                ? filteredSuggestions[index]
-                : search;
-            insertMention({ editor, value, trigger, target });
+              index < suggestions.length ? suggestions[index] : search;
+            insertMention({ editor, value, target, ...mention });
             closeSuggestions();
           }
+          onKeyDown && onKeyDown(event);
           break;
         case "Enter":
-          event.preventDefault();
-          if (target && trigger) {
+          if (target && mention) {
+            event.preventDefault();
             const value =
-              index < filteredSuggestions.length
-                ? filteredSuggestions[index]
-                : search;
-            insertMention({ editor, value, trigger, target });
+              index < suggestions.length ? suggestions[index] : search;
+            insertMention({ editor, value, target, ...mention });
             closeSuggestions();
-          } else if (!target && onEnterPress) {
-            onEnterPress();
+          } else if (!target) {
+            if (singleLine) {
+              event.preventDefault();
+            }
+            if (onEnterPress) {
+              onEnterPress();
+            }
           }
           break;
         case "Escape":
-          if (target && trigger) {
+          if (target && mention) {
             event.preventDefault();
             event.stopPropagation();
             closeSuggestions();
+          } else {
+            onKeyDown && onKeyDown(event);
           }
           break;
         case " ":
           const value = search.trim();
-          if (target && trigger && value) {
-            insertMention({ editor, value, trigger, target });
+          if (target && mention && value) {
+            insertMention({ editor, value, target, ...mention });
             closeSuggestions();
           }
-          break;
-        case "Backspace":
-          // (mobile) Prevent the user from having to press backspace twice
-          const lastElement = getLastElement(editor.children);
-          if (
-            isTextElement(lastElement) &&
-            hasZeroWidthChars(lastElement.text) &&
-            lastElement.text.length === 2
-          ) {
-            Editor.deleteBackward(editor, { unit: "character" });
-          }
+          onKeyDown && onKeyDown(event);
           break;
       }
     },
     [
       target,
-      trigger,
+      mention,
       onEnterPress,
+      singleLine,
       index,
-      filteredSuggestions,
+      suggestions,
       editor,
       search,
+      onKeyDown,
       closeSuggestions,
     ]
   );
@@ -237,60 +209,80 @@ const MentionTextField = (props: MentionTextFieldProps) => {
     }
   }, [openSuggestions, editor, onChange]);
 
-  const handleClick = useCallback(() => openSuggestions(), [openSuggestions]);
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      openSuggestions();
+      if (onClick) {
+        onClick(event);
+      }
+    },
+    [onClick, openSuggestions]
+  );
 
   const handleClickSuggestion = useCallback(
     (index?: number) => {
-      if (target && trigger) {
+      if (target && mention) {
         const value =
-          typeof index !== "undefined" && index < filteredSuggestions.length
-            ? filteredSuggestions[index]
+          typeof index !== "undefined" && index < suggestions.length
+            ? suggestions[index]
             : search;
-        insertMention({ editor, value, trigger, target });
+        insertMention({ editor, value, target, ...mention });
         closeSuggestions();
         ReactEditor.focus(editor);
       }
     },
-    [target, trigger, editor, filteredSuggestions, search, closeSuggestions]
+    [target, mention, editor, suggestions, search, closeSuggestions]
   );
 
   const handlePaste = useCallback(
     (event: ClipboardEvent<HTMLDivElement>) => {
-      event.preventDefault();
       const data = event.clipboardData.getData("text");
-      const text = data.replace(/(\r\n|\n|\r)/gm, "");
-      const descendants = getDescendants(text, triggers);
-      Transforms.insertNodes(editor, descendants);
+      const text = singleLine ? data.replace(/(\r\n|\n|\r)/gm, "") : data;
+      const nodes = getNodesFromPlainText(text, mentions);
+      Transforms.insertNodes(editor, nodes);
       Transforms.move(editor);
-      editor.onChange();
+      if (onPaste) {
+        onPaste(event);
+      }
     },
-    [editor, triggers]
+    [singleLine, mentions, editor, onPaste]
+  );
+
+  const handleFocus = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      if (onFocus) {
+        onFocus(event);
+      }
+    },
+    [onFocus]
   );
 
   const handleBlur = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
-      if (elem?.contains(event.relatedTarget)) {
+      if (popoverElement?.contains(event.relatedTarget)) {
         return;
       }
-      const result = getUserInputAtSelection(editor, triggers);
+      const result = getUserInputAtSelection(editor, mentions);
       if (result && result.search) {
-        const { trigger, search, target } = result;
-        insertMention({ editor, value: search, trigger, target });
+        const { mention, search, target } = result;
+        insertMention({ editor, value: search, target, ...mention });
       }
-      setFocus(false);
+      if (onBlur) {
+        onBlur(event);
+      }
     },
-    [editor, elem, triggers]
+    [editor, popoverElement, onBlur, mentions]
   );
 
   useEffect(() => {
     if (
       target &&
-      elem &&
-      (filteredSuggestions.length > 0 || search.length > 0)
+      popoverElement &&
+      (suggestions.length > 0 || search.length > 0)
     ) {
-      setSuggestionsPosition(editor, elem, target);
+      setSuggestionPopoverPosition(editor, popoverElement, target);
     }
-  }, [filteredSuggestions.length, editor, index, search, target, elem]);
+  }, [suggestions.length, editor, search, target, popoverElement]);
 
   useEffect(() => {
     addSpaceAfterMention(editor);
@@ -300,94 +292,70 @@ const MentionTextField = (props: MentionTextFieldProps) => {
   useEffect(() => {
     if (autoFocus) {
       ReactEditor.focus(editor);
-      const path = getLasPath(editor);
-      Transforms.select(editor, path);
+      const nodeEntry = getLastNodeEntry(editor);
+      if (nodeEntry) {
+        const [node, path] = nodeEntry;
+        if (node && Text.isText(node) && !node.text) {
+          Transforms.select(editor, path);
+        }
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoFocus]);
 
   return (
-    <Fieldset
-      onClick={() => ReactEditor.focus(editor)}
-      style={
-        focus
-          ? {
-              borderColor: theme.palette.primary.main,
-              borderWidth: 2,
-              padding: "7px 13px 12px 13px",
-            }
-          : { padding: "7px 14px 13px 14px" }
-      }
-    >
-      {label && (
-        <Legend
-          sx={{
-            color: focus ? "primary.main" : "text.secondary",
-          }}
-        >
-          {label}
-        </Legend>
+    <Slate editor={editor} value={initialValue} onChange={handleChange}>
+      <Editable
+        renderElement={renderElement}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onPaste={handlePaste}
+        placeholder={placeholder}
+        {...rest}
+      />
+      {target && (suggestions.length > 0 || search.length > 0) && (
+        <Portal>
+          <div
+            ref={setPopoverElement}
+            style={{
+              top: "-9999px",
+              left: "-9999px",
+              position: "absolute",
+              zIndex: suggestionPopoverZIndex,
+            }}
+            data-testid="mentions-portal"
+          >
+            <ClickAwayListener onClickAway={closeSuggestions}>
+              <SuggestionListComponent>
+                {suggestions.map((char, i) => (
+                  <SuggestionListItemComponent
+                    onClick={() =>
+                      showAddMenuItem && char === search
+                        ? handleClickSuggestion()
+                        : handleClickSuggestion(i)
+                    }
+                    key={char}
+                    selected={i === index}
+                  >
+                    {showAddMenuItem &&
+                      char === search &&
+                      addMentionText &&
+                      addMentionText(search)}
+                    {showAddMenuItem &&
+                      char === search &&
+                      !addMentionText &&
+                      `Add "${search}"`}
+                    {(!showAddMenuItem || char !== search) && char}
+                  </SuggestionListItemComponent>
+                ))}
+              </SuggestionListComponent>
+            </ClickAwayListener>
+          </div>
+        </Portal>
       )}
-      <Slate editor={editor} value={initialValue} onChange={handleChange}>
-        <Editable
-          aria-label={props["aria-label"]}
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          renderElement={renderElement}
-          onClick={handleClick}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setFocus(true)}
-          onBlur={handleBlur}
-          onPaste={handlePaste}
-          placeholder={placeholder}
-        />
-        {target && (filteredSuggestions.length > 0 || search.length > 0) && (
-          <Portal>
-            <Fade in>
-              <div
-                ref={setElem}
-                style={{
-                  top: "-9999px",
-                  left: "-9999px",
-                  position: "absolute",
-                  zIndex: theme.zIndex.modal + 1,
-                }}
-                data-testid="mentions-portal"
-              >
-                <ClickAwayListener onClickAway={closeSuggestions}>
-                  <Paper elevation={2}>
-                    <MenuList>
-                      {filteredSuggestions.map((char, i) => (
-                        <MenuItem
-                          onClick={() =>
-                            showAddMenuItem && char === search
-                              ? handleClickSuggestion()
-                              : handleClickSuggestion(i)
-                          }
-                          key={char}
-                          selected={i === index}
-                        >
-                          {showAddMenuItem &&
-                            char === search &&
-                            addMentionText &&
-                            addMentionText(search)}
-                          {showAddMenuItem &&
-                            char === search &&
-                            !addMentionText &&
-                            `Add "${search}"`}
-                          {(!showAddMenuItem || char !== search) && char}
-                        </MenuItem>
-                      ))}
-                    </MenuList>
-                  </Paper>
-                </ClickAwayListener>
-              </div>
-            </Fade>
-          </Portal>
-        )}
-      </Slate>
-    </Fieldset>
+    </Slate>
   );
 };
 
