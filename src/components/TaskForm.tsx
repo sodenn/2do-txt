@@ -1,6 +1,13 @@
-import { Box, Button, Grid, Stack, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Stack,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { isValid } from "date-fns";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskList } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
@@ -46,6 +53,8 @@ const TaskForm = (props: TaskFormProps) => {
     onEnterPress,
   } = props;
   const { t } = useTranslation();
+  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
+  const [autoFocus, setAutoFocus] = useState(!fullScreenDialog);
   const showCreationDate = !!formData._id;
   const showCompletionDate = !!formData._id && completed;
   const mdGridItems =
@@ -111,6 +120,13 @@ const TaskForm = (props: TaskFormProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.body, formData.dueDate]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setAutoFocus(true);
+    }, theme.transitions.duration.enteringScreen);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Stack>
       <Box sx={{ mb: 2 }}>
@@ -125,7 +141,7 @@ const TaskForm = (props: TaskFormProps) => {
           initialValue={formData.body}
           onEnterPress={onEnterPress}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
-          autoFocus={true}
+          autoFocus={autoFocus}
           suggestionPopoverZIndex={theme.zIndex.modal + 1}
         />
       </Box>
