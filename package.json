@@ -57,6 +57,9 @@
     "slate-react": "0.77.4",
     "typeface-roboto": "^1.1.13"
   },
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
