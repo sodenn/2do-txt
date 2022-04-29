@@ -18,7 +18,7 @@ import Settings from "./Settings";
 
 const drawerWidth = 320;
 
-export const SideSheetHeaderContainer = styled("div", {
+export const HeaderContainer = styled("div", {
   shouldForwardProp: (prop) => prop !== "open",
 })<{ open: boolean }>(({ theme, open }) => ({
   [theme.breakpoints.up("lg")]: {
@@ -36,7 +36,7 @@ export const SideSheetHeaderContainer = styled("div", {
   },
 }));
 
-const SideSheetMain = styled("main", {
+const Main = styled("main", {
   shouldForwardProp: (prop) => prop !== "open",
 })<{
   open: boolean;
@@ -64,17 +64,16 @@ const SideSheetMain = styled("main", {
   },
 }));
 
-export const SideSheetMainContainer = forwardRef<
-  HTMLDivElement,
-  PropsWithChildren<{}>
->(({ children }, ref) => {
-  const { sideSheetOpen } = useSideSheet();
-  return (
-    <SideSheetMain ref={ref} open={sideSheetOpen}>
-      {children}
-    </SideSheetMain>
-  );
-});
+export const MainContainer = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
+  ({ children }, ref) => {
+    const { sideSheetOpen } = useSideSheet();
+    return (
+      <Main ref={ref} open={sideSheetOpen}>
+        {children}
+      </Main>
+    );
+  }
+);
 
 const SaveAreaHeader = styled(Toolbar)`
   padding-top: env(safe-area-inset-top);

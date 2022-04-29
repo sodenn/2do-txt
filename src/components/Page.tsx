@@ -1,4 +1,4 @@
-import { Box, Container, CssBaseline, styled } from "@mui/material";
+import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useLoading } from "../data/LoadingContext";
 import ArchivedTasksDialog from "./ArchivedTasksDialog";
@@ -9,7 +9,7 @@ import FileManagementDialog from "./FileManagementDialog";
 import FilePicker from "./FilePicker";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
-import SideSheet, { SideSheetMainContainer } from "./SideSheet";
+import SideSheet, { MainContainer } from "./SideSheet";
 import TaskDialog from "./TaskDialog";
 import TaskLists from "./TaskLists";
 
@@ -46,14 +46,13 @@ const Page = () => {
         data-testid="page"
         sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
       >
-        <CssBaseline />
         <SideSheet />
-        <SideSheetMainContainer ref={scrollContainer}>
+        <MainContainer ref={scrollContainer}>
           <SafeAreaContainer disableGutters>
             <TaskLists />
             <Onboarding />
           </SafeAreaContainer>
-        </SideSheetMainContainer>
+        </MainContainer>
       </Box>
       <TaskDialog />
       <FileCreateDialog />

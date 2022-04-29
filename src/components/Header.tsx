@@ -7,7 +7,7 @@ import AddTaskButton from "./AddTaskButton";
 import DownloadButton from "./DownloadButton";
 import FileMenu from "./FileMenu";
 import SearchBar from "./SearchBar";
-import { SideSheetHeaderContainer } from "./SideSheet";
+import { HeaderContainer } from "./SideSheet";
 import SideSheetButton from "./SideSheetButton";
 
 interface HeaderProps {
@@ -30,7 +30,7 @@ const Header = ({ divider = false }: HeaderProps) => {
 
   return (
     <Box style={{ flex: "none", marginBottom: 2 }}>
-      <SideSheetHeaderContainer open={sideSheetOpen}>
+      <HeaderContainer open={sideSheetOpen}>
         <SafeAreaAppBar
           position="static"
           color="transparent"
@@ -55,7 +55,7 @@ const Header = ({ divider = false }: HeaderProps) => {
             )}
           </Toolbar>
         </SafeAreaAppBar>
-      </SideSheetHeaderContainer>
+      </HeaderContainer>
     </Box>
   );
 };

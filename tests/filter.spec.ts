@@ -173,11 +173,7 @@ test.describe("Sorting", () => {
 });
 
 test.describe("Menu", () => {
-  test("should allow me to toggle the menu via shortcut", async ({
-    page,
-    isMobile,
-  }) => {
-    // eslint-disable-next-line jest/valid-title
+  test("should allow me to toggle the menu via shortcut", async ({ page }) => {
     await page.keyboard.press("m");
     await expect(page.locator('[aria-label="Open menu"]')).toBeVisible();
     await page.keyboard.press("m");
