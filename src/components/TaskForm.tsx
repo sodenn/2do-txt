@@ -121,6 +121,7 @@ const TaskForm = (props: TaskFormProps) => {
 
   return (
     <Stack sx={{ minHeight: fullScreenDialog ? "50vh" : "none" }}>
+      {/** 50vh is set to force scrolling on iOS */}
       <Box sx={{ mb: 2 }}>
         <MuiMentionTextField
           state={state}
