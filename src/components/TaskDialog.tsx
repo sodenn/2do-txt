@@ -57,7 +57,7 @@ const TaskDialog = () => {
     setTaskDialogOptions,
   } = useTaskDialog();
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const { createCreationDate } = useSettings();
   const [key, setKey] = useState(0);
   const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
@@ -92,7 +92,7 @@ const TaskDialog = () => {
     setSelectedTaskList(taskList);
   };
 
-  const handleEnter = async () => {
+  const handleEnter = () => {
     setFormData(createFormData(createCreationDate, task));
     setSelectedTaskList(() => {
       if (task) {
@@ -119,7 +119,7 @@ const TaskDialog = () => {
 
   return (
     <>
-      {!fullScreen && (
+      {!fullScreenDialog && (
         <Dialog
           aria-label="Task dialog"
           maxWidth="sm"
@@ -162,7 +162,7 @@ const TaskDialog = () => {
           </DialogActions>
         </Dialog>
       )}
-      {fullScreen && (
+      {fullScreenDialog && (
         <FullScreenDialog
           aria-label="Task dialog"
           open={open}

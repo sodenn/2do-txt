@@ -1,4 +1,11 @@
-import { Box, Button, Grid, Stack, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Stack,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { isValid } from "date-fns";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -33,6 +40,7 @@ interface TaskFormProps {
 const TaskForm = (props: TaskFormProps) => {
   const platform = usePlatform();
   const theme = useTheme();
+  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const hasTouchScreen = useTouchScreen();
   const {
     formData,
@@ -112,7 +120,7 @@ const TaskForm = (props: TaskFormProps) => {
   }, [formData.body, formData.dueDate]);
 
   return (
-    <Stack>
+    <Stack sx={{ minHeight: fullScreenDialog ? "50vh" : "none" }}>
       <Box sx={{ mb: 2 }}>
         <MuiMentionTextField
           state={state}
@@ -125,7 +133,7 @@ const TaskForm = (props: TaskFormProps) => {
           initialValue={formData.body}
           onEnterPress={onEnterPress}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
-          autoFocus={true}
+          autoFocus
           suggestionPopoverZIndex={theme.zIndex.modal + 1}
         />
       </Box>

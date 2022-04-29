@@ -1,3 +1,4 @@
+import { Keyboard, KeyboardStyle } from "@capacitor/keyboard";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import {
   alpha,
@@ -133,6 +134,15 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
             : mode === "dark"
             ? Style.Dark
             : Style.Default,
+      }).catch((error) => void error);
+
+      Keyboard.setStyle({
+        style:
+          mode === "light"
+            ? KeyboardStyle.Light
+            : mode === "dark"
+            ? KeyboardStyle.Dark
+            : KeyboardStyle.Default,
       }).catch((error) => void error);
     },
     [setStorageItem, theme.palette.background.default]
