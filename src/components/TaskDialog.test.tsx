@@ -30,9 +30,8 @@ describe("TaskDialog", () => {
 
     await userEvent.keyboard("m");
 
-    expect(
-      screen.getByRole("presentation", { name: "Menu" })
-    ).toBeInTheDocument();
+    const menu = await screen.findByTestId("Menu");
+    await expect(menu.getAttribute("aria-label")).toBe("Open menu");
 
     await userEvent.keyboard("n");
 

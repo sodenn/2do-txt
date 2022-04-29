@@ -9,11 +9,11 @@ import FileManagementDialog from "./FileManagementDialog";
 import FilePicker from "./FilePicker";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
-import SideSheet from "./SideSheet";
+import SideSheet, { MainContainer } from "./SideSheet";
 import TaskDialog from "./TaskDialog";
 import TaskLists from "./TaskLists";
 
-const StyledContainer = styled(Container)`
+const SafeAreaContainer = styled(Container)`
   padding-right: env(safe-area-inset-right);
   padding-left: env(safe-area-inset-left);
   padding-bottom: env(safe-area-inset-bottom);
@@ -42,16 +42,17 @@ const Page = () => {
   return (
     <FilePicker>
       <Header divider={scrollTop > 12} />
-      <SideSheet />
       <Box
         data-testid="page"
-        ref={scrollContainer}
-        sx={{ overflowY: "auto", flex: "auto", px: { sm: 1 } }}
+        sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
       >
-        <StyledContainer disableGutters>
-          <TaskLists />
-          <Onboarding />
-        </StyledContainer>
+        <SideSheet />
+        <MainContainer ref={scrollContainer}>
+          <SafeAreaContainer disableGutters>
+            <TaskLists />
+            <Onboarding />
+          </SafeAreaContainer>
+        </MainContainer>
       </Box>
       <TaskDialog />
       <FileCreateDialog />

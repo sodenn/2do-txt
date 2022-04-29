@@ -2,7 +2,7 @@ import { expect, Page, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:3000");
-  await page.locator('[aria-label="Menu"]').click();
+  await page.locator('[aria-label="Toggle menu"]').click();
 });
 
 test.describe("Appearance", () => {
