@@ -75,10 +75,9 @@ export const MainContainer = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
   }
 );
 
-const SaveAreaHeader = styled(Toolbar)`
+const SaveAreaHeader = styled("div")`
   padding-top: env(safe-area-inset-top);
   padding-left: env(safe-area-inset-left);
-  align-items: flex-end;
 `;
 
 const SaveAreaContent = styled("div")`
@@ -151,16 +150,18 @@ const SideSheet = () => {
     >
       <TabContext value={tab}>
         <Box sx={{ flex: "none", borderBottom: 1, borderColor: "divider" }}>
-          <SaveAreaHeader>
-            <Tabs value={tab} onChange={handleChange}>
-              <Tab
-                sx={{ display: hideFilter ? "none" : "inline-flex" }}
-                label={t("Filter")}
-                value="filter"
-              />
-              <Tab label={t("Settings")} value="settings" />
-            </Tabs>
-          </SaveAreaHeader>
+          <Toolbar sx={{ alignItems: "flex-end" }}>
+            <SaveAreaHeader>
+              <Tabs value={tab} onChange={handleChange}>
+                <Tab
+                  sx={{ display: hideFilter ? "none" : "inline-flex" }}
+                  label={t("Filter")}
+                  value="filter"
+                />
+                <Tab label={t("Settings")} value="settings" />
+              </Tabs>
+            </SaveAreaHeader>
+          </Toolbar>
         </Box>
         <Box sx={{ overflowY: "auto", flex: "auto" }}>
           <SaveAreaContent>
