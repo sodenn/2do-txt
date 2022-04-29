@@ -3412,19 +3412,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*":
-  version "17.0.43"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.43.tgz#4adc142887dd4a2601ce730bc56c3436fdb07a55"
-  integrity sha512-8Q+LNpdxf057brvPu1lMtC5Vn7J119xrP1aq4qiaefNioQUYANF/CYeK4NsKorSZyUGJ66g0IM+4bbjwx45o2A==
-  dependencies:
-    "@types/prop-types" "*"
-    "@types/scheduler" "*"
-    csstype "^3.0.2"
-
-"@types/react@^18.0.6":
-  version "18.0.6"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.6.tgz#30206c3830af6ce8639b91ace5868bc2d3d1d96c"
-  integrity sha512-bPqwzJRzKtfI0mVYr5R+1o9BOE8UEXefwc1LwcBtfnaAn6OoqMhLa/91VA8aeWfDPJt1kHvYKI8RHcQybZLHHA==
+"@types/react@*", "@types/react@^18.0.8":
+  version "18.0.8"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.8.tgz#a051eb380a9fbcaa404550543c58e1cf5ce4ab87"
+  integrity sha512-+j2hk9BzCOrrOSJASi5XiOyBbERk9jG5O73Ya4M0env5Ixi6vUNli4qy994AINcEF+1IEHISYFfIT4zwr++LKw==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -13998,10 +13989,10 @@ slate-history@^0.66.0:
   dependencies:
     is-plain-object "^5.0.0"
 
-slate-react@0.77.3:
-  version "0.77.3"
-  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.77.3.tgz#6882bc22f501d503f90015925bcbdce3f7462a16"
-  integrity sha512-j7DeGHJMwePT6OeCX/nqkTXcrbo0599UyBQsP+knoqlrW/SRLuyCrj4rgOo6hbahOLlTR6wvKshW9p6KAs+uJA==
+slate-react@0.77.4:
+  version "0.77.4"
+  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.77.4.tgz#b2532b57e47c4e088b1583ed8befc6e238a15ad5"
+  integrity sha512-e3gYuEhjbEX4IhydC4kWZgcvH5fgJkJMuu9paarO6gdW5vRRSWnys/EbOs5ALp4e9NWr5u1XzQkJnbpyW5AqBA==
   dependencies:
     "@types/is-hotkey" "^0.1.1"
     "@types/lodash" "^4.14.149"
