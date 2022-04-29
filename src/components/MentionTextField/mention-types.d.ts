@@ -1,27 +1,52 @@
-import { CSSProperties } from "react";
+import React, { CSSProperties, FunctionComponent } from "react";
 import { BaseEditor, BaseRange, Descendant, Editor } from "slate";
 import { HistoryEditor } from "slate-history";
 import { ReactEditor } from "slate-react";
 
-interface Trigger {
-  value: string;
-  style?: CSSProperties;
+interface MentionTextFieldState {
+  editor: Editor;
+  mentions: Mention[];
+  singleLine?: boolean;
 }
 
-interface Suggestion {
-  trigger: string;
-  items: string[];
+interface MentionTextFieldProps
+  extends Omit<React.TextareaHTMLAttributes<HTMLDivElement>, "onChange"> {
+  state: MentionTextFieldState;
+  autoFocus?: boolean;
+  placeholder?: string;
+  initialValue?: string;
+  onChange?: (value: string) => void;
+  addMentionText?: (value: string) => string;
+  onEnterPress?: () => void;
+  suggestionPopoverZIndex?: number;
+  suggestionListComponent?: FunctionComponent;
+  suggestionListItemComponent?: FunctionComponent<SuggestionListItemProps>;
+}
+
+interface MentionTextFieldHookOptions {
+  mentions: Mention[];
+  singleLine?: boolean;
+}
+
+interface SuggestionListItemProps {
+  onClick: () => void;
+  selected: boolean;
 }
 
 interface Mention {
   trigger: string;
-  value: string;
+  suggestions: string[];
+  style?: CSSProperties;
 }
 
-interface InsertMentionOptions {
+interface InsertMentionHookOptions extends Omit<Mention, "suggestions"> {
+  value: string;
+  unique: boolean;
+}
+
+interface InsertMentionOptions extends Omit<Mention, "suggestions"> {
   editor: Editor;
   value: string;
-  trigger: Trigger;
   target: BaseRange;
 }
 
@@ -43,7 +68,7 @@ interface CustomText {
   text: string;
 }
 
-export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
+type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
 
 declare module "slate" {
   interface CustomTypes {
@@ -52,3 +77,17 @@ declare module "slate" {
     Text: CustomText;
   }
 }
+
+export {
+  MentionTextFieldState,
+  MentionTextFieldProps,
+  MentionTextFieldHookOptions,
+  SuggestionListItemProps,
+  Mention,
+  Suggestion,
+  CustomEditor,
+  CustomText,
+  InsertMentionOptions,
+  InsertMentionHookOptions,
+  ParagraphElement,
+};

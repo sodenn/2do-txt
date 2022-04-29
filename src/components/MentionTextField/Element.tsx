@@ -4,10 +4,10 @@ import { isMentionElement } from "./mention-utils";
 
 const Span = styled("span")<{ selected: number; focused: number }>(
   ({ theme, selected, focused }) => ({
-    padding: "1px 4px 2px",
+    padding: "0px 4px 0px",
     margin: "0 1px",
     verticalAlign: "baseline",
-    display: "inline",
+    display: "inline-block",
     borderRadius: theme.spacing(1),
     backgroundColor: "#eee",
     wordBreak: "break-word",

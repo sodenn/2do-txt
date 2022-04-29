@@ -1,111 +1,12 @@
-import { useCallback, useMemo } from "react";
-import {
-  BaseRange,
-  createEditor,
-  Descendant,
-  Editor,
-  Range,
-  Transforms,
-} from "slate";
-import { withHistory } from "slate-history";
-import { ReactEditor, withReact } from "slate-react";
+import { BaseRange, Descendant, Editor, Range, Text, Transforms } from "slate";
+import { ReactEditor } from "slate-react";
 import {
   CustomText,
   InsertMentionOptions,
+  Mention,
   MentionElement,
   ParagraphElement,
-  Suggestion,
-  Trigger,
 } from "./mention-types";
-
-export function useMentionTextField() {
-  const editor = useMemo(
-    () => withMentions(withReact(withHistory(createEditor()))),
-    []
-  );
-
-  const openSuggestions = useCallback(
-    (trigger: string) => {
-      ReactEditor.focus(editor);
-      const lastElement = getLastElement(editor.children);
-      if (
-        isMentionElement(lastElement) ||
-        (isTextElement(lastElement) && !!lastElement.text)
-      ) {
-        Editor.insertText(editor, ` ${trigger}`);
-      } else {
-        Editor.insertText(editor, trigger);
-      }
-    },
-    [editor]
-  );
-
-  const removeMention = useCallback(
-    (trigger: string, value?: string) => {
-      editor.children.forEach((element) => {
-        if (isParagraphElement(element)) {
-          element.children.forEach((child) => {
-            if (
-              isMentionElement(child) &&
-              child.trigger === trigger &&
-              (!value || value === child.value)
-            ) {
-              const path = ReactEditor.findPath(editor, child);
-              Transforms.removeNodes(editor, { at: path });
-            }
-          });
-        }
-      });
-    },
-    [editor]
-  );
-
-  const insertMention = useCallback(
-    (trigger: Trigger, value: string, uniqueTrigger = false) => {
-      if (uniqueTrigger) {
-        removeMention(trigger.value);
-      }
-
-      const startOfLine = isStartOfLine(editor.children);
-      const lastElement = getLastElement(editor.children);
-      if (
-        !startOfLine &&
-        (!isTextElement(lastElement) || !lastElement.text.endsWith(" "))
-      ) {
-        Transforms.insertNodes(editor, [{ text: " " }]);
-        Transforms.move(editor);
-      }
-
-      const mentionElement: MentionElement = {
-        type: "mention",
-        trigger: trigger.value,
-        style: trigger.style,
-        value,
-        children: [{ text: "" }],
-      };
-      Transforms.insertNodes(editor, mentionElement);
-      Transforms.move(editor);
-    },
-    [editor, removeMention]
-  );
-
-  return {
-    editor,
-    openSuggestions,
-    insertMention,
-    removeMention,
-  };
-}
-
-export function getTriggers(triggers: Trigger[], suggestions?: Suggestion[]) {
-  const allTriggers = [...triggers];
-  suggestions?.forEach((s) => {
-    if (triggers.every((t) => t.value !== s.trigger)) {
-      allTriggers.push({ value: s.trigger });
-    }
-  });
-  return allTriggers;
-}
 
 export function isMentionElement(element: any): element is MentionElement {
   return element && element.type === "mention";
@@ -113,24 +14,6 @@ export function isMentionElement(element: any): element is MentionElement {
 
 function isParagraphElement(element: any): element is ParagraphElement {
   return element && element.type === "paragraph";
-}
-
-export function isTextElement(element: any): element is CustomText {
-  return element && element.hasOwnProperty("text");
-}
-
-function withMentions(editor: Editor) {
-  const { isInline, isVoid } = editor;
-
-  editor.isInline = (element) => {
-    return element.type === "mention" ? true : isInline(element);
-  };
-
-  editor.isVoid = (element) => {
-    return element.type === "mention" ? true : isVoid(element);
-  };
-
-  return editor;
 }
 
 function removeZeroWidthChars(text: string) {
@@ -142,29 +25,23 @@ export function hasZeroWidthChars(text: string) {
 }
 
 export function getPlainText(editor: Editor) {
-  const children = editor.children.flatMap((c) =>
-    isParagraphElement(c) ? c.children : []
-  );
-
   let plainText = "";
-  children.forEach((c) => {
-    if (isMentionElement(c)) {
-      plainText += `${c.trigger}${c.value}`;
-    } else if (isTextElement(c)) {
-      plainText += c.text;
-    }
-  });
-
+  getAllNodesEntries(editor)
+    .filter(([node]) => !Text.isText(node) || !!node.text)
+    .forEach(([node]) => {
+      if (isParagraphElement(node)) {
+        plainText += "\n";
+      } else if (isMentionElement(node)) {
+        plainText += `${node.trigger}${node.value}`;
+      } else if (Text.isText(node)) {
+        plainText += node.text;
+      }
+    });
   return removeZeroWidthChars(plainText);
 }
 
 export function insertMention(opt: InsertMentionOptions) {
-  const {
-    value,
-    trigger: { value: trigger, style },
-    editor,
-    target,
-  } = opt;
+  const { trigger, style, value, editor, target } = opt;
   Transforms.select(editor, target);
   const mention: MentionElement = {
     type: "mention",
@@ -178,40 +55,32 @@ export function insertMention(opt: InsertMentionOptions) {
 }
 
 export function addSpaceAfterMention(editor: Editor) {
-  const elements = editor.children;
-  if (elements.length > 0) {
-    const paragraph = elements[elements.length - 1];
-    if (isParagraphElement(paragraph)) {
-      const children = paragraph.children;
-      if (children.length > 1) {
-        const secondLastElement = children[children.length - 2];
-        const lastElement = children[children.length - 1];
-        const textRightBeforeMention =
-          isMentionElement(secondLastElement) &&
-          isTextElement(lastElement) &&
-          /^\S$/.test(removeZeroWidthChars(lastElement.text));
-        if (textRightBeforeMention) {
-          Transforms.move(editor, { reverse: true });
-          Editor.insertText(editor, " ");
-          Transforms.move(editor);
-          return true;
-        }
-      }
+  const nodes = getAllNodesEntries(editor).map(([node]) => node);
+  for (let index = 0; index < nodes.length; index++) {
+    const node = nodes[index];
+    const nodeBefore = index > 0 ? nodes[index - 1] : undefined;
+    const textRightBeforeMention =
+      isMentionElement(nodeBefore) &&
+      Text.isText(node) &&
+      /^\S$/.test(removeZeroWidthChars(node.text));
+    if (textRightBeforeMention) {
+      Transforms.move(editor, { reverse: true });
+      Editor.insertText(editor, " ");
+      Transforms.move(editor);
+      return true;
     }
   }
 }
 
-export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
+export function getUserInputAtSelection(editor: Editor, mentions: Mention[]) {
   const { selection } = editor;
 
   if (selection && Range.isCollapsed(selection)) {
     const [start] = Range.edges(selection);
-    let textBefore = Editor.string(
-      editor,
-      Editor.range(editor, { path: [0, 0], offset: 0 }, start)
-    );
-    const escapedTriggers = triggers
-      .map((t) => t.value)
+    let textBefore = Editor.string(editor, Editor.range(editor, [0, 0], start));
+    textBefore = textBefore.substring(textBefore.length - start.offset); // only the current line
+    const escapedTriggers = mentions
+      .map((m) => m.trigger)
       .map(escapeRegExp)
       .join("|");
     const pattern = `(^|\\s)(${escapedTriggers})(|\uFEFF|\\S+|\uFEFF\\S+)$`;
@@ -233,78 +102,67 @@ export function getUserInputAtSelection(editor: Editor, triggers: Trigger[]) {
         },
         start
       );
-    const trigger =
-      beforeMatchExists && triggers.find((t) => t.value === beforeMatch[2]);
+    const mention =
+      beforeMatchExists && mentions.find((m) => m.trigger === beforeMatch[2]);
 
     const after = Editor.after(editor, start);
     const afterRange = Editor.range(editor, start, after);
     const afterText = Editor.string(editor, afterRange);
     const afterMatch = afterText.match(/^(\s|$)/);
 
-    if (beforeMatch && afterMatch && beforeRange && trigger) {
+    if (beforeMatch && afterMatch && beforeRange && mention) {
       return {
         target: beforeRange,
-        trigger: trigger,
+        mention,
         search: removeZeroWidthChars(beforeMatch[3]),
       };
     }
   }
 }
 
-export function getLastElement(
-  elements: Descendant[]
-): MentionElement | CustomText | undefined {
-  if (elements.length > 0) {
-    const lastElement = elements[elements.length - 1];
-    if (isParagraphElement(lastElement)) {
-      return getLastElement(lastElement.children);
-    } else {
-      return lastElement;
-    }
-  }
+export function getAllNodesEntries(editor: Editor) {
+  return Array.from(
+    Editor.nodes<ParagraphElement | MentionElement | CustomText>(editor, {
+      at: [],
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        (isParagraphElement(n) || isMentionElement(n) || Text.isText(n)),
+    })
+  ).filter((node, index) => !(index === 0 && isParagraphElement(node[0])));
 }
 
-export function isStartOfLine(elements: Descendant[]): boolean {
-  if (elements.length > 0) {
-    const element = elements[elements.length - 1];
-    if (isParagraphElement(element)) {
-      if (element.children.length === 0) {
-        return true;
-      } else if (element.children.length === 1) {
-        const child = element.children[0];
-        return isTextElement(child) && !child.text;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
+export function getLastNodeEntry(editor: Editor) {
+  const nodeEntries = getAllNodesEntries(editor);
+  return [...nodeEntries].pop();
 }
 
-export function getLasPath(editor: Editor) {
-  const lastElement = getLastElement(editor.children);
-  return ReactEditor.findPath(editor, lastElement as any);
-}
-
-export function setSuggestionsPosition(
+export function setSuggestionPopoverPosition(
   editor: Editor,
-  elem: HTMLElement,
+  popoverElement: HTMLElement,
   target: BaseRange
 ) {
   try {
     const domRange = ReactEditor.toDOMRange(editor, target);
     const rect = domRange.getBoundingClientRect();
-    elem.style.top = `${rect.top + window.pageYOffset + 24}px`;
-    elem.style.left = `${rect.left + window.pageXOffset}px`;
+
+    if (
+      popoverElement.offsetWidth + rect.left + window.pageXOffset <
+      window.outerWidth - 16
+    ) {
+      popoverElement.style.left = `${rect.left + window.pageXOffset}px`;
+      popoverElement.style.right = "auto";
+    } else {
+      popoverElement.style.left = "auto";
+      popoverElement.style.right = "16px";
+    }
+
+    popoverElement.style.top = `${rect.top + window.pageYOffset + 24}px`;
   } catch (e) {
     //
   }
 }
 
-export function getMentionsFromPlaintext(text: string, triggers: string[]) {
+export function getMentionElementData(text: string, triggers: string[]) {
   const pattern = `(\\s|^)(${triggers.map(escapeRegExp).join("|")})\\S+`;
 
   const result: {
@@ -320,7 +178,7 @@ export function getMentionsFromPlaintext(text: string, triggers: string[]) {
     const start = match[0].startsWith(" ") ? match.index! + 1 : match.index!;
     const end = start + match[0].trim().length - 1;
     result.push({
-      value: value,
+      value,
       trigger,
       start,
       end,
@@ -330,32 +188,31 @@ export function getMentionsFromPlaintext(text: string, triggers: string[]) {
   return result;
 }
 
-export function getDescendants(text = "", triggers: Trigger[]) {
-  const descendant: Descendant[] = [];
+export function getNodesFromPlainText(text = "", triggers: Mention[]) {
+  const nodes: Descendant[] = [];
 
-  const mentions = getMentionsFromPlaintext(
+  const data = getMentionElementData(
     text,
-    triggers.map((t) => t.value)
+    triggers.map((m) => m.trigger)
   );
 
-  for (let index = 0; index < mentions.length; index++) {
-    const { value, start, end, trigger } = mentions[index];
-    const mentionBefore = index - 1 >= 0 ? mentions[index - 1] : undefined;
-    const mentionAfter =
-      index + 1 < mentions.length ? mentions[index + 1] : undefined;
+  for (let index = 0; index < data.length; index++) {
+    const { value, start, end, trigger } = data[index];
+    const mentionBefore = index - 1 >= 0 ? data[index - 1] : undefined;
+    const mentionAfter = index + 1 < data.length ? data[index + 1] : undefined;
     const textBefore = mentionBefore
       ? text.substring(mentionBefore.end + 1, start)
       : text.substring(0, start);
 
     if (textBefore) {
-      descendant.push({
+      nodes.push({
         text: textBefore,
       });
     }
 
-    const style = triggers.find((t) => t.value === trigger)?.style;
+    const style = triggers.find((m) => m.trigger === trigger)?.style;
 
-    descendant.push({
+    nodes.push({
       type: "mention",
       trigger,
       value,
@@ -366,26 +223,27 @@ export function getDescendants(text = "", triggers: Trigger[]) {
     if (!mentionAfter) {
       const textAfter = text.substring(end + 1, text.length);
       if (textAfter) {
-        descendant.push({
+        nodes.push({
           text: textAfter,
         });
       }
     }
   }
 
-  if (mentions.length === 0 && text) {
-    descendant.push({
+  if (data.length === 0 && text) {
+    nodes.push({
       text,
     });
   }
 
-  descendant.push({
+  // add an empty text note at the end for autofocusing
+  nodes.push({
     text: "",
   });
 
-  return descendant;
+  return nodes;
 }
 
-function escapeRegExp(string: string) {
+export function escapeRegExp(string: string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
