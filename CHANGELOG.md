@@ -1,3 +1,22 @@
+# [1.11.0](https://github.com/sodenn/2do-txt/compare/v1.10.0...v1.11.0) (2022-04-30)
+
+
+### Bug Fixes
+
+* **FilePicker:** correct drag-n-drop validation ([#326](https://github.com/sodenn/2do-txt/issues/326)) ([b951f00](https://github.com/sodenn/2do-txt/commit/b951f00148aef2061ded3644bd2e326c7bcff0f7))
+* only show notification when tasks have been archived ([#383](https://github.com/sodenn/2do-txt/issues/383)) ([ef9d79c](https://github.com/sodenn/2do-txt/commit/ef9d79ccd3fba93ba63358917c9b987b80427df2))
+* prevent the access token from being refreshed twice ([#386](https://github.com/sodenn/2do-txt/issues/386)) ([9b5cdf7](https://github.com/sodenn/2do-txt/commit/9b5cdf7df3a547a8af7465e7f82065c3d704c99a))
+* **TaskList:** hide completed tasks if set via settings ([#382](https://github.com/sodenn/2do-txt/issues/382)) ([0b98a8c](https://github.com/sodenn/2do-txt/commit/0b98a8c6a128281f4a7670062ff2e669574f1a57))
+
+
+### Features
+
+* archive completed tasks to done.txt ([#362](https://github.com/sodenn/2do-txt/issues/362)) ([f93e300](https://github.com/sodenn/2do-txt/commit/f93e3008fafe5d1eed69fb372df038a604cc1582))
+* **Filter:** add option to set filter type ([b446269](https://github.com/sodenn/2do-txt/commit/b446269368c1e38a94ddb5b8640cad269f12e879))
+* **Filter:** limit filter types to AND and OR ([#345](https://github.com/sodenn/2do-txt/issues/345)) ([8596493](https://github.com/sodenn/2do-txt/commit/8596493779ac7d7eaa6a2992733bb770e767ff66))
+* **MentionTextField:** automatically add a space after a mention ([#378](https://github.com/sodenn/2do-txt/issues/378)) ([81edf00](https://github.com/sodenn/2do-txt/commit/81edf001510f9ae41b40e433888cf3a43a3292b6))
+* **TaskForm:** open the task form in a full-screen dialog (iOS) ([#381](https://github.com/sodenn/2do-txt/issues/381)) ([8c4ad81](https://github.com/sodenn/2do-txt/commit/8c4ad81759cd998381fc15bd8f5a4dfc9f789c6f))
+
 # [1.10.0](https://github.com/sodenn/2do-txt/compare/v1.9.0...v1.10.0) (2022-04-05)
 
 
