@@ -1,4 +1,4 @@
-import { Keyboard, KeyboardStyle } from "@capacitor/keyboard";
+import { KeyboardStyle } from "@capacitor/keyboard";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import {
   alpha,
@@ -15,6 +15,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { WithChildren } from "../types/common";
 import { createContext } from "../utils/Context";
+import { useKeyboard } from "../utils/keyboard";
 import { useStorage } from "../utils/storage";
 
 const translations: Record<string, Localization> = {
@@ -104,6 +105,7 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
   const {
     i18n: { language },
   } = useTranslation();
+  const { setKeyboardStyle } = useKeyboard();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [themeMode, _setThemeMode] = useState<ThemeMode>("system");
   const paletteMode = getPaletteMode(themeMode, prefersDarkMode);
@@ -136,16 +138,16 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
             : Style.Default,
       }).catch((error) => void error);
 
-      Keyboard.setStyle({
+      setKeyboardStyle({
         style:
           mode === "light"
             ? KeyboardStyle.Light
             : mode === "dark"
             ? KeyboardStyle.Dark
             : KeyboardStyle.Default,
-      }).catch((error) => void error);
+      });
     },
-    [setStorageItem, theme.palette.background.default]
+    [setKeyboardStyle, setStorageItem, theme.palette.background.default]
   );
 
   useEffect(() => {

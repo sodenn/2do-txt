@@ -1,17 +1,11 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Stack,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, Grid, Stack, useTheme } from "@mui/material";
 import { isValid } from "date-fns";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskList } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
+import { useKeyboard } from "../utils/keyboard";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import { createDueDateRegex, TaskFormData } from "../utils/task";
 import {
@@ -40,7 +34,12 @@ interface TaskFormProps {
 const TaskForm = (props: TaskFormProps) => {
   const platform = usePlatform();
   const theme = useTheme();
-  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
+  const rootRef = useRef<HTMLDivElement>();
+  const {
+    addKeyboardDidShowListener,
+    addKeyboardDidHideListener,
+    removeAllKeyboardListeners,
+  } = useKeyboard();
   const hasTouchScreen = useTouchScreen();
   const {
     formData,
@@ -119,9 +118,23 @@ const TaskForm = (props: TaskFormProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.body, formData.dueDate]);
 
+  useEffect(() => {
+    addKeyboardDidShowListener((info) => {
+      rootRef.current?.style.setProperty(
+        "padding-bottom",
+        info.keyboardHeight + "px"
+      );
+    });
+    addKeyboardDidHideListener(() => {
+      rootRef.current?.style.removeProperty("padding-bottom");
+    });
+    return () => {
+      removeAllKeyboardListeners();
+    };
+  });
+
   return (
-    <Stack sx={{ minHeight: fullScreenDialog ? "50vh" : "none" }}>
-      {/** 50vh is set to force scrolling on iOS */}
+    <Stack ref={rootRef}>
       <Box sx={{ mb: 2 }}>
         <MuiMentionTextField
           state={state}
