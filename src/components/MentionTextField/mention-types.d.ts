@@ -50,6 +50,17 @@ interface InsertMentionOptions extends Omit<Mention, "suggestions"> {
   target: BaseRange;
 }
 
+interface InsertSpaceAction {
+  action: "insert-space";
+  direction: "before" | "after";
+}
+
+interface InsertNodeAction {
+  action: "insert-node";
+}
+
+export type InsertAction = InsertSpaceAction | InsertNodeAction;
+
 export interface MentionElement {
   type: "mention";
   value: string;
