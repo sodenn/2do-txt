@@ -1,6 +1,6 @@
 import { Box, Button, Grid, Stack, useTheme } from "@mui/material";
 import { isValid } from "date-fns";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskList } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
@@ -44,7 +44,7 @@ const TaskForm = (props: TaskFormProps) => {
   const {
     formData,
     projects,
-    tags,
+    tags: _tags,
     contexts,
     taskLists,
     completed,
@@ -53,6 +53,13 @@ const TaskForm = (props: TaskFormProps) => {
     onEnterPress,
   } = props;
   const { t } = useTranslation();
+  const tags = useMemo(() => {
+    const tags = { ..._tags };
+    if (Object.keys(tags).every((k) => k !== "due")) {
+      tags.due = [];
+    }
+    return tags;
+  }, [_tags]);
   const showCreationDate = !!formData._id;
   const showCompletionDate = !!formData._id && completed;
   const mdGridItems =
