@@ -54,7 +54,7 @@
     "react-scripts": "4.0.3",
     "slate": "0.77.0",
     "slate-history": "^0.66.0",
-    "slate-react": "0.77.4",
+    "slate-react": "0.78.1",
     "typeface-roboto": "^1.1.13"
   },
   "resolutions": {
@@ -119,7 +119,7 @@
     "@types/jest": "^27.4.1",
     "@types/node": "^16.11.12",
     "@types/react": "^18.0.8",
-    "@types/react-dom": "^18.0.2",
+    "@types/react-dom": "^18.0.3",
     "cordova-res": "^0.15.4",
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.6.2",
