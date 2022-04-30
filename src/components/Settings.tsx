@@ -104,6 +104,8 @@ const Settings = () => {
             {t("Task Archiving")}
           </Typography>
           <Tooltip
+            enterTouchDelay={0}
+            leaveTouchDelay={2000}
             title={
               <Trans i18nKey="Completed tasks are archived in a second file called done.txt" />
             }
