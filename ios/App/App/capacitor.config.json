@@ -9,7 +9,8 @@
 			"backgroundColor": "#90caf9"
 		},
 		"Keyboard": {
-			"resizeOnFullScreen": true
+			"resizeOnFullScreen": true,
+			"resize": "body"
 		}
 	}
 }
