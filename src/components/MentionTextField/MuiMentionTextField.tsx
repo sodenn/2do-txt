@@ -19,6 +19,7 @@ import { MentionTextFieldProps } from "./mention-types";
 import MentionTextField from "./MentionTextField";
 
 const Legend = styled("legend")`
+  user-select: none;
   margin-left: -5px;
   font-size: 12px;
   padding: 0 4px;
@@ -37,8 +38,10 @@ const Fieldset = styled("fieldset")(({ theme }) => {
     borderColor: borderColor,
     borderStyle: "solid",
     cursor: "text",
-    "&:hover": {
-      borderColor: theme.palette.text.primary,
+    "@media (hover: hover) and (pointer: fine)": {
+      "&:hover": {
+        borderColor: theme.palette.text.primary,
+      },
     },
   };
 });
@@ -97,9 +100,9 @@ const MuiMentionTextField = (props: MuiMentionTextFieldProps) => {
           ? {
               borderColor: theme.palette.primary.main,
               borderWidth: 2,
-              padding: "7px 13px 12px 13px",
+              padding: "8px 13px 13px 13px",
             }
-          : { padding: "7px 14px 13px 14px" }
+          : { padding: "8px 14px 14px 14px" }
       }
     >
       {label && (
