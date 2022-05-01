@@ -14,7 +14,7 @@ const CreateExampleFileButton = () => {
 
   return (
     <Button
-      aria-label="Create task"
+      aria-label="Create example file"
       onClick={handleClick}
       startIcon={<LightbulbOutlinedIcon />}
       variant="outlined"
