@@ -21,6 +21,19 @@ jest.mock("../utils/platform", () => ({
   useTouchScreen: jest.fn(),
 }));
 
+jest.mock("slate-react", () => {
+  const { ReactEditor, ...rest } = jest.requireActual("slate-react");
+  const toDOMRange = ReactEditor.toDOMRange;
+  ReactEditor.toDOMRange = (editor: any, target: any) => {
+    const domRange = toDOMRange(editor, target);
+    domRange.getBoundingClientRect = jest.fn();
+  };
+  return {
+    ...rest,
+    ReactEditor,
+  };
+});
+
 export interface FilesystemItem {
   path: string;
   value: string;

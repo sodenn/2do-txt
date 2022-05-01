@@ -1,7 +1,7 @@
 import { DatePicker, DatePickerProps } from "@mui/lab";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import { TextField } from "@mui/material";
+import { TextField, useMediaQuery } from "@mui/material";
 import { Locale } from "date-fns";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
@@ -28,7 +28,20 @@ const LocalizationDatePicker = forwardRef<
   HTMLInputElement,
   LocalizationDatePickerProps
 >((props, ref) => {
-  const { value = null, ariaLabel, ...rest } = props;
+  const { value = null, ariaLabel, onChange, ...rest } = props;
+  const desktop = useMediaQuery("@media (pointer: fine)");
+
+  const handleChange = (date: Date | null, keyboardInputValue?: string) => {
+    if (desktop) {
+      onChange(date, keyboardInputValue);
+    }
+  };
+
+  const handleAccept = (date: Date | null) => {
+    if (!desktop) {
+      onChange(date);
+    }
+  };
 
   const {
     t,
@@ -40,8 +53,11 @@ const LocalizationDatePicker = forwardRef<
       dateAdapter={AdapterDateFns}
       locale={localeMap[resolvedLanguage]}
     >
+      {/** @ts-ignore */}
       <DatePicker
         {...rest}
+        onChange={handleChange}
+        onAccept={handleAccept}
         ref={ref}
         value={value}
         clearable

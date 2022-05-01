@@ -3,12 +3,13 @@ import { createEditor, Editor, Element, Range, Transforms } from "slate";
 import { withHistory } from "slate-history";
 import { ReactEditor, withReact } from "slate-react";
 import {
+  InsertAction,
   InsertMentionHookOptions,
   MentionElement,
   MentionTextFieldHookOptions,
   MentionTextFieldState,
 } from "./mention-types";
-import { escapeRegExp, isMentionElement } from "./mention-utils";
+import { escapeRegExp, focusEditor, isMentionElement } from "./mention-utils";
 
 function withMentions(editor: Editor) {
   const { isInline, isVoid } = editor;
@@ -34,20 +35,72 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
 
   const state: MentionTextFieldState = { editor, mentions, singleLine };
 
+  const getInsertAction = useCallback((): InsertAction | undefined => {
+    const { selection } = editor;
+    if (selection && Range.isCollapsed(selection)) {
+      const [start] = Range.edges(selection);
+      const prev = Editor.previous(editor);
+      const next = Editor.next(editor);
+
+      if (prev && isMentionElement(prev[0])) {
+        return { action: "insert-space", direction: "before" };
+      }
+
+      if (next && isMentionElement(next[0])) {
+        return { action: "insert-space", direction: "after" };
+      }
+
+      const charBefore = Editor.before(editor, start, { unit: "character" });
+      const beforeRange = charBefore && Editor.range(editor, charBefore, start);
+      const beforeText = beforeRange && Editor.string(editor, beforeRange);
+
+      const charAfter = Editor.after(editor, start, { unit: "character" });
+      const afterRange = charAfter && Editor.range(editor, charAfter, start);
+      const afterText = afterRange && Editor.string(editor, afterRange);
+
+      const triggers = mentions
+        .map((m) => escapeRegExp(m.trigger))
+        .filter((t) => t.length === 1)
+        .join("");
+      const pattern = `[^\\s${triggers}]`;
+      const regex = new RegExp(pattern);
+
+      if (
+        beforeText &&
+        regex.test(beforeText) &&
+        (!afterText || afterText === " ")
+      ) {
+        return { action: "insert-space", direction: "before" };
+      }
+
+      if (
+        (!beforeText || beforeText === " ") &&
+        afterText &&
+        regex.test(afterText)
+      ) {
+        return { action: "insert-space", direction: "after" };
+      }
+
+      if (
+        (!beforeText || beforeText === " ") &&
+        (!afterText || afterText === " ")
+      ) {
+        return { action: "insert-node" };
+      }
+    }
+  }, [editor, mentions]);
+
   const openSuggestions = useCallback(
     (trigger: string) => {
-      ReactEditor.focus(editor);
-      const { selection } = editor;
-      if (selection && Range.isCollapsed(selection)) {
-        const prev = Editor.previous(editor);
-        const next = Editor.next(editor);
-
-        if (prev && isMentionElement(prev[0])) {
+      focusEditor(editor, true);
+      const action = getInsertAction();
+      if (action) {
+        if (action.action === "insert-space" && action.direction === "before") {
           Editor.insertText(editor, ` ${trigger}`);
           return;
         }
 
-        if (next && isMentionElement(next[0])) {
+        if (action.action === "insert-space" && action.direction === "after") {
           Editor.insertText(editor, `${trigger} `);
           Transforms.move(editor, {
             distance: 1,
@@ -57,56 +110,13 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
           return;
         }
 
-        const [start] = Range.edges(selection);
-
-        const charBefore = Editor.before(editor, start, { unit: "character" });
-        const beforeRange =
-          charBefore && Editor.range(editor, charBefore, start);
-        const beforeText = beforeRange && Editor.string(editor, beforeRange);
-
-        const charAfter = Editor.after(editor, start, { unit: "character" });
-        const afterRange = charAfter && Editor.range(editor, charAfter, start);
-        const afterText = afterRange && Editor.string(editor, afterRange);
-
-        const triggers = mentions
-          .map((m) => escapeRegExp(m.trigger))
-          .filter((t) => t.length === 1)
-          .join("");
-        const pattern = `[^\\s${triggers}]`;
-        const regex = new RegExp(pattern);
-
-        if (
-          beforeText &&
-          regex.test(beforeText) &&
-          (!afterText || afterText === " ")
-        ) {
-          Editor.insertText(editor, ` ${trigger}`);
-          return;
-        }
-
-        if (
-          (!beforeText || beforeText === " ") &&
-          afterText &&
-          regex.test(afterText)
-        ) {
-          Editor.insertText(editor, `${trigger} `);
-          Transforms.move(editor, {
-            distance: 1,
-            unit: "character",
-            reverse: true,
-          });
-          return;
-        }
-
-        if (
-          (!beforeText || beforeText === " ") &&
-          (!afterText || afterText === " ")
-        ) {
+        if (action.action === "insert-node") {
           Editor.insertText(editor, trigger);
+          return;
         }
       }
     },
-    [editor, mentions]
+    [editor, getInsertAction]
   );
 
   const removeMention = useCallback(
@@ -141,6 +151,19 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
         removeMention(trigger);
       }
 
+      focusEditor(editor, true);
+
+      const action = getInsertAction();
+
+      if (!action) {
+        return;
+      }
+
+      if (action.action === "insert-space" && action.direction === "before") {
+        Editor.insertText(editor, " ");
+        Transforms.move(editor);
+      }
+
       const style = mentions.find((m) => m.trigger === trigger)?.style;
 
       const mentionElement: MentionElement = {
@@ -153,8 +176,13 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
 
       Transforms.insertNodes(editor, mentionElement);
       Transforms.move(editor);
+
+      if (action.action === "insert-space" && action.direction === "after") {
+        Editor.insertText(editor, " ");
+        Transforms.move(editor);
+      }
     },
-    [editor, mentions, removeMention]
+    [editor, getInsertAction, mentions, removeMention]
   );
 
   return {

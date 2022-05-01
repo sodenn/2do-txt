@@ -1,17 +1,11 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Stack,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { isValid } from "date-fns";
-import { useEffect } from "react";
+import { Box, Button, Grid, Stack, useTheme } from "@mui/material";
+import { isSameDay, isValid } from "date-fns";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskList } from "../data/TaskContext";
 import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
+import { useKeyboard } from "../utils/keyboard";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import { createDueDateRegex, TaskFormData } from "../utils/task";
 import {
@@ -40,12 +34,17 @@ interface TaskFormProps {
 const TaskForm = (props: TaskFormProps) => {
   const platform = usePlatform();
   const theme = useTheme();
-  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
+  const rootRef = useRef<HTMLDivElement>();
+  const {
+    addKeyboardDidShowListener,
+    addKeyboardDidHideListener,
+    removeAllKeyboardListeners,
+  } = useKeyboard();
   const hasTouchScreen = useTouchScreen();
   const {
     formData,
     projects,
-    tags,
+    tags: _tags,
     contexts,
     taskLists,
     completed,
@@ -54,6 +53,13 @@ const TaskForm = (props: TaskFormProps) => {
     onEnterPress,
   } = props;
   const { t } = useTranslation();
+  const tags = useMemo(() => {
+    const tags = { ..._tags };
+    if (Object.keys(tags).every((k) => k !== "due")) {
+      tags.due = [];
+    }
+    return tags;
+  }, [_tags]);
   const showCreationDate = !!formData._id;
   const showCompletionDate = !!formData._id && completed;
   const mdGridItems =
@@ -104,12 +110,17 @@ const TaskForm = (props: TaskFormProps) => {
   useEffect(() => {
     // set value in due date picker depending on text changes
     const match = formData.body.match(createDueDateRegex());
-    if (formData.dueDate && !match) {
+    if (!match) {
       onChange({ ...formData, dueDate: undefined });
-    } else if (!formData.dueDate && match && match.length > 0) {
-      const dateString = match[match.length - 1].trim().substr("due:".length);
+    } else if (match && match.length > 0) {
+      const dateString = match[match.length - 1]
+        .trim()
+        .substring("due:".length);
       const dueDate = parseDate(dateString);
-      if (dueDate) {
+      if (
+        dueDate &&
+        (!formData.dueDate || !isSameDay(formData.dueDate, dueDate))
+      ) {
         onChange({
           ...formData,
           dueDate,
@@ -117,11 +128,25 @@ const TaskForm = (props: TaskFormProps) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.body, formData.dueDate]);
+  }, [formData.body]);
+
+  useEffect(() => {
+    addKeyboardDidShowListener((info) => {
+      rootRef.current?.style.setProperty(
+        "padding-bottom",
+        info.keyboardHeight + "px"
+      );
+    });
+    addKeyboardDidHideListener(() => {
+      rootRef.current?.style.removeProperty("padding-bottom");
+    });
+    return () => {
+      removeAllKeyboardListeners();
+    };
+  });
 
   return (
-    <Stack sx={{ minHeight: fullScreenDialog ? "50vh" : "none" }}>
-      {/** 50vh is set to force scrolling on iOS */}
+    <Stack ref={rootRef}>
       <Box sx={{ mb: 2 }}>
         <MuiMentionTextField
           state={state}

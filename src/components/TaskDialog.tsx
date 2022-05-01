@@ -64,6 +64,7 @@ const TaskDialog = () => {
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
+  const [divider, setDivider] = useState(false);
   const formDisabled = !formData.body || (!activeTaskList && !selectedTaskList);
   const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
@@ -117,6 +118,26 @@ const TaskDialog = () => {
     return reason !== "backdropClick" ? closeDialog() : undefined;
   };
 
+  const TransitionProps = {
+    onEnter: handleEnter,
+    onExited: handleExit,
+  };
+
+  const taskForm = (
+    <TaskForm
+      key={key}
+      completed={!!task?.completed}
+      formData={formData}
+      contexts={Object.keys(contexts)}
+      projects={Object.keys(projects)}
+      tags={tags}
+      taskLists={activeTaskList || task ? [] : taskLists}
+      onChange={handleChange}
+      onFileSelect={handleFileSelect}
+      onEnterPress={handleSave}
+    />
+  );
+
   return (
     <>
       {!fullScreenDialog && (
@@ -126,28 +147,12 @@ const TaskDialog = () => {
           fullWidth
           open={open}
           onClose={handleClose}
-          TransitionProps={{
-            onEnter: handleEnter,
-            onExited: handleExit,
-          }}
+          TransitionProps={TransitionProps}
         >
           <DialogTitle>
             {!!formData._id ? t("Edit Task") : t("Create Task")}
           </DialogTitle>
-          <DialogContent>
-            <TaskForm
-              key={key}
-              completed={!!task?.completed}
-              formData={formData}
-              contexts={Object.keys(contexts)}
-              projects={Object.keys(projects)}
-              tags={tags}
-              taskLists={activeTaskList || task ? [] : taskLists}
-              onChange={handleChange}
-              onFileSelect={handleFileSelect}
-              onEnterPress={handleSave}
-            />
-          </DialogContent>
+          <DialogContent>{taskForm}</DialogContent>
           <DialogActions>
             <Button tabIndex={-1} onClick={closeDialog}>
               {t("Cancel")}
@@ -167,12 +172,10 @@ const TaskDialog = () => {
           aria-label="Task dialog"
           open={open}
           onClose={closeDialog}
-          TransitionProps={{
-            onEnter: handleEnter,
-            onExited: handleExit,
-          }}
+          TransitionProps={TransitionProps}
         >
           <FullScreenDialogTitle
+            divider={divider}
             onClose={closeDialog}
             accept={{
               text: t("Save"),
@@ -183,19 +186,8 @@ const TaskDialog = () => {
           >
             {!!formData._id ? t("Edit Task") : t("Create Task")}
           </FullScreenDialogTitle>
-          <FullScreenDialogContent>
-            <TaskForm
-              key={key}
-              completed={!!task?.completed}
-              formData={formData}
-              contexts={Object.keys(contexts)}
-              projects={Object.keys(projects)}
-              tags={tags}
-              taskLists={activeTaskList || task ? [] : taskLists}
-              onChange={handleChange}
-              onFileSelect={handleFileSelect}
-              onEnterPress={handleSave}
-            />
+          <FullScreenDialogContent onScroll={(top) => setDivider(top > 12)}>
+            {taskForm}
           </FullScreenDialogContent>
         </FullScreenDialog>
       )}

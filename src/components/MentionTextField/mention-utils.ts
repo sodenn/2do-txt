@@ -131,6 +131,23 @@ export function getAllNodesEntries(editor: Editor) {
   ).filter((node, index) => !(index === 0 && isParagraphElement(node[0])));
 }
 
+export function focusEditor(editor: Editor, addEmptyTextNode = false) {
+  ReactEditor.focus(editor);
+  const { selection } = editor;
+  if (!selection || !Range.isCollapsed(selection)) {
+    if (addEmptyTextNode) {
+      Transforms.insertNodes(editor, { text: "" });
+    }
+    const nodeEntry = getLastNodeEntry(editor);
+    if (nodeEntry) {
+      const [node, path] = nodeEntry;
+      if (node && Text.isText(node) && !node.text) {
+        Transforms.select(editor, path);
+      }
+    }
+  }
+}
+
 export function getLastNodeEntry(editor: Editor) {
   const nodeEntries = getAllNodesEntries(editor);
   return [...nodeEntries].pop();
