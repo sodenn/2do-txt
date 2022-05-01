@@ -131,11 +131,13 @@ export function getAllNodesEntries(editor: Editor) {
   ).filter((node, index) => !(index === 0 && isParagraphElement(node[0])));
 }
 
-export function focusEditor(editor: Editor) {
+export function focusEditor(editor: Editor, addEmptyTextNode = false) {
   ReactEditor.focus(editor);
   const { selection } = editor;
   if (!selection || !Range.isCollapsed(selection)) {
-    Transforms.insertNodes(editor, { text: "" });
+    if (addEmptyTextNode) {
+      Transforms.insertNodes(editor, { text: "" });
+    }
     const nodeEntry = getLastNodeEntry(editor);
     if (nodeEntry) {
       const [node, path] = nodeEntry;

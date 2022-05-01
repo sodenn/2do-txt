@@ -92,7 +92,7 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
 
   const openSuggestions = useCallback(
     (trigger: string) => {
-      focusEditor(editor);
+      focusEditor(editor, true);
       const action = getInsertAction();
       if (action) {
         if (action.action === "insert-space" && action.direction === "before") {
@@ -151,7 +151,7 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
         removeMention(trigger);
       }
 
-      focusEditor(editor);
+      focusEditor(editor, true);
 
       const action = getInsertAction();
 
