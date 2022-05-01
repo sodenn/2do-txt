@@ -1,5 +1,5 @@
 import { Box, Button, Grid, Stack, useTheme } from "@mui/material";
-import { isValid } from "date-fns";
+import { isSameDay, isValid } from "date-fns";
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskList } from "../data/TaskContext";
@@ -110,12 +110,17 @@ const TaskForm = (props: TaskFormProps) => {
   useEffect(() => {
     // set value in due date picker depending on text changes
     const match = formData.body.match(createDueDateRegex());
-    if (formData.dueDate && !match) {
+    if (!match) {
       onChange({ ...formData, dueDate: undefined });
-    } else if (!formData.dueDate && match && match.length > 0) {
-      const dateString = match[match.length - 1].trim().substr("due:".length);
+    } else if (match && match.length > 0) {
+      const dateString = match[match.length - 1]
+        .trim()
+        .substring("due:".length);
       const dueDate = parseDate(dateString);
-      if (dueDate) {
+      if (
+        dueDate &&
+        (!formData.dueDate || !isSameDay(formData.dueDate, dueDate))
+      ) {
         onChange({
           ...formData,
           dueDate,
@@ -123,7 +128,7 @@ const TaskForm = (props: TaskFormProps) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.body, formData.dueDate]);
+  }, [formData.body]);
 
   useEffect(() => {
     addKeyboardDidShowListener((info) => {

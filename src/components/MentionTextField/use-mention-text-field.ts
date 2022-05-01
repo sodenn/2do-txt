@@ -9,7 +9,7 @@ import {
   MentionTextFieldHookOptions,
   MentionTextFieldState,
 } from "./mention-types";
-import { escapeRegExp, isMentionElement } from "./mention-utils";
+import { escapeRegExp, focusEditor, isMentionElement } from "./mention-utils";
 
 function withMentions(editor: Editor) {
   const { isInline, isVoid } = editor;
@@ -92,7 +92,7 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
 
   const openSuggestions = useCallback(
     (trigger: string) => {
-      ReactEditor.focus(editor);
+      focusEditor(editor);
       const action = getInsertAction();
       if (action) {
         if (action.action === "insert-space" && action.direction === "before") {
@@ -151,31 +151,35 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
         removeMention(trigger);
       }
 
+      focusEditor(editor);
+
       const action = getInsertAction();
 
-      if (action) {
-        if (action.action === "insert-space" && action.direction === "before") {
-          Editor.insertText(editor, " ");
-          Transforms.move(editor);
-        }
+      if (!action) {
+        return;
+      }
 
-        const style = mentions.find((m) => m.trigger === trigger)?.style;
-
-        const mentionElement: MentionElement = {
-          type: "mention",
-          trigger,
-          style,
-          value,
-          children: [{ text: "" }],
-        };
-
-        Transforms.insertNodes(editor, mentionElement);
+      if (action.action === "insert-space" && action.direction === "before") {
+        Editor.insertText(editor, " ");
         Transforms.move(editor);
+      }
 
-        if (action.action === "insert-space" && action.direction === "after") {
-          Editor.insertText(editor, " ");
-          Transforms.move(editor);
-        }
+      const style = mentions.find((m) => m.trigger === trigger)?.style;
+
+      const mentionElement: MentionElement = {
+        type: "mention",
+        trigger,
+        style,
+        value,
+        children: [{ text: "" }],
+      };
+
+      Transforms.insertNodes(editor, mentionElement);
+      Transforms.move(editor);
+
+      if (action.action === "insert-space" && action.direction === "after") {
+        Editor.insertText(editor, " ");
+        Transforms.move(editor);
       }
     },
     [editor, getInsertAction, mentions, removeMention]

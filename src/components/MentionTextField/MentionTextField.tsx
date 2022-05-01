@@ -11,7 +11,7 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { Descendant, Range, Text, Transforms } from "slate";
+import { Descendant, Range, Transforms } from "slate";
 import { Editable, ReactEditor, RenderElementProps, Slate } from "slate-react";
 import { WithChildren } from "../../types/common";
 import Element from "./Element";
@@ -22,7 +22,7 @@ import {
 } from "./mention-types";
 import {
   addSpaceAfterMention,
-  getLastNodeEntry,
+  focusEditor,
   getNodesFromPlainText,
   getPlainText,
   getUserInputAtSelection,
@@ -291,14 +291,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
 
   useEffect(() => {
     if (autoFocus) {
-      ReactEditor.focus(editor);
-      const nodeEntry = getLastNodeEntry(editor);
-      if (nodeEntry) {
-        const [node, path] = nodeEntry;
-        if (node && Text.isText(node) && !node.text) {
-          Transforms.select(editor, path);
-        }
-      }
+      focusEditor(editor);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoFocus]);
