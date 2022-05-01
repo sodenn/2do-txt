@@ -45,18 +45,21 @@ const FileCreateDialog = () => {
   >("Dropbox");
 
   const createNewFile = useCallback(
-    async (filePath?: string) => {
-      if (filePath) {
-        let text = "";
-        if (createExampleFile) {
-          text = await fetch("/todo.txt").then((r) => r.text());
-        }
-        await saveTodoFile(filePath, text);
-        await addTodoFilePath(filePath);
-        setActiveTaskListPath(filePath);
-        if (createFirstTask) {
-          setTaskDialogOptions({ open: true });
-        }
+    async (filePath: string) => {
+      if (!filePath) {
+        return;
+      }
+
+      let text = "";
+      if (createExampleFile) {
+        text = await fetch("/todo.txt").then((r) => r.text());
+      }
+
+      await saveTodoFile(filePath, text);
+      await addTodoFilePath(filePath);
+      setActiveTaskListPath(filePath);
+      if (createFirstTask) {
+        setTaskDialogOptions({ open: true });
       }
     },
     [
@@ -70,7 +73,7 @@ const FileCreateDialog = () => {
   );
 
   const createTodoFileAndSync = async () => {
-    setFileCreateDialog({ open: false });
+    handleClose();
     await createNewFile(fileName);
     if (selectedCloudStorage && connectedCloudStorages[selectedCloudStorage]) {
       const result = await uploadFileAndResolveConflict({
@@ -131,20 +134,32 @@ const FileCreateDialog = () => {
     );
   };
 
-  const handleCancel = () => {
-    setFileCreateDialog({ open: false });
-  };
+  const handleClose = useCallback(
+    () => setFileCreateDialog((current) => ({ ...current, open: false })),
+    [setFileCreateDialog]
+  );
+
+  const handleExited = () => setFileCreateDialog({ open: false });
 
   useEffect(() => {
     if (platform === "electron" && open) {
       getUniqueFilePath(defaultTodoFilePath).then(({ fileName }) => {
         window.electron.saveFile(fileName).then((filePath) => {
-          setFileCreateDialog({ open: false });
-          createNewFile(filePath);
+          handleClose();
+          if (filePath) {
+            createNewFile(filePath).catch((e) => console.debug(e));
+          }
         });
       });
     }
-  }, [getUniqueFilePath, createNewFile, open, platform, setFileCreateDialog]);
+  }, [
+    getUniqueFilePath,
+    createNewFile,
+    open,
+    platform,
+    setFileCreateDialog,
+    handleClose,
+  ]);
 
   useEffect(() => {
     if (platform !== "electron" && open) {
@@ -159,7 +174,12 @@ const FileCreateDialog = () => {
   }
 
   return (
-    <Dialog aria-label="File dialog" open={open} onClose={handleCancel}>
+    <Dialog
+      aria-label="File dialog"
+      open={open}
+      onClose={handleClose}
+      TransitionProps={{ onExited: handleExited }}
+    >
       <DialogTitle>
         {createExampleFile ? t("Create example file") : t("Create todo.txt")}
       </DialogTitle>
@@ -194,7 +214,7 @@ const FileCreateDialog = () => {
           ))}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel}>{t("Cancel")}</Button>
+        <Button onClick={handleClose}>{t("Cancel")}</Button>
         <Button
           aria-label="Create file"
           disabled={!fileName}
