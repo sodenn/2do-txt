@@ -67,7 +67,7 @@ const TaskForm = (props: TaskFormProps) => {
     !(showCreationDate && showCompletionDate)
       ? 4
       : 6;
-  const { state, openSuggestions, removeMention, insertMention } =
+  const { state, openSuggestions, removeMentions, insertMention } =
     useMentionTextField({
       singleLine: true,
       mentions: [
@@ -100,10 +100,10 @@ const TaskForm = (props: TaskFormProps) => {
       insertMention({
         value: formatDate(value),
         trigger: "due:",
-        unique: true,
+        replace: true,
       });
     } else {
-      removeMention("due:");
+      removeMentions("due:");
     }
   };
 

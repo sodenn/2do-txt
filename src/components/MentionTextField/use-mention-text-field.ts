@@ -1,13 +1,22 @@
-import { useCallback, useMemo } from "react";
-import { createEditor, Editor, Element, Range, Transforms } from "slate";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  BaseRange,
+  createEditor,
+  Editor,
+  Element,
+  Range,
+  Text,
+  Transforms,
+} from "slate";
 import { withHistory } from "slate-history";
-import { ReactEditor, withReact } from "slate-react";
+import { withReact } from "slate-react";
 import {
   InsertAction,
   InsertMentionHookOptions,
   MentionElement,
   MentionTextFieldHookOptions,
   MentionTextFieldState,
+  RemoveOrReplaceMentionsOptions,
 } from "./mention-types";
 import { escapeRegExp, focusEditor, isMentionElement } from "./mention-utils";
 
@@ -33,10 +42,11 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
     []
   );
 
+  const [selection, setSelection] = useState<BaseRange | undefined>();
+
   const state: MentionTextFieldState = { editor, mentions, singleLine };
 
   const getInsertAction = useCallback((): InsertAction | undefined => {
-    const { selection } = editor;
     if (selection && Range.isCollapsed(selection)) {
       const [start] = Range.edges(selection);
       const prev = Editor.previous(editor);
@@ -88,11 +98,11 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
         return { action: "insert-node" };
       }
     }
-  }, [editor, mentions]);
+  }, [editor, mentions, selection]);
 
   const openSuggestions = useCallback(
     (trigger: string) => {
-      focusEditor(editor, true);
+      focusEditor(editor);
       const action = getInsertAction();
       if (action) {
         if (action.action === "insert-space" && action.direction === "before") {
@@ -119,42 +129,91 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
     [editor, getInsertAction]
   );
 
-  const removeMention = useCallback(
+  const findMentionEntries = useCallback(
     (trigger: string, value?: string) => {
-      const mentionElements = Array.from(
+      return Array.from(
         Editor.nodes(editor, {
           at: [],
           match: (n) =>
             !Editor.isEditor(n) && Element.isElement(n) && isMentionElement(n),
         })
-      );
-      mentionElements.forEach((node) => {
-        const [element] = node;
-        if (
-          isMentionElement(element) &&
-          element.trigger === trigger &&
-          (!value || value === element.value)
-        ) {
-          const path = ReactEditor.findPath(editor, element);
-          Transforms.removeNodes(editor, { at: path });
-        }
+      ).filter((entry) => {
+        const [node] = entry;
+        return (
+          isMentionElement(node) &&
+          node.trigger === trigger &&
+          (!value || value === node.value)
+        );
       });
     },
     [editor]
   );
 
+  const removeOrReplaceMentions = useCallback(
+    (opt: RemoveOrReplaceMentionsOptions) => {
+      const { trigger, value, newValue } = opt;
+
+      const mentionEntries = findMentionEntries(trigger, value);
+
+      mentionEntries.forEach((entry) => {
+        const [, path] = entry;
+
+        // remove space at the end of the previous text node
+        const prev = Editor.previous(editor, { at: path });
+        if (!newValue && prev && Text.isText(prev[0])) {
+          const prevNode = prev[0];
+          const prevPath = prev[1];
+          Transforms.removeNodes(editor, { at: prevPath });
+          Transforms.insertNodes(
+            editor,
+            { text: prevNode.text.trim() },
+            { at: prevPath }
+          );
+        }
+
+        // replace or remove the mention
+        if (newValue) {
+          Transforms.setNodes(editor, { value: newValue }, { at: path });
+        } else {
+          Transforms.removeNodes(editor, { at: path });
+        }
+      });
+    },
+    [editor, findMentionEntries]
+  );
+
+  const removeMentions = useCallback(
+    (trigger: string, value?: string) => {
+      removeOrReplaceMentions({ trigger, value });
+    },
+    [removeOrReplaceMentions]
+  );
+
+  const replaceMentions = useCallback(
+    (trigger: string, value: string) => {
+      removeOrReplaceMentions({
+        trigger,
+        newValue: value,
+      });
+    },
+    [removeOrReplaceMentions]
+  );
+
   const insertMention = useCallback(
     (opt: InsertMentionHookOptions) => {
-      const { value, trigger, unique } = opt;
+      const { value, trigger, replace } = opt;
 
-      if (unique) {
-        removeMention(trigger);
+      if (replace && findMentionEntries(opt.trigger).length > 0) {
+        replaceMentions(opt.trigger, opt.value);
+        return;
       }
 
-      focusEditor(editor, true);
+      // restore selection if lost by popover or similar
+      if (!editor.selection && selection) {
+        Transforms.select(editor, selection);
+      }
 
       const action = getInsertAction();
-
       if (!action) {
         return;
       }
@@ -165,7 +224,6 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
       }
 
       const style = mentions.find((m) => m.trigger === trigger)?.style;
-
       const mentionElement: MentionElement = {
         type: "mention",
         trigger,
@@ -182,13 +240,28 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
         Transforms.move(editor);
       }
     },
-    [editor, getInsertAction, mentions, removeMention]
+    [
+      editor,
+      findMentionEntries,
+      getInsertAction,
+      mentions,
+      replaceMentions,
+      selection,
+    ]
   );
+
+  useEffect(() => {
+    // store the last non-null selection for possible restore
+    if (editor.selection) {
+      setSelection(editor.selection);
+    }
+  }, [editor.selection]);
 
   return {
     state,
     openSuggestions,
+    removeMentions,
+    replaceMentions,
     insertMention,
-    removeMention,
   };
 }

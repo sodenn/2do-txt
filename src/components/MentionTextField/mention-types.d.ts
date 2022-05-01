@@ -39,9 +39,15 @@ interface Mention {
   style?: CSSProperties;
 }
 
+interface RemoveOrReplaceMentionsOptions {
+  trigger: string;
+  value?: string;
+  newValue?: string;
+}
+
 interface InsertMentionHookOptions extends Omit<Mention, "suggestions"> {
   value: string;
-  unique: boolean;
+  replace: boolean;
 }
 
 interface InsertMentionOptions extends Omit<Mention, "suggestions"> {
@@ -98,6 +104,7 @@ export {
   Suggestion,
   CustomEditor,
   CustomText,
+  RemoveOrReplaceMentionsOptions,
   InsertMentionOptions,
   InsertMentionHookOptions,
   ParagraphElement,
