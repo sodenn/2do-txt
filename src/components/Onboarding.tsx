@@ -8,6 +8,7 @@ import logo from "../images/logo.png";
 import { usePlatform } from "../utils/platform";
 import CloudFileImportButtons from "./CloudFileImportButtons";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
+import CreateExampleFileButton from "./CreateExampleFileButton";
 
 const StyledBox = styled("div")`
   display: flex;
@@ -23,7 +24,7 @@ const StyledBox = styled("div")`
 const Onboarding = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
-  const { setFileCreateDialogOpen } = useFileCreateDialog();
+  const { setFileCreateDialog } = useFileCreateDialog();
   const { taskLists, openTodoFilePicker } = useTask();
 
   return (
@@ -44,12 +45,15 @@ const Onboarding = () => {
         </Typography>
         <Button
           aria-label="Create task"
-          onClick={() => setFileCreateDialogOpen(true)}
+          onClick={() =>
+            setFileCreateDialog({ open: true, createFirstTask: true })
+          }
           startIcon={<AddTaskIcon />}
           variant="contained"
         >
           {t("Create Task")}
         </Button>
+        <CreateExampleFileButton />
         <Button
           onClick={openTodoFilePicker}
           aria-label="Open todo.txt"

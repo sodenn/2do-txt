@@ -152,14 +152,17 @@ const SideSheet = () => {
         <Box sx={{ flex: "none", borderBottom: 1, borderColor: "divider" }}>
           <Toolbar sx={{ alignItems: "flex-end" }}>
             <SaveAreaHeader>
-              <Tabs value={tab} onChange={handleChange}>
-                <Tab
-                  sx={{ display: hideFilter ? "none" : "inline-flex" }}
-                  label={t("Filter")}
-                  value="filter"
-                />
-                <Tab label={t("Settings")} value="settings" />
-              </Tabs>
+              {!hideFilter && (
+                <Tabs value={tab} onChange={handleChange}>
+                  <Tab label={t("Filter")} value="filter" />
+                  <Tab label={t("Settings")} value="settings" />
+                </Tabs>
+              )}
+              {hideFilter && (
+                <Tabs value="settings">
+                  <Tab label={t("Settings")} value="settings" />
+                </Tabs>
+              )}
             </SaveAreaHeader>
           </Toolbar>
         </Box>

@@ -4,7 +4,7 @@ import { readFileSync } from "fs";
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:3000");
 
-  const content = readFileSync("resources/todo.txt");
+  const content = readFileSync("public/todo.txt");
 
   await page.setInputFiles('[data-testid="file-picker"]', {
     name: "todo1.txt",

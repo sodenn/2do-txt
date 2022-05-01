@@ -29,7 +29,7 @@ const FileActionButton = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
   const { openTodoFilePicker } = useTask();
-  const { setFileCreateDialogOpen } = useFileCreateDialog();
+  const { setFileCreateDialog } = useFileCreateDialog();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const {
     connectedCloudStorages,
@@ -46,7 +46,7 @@ const FileActionButton = () => {
       label: t("Create todo.txt"),
       icon: <AddOutlinedIcon fontSize="small" />,
       click: () => {
-        setFileCreateDialogOpen(true);
+        setFileCreateDialog({ open: true });
         setFileManagementDialogOpen(false);
       },
     },
