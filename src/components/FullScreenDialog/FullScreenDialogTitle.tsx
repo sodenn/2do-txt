@@ -3,6 +3,7 @@ import {
   AppBar,
   Box,
   Button,
+  Divider,
   IconButton,
   styled,
   Toolbar,
@@ -11,6 +12,7 @@ import {
 import React, { PropsWithChildren, ReactNode } from "react";
 
 interface FullScreenDialogTitleProps {
+  divider?: boolean;
   onClose: () => void;
   accept: {
     text?: ReactNode;
@@ -29,7 +31,7 @@ export const StyledAppBar = styled(AppBar)`
 const FullScreenDialogTitle = (
   props: PropsWithChildren<FullScreenDialogTitleProps>
 ) => {
-  const { onClose, accept, children } = props;
+  const { divider, onClose, accept, children } = props;
   return (
     <Box style={{ flex: "none" }}>
       <StyledAppBar position="static" color="transparent" elevation={0}>
@@ -59,6 +61,7 @@ const FullScreenDialogTitle = (
           )}
         </Toolbar>
       </StyledAppBar>
+      {divider && <Divider />}
     </Box>
   );
 };
