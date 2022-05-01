@@ -38,6 +38,22 @@ test.describe("New file", () => {
   });
 });
 
+test.describe("Example file", () => {
+  test("should allow me to create an example file", async ({ page }) => {
+    await page.locator('[aria-label="Create example file"]').click();
+
+    await expect(page.locator('[aria-label="File name"]')).toHaveValue(
+      "todo.txt"
+    );
+
+    await page.locator('[aria-label="Create file"]').click();
+
+    await expect(page).toHaveURL("http://localhost:3000/?active=todo.txt");
+
+    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
+  });
+});
+
 test.describe("File import", () => {
   // webkit: Selecting multiple files does not work in the test
   // eslint-disable-next-line jest/valid-title
