@@ -43,7 +43,7 @@ const CloudFileDialog = () => {
     cloudFileDialogOptions: { open, cloudStorage },
     setCloudFileDialogOptions,
   } = useCloudStorage();
-  const { setFileCreateDialogOpen } = useFileCreateDialog();
+  const { setFileCreateDialog } = useFileCreateDialog();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListCloudItemResult | undefined>();
@@ -128,7 +128,7 @@ const CloudFileDialog = () => {
 
   const handleCreateFile = () => {
     handleClose();
-    setFileCreateDialogOpen(true);
+    setFileCreateDialog({ open: true });
   };
 
   const handleLoadItems = useCallback(

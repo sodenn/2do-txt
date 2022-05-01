@@ -44,7 +44,7 @@ test.describe("File import", () => {
   test.skip(({ browserName }) => browserName === "webkit");
 
   test("should allow me to import files", async ({ page }) => {
-    const content = readFileSync("resources/todo.txt");
+    const content = readFileSync("public/todo.txt");
 
     await expect(page.locator("text=Import todo.txt")).toBeVisible();
 
@@ -78,7 +78,7 @@ test.describe("File import", () => {
   test("should allow me to import files via drag and drop", async ({
     page,
   }) => {
-    const content = readFileSync("resources/todo.txt");
+    const content = readFileSync("public/todo.txt");
 
     const dataTransfer = await page.evaluateHandle((text) => {
       const dt = new DataTransfer();

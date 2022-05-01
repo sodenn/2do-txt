@@ -1,12 +1,23 @@
 import { useState } from "react";
 import { createContext } from "../utils/Context";
 
+interface FileCreateDialogProps {
+  open: boolean;
+  createFirstTask?: boolean;
+  createExampleFile?: boolean;
+}
+
 const [FileCreateDialogProvider, useFileCreateDialog] = createContext(() => {
-  const [fileCreateDialogOpen, setFileCreateDialogOpen] = useState(false);
+  const [fileCreateDialog, setFileCreateDialog] =
+    useState<FileCreateDialogProps>({
+      open: false,
+      createFirstTask: false,
+      createExampleFile: false,
+    });
 
   return {
-    fileCreateDialogOpen,
-    setFileCreateDialogOpen,
+    fileCreateDialog,
+    setFileCreateDialog,
   };
 });
 

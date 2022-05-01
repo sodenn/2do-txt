@@ -32,7 +32,7 @@ const FileMenu = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
-  const { setFileCreateDialogOpen } = useFileCreateDialog();
+  const { setFileCreateDialog } = useFileCreateDialog();
   const { taskLists, activeTaskList, openTodoFilePicker } = useTask();
   const {
     setCloudFileDialogOptions,
@@ -62,7 +62,7 @@ const FileMenu = () => {
   };
 
   const handleCreateFile = () => {
-    setFileCreateDialogOpen(true);
+    setFileCreateDialog({ open: true });
     handleClose();
   };
 
