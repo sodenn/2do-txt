@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/sodenn/2do-txt/compare/v1.11.0...v1.12.0) (2022-05-01)
+
+
+### Features
+
+* **Onboarding:** create a sample todo.txt file ([#410](https://github.com/sodenn/2do-txt/issues/410)) ([2b05a94](https://github.com/sodenn/2do-txt/commit/2b05a94773b44580ea1dc99ed566a697c89da1ab))
+
 # [1.11.0](https://github.com/sodenn/2do-txt/compare/v1.10.0...v1.11.0) (2022-04-30)
 
 
