@@ -7,6 +7,7 @@
       "ES2020.String",
       "esnext"
     ],
+    "types": ["vite/client"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

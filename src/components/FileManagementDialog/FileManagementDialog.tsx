@@ -52,8 +52,8 @@ const FileManagementDialog = () => {
         .filter((f) => taskLists.every((t) => t.filePath !== f))
         .filter(
           (filePath) =>
-            filePath !== process.env.REACT_APP_ARCHIVE_FILE_NAME &&
-            !filePath.endsWith(`_${process.env.REACT_APP_ARCHIVE_FILE_NAME}`)
+            filePath !== process.env.VITE_ARCHIVE_FILE_NAME &&
+            !filePath.endsWith(`_${process.env.VITE_ARCHIVE_FILE_NAME}`)
         );
       setClosedFiles(closedFiles);
       return closedFiles;

@@ -2,10 +2,9 @@
 declare namespace NodeJS {
   interface ProcessEnv {
     NODE_ENV: "development" | "production" | "test";
-    PUBLIC_URL: string;
-    REACT_APP_DROPBOX_CLIENT_ID: string;
-    REACT_APP_WEB_CLOUD_STORAGE_ENABLE: "true" | "false";
-    REACT_APP_DEFAULT_FILE_NAME: string;
-    REACT_APP_ARCHIVE_FILE_NAME: string;
+    VITE_DROPBOX_CLIENT_ID: string;
+    VITE_WEB_CLOUD_STORAGE_ENABLE: "true" | "false";
+    VITE_DEFAULT_FILE_NAME: string;
+    VITE_ARCHIVE_FILE_NAME: string;
   }
 }
