@@ -69,7 +69,7 @@
     "eject": "react-scripts eject",
     "lint": "eslint ./src --max-warnings=0 --ext .ts,.tsx",
     "format": "prettier --check ./src",
-    "resources": "capacitor-resources -p ios",
+    "resources": "cordova-res ios --skip-config --copy",
     "cap:sync": "npx cap sync && yarn electron:sync",
     "ios:sync": "npx cap sync ios",
     "ios:start": "yarn build && yarn ios:sync && npx cap open ios",
@@ -79,12 +79,6 @@
     "semantic-release": "semantic-release"
   },
   "jest": {
-    "moduleNameMapper": {
-      "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js"
-    },
-    "transform": {
-      "node_modules/react-movable/.+\\.(j|t)sx?$": "babel-jest"
-    },
     "transformIgnorePatterns": [
       "node_modules/(?!react-movable/.*)"
     ]
