@@ -21,7 +21,7 @@ import { useNetwork } from "../NetworkContext";
 import DropboxContentHasher from "./DropboxContentHasher";
 
 const cloudStorage = "Dropbox";
-const dropboxClientId = process.env.VITE_DROPBOX_CLIENT_ID;
+const dropboxClientId = import.meta.env.VITE_DROPBOX_CLIENT_ID;
 const redirectUri = "https://www.dropbox.com/1/oauth2/redirect_receiver";
 
 export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {

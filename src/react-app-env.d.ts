@@ -1,6 +1,5 @@
-/// <reference types="react-scripts" />
-declare namespace NodeJS {
-  interface ProcessEnv {
+declare namespace ImportMeta {
+  interface ImportMetaEnv {
     NODE_ENV: "development" | "production" | "test";
     VITE_DROPBOX_CLIENT_ID: string;
     VITE_WEB_CLOUD_STORAGE_ENABLE: "true" | "false";

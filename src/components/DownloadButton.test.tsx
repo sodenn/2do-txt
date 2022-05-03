@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import FileSaver from "file-saver";
+import { describe, expect, it, vi } from "vitest";
 import {
   EmptyTestContext,
   todoTxt,
@@ -9,13 +10,12 @@ import {
 } from "../utils/testing";
 import DownloadButton from "./DownloadButton";
 
-jest.mock("file-saver", () => ({ saveAs: jest.fn() }));
+vi.mock("file-saver", () => ({ saveAs: vi.fn() }));
 
 // Mock Blob as well to compare content
-// @ts-ignore
-global.Blob = function (content, options) {
+vi.stubGlobal("Blob", function (content: any, options: any) {
   return { content, options };
-};
+});
 
 describe("DownloadButton", () => {
   it("should download a todo.txt file", async () => {
@@ -39,7 +39,7 @@ describe("DownloadButton", () => {
     await waitFor(() => {
       expect(FileSaver.saveAs).toHaveBeenCalledWith(
         { content: [todoTxt], options: { type: "text/plain;charset=utf-8" } },
-        process.env.VITE_DEFAULT_FILE_NAME
+        import.meta.env.VITE_DEFAULT_FILE_NAME
       );
     });
   });

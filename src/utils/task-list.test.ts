@@ -142,8 +142,8 @@ x 2. task +ProjB
     const taskLists: TaskList[] = [
       {
         ...parseResult,
-        filePath: process.env.VITE_DEFAULT_FILE_NAME,
-        fileName: process.env.VITE_DEFAULT_FILE_NAME,
+        filePath: import.meta.env.VITE_DEFAULT_FILE_NAME,
+        fileName: import.meta.env.VITE_DEFAULT_FILE_NAME,
       },
     ];
 

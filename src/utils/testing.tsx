@@ -2,11 +2,11 @@ import { Capacitor } from "@capacitor/core";
 import { Filesystem, ReadFileResult } from "@capacitor/filesystem";
 import { ReadFileOptions } from "@capacitor/filesystem/dist/esm/definitions";
 import { GetOptions, GetResult, Storage } from "@capacitor/storage";
-import { createEvent, fireEvent } from "@testing-library/react";
 import i18n from "i18next";
 import { PropsWithChildren } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
+import { vi } from "vitest";
 import { AppRouters } from "../components/AppRouter";
 import { useLoading } from "../data/LoadingContext";
 import ProviderBundle from "../data/ProviderBundle";
@@ -14,25 +14,24 @@ import { WithChildren } from "../types/common";
 import { SecureStorageKeys } from "./secure-storage";
 import { StorageKeys } from "./storage";
 
-jest.setTimeout(15000);
-
-jest.mock("../utils/platform", () => ({
-  ...jest.requireActual("../utils/platform"),
-  useTouchScreen: jest.fn(),
+vi.mock("../utils/platform", () => ({
+  ...vi.importActual("../utils/platform"),
+  useTouchScreen: vi.fn(),
 }));
 
-jest.mock("slate-react", () => {
-  const { ReactEditor, ...rest } = jest.requireActual("slate-react");
-  const toDOMRange = ReactEditor.toDOMRange;
-  ReactEditor.toDOMRange = (editor: any, target: any) => {
-    const domRange = toDOMRange(editor, target);
-    domRange.getBoundingClientRect = jest.fn();
-  };
-  return {
-    ...rest,
-    ReactEditor,
-  };
-});
+// vi.mock("slate-react", () => {
+//   // @ts-ignore
+//   const { ReactEditor, ...rest } = vi.importActual("slate-react");
+//   const toDOMRange = ReactEditor.toDOMRange;
+//   ReactEditor.toDOMRange = (editor: any, target: any) => {
+//     const domRange = toDOMRange(editor, target);
+//     domRange.getBoundingClientRect = vi.fn();
+//   };
+//   return {
+//     ...rest,
+//     ReactEditor,
+//   };
+// });
 
 export interface FilesystemItem {
   path: string;
@@ -63,11 +62,11 @@ i18n.use(initReactI18next).init({
   resources: { en: { translations: {} } },
 });
 
-window.scrollTo = jest.fn();
-window.HTMLElement.prototype.scrollIntoView = jest.fn();
+vi.stubGlobal("scrollTo", vi.fn());
+//window.HTMLElement.prototype.scrollIntoView = vi.fn();
 
 // @ts-ignore
-global.Keychain = {
+vi.stubGlobal("Keychain", {
   get: (success: (key: string) => string, error: () => any, key: string) => {
     const value = sessionStorage.getItem("SecureStorage." + key);
     success(value!);
@@ -85,12 +84,12 @@ global.Keychain = {
     sessionStorage.removeItem("SecureStorage." + key);
     success();
   },
-};
+});
 
 const mocks = {
   Filesystem: {
     readFile: (textOrItems: string | FilesystemItem[]) => {
-      Filesystem.readFile = jest
+      Filesystem.readFile = vi
         .fn()
         .mockImplementation(
           async (opt: ReadFileOptions): Promise<ReadFileResult> => {
@@ -113,7 +112,7 @@ const mocks = {
   },
   Storage: {
     get: (storage: StorageItem[]) => {
-      Storage.get = jest
+      Storage.get = vi
         .fn()
         .mockImplementation(async (option: GetOptions): Promise<GetResult> => {
           const item = storage.find((i) => i.key === option.key);
@@ -130,19 +129,9 @@ const mocks = {
   },
   Platform: {
     getPlatform: (platform: string) => {
-      Capacitor.getPlatform = jest.fn().mockImplementation(() => platform);
+      Capacitor.getPlatform = vi.fn().mockImplementation(() => platform);
     },
   },
-};
-
-export const pasteText = (editor: HTMLElement, text: string) => {
-  const event = createEvent.paste(editor, {
-    clipboardData: {
-      types: ["text/plain"],
-      getData: () => text,
-    },
-  });
-  fireEvent(editor, event);
 };
 
 export const todoTxt = `First task @Test
@@ -150,13 +139,13 @@ X 2012-01-01 Second task
 (A) x Third task @Test`;
 
 export const todoTxtFilesystemItem: FilesystemItem = {
-  path: process.env.VITE_DEFAULT_FILE_NAME,
+  path: import.meta.env.VITE_DEFAULT_FILE_NAME,
   value: todoTxt,
 };
 
 export const todoTxtPaths: StorageItem = {
   key: "todo-txt-paths",
-  value: JSON.stringify([process.env.VITE_DEFAULT_FILE_NAME]),
+  value: JSON.stringify([import.meta.env.VITE_DEFAULT_FILE_NAME]),
 };
 
 export const TestContext = (props: TestContextProps) => {
