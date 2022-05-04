@@ -1838,10 +1838,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-1.1.0.tgz#0bd6a8bc185b7fd9a1219c3080ab26c2b54ea8b6"
   integrity sha512-8O3UuvL8HNUEJvZnmn8yUmvgB1evtXfcF0oxIo3YbSlylqywJwS3JTiuhKmsvSxCdpbTy8IaTsutVh3gZgWbKg==
 
-"@capacitor/ios@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-3.5.0.tgz#69087c1764921ae531385431521bd7b5784af117"
-  integrity sha512-rjFS9gdEmtxP01cr6pWoKRYObkllO4X53s9OvQ/A7K02u5Sz2Ru1iOz1f2xi93GTHPfEMP6/XRI963ZbwbCOSQ==
+"@capacitor/ios@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-3.5.1.tgz#976de8909487c0ca35b8f1616ce8837bb19ff8c6"
+  integrity sha512-295L9dHe/QaejUpGI8Pxwb1i2yVgick1ExIDK26xk+tk1km3B1HVjsIS8qkf2SOp7tuwP9+W5T5p7rLMNN4v5g==
 
 "@capacitor/keyboard@^1.2.2":
   version "1.2.2"
