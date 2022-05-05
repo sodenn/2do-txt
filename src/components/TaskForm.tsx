@@ -161,6 +161,7 @@ const TaskForm = (props: TaskFormProps) => {
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           autoFocus
           suggestionPopoverZIndex={theme.zIndex.modal + 1}
+          addMentionText={(value) => t("Add tag", { name: value })}
         />
       </Box>
       <Grid spacing={2} container>

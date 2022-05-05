@@ -114,5 +114,10 @@
   "Task archiving was turned on because a done.txt file was found": "Task archiving was turned on because a done.txt file was found.",
   "All completed tasks have been archived": "All completed tasks have been archived to {{doneFilePath}}.",
   "All completed tasks have been restored": "All completed tasks in {{doneFilePath}} have been restored.",
-  "Create example file": "Create example file"
+  "Create example file": "Create example file",
+  "Completed tasks": "Completed tasks",
+  "Keep priority": "Keep priority",
+  "Remove priority": "Remove priority",
+  "Archive priority": "Archive priority",
+  "Transform priority in a pri:X tag": "Transform priority in a pri:X tag"
 }

@@ -121,5 +121,10 @@
   "Task archiving was turned on because a done.txt file was found": "Aufgabenarchivierung wurde eingeschaltet da eine done.txt Datei gefunden wurde.",
   "All completed tasks have been archived": "Alle fertigen Aufgaben wurden nach {{doneFilePath}} archiviert.",
   "All completed tasks have been restored": "Alle fertigen Aufgaben in {{doneFilePath}} wurden wiederhergestellt.",
-  "Create example file": "Beispieldatei erzeugen"
+  "Create example file": "Beispieldatei erzeugen",
+  "Completed tasks": "Fertige Aufgaben",
+  "Keep priority": "Priorität beibehalten",
+  "Remove priority": "Priorität entfernen",
+  "Archive priority": "Priorität archivieren",
+  "Transform priority in a pri:X tag": "Priorität in ein pri:X Tag transformieren"
 }
