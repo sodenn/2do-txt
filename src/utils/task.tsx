@@ -179,13 +179,7 @@ export function useFormatBody() {
         return (
           <span
             key={index}
-            style={
-              key === "due"
-                ? dueDateStyle
-                : key === "pri"
-                ? priorityStyle
-                : tagStyle
-            }
+            style={getTaskTagStyle(key)}
             className={taskChipStyle}
           >
             {text}
@@ -292,4 +286,12 @@ function spliceWhere<T>(items: T[], predicate: (s: T) => boolean): T[] {
     }
   }
   return result;
+}
+
+export function getTaskTagStyle(key: string) {
+  return key === "due"
+    ? dueDateStyle
+    : key === "pri"
+    ? priorityStyle
+    : tagStyle;
 }
