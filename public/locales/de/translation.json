@@ -67,7 +67,7 @@
   "Without project": "Ohne Projekt",
   "Without tag": "Ohne Tag",
   "Tags": "Tags",
-  "Add tag": "{{name}} <strong>hinzufügen</strong>",
+  "Add tag": "\"{{name}}\" hinzufügen",
   "All": "Alle",
   "Delete task": "Aufgabe löschen",
   "Are you sure you want to delete this task?": "Diese Aufgabe wirklich löschen?",
