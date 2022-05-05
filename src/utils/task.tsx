@@ -9,6 +9,7 @@ import {
   contextStyle,
   disabledStyle,
   dueDateStyle,
+  priorityBoldStyle,
   priorityStyle,
   projectStyle,
   tagStyle,
@@ -178,7 +179,13 @@ export function useFormatBody() {
         return (
           <span
             key={index}
-            style={key === "due" ? dueDateStyle : tagStyle}
+            style={
+              key === "due"
+                ? dueDateStyle
+                : key === "pri"
+                ? priorityStyle
+                : tagStyle
+            }
             className={taskChipStyle}
           >
             {text}
@@ -191,7 +198,11 @@ export function useFormatBody() {
 
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <span key={task._id} className={taskChipStyle} style={priorityStyle}>
+        <span
+          key={task._id}
+          className={taskChipStyle}
+          style={priorityBoldStyle}
+        >
           {task.priority}
         </span>
       );
