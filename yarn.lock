@@ -1826,10 +1826,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/clipboard/-/clipboard-1.0.8.tgz#5799cad4518618d45501509348a5c20d3ed32647"
   integrity sha512-q8Fb5imJHQtYA+1sGqqigCrXmf0R1ZGXf/XMRtTznQqm0jhiayUusQN63Rv1YtKIPTJeeVJqy/i6rv72d4GH0Q==
 
-"@capacitor/core@^3.2.2", "@capacitor/core@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@capacitor/core/-/core-3.5.0.tgz#1b508e42b263816603e986557d6b9c5d64876164"
-  integrity sha512-+CFSG+CztpFIir9gGqNEtAYuf6OWryQ8dojXoeozAkoz3mKvyFfcEfvLVPo/pw/B4zHIlNnJLHne6vbjAFbDKQ==
+"@capacitor/core@^3.2.2", "@capacitor/core@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/core/-/core-3.5.1.tgz#49d48c0261d811a4d8c43d89d8a10bd519675bd2"
+  integrity sha512-UTROxB7q/hZBnhDLcCN7mVsAX3SxXNMhVuPbtddsDOUCm4hExLXN62gPD7rjgmumhfHMjeXmkw/EfRzSjttL1g==
   dependencies:
     tslib "^2.1.0"
 
@@ -14974,12 +14974,7 @@ tslib@^1.8.1, tslib@^1.9.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
-  integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
-
-tslib@^2.4.0:
+tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.1, tslib@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
