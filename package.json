@@ -15,7 +15,7 @@
   "dependencies": {
     "@capacitor-community/electron": "^4.1.0",
     "@capacitor/clipboard": "^1.0.8",
-    "@capacitor/core": "^3.5.0",
+    "@capacitor/core": "^3.5.1",
     "@capacitor/filesystem": "^1.1.0",
     "@capacitor/ios": "^3.5.1",
     "@capacitor/keyboard": "^1.2.2",
@@ -54,7 +54,7 @@
     "react-scripts": "4.0.3",
     "slate": "0.77.0",
     "slate-history": "^0.66.0",
-    "slate-react": "0.78.1",
+    "slate-react": "0.79.0",
     "typeface-roboto": "^1.1.13"
   },
   "resolutions": {
@@ -102,7 +102,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^3.5.0",
+    "@capacitor/cli": "^3.5.1",
     "@playwright/test": "^1.21.1",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
