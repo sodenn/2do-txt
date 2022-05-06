@@ -67,7 +67,7 @@
   "Without project": "Ohne Projekt",
   "Without tag": "Ohne Tag",
   "Tags": "Tags",
-  "Add tag": "{{name}} <strong>hinzufügen</strong>",
+  "Add tag": "\"{{name}}\" hinzufügen",
   "All": "Alle",
   "Delete task": "Aufgabe löschen",
   "Are you sure you want to delete this task?": "Diese Aufgabe wirklich löschen?",
@@ -107,7 +107,7 @@
   "Filter type": "Filtertyp",
   "AND": "UND",
   "OR": "ODER",
-  "Task Archiving": "Aufgabenarchivierung",
+  "Archiving": "Archivierung",
   "Completed tasks are archived in a second file called done.txt": "Erledigte Aufgaben werden in einer zweite Datei mit dem Namen <strong>done.txt</strong> archiviert.",
   "Task archived": "Aufgabe archiviert in {{fileName}}",
   "Archived tasks": "Archivierte Aufgaben",
@@ -119,7 +119,12 @@
   "Archive manually": "Manuell archivieren",
   "Archive now": "Jetzt archivieren",
   "Task archiving was turned on because a done.txt file was found": "Aufgabenarchivierung wurde eingeschaltet da eine done.txt Datei gefunden wurde.",
-  "All completed tasks have been archived": "Alle fertigen Aufgaben wurden nach {{doneFilePath}} archiviert.",
-  "All completed tasks have been restored": "Alle fertigen Aufgaben in {{doneFilePath}} wurden wiederhergestellt.",
-  "Create example file": "Beispieldatei erzeugen"
+  "All completed tasks have been archived": "Alle erledigten Aufgaben wurden nach {{doneFilePath}} archiviert.",
+  "All completed tasks have been restored": "Alle erledigten Aufgaben in {{doneFilePath}} wurden wiederhergestellt.",
+  "Create example file": "Beispieldatei erzeugen",
+  "Completed tasks": "Erledigte Aufgaben",
+  "Keep priority": "Priorität beibehalten",
+  "Remove priority": "Priorität entfernen",
+  "Archive priority": "Priorität archivieren",
+  "Transform priority in a pri:X tag": "Priorität in ein pri:X Tag transformieren"
 }

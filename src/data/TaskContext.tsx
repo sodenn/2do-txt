@@ -25,6 +25,7 @@ import {
   stringifyTask,
   Task,
   TaskFormData,
+  transformPriority,
 } from "../utils/task";
 import {
   getCommonTaskListAttributes,
@@ -64,6 +65,7 @@ const [TaskProvider, useTask] = createContext(() => {
     showNotifications,
     createCompletionDate,
     archiveMode,
+    priorityTransformation,
     removeTodoFilePath,
     getTodoFilePaths,
   } = useSettings();
@@ -317,15 +319,17 @@ const [TaskProvider, useTask] = createContext(() => {
       }
 
       const updatedTask = { ...task, completed: !task.completed };
-      if (createCompletionDate && updatedTask.completed) {
-        updatedTask.completionDate = todayDate();
+
+      if (updatedTask.completed) {
+        if (createCompletionDate) {
+          updatedTask.completionDate = todayDate();
+        }
+        cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
       } else {
         delete updatedTask.completionDate;
       }
 
-      if (updatedTask.completed) {
-        cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
-      }
+      transformPriority(updatedTask, priorityTransformation);
 
       const updatedList =
         archiveMode === "automatic"
@@ -349,6 +353,7 @@ const [TaskProvider, useTask] = createContext(() => {
       cancelNotifications,
       createCompletionDate,
       findTaskListByTaskId,
+      priorityTransformation,
       archiveMode,
       archiveTask,
       saveTodoFile,

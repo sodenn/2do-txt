@@ -15,6 +15,7 @@ import ArchiveModeSelect from "./ArchiveModeSelect";
 import ArchiveNowButton from "./ArchiveNowButton";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 import LanguageSelect from "./LanguageSelect";
+import PriorityTransformationSelect from "./PriorityTransformationSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
 
 const Settings = () => {
@@ -101,7 +102,7 @@ const Settings = () => {
           sx={{ mb: "0.35em" }}
         >
           <Typography component="div" variant="subtitle1">
-            {t("Task Archiving")}
+            {t("Archiving")}
           </Typography>
           <Tooltip
             enterTouchDelay={0}
@@ -117,6 +118,12 @@ const Settings = () => {
           <ArchiveModeSelect />
           {archiveMode === "manual" && <ArchiveNowButton />}
         </Stack>
+      </div>
+      <div>
+        <Typography component="div" variant="subtitle1" gutterBottom>
+          {t("Completed tasks")}
+        </Typography>
+        <PriorityTransformationSelect />
       </div>
       {cloudStorageEnabled && (
         <div>

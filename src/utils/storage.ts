@@ -9,6 +9,7 @@ export type StorageKeys =
   | "todo-txt-paths"
   | "create-creation-date"
   | "archive-mode"
+  | "priority-transformation"
   | "show-notifications"
   | "create-completion-date"
   | "received-notifications"

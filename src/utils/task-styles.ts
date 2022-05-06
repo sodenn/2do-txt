@@ -23,10 +23,16 @@ export const tagStyle: CSSProperties = {
   whiteSpace: "nowrap",
 };
 
-export const priorityStyle: CSSProperties = {
+export const priorityBoldStyle: CSSProperties = {
   color: "#720daf",
   backgroundColor: "#ecd2fb",
   fontWeight: "bold",
+};
+
+export const priorityStyle: CSSProperties = {
+  color: "#720daf",
+  backgroundColor: "#ecd2fb",
+  whiteSpace: "nowrap",
 };
 
 export const dateStyle: CSSProperties = {

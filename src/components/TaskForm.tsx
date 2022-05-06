@@ -7,13 +7,12 @@ import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
 import { useKeyboard } from "../utils/keyboard";
 import { usePlatform, useTouchScreen } from "../utils/platform";
-import { createDueDateRegex, TaskFormData } from "../utils/task";
 import {
-  contextStyle,
-  dueDateStyle,
-  projectStyle,
-  tagStyle,
-} from "../utils/task-styles";
+  createDueDateRegex,
+  getTaskTagStyle,
+  TaskFormData,
+} from "../utils/task";
+import { contextStyle, projectStyle } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import { MuiMentionTextField, useMentionTextField } from "./MentionTextField";
@@ -84,7 +83,7 @@ const TaskForm = (props: TaskFormProps) => {
         ...Object.entries(tags).map(([key, value]) => ({
           trigger: `${key}:`,
           suggestions: value,
-          style: key === "due" ? dueDateStyle : tagStyle,
+          style: getTaskTagStyle(key),
         })),
       ],
     });
@@ -161,6 +160,7 @@ const TaskForm = (props: TaskFormProps) => {
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           autoFocus
           suggestionPopoverZIndex={theme.zIndex.modal + 1}
+          addMentionText={(value) => t("Add tag", { name: value })}
         />
       </Box>
       <Grid spacing={2} container>
