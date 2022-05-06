@@ -100,7 +100,7 @@
   "Filter type": "Filter type",
   "AND": "AND",
   "OR": "OR",
-  "Task Archiving": "Task Archiving",
+  "Archiving": "Archiving",
   "Completed tasks are archived in a second file called done.txt": "Completed tasks are archived in a second file called <strong>done.txt</strong>.",
   "Task archived": "Task archived in {{fileName}}",
   "Archived tasks": "Archived tasks",

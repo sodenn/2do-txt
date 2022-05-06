@@ -102,7 +102,7 @@ const Settings = () => {
           sx={{ mb: "0.35em" }}
         >
           <Typography component="div" variant="subtitle1">
-            {t("Task Archiving")}
+            {t("Archiving")}
           </Typography>
           <Tooltip
             enterTouchDelay={0}
