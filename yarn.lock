@@ -1838,10 +1838,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/filesystem/-/filesystem-1.1.0.tgz#0bd6a8bc185b7fd9a1219c3080ab26c2b54ea8b6"
   integrity sha512-8O3UuvL8HNUEJvZnmn8yUmvgB1evtXfcF0oxIo3YbSlylqywJwS3JTiuhKmsvSxCdpbTy8IaTsutVh3gZgWbKg==
 
-"@capacitor/ios@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-3.5.0.tgz#69087c1764921ae531385431521bd7b5784af117"
-  integrity sha512-rjFS9gdEmtxP01cr6pWoKRYObkllO4X53s9OvQ/A7K02u5Sz2Ru1iOz1f2xi93GTHPfEMP6/XRI963ZbwbCOSQ==
+"@capacitor/ios@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-3.5.1.tgz#976de8909487c0ca35b8f1616ce8837bb19ff8c6"
+  integrity sha512-295L9dHe/QaejUpGI8Pxwb1i2yVgick1ExIDK26xk+tk1km3B1HVjsIS8qkf2SOp7tuwP9+W5T5p7rLMNN4v5g==
 
 "@capacitor/keyboard@^1.2.2":
   version "1.2.2"
@@ -12933,10 +12933,10 @@ react-error-overlay@6.0.9, react-error-overlay@^6.0.9:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.9.tgz#3c743010c9359608c375ecd6bc76f35d93995b0a"
   integrity sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==
 
-react-i18next@^11.16.7:
-  version "11.16.7"
-  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-11.16.7.tgz#8d0680b7f4c8e43f59996336b7183ad576a28df7"
-  integrity sha512-7yotILJLnKfvUfrl/nt9eK9vFpVFjZPLWAwBzWL6XppSZZEvlmlKk0GBGDCAPfLfs8oND7WAbry8wGzdoiW5Nw==
+react-i18next@^11.16.8:
+  version "11.16.8"
+  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-11.16.8.tgz#e71621c16f8f77152e85795a88ba6a371e46687d"
+  integrity sha512-uuhSuwY0iMOPV9HUsN1OC4cGCrATPvzZ1O8UfvLR+imz/XjPmfDgZM1e4dPS0Suc2+aCQqJ0FmWP891lUkB2Cg==
   dependencies:
     "@babel/runtime" "^7.14.5"
     html-escaper "^2.0.2"
