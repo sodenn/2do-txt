@@ -2,7 +2,6 @@ import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { PriorityTransformation } from "../data/SettingsContext";
-import { Dictionary } from "../types/common";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import {
   completedStyle,
@@ -26,7 +25,7 @@ export interface Task {
   completionDate?: Date;
   creationDate?: Date;
   priority?: Priority;
-  tags: Dictionary<string[]>;
+  tags: Record<string, string[]>;
   dueDate?: Date;
   body: string;
   raw: string;
@@ -118,7 +117,7 @@ export function parseTaskBody(
     .map((t) => t.substr(1))
     .filter((t) => t.length > 0);
 
-  const tags: Dictionary<string[]> = {};
+  const tags: Record<string, string[]> = {};
   spliceWhere(tokens, (s) => /[^:]+:[^/:][^:]*/.test(s)).forEach((s) => {
     const tuple = s.split(":");
     if (tags[tuple[0]]) {

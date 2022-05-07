@@ -4,7 +4,6 @@ import { ReadFileOptions } from "@capacitor/filesystem/dist/esm/definitions";
 import { GetOptions, GetResult, Storage } from "@capacitor/storage";
 import { createEvent, fireEvent } from "@testing-library/react";
 import i18n from "i18next";
-import { PropsWithChildren } from "react";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
 import { AppRouters } from "../components/AppRouter";
@@ -49,7 +48,7 @@ export interface SecureStorageItem {
   value: string;
 }
 
-export interface TestContextProps {
+export interface TestContextProps extends WithChildren {
   text?: string;
   filesystem?: FilesystemItem[];
   storage?: StorageItem[];
@@ -189,9 +188,7 @@ const Page = ({ children }: WithChildren) => {
   return <div data-testid={loading ? "loading" : "page"}>{children}</div>;
 };
 
-export const EmptyTestContext = (
-  props: PropsWithChildren<TestContextProps>
-) => {
+export const EmptyTestContext = (props: TestContextProps) => {
   const { text, filesystem, storage, secureStorage, platform, children } =
     props;
 

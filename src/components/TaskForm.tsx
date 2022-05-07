@@ -3,7 +3,6 @@ import { isSameDay, isValid } from "date-fns";
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskList } from "../data/TaskContext";
-import { Dictionary } from "../types/common";
 import { formatDate, parseDate } from "../utils/date";
 import { useKeyboard } from "../utils/keyboard";
 import { usePlatform, useTouchScreen } from "../utils/platform";
@@ -22,7 +21,7 @@ interface TaskFormProps {
   formData: TaskFormData;
   projects: string[];
   contexts: string[];
-  tags: Dictionary<string[]>;
+  tags: Record<string, string[]>;
   taskLists: TaskList[];
   completed: boolean;
   onChange: (value: TaskFormData) => void;

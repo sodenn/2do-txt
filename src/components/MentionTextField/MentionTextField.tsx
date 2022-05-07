@@ -4,7 +4,6 @@ import React, {
   FocusEvent,
   forwardRef,
   MouseEvent,
-  PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
@@ -40,9 +39,9 @@ const SuggestionList = forwardRef<HTMLUListElement, WithChildren>(
   ({ children }, ref) => <ul ref={ref}>{children}</ul>
 );
 
-const SuggestionListItem = (
-  props: PropsWithChildren<SuggestionListItemProps>
-) => <li {...props} />;
+const SuggestionListItem = (props: SuggestionListItemProps) => (
+  <li {...props} />
+);
 
 const MentionTextField = (props: MentionTextFieldProps) => {
   const {

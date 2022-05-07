@@ -1,8 +1,7 @@
 import { Badge, Chip, styled } from "@mui/material";
-import { Dictionary } from "../types/common";
 
 interface ChipListProps {
-  items?: Dictionary<number>;
+  items?: Record<string, number>;
   activeItems?: string[];
   multiple?: boolean;
   onClick?: (item: string) => void;

@@ -9,10 +9,11 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { forwardRef, PropsWithChildren, useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
+import { WithChildren } from "../types/common";
 import Filter from "./Filter";
 import Settings from "./Settings";
 
@@ -64,7 +65,7 @@ const Main = styled("main", {
   },
 }));
 
-export const MainContainer = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
+export const MainContainer = forwardRef<HTMLDivElement, WithChildren>(
   ({ children }, ref) => {
     const { sideSheetOpen } = useSideSheet();
     return (

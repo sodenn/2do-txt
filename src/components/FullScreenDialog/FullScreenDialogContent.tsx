@@ -1,5 +1,6 @@
 import { Box, styled } from "@mui/material";
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { WithChildren } from "../../types/common";
 
 const SafeArea = styled("div")`
   padding-right: env(safe-area-inset-right);
@@ -7,13 +8,11 @@ const SafeArea = styled("div")`
   padding-bottom: env(safe-area-inset-bottom);
 `;
 
-interface FullScreenDialogContentProps {
+interface FullScreenDialogContentProps extends WithChildren {
   onScroll?: (top: number) => void;
 }
 
-const FullScreenDialogContent = (
-  props: PropsWithChildren<FullScreenDialogContentProps>
-) => {
+const FullScreenDialogContent = (props: FullScreenDialogContentProps) => {
   const { children, onScroll } = props;
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
 
