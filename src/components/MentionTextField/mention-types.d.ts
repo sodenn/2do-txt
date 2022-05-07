@@ -2,6 +2,7 @@ import React, { CSSProperties, FunctionComponent, ReactNode } from "react";
 import { BaseEditor, BaseRange, Descendant, Editor } from "slate";
 import { HistoryEditor } from "slate-history";
 import { ReactEditor } from "slate-react";
+import { WithChildren } from "../../types/common";
 
 interface MentionTextFieldState {
   editor: Editor;
@@ -28,7 +29,7 @@ interface MentionTextFieldHookOptions {
   singleLine?: boolean;
 }
 
-interface SuggestionListItemProps {
+interface SuggestionListItemProps extends WithChildren {
   onClick: () => void;
   selected: boolean;
 }

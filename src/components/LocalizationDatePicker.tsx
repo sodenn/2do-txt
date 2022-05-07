@@ -7,14 +7,13 @@ import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Dictionary } from "../types/common";
 
-const localeMap: Dictionary<Locale> = {
+const localeMap: Record<string, Locale> = {
   en: enLocale,
   de: deLocale,
 };
 
-const maskMap: Dictionary<string> = {
+const maskMap: Record<string, string> = {
   en: "__/__/____",
   de: "__.__.____",
 };

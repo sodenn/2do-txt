@@ -9,9 +9,10 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React, { PropsWithChildren, ReactNode } from "react";
+import React, { ReactNode } from "react";
+import { WithChildren } from "../../types/common";
 
-interface FullScreenDialogTitleProps {
+interface FullScreenDialogTitleProps extends WithChildren {
   divider?: boolean;
   onClose: () => void;
   accept: {
@@ -28,9 +29,7 @@ export const StyledAppBar = styled(AppBar)`
   padding-right: env(safe-area-inset-right);
 `;
 
-const FullScreenDialogTitle = (
-  props: PropsWithChildren<FullScreenDialogTitleProps>
-) => {
+const FullScreenDialogTitle = (props: FullScreenDialogTitleProps) => {
   const { divider, onClose, accept, children } = props;
   return (
     <Box style={{ flex: "none" }}>
