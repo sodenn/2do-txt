@@ -112,7 +112,7 @@
     "@types/file-saver": "^2.0.5",
     "@types/jest": "^27.5.0",
     "@types/node": "^16.11.12",
-    "@types/react": "^18.0.8",
+    "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.3",
     "cordova-res": "^0.15.4",
     "import-sort-style-module": "^6.0.0",
