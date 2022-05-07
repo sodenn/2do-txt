@@ -54,7 +54,7 @@
     "react-scripts": "4.0.3",
     "slate": "0.77.0",
     "slate-history": "^0.66.0",
-    "slate-react": "0.78.1",
+    "slate-react": "0.79.0",
     "typeface-roboto": "^1.1.13"
   },
   "resolutions": {
