@@ -25,7 +25,7 @@
     "@capacitor/splash-screen": "^1.2.2",
     "@capacitor/status-bar": "^1.0.8",
     "@capacitor/storage": "^1.2.5",
-    "@date-io/date-fns": "^2.13.1",
+    "@date-io/date-fns": "^2.13.2",
     "@emotion/css": "^11.9.0",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
