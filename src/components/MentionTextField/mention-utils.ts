@@ -26,7 +26,7 @@ export function hasZeroWidthChars(text: string) {
 
 export function getPlainText(editor: Editor) {
   let plainText = "";
-  getAllNodesEntries(editor)
+  getAllNodeEntries(editor)
     .filter(([node]) => !Text.isText(node) || !!node.text)
     .forEach(([node]) => {
       if (isParagraphElement(node)) {
@@ -52,24 +52,6 @@ export function insertMention(opt: InsertMentionOptions) {
   };
   Transforms.insertNodes(editor, mention);
   Transforms.move(editor);
-}
-
-export function addSpaceAfterMention(editor: Editor) {
-  const nodes = getAllNodesEntries(editor).map(([node]) => node);
-  for (let index = 0; index < nodes.length; index++) {
-    const node = nodes[index];
-    const nodeBefore = index > 0 ? nodes[index - 1] : undefined;
-    const textRightBeforeMention =
-      isMentionElement(nodeBefore) &&
-      Text.isText(node) &&
-      /^\S$/.test(removeZeroWidthChars(node.text));
-    if (textRightBeforeMention) {
-      Transforms.move(editor, { reverse: true });
-      Editor.insertText(editor, " ");
-      Transforms.move(editor);
-      return true;
-    }
-  }
 }
 
 export function getUserInputAtSelection(editor: Editor, mentions: Mention[]) {
@@ -120,7 +102,7 @@ export function getUserInputAtSelection(editor: Editor, mentions: Mention[]) {
   }
 }
 
-export function getAllNodesEntries(editor: Editor) {
+function getAllNodeEntries(editor: Editor) {
   return Array.from(
     Editor.nodes<ParagraphElement | MentionElement | CustomText>(editor, {
       at: [],
@@ -146,7 +128,7 @@ export function focusEditor(editor: Editor) {
 }
 
 export function getLastNodeEntry(editor: Editor) {
-  const nodeEntries = getAllNodesEntries(editor);
+  const nodeEntries = getAllNodeEntries(editor);
   return [...nodeEntries].pop();
 }
 

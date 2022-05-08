@@ -1,4 +1,4 @@
-import React, { CSSProperties, FunctionComponent, ReactNode } from "react";
+import { CSSProperties, FunctionComponent, ReactNode } from "react";
 import { BaseEditor, BaseRange, Descendant, Editor } from "slate";
 import { HistoryEditor } from "slate-history";
 import { ReactEditor } from "slate-react";
