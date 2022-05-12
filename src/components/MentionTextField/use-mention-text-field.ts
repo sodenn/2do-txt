@@ -18,7 +18,12 @@ import {
   MentionTextFieldState,
   RemoveOrReplaceMentionsOptions,
 } from "./mention-types";
-import { escapeRegExp, focusEditor, isMentionElement } from "./mention-utils";
+import {
+  escapeRegExp,
+  focusEditor,
+  isMentionElement,
+  zeroWidthChars,
+} from "./mention-utils";
 
 function withMentions(editor: Editor) {
   const { isInline, isVoid, normalizeNode } = editor;
@@ -40,7 +45,7 @@ function withMentions(editor: Editor) {
       prevEntry &&
       isMentionElement(prevEntry[0]) &&
       Text.isText(node) &&
-      /^\S/.test(node.text);
+      new RegExp(`^\\S|^${zeroWidthChars}\\S`).test(node.text);
 
     if (textAfterMention) {
       Transforms.insertNodes(editor, { text: " " }, { at: path });

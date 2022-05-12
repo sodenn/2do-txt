@@ -10,7 +10,7 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { Descendant, Range, Transforms } from "slate";
+import { Descendant, Editor, Range, Text, Transforms } from "slate";
 import { Editable, ReactEditor, RenderElementProps, Slate } from "slate-react";
 import { WithChildren } from "../../types/common";
 import Element from "./Element";
@@ -21,9 +21,11 @@ import {
 } from "./mention-types";
 import {
   focusEditor,
+  getLastNodeEntry,
   getNodesFromPlainText,
   getPlainText,
   getUserInputAtSelection,
+  hasZeroWidthChars,
   insertMention,
   setSuggestionPopoverPosition,
 } from "./mention-utils";
@@ -180,6 +182,20 @@ const MentionTextField = (props: MentionTextFieldProps) => {
           if (target && mention && value) {
             insertMention({ editor, value, target, ...mention });
             closeSuggestions();
+          }
+          onKeyDown && onKeyDown(event);
+          break;
+        case "Backspace":
+          // (mobile) Prevent the user from having to press backspace twice
+          const entry = getLastNodeEntry(editor);
+          if (entry) {
+            const [node] = entry;
+            if (Text.isText(node)) {
+              const { text } = node;
+              if (hasZeroWidthChars(text) && text.length === 2) {
+                Editor.deleteBackward(editor, { unit: "character" });
+              }
+            }
           }
           onKeyDown && onKeyDown(event);
           break;
