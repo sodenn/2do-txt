@@ -1,7 +1,7 @@
 {
   "datePicker": {
     "okText": "OK",
-    "clearText": "",
+    "clearText": "Löschen",
     "cancelText": "Abbrechen",
     "todayText": "Heute",
     "toolbarTitle": "Datum wählen"

@@ -20,7 +20,6 @@ import {
   SuggestionListItemProps,
 } from "./mention-types";
 import {
-  addSpaceAfterMention,
   focusEditor,
   getNodesFromPlainText,
   getPlainText,
@@ -235,6 +234,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
 
   const handlePaste = useCallback(
     (event: ClipboardEvent<HTMLDivElement>) => {
+      event.preventDefault();
       const data = event.clipboardData.getData("text");
       const text = singleLine ? data.replace(/(\r\n|\n|\r)/gm, "") : data;
       const nodes = getNodesFromPlainText(text, mentions);
@@ -282,11 +282,6 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       setSuggestionPopoverPosition(editor, popoverElement, target);
     }
   }, [suggestions.length, editor, search, target, popoverElement]);
-
-  useEffect(() => {
-    addSpaceAfterMention(editor);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor.children]);
 
   useEffect(() => {
     if (autoFocus) {

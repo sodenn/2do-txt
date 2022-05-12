@@ -1,3 +1,15 @@
+# [1.13.0](https://github.com/sodenn/2do-txt/compare/v1.12.0...v1.13.0) (2022-05-08)
+
+
+### Bug Fixes
+
+* **TaskForm:** remove spaces when due date is removed ([#412](https://github.com/sodenn/2do-txt/issues/412)) ([e5f21fa](https://github.com/sodenn/2do-txt/commit/e5f21fae3132f13ea4d9b286d8e3c92b209d4700))
+
+
+### Features
+
+* **Task:** remove or archive priority when task is completed ([#426](https://github.com/sodenn/2do-txt/issues/426)) ([fc2a00d](https://github.com/sodenn/2do-txt/commit/fc2a00dfb7b505cdec00b14eafc0a320e09aee5d))
+
 # [1.12.0](https://github.com/sodenn/2do-txt/compare/v1.11.0...v1.12.0) (2022-05-01)
 
 
