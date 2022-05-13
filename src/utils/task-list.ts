@@ -3,7 +3,6 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
 import { TaskList, useTask } from "../data/TaskContext";
-import { Dictionary } from "../types/common";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
@@ -15,10 +14,10 @@ export interface TaskListParseResult extends TaskListAttributes {
 }
 
 export interface TaskListAttributes {
-  priorities: Dictionary<number>;
-  projects: Dictionary<number>;
-  contexts: Dictionary<number>;
-  tags: Dictionary<string[]>;
+  priorities: Record<string, number>;
+  projects: Record<string, number>;
+  contexts: Record<string, number>;
+  tags: Record<string, string[]>;
 }
 
 export interface TaskGroup {
@@ -276,7 +275,7 @@ function getTaskListAttributes(
     .filter((i) => !incompleteTasksOnly || !i.completed)
     .map((task) => task.priority)
     .filter((priority): priority is string => !!priority)
-    .reduce<Dictionary<number>>((prev, cur) => {
+    .reduce<Record<string, number>>((prev, cur) => {
       prev[cur] = (prev[cur] || 0) + 1;
       return prev;
     }, {});
@@ -284,7 +283,7 @@ function getTaskListAttributes(
   const projects = taskList
     .filter((i) => !incompleteTasksOnly || !i.completed)
     .flatMap((i) => i.projects)
-    .reduce<Dictionary<number>>((prev, cur) => {
+    .reduce<Record<string, number>>((prev, cur) => {
       prev[cur] = (prev[cur] || 0) + 1;
       return prev;
     }, {});
@@ -292,12 +291,12 @@ function getTaskListAttributes(
   const contexts = taskList
     .filter((i) => !incompleteTasksOnly || !i.completed)
     .flatMap((i) => i.contexts)
-    .reduce<Dictionary<number>>((prev, cur) => {
+    .reduce<Record<string, number>>((prev, cur) => {
       prev[cur] = (prev[cur] || 0) + 1;
       return prev;
     }, {});
 
-  let tags: Dictionary<string[]> = {};
+  let tags: Record<string, string[]> = {};
   taskList
     .filter((i) => !incompleteTasksOnly || !i.completed)
     .forEach((i) => {
@@ -468,10 +467,10 @@ function sortByDate(a?: string, b?: string) {
 }
 
 function reduceDictionaries<T extends number | string[]>(
-  dictionaries: Dictionary<T>[]
-): Dictionary<T> {
+  dictionaries: Record<string, T>[]
+): Record<string, T> {
   if (containsNumberDictionaries(dictionaries)) {
-    const arr: Dictionary<number>[] = dictionaries;
+    const arr: Record<string, number>[] = dictionaries;
     const result = arr.reduce((prev, curr) => {
       Object.entries(curr).forEach(([key, value]) => {
         const prevValue = prev[key];
@@ -487,7 +486,7 @@ function reduceDictionaries<T extends number | string[]>(
   }
 
   if (containsStringArrayDictionaries(dictionaries)) {
-    const arr: Dictionary<string[]>[] = dictionaries;
+    const arr: Record<string, string[]>[] = dictionaries;
     const result = arr.reduce((prev, curr) => {
       Object.entries(curr).forEach(([key, value]) => {
         const prevValue = prev[key];
@@ -506,16 +505,16 @@ function reduceDictionaries<T extends number | string[]>(
 }
 
 function containsNumberDictionaries(
-  dictionary: Dictionary<any>[]
-): dictionary is Dictionary<number>[] {
+  dictionary: Record<string, any>[]
+): dictionary is Record<string, number>[] {
   return dictionary.every((dictionary) =>
     Object.values(dictionary).every((v) => typeof v === "number")
   );
 }
 
 function containsStringArrayDictionaries(
-  dictionary: Dictionary<any>[]
-): dictionary is Dictionary<string[]>[] {
+  dictionary: Record<string, any>[]
+): dictionary is Record<string, string[]>[] {
   return dictionary.every((dictionary) =>
     Object.values(dictionary).every(
       (v) => Array.isArray(v) && v.every((s) => typeof s === "string")

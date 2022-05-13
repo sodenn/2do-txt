@@ -7,6 +7,8 @@ export type Language = "de" | "en";
 
 export type ArchiveMode = "no-archiving" | "automatic" | "manual";
 
+export type PriorityTransformation = "keep" | "remove" | "archive";
+
 const [SettingsProvider, useSettings] = createContext(() => {
   const { i18n } = useTranslation();
   const [settingsInitialized, setSettingsInitialized] = useState(false);
@@ -18,6 +20,8 @@ const [SettingsProvider, useSettings] = createContext(() => {
   const [createCompletionDate, setCreateCompletionDate] = useState(true);
   const [showNotifications, _setShowNotifications] = useState(false);
   const [archiveMode, _setArchiveMode] = useState<ArchiveMode>("no-archiving");
+  const [priorityTransformation, _setPriorityTransformation] =
+    useState<PriorityTransformation>("keep");
 
   const changeLanguage = useCallback(
     (language: Language) => {
@@ -58,6 +62,14 @@ const [SettingsProvider, useSettings] = createContext(() => {
     (value: ArchiveMode) => {
       setStorageItem("archive-mode", value);
       _setArchiveMode(value);
+    },
+    [setStorageItem]
+  );
+
+  const setCompletedTaskPriority = useCallback(
+    (value: PriorityTransformation) => {
+      setStorageItem("priority-transformation", value);
+      _setPriorityTransformation(value);
     },
     [setStorageItem]
   );
@@ -128,6 +140,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
       getStorageItem("create-creation-date"),
       getStorageItem("create-completion-date"),
       getStorageItem<ArchiveMode>("archive-mode"),
+      getStorageItem<PriorityTransformation>("priority-transformation"),
       getStorageItem<Language>("language"),
     ]).then(
       ([
@@ -135,6 +148,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
         createCreationDate,
         createCompletionDate,
         archiveMode,
+        completedTaskPriority,
         language,
       ]) => {
         _setShowNotifications(showNotifications === "true");
@@ -144,7 +158,8 @@ const [SettingsProvider, useSettings] = createContext(() => {
         setCreateCompletionDate(
           createCompletionDate === null ? true : createCompletionDate === "true"
         );
-        setArchiveMode(archiveMode || "no-archiving");
+        _setArchiveMode(archiveMode || "no-archiving");
+        _setPriorityTransformation(completedTaskPriority || "keep");
         changeLanguage(language || "en");
         setSettingsInitialized(true);
       }
@@ -158,6 +173,8 @@ const [SettingsProvider, useSettings] = createContext(() => {
     createCompletionDate,
     archiveMode,
     setArchiveMode,
+    priorityTransformation,
+    setCompletedTaskPriority,
     toggleCreateCompletionDate,
     toggleCreateCreationDate,
     showNotifications,

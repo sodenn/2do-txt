@@ -4,7 +4,6 @@ import React, {
   FocusEvent,
   forwardRef,
   MouseEvent,
-  PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
@@ -21,7 +20,6 @@ import {
   SuggestionListItemProps,
 } from "./mention-types";
 import {
-  addSpaceAfterMention,
   focusEditor,
   getNodesFromPlainText,
   getPlainText,
@@ -40,9 +38,9 @@ const SuggestionList = forwardRef<HTMLUListElement, WithChildren>(
   ({ children }, ref) => <ul ref={ref}>{children}</ul>
 );
 
-const SuggestionListItem = (
-  props: PropsWithChildren<SuggestionListItemProps>
-) => <li {...props} />;
+const SuggestionListItem = (props: SuggestionListItemProps) => (
+  <li {...props} />
+);
 
 const MentionTextField = (props: MentionTextFieldProps) => {
   const {
@@ -236,6 +234,7 @@ const MentionTextField = (props: MentionTextFieldProps) => {
 
   const handlePaste = useCallback(
     (event: ClipboardEvent<HTMLDivElement>) => {
+      event.preventDefault();
       const data = event.clipboardData.getData("text");
       const text = singleLine ? data.replace(/(\r\n|\n|\r)/gm, "") : data;
       const nodes = getNodesFromPlainText(text, mentions);
@@ -283,11 +282,6 @@ const MentionTextField = (props: MentionTextFieldProps) => {
       setSuggestionPopoverPosition(editor, popoverElement, target);
     }
   }, [suggestions.length, editor, search, target, popoverElement]);
-
-  useEffect(() => {
-    addSpaceAfterMention(editor);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor.children]);
 
   useEffect(() => {
     if (autoFocus) {

@@ -1,13 +1,14 @@
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
-import { Dictionary } from "../types/common";
+import { PriorityTransformation } from "../data/SettingsContext";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import {
   completedStyle,
   contextStyle,
   disabledStyle,
   dueDateStyle,
+  priorityBoldStyle,
   priorityStyle,
   projectStyle,
   tagStyle,
@@ -24,7 +25,7 @@ export interface Task {
   completionDate?: Date;
   creationDate?: Date;
   priority?: Priority;
-  tags: Dictionary<string[]>;
+  tags: Record<string, string[]>;
   dueDate?: Date;
   body: string;
   raw: string;
@@ -44,7 +45,7 @@ export interface TaskFormData {
 export const createDueDateRegex = () =>
   /due:\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\s?/g;
 
-export function parseTask(text: string, order: number) {
+export function parseTask(text: string, order = -1) {
   const line = text.trim();
   const tokens = line.split(/\s+/).map((s) => s.trim());
 
@@ -116,7 +117,7 @@ export function parseTaskBody(
     .map((t) => t.substr(1))
     .filter((t) => t.length > 0);
 
-  const tags: Dictionary<string[]> = {};
+  const tags: Record<string, string[]> = {};
   spliceWhere(tokens, (s) => /[^:]+:[^/:][^:]*/.test(s)).forEach((s) => {
     const tuple = s.split(":");
     if (tags[tuple[0]]) {
@@ -177,7 +178,7 @@ export function useFormatBody() {
         return (
           <span
             key={index}
-            style={key === "due" ? dueDateStyle : tagStyle}
+            style={getTaskTagStyle(key)}
             className={taskChipStyle}
           >
             {text}
@@ -190,7 +191,11 @@ export function useFormatBody() {
 
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <span key={task._id} className={taskChipStyle} style={priorityStyle}>
+        <span
+          key={task._id}
+          className={taskChipStyle}
+          style={priorityBoldStyle}
+        >
           {task.priority}
         </span>
       );
@@ -209,6 +214,47 @@ export function useFormatBody() {
       </span>
     );
   };
+}
+
+export function transformPriority(
+  task: Task,
+  transformation: PriorityTransformation
+) {
+  if (task.completed) {
+    if (transformation === "remove") {
+      delete task.priority;
+    } else if (transformation === "archive" && task.priority) {
+      task.body = removePriTag(task.body);
+      task.body += ` pri:${task.priority}`;
+      task.tags["pri"] = [task.priority];
+      delete task.priority;
+    }
+  } else if (transformation === "archive") {
+    const priRegex = getPriRegex();
+    const match = task.body.match(priRegex);
+    if (match && match.length > 0) {
+      task.priority = match[0].trim().slice(-1);
+      task.body = removePriTag(task.body);
+    }
+  }
+}
+
+function removePriTag(text: string) {
+  const priRegex = getPriRegex();
+  const match = text.match(priRegex);
+  if (match && match.length > 0) {
+    if (match[0].startsWith(" ") && match[0].endsWith(" ")) {
+      return text.replace(priRegex, " ").trim();
+    } else {
+      return text.replace(priRegex, "").trim();
+    }
+  } else {
+    return text;
+  }
+}
+
+function getPriRegex() {
+  return /(^|\s)pri:[A-Z]($|\s)/g;
 }
 
 export function stringifyTask(task: Task) {
@@ -239,4 +285,12 @@ function spliceWhere<T>(items: T[], predicate: (s: T) => boolean): T[] {
     }
   }
   return result;
+}
+
+export function getTaskTagStyle(key: string) {
+  return key === "due"
+    ? dueDateStyle
+    : key === "pri"
+    ? priorityStyle
+    : tagStyle;
 }

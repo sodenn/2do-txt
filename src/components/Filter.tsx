@@ -10,7 +10,6 @@ import {
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
-import { Dictionary } from "../types/common";
 import ChipList from "./ChipList";
 
 const Filter = () => {
@@ -107,10 +106,13 @@ const Filter = () => {
             {t("Tags")}
           </Typography>
           <ChipList
-            items={Object.keys(tags).reduce<Dictionary<number>>((acc, key) => {
-              acc[key] = tags[key].length;
-              return acc;
-            }, {})}
+            items={Object.keys(tags).reduce<Record<string, number>>(
+              (acc, key) => {
+                acc[key] = tags[key].length;
+                return acc;
+              },
+              {}
+            )}
             activeItems={activeTags}
             onClick={(item) =>
               setActiveTags((items) =>

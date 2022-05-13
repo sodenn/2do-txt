@@ -6,7 +6,7 @@ import {
   styled,
   useTheme,
 } from "@mui/material";
-import React, {
+import {
   FocusEvent,
   forwardRef,
   ReactNode,

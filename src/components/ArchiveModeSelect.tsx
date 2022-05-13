@@ -1,5 +1,4 @@
 import { MenuItem, Select } from "@mui/material";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { ArchiveMode, useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";

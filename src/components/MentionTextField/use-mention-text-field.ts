@@ -21,7 +21,7 @@ import {
 import { escapeRegExp, focusEditor, isMentionElement } from "./mention-utils";
 
 function withMentions(editor: Editor) {
-  const { isInline, isVoid } = editor;
+  const { isInline, isVoid, normalizeNode } = editor;
 
   editor.isInline = (element) => {
     return element.type === "mention" ? true : isInline(element);
@@ -29,6 +29,36 @@ function withMentions(editor: Editor) {
 
   editor.isVoid = (element) => {
     return element.type === "mention" ? true : isVoid(element);
+  };
+
+  editor.normalizeNode = (entry) => {
+    const [node, path] = entry;
+    const prevEntry = Editor.previous(editor, { at: path });
+    const nextEntry = Editor.next(editor, { at: path });
+
+    const textAfterMention =
+      prevEntry &&
+      isMentionElement(prevEntry[0]) &&
+      Text.isText(node) &&
+      /^\S/.test(node.text);
+
+    if (textAfterMention) {
+      Transforms.insertNodes(editor, { text: " " }, { at: path });
+      return true;
+    }
+
+    const mentionAfterText =
+      nextEntry &&
+      isMentionElement(nextEntry[0]) &&
+      Text.isText(node) &&
+      /\S$/.test(node.text);
+
+    if (mentionAfterText) {
+      Transforms.insertNodes(editor, { text: " " }, { at: nextEntry[1] });
+      return true;
+    }
+
+    normalizeNode(entry);
   };
 
   return editor;
