@@ -103,7 +103,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^3.5.1",
-    "@playwright/test": "^1.21.1",
+    "@playwright/test": "^1.22.0",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@testing-library/jest-dom": "^5.16.4",
