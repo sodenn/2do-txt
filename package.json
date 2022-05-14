@@ -39,7 +39,7 @@
     "date-fns": "^2.28.0",
     "dropbox": "^10.29.0",
     "file-saver": "^2.0.5",
-    "i18next": "^21.8.0",
+    "i18next": "^21.8.2",
     "i18next-browser-languagedetector": "^6.1.4",
     "i18next-http-backend": "^1.4.0",
     "jszip": "^3.9.1",
@@ -103,7 +103,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^3.5.1",
-    "@playwright/test": "^1.21.1",
+    "@playwright/test": "^1.22.0",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@testing-library/jest-dom": "^5.16.4",
