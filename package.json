@@ -51,7 +51,7 @@
     "react-i18next": "^11.16.9",
     "react-movable": "^3.0.4",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "5.0.1",
     "slate": "0.77.0",
     "slate-history": "^0.66.0",
     "slate-react": "0.79.0",
