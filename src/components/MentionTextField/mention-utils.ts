@@ -8,6 +8,8 @@ import {
   ParagraphElement,
 } from "./mention-types";
 
+export const zeroWidthChars = "[\u200B-\u200D\uFEFF]";
+
 export function isMentionElement(element: any): element is MentionElement {
   return element && element.type === "mention";
 }
@@ -17,11 +19,11 @@ function isParagraphElement(element: any): element is ParagraphElement {
 }
 
 function removeZeroWidthChars(text: string) {
-  return text.replace(/[\u200B-\u200D\uFEFF]/g, "");
+  return text.replace(new RegExp(zeroWidthChars, "g"), "");
 }
 
 export function hasZeroWidthChars(text: string) {
-  return /[\u200B-\u200D\uFEFF]/g.test(text);
+  return new RegExp(zeroWidthChars, "g").test(text);
 }
 
 export function getPlainText(editor: Editor) {
@@ -65,7 +67,7 @@ export function getUserInputAtSelection(editor: Editor, mentions: Mention[]) {
       .map((m) => m.trigger)
       .map(escapeRegExp)
       .join("|");
-    const pattern = `(^|\\s)(${escapedTriggers})(|\uFEFF|\\S+|\uFEFF\\S+)$`;
+    const pattern = `(^|\\s)(${escapedTriggers})(|${zeroWidthChars}|\\S+|${zeroWidthChars}\\S+)$`;
     const beforeMatch = textBefore.match(new RegExp(pattern));
     const beforeMatchExists =
       !!beforeMatch && beforeMatch.length > 2 && !!beforeMatch[0];
