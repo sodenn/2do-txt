@@ -2,7 +2,6 @@ import { Capacitor } from "@capacitor/core";
 import { Filesystem, ReadFileResult } from "@capacitor/filesystem";
 import { ReadFileOptions } from "@capacitor/filesystem/dist/esm/definitions";
 import { GetOptions, GetResult, Storage } from "@capacitor/storage";
-import { createEvent, fireEvent } from "@testing-library/react";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
@@ -12,8 +11,6 @@ import ProviderBundle from "../data/ProviderBundle";
 import { WithChildren } from "../types/common";
 import { SecureStorageKeys } from "./secure-storage";
 import { StorageKeys } from "./storage";
-
-jest.setTimeout(15000);
 
 jest.mock("../utils/platform", () => ({
   ...jest.requireActual("../utils/platform"),
@@ -132,16 +129,6 @@ const mocks = {
       Capacitor.getPlatform = jest.fn().mockImplementation(() => platform);
     },
   },
-};
-
-export const pasteText = (editor: HTMLElement, text: string) => {
-  const event = createEvent.paste(editor, {
-    clipboardData: {
-      types: ["text/plain"],
-      getData: () => text,
-    },
-  });
-  fireEvent(editor, event);
 };
 
 export const todoTxt = `First task @Test
