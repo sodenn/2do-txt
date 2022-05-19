@@ -51,7 +51,7 @@ const ChipList = (props: ChipListProps) => {
               variant={activeItems.includes(item) ? "filled" : "outlined"}
               label={item}
               color={color}
-              onClick={() => onClick && onClick(item)}
+              onClick={() => onClick?.(item)}
             />
           </Badge>
         </li>

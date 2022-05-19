@@ -1,8 +1,15 @@
+import {
+  addBusinessDays,
+  addDays,
+  addMonths,
+  addWeeks,
+  addYears,
+} from "date-fns";
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { PriorityTransformation } from "../data/SettingsContext";
-import { formatDate, formatLocaleDate, parseDate } from "./date";
+import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import {
   completedStyle,
   contextStyle,
@@ -214,6 +221,81 @@ export function useFormatBody() {
       </span>
     );
   };
+}
+
+export function createNextRecurringTask(
+  task: Task,
+  createCreationDate: boolean
+) {
+  const recMatch = task.body.match(/\brec:(\+?)([1-9]+)([dbwmy])/);
+
+  if (!recMatch || recMatch.length < 4) {
+    return;
+  }
+
+  const strict = recMatch[1] === "+";
+  const number = parseInt(recMatch[2]);
+  const unit = recMatch[3];
+
+  const dueDateRegex = createDueDateRegex();
+  const dueDateMatch = task.body.match(dueDateRegex);
+
+  const oldCreationDate = task.creationDate;
+
+  const oldCompletionDate = task.completionDate
+    ? task.completionDate
+    : todayDate();
+
+  const oldDueDateString = dueDateMatch
+    ? dueDateMatch[dueDateMatch.length - 1].trim().substring("due:".length)
+    : undefined;
+  const oldDueDate = oldDueDateString
+    ? parseDate(oldDueDateString) || todayDate()
+    : todayDate();
+
+  const newDueDate = addToDate(
+    strict ? oldDueDate : oldCompletionDate,
+    number,
+    unit
+  );
+
+  const newCreationDate =
+    strict && !oldCreationDate
+      ? oldCompletionDate
+      : strict && oldCreationDate
+      ? oldCreationDate
+      : oldCompletionDate;
+
+  const recurringTask = parseTask(stringifyTask(task));
+
+  if (createCreationDate) {
+    recurringTask.creationDate = newCreationDate;
+  } else {
+    delete recurringTask.creationDate;
+  }
+
+  const newDueDateString = formatDate(newDueDate);
+  recurringTask.body = dueDateMatch
+    ? recurringTask.body.replace(dueDateMatch[0], `due:${newDueDateString}`)
+    : `${recurringTask.body} due:${newDueDateString}`;
+
+  return parseTask(stringifyTask(recurringTask));
+}
+
+function addToDate(date: Date, amount: number, unit: string) {
+  if (unit === "d") {
+    return addDays(date, amount);
+  } else if (unit === "b") {
+    return addBusinessDays(date, amount);
+  } else if (unit === "w") {
+    return addWeeks(date, amount);
+  } else if (unit === "m") {
+    return addMonths(date, amount);
+  } else if (unit === "y") {
+    return addYears(date, amount);
+  } else {
+    throw new Error(`Unknown unit "${unit}"`);
+  }
 }
 
 export function transformPriority(

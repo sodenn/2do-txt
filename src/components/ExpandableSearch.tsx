@@ -42,16 +42,10 @@ const ExpandableSearch = forwardRef<HTMLInputElement, ExpandableSearchProps>(
 
     const handleExitedInput = () => {
       setShowButton(true);
-      if (onExpand) {
-        onExpand(false);
-      }
+      onExpand?.(false);
     };
 
-    const handleExitButton = () => {
-      if (onExpand) {
-        onExpand(true);
-      }
-    };
+    const handleExitButton = () => onExpand?.(true);
 
     const handleExitedButton = () => {
       setShowInput(true);
