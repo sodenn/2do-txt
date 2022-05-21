@@ -119,5 +119,13 @@
   "Keep priority": "Keep priority",
   "Remove priority": "Remove priority",
   "Archive priority": "Archive priority",
-  "Transform priority in a pri:X tag": "Transform priority in a pri:X tag"
+  "Transform priority in a pri:X tag": "Transform priority in a pri:X tag",
+  "Recurrence": "Recurrence",
+  "No recurrence": "No recurrence",
+  "Days": "Days",
+  "Business days": "Business days",
+  "Weeks": "Weeks",
+  "Months": "Months",
+  "Years": "Years",
+  "Strict recurrence": "Strict recurrence (repeat from due date)"
 }

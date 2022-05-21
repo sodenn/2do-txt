@@ -51,7 +51,7 @@ export interface TaskFormData {
 export const createDueDateRegex = () =>
   /\bdue:\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\s?/g;
 
-export const createDueDateValueRegex = () =>
+const createDueDateValueRegex = () =>
   /\b\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])(\s|$)/g;
 
 export const getDueDateValue = (text: string) => {
@@ -62,9 +62,9 @@ export const getDueDateValue = (text: string) => {
   }
 };
 
-const createRecRegex = () => /\brec:(\+?)([1-9]+)([dbwmy])(\s|$)/g;
+const createRecRegex = () => /\brec:(\+?)([1-9][0-9]*)([dbwmy])(\s|$)/g;
 
-const createRecValueRegex = () => /\b(\+?)([1-9]+)([dbwmy])(\s|$)/g;
+const createRecValueRegex = () => /\b(\+?)([1-9][0-9]*)([dbwmy])(\s|$)/g;
 
 const getRecMatch = (text?: string) => {
   if (!text) {
@@ -277,8 +277,6 @@ export function createNextRecurringTask(
   const dueDateRegex = createDueDateRegex();
   const dueDateMatch = task.body.match(dueDateRegex);
 
-  const oldCreationDate = task.creationDate;
-
   const oldCompletionDate = task.completionDate
     ? task.completionDate
     : todayDate();
@@ -296,17 +294,10 @@ export function createNextRecurringTask(
     unit
   );
 
-  const newCreationDate =
-    strict && !oldCreationDate
-      ? oldCompletionDate
-      : strict && oldCreationDate
-      ? oldCreationDate
-      : oldCompletionDate;
-
   const recurringTask = parseTask(stringifyTask(task));
 
   if (createCreationDate) {
-    recurringTask.creationDate = newCreationDate;
+    recurringTask.creationDate = oldCompletionDate;
   } else {
     delete recurringTask.creationDate;
   }

@@ -79,11 +79,11 @@ describe("recurring tasks", () => {
   });
 
   it("should create next recurring task in strict mode", async () => {
-    const task = parseTask("2022-05-01 This is a test rec:+1m due:2022-05-20");
+    const task = parseTask("2022-05-01 This is a test rec:+10m due:2022-05-20");
     const recurringTask = createNextRecurringTask(task, true);
     expect(recurringTask).toBeDefined();
     expect(recurringTask!.raw).toBe(
-      "2022-05-01 This is a test rec:+1m due:2022-06-20"
+      "2022-06-01 This is a test rec:+10m due:2023-03-20"
     );
   });
 
