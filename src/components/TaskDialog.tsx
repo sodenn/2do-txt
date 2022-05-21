@@ -24,7 +24,10 @@ const initialTaskFormData: TaskFormData = {
   completionDate: undefined,
 };
 
-const createFormData = (createCreationDate: boolean, activeTask?: Task) => {
+const createFormData = (
+  createCreationDate: boolean,
+  activeTask?: Task
+): TaskFormData => {
   if (activeTask) {
     return {
       _id: activeTask._id,
@@ -32,7 +35,6 @@ const createFormData = (createCreationDate: boolean, activeTask?: Task) => {
       priority: activeTask.priority,
       creationDate: activeTask.creationDate,
       completionDate: activeTask.completionDate,
-      dueDate: activeTask.dueDate,
     };
   } else {
     const creationDate = createCreationDate ? new Date() : undefined;

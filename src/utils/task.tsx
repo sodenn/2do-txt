@@ -43,14 +43,51 @@ export interface Task {
 export interface TaskFormData {
   body: string;
   priority?: string;
-  dueDate?: Date;
   creationDate?: Date;
   completionDate?: Date;
   _id?: string;
 }
 
 export const createDueDateRegex = () =>
-  /due:\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\s?/g;
+  /\bdue:\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\s?/g;
+
+export const createDueDateValueRegex = () =>
+  /\b\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])(\s|$)/g;
+
+export const getDueDateValue = (text: string) => {
+  const match = text.matchAll(createDueDateValueRegex());
+  const lastMatch = Array.from(match).pop();
+  if (lastMatch) {
+    return parseDate(lastMatch[0]);
+  }
+};
+
+const createRecRegex = () => /\brec:(\+?)([1-9]+)([dbwmy])(\s|$)/g;
+
+const createRecValueRegex = () => /\b(\+?)([1-9]+)([dbwmy])(\s|$)/g;
+
+const getRecMatch = (text?: string) => {
+  if (!text) {
+    return;
+  }
+  const match = text.matchAll(createRecRegex());
+  return Array.from(match).pop();
+};
+
+export const getRecValueMatch = (text?: string) => {
+  if (!text) {
+    return;
+  }
+  const match = text.matchAll(createRecValueRegex());
+  return Array.from(match).pop();
+};
+
+export const getRecValue = (text: string) => {
+  const match = getRecValueMatch(text);
+  if (match) {
+    return match[0];
+  }
+};
 
 export function parseTask(text: string, order = -1) {
   const line = text.trim();
@@ -227,7 +264,7 @@ export function createNextRecurringTask(
   task: Task,
   createCreationDate: boolean
 ) {
-  const recMatch = task.body.match(/\brec:(\+?)([1-9]+)([dbwmy])/);
+  const recMatch = getRecMatch(task.body);
 
   if (!recMatch || recMatch.length < 4) {
     return;

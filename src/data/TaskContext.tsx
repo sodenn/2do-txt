@@ -22,6 +22,7 @@ import { useStorage } from "../utils/storage";
 import {
   createDueDateRegex,
   createNextRecurringTask,
+  getDueDateValue,
   parseTaskBody,
   stringifyTask,
   Task,
@@ -229,7 +230,8 @@ const [TaskProvider, useTask] = createContext(() => {
   const addTask = useCallback(
     (data: TaskFormData, taskList: TaskList) => {
       const { items, lineEnding } = taskList;
-      const { priority, completionDate, creationDate, dueDate, ...rest } = data;
+      const dueDate = getDueDateValue(data.body);
+      const { priority, completionDate, creationDate, ...rest } = data;
       const { projects, contexts, tags } = parseTaskBody(rest.body);
 
       const newTask: Task = {

@@ -193,17 +193,19 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
       mentionEntries.forEach((entry) => {
         const [, path] = entry;
 
-        // remove space at the end of the previous text node
         const prev = Editor.previous(editor, { at: path });
-        if (!newValue && prev && Text.isText(prev[0])) {
-          const prevNode = prev[0];
-          const prevPath = prev[1];
-          Transforms.removeNodes(editor, { at: prevPath });
-          Transforms.insertNodes(
-            editor,
-            { text: prevNode.text.trim() },
-            { at: prevPath }
-          );
+
+        // remove space at the end of the previous text node
+        if (!newValue && prev) {
+          const [prevNode, prevPath] = prev;
+          if (Text.isText(prevNode) && prevNode.text.endsWith(" ")) {
+            Transforms.removeNodes(editor, { at: prevPath });
+            Transforms.insertNodes(
+              editor,
+              { text: prevNode.text.trim() },
+              { at: prevPath }
+            );
+          }
         }
 
         // replace or remove the mention
@@ -211,6 +213,18 @@ export function useMentionTextField(opt: MentionTextFieldHookOptions) {
           Transforms.setNodes(editor, { value: newValue }, { at: path });
         } else {
           Transforms.removeNodes(editor, { at: path });
+          if (prev) {
+            const [, prevPath] = prev;
+            Transforms.select(editor, {
+              anchor: Editor.start(editor, prevPath),
+              focus: Editor.end(editor, prevPath),
+            });
+          } else {
+            Transforms.select(editor, {
+              anchor: Editor.start(editor, []),
+              focus: Editor.end(editor, []),
+            });
+          }
         }
       });
     },

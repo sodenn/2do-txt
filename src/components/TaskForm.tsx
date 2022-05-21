@@ -1,13 +1,14 @@
 import { Box, Button, Grid, Stack, useTheme } from "@mui/material";
-import { isSameDay, isValid } from "date-fns";
+import { isValid } from "date-fns";
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskList } from "../data/TaskContext";
-import { formatDate, parseDate } from "../utils/date";
+import { formatDate } from "../utils/date";
 import { useKeyboard } from "../utils/keyboard";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import {
-  createDueDateRegex,
+  getDueDateValue,
+  getRecValue,
   getTaskTagStyle,
   TaskFormData,
 } from "../utils/task";
@@ -16,6 +17,7 @@ import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import { MuiMentionTextField, useMentionTextField } from "./MentionTextField";
 import PrioritySelect from "./PrioritySelect";
+import RecurrenceSelect from "./RecurrenceSelect";
 
 interface TaskFormProps {
   formData: TaskFormData;
@@ -58,6 +60,8 @@ const TaskForm = (props: TaskFormProps) => {
     }
     return tags;
   }, [_tags]);
+  const rec = getRecValue(formData.body);
+  const dueDate = getDueDateValue(formData.body);
   const showCreationDate = !!formData._id;
   const showCompletionDate = !!formData._id && completed;
   const mdGridItems =
@@ -88,10 +92,7 @@ const TaskForm = (props: TaskFormProps) => {
     });
 
   const handleDueDateChange = (value: Date | null) => {
-    if (
-      (value && !isValid(value)) ||
-      value?.getDate() === formData.dueDate?.getDate()
-    ) {
+    if ((value && !isValid(value)) || value?.getDate() === dueDate?.getDate()) {
       return;
     }
     if (value) {
@@ -105,28 +106,17 @@ const TaskForm = (props: TaskFormProps) => {
     }
   };
 
-  useEffect(() => {
-    // set value in due date picker depending on text changes
-    const match = formData.body.match(createDueDateRegex());
-    if (!match) {
-      onChange({ ...formData, dueDate: undefined });
-    } else if (match && match.length > 0) {
-      const dateString = match[match.length - 1]
-        .trim()
-        .substring("due:".length);
-      const dueDate = parseDate(dateString);
-      if (
-        dueDate &&
-        (!formData.dueDate || !isSameDay(formData.dueDate, dueDate))
-      ) {
-        onChange({
-          ...formData,
-          dueDate,
-        });
-      }
+  const handleRecChange = (value: string | null) => {
+    if (value) {
+      insertMention({
+        value: value,
+        trigger: "rec:",
+        replace: true,
+      });
+    } else {
+      removeMentions("rec:");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.body]);
+  };
 
   useEffect(() => {
     addKeyboardDidShowListener((info) => {
@@ -231,9 +221,12 @@ const TaskForm = (props: TaskFormProps) => {
           <LocalizationDatePicker
             ariaLabel="Due date"
             label={t("Due Date")}
-            value={formData.dueDate}
+            value={dueDate}
             onChange={handleDueDateChange}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <RecurrenceSelect value={rec} onChange={handleRecChange} />
         </Grid>
       </Grid>
     </Stack>
