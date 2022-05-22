@@ -9,21 +9,11 @@ import {
   OutlinedInput,
   Select,
   Stack,
-  styled,
   Tooltip,
-  tooltipClasses,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getRecValueMatch } from "../utils/task";
-
-const CustomWidthTooltip = styled(({ className, ...props }: any) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))({
-  [`& .${tooltipClasses.tooltip}`]: {
-    maxWidth: 200,
-  },
-});
 
 interface RecurrenceSelectProps {
   value?: string;
@@ -107,10 +97,7 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
           value={amount}
           endAdornment={
             <InputAdornment position="end">
-              <CustomWidthTooltip
-                enterTouchDelay={200}
-                title={t("Strict recurrence")}
-              >
+              <Tooltip enterTouchDelay={200} title={t("Strict recurrence")}>
                 <IconButton
                   aria-label="Toggle strict mode"
                   onClick={() => handleChangeStrict(!strict)}
@@ -119,7 +106,7 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
                   {!strict && <AddCircleOutlineRoundedIcon />}
                   {strict && <AddCircleOutlinedIcon />}
                 </IconButton>
-              </CustomWidthTooltip>
+              </Tooltip>
             </InputAdornment>
           }
           onChange={(event) => handleChangeNumber(event.target.value)}
