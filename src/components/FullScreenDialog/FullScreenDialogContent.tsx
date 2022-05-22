@@ -18,11 +18,7 @@ const FullScreenDialogContent = (props: FullScreenDialogContentProps) => {
 
   useEffect(() => {
     if (root) {
-      const listener = () => {
-        if (onScroll) {
-          onScroll(root.scrollTop);
-        }
-      };
+      const listener = () => onScroll?.(root.scrollTop);
       root.addEventListener("scroll", listener);
       return () => {
         root.removeEventListener("scroll", listener);

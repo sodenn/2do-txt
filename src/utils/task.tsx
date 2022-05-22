@@ -1,8 +1,15 @@
+import {
+  addBusinessDays,
+  addDays,
+  addMonths,
+  addWeeks,
+  addYears,
+} from "date-fns";
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { PriorityTransformation } from "../data/SettingsContext";
-import { formatDate, formatLocaleDate, parseDate } from "./date";
+import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import {
   completedStyle,
   contextStyle,
@@ -36,14 +43,51 @@ export interface Task {
 export interface TaskFormData {
   body: string;
   priority?: string;
-  dueDate?: Date;
   creationDate?: Date;
   completionDate?: Date;
   _id?: string;
 }
 
 export const createDueDateRegex = () =>
-  /due:\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\s?/g;
+  /\bdue:\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\s?/g;
+
+const createDueDateValueRegex = () =>
+  /\b\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])(\s|$)/g;
+
+export const getDueDateValue = (text: string) => {
+  const match = text.matchAll(createDueDateValueRegex());
+  const lastMatch = Array.from(match).pop();
+  if (lastMatch) {
+    return parseDate(lastMatch[0]);
+  }
+};
+
+const createRecRegex = () => /\brec:(\+?)([1-9][0-9]*)([dbwmy])(\s|$)/g;
+
+const createRecValueRegex = () => /\b(\+?)([1-9][0-9]*)([dbwmy])(\s|$)/g;
+
+const getRecMatch = (text?: string) => {
+  if (!text) {
+    return;
+  }
+  const match = text.matchAll(createRecRegex());
+  return Array.from(match).pop();
+};
+
+export const getRecValueMatch = (text?: string) => {
+  if (!text) {
+    return;
+  }
+  const match = text.matchAll(createRecValueRegex());
+  return Array.from(match).pop();
+};
+
+export const getRecValue = (text: string) => {
+  const match = getRecValueMatch(text);
+  if (match) {
+    return match[0];
+  }
+};
 
 export function parseTask(text: string, order = -1) {
   const line = text.trim();
@@ -214,6 +258,72 @@ export function useFormatBody() {
       </span>
     );
   };
+}
+
+export function createNextRecurringTask(
+  task: Task,
+  createCreationDate: boolean
+) {
+  const recMatch = getRecMatch(task.body);
+
+  if (!recMatch || recMatch.length < 4) {
+    return;
+  }
+
+  const strict = recMatch[1] === "+";
+  const number = parseInt(recMatch[2]);
+  const unit = recMatch[3];
+
+  const dueDateRegex = createDueDateRegex();
+  const dueDateMatch = task.body.match(dueDateRegex);
+
+  const oldCompletionDate = task.completionDate
+    ? task.completionDate
+    : todayDate();
+
+  const oldDueDateString = dueDateMatch
+    ? dueDateMatch[dueDateMatch.length - 1].trim().substring("due:".length)
+    : undefined;
+  const oldDueDate = oldDueDateString
+    ? parseDate(oldDueDateString) || todayDate()
+    : todayDate();
+
+  const newDueDate = addToDate(
+    strict ? oldDueDate : oldCompletionDate,
+    number,
+    unit
+  );
+
+  const recurringTask = parseTask(stringifyTask(task));
+
+  if (createCreationDate) {
+    recurringTask.creationDate = oldCompletionDate;
+  } else {
+    delete recurringTask.creationDate;
+  }
+
+  const newDueDateString = formatDate(newDueDate);
+  recurringTask.body = dueDateMatch
+    ? recurringTask.body.replace(dueDateMatch[0], `due:${newDueDateString}`)
+    : `${recurringTask.body} due:${newDueDateString}`;
+
+  return parseTask(stringifyTask(recurringTask), task._order);
+}
+
+function addToDate(date: Date, amount: number, unit: string) {
+  if (unit === "d") {
+    return addDays(date, amount);
+  } else if (unit === "b") {
+    return addBusinessDays(date, amount);
+  } else if (unit === "w") {
+    return addWeeks(date, amount);
+  } else if (unit === "m") {
+    return addMonths(date, amount);
+  } else if (unit === "y") {
+    return addYears(date, amount);
+  } else {
+    throw new Error(`Unknown unit "${unit}"`);
+  }
 }
 
 export function transformPriority(

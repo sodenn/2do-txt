@@ -63,9 +63,7 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
   const platform = usePlatform();
 
   const handleChange = (val: string | null) => {
-    if (onChange) {
-      onChange(val);
-    }
+    onChange?.(val);
     setValue(val);
   };
 

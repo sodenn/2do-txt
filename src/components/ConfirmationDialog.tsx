@@ -15,9 +15,7 @@ const ConfirmationDialog = () => {
   } = useConfirmationDialog();
 
   const handleClick = (handler?: () => void) => {
-    if (handler) {
-      handler();
-    }
+    handler?.();
     setConfirmationDialog((currentValue) => ({ ...currentValue, open: false }));
   };
 

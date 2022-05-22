@@ -21,10 +21,8 @@ const FileSelect = (props: FileSelectProps) => {
 
   const handleChange = (event: SelectChangeEvent) => {
     const filePath = event.target.value;
-    if (onSelect) {
-      const item = options.find((l) => l.filePath === filePath);
-      onSelect(item);
-    }
+    const item = options.find((l) => l.filePath === filePath);
+    onSelect(item);
     setFilePath(filePath);
   };
 

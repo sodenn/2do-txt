@@ -126,5 +126,13 @@
   "Keep priority": "Priorität beibehalten",
   "Remove priority": "Priorität entfernen",
   "Archive priority": "Priorität archivieren",
-  "Transform priority in a pri:X tag": "Priorität in ein pri:X Tag transformieren"
+  "Transform priority in a pri:X tag": "Priorität in ein pri:X Tag transformieren",
+  "Recurrence": "Wiederholung",
+  "No recurrence": "Keine Wiederholung",
+  "Days": "Tage",
+  "Business days": "Werktage",
+  "Weeks": "Wochen",
+  "Months": "Monate",
+  "Years": "Jahre",
+  "Strict recurrence": "Strenge Wiederholung (Wiederholung ab Fälligkeitsdatum)"
 }

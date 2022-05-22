@@ -21,6 +21,8 @@ import { usePlatform } from "../utils/platform";
 import { useStorage } from "../utils/storage";
 import {
   createDueDateRegex,
+  createNextRecurringTask,
+  getDueDateValue,
   parseTaskBody,
   stringifyTask,
   Task,
@@ -63,6 +65,7 @@ const [TaskProvider, useTask] = createContext(() => {
     addTodoFilePath,
     settingsInitialized,
     showNotifications,
+    createCreationDate,
     createCompletionDate,
     archiveMode,
     priorityTransformation,
@@ -227,7 +230,8 @@ const [TaskProvider, useTask] = createContext(() => {
   const addTask = useCallback(
     (data: TaskFormData, taskList: TaskList) => {
       const { items, lineEnding } = taskList;
-      const { priority, completionDate, creationDate, dueDate, ...rest } = data;
+      const dueDate = getDueDateValue(data.body);
+      const { priority, completionDate, creationDate, ...rest } = data;
       const { projects, contexts, tags } = parseTaskBody(rest.body);
 
       const newTask: Task = {
@@ -324,6 +328,14 @@ const [TaskProvider, useTask] = createContext(() => {
         if (createCompletionDate) {
           updatedTask.completionDate = todayDate();
         }
+        const recurringTasks = createNextRecurringTask(
+          task,
+          createCreationDate
+        );
+        if (recurringTasks) {
+          const index = taskList.items.findIndex((i) => i._id === task._id);
+          taskList.items.splice(index, 0, recurringTasks);
+        }
         cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
       } else {
         delete updatedTask.completionDate;
@@ -351,6 +363,7 @@ const [TaskProvider, useTask] = createContext(() => {
     },
     [
       cancelNotifications,
+      createCreationDate,
       createCompletionDate,
       findTaskListByTaskId,
       priorityTransformation,

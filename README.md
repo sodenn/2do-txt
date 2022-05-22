@@ -35,6 +35,7 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 - Supports working with multiple todo.txt files
 - Autocompletion for projects, contexts and tags
 - Archive completed tasks to done.txt
+- Task recurrence (`rec:` tag)
 - Dropbox sync (iOS)
 - Dark mode
 - Responsive Design
