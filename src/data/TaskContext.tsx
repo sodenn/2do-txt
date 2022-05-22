@@ -334,7 +334,7 @@ const [TaskProvider, useTask] = createContext(() => {
         );
         if (recurringTasks) {
           const index = taskList.items.findIndex((i) => i._id === task._id);
-          taskList.items.splice(index + 1, 0, recurringTasks);
+          taskList.items.splice(index, 0, recurringTasks);
         }
         cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
       } else {

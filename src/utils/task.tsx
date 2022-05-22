@@ -307,7 +307,7 @@ export function createNextRecurringTask(
     ? recurringTask.body.replace(dueDateMatch[0], `due:${newDueDateString}`)
     : `${recurringTask.body} due:${newDueDateString}`;
 
-  return parseTask(stringifyTask(recurringTask));
+  return parseTask(stringifyTask(recurringTask), task._order);
 }
 
 function addToDate(date: Date, amount: number, unit: string) {
