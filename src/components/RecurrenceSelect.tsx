@@ -47,13 +47,13 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
       setStrict(false);
       handleChange("", "1", false);
     } else {
-      handleChange(value || "", amount, strict);
+      handleChange(value || "-", amount, strict);
     }
   };
 
-  const handleChangeNumber = (value: string) => {
-    setAmount(value || "");
-    handleChange(unit, value, strict);
+  const handleChangeAmount = (value: string) => {
+    setAmount(value);
+    handleChange(unit, value || "1", strict);
   };
 
   const handleChangeStrict = (value: boolean) => {
@@ -62,7 +62,7 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
   };
 
   const handleChange = (unit: string, amount: string, strict: boolean) => {
-    if (!unit || !amount) {
+    if (unit === "-") {
       onChange?.(null);
     } else {
       const value = (strict ? "+" : "") + amount + unit;
@@ -93,7 +93,12 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
       {unit !== "-" && (
         <OutlinedInput
           type="number"
-          inputProps={{ min: "1", step: "1", pattern: "\\d+" }}
+          inputProps={{
+            min: "1",
+            step: "1",
+            pattern: "[1-9]*",
+            inputmode: "numeric",
+          }}
           value={amount}
           endAdornment={
             <InputAdornment position="end">
@@ -109,7 +114,7 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
               </Tooltip>
             </InputAdornment>
           }
-          onChange={(event) => handleChangeNumber(event.target.value)}
+          onChange={(event) => handleChangeAmount(event.target.value)}
         />
       )}
     </Stack>
