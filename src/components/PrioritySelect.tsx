@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { usePlatform } from "../utils/platform";
+import { useTouchScreen } from "../utils/platform";
 
 const options = [
   "A",
@@ -60,7 +60,7 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
   const { t } = useTranslation();
   const [value, setValue] = useState(initialValue ?? null);
   const [autoSelect, setAutoSelect] = useState(false);
-  const platform = usePlatform();
+  const hasTouchScreen = useTouchScreen();
 
   const handleChange = (val: string | null) => {
     onChange?.(val);
@@ -73,7 +73,7 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
 
   return (
     <>
-      {platform !== "ios" && platform !== "android" && (
+      {!hasTouchScreen && (
         <Autocomplete
           autoSelect={autoSelect}
           autoHighlight={autoSelect}
@@ -93,7 +93,7 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
           onInputChange={(_, val) => handleInputChange(val)}
         />
       )}
-      {(platform === "ios" || platform === "android") && (
+      {hasTouchScreen && (
         <FormControl fullWidth>
           <InputLabel>{t("Priority")}</InputLabel>
           <Select
