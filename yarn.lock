@@ -2801,12 +2801,13 @@
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
 
-"@playwright/test@^1.22.1":
-  version "1.22.1"
-  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.22.1.tgz#78b4a7c13d8a7a0c6432672571d70c4d3963f027"
-  integrity sha512-8ouMBUboYslHom41W8bnSEn0TwlAMHhCACwOZeuiAgzukj7KobpZ+UBwrGE0jJ0UblJbKAQNRHXL+z7sDSkb6g==
+"@playwright/test@^1.22.2":
+  version "1.22.2"
+  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.22.2.tgz#b848f25f8918140c2d0bae8e9227a40198f2dd4a"
+  integrity sha512-cCl96BEBGPtptFz7C2FOSN3PrTnJ3rPpENe+gYCMx4GNNDlN4tmo2D89y13feGKTMMAIVrXfSQ/UmaQKLy1XLA==
   dependencies:
-    playwright-core "1.22.1"
+    "@types/node" "*"
+    playwright-core "1.22.2"
 
 "@pmmmwh/react-refresh-webpack-plugin@0.4.3":
   version "0.4.3"
@@ -3324,10 +3325,10 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.4.tgz#15925414e0ad2cd765bfef58842f7e26a7accb24"
   integrity sha512-1HcDas8SEj4z1Wc696tH56G8OlRaH/sqZOynNNB+HF0WOeXPaxTtbYzJY2oEfiUxjSKjhCKr+MvR7dCHcEelug==
 
-"@types/react-dom@^18.0.0", "@types/react-dom@^18.0.4":
-  version "18.0.4"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.0.4.tgz#dcbcadb277bcf6c411ceff70069424c57797d375"
-  integrity sha512-FgTtbqPOCI3dzZPZoC2T/sx3L34qxy99ITWn4eoSA95qPyXDMH0ALoAqUp49ITniiJFsXUVBtalh/KffMpg21Q==
+"@types/react-dom@^18.0.0", "@types/react-dom@^18.0.5":
+  version "18.0.5"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.0.5.tgz#330b2d472c22f796e5531446939eacef8378444a"
+  integrity sha512-OWPWTUrY/NIrjsAPkAk1wW9LZeIjSvkXRhclsFO8CZcZGCOg2G0YZy4ft+rOyYxy8B7ui5iZzi9OkDebZ7/QSA==
   dependencies:
     "@types/react" "*"
 
@@ -8152,10 +8153,10 @@ i18next-http-backend@^1.4.0:
   dependencies:
     cross-fetch "3.1.5"
 
-i18next@^21.8.3:
-  version "21.8.3"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-21.8.3.tgz#1d90fbb8907ba94c2320111ec2c43cdffe4f3fc2"
-  integrity sha512-I6QEXu096oaNH8h+hs2eHu6hxtWPdb/rsoRFHmFep01uuwB0h86ckXaT14ladhstWenEScsxiAQ2TW9fmDG57Q==
+i18next@^21.8.4:
+  version "21.8.4"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-21.8.4.tgz#646e23065752036b38d9fda8898c18139b9e8ebe"
+  integrity sha512-b3LQ5n9V1juu8UItb5x1QTI4OTvNqsNs/wetwQlBvfijEqks+N5HKMKSoevf8w0/RGUrDQ7g4cvVzF8WBp9pUw==
   dependencies:
     "@babel/runtime" "^7.17.2"
 
@@ -11605,10 +11606,10 @@ pkg-up@3.1.0:
   dependencies:
     find-up "^3.0.0"
 
-playwright-core@1.22.1:
-  version "1.22.1"
-  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.22.1.tgz#59ddf903546171fdfd9c3dc189630c883619667c"
-  integrity sha512-H+ZUVYnceWNXrRf3oxTEKAr81QzFsCKu5Fp//fEjQvqgKkfA1iX3E9DBrPJpPNOrgVzcE+IqeI0fDmYJe6Ynnw==
+playwright-core@1.22.2:
+  version "1.22.2"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.22.2.tgz#ed2963d79d71c2a18d5a6fd25b60b9f0a344661a"
+  integrity sha512-w/hc/Ld0RM4pmsNeE6aL/fPNWw8BWit2tg+TfqJ3+p59c6s3B6C8mXvXrIPmfQEobkcFDc+4KirNzOQ+uBSP1Q==
 
 plist@^3.0.2, plist@^3.0.4:
   version "3.0.5"
