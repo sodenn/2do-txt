@@ -371,4 +371,30 @@ test.describe("Task editor", () => {
 
     await expect(page.locator('[data-testid="mention-Test"]')).toHaveCount(1);
   });
+
+  test("should add add and remove recurrence", async ({ page }) => {
+    await page.locator('button[aria-label="Add task"]').click();
+
+    await page.locator('[aria-label="Select unit"]').click();
+
+    await page.locator('text="Days"').click();
+
+    await page.locator('[aria-label="Amount"]').focus();
+
+    await page.keyboard.press("ArrowUp");
+
+    await expect(page.locator('[aria-label="Amount"]')).toHaveValue("2");
+
+    // make sure rec-tag was added
+    await expect(page.locator('[data-testid="mention-2d"]')).toHaveText(
+      "rec:2d"
+    );
+
+    await page.locator('[aria-label="Select unit"]').click();
+
+    await page.locator('text="No recurrence"').click();
+
+    // make sure rec-tag was removed
+    await expect(page.locator('[data-testid="mention-2d"]')).toHaveCount(0);
+  });
 });
