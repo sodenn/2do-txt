@@ -45,7 +45,7 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
     if (value === "-") {
       setAmount("1");
       setStrict(false);
-      handleChange("", "1", false);
+      handleChange("-", "1", false);
     } else {
       handleChange(value || "-", amount, strict);
     }
@@ -97,7 +97,8 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
             min: "1",
             step: "1",
             pattern: "[1-9]*",
-            inputmode: "numeric",
+            inputMode: "numeric",
+            "aria-label": "Amount",
           }}
           value={amount}
           endAdornment={
