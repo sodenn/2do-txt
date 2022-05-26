@@ -9,7 +9,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { WithChildren } from "../../types/common";
 
 interface FullScreenDialogTitleProps extends WithChildren {

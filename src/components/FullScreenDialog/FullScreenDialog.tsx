@@ -6,7 +6,7 @@ import {
   Slide,
   SlideProps,
 } from "@mui/material";
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 
 const Transition = forwardRef<HTMLCollection, SlideProps>(
   ({ children, ...rest }, ref) => {

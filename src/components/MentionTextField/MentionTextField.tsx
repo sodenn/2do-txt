@@ -1,5 +1,5 @@
 import { ClickAwayListener } from "@mui/material";
-import React, {
+import {
   ClipboardEvent,
   FocusEvent,
   forwardRef,
