@@ -183,7 +183,12 @@ const TaskForm = (props: TaskFormProps) => {
             <FileSelect options={taskLists} onSelect={onFileSelect} />
           </Grid>
         )}
-        <Grid item xs={12} sm={6} md={mdGridItems}>
+        <Grid
+          item
+          xs={12}
+          sm={showCreationDate && !showCompletionDate ? 12 : 6}
+          md={mdGridItems}
+        >
           <PrioritySelect
             value={formData.priority}
             onChange={(priority) => onChange({ ...formData, priority })}
