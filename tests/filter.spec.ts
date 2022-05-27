@@ -104,7 +104,7 @@ test.describe("Search", () => {
   });
 });
 
-test.describe("Priority", () => {
+test.describe("Filter", () => {
   test("should allow me to filter tasks by priority", async ({ page }) => {
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
@@ -114,9 +114,7 @@ test.describe("Priority", () => {
     await page.locator('[aria-label="A is used 2 times"]').click();
     await expect(page).toHaveURL("http://localhost:3000");
   });
-});
 
-test.describe("Project", () => {
   test("should allow me to filter tasks by project", async ({ page }) => {
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
@@ -126,9 +124,7 @@ test.describe("Project", () => {
     await page.locator('[aria-label="CompanyA is used 1 times"]').click();
     await expect(page).toHaveURL("http://localhost:3000");
   });
-});
 
-test.describe("Context", () => {
   test("should allow me to filter tasks by context", async ({ page }) => {
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
@@ -138,9 +134,7 @@ test.describe("Context", () => {
     await page.locator('[aria-label="Private is used 4 times"]').click();
     await expect(page).toHaveURL("http://localhost:3000");
   });
-});
 
-test.describe("Status", () => {
   test("should allow me to hide completed tasks", async ({ page }) => {
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
@@ -153,9 +147,7 @@ test.describe("Status", () => {
     ).toBeVisible();
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(6);
   });
-});
 
-test.describe("Sorting", () => {
   test("should allow me to sort tasks by priority", async ({ page }) => {
     await page.keyboard.press("m");
     await page.locator('[aria-label="Sort tasks"]').click();
@@ -169,6 +161,16 @@ test.describe("Sorting", () => {
     await expect(
       page.locator('[aria-label="Task group"] >> text="Without priority"')
     ).toHaveCount(1);
+  });
+
+  test("should clear active filter", async ({ page, isMobile }) => {
+    // eslint-disable-next-line jest/valid-title
+    test.skip(!!isMobile, "not relevant for mobile browser");
+    await page.keyboard.press("m");
+    await page.locator('[aria-label="Private is used 4 times"]').click();
+    await page.locator('[aria-label="CompanyA is used 1 times"]').click();
+    await page.keyboard.press("x");
+    await expect(page).toHaveURL("http://localhost:3000");
   });
 });
 

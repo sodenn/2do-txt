@@ -127,5 +127,14 @@
   "Weeks": "Weeks",
   "Months": "Months",
   "Years": "Years",
-  "Strict recurrence": "Strict recurrence (repeat from due date)"
+  "Strict recurrence": "Strict recurrence (repeat from due date)",
+  "Keyboard Shortcuts": "Keyboard Shortcuts",
+  "Key": "Key",
+  "F": "Search tasks",
+  "X": "Delete active filters",
+  "M": "Open menu (filter + settings)",
+  "N": "Create new task",
+  "E": "Edit selected task",
+  "D": "Delete selected task",
+  "T": "Download todo.txt"
 }

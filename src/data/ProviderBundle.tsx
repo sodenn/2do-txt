@@ -14,6 +14,7 @@ import { LoadingProvider } from "./LoadingContext";
 import { MigrationProvider } from "./MigrationContext";
 import { NetworkProvider } from "./NetworkContext";
 import { SettingsProvider } from "./SettingsContext";
+import { ShortcutsDialogProvider } from "./ShortcutsDialogContext";
 import { SideSheetProvider } from "./SideSheetContext";
 import { TaskProvider } from "./TaskContext";
 import { TaskDialogProvider } from "./TaskDialogContext";
@@ -43,11 +44,13 @@ const ProviderBundle = ({ children }: WithChildren) => {
                             <ArchivedTaskProvider>
                               <TaskProvider>
                                 <FileManagementDialogProvider>
-                                  <FileCreateDialogProvider>
-                                    <TaskDialogProvider>
-                                      {children}
-                                    </TaskDialogProvider>
-                                  </FileCreateDialogProvider>
+                                  <ShortcutsDialogProvider>
+                                    <FileCreateDialogProvider>
+                                      <TaskDialogProvider>
+                                        {children}
+                                      </TaskDialogProvider>
+                                    </FileCreateDialogProvider>
+                                  </ShortcutsDialogProvider>
                                 </FileManagementDialogProvider>
                               </TaskProvider>
                             </ArchivedTaskProvider>

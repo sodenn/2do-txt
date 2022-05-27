@@ -10,6 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
+import { useAddShortcutListener } from "../utils/shortcuts";
 import ChipList from "./ChipList";
 
 const Filter = () => {
@@ -30,6 +31,7 @@ const Filter = () => {
     setActiveContexts,
     setActiveTags,
     setHideCompletedTasks,
+    setSearchTerm,
   } = useFilter();
 
   const attributes = activeTaskList ? activeTaskList : rest;
@@ -39,6 +41,14 @@ const Filter = () => {
     : attributes;
 
   const showSortBy = taskLists.some((list) => list.items.length > 0);
+
+  useAddShortcutListener(() => {
+    setActiveProjects([]);
+    setActiveContexts([]);
+    setActiveTags([]);
+    setActivePriorities([]);
+    setSearchTerm("");
+  }, "x");
 
   return (
     <Stack spacing={2}>

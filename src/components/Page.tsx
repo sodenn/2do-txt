@@ -9,6 +9,7 @@ import FileManagementDialog from "./FileManagementDialog";
 import FilePicker from "./FilePicker";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
+import ShortcutsDialog from "./ShortcutsDialog";
 import SideSheet, { MainContainer } from "./SideSheet";
 import TaskDialog from "./TaskDialog";
 import TaskLists from "./TaskLists";
@@ -60,6 +61,7 @@ const Page = () => {
       <FileManagementDialog />
       <ConfirmationDialog />
       <ArchivedTasksDialog />
+      <ShortcutsDialog />
     </FilePicker>
   );
 };
