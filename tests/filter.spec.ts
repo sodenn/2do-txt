@@ -163,7 +163,9 @@ test.describe("Filter", () => {
     ).toHaveCount(1);
   });
 
-  test("should clear active filter", async ({ page }) => {
+  test("should clear active filter", async ({ page, isMobile }) => {
+    // eslint-disable-next-line jest/valid-title
+    test.skip(!!isMobile, "not relevant for mobile browser");
     await page.keyboard.press("m");
     await page.locator('[aria-label="Private is used 4 times"]').click();
     await page.locator('[aria-label="CompanyA is used 1 times"]').click();

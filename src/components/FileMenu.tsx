@@ -4,6 +4,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import QuestionMarkOutlinedIcon from "@mui/icons-material/QuestionMarkOutlined";
 import {
   Button,
   Divider,
@@ -18,9 +19,10 @@ import { useCloudStorage } from "../data/CloudStorageContext";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../data/FileManagementDialogContext";
 import { useFilter } from "../data/FilterContext";
+import { useShortcutsDialog } from "../data/ShortcutsDialogContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
-import { usePlatform } from "../utils/platform";
+import { usePlatform, useTouchScreen } from "../utils/platform";
 import DropboxIcon from "./DropboxIcon";
 import StartEllipsis from "./StartEllipsis";
 
@@ -31,7 +33,9 @@ const menuMaxWidth = 350;
 const FileMenu = () => {
   const { t } = useTranslation();
   const platform = usePlatform();
+  const hasTouchScreen = useTouchScreen();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
+  const { setShortcutsDialogOpen } = useShortcutsDialog();
   const { setFileCreateDialog } = useFileCreateDialog();
   const { taskLists, activeTaskList, openTodoFilePicker } = useTask();
   const {
@@ -74,6 +78,11 @@ const FileMenu = () => {
   const handleOpenFile = () => {
     handleClose();
     openTodoFilePicker();
+  };
+
+  const handleKeyboardShortcutsClick = () => {
+    handleClose();
+    setShortcutsDialogOpen(true);
   };
 
   return (
@@ -159,6 +168,14 @@ const FileMenu = () => {
               <AllInboxRoundedIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>{t("Manage todo.txt")}</ListItemText>
+          </MenuItem>
+        )}
+        {!hasTouchScreen && (
+          <MenuItem onClick={handleKeyboardShortcutsClick}>
+            <ListItemIcon>
+              <QuestionMarkOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>{t("Keyboard Shortcuts")}</ListItemText>
           </MenuItem>
         )}
       </Menu>
