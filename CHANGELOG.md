@@ -1,3 +1,17 @@
+# [1.14.0](https://github.com/sodenn/2do-txt/compare/v1.13.0...v1.14.0) (2022-05-27)
+
+
+### Bug Fixes
+
+* **MentionTextEditor:** zero-width chars handling ([#443](https://github.com/sodenn/2do-txt/issues/443)) ([a26bc03](https://github.com/sodenn/2do-txt/commit/a26bc03114ab75afabd8f95e7a08134da855f66f))
+* **RecurrenceSelect:** trigger change event with the correct value ([#474](https://github.com/sodenn/2do-txt/issues/474)) ([a60c9d1](https://github.com/sodenn/2do-txt/commit/a60c9d1b44a7193f1f05c82b6c6480353126b97d))
+
+
+### Features
+
+* shortcut for clearing the task filter ([#480](https://github.com/sodenn/2do-txt/issues/480)) ([8fb7728](https://github.com/sodenn/2do-txt/commit/8fb77281888148279335cf11cf22703934721371))
+* task recurrence ([#454](https://github.com/sodenn/2do-txt/issues/454)) ([ba66945](https://github.com/sodenn/2do-txt/commit/ba66945ece7f56f5c046f0d6e58cbf8301600507))
+
 # [1.13.0](https://github.com/sodenn/2do-txt/compare/v1.12.0...v1.13.0) (2022-05-08)
 
 
