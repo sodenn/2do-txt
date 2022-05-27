@@ -29,7 +29,7 @@ const ShortcutsDialog = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>{t("Shortcut")}</TableCell>
+              <TableCell>{t("Key")}</TableCell>
               <TableCell>{t("Description")}</TableCell>
             </TableRow>
           </TableHead>
