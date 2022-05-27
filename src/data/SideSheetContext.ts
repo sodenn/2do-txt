@@ -5,17 +5,11 @@ import { useAddShortcutListener } from "../utils/shortcuts";
 const [SideSheetProvider, useSideSheet] = createContext(() => {
   const [sideSheetOpen, setSideSheetOpen] = useState(false);
 
-  useAddShortcutListener(
-    () => {
-      toggleSideSheet();
-    },
-    "m",
-    []
-  );
-
   const toggleSideSheet = useCallback(() => {
     setSideSheetOpen(!sideSheetOpen);
   }, [sideSheetOpen]);
+
+  useAddShortcutListener(toggleSideSheet, "m", [toggleSideSheet]);
 
   return {
     sideSheetOpen,

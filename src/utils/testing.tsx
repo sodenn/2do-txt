@@ -59,9 +59,6 @@ i18n.use(initReactI18next).init({
   resources: { en: { translations: {} } },
 });
 
-window.scrollTo = jest.fn();
-window.HTMLElement.prototype.scrollIntoView = jest.fn();
-
 // @ts-ignore
 global.Keychain = {
   get: (success: (key: string) => string, error: () => any, key: string) => {
