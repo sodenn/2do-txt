@@ -42,7 +42,7 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 - Drag and drop support for todo.txt files
 
 ## Supported Platforms
-- [Webbrowser](https://sodenn.github.io/2do-txt/)
+- [Webbrowser](https://2do-txt-sodenn.vercel.app/)
 - iOS
 - Desktop (Electron): macOS, Windows, Linux
 
