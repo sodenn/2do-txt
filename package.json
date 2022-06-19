@@ -18,7 +18,7 @@
     "@capacitor/core": "^3.5.1",
     "@capacitor/filesystem": "^1.1.0",
     "@capacitor/ios": "^3.5.1",
-    "@capacitor/keyboard": "^1.2.2",
+    "@capacitor/keyboard": "^1.2.3",
     "@capacitor/local-notifications": "^1.1.0",
     "@capacitor/network": "^1.0.7",
     "@capacitor/share": "^1.1.2",
@@ -28,7 +28,7 @@
     "@date-io/date-fns": "^2.14.0",
     "@emotion/css": "^11.9.0",
     "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1",
+    "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.8.4",
     "@mui/lab": "^5.0.0-alpha.83",
     "@mui/material": "^5.8.4",
@@ -102,7 +102,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^3.5.1",
+    "@capacitor/cli": "^3.6.0",
     "@playwright/test": "^1.22.2",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
@@ -117,7 +117,7 @@
     "cordova-res": "^0.15.4",
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.6.2",
-    "prettier-plugin-organize-imports": "^2.3.4",
+    "prettier-plugin-organize-imports": "^3.0.0",
     "semantic-release": "^19.0.3",
     "typescript": "^4.7.2"
   }
