@@ -13,7 +13,7 @@
     "url": "https://github.com/sodenn/2do-txt.git"
   },
   "dependencies": {
-    "@capacitor-community/electron": "^4.1.0",
+    "@capacitor-community/electron": "^4.1.2",
     "@capacitor/clipboard": "^1.0.8",
     "@capacitor/core": "^3.5.1",
     "@capacitor/filesystem": "^1.1.0",
