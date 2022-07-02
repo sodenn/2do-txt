@@ -65,7 +65,7 @@ setupFileHandling(myCapacitorApp.getMainWindow());
   // Initialize our app, build windows, and load content.
   await myCapacitorApp.init();
   // Check for updates if we are in a packaged app.
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdatesAndNotify().catch(console.error);
 })();
 
 // Handle when all of our windows are close (platforms have their own expectations).
