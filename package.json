@@ -31,7 +31,7 @@
     "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.8.4",
     "@mui/lab": "^5.0.0-alpha.87",
-    "@mui/material": "^5.8.6",
+    "@mui/material": "^5.8.7",
     "capacitor-rate-app": "^2.0.0",
     "cordova-plugin-inappbrowser": "^5.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566b",
@@ -103,7 +103,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^3.6.0",
-    "@playwright/test": "^1.22.2",
+    "@playwright/test": "^1.23.1",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@testing-library/jest-dom": "^5.16.4",
