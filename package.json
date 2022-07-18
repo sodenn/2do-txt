@@ -30,7 +30,7 @@
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.8.4",
-    "@mui/lab": "^5.0.0-alpha.87",
+    "@mui/lab": "^5.0.0-alpha.91",
     "@mui/material": "^5.8.7",
     "capacitor-rate-app": "^2.0.0",
     "cordova-plugin-inappbrowser": "^5.0.0",
