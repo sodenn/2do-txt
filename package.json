@@ -103,7 +103,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^3.6.0",
-    "@playwright/test": "^1.23.3",
+    "@playwright/test": "^1.24.0",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@testing-library/jest-dom": "^5.16.4",
@@ -111,7 +111,7 @@
     "@testing-library/user-event": "^14.2.0",
     "@types/file-saver": "^2.0.5",
     "@types/jest": "^28.1.6",
-    "@types/node": "^16.11.12",
+    "@types/node": "^18.0.6",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "cordova-res": "^0.15.4",
