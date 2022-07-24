@@ -9,68 +9,68 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "2do-txt@workspace:."
   dependencies:
-    "@capacitor-community/electron": ^4.1.2
-    "@capacitor/cli": ^3.6.0
-    "@capacitor/clipboard": ^1.0.8
-    "@capacitor/core": ^3.6.0
-    "@capacitor/filesystem": ^1.1.0
-    "@capacitor/ios": ^3.6.0
-    "@capacitor/keyboard": ^1.2.3
-    "@capacitor/local-notifications": ^1.1.0
-    "@capacitor/network": ^1.0.7
-    "@capacitor/share": ^1.1.2
-    "@capacitor/splash-screen": ^1.2.2
-    "@capacitor/status-bar": ^1.0.8
-    "@capacitor/storage": ^1.2.5
-    "@date-io/date-fns": ^2.14.0
-    "@emotion/css": ^11.9.0
-    "@emotion/react": ^11.9.3
-    "@emotion/styled": ^11.9.3
-    "@mui/icons-material": ^5.8.4
-    "@mui/lab": ^5.0.0-alpha.87
-    "@mui/material": ^5.8.7
-    "@playwright/test": ^1.24.0
-    "@semantic-release/changelog": ^6.0.1
-    "@semantic-release/git": ^10.0.1
-    "@testing-library/jest-dom": ^5.16.4
-    "@testing-library/react": ^13.3.0
-    "@testing-library/user-event": ^14.2.0
-    "@types/file-saver": ^2.0.5
-    "@types/jest": ^28.1.6
-    "@types/node": ^16.11.12
-    "@types/react": ^18.0.15
-    "@types/react-dom": ^18.0.6
-    capacitor-rate-app: ^2.0.0
-    cordova-plugin-inappbrowser: ^5.0.0
+    "@capacitor-community/electron": 4.1.2
+    "@capacitor/cli": 3.6.0
+    "@capacitor/clipboard": 1.0.8
+    "@capacitor/core": 3.6.0
+    "@capacitor/filesystem": 1.1.0
+    "@capacitor/ios": 3.6.0
+    "@capacitor/keyboard": 1.2.3
+    "@capacitor/local-notifications": 1.1.0
+    "@capacitor/network": 1.0.7
+    "@capacitor/share": 1.1.2
+    "@capacitor/splash-screen": 1.2.2
+    "@capacitor/status-bar": 1.0.8
+    "@capacitor/storage": 1.2.5
+    "@date-io/date-fns": 2.14.0
+    "@emotion/css": 11.9.0
+    "@emotion/react": 11.9.3
+    "@emotion/styled": 11.9.3
+    "@mui/icons-material": 5.8.4
+    "@mui/lab": 5.0.0-alpha.87
+    "@mui/material": 5.8.7
+    "@playwright/test": 1.24.0
+    "@semantic-release/changelog": 6.0.1
+    "@semantic-release/git": 10.0.1
+    "@testing-library/jest-dom": 5.16.4
+    "@testing-library/react": 13.3.0
+    "@testing-library/user-event": 14.2.0
+    "@types/file-saver": 2.0.5
+    "@types/jest": 28.1.6
+    "@types/node": 16.11.12
+    "@types/react": 18.0.15
+    "@types/react-dom": 18.0.6
+    capacitor-rate-app: 2.0.0
+    cordova-plugin-inappbrowser: 5.0.0
     cordova-plugin-ios-keychain: "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566bc0acac5c2500496d5507a5eb74689980f"
-    cordova-res: ^0.15.4
-    crypto-js: ^4.1.1
-    date-fns: ^2.28.0
-    dropbox: ^10.32.0
+    cordova-res: 0.15.4
+    crypto-js: 4.1.1
+    date-fns: 2.28.0
+    dropbox: 10.32.0
     eslint: 7.32.0
-    file-saver: ^2.0.5
-    i18next: ^21.8.14
-    i18next-browser-languagedetector: ^6.1.4
-    i18next-http-backend: ^1.4.1
-    import-sort-style-module: ^6.0.0
-    jszip: ^3.10.0
-    lodash.throttle: ^4.1.1
-    notistack: ^2.0.5
-    prettier: ^2.7.1
-    prettier-plugin-organize-imports: ^3.0.0
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    react-dropzone: ^14.2.2
-    react-i18next: ^11.18.1
-    react-movable: ^3.0.4
-    react-router-dom: ^6.3.0
+    file-saver: 2.0.5
+    i18next: 21.8.14
+    i18next-browser-languagedetector: 6.1.4
+    i18next-http-backend: 1.4.1
+    import-sort-style-module: 6.0.0
+    jszip: 3.10.0
+    lodash.throttle: 4.1.1
+    notistack: 2.0.5
+    prettier: 2.7.1
+    prettier-plugin-organize-imports: 3.0.0
+    react: 18.2.0
+    react-dom: 18.2.0
+    react-dropzone: 14.2.2
+    react-i18next: 11.18.1
+    react-movable: 3.0.4
+    react-router-dom: 6.3.0
     react-scripts: 4.0.3
-    semantic-release: ^19.0.3
+    semantic-release: 19.0.3
     slate: 0.81.1
-    slate-history: ^0.66.0
+    slate-history: 0.66.0
     slate-react: 0.81.0
-    typeface-roboto: ^1.1.13
-    typescript: ^4.7.4
+    typeface-roboto: 1.1.13
+    typescript: 4.7.4
   languageName: unknown
   linkType: soft
 
@@ -2702,7 +2702,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor-community/electron@npm:^4.1.2":
+"@capacitor-community/electron@npm:4.1.2":
   version: 4.1.2
   resolution: "@capacitor-community/electron@npm:4.1.2"
   dependencies:
@@ -2719,7 +2719,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/cli@npm:^3.5.1, @capacitor/cli@npm:^3.6.0":
+"@capacitor/cli@npm:3.6.0, @capacitor/cli@npm:^3.5.1":
   version: 3.6.0
   resolution: "@capacitor/cli@npm:3.6.0"
   dependencies:
@@ -2746,7 +2746,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/clipboard@npm:^1.0.8":
+"@capacitor/clipboard@npm:1.0.8":
   version: 1.0.8
   resolution: "@capacitor/clipboard@npm:1.0.8"
   peerDependencies:
@@ -2755,7 +2755,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/core@npm:^3.5.1, @capacitor/core@npm:^3.6.0":
+"@capacitor/core@npm:3.6.0, @capacitor/core@npm:^3.5.1":
   version: 3.6.0
   resolution: "@capacitor/core@npm:3.6.0"
   dependencies:
@@ -2764,7 +2764,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/filesystem@npm:^1.1.0":
+"@capacitor/filesystem@npm:1.1.0":
   version: 1.1.0
   resolution: "@capacitor/filesystem@npm:1.1.0"
   peerDependencies:
@@ -2773,7 +2773,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/ios@npm:^3.6.0":
+"@capacitor/ios@npm:3.6.0":
   version: 3.6.0
   resolution: "@capacitor/ios@npm:3.6.0"
   peerDependencies:
@@ -2782,7 +2782,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/keyboard@npm:^1.2.3":
+"@capacitor/keyboard@npm:1.2.3":
   version: 1.2.3
   resolution: "@capacitor/keyboard@npm:1.2.3"
   peerDependencies:
@@ -2791,7 +2791,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/local-notifications@npm:^1.1.0":
+"@capacitor/local-notifications@npm:1.1.0":
   version: 1.1.0
   resolution: "@capacitor/local-notifications@npm:1.1.0"
   peerDependencies:
@@ -2800,7 +2800,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/network@npm:^1.0.7":
+"@capacitor/network@npm:1.0.7":
   version: 1.0.7
   resolution: "@capacitor/network@npm:1.0.7"
   peerDependencies:
@@ -2809,7 +2809,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/share@npm:^1.1.2":
+"@capacitor/share@npm:1.1.2":
   version: 1.1.2
   resolution: "@capacitor/share@npm:1.1.2"
   peerDependencies:
@@ -2818,7 +2818,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/splash-screen@npm:^1.2.2":
+"@capacitor/splash-screen@npm:1.2.2":
   version: 1.2.2
   resolution: "@capacitor/splash-screen@npm:1.2.2"
   peerDependencies:
@@ -2827,7 +2827,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/status-bar@npm:^1.0.8":
+"@capacitor/status-bar@npm:1.0.8":
   version: 1.0.8
   resolution: "@capacitor/status-bar@npm:1.0.8"
   peerDependencies:
@@ -2836,7 +2836,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/storage@npm:^1.2.5":
+"@capacitor/storage@npm:1.2.5":
   version: 1.2.5
   resolution: "@capacitor/storage@npm:1.2.5"
   peerDependencies:
@@ -2885,7 +2885,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/date-fns@npm:^2.11.0, @date-io/date-fns@npm:^2.14.0":
+"@date-io/date-fns@npm:2.14.0, @date-io/date-fns@npm:^2.11.0":
   version: 2.14.0
   resolution: "@date-io/date-fns@npm:2.14.0"
   dependencies:
@@ -2976,7 +2976,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/css@npm:^11.9.0":
+"@emotion/css@npm:11.9.0":
   version: 11.9.0
   resolution: "@emotion/css@npm:11.9.0"
   dependencies:
@@ -3017,7 +3017,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/react@npm:^11.9.3":
+"@emotion/react@npm:11.9.3":
   version: 11.9.3
   resolution: "@emotion/react@npm:11.9.3"
   dependencies:
@@ -3067,7 +3067,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/styled@npm:^11.9.3":
+"@emotion/styled@npm:11.9.3":
   version: 11.9.3
   resolution: "@emotion/styled@npm:11.9.3"
   dependencies:
@@ -3633,7 +3633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^5.8.4":
+"@mui/icons-material@npm:5.8.4":
   version: 5.8.4
   resolution: "@mui/icons-material@npm:5.8.4"
   dependencies:
@@ -3649,7 +3649,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/lab@npm:^5.0.0-alpha.87":
+"@mui/lab@npm:5.0.0-alpha.87":
   version: 5.0.0-alpha.87
   resolution: "@mui/lab@npm:5.0.0-alpha.87"
   dependencies:
@@ -3693,7 +3693,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^5.8.7":
+"@mui/material@npm:5.8.7":
   version: 5.8.7
   resolution: "@mui/material@npm:5.8.7"
   dependencies:
@@ -4224,7 +4224,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.24.0":
+"@playwright/test@npm:1.24.0":
   version: 1.24.0
   resolution: "@playwright/test@npm:1.24.0"
   dependencies:
@@ -4319,7 +4319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@semantic-release/changelog@npm:^6.0.1":
+"@semantic-release/changelog@npm:6.0.1":
   version: 6.0.1
   resolution: "@semantic-release/changelog@npm:6.0.1"
   dependencies:
@@ -4364,7 +4364,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@semantic-release/git@npm:^10.0.1":
+"@semantic-release/git@npm:10.0.1":
   version: 10.0.1
   resolution: "@semantic-release/git@npm:10.0.1"
   dependencies:
@@ -4633,7 +4633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:^5.16.4":
+"@testing-library/jest-dom@npm:5.16.4":
   version: 5.16.4
   resolution: "@testing-library/jest-dom@npm:5.16.4"
   dependencies:
@@ -4650,7 +4650,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:^13.3.0":
+"@testing-library/react@npm:13.3.0":
   version: 13.3.0
   resolution: "@testing-library/react@npm:13.3.0"
   dependencies:
@@ -4664,7 +4664,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^14.2.0":
+"@testing-library/user-event@npm:14.2.0":
   version: 14.2.0
   resolution: "@testing-library/user-event@npm:14.2.0"
   peerDependencies:
@@ -4772,7 +4772,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/file-saver@npm:^2.0.5":
+"@types/file-saver@npm:2.0.5":
   version: 2.0.5
   resolution: "@types/file-saver@npm:2.0.5"
   checksum: a31d6ee2abf99598647139f8f35b37b6e1bacf6c7ddf05c66651b9b0e6e53381aa0e8ed13f37faa6e496e0eb1da87c97e6c70fd589d5b83b0c95c57cb64ce92a
@@ -4846,7 +4846,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*, @types/jest@npm:^28.1.6":
+"@types/jest@npm:*, @types/jest@npm:28.1.6":
   version: 28.1.6
   resolution: "@types/jest@npm:28.1.6"
   dependencies:
@@ -4898,7 +4898,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^16.11.12":
+"@types/node@npm:*, @types/node@npm:16.11.12":
   version: 16.11.12
   resolution: "@types/node@npm:16.11.12"
   checksum: a3feb346d61a56f5a137c29bb8c63cfa3cc02e184b9dffdc18ef1528dcce55596e570575215a2e39e6ce69343eeb2a5ba71c271938f1dc8db4cc393902855412
@@ -4940,7 +4940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.0.0, @types/react-dom@npm:^18.0.6":
+"@types/react-dom@npm:18.0.6, @types/react-dom@npm:^18.0.0":
   version: 18.0.6
   resolution: "@types/react-dom@npm:18.0.6"
   dependencies:
@@ -4967,7 +4967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^18.0.15":
+"@types/react@npm:*, @types/react@npm:18.0.15":
   version: 18.0.15
   resolution: "@types/react@npm:18.0.15"
   dependencies:
@@ -7021,7 +7021,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"capacitor-rate-app@npm:^2.0.0":
+"capacitor-rate-app@npm:2.0.0":
   version: 2.0.0
   resolution: "capacitor-rate-app@npm:2.0.0"
   peerDependencies:
@@ -7770,7 +7770,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cordova-plugin-inappbrowser@npm:^5.0.0":
+"cordova-plugin-inappbrowser@npm:5.0.0":
   version: 5.0.0
   resolution: "cordova-plugin-inappbrowser@npm:5.0.0"
   checksum: 9e6dea526769aaca1904eba2f2d17f9ea3c2a451305b51e134e7cf282fa5a33e0eeb49c017eef6ce3bfbffd21ea44345a6c5dffcae19b9d713a5c642e3fd608a
@@ -7784,7 +7784,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cordova-res@npm:^0.15.4":
+"cordova-res@npm:0.15.4":
   version: 0.15.4
   resolution: "cordova-res@npm:0.15.4"
   dependencies:
@@ -7975,7 +7975,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.1.1":
+"crypto-js@npm:4.1.1":
   version: 4.1.1
   resolution: "crypto-js@npm:4.1.1"
   checksum: b3747c12ee3a7632fab3b3e171ea50f78b182545f0714f6d3e7e2858385f0f4101a15f2517e033802ce9d12ba50a391575ff4638c9de3dd9b2c4bc47768d5425
@@ -8344,7 +8344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.28.0":
+"date-fns@npm:2.28.0":
   version: 2.28.0
   resolution: "date-fns@npm:2.28.0"
   checksum: a0516b2e4f99b8bffc6cc5193349f185f195398385bdcaf07f17c2c4a24473c99d933eb0018be4142a86a6d46cb0b06be6440ad874f15e795acbedd6fd727a1f
@@ -8915,7 +8915,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dropbox@npm:^10.32.0":
+"dropbox@npm:10.32.0":
   version: 10.32.0
   resolution: "dropbox@npm:10.32.0"
   dependencies:
@@ -10050,7 +10050,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-saver@npm:^2.0.5":
+"file-saver@npm:2.0.5":
   version: 2.0.5
   resolution: "file-saver@npm:2.0.5"
   checksum: c62d96e5cebc58b4bdf3ae8a60d5cf9607ad82f75f798c33a4ee63435ac2203002584d5256a2a780eda7feb5e19dc3b6351c2212e58b3f529e63d265a7cc79f7
@@ -11235,7 +11235,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-browser-languagedetector@npm:^6.1.4":
+"i18next-browser-languagedetector@npm:6.1.4":
   version: 6.1.4
   resolution: "i18next-browser-languagedetector@npm:6.1.4"
   dependencies:
@@ -11244,7 +11244,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-http-backend@npm:^1.4.1":
+"i18next-http-backend@npm:1.4.1":
   version: 1.4.1
   resolution: "i18next-http-backend@npm:1.4.1"
   dependencies:
@@ -11253,7 +11253,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^21.8.14":
+"i18next@npm:21.8.14":
   version: 21.8.14
   resolution: "i18next@npm:21.8.14"
   dependencies:
@@ -11432,7 +11432,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"import-sort-style-module@npm:^6.0.0":
+"import-sort-style-module@npm:6.0.0":
   version: 6.0.0
   resolution: "import-sort-style-module@npm:6.0.0"
   checksum: 591a8ac05eda17406a8b3b1c2ac828cbedfe3bcfe6d6e69acdac09761bd328c724c4b7f4729704cd42414dab5416d3313fdc801920f6221d5022eb1e756a2848
@@ -13084,7 +13084,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jszip@npm:^3.10.0":
+"jszip@npm:3.10.0":
   version: 3.10.0
   resolution: "jszip@npm:3.10.0"
   dependencies:
@@ -13535,7 +13535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.throttle@npm:^4.1.1":
+"lodash.throttle@npm:4.1.1":
   version: 4.1.1
   resolution: "lodash.throttle@npm:4.1.1"
   checksum: 129c0a28cee48b348aef146f638ef8a8b197944d4e9ec26c1890c19d9bf5a5690fe11b655c77a4551268819b32d27f4206343e30c78961f60b561b8608c8c805
@@ -14738,7 +14738,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"notistack@npm:^2.0.5":
+"notistack@npm:2.0.5":
   version: 2.0.5
   resolution: "notistack@npm:2.0.5"
   dependencies:
@@ -16749,7 +16749,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-organize-imports@npm:^3.0.0":
+"prettier-plugin-organize-imports@npm:3.0.0":
   version: 3.0.0
   resolution: "prettier-plugin-organize-imports@npm:3.0.0"
   peerDependencies:
@@ -16759,7 +16759,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.7.1":
+"prettier@npm:2.7.1":
   version: 2.7.1
   resolution: "prettier@npm:2.7.1"
   bin:
@@ -17200,7 +17200,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.2.0":
+"react-dom@npm:18.2.0":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
   dependencies:
@@ -17212,7 +17212,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dropzone@npm:^14.2.2":
+"react-dropzone@npm:14.2.2":
   version: 14.2.2
   resolution: "react-dropzone@npm:14.2.2"
   dependencies:
@@ -17232,7 +17232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^11.18.1":
+"react-i18next@npm:11.18.1":
   version: 11.18.1
   resolution: "react-i18next@npm:11.18.1"
   dependencies:
@@ -17271,7 +17271,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-movable@npm:^3.0.4":
+"react-movable@npm:3.0.4":
   version: 3.0.4
   resolution: "react-movable@npm:3.0.4"
   peerDependencies:
@@ -17288,7 +17288,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^6.3.0":
+"react-router-dom@npm:6.3.0":
   version: 6.3.0
   resolution: "react-router-dom@npm:6.3.0"
   dependencies:
@@ -17405,7 +17405,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.2.0":
+"react@npm:18.2.0":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
   dependencies:
@@ -18289,7 +18289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semantic-release@npm:^19.0.3":
+"semantic-release@npm:19.0.3":
   version: 19.0.3
   resolution: "semantic-release@npm:19.0.3"
   dependencies:
@@ -18655,7 +18655,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slate-history@npm:^0.66.0":
+"slate-history@npm:0.66.0":
   version: 0.66.0
   resolution: "slate-history@npm:0.66.0"
   dependencies:
@@ -20086,14 +20086,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typeface-roboto@npm:^1.1.13":
+"typeface-roboto@npm:1.1.13":
   version: 1.1.13
   resolution: "typeface-roboto@npm:1.1.13"
   checksum: 89e43bc445c4619c7d70f09c398423790a31905f103e82f730e6702d7e3677587bc83ea5fdcb5f420b3d80509966e4167e1927dcd8ff65ad721c73bfb56bcf1c
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.7.4":
+"typescript@npm:4.7.4":
   version: 4.7.4
   resolution: "typescript@npm:4.7.4"
   bin:
@@ -20103,7 +20103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.7.4#~builtin<compat/typescript>":
+"typescript@patch:typescript@4.7.4#~builtin<compat/typescript>":
   version: 4.7.4
   resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=f456af"
   bin:
