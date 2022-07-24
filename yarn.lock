@@ -47,6 +47,7 @@ __metadata:
     crypto-js: ^4.1.1
     date-fns: ^2.28.0
     dropbox: ^10.32.0
+    eslint: 7.32.0
     file-saver: ^2.0.5
     i18next: ^21.8.14
     i18next-browser-languagedetector: ^6.1.4
@@ -8185,7 +8186,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.11.0":
+"eslint@npm:7.32.0, eslint@npm:^7.11.0":
   version: 7.32.0
   resolution: "eslint@npm:7.32.0"
   dependencies:
