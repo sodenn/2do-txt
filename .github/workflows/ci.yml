@@ -36,6 +36,7 @@ jobs:
         with:
           node-version: v16.13.0
       - run: corepack enable
+      - run: yarn --version
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
