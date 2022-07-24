@@ -7,24 +7,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: v16.13.0
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
+      - run: corepack enable
+      - run: yarn install --immutable --immutable-cache
       - run: yarn build
       - run: yarn electron:sync
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: electron
           path: electron/
@@ -36,23 +27,14 @@ jobs:
         # ubuntu-latest, macos-latest, windows-latest
         os: [ macos-latest ]
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: v16.13.0
-      - uses: actions/download-artifact@v2
+      - run: corepack enable
+      - uses: actions/download-artifact@v3
         with:
           name: electron
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --immutable --immutable-cache
       - name: Sets env vars for macOS code signing
         if: matrix.os == 'macos-latest'
         run: |
@@ -66,7 +48,7 @@ jobs:
       - uses: geekyeggo/delete-artifact@v1
         with:
           name: electron
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: ${{ runner.os }}-dist
           path: |

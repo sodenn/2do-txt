@@ -4,6 +4,10 @@
   "description": "todo.txt-compatible task manager",
   "license": "GPL-3.0",
   "private": true,
+  "packageManager": "yarn@3.2.2",
+  "engines": {
+    "yarn": ">=3.2.2"
+  },
   "author": {
     "name": "sodenn",
     "email": "mail@sodenn.dev"
