@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: v16.13.0
       - run: corepack enable
-      - run: yarn install --immutable --immutable-cache --check-cache
+      - run: yarn install --immutable --immutable-cache
       - run: yarn build
       - run: yarn electron:sync
       - uses: actions/upload-artifact@v3
@@ -44,7 +44,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: electron
-      - run: yarn install --immutable --immutable-cache --check-cache
+      - run: yarn install --immutable --immutable-cache
       - run: npm --no-git-tag-version version ${{ needs.release.outputs.releaseVersion }}
         continue-on-error: true
       - name: Sets env vars for macOS code signing
