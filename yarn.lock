@@ -34,7 +34,7 @@ __metadata:
     "@semantic-release/git": 10.0.1
     "@testing-library/jest-dom": 5.16.4
     "@testing-library/react": 13.3.0
-    "@testing-library/user-event": 14.2.0
+    "@testing-library/user-event": 14.3.0
     "@types/file-saver": 2.0.5
     "@types/jest": 28.1.6
     "@types/node": 16.11.12
@@ -4664,12 +4664,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:14.2.0":
-  version: 14.2.0
-  resolution: "@testing-library/user-event@npm:14.2.0"
+"@testing-library/user-event@npm:14.3.0":
+  version: 14.3.0
+  resolution: "@testing-library/user-event@npm:14.3.0"
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: b34f19bbfe938d03778831b9c083d451c53f983f6f6c0db05a572b71ba5323c4125097bb4b8c97595bc9b946610d2c2f65cf1e113f047eed7a3078f28a1027e2
+  checksum: cbd5954460496519cb2ff3fa506ca598d7e4c2e3d2f2e129b21909758f5ec87573aad7d6c79aebffd4bd0ea843315b3064a2a76e545f196bd4c82489cb3afc1d
   languageName: node
   linkType: hard
 
