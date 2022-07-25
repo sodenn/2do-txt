@@ -71,7 +71,7 @@
     "test:e2e": "playwright test",
     "test:record": "playwright codegen localhost:3000",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src --max-warnings=0 --ext .ts,.tsx",
+    "lint": "node_modules/.bin/eslint ./src --max-warnings=0 --ext .ts,.tsx",
     "format": "prettier --check ./src",
     "resources": "cordova-res ios --skip-config --copy",
     "cap:sync": "npx cap sync && yarn electron:sync",
