@@ -61,7 +61,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
       # If the Playwright browser binaries weren't able to be restored, we tell
-      # paywright to install everything for us.
+      # Playwright to install everything for us.
       - name: Install Playwright's dependencies
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
