@@ -1,11 +1,4 @@
 {
-  "datePicker": {
-    "okText": "OK",
-    "clearText": "Löschen",
-    "cancelText": "Abbrechen",
-    "todayText": "Heute",
-    "toolbarTitle": "Datum wählen"
-  },
   "Projects": "Projekte",
   "Contexts": "Kontexte",
   "Light": "Hell",

@@ -1,7 +1,11 @@
-import { DatePicker, DatePickerProps } from "@mui/lab";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import { TextField, useMediaQuery } from "@mui/material";
+import {
+  DatePicker,
+  DatePickerProps,
+  deDE,
+  LocalizationProvider,
+} from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Locale } from "date-fns";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
@@ -13,13 +17,8 @@ const localeMap: Record<string, Locale> = {
   de: deLocale,
 };
 
-const maskMap: Record<string, string> = {
-  en: "__/__/____",
-  de: "__.__.____",
-};
-
 type LocalizationDatePickerProps = Omit<
-  DatePickerProps<Date>,
+  DatePickerProps<Date | undefined, Date>,
   "renderInput" | "date" | "openPicker" | "rawValue"
 > & { ariaLabel?: string };
 
@@ -30,63 +29,34 @@ const LocalizationDatePicker = forwardRef<
   const { value = null, ariaLabel, onChange, ...rest } = props;
   const desktop = useMediaQuery("@media (pointer: fine)");
 
-  const handleChange = (date: Date | null, keyboardInputValue?: string) => {
-    if (desktop) {
-      onChange(date, keyboardInputValue);
-    }
-  };
-
-  const handleAccept = (date: Date | null) => {
-    if (!desktop) {
-      onChange(date);
-    }
-  };
-
   const {
-    t,
     i18n: { resolvedLanguage },
   } = useTranslation();
 
   return (
     <LocalizationProvider
+      localeText={
+        resolvedLanguage === "de"
+          ? deDE.components.MuiLocalizationProvider.defaultProps.localeText
+          : undefined
+      }
       dateAdapter={AdapterDateFns}
-      locale={localeMap[resolvedLanguage]}
+      adapterLocale={localeMap[resolvedLanguage]}
     >
-      {/** @ts-ignore */}
       <DatePicker
         {...rest}
-        onChange={handleChange}
-        onAccept={handleAccept}
+        onChange={onChange}
         ref={ref}
         value={value}
-        clearable
-        allowSameDateSelection
-        toolbarTitle={
-          resolvedLanguage !== "en"
-            ? (t("datePicker.toolbarTitle") as any)
-            : undefined
+        componentsProps={
+          desktop
+            ? {
+                actionBar: { actions: ["clear"] },
+              }
+            : {
+                actionBar: { actions: ["accept", "cancel", "clear"] },
+              }
         }
-        todayText={
-          resolvedLanguage !== "en"
-            ? (t("datePicker.todayText") as any)
-            : undefined
-        }
-        clearText={
-          resolvedLanguage !== "en"
-            ? (t("datePicker.clearText") as any)
-            : undefined
-        }
-        cancelText={
-          resolvedLanguage !== "en"
-            ? (t("datePicker.cancelText") as any)
-            : undefined
-        }
-        okText={
-          resolvedLanguage !== "en"
-            ? (t("datePicker.okText") as any)
-            : undefined
-        }
-        mask={maskMap[resolvedLanguage]}
         renderInput={(params) => (
           <TextField
             {...params}

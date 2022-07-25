@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useTouchScreen } from "../utils/platform";
 
 const options = [
+  "",
   "A",
   "B",
   "C",
@@ -58,13 +59,13 @@ interface PrioritySelectProps {
 const PrioritySelect: FC<PrioritySelectProps> = (props) => {
   const { value: initialValue, onChange } = props;
   const { t } = useTranslation();
-  const [value, setValue] = useState(initialValue ?? null);
+  const [value, setValue] = useState(initialValue ?? "");
   const [autoSelect, setAutoSelect] = useState(false);
   const hasTouchScreen = useTouchScreen();
 
   const handleChange = (val: string | null) => {
     onChange?.(val);
-    setValue(val);
+    setValue(val ?? "");
   };
 
   const handleInputChange = (val: string) => {
