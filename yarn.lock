@@ -66,7 +66,7 @@ __metadata:
     react-router-dom: 6.3.0
     react-scripts: 4.0.3
     semantic-release: 19.0.3
-    slate: 0.81.1
+    slate: 0.82.0
     slate-history: 0.66.0
     slate-react: 0.81.0
     typeface-roboto: 1.1.13
@@ -18679,14 +18679,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slate@npm:0.81.1":
-  version: 0.81.1
-  resolution: "slate@npm:0.81.1"
+"slate@npm:0.82.0":
+  version: 0.82.0
+  resolution: "slate@npm:0.82.0"
   dependencies:
     immer: ^9.0.6
     is-plain-object: ^5.0.0
     tiny-warning: ^1.0.3
-  checksum: 550541fa6e95a81a3dfa81d863a67141659f8ac150808b6fd2c71ee5f758390a1d32e227ee6eb67f945cd79b9e6fffbcdc8db6e42b5737ea6427ee379e0afb62
+  checksum: 60dbc656a80419883736bb588dc39a2713f96fcb455c7f9cf90df2e0bcac943c05d95a019bcc3358659be77ce2298b4115b45a535152d843f8bcd934dda8cf66
   languageName: node
   linkType: hard
 
