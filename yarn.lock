@@ -68,7 +68,7 @@ __metadata:
     semantic-release: 19.0.3
     slate: 0.82.0
     slate-history: 0.66.0
-    slate-react: 0.81.0
+    slate-react: 0.82.0
     typeface-roboto: 1.1.13
     typescript: 4.7.4
   languageName: unknown
@@ -18659,9 +18659,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slate-react@npm:0.81.0":
-  version: 0.81.0
-  resolution: "slate-react@npm:0.81.0"
+"slate-react@npm:0.82.0":
+  version: 0.82.0
+  resolution: "slate-react@npm:0.82.0"
   dependencies:
     "@types/is-hotkey": ^0.1.1
     "@types/lodash": ^4.14.149
@@ -18675,7 +18675,7 @@ __metadata:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
     slate: ">=0.65.3"
-  checksum: 157272106da0e2af7c370e61f85156b3d3b81baf4bf65f16799ed682ee6c01c49950380b76ac274b2c0c31854e23456043ff18cb42eb3db2f781a3b1ae7be4eb
+  checksum: f846e7c23ba3e57c48c963016c7f90e8d56e2ef3de48c42d171a52ae09f2386709c7b0dcd0f9ca11554b63567a73efa38cf2944a570d5edeb59684744962307a
   languageName: node
   linkType: hard
 

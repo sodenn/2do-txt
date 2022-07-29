@@ -59,7 +59,7 @@
     "react-scripts": "4.0.3",
     "slate": "0.82.0",
     "slate-history": "0.66.0",
-    "slate-react": "0.81.0",
+    "slate-react": "0.82.0",
     "typeface-roboto": "1.1.13"
   },
   "resolutions": {
