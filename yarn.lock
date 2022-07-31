@@ -49,7 +49,7 @@ __metadata:
     date-fns: 2.29.1
     dropbox: 10.32.0
     file-saver: 2.0.5
-    i18next: 21.8.14
+    i18next: 21.8.16
     i18next-browser-languagedetector: 6.1.4
     i18next-http-backend: 1.4.1
     import-sort-style-module: 6.0.0
@@ -11276,12 +11276,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:21.8.14":
-  version: 21.8.14
-  resolution: "i18next@npm:21.8.14"
+"i18next@npm:21.8.16":
+  version: 21.8.16
+  resolution: "i18next@npm:21.8.16"
   dependencies:
     "@babel/runtime": ^7.17.2
-  checksum: 83b1a57d761c3d29b90f4e87eb9945902fa13d7750f11bc7f22e8c9999f7e5bf9b2a30c44a9b47569c8ea704573b02a562c2678cf2281073197ace07657d21be
+  checksum: b29d0cfd3e69edb01ba55fac7f642cde921a47880bfb0552756dffdd2aaa866da17ae0825e47b6972b2c1249aa22a6e9f8813ce18a5072975a0dc720c408a4e5
   languageName: node
   linkType: hard
 

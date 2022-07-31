@@ -44,7 +44,7 @@
     "date-fns": "2.29.1",
     "dropbox": "10.32.0",
     "file-saver": "2.0.5",
-    "i18next": "21.8.14",
+    "i18next": "21.8.16",
     "i18next-browser-languagedetector": "6.1.4",
     "i18next-http-backend": "1.4.1",
     "jszip": "3.10.0",
