@@ -57,7 +57,7 @@ __metadata:
     lodash.throttle: 4.1.1
     notistack: 2.0.5
     prettier: 2.7.1
-    prettier-plugin-organize-imports: 3.0.0
+    prettier-plugin-organize-imports: 3.0.1
     react: 18.2.0
     react-dom: 18.2.0
     react-dropzone: 14.2.2
@@ -16787,13 +16787,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-organize-imports@npm:3.0.0":
-  version: 3.0.0
-  resolution: "prettier-plugin-organize-imports@npm:3.0.0"
+"prettier-plugin-organize-imports@npm:3.0.1":
+  version: 3.0.1
+  resolution: "prettier-plugin-organize-imports@npm:3.0.1"
   peerDependencies:
+    "@volar/vue-typescript": ">=0.39.0"
     prettier: ">=2.0"
     typescript: ">=2.9"
-  checksum: 6ff49f5532b9c33e0574c9dc10ba9fd990801efb207b640126a0c136dbcb673d2ca131fd5ffd0007a56c2c08d80c0a4b11a179ac5ca86e54445f18df5188c6ca
+  peerDependenciesMeta:
+    "@volar/vue-typescript":
+      optional: true
+  checksum: d4282c1937fa8fb641fba84722da7184a3992a3ab16177e413f7d5dfd87b4cfa8a5d06b3a6563af2c727151f2975f8de0a2f1e9e0968ef29c06f476c32f8a8aa
   languageName: node
   linkType: hard
 
