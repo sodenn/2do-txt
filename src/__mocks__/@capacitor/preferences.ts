@@ -3,9 +3,9 @@ import {
   GetResult,
   RemoveOptions,
   SetOptions,
-} from "@capacitor/storage";
+} from "@capacitor/preferences";
 
-export const Storage = {
+export const Preferences = {
   async get(options: GetOptions): Promise<GetResult> {
     return { value: null };
   },

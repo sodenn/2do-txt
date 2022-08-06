@@ -39,7 +39,7 @@ const FileManagementDialog = () => {
         path: "",
         directory: Directory.Documents,
       }).then((result) => {
-        return result.files;
+        return result.files.map((f) => f.name);
       });
     } else {
       return [];

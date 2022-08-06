@@ -1,7 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import { Filesystem, ReadFileResult } from "@capacitor/filesystem";
 import { ReadFileOptions } from "@capacitor/filesystem/dist/esm/definitions";
-import { GetOptions, GetResult, Storage } from "@capacitor/storage";
+import { GetOptions, GetResult, Preferences } from "@capacitor/preferences";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { MemoryRouter } from "react-router-dom";
@@ -106,7 +106,7 @@ const mocks = {
   },
   Storage: {
     get: (storage: StorageItem[]) => {
-      Storage.get = jest
+      Preferences.get = jest
         .fn()
         .mockImplementation(async (option: GetOptions): Promise<GetResult> => {
           const item = storage.find((i) => i.key === option.key);

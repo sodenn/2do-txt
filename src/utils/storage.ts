@@ -1,4 +1,4 @@
-import { Storage } from "@capacitor/storage";
+import { Preferences } from "@capacitor/preferences";
 import { useCallback } from "react";
 
 export type StorageKeys =
@@ -22,7 +22,7 @@ export type StorageKeys =
 export function useStorage() {
   const getStorageItem = useCallback(
     async <T extends string>(key: StorageKeys) => {
-      const result = await Storage.get({ key });
+      const result = await Preferences.get({ key });
       if (result) {
         return result.value as T;
       }
@@ -34,13 +34,13 @@ export function useStorage() {
 
   const setStorageItem = useCallback(
     async (key: StorageKeys, value: string) => {
-      return Storage.set({ key, value: value });
+      return Preferences.set({ key, value: value });
     },
     []
   );
 
   const removeStorageItem = useCallback(async (key: StorageKeys) => {
-    return Storage.remove({ key });
+    return Preferences.remove({ key });
   }, []);
 
   return { getStorageItem, setStorageItem, removeStorageItem };
