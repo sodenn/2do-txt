@@ -29,7 +29,7 @@ __metadata:
     "@mui/icons-material": 5.8.4
     "@mui/lab": 5.0.0-alpha.93
     "@mui/material": 5.9.3
-    "@mui/x-date-pickers": 5.0.0-beta.3
+    "@mui/x-date-pickers": 5.0.0-beta.4
     "@playwright/test": 1.24.2
     "@semantic-release/changelog": 6.0.1
     "@semantic-release/git": 10.0.1
@@ -3858,9 +3858,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:5.0.0-beta.3":
-  version: 5.0.0-beta.3
-  resolution: "@mui/x-date-pickers@npm:5.0.0-beta.3"
+"@mui/x-date-pickers@npm:5.0.0-beta.4":
+  version: 5.0.0-beta.4
+  resolution: "@mui/x-date-pickers@npm:5.0.0-beta.4"
   dependencies:
     "@babel/runtime": ^7.18.6
     "@date-io/core": ^2.14.0
@@ -3897,7 +3897,7 @@ __metadata:
       optional: true
     moment:
       optional: true
-  checksum: 59ee61be98c9265cfcbace053d879a4d1a755583cc5bef16530d102db56029a825df577283c6977958a342b1f7354b17b3cb4ebc95ac4b4ba1cb9a6f808ab121
+  checksum: 8ef3a8b3bbc2d127e1390352d8018279d75e6f37d37a9363592da3026fb48537b2cbb09658314170ab14c76cbc62acc4710cc391a1299828d0addfe37106eb25
   languageName: node
   linkType: hard
 

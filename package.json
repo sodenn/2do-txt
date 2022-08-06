@@ -36,7 +36,7 @@
     "@mui/icons-material": "5.8.4",
     "@mui/lab": "5.0.0-alpha.93",
     "@mui/material": "5.9.3",
-    "@mui/x-date-pickers": "5.0.0-beta.3",
+    "@mui/x-date-pickers": "5.0.0-beta.4",
     "capacitor-rate-app": "2.0.0",
     "cordova-plugin-inappbrowser": "5.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566bc0acac5c2500496d5507a5eb74689980f",
