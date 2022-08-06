@@ -18,10 +18,10 @@ __metadata:
     "@capacitor/keyboard": 4.0.1
     "@capacitor/local-notifications": 4.0.1
     "@capacitor/network": 4.0.1
+    "@capacitor/preferences": 4.0.1
     "@capacitor/share": 4.0.1
     "@capacitor/splash-screen": 4.0.1
     "@capacitor/status-bar": 4.0.1
-    "@capacitor/storage": 1.2.5
     "@date-io/date-fns": 2.14.0
     "@emotion/css": 11.9.0
     "@emotion/react": 11.9.3
@@ -2855,6 +2855,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@capacitor/preferences@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@capacitor/preferences@npm:4.0.1"
+  peerDependencies:
+    "@capacitor/core": ^4.0.0
+  checksum: 3b63a159821113c1afddca69a9066af6789297cb40a802db0049d8918c0f529fc4050b88f67a3e348cafcb35f5ba38ca015f988fd30d079374b7573d54599d61
+  languageName: node
+  linkType: hard
+
 "@capacitor/share@npm:4.0.1":
   version: 4.0.1
   resolution: "@capacitor/share@npm:4.0.1"
@@ -2879,15 +2888,6 @@ __metadata:
   peerDependencies:
     "@capacitor/core": ^4.0.0
   checksum: 1fdf09b0d1c3b987596dd0c55fc8dd53ad540359a33efd7dca99ec60085de540d173910af1e8d8c99ec22ff17265d413f0e833833709653ac8bd7f7106ae35c8
-  languageName: node
-  linkType: hard
-
-"@capacitor/storage@npm:1.2.5":
-  version: 1.2.5
-  resolution: "@capacitor/storage@npm:1.2.5"
-  peerDependencies:
-    "@capacitor/core": ^3.0.0
-  checksum: a2ebd1368923d253f99e26cb2c78dfe34ce4d3442fa3d6f26a4334f9fc6270c805d5eb99994e5578d061cea12403aa95c95d4e3566161b27fe10a516ede51bdb
   languageName: node
   linkType: hard
 
