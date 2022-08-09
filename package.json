@@ -37,6 +37,9 @@
     "@mui/lab": "5.0.0-alpha.93",
     "@mui/material": "5.9.3",
     "@mui/x-date-pickers": "5.0.0-beta.4",
+    "@react-fluent-edit/core": "^0.0.4",
+    "@react-fluent-edit/mentions": "^0.0.4",
+    "@react-fluent-edit/mui": "^0.0.4",
     "capacitor-rate-app": "2.0.0",
     "cordova-plugin-inappbrowser": "5.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566bc0acac5c2500496d5507a5eb74689980f",
@@ -57,9 +60,9 @@
     "react-movable": "3.0.4",
     "react-router-dom": "6.3.0",
     "react-scripts": "4.0.3",
-    "slate": "0.82.0",
+    "slate": "0.81.3",
     "slate-history": "0.66.0",
-    "slate-react": "0.82.0",
+    "slate-react": "0.81.0",
     "typeface-roboto": "1.1.13"
   },
   "resolutions": {
