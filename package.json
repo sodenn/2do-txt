@@ -29,7 +29,7 @@
     "@capacitor/share": "4.0.1",
     "@capacitor/splash-screen": "4.0.1",
     "@capacitor/status-bar": "4.0.1",
-    "@date-io/date-fns": "2.14.0",
+    "@date-io/date-fns": "2.15.0",
     "@emotion/css": "11.10.0",
     "@emotion/react": "11.10.0",
     "@emotion/styled": "11.10.0",
