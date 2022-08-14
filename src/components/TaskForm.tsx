@@ -102,6 +102,10 @@ const TaskForm = (props: TaskFormProps) => {
         newText: formatDate(value),
         trigger: "due:",
       });
+      addMention({
+        text: formatDate(value),
+        trigger: "due:",
+      });
     } else {
       removeMentions({ trigger: "due:" });
     }
