@@ -45,7 +45,7 @@
     "dropbox": "10.32.0",
     "file-saver": "2.0.5",
     "i18next": "21.9.0",
-    "i18next-browser-languagedetector": "6.1.4",
+    "i18next-browser-languagedetector": "6.1.5",
     "i18next-http-backend": "1.4.1",
     "jszip": "3.10.1",
     "lodash.throttle": "4.1.1",
