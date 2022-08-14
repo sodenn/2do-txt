@@ -41,7 +41,7 @@ __metadata:
     "@types/node": 16.11.48
     "@types/react": 18.0.17
     "@types/react-dom": 18.0.6
-    capacitor-rate-app: 2.0.0
+    capacitor-rate-app: 3.0.0
     cordova-plugin-inappbrowser: 5.0.0
     cordova-plugin-ios-keychain: "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566bc0acac5c2500496d5507a5eb74689980f"
     cordova-res: 0.15.4
@@ -7206,12 +7206,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"capacitor-rate-app@npm:2.0.0":
-  version: 2.0.0
-  resolution: "capacitor-rate-app@npm:2.0.0"
+"capacitor-rate-app@npm:3.0.0":
+  version: 3.0.0
+  resolution: "capacitor-rate-app@npm:3.0.0"
   peerDependencies:
-    "@capacitor/core": ^3.0.0
-  checksum: 991d86668d340ec021f7094539da2a7b4892ddfefa9cb6e2b1085923e62b5e39fc2c9e85d670af1d32258dc4f38d52b5bc6ccdb8792aa3ff4c1031b639d9b3d1
+    "@capacitor/core": ^4.0.0
+  checksum: d535ebf922f0792585b7d47293c91c118742d23b49d4b9da91b85443c198594e3e13fafeba22470f335e5a34adcc693e39ebfafff0184918b565777866a43d09
   languageName: node
   linkType: hard
 
