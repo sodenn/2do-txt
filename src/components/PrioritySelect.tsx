@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { useTouchScreen } from "../utils/platform";
 
 const options = [
-  "",
   "A",
   "B",
   "C",
@@ -41,6 +40,8 @@ const options = [
   "Z",
 ];
 
+const selectOptions = ["", ...options];
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -59,13 +60,13 @@ interface PrioritySelectProps {
 const PrioritySelect: FC<PrioritySelectProps> = (props) => {
   const { value: initialValue, onChange } = props;
   const { t } = useTranslation();
-  const [value, setValue] = useState(initialValue ?? "");
+  const [value, setValue] = useState(initialValue ?? null);
   const [autoSelect, setAutoSelect] = useState(false);
   const hasTouchScreen = useTouchScreen();
 
   const handleChange = (val: string | null) => {
     onChange?.(val);
-    setValue(val ?? "");
+    setValue(val);
   };
 
   const handleInputChange = (val: string) => {
@@ -95,23 +96,24 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
         />
       )}
       {hasTouchScreen && (
-        <FormControl fullWidth>
-          <InputLabel>{t("Priority")}</InputLabel>
+        <FormControl fullWidth variant="outlined">
+          <InputLabel shrink>{t("Priority")}</InputLabel>
           <Select
-            value={value}
+            value={value ?? ""}
+            displayEmpty
             MenuProps={MenuProps}
             input={
               <OutlinedInput
+                notched
                 label={t("Priority")}
                 inputProps={{ "aria-label": "Select task priority" }}
               />
             }
             onChange={(event) => handleChange(event.target.value)}
           >
-            <MenuItem value="">{t("None")}</MenuItem>
-            {options.map((item, index) => (
+            {selectOptions.map((item, index) => (
               <MenuItem key={index} value={item}>
-                {item}
+                {!item ? <em>{t("None")}</em> : item}
               </MenuItem>
             ))}
           </Select>
