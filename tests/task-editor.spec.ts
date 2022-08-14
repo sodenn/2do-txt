@@ -193,7 +193,8 @@ test.describe("Task editor", () => {
 
     await page.type(
       '[aria-label="Text editor"]',
-      "Play soccer with friends @Hpb"
+      "Play soccer with friends @Hpb",
+      { delay: 30 }
     );
 
     await page.keyboard.press("ArrowLeft");

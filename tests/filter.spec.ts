@@ -66,7 +66,7 @@ test.describe("Search", () => {
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
   });
 
-  test("should allow me to clear the search input field (mobile)", async ({
+  test("mobile: should allow me to clear the search input field", async ({
     page,
     isMobile,
   }) => {
