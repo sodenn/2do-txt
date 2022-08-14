@@ -116,7 +116,7 @@
     "@testing-library/user-event": "14.4.2",
     "@types/file-saver": "2.0.5",
     "@types/jest": "28.1.6",
-    "@types/node": "16.11.47",
+    "@types/node": "16.11.48",
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",
     "cordova-res": "0.15.4",
