@@ -7,6 +7,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { FluentEditProvider } from "@react-fluent-edit/core";
+import { MentionsProvider } from "@react-fluent-edit/mentions";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
@@ -126,18 +128,20 @@ const TaskDialog = () => {
   };
 
   const taskForm = (
-    <TaskForm
-      key={key}
-      completed={!!task?.completed}
-      formData={formData}
-      contexts={Object.keys(contexts)}
-      projects={Object.keys(projects)}
-      tags={tags}
-      taskLists={activeTaskList || task ? [] : taskLists}
-      onChange={handleChange}
-      onFileSelect={handleFileSelect}
-      onEnterPress={handleSave}
-    />
+    <FluentEditProvider providers={[<MentionsProvider />]}>
+      <TaskForm
+        key={key}
+        completed={!!task?.completed}
+        formData={formData}
+        contexts={Object.keys(contexts)}
+        projects={Object.keys(projects)}
+        tags={tags}
+        taskLists={activeTaskList || task ? [] : taskLists}
+        onChange={handleChange}
+        onFileSelect={handleFileSelect}
+        onEnterPress={handleSave}
+      />
+    </FluentEditProvider>
   );
 
   return (

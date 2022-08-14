@@ -37,6 +37,9 @@
     "@mui/lab": "5.0.0-alpha.94",
     "@mui/material": "5.10.0",
     "@mui/x-date-pickers": "5.0.0-beta.4",
+    "@react-fluent-edit/core": "1.0.2",
+    "@react-fluent-edit/mentions": "1.0.2",
+    "@react-fluent-edit/mui": "1.0.2",
     "capacitor-rate-app": "3.0.0",
     "cordova-plugin-inappbrowser": "5.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566bc0acac5c2500496d5507a5eb74689980f",
@@ -57,9 +60,9 @@
     "react-movable": "3.0.4",
     "react-router-dom": "6.3.0",
     "react-scripts": "4.0.3",
-    "slate": "0.82.0",
+    "slate": "0.81.3",
     "slate-history": "0.66.0",
-    "slate-react": "0.82.0",
+    "slate-react": "0.81.0",
     "typeface-roboto": "1.1.13"
   },
   "resolutions": {
@@ -85,7 +88,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "node_modules/(?!react-movable/.*)"
+      "node_modules/(?!react-movable|remark-parse|mdast-util-from-markdown|mdast-util-to-string|micromark|decode-named-character-reference|character-entities|unist-util-stringify-position|remark-stringify|mdast-util-to-markdown|zwitch|longest-streak|unist-util-visit|unist-util-is|unified|bail|is-plain-obj|trough|vfile)"
     ]
   },
   "eslintConfig": {

@@ -173,7 +173,8 @@ test.describe("Task editor", () => {
 
     await page.type(
       '[aria-label="Text editor"]',
-      "Play soccer with friends @pr "
+      "Play soccer with friends @pr ",
+      { delay: 10 }
     );
 
     // make sure context was added
@@ -192,7 +193,8 @@ test.describe("Task editor", () => {
 
     await page.type(
       '[aria-label="Text editor"]',
-      "Play soccer with friends @Hpb"
+      "Play soccer with friends @Hpb",
+      { delay: 30 }
     );
 
     await page.keyboard.press("ArrowLeft");
@@ -245,7 +247,7 @@ test.describe("Task editor", () => {
     ).toHaveCount(1);
   });
 
-  test("should allow me to create a new task by keyboard only", async ({
+  test("should allow me to create a new task by using the keyboard only", async ({
     page,
     isMobile,
   }) => {

@@ -1,6 +1,8 @@
-import { Box, Button, Grid, Stack, useTheme } from "@mui/material";
+import { Box, Button, Grid, Stack } from "@mui/material";
+import { createMentionsPlugin, useMentions } from "@react-fluent-edit/mentions";
+import { MuiFluentEdit, MuiMentionCombobox } from "@react-fluent-edit/mui";
 import { isValid } from "date-fns";
-import { useEffect, useMemo, useRef } from "react";
+import { KeyboardEvent, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskList } from "../data/TaskContext";
 import { formatDate } from "../utils/date";
@@ -15,7 +17,6 @@ import {
 import { contextStyle, projectStyle } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
-import { MuiMentionTextField, useMentionTextField } from "./MentionTextField";
 import PrioritySelect from "./PrioritySelect";
 import RecurrenceSelect from "./RecurrenceSelect";
 
@@ -33,7 +34,6 @@ interface TaskFormProps {
 
 const TaskForm = (props: TaskFormProps) => {
   const platform = usePlatform();
-  const theme = useTheme();
   const rootRef = useRef<HTMLDivElement>();
   const {
     addKeyboardDidShowListener,
@@ -69,52 +69,56 @@ const TaskForm = (props: TaskFormProps) => {
     !(showCreationDate && showCompletionDate)
       ? 4
       : 6;
-  const { state, openSuggestions, removeMentions, insertMention } =
-    useMentionTextField({
-      singleLine: true,
-      mentions: [
-        {
-          trigger: "+",
-          suggestions: projects,
-          style: projectStyle,
-        },
-        {
-          trigger: "@",
-          suggestions: contexts,
-          style: contextStyle,
-        },
-        ...Object.entries(tags).map(([key, value]) => ({
-          trigger: `${key}:`,
-          suggestions: value,
-          style: getTaskTagStyle(key),
-        })),
-      ],
-    });
+  const { openMentionsCombobox, removeMentions, renameMentions, addMention } =
+    useMentions();
+  const plugins = useMemo(
+    () => [
+      createMentionsPlugin({
+        mentions: [
+          {
+            trigger: "+",
+            style: projectStyle,
+          },
+          {
+            trigger: "@",
+            style: contextStyle,
+          },
+          ...Object.keys(tags).map((key) => ({
+            trigger: `${key}:`,
+            style: getTaskTagStyle(key),
+          })),
+        ],
+      }),
+    ],
+    [tags]
+  );
 
   const handleDueDateChange = (value: Date | null) => {
     if ((value && !isValid(value)) || value?.getDate() === dueDate?.getDate()) {
       return;
     }
     if (value) {
-      insertMention({
-        value: formatDate(value),
+      renameMentions({
+        newText: formatDate(value),
         trigger: "due:",
-        replace: true,
+      });
+      addMention({
+        text: formatDate(value),
+        trigger: "due:",
       });
     } else {
-      removeMentions("due:");
+      removeMentions({ trigger: "due:" });
     }
   };
 
   const handleRecChange = (value: string | null) => {
     if (value) {
-      insertMention({
-        value: value,
+      addMention({
+        text: value,
         trigger: "rec:",
-        replace: true,
       });
     } else {
-      removeMentions("rec:");
+      removeMentions({ trigger: "rec:" });
     }
   };
 
@@ -133,11 +137,16 @@ const TaskForm = (props: TaskFormProps) => {
     };
   });
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      onEnterPress();
+    }
+  };
+
   return (
     <Stack ref={rootRef}>
       <Box sx={{ mb: 2 }}>
-        <MuiMentionTextField
-          state={state}
+        <MuiFluentEdit
           label={t("Description")}
           placeholder={t("Enter text and tags")}
           aria-label="Text editor"
@@ -145,12 +154,23 @@ const TaskForm = (props: TaskFormProps) => {
           autoCapitalize="off"
           spellCheck={false}
           initialValue={formData.body}
-          onEnterPress={onEnterPress}
+          onKeyDown={handleKeyDown}
           onChange={(body) => onChange({ ...formData, body: body || "" })}
           autoFocus
-          suggestionPopoverZIndex={theme.zIndex.modal + 1}
-          addMentionText={(value) => t("Add tag", { name: value })}
-        />
+          singleLine
+          plugins={plugins}
+        >
+          <MuiMentionCombobox
+            renderAddMentionLabel={(value) => t("Add tag", { name: value })}
+            items={[
+              ...projects.map((i) => ({ text: i, trigger: "+" })),
+              ...contexts.map((i) => ({ text: i, trigger: "@" })),
+              ...Object.entries(tags).flatMap(([trigger, items]) =>
+                items.map((i) => ({ text: i, trigger: trigger }))
+              ),
+            ]}
+          />
+        </MuiFluentEdit>
       </Box>
       <Grid spacing={2} container>
         {(hasTouchScreen || platform === "ios" || platform === "android") && (
@@ -162,7 +182,7 @@ const TaskForm = (props: TaskFormProps) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => openSuggestions("@")}
+                onClick={() => openMentionsCombobox("@")}
               >
                 {t("@Context")}
               </Button>
@@ -171,7 +191,7 @@ const TaskForm = (props: TaskFormProps) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => openSuggestions("+")}
+                onClick={() => openMentionsCombobox("+")}
               >
                 {t("+Project")}
               </Button>
