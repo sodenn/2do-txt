@@ -22,7 +22,7 @@ __metadata:
     "@capacitor/share": 4.0.1
     "@capacitor/splash-screen": 4.0.1
     "@capacitor/status-bar": 4.0.1
-    "@date-io/date-fns": 2.14.0
+    "@date-io/date-fns": 2.15.0
     "@emotion/css": 11.10.0
     "@emotion/react": 11.10.0
     "@emotion/styled": 11.10.0
@@ -2949,7 +2949,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/date-fns@npm:2.14.0, @date-io/date-fns@npm:^2.14.0":
+"@date-io/core@npm:^2.15.0":
+  version: 2.15.0
+  resolution: "@date-io/core@npm:2.15.0"
+  checksum: 5ecb264230a5bbf753177f84c7fa4e778b03d85bafb63709ca9211c373d52dae5decb6884bbe8f0a17bb2f17fc9184e418ca54da147106dfdb83fce6fb96631f
+  languageName: node
+  linkType: hard
+
+"@date-io/date-fns@npm:2.15.0":
+  version: 2.15.0
+  resolution: "@date-io/date-fns@npm:2.15.0"
+  dependencies:
+    "@date-io/core": ^2.15.0
+  peerDependencies:
+    date-fns: ^2.0.0
+  peerDependenciesMeta:
+    date-fns:
+      optional: true
+  checksum: 5aacac0efc50b6ae2d53d78b827a62a64fcf51e61dc4091aefec53db668ceadea0695f3cf878f89955b23a961deae5410dcbc5fd1d9326945c51bbb2f00d7aa9
+  languageName: node
+  linkType: hard
+
+"@date-io/date-fns@npm:^2.14.0":
   version: 2.14.0
   resolution: "@date-io/date-fns@npm:2.14.0"
   dependencies:
