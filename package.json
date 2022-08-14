@@ -37,7 +37,7 @@
     "@mui/lab": "5.0.0-alpha.94",
     "@mui/material": "5.10.0",
     "@mui/x-date-pickers": "5.0.0-beta.4",
-    "capacitor-rate-app": "2.0.0",
+    "capacitor-rate-app": "3.0.0",
     "cordova-plugin-inappbrowser": "5.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566bc0acac5c2500496d5507a5eb74689980f",
     "crypto-js": "4.1.1",
