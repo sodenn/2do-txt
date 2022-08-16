@@ -31,7 +31,7 @@ __metadata:
     "@mui/material": 5.10.0
     "@mui/x-date-pickers": 5.0.0-beta.5
     "@playwright/test": 1.25.0
-    "@react-fluent-edit/core": 1.0.2
+    "@react-fluent-edit/core": 1.0.3
     "@react-fluent-edit/mentions": 1.0.2
     "@react-fluent-edit/mui": 1.0.2
     "@semantic-release/changelog": 6.0.1
@@ -4548,6 +4548,24 @@ __metadata:
     slate-history: ^0.66.0
     slate-react: ^0.81.0
   checksum: ea277aa7fae5dee1b45209bdeab53275c3483557484cd3b9c4fbed21a1b3f1f4e21cc6097888c2e8ba04d344236f9deacabba4aeb1044ee076a79c7f3ef147d0
+  languageName: node
+  linkType: hard
+
+"@react-fluent-edit/core@npm:1.0.3":
+  version: 1.0.3
+  resolution: "@react-fluent-edit/core@npm:1.0.3"
+  dependencies:
+    remark-parse: 10.0.1
+    remark-slate-transformer: 0.7.0
+    remark-stringify: 10.0.2
+    unified: 10.1.2
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    slate: ^0.81.3
+    slate-history: ^0.66.0
+    slate-react: ^0.81.0
+  checksum: 5af631c99e1602e1bfc25a381581f2c390585a0abc567bdff65fdcaf3970f45b7926131658a2d61b9967e4389ebd8a571383b1c27e4683863686eb2f2aafb281
   languageName: node
   linkType: hard
 
