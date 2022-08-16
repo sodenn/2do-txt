@@ -64,7 +64,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-dropzone: 14.2.2
-    react-i18next: 11.18.3
+    react-i18next: 11.18.4
     react-movable: 3.0.4
     react-router-dom: 6.3.0
     react-scripts: 4.0.3
@@ -17907,9 +17907,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:11.18.3":
-  version: 11.18.3
-  resolution: "react-i18next@npm:11.18.3"
+"react-i18next@npm:11.18.4":
+  version: 11.18.4
+  resolution: "react-i18next@npm:11.18.4"
   dependencies:
     "@babel/runtime": ^7.14.5
     html-parse-stringify: ^3.0.1
@@ -17921,7 +17921,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 05fe3187dd092000c9f24dfd0cad2bd433f9a88a78cec2b43d74545ea1ec014f2b4e2ac84c579480be15bc571ef7fb2a2fafbe0bfac02f80ce10a8ffc6ad91e7
+  checksum: c64546e22447410cb09020156d86a35cc672f5e34899155456068a7caedfb70dacd70e3619e671ebc831b11d0ca95c1de1c56897842fd1de401a87b86d040beb
   languageName: node
   linkType: hard
 
