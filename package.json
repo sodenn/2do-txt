@@ -19,9 +19,9 @@
   "dependencies": {
     "@capacitor-community/electron": "4.1.2",
     "@capacitor/clipboard": "4.0.1",
-    "@capacitor/core": "4.0.1",
+    "@capacitor/core": "4.1.0",
     "@capacitor/filesystem": "4.0.1",
-    "@capacitor/ios": "4.0.1",
+    "@capacitor/ios": "4.1.0",
     "@capacitor/keyboard": "4.0.1",
     "@capacitor/local-notifications": "4.0.1",
     "@capacitor/network": "4.0.1",
@@ -110,7 +110,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "4.0.1",
+    "@capacitor/cli": "4.1.0",
     "@playwright/test": "1.25.0",
     "@semantic-release/changelog": "6.0.1",
     "@semantic-release/git": "10.0.1",
