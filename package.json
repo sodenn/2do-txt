@@ -44,7 +44,7 @@
     "cordova-plugin-inappbrowser": "5.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566bc0acac5c2500496d5507a5eb74689980f",
     "crypto-js": "4.1.1",
-    "date-fns": "2.29.1",
+    "date-fns": "2.29.2",
     "dropbox": "10.32.0",
     "file-saver": "2.0.5",
     "i18next": "21.9.0",
