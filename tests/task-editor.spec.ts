@@ -13,14 +13,18 @@ test.describe("Task editor", () => {
 
     await expect(page.locator('[aria-label="Text editor"]')).toBeFocused();
 
-    await page.type('[aria-label="Text editor"]', "Play soccer with friends @");
+    await page.type(
+      '[aria-label="Text editor"]',
+      "Play soccer with friends @",
+      { delay: 30 }
+    );
 
     await page.locator('[role="menuitem"] >> text="Private"').click();
 
-    await page.type('[aria-label="Text editor"]', "@");
+    await page.type('[aria-label="Text editor"]', "@", { delay: 30 });
 
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("Enter");
+    await page.keyboard.press("ArrowDown", { delay: 30 });
+    await page.keyboard.press("Enter", { delay: 30 });
 
     await expect(page.locator('[aria-label="Text editor"]')).toHaveText(
       "Play soccer with friends @Private @Holiday"
@@ -174,7 +178,7 @@ test.describe("Task editor", () => {
     await page.type(
       '[aria-label="Text editor"]',
       "Play soccer with friends @pr ",
-      { delay: 10 }
+      { delay: 40 }
     );
 
     // make sure context was added
@@ -201,7 +205,7 @@ test.describe("Task editor", () => {
     await page.press('[aria-label="Text editor"]', "Backspace");
     await page.press('[aria-label="Text editor"]', "o");
     await page.keyboard.press("ArrowRight");
-    await page.type('[aria-label="Text editor"]', "by ");
+    await page.type('[aria-label="Text editor"]', "by ", { delay: 30 });
 
     // make sure context was added
     await expect(page.locator('[data-testid="mention-Hobby"]')).toHaveText(
