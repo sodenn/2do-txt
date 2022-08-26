@@ -19,7 +19,7 @@
   "homepage": "https://github.com/sodenn/2do-txt",
   "main": "build/src/index.js",
   "scripts": {
-    "build": "tsc && electron-rebuild",
+    "build": "electron-rebuild",
     "electron:start-live": "node ./live-runner.js",
     "electron:start": "yarn build && electron --inspect=5858 ./",
     "electron:pack": "yarn build && electron-builder -c ./electron-builder.config.json -p never",
