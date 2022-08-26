@@ -174,7 +174,7 @@ test.describe("Task editor", () => {
     await page.type(
       '[aria-label="Text editor"]',
       "Play soccer with friends @pr ",
-      { delay: 10 }
+      { delay: 40 }
     );
 
     // make sure context was added
@@ -194,7 +194,7 @@ test.describe("Task editor", () => {
     await page.type(
       '[aria-label="Text editor"]',
       "Play soccer with friends @Hpb",
-      { delay: 30 }
+      { delay: 40 }
     );
 
     await page.keyboard.press("ArrowLeft");
