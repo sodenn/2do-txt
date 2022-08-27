@@ -49,6 +49,7 @@ jobs:
           name: electron
       - run: corepack enable
       - run: yarn install --immutable --immutable-cache
+        working-directory: electron
       - run: yarn electron:pack
         working-directory: electron
       - uses: actions/upload-artifact@v3
