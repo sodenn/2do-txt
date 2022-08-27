@@ -5,21 +5,6 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: v16.13.0
-      - run: corepack enable
-      - run: yarn install --immutable --immutable-cache
-      - run: yarn build
-      - run: yarn electron:sync
-      - uses: actions/upload-artifact@v3
-        with:
-          name: electron
-          path: electron/
-  pack:
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -31,10 +16,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: v16.13.0
-      - uses: actions/download-artifact@v3
-        with:
-          name: electron
-          path: electron
       - name: Sets env vars for macOS code signing
         if: matrix.os == 'macos-latest'
         run: |
@@ -44,14 +25,20 @@ jobs:
           echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
           echo "APPLEID=${{ secrets.APPLEID }}" >> $GITHUB_ENV
           echo "APPLEIDPASS=${{ secrets.APPLEIDPASS }}" >> $GITHUB_ENV
-      - uses: geekyeggo/delete-artifact@v1
-        with:
-          name: electron
       - run: corepack enable
+      - run: yarn install --immutable --immutable-cache
+      - run: yarn build
+      - run: yarn electron:sync
       - run: yarn install --immutable --immutable-cache
         working-directory: electron
       - run: yarn electron:pack
         working-directory: electron
+      - name: Display electron files
+        run: ls -R
+        working-directory: electron
+      - name: Display build files
+        run: ls -R
+        working-directory: electron/build/src
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ runner.os }}-dist
