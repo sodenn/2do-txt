@@ -20,7 +20,7 @@
     "@capacitor-community/electron": "4.1.2",
     "@capacitor/clipboard": "4.0.1",
     "@capacitor/core": "4.1.0",
-    "@capacitor/filesystem": "4.0.1",
+    "@capacitor/filesystem": "4.1.0",
     "@capacitor/ios": "4.1.0",
     "@capacitor/keyboard": "4.0.1",
     "@capacitor/local-notifications": "4.0.1",

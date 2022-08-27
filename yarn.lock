@@ -13,7 +13,7 @@ __metadata:
     "@capacitor/cli": 4.1.0
     "@capacitor/clipboard": 4.0.1
     "@capacitor/core": 4.1.0
-    "@capacitor/filesystem": 4.0.1
+    "@capacitor/filesystem": 4.1.0
     "@capacitor/ios": 4.1.0
     "@capacitor/keyboard": 4.0.1
     "@capacitor/local-notifications": 4.0.1
@@ -2831,12 +2831,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/filesystem@npm:4.0.1":
-  version: 4.0.1
-  resolution: "@capacitor/filesystem@npm:4.0.1"
+"@capacitor/filesystem@npm:4.1.0":
+  version: 4.1.0
+  resolution: "@capacitor/filesystem@npm:4.1.0"
   peerDependencies:
     "@capacitor/core": ^4.0.0
-  checksum: 07345ff860f7f0c0abc09d790bda6c9a52f1f69559499cd6c0b2c71a34ef1596c4d18c7c40ce59bdd3c8ba0e3d527b95cc865b100adb0324778900f91a5184a1
+  checksum: 773c36c2e81df9f3c54fd532b84be04d4d4bcbc174fe59032d886c006544ae8752e3ac23e0a5c05adcde3e75bb8158b862336c61bcf5d0eb61bb0388ed94c1a7
   languageName: node
   linkType: hard
 
