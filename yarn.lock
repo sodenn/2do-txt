@@ -29,6 +29,7 @@ __metadata:
     "@mui/icons-material": 5.10.2
     "@mui/lab": 5.0.0-alpha.96
     "@mui/material": 5.10.2
+    "@mui/system": 5.10.2
     "@mui/x-date-pickers": 5.0.0-beta.7
     "@playwright/test": 1.25.1
     "@react-fluent-edit/core": 1.0.3
@@ -3896,7 +3897,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^5.10.2":
+"@mui/system@npm:5.10.2, @mui/system@npm:^5.10.2":
   version: 5.10.2
   resolution: "@mui/system@npm:5.10.2"
   dependencies:

@@ -46,7 +46,7 @@ test.describe("Task editor", () => {
     await page.locator(datePickerButton).click();
 
     const today = new Date();
-    const dueDateSelector = `[aria-label="${format(today, "MMM d, yyyy")}"]`;
+    const dueDateSelector = '[aria-current="date"]';
     const dueDateTag = `due:${formatDate(today)}`;
 
     // choose date and confirm

@@ -98,10 +98,7 @@ const TaskForm = (props: TaskFormProps) => {
       return;
     }
     if (value) {
-      renameMentions({
-        newText: formatDate(value),
-        trigger: "due:",
-      });
+      removeMentions({ trigger: "due:" });
       addMention({
         text: formatDate(value),
         trigger: "due:",
