@@ -61,7 +61,7 @@ describe("task priority", () => {
 
 describe("recurring tasks", () => {
   beforeAll(() => {
-    jest.useFakeTimers("modern");
+    jest.useFakeTimers();
     jest.setSystemTime(new Date(2022, 5, 1));
   });
 

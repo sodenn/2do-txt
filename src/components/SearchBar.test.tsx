@@ -3,6 +3,16 @@ import userEvent from "@testing-library/user-event";
 import { TestContext, todoTxt, todoTxtPaths } from "../utils/testing";
 
 describe("SearchBar", () => {
+  it("should not show the search bar when no files are open", async () => {
+    render(<TestContext />);
+
+    await screen.findByTestId("page");
+
+    await expect(() =>
+      screen.findByRole("search", { name: "Search for tasks" })
+    ).rejects.toThrow('Unable to find role="search"');
+  });
+
   it("should search a task", async () => {
     render(<TestContext text={todoTxt} storage={[todoTxtPaths]} />);
 
@@ -35,16 +45,6 @@ describe("SearchBar", () => {
     });
 
     expect(taskListItems.length).toBe(3);
-  });
-
-  it("should not show the search bar when no files are open", async () => {
-    render(<TestContext />);
-
-    await screen.findByTestId("page");
-
-    await expect(() =>
-      screen.findByRole("search", { name: "Search for tasks" })
-    ).rejects.toThrow('Unable to find role="search"');
   });
 
   it("should focus the search input via shortcut", async () => {

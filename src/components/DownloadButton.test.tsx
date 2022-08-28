@@ -39,7 +39,7 @@ describe("DownloadButton", () => {
     await waitFor(() => {
       expect(FileSaver.saveAs).toHaveBeenCalledWith(
         { content: [todoTxt], options: { type: "text/plain;charset=utf-8" } },
-        process.env.REACT_APP_DEFAULT_FILE_NAME
+        process.env.VITE_DEFAULT_FILE_NAME
       );
     });
   });

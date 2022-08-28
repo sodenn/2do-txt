@@ -15,7 +15,7 @@ i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     backend: {
-      loadPath: `${process.env.PUBLIC_URL}/locales/{{lng}}/{{ns}}.json`,
+      loadPath: "/locales/{{lng}}/{{ns}}.json",
     },
     load: "languageOnly",
     fallbackLng: "en",

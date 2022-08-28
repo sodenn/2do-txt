@@ -142,8 +142,8 @@ x 2. task +ProjB
     const taskLists: TaskList[] = [
       {
         ...parseResult,
-        filePath: process.env.REACT_APP_DEFAULT_FILE_NAME,
-        fileName: process.env.REACT_APP_DEFAULT_FILE_NAME,
+        filePath: process.env.VITE_DEFAULT_FILE_NAME!,
+        fileName: process.env.VITE_DEFAULT_FILE_NAME!,
       },
     ];
 

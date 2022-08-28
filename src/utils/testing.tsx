@@ -133,13 +133,13 @@ X 2012-01-01 Second task
 (A) x Third task @Test`;
 
 export const todoTxtFilesystemItem: FilesystemItem = {
-  path: process.env.REACT_APP_DEFAULT_FILE_NAME,
+  path: process.env.VITE_DEFAULT_FILE_NAME!,
   value: todoTxt,
 };
 
 export const todoTxtPaths: StorageItem = {
   key: "todo-txt-paths",
-  value: JSON.stringify([process.env.REACT_APP_DEFAULT_FILE_NAME]),
+  value: JSON.stringify([process.env.VITE_DEFAULT_FILE_NAME]),
 };
 
 export const TestContext = (props: TestContextProps) => {
