@@ -32,9 +32,9 @@ __metadata:
     "@mui/system": 5.10.2
     "@mui/x-date-pickers": 5.0.0-beta.7
     "@playwright/test": 1.25.1
-    "@react-fluent-edit/core": 1.0.3
-    "@react-fluent-edit/mentions": 1.0.3
-    "@react-fluent-edit/mui": 1.0.3
+    "@react-fluent-edit/core": 1.0.3-build-tsconfig.2
+    "@react-fluent-edit/mentions": 1.0.3-build-tsconfig.2
+    "@react-fluent-edit/mui": 1.0.3-build-tsconfig.2
     "@semantic-release/changelog": 6.0.1
     "@semantic-release/git": 10.0.1
     "@testing-library/jest-dom": 5.16.5
@@ -4422,9 +4422,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-fluent-edit/core@npm:1.0.3":
-  version: 1.0.3
-  resolution: "@react-fluent-edit/core@npm:1.0.3"
+"@react-fluent-edit/core@npm:1.0.3-build-tsconfig.2":
+  version: 1.0.3-build-tsconfig.2
+  resolution: "@react-fluent-edit/core@npm:1.0.3-build-tsconfig.2"
   dependencies:
     remark-parse: 10.0.1
     remark-slate-transformer: 0.7.0
@@ -4436,31 +4436,31 @@ __metadata:
     slate: ^0.81.3
     slate-history: ^0.66.0
     slate-react: ^0.81.0
-  checksum: 5af631c99e1602e1bfc25a381581f2c390585a0abc567bdff65fdcaf3970f45b7926131658a2d61b9967e4389ebd8a571383b1c27e4683863686eb2f2aafb281
+  checksum: 904047e04d1de6333bfcc14b7b13f461bfde63b82946b0c1f584f251e2f598dc6bf89bb87cb4d70131bf1abd7d0e98ee83e28e4adfba7319f0c62e0a2ad5a457
   languageName: node
   linkType: hard
 
-"@react-fluent-edit/mentions@npm:1.0.3":
-  version: 1.0.3
-  resolution: "@react-fluent-edit/mentions@npm:1.0.3"
+"@react-fluent-edit/mentions@npm:1.0.3-build-tsconfig.2":
+  version: 1.0.3-build-tsconfig.2
+  resolution: "@react-fluent-edit/mentions@npm:1.0.3-build-tsconfig.2"
   dependencies:
-    "@react-fluent-edit/core": 1.0.3
+    "@react-fluent-edit/core": 1.0.3-build-tsconfig.2
   peerDependencies:
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
     slate: ^0.81.3
     slate-history: ^0.66.0
     slate-react: ^0.81.0
-  checksum: 2e5a52d779019f91fc6c459f28c73821895a75e9662996f604e34ecc559d1f3e06bf9ded313368a8d52ff0a736a6c39ea0090558fcc530d08658225a5551c801
+  checksum: aafcd4f3480181c6b9c4e81f3051feb1073410b47fc1bddf611b2730ded07e2446da9dd745c9c37c571fa80f5bc1a391fa904de1c4802ce34502d2929ecaf29c
   languageName: node
   linkType: hard
 
-"@react-fluent-edit/mui@npm:1.0.3":
-  version: 1.0.3
-  resolution: "@react-fluent-edit/mui@npm:1.0.3"
+"@react-fluent-edit/mui@npm:1.0.3-build-tsconfig.2":
+  version: 1.0.3-build-tsconfig.2
+  resolution: "@react-fluent-edit/mui@npm:1.0.3-build-tsconfig.2"
   dependencies:
-    "@react-fluent-edit/core": 1.0.3
-    "@react-fluent-edit/mentions": 1.0.3
+    "@react-fluent-edit/core": 1.0.3-build-tsconfig.2
+    "@react-fluent-edit/mentions": 1.0.3-build-tsconfig.2
   peerDependencies:
     "@emotion/react": ^11.9.3
     "@emotion/styled": ^11.9.3
@@ -4470,7 +4470,7 @@ __metadata:
     slate: ^0.81.3
     slate-history: ^0.66.0
     slate-react: ^0.81.0
-  checksum: 6c85f2f5458d149414a383377798c52df0864bec784826a53e91eb54432ec7c38598f978686b3607dea8b3cfdda5450335f090bf4fec4f92a11de3a82a93bce0
+  checksum: d2e86e7e48974f206629ade2a7367a0662ace193bf7c221099da06c7766950d58b0369f3586203e252ecf5aec30758f98bdcfe572c21ef66b2d41d700d2dff28
   languageName: node
   linkType: hard
 
