@@ -10,11 +10,11 @@ __metadata:
   resolution: "2do-txt@workspace:."
   dependencies:
     "@capacitor-community/electron": 4.1.2
-    "@capacitor/cli": 4.1.0
+    "@capacitor/cli": 4.2.0
     "@capacitor/clipboard": 4.0.1
-    "@capacitor/core": 4.1.0
+    "@capacitor/core": 4.2.0
     "@capacitor/filesystem": 4.1.0
-    "@capacitor/ios": 4.1.0
+    "@capacitor/ios": 4.2.0
     "@capacitor/keyboard": 4.0.1
     "@capacitor/local-notifications": 4.0.1
     "@capacitor/network": 4.0.1
@@ -2750,9 +2750,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/cli@npm:4.1.0":
-  version: 4.1.0
-  resolution: "@capacitor/cli@npm:4.1.0"
+"@capacitor/cli@npm:4.2.0":
+  version: 4.2.0
+  resolution: "@capacitor/cli@npm:4.2.0"
   dependencies:
     "@ionic/cli-framework-output": ^2.2.5
     "@ionic/utils-fs": ^3.1.6
@@ -2774,7 +2774,7 @@ __metadata:
   bin:
     cap: bin/capacitor
     capacitor: bin/capacitor
-  checksum: 86b02df00f57d0568923df481f0c79251baa2c6c0692c95559013dd7066e51de3d0ae9ea3f804945eb997d635cb5b8861c8de5e76cbf8a39a50721b1f973e097
+  checksum: ad1ec63ece5340f3b8f941df04d29a6cfe98d7638e800fce7f61d49ad5ec6558938c14dbebbe692fe8dbee3e2fa68d2fc5a6b679c9d542e9bfb0706ef08c5a86
   languageName: node
   linkType: hard
 
@@ -2814,12 +2814,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/core@npm:4.1.0":
-  version: 4.1.0
-  resolution: "@capacitor/core@npm:4.1.0"
+"@capacitor/core@npm:4.2.0":
+  version: 4.2.0
+  resolution: "@capacitor/core@npm:4.2.0"
   dependencies:
     tslib: ^2.1.0
-  checksum: 7c374a22e3e308b210aece0b28eff6fedcf9e6892a9162de6a31a82a4786e288adaa8775c8895f63820a943fa4a95e646b935d2cf9e0d08ac816fb75d885b164
+  checksum: 61e125441f88c734f58ed5e2de820ca966139cd88eb5131be4472b30a567753d57498d5b32ea0fe8e88067e61b32cd04fe7c9f28a7c0c639fc91d816ed98993b
   languageName: node
   linkType: hard
 
@@ -2841,12 +2841,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/ios@npm:4.1.0":
-  version: 4.1.0
-  resolution: "@capacitor/ios@npm:4.1.0"
+"@capacitor/ios@npm:4.2.0":
+  version: 4.2.0
+  resolution: "@capacitor/ios@npm:4.2.0"
   peerDependencies:
-    "@capacitor/core": ^4.0.0
-  checksum: 151404601dd523766445ba0bb3c5b77dda7b688505073985ddbdedee2202e48559d628a0c13a5a376ff8853a54e0b232da6148dce55d30d57602b820d1328e55
+    "@capacitor/core": ^4.1.0
+  checksum: 3a8f3b18881cb5efd388ebc3ad5d07cc9cd7cacfb24d13a0cb1765ce50447f11e1458dc12e306345809e795fcd3f074341c2aa9072f0e8f4c1ec5900894f600b
   languageName: node
   linkType: hard
 
