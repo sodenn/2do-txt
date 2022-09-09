@@ -2,5 +2,41 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base"
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": ["npm"],
+      "stabilityDays": 3
+    },
+    {
+      "matchPaths": ["+(package.json)"],
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "dependencies (non-major)"
+    },
+    {
+      "matchPaths": ["+(package.json)"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "devDependencies (non-major)"
+    },
+    {
+      "matchPaths": ["electron/**"],
+      "matchPackageNames": [
+        "@capacitor-community/electron",
+        "chokidar",
+        "electron-is-dev",
+        "electron-serve",
+        "electron-unhandled",
+        "electron-updater",
+        "electron-window-state",
+        "electron",
+        "electron-builder",
+        "electron-notarize",
+        "electron-rebuild",
+        "typescript"
+      ],
+      "groupName": "Electron dependencies"
+    }
   ]
 }
