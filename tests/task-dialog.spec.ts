@@ -7,7 +7,19 @@ test.beforeEach(async ({ page }) => {
   await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
 });
 
-test.describe("Task editor", () => {
+const delay = { delay: 30 };
+
+test.describe("Task dialog", () => {
+  test("should allow me to open and close the task dialog via shortcut", async ({
+    page,
+  }) => {
+    await page.waitForTimeout(1000);
+    await page.keyboard.press("n");
+    await expect(page.locator('[aria-label="Task dialog"]')).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.locator('[aria-label="Task dialog"]')).not.toBeVisible();
+  });
+
   test("should allow me to add a task with contexts", async ({ page }) => {
     await page.locator('button[aria-label="Add task"]').click();
 
@@ -16,19 +28,31 @@ test.describe("Task editor", () => {
     await page.type(
       '[aria-label="Text editor"]',
       "Play soccer with friends @",
-      { delay: 30 }
+      delay
     );
 
+    // select "Private" from the mention list
     await page.locator('[role="menuitem"] >> text="Private"').click();
 
-    await page.type('[aria-label="Text editor"]', "@", { delay: 30 });
-
-    await page.keyboard.press("ArrowDown", { delay: 30 });
-    await page.keyboard.press("Enter", { delay: 30 });
+    // open the mention popover
+    await page.type('[aria-label="Text editor"]', "@", delay);
+    // select "Holiday" from the mention list
+    await page.keyboard.press("ArrowDown", delay);
+    await page.keyboard.press("Enter", delay);
 
     await expect(page.locator('[aria-label="Text editor"]')).toHaveText(
       "Play soccer with friends @Private @Holiday"
     );
+
+    // save the task
+    await page.click('[type="button"][aria-label="Save task"]');
+
+    // make sure the task is part of the list
+    await expect(
+      page.locator(
+        '[aria-label="Task"] >> text=Play soccer with friends @Private @Holiday'
+      )
+    ).toBeVisible();
   });
 
   test("should keep due date datepicker and text field in sync", async ({
@@ -178,7 +202,7 @@ test.describe("Task editor", () => {
     await page.type(
       '[aria-label="Text editor"]',
       "Play soccer with friends @pr ",
-      { delay: 40 }
+      delay
     );
 
     // make sure context was added
@@ -198,14 +222,14 @@ test.describe("Task editor", () => {
     await page.type(
       '[aria-label="Text editor"]',
       "Play soccer with friends @Hpb",
-      { delay: 30 }
+      delay
     );
 
     await page.keyboard.press("ArrowLeft");
     await page.press('[aria-label="Text editor"]', "Backspace");
     await page.press('[aria-label="Text editor"]', "o");
     await page.keyboard.press("ArrowRight");
-    await page.type('[aria-label="Text editor"]', "by ", { delay: 30 });
+    await page.type('[aria-label="Text editor"]', "by ", delay);
 
     // make sure context was added
     await expect(page.locator('[data-testid="mention-Hobby"]')).toHaveText(
@@ -255,7 +279,6 @@ test.describe("Task editor", () => {
     page,
     isMobile,
   }) => {
-    // eslint-disable-next-line jest/valid-title
     test.skip(!!isMobile, "not relevant for mobile browser");
 
     await page.locator('button[aria-label="Add task"]').click();

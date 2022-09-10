@@ -21,7 +21,6 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("Reorder Files", () => {
   // webkit: Selecting multiple files does not work in the test
-  // eslint-disable-next-line jest/valid-title
   test.skip(({ browserName }) => browserName === "webkit");
 
   test("should allow me to order file lists using drag and drop", async ({
