@@ -111,5 +111,18 @@ test.describe("Task List", () => {
 
   test("should delete a task via the task menu", async ({ page }) => {
     await openTodoTxt(page);
+    await expect(
+      page.locator('[role="button"][aria-label="Task"]')
+    ).toHaveCount(8);
+    const listItem = page.locator('[aria-label="Task"]').nth(1);
+    await listItem.hover();
+    await listItem.locator('[aria-label="Task menu"]').click();
+    await page.locator('[role="menuitem"][aria-label="Delete task"]').click();
+    await page
+      .locator('[aria-label="Confirmation Dialog"] [aria-label="Delete"]')
+      .click();
+    await expect(
+      page.locator('[role="button"][aria-label="Task"]')
+    ).toHaveCount(7);
   });
 });
