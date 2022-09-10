@@ -155,13 +155,21 @@ const SideSheet = () => {
             <SaveAreaHeader>
               {!hideFilter && (
                 <Tabs value={tab} onChange={handleChange}>
-                  <Tab label={t("Filter")} value="filter" />
-                  <Tab label={t("Settings")} value="settings" />
+                  <Tab label={t("Filter")} value="filter" aria-label="Filter" />
+                  <Tab
+                    label={t("Settings")}
+                    value="settings"
+                    aria-label="Settings"
+                  />
                 </Tabs>
               )}
               {hideFilter && (
                 <Tabs value="settings">
-                  <Tab label={t("Settings")} value="settings" />
+                  <Tab
+                    label={t("Settings")}
+                    value="settings"
+                    aria-label="Settings"
+                  />
                 </Tabs>
               )}
             </SaveAreaHeader>

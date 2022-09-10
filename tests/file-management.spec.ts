@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "fs";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:3000");
+  await page.goto("http://127.0.0.1:5173");
 
   const content = readFileSync("public/todo.txt");
 
@@ -21,7 +21,6 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("Reorder Files", () => {
   // webkit: Selecting multiple files does not work in the test
-  // eslint-disable-next-line jest/valid-title
   test.skip(({ browserName }) => browserName === "webkit");
 
   test("should allow me to order file lists using drag and drop", async ({

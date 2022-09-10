@@ -1,3 +1,4 @@
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createNextRecurringTask, parseTask, transformPriority } from "./task";
 
 describe("task priority", () => {
@@ -61,12 +62,12 @@ describe("task priority", () => {
 
 describe("recurring tasks", () => {
   beforeAll(() => {
-    jest.useFakeTimers("modern");
-    jest.setSystemTime(new Date(2022, 5, 1));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2022, 5, 1));
   });
 
   afterAll(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it("should create next recurring task", async () => {

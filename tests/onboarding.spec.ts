@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "fs";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:3000");
+  await page.goto("http://127.0.0.1:5173");
 });
 
 test.describe("Onboarding", () => {
@@ -12,9 +12,7 @@ test.describe("Onboarding", () => {
 });
 
 test.describe("New file", () => {
-  test("should allow me to create a new file and add a task", async ({
-    page,
-  }) => {
+  test("should allow me to create a new file", async ({ page }) => {
     await page.locator('[aria-label="Create task"]').click();
 
     await expect(page.locator('[aria-label="File name"]')).toHaveValue(
@@ -23,18 +21,9 @@ test.describe("New file", () => {
 
     await page.locator('[aria-label="Create file"]').click();
 
-    await expect(page).toHaveURL("http://localhost:3000/?active=todo.txt");
+    await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
 
     await expect(page.locator('[aria-label="Text editor"]')).toBeFocused();
-
-    await page.type(
-      '[aria-label="Text editor"]',
-      "Play soccer with friends @Private"
-    );
-
-    await page.locator('[role="menuitem"] >> text=Private').click();
-
-    await page.locator('[aria-label="Save task"]').click();
   });
 });
 
@@ -48,7 +37,7 @@ test.describe("Example file", () => {
 
     await page.locator('[aria-label="Create file"]').click();
 
-    await expect(page).toHaveURL("http://localhost:3000/?active=todo.txt");
+    await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
 
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
   });
@@ -56,7 +45,6 @@ test.describe("Example file", () => {
 
 test.describe("File import", () => {
   // webkit: Selecting multiple files does not work in the test
-  // eslint-disable-next-line jest/valid-title
   test.skip(({ browserName }) => browserName === "webkit");
 
   test("should allow me to import files", async ({ page }) => {

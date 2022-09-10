@@ -1,10 +1,11 @@
-import { TaskList } from "../data/TaskContext";
+import { describe, expect, it } from "vitest";
 import { arrayMove } from "./array";
 import {
   convertToTaskGroups,
   filterTaskList,
   getCommonTaskListAttributes,
   parseTaskList,
+  TaskList,
   TaskListFilter,
 } from "./task-list";
 
@@ -142,8 +143,8 @@ x 2. task +ProjB
     const taskLists: TaskList[] = [
       {
         ...parseResult,
-        filePath: process.env.REACT_APP_DEFAULT_FILE_NAME,
-        fileName: process.env.REACT_APP_DEFAULT_FILE_NAME,
+        filePath: import.meta.env.VITE_DEFAULT_FILE_NAME!,
+        fileName: import.meta.env.VITE_DEFAULT_FILE_NAME!,
       },
     ];
 

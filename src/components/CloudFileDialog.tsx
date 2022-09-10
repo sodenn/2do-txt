@@ -56,8 +56,8 @@ const CloudFileDialog = () => {
         .filter((i) => i.type !== "folder")
         .filter(
           (i) =>
-            i.name !== process.env.REACT_APP_ARCHIVE_FILE_NAME &&
-            !i.name.endsWith(`_${process.env.REACT_APP_ARCHIVE_FILE_NAME}`)
+            i.name !== import.meta.env.VITE_ARCHIVE_FILE_NAME &&
+            !i.name.endsWith(`_${import.meta.env.VITE_ARCHIVE_FILE_NAME}`)
         );
 
   const handleClose = () => {

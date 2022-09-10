@@ -59,14 +59,14 @@ export function getArchiveFilePath(filePath: string) {
     return;
   }
 
-  return fileName === process.env.REACT_APP_DEFAULT_FILE_NAME
+  return fileName === import.meta.env.VITE_DEFAULT_FILE_NAME
     ? filePath.replace(
         new RegExp(`${fileName}$`),
-        process.env.REACT_APP_ARCHIVE_FILE_NAME
+        import.meta.env.VITE_ARCHIVE_FILE_NAME!
       )
     : filePath.replace(
         new RegExp(`${fileName}$`),
-        `${fileNameWithoutEnding}_${process.env.REACT_APP_ARCHIVE_FILE_NAME}`
+        `${fileNameWithoutEnding}_${import.meta.env.VITE_ARCHIVE_FILE_NAME}`
       );
 }
 

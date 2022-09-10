@@ -33,7 +33,7 @@ import {
   getCommonTaskListAttributes,
   parseTaskList,
   stringifyTaskList,
-  TaskListParseResult,
+  TaskList,
 } from "../utils/task-list";
 import { generateId } from "../utils/uuid";
 import { useArchivedTask } from "./ArchivedTaskContext";
@@ -47,11 +47,6 @@ import { useSettings } from "./SettingsContext";
 interface SyncItem {
   filePath: string;
   text: string;
-}
-
-export interface TaskList extends TaskListParseResult {
-  filePath: string;
-  fileName: string;
 }
 
 const [TaskProvider, useTask] = createContext(() => {

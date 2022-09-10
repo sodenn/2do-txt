@@ -1,14 +1,15 @@
+import { describe, expect, it } from "vitest";
 import { getArchiveFilePath } from "./filesystem";
 
 describe("filesystem", () => {
   it("should get archive file path from long source path", async () => {
-    const filePath = `/Documents/${process.env.REACT_APP_DEFAULT_FILE_NAME}`;
+    const filePath = `/Documents/${import.meta.env.VITE_DEFAULT_FILE_NAME}`;
     const archiveFilePath = getArchiveFilePath(filePath);
     expect(archiveFilePath).toBe("/Documents/done.txt");
   });
 
   it("should get archive file path from short source path", async () => {
-    const filePath = process.env.REACT_APP_DEFAULT_FILE_NAME;
+    const filePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
     const archiveFilePath = getArchiveFilePath(filePath);
     expect(archiveFilePath).toBe("done.txt");
   });

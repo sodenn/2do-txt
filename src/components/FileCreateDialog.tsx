@@ -22,7 +22,7 @@ import { CloudStorage } from "../types/cloud-storage.types";
 import { useFilesystem } from "../utils/filesystem";
 import { usePlatform } from "../utils/platform";
 
-const defaultTodoFilePath = process.env.REACT_APP_DEFAULT_FILE_NAME;
+const defaultTodoFilePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
 
 const FileCreateDialog = () => {
   const { t } = useTranslation();

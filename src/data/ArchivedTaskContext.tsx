@@ -10,21 +10,12 @@ import {
   useFilesystem,
 } from "../utils/filesystem";
 import { Task } from "../utils/task";
-import {
-  parseTaskList,
-  stringifyTaskList,
-  TaskListParseResult,
-} from "../utils/task-list";
+import { parseTaskList, stringifyTaskList, TaskList } from "../utils/task-list";
 import { useArchivedTasksDialog } from "./ArchivedTasksDialogContext";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useSettings } from "./SettingsContext";
 
 type SaveTodoFile = (filePath: string, text: string) => Promise<void>;
-
-interface TaskList extends TaskListParseResult {
-  filePath: string;
-  fileName: string;
-}
 
 interface SyncItem {
   filePath: string;
