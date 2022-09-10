@@ -98,7 +98,7 @@ const config: PlaywrightTestConfig = {
   /* Run your local dev server before starting the tests */
   webServer: {
     command: "yarn start",
-    url: "http://localhost:3000",
+    url: "http://127.0.0.1:5173/",
     reuseExistingServer: !process.env.CI,
     timeout: 2 * 60 * 1000,
   },

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "fs";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:3000");
+  await page.goto("http://127.0.0.1:5173");
 
   const content = readFileSync("public/todo.txt");
 

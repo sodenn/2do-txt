@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "fs";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:3000");
+  await page.goto("http://127.0.0.1:5173");
 });
 
 test.describe("Onboarding", () => {
@@ -23,7 +23,7 @@ test.describe("New file", () => {
 
     await page.locator('[aria-label="Create file"]').click();
 
-    await expect(page).toHaveURL("http://localhost:3000/?active=todo.txt");
+    await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
 
     await expect(page.locator('[aria-label="Text editor"]')).toBeFocused();
 
@@ -48,7 +48,7 @@ test.describe("Example file", () => {
 
     await page.locator('[aria-label="Create file"]').click();
 
-    await expect(page).toHaveURL("http://localhost:3000/?active=todo.txt");
+    await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
 
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
   });
