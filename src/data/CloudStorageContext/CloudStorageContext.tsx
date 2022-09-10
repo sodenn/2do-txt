@@ -132,7 +132,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const cloudStorageEnabled =
     platform === "ios" ||
     platform === "android" ||
-    process.env.REACT_APP_ENABLE_WEB_CLOUD_STORAGE === "true";
+    import.meta.env.REACT_APP_ENABLE_WEB_CLOUD_STORAGE === "true";
 
   const handleError = useCallback((error: any) => {
     if (error instanceof CloudFileUnauthorizedError) {

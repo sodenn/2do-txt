@@ -2,7 +2,6 @@ import { isAfter, isBefore } from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
-import { TaskList, useTask } from "../data/TaskContext";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
@@ -11,6 +10,11 @@ export interface TaskListParseResult extends TaskListAttributes {
   items: Task[];
   lineEnding: string;
   incomplete: TaskListAttributes;
+}
+
+export interface TaskList extends TaskListParseResult {
+  filePath: string;
+  fileName: string;
 }
 
 export interface TaskListAttributes {
@@ -80,9 +84,11 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
     .join(lineEnding);
 }
 
-export function useTaskGroups() {
-  const { taskLists: _taskLists, activeTaskList } = useTask();
-  const taskLists = activeTaskList ? [activeTaskList] : _taskLists;
+export function useTaskGroups(
+  taskLists: TaskList[],
+  activeTaskList?: TaskList
+) {
+  taskLists = activeTaskList ? [activeTaskList] : taskLists;
 
   const {
     sortBy,

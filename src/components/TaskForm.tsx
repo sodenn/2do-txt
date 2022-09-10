@@ -4,7 +4,6 @@ import { MuiFluentEdit, MuiMentionCombobox } from "@react-fluent-edit/mui";
 import { isValid } from "date-fns";
 import { KeyboardEvent, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { TaskList } from "../data/TaskContext";
 import { formatDate } from "../utils/date";
 import { useKeyboard } from "../utils/keyboard";
 import { usePlatform, useTouchScreen } from "../utils/platform";
@@ -14,6 +13,7 @@ import {
   getTaskTagStyle,
   TaskFormData,
 } from "../utils/task";
+import { TaskList } from "../utils/task-list";
 import { contextStyle, projectStyle } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";

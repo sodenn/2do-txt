@@ -11,12 +11,12 @@ import TaskList from "./TaskList";
 
 const TaskLists = () => {
   const { t } = useTranslation();
-  const { activeTaskList, deleteTask } = useTask();
+  const { taskLists, activeTaskList, deleteTask } = useTask();
   const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
   const listItemsRef = useRef<HTMLDivElement[]>([]);
-  const taskGroups = useTaskGroups();
+  const taskGroups = useTaskGroups(taskLists, activeTaskList);
   const flatTaskList = taskGroups.flatMap((i) =>
     i.groups.reduce<Task[]>((prev, curr) => [...prev, ...curr.items], [])
   );

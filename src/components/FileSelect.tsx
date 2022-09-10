@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TaskList } from "../data/TaskContext";
+import { TaskList } from "../utils/task-list";
 import StartEllipsis from "./StartEllipsis";
 
 interface FileSelectProps {
