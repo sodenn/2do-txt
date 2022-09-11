@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
-import { useStorage } from "../utils/storage";
+import { usePreferences } from "../utils/preferences";
 
 export type Language = "de" | "en";
 
@@ -15,7 +15,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
   const [language, setLanguage] = useState<Language>(
     (i18n.resolvedLanguage as Language) || "en"
   );
-  const { getStorageItem, setStorageItem } = useStorage();
+  const { getPreferencesItem, setPreferencesItem } = usePreferences();
   const [createCreationDate, setCreateCreationDate] = useState(true);
   const [createCompletionDate, setCreateCompletionDate] = useState(true);
   const [showNotifications, _setShowNotifications] = useState(false);
@@ -28,66 +28,66 @@ const [SettingsProvider, useSettings] = createContext(() => {
       if (language && i18n.resolvedLanguage !== language) {
         setLanguage(language);
         i18n.changeLanguage(language);
-        setStorageItem("language", language);
+        setPreferencesItem("language", language);
       }
     },
-    [i18n, setStorageItem]
+    [i18n, setPreferencesItem]
   );
 
   const toggleCreateCompletionDate = useCallback(() => {
     setCreateCompletionDate((value) => {
       const newValue = !value;
-      setStorageItem("create-completion-date", newValue.toString());
+      setPreferencesItem("create-completion-date", newValue.toString());
       return newValue;
     });
-  }, [setCreateCompletionDate, setStorageItem]);
+  }, [setCreateCompletionDate, setPreferencesItem]);
 
   const toggleCreateCreationDate = useCallback(() => {
     setCreateCreationDate((value) => {
       const newValue = !value;
-      setStorageItem("create-creation-date", newValue.toString());
+      setPreferencesItem("create-creation-date", newValue.toString());
       return newValue;
     });
-  }, [setCreateCreationDate, setStorageItem]);
+  }, [setCreateCreationDate, setPreferencesItem]);
 
   const setShowNotifications = useCallback(
     (value: boolean) => {
-      setStorageItem("show-notifications", value.toString());
+      setPreferencesItem("show-notifications", value.toString());
       _setShowNotifications(value);
     },
-    [setStorageItem]
+    [setPreferencesItem]
   );
 
   const setArchiveMode = useCallback(
     (value: ArchiveMode) => {
-      setStorageItem("archive-mode", value);
+      setPreferencesItem("archive-mode", value);
       _setArchiveMode(value);
     },
-    [setStorageItem]
+    [setPreferencesItem]
   );
 
   const setCompletedTaskPriority = useCallback(
     (value: PriorityTransformation) => {
-      setStorageItem("priority-transformation", value);
+      setPreferencesItem("priority-transformation", value);
       _setPriorityTransformation(value);
     },
-    [setStorageItem]
+    [setPreferencesItem]
   );
 
   const getTodoFilePaths = useCallback(async () => {
-    const pathStr = await getStorageItem("todo-txt-paths");
+    const pathStr = await getPreferencesItem("todo-txt-paths");
     try {
       const paths: string[] = pathStr ? JSON.parse(pathStr) : [];
       return paths;
     } catch (e) {
-      await setStorageItem("todo-txt-paths", JSON.stringify([]));
+      await setPreferencesItem("todo-txt-paths", JSON.stringify([]));
       return [];
     }
-  }, [getStorageItem, setStorageItem]);
+  }, [getPreferencesItem, setPreferencesItem]);
 
   const addTodoFilePath = useCallback(
     async (filePath: string) => {
-      const filePathsStr = await getStorageItem("todo-txt-paths");
+      const filePathsStr = await getPreferencesItem("todo-txt-paths");
 
       let filePaths: string[] = [];
       try {
@@ -104,17 +104,17 @@ const [SettingsProvider, useSettings] = createContext(() => {
         return;
       }
 
-      await setStorageItem(
+      await setPreferencesItem(
         "todo-txt-paths",
         JSON.stringify([...filePaths, filePath])
       );
     },
-    [getStorageItem, setStorageItem]
+    [getPreferencesItem, setPreferencesItem]
   );
 
   const removeTodoFilePath = useCallback(
     async (filePath: string) => {
-      const filePathsStr = await getStorageItem("todo-txt-paths");
+      const filePathsStr = await getPreferencesItem("todo-txt-paths");
       let updatedFilePathsStr = JSON.stringify([]);
 
       if (filePathsStr) {
@@ -129,19 +129,19 @@ const [SettingsProvider, useSettings] = createContext(() => {
         }
       }
 
-      await setStorageItem("todo-txt-paths", updatedFilePathsStr);
+      await setPreferencesItem("todo-txt-paths", updatedFilePathsStr);
     },
-    [getStorageItem, setStorageItem]
+    [getPreferencesItem, setPreferencesItem]
   );
 
   useEffect(() => {
     Promise.all([
-      getStorageItem("show-notifications"),
-      getStorageItem("create-creation-date"),
-      getStorageItem("create-completion-date"),
-      getStorageItem<ArchiveMode>("archive-mode"),
-      getStorageItem<PriorityTransformation>("priority-transformation"),
-      getStorageItem<Language>("language"),
+      getPreferencesItem("show-notifications"),
+      getPreferencesItem("create-creation-date"),
+      getPreferencesItem("create-completion-date"),
+      getPreferencesItem<ArchiveMode>("archive-mode"),
+      getPreferencesItem<PriorityTransformation>("priority-transformation"),
+      getPreferencesItem<Language>("language"),
     ]).then(
       ([
         showNotifications,
@@ -164,7 +164,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
         setSettingsInitialized(true);
       }
     );
-  }, [changeLanguage, getStorageItem, setArchiveMode]);
+  }, [changeLanguage, getPreferencesItem, setArchiveMode]);
 
   return {
     language,

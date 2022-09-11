@@ -1,13 +1,3 @@
-export function uniqueListBy<T>(arr: T[], key: keyof T): T[] {
-  const map = new Map(arr.map((item) => [(item as any)[key], item]));
-  return [...(map.values() as any)];
-}
-
-export function uniqueList(items: (string | number)[]) {
-  // @ts-ignore
-  return [...new Set(items)];
-}
-
 export function groupBy<T>(arr: T[], getKey: (item: T) => string | string[]) {
   return arr.reduce<{ [key: string]: T[] }>((map, item) => {
     let key = getKey(item);

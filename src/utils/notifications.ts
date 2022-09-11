@@ -8,7 +8,7 @@ import { isAfter, subDays } from "date-fns";
 import { useCallback, useEffect } from "react";
 import { dateReviver } from "./date";
 import { usePlatform } from "./platform";
-import { useStorage } from "./storage";
+import { usePreferences } from "./preferences";
 
 interface ReceivedNotifications {
   id: number;
@@ -16,7 +16,7 @@ interface ReceivedNotifications {
 }
 
 export function useNotifications() {
-  const { setStorageItem, getStorageItem } = useStorage();
+  const { setPreferencesItem, getPreferencesItem } = usePreferences();
   const platform = usePlatform();
 
   // Notifications in the browser must be re-scheduled because they are based on setTimeout
@@ -25,14 +25,14 @@ export function useNotifications() {
   }, [platform]);
 
   const getReceivedNotifications = useCallback(async () => {
-    const value = await getStorageItem("received-notifications");
+    const value = await getPreferencesItem("received-notifications");
 
     const receivedNotifications: ReceivedNotifications[] = value
       ? JSON.parse(value, dateReviver)
       : [];
 
     return receivedNotifications;
-  }, [getStorageItem]);
+  }, [getPreferencesItem]);
 
   useEffect(() => {
     if (!shouldNotificationsBeRescheduled()) {
@@ -50,7 +50,7 @@ export function useNotifications() {
           { id: notification.id, receivingDate: new Date() },
         ];
 
-        setStorageItem("received-notifications", JSON.stringify(newValue));
+        setPreferencesItem("received-notifications", JSON.stringify(newValue));
       }
     );
 
@@ -64,7 +64,7 @@ export function useNotifications() {
         isAfter(item.receivingDate, twoDaysAgo)
       );
 
-      setStorageItem("received-notifications", JSON.stringify(newValue));
+      setPreferencesItem("received-notifications", JSON.stringify(newValue));
     }, 1000 * 60);
 
     return () => {
@@ -117,12 +117,16 @@ export function useNotifications() {
         options.notifications.every((n) => n.id !== item.id)
       );
 
-      setStorageItem(
+      setPreferencesItem(
         "received-notifications",
         JSON.stringify(newReceivedNotifications)
       );
     },
-    [getReceivedNotifications, setStorageItem, shouldNotificationsBeRescheduled]
+    [
+      getReceivedNotifications,
+      setPreferencesItem,
+      shouldNotificationsBeRescheduled,
+    ]
   );
 
   return {

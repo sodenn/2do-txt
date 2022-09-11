@@ -3,10 +3,10 @@ import { addWeeks, isAfter } from "date-fns";
 import { useCallback } from "react";
 import { parseDate } from "./date";
 import { usePlatform } from "./platform";
-import { useStorage } from "./storage";
+import { usePreferences } from "./preferences";
 
 export function useAppRate() {
-  const { getStorageItem, setStorageItem } = useStorage();
+  const { getPreferencesItem, setPreferencesItem } = usePreferences();
   const platform = usePlatform();
 
   const getNextRatingRequestDate = useCallback(
@@ -15,33 +15,33 @@ export function useAppRate() {
   );
 
   const getCounter = useCallback(async () => {
-    const counter = await getStorageItem("app-rate-counter");
+    const counter = await getPreferencesItem("app-rate-counter");
     if (!counter) {
       return 0;
     }
     return parseInt(counter);
-  }, [getStorageItem]);
+  }, [getPreferencesItem]);
 
   const increaseCounter = useCallback(
     async (counter: number) => {
       const newValue = counter + 1;
-      await setStorageItem("app-rate-counter", newValue.toString());
+      await setPreferencesItem("app-rate-counter", newValue.toString());
     },
-    [setStorageItem]
+    [setPreferencesItem]
   );
 
   const setNextRatingRequestDate = useCallback(
     (nextRatingRequestDate = getNextRatingRequestDate()) => {
-      return setStorageItem(
+      return setPreferencesItem(
         "app-rate-date",
         nextRatingRequestDate.toISOString()
       );
     },
-    [getNextRatingRequestDate, setStorageItem]
+    [getNextRatingRequestDate, setPreferencesItem]
   );
 
   const getNextRatingRequestDateFromStorage = useCallback(async () => {
-    const dateStr = await getStorageItem("app-rate-date");
+    const dateStr = await getPreferencesItem("app-rate-date");
 
     if (!dateStr) {
       const nextRatingRequestDate = getNextRatingRequestDate();
@@ -58,7 +58,7 @@ export function useAppRate() {
       await setNextRatingRequestDate(nextRatingRequestDate);
       return nextRatingRequestDate;
     }
-  }, [getNextRatingRequestDate, getStorageItem, setNextRatingRequestDate]);
+  }, [getNextRatingRequestDate, getPreferencesItem, setNextRatingRequestDate]);
 
   const isTimeForRatingRequest = useCallback(async () => {
     const currentDate = new Date();

@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import { WithChildren } from "../types/common";
 import { createContext } from "../utils/Context";
 import { useKeyboard } from "../utils/keyboard";
-import { useStorage } from "../utils/storage";
+import { usePreferences } from "../utils/preferences";
 
 const translations: Record<string, Localization> = {
   en: enUS,
@@ -101,7 +101,7 @@ const getPaletteMode = (
 };
 
 const [AppThemeProvider, useAppTheme] = createContext(() => {
-  const { getStorageItem, setStorageItem } = useStorage();
+  const { getPreferencesItem, setPreferencesItem } = usePreferences();
   const {
     i18n: { language },
   } = useTranslation();
@@ -117,7 +117,7 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
   const setThemeMode = useCallback(
     (mode: ThemeMode) => {
       _setThemeMode(mode);
-      setStorageItem("theme-mode", mode);
+      setPreferencesItem("theme-mode", mode);
 
       const themeColorMetaTag = document.querySelector(
         'meta[name="theme-color"]'
@@ -147,14 +147,14 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
             : KeyboardStyle.Default,
       });
     },
-    [setKeyboardStyle, setStorageItem, theme.palette.background.default]
+    [setKeyboardStyle, setPreferencesItem, theme.palette.background.default]
   );
 
   useEffect(() => {
-    getStorageItem("theme-mode").then((themeMode) =>
+    getPreferencesItem("theme-mode").then((themeMode) =>
       setThemeMode((themeMode as ThemeMode) || "system")
     );
-  }, [getStorageItem, setThemeMode, prefersDarkMode]);
+  }, [getPreferencesItem, setThemeMode, prefersDarkMode]);
 
   return {
     setThemeMode,

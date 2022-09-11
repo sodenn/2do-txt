@@ -18,7 +18,7 @@ import {
 import { hashCode } from "../utils/hashcode";
 import { useNotifications } from "../utils/notifications";
 import { usePlatform } from "../utils/platform";
-import { useStorage } from "../utils/storage";
+import { usePreferences } from "../utils/preferences";
 import {
   createDueDateRegex,
   createNextRecurringTask,
@@ -52,7 +52,7 @@ interface SyncItem {
 const [TaskProvider, useTask] = createContext(() => {
   const { promptForRating } = useAppRate();
   const { getUri, readFile, writeFile, deleteFile, isFile } = useFilesystem();
-  const { setStorageItem } = useStorage();
+  const { setPreferencesItem } = usePreferences();
   const { migrate1 } = useMigration();
   const { enqueueSnackbar } = useSnackbar();
   const { setConfirmationDialog } = useConfirmationDialog();
@@ -511,13 +511,13 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const reorderTaskList = useCallback(
     async (filePaths: string[]) => {
-      await setStorageItem("todo-txt-paths", JSON.stringify(filePaths));
+      await setPreferencesItem("todo-txt-paths", JSON.stringify(filePaths));
       const reorderedList = [...taskLists].sort(
         (a, b) => filePaths.indexOf(a.filePath) - filePaths.indexOf(b.filePath)
       );
       setTaskLists(reorderedList);
     },
-    [setStorageItem, taskLists]
+    [setPreferencesItem, taskLists]
   );
 
   const createNewTodoFile = useCallback(

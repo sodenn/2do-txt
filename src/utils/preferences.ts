@@ -1,7 +1,7 @@
 import { Preferences } from "@capacitor/preferences";
 import { useCallback } from "react";
 
-export type StorageKeys =
+export type PreferencesKeys =
   | "app-rate-counter"
   | "app-rate-date"
   | "language"
@@ -19,9 +19,9 @@ export type StorageKeys =
   | "cloud-files"
   | "cloud-archive-files";
 
-export function useStorage() {
-  const getStorageItem = useCallback(
-    async <T extends string>(key: StorageKeys) => {
+export function usePreferences() {
+  const getPreferencesItem = useCallback(
+    async <T extends string>(key: PreferencesKeys) => {
       const result = await Preferences.get({ key });
       if (result) {
         return result.value as T;
@@ -32,16 +32,16 @@ export function useStorage() {
     []
   );
 
-  const setStorageItem = useCallback(
-    async (key: StorageKeys, value: string) => {
+  const setPreferencesItem = useCallback(
+    async (key: PreferencesKeys, value: string) => {
       return Preferences.set({ key, value: value });
     },
     []
   );
 
-  const removeStorageItem = useCallback(async (key: StorageKeys) => {
+  const removePreferencesItem = useCallback(async (key: PreferencesKeys) => {
     return Preferences.remove({ key });
   }, []);
 
-  return { getStorageItem, setStorageItem, removeStorageItem };
+  return { getPreferencesItem, setPreferencesItem, removePreferencesItem };
 }
