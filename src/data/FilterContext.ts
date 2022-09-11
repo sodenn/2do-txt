@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { createContext } from "../utils/Context";
-import { usePreferences } from "../utils/prefereneces";
+import { usePreferences } from "../utils/preferences";
 
 export type SortKey =
   | "priority"

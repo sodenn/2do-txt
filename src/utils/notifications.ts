@@ -8,7 +8,7 @@ import { isAfter, subDays } from "date-fns";
 import { useCallback, useEffect } from "react";
 import { dateReviver } from "./date";
 import { usePlatform } from "./platform";
-import { usePreferences } from "./prefereneces";
+import { usePreferences } from "./preferences";
 
 interface ReceivedNotifications {
   id: number;

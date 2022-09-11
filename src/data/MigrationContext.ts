@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { createContext } from "../utils/Context";
-import { usePreferences } from "../utils/prefereneces";
+import { usePreferences } from "../utils/preferences";
 
 const [MigrationProvider, useMigration] = createContext(() => {
   const { getPreferencesItem, setPreferencesItem, removePreferencesItem } =

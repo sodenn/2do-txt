@@ -25,7 +25,7 @@ import {
   getFilenameFromPath,
 } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
-import { usePreferences } from "../../utils/prefereneces";
+import { usePreferences } from "../../utils/preferences";
 import { useSecureStorage } from "../../utils/secure-storage";
 import { useConfirmationDialog } from "../ConfirmationDialogContext";
 import { useNetwork } from "../NetworkContext";

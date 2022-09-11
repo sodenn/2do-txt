@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
-import { usePreferences } from "../utils/prefereneces";
+import { usePreferences } from "../utils/preferences";
 
 export type Language = "de" | "en";
 

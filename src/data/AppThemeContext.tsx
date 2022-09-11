@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import { WithChildren } from "../types/common";
 import { createContext } from "../utils/Context";
 import { useKeyboard } from "../utils/keyboard";
-import { usePreferences } from "../utils/prefereneces";
+import { usePreferences } from "../utils/preferences";
 
 const translations: Record<string, Localization> = {
   en: enUS,

@@ -3,7 +3,7 @@ import { addWeeks, isAfter } from "date-fns";
 import { useCallback } from "react";
 import { parseDate } from "./date";
 import { usePlatform } from "./platform";
-import { usePreferences } from "./prefereneces";
+import { usePreferences } from "./preferences";
 
 export function useAppRate() {
   const { getPreferencesItem, setPreferencesItem } = usePreferences();

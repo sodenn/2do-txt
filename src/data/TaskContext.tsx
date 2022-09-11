@@ -18,7 +18,7 @@ import {
 import { hashCode } from "../utils/hashcode";
 import { useNotifications } from "../utils/notifications";
 import { usePlatform } from "../utils/platform";
-import { usePreferences } from "../utils/prefereneces";
+import { usePreferences } from "../utils/preferences";
 import {
   createDueDateRegex,
   createNextRecurringTask,
