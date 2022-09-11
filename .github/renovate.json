@@ -6,7 +6,7 @@
   "packageRules": [
     {
       "matchDatasources": ["npm"],
-      "stabilityDays": 3
+      "stabilityDays": 2
     },
     {
       "matchPaths": ["+(package.json)"],

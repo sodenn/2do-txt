@@ -25,8 +25,8 @@ import {
   getFilenameFromPath,
 } from "../../utils/filesystem";
 import { usePlatform } from "../../utils/platform";
+import { usePreferences } from "../../utils/prefereneces";
 import { useSecureStorage } from "../../utils/secure-storage";
-import { useStorage } from "../../utils/storage";
 import { useConfirmationDialog } from "../ConfirmationDialogContext";
 import { useNetwork } from "../NetworkContext";
 import {
@@ -123,7 +123,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     });
   const { getSecureStorageItem, removeSecureStorageItem } = useSecureStorage();
   const { setConfirmationDialog } = useConfirmationDialog();
-  const { getStorageItem, setStorageItem } = useStorage();
+  const { getPreferencesItem, setPreferencesItem } = usePreferences();
   const { checkNetworkStatus } = useNetwork();
   const initRef = useRef<Promise<void> | null>(null);
   const [connectedCloudStorages, setConnectedCloudStorages] = useState<
@@ -162,7 +162,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   );
 
   const getCloudFileRefs = useCallback(async (): Promise<CloudFileRef[]> => {
-    const cloudFilesStr = await getStorageItem("cloud-files");
+    const cloudFilesStr = await getPreferencesItem("cloud-files");
 
     if (!cloudFilesStr) {
       return [];
@@ -171,15 +171,17 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     try {
       return JSON.parse(cloudFilesStr);
     } catch (error) {
-      await setStorageItem("cloud-files", JSON.stringify([]));
+      await setPreferencesItem("cloud-files", JSON.stringify([]));
       return [];
     }
-  }, [getStorageItem, setStorageItem]);
+  }, [getPreferencesItem, setPreferencesItem]);
 
   const getCloudArchiveFileRefs = useCallback(async (): Promise<
     CloudArchiveFileRef[]
   > => {
-    const cloudArchiveFilesStr = await getStorageItem("cloud-archive-files");
+    const cloudArchiveFilesStr = await getPreferencesItem(
+      "cloud-archive-files"
+    );
 
     if (!cloudArchiveFilesStr) {
       return [];
@@ -188,10 +190,10 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     try {
       return JSON.parse(cloudArchiveFilesStr);
     } catch (error) {
-      await setStorageItem("cloud-archive-files", JSON.stringify([]));
+      await setPreferencesItem("cloud-archive-files", JSON.stringify([]));
       return [];
     }
-  }, [getStorageItem, setStorageItem]);
+  }, [getPreferencesItem, setPreferencesItem]);
 
   const initializeCloudStorages = useCallback(async () => {
     const cloudFiles = await getCloudFileRefs();
@@ -224,7 +226,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       }));
 
       const cloudFiles = await getCloudFileRefs();
-      await setStorageItem(
+      await setPreferencesItem(
         "cloud-files",
         JSON.stringify(
           cloudFiles.filter(
@@ -233,7 +235,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         )
       );
     },
-    [dropboxUnlink, getCloudFileRefs, setStorageItem]
+    [dropboxUnlink, getCloudFileRefs, setPreferencesItem]
   );
 
   const linkCloudFile = useCallback(
@@ -245,9 +247,9 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         { ...cloudFile },
       ];
 
-      await setStorageItem("cloud-files", JSON.stringify(newCloudFiles));
+      await setPreferencesItem("cloud-files", JSON.stringify(newCloudFiles));
     },
-    [getCloudFileRefs, setStorageItem]
+    [getCloudFileRefs, setPreferencesItem]
   );
 
   const linkCloudArchiveFile = useCallback(
@@ -259,12 +261,12 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         { ...cloudArchiveFile },
       ];
 
-      await setStorageItem(
+      await setPreferencesItem(
         "cloud-archive-files",
         JSON.stringify(newArchiveCloudFiles)
       );
     },
-    [getCloudArchiveFileRefs, setStorageItem]
+    [getCloudArchiveFileRefs, setPreferencesItem]
   );
 
   const getCloudFileRefByFilePath = useCallback(
@@ -705,9 +707,9 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       const newCloudFiles = cloudFiles.filter(
         (c) => c.path !== cloudFileRef.path
       );
-      await setStorageItem("cloud-files", JSON.stringify(newCloudFiles));
+      await setPreferencesItem("cloud-files", JSON.stringify(newCloudFiles));
     },
-    [getCloudFileRefByFilePath, getCloudFileRefs, setStorageItem]
+    [getCloudFileRefByFilePath, getCloudFileRefs, setPreferencesItem]
   );
 
   const unlinkCloudArchiveFile = useCallback(
@@ -724,12 +726,16 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       const newCloudArchiveFiles = cloudArchiveFiles.filter(
         (c) => c.path !== archiveFile.path
       );
-      await setStorageItem(
+      await setPreferencesItem(
         "cloud-archive-files",
         JSON.stringify(newCloudArchiveFiles)
       );
     },
-    [getCloudArchiveFileRefByFilePath, getCloudArchiveFileRefs, setStorageItem]
+    [
+      getCloudArchiveFileRefByFilePath,
+      getCloudArchiveFileRefs,
+      setPreferencesItem,
+    ]
   );
 
   const deleteCloudFile = useCallback(

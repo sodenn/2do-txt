@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { createContext } from "../utils/Context";
-import { useStorage } from "../utils/storage";
+import { usePreferences } from "../utils/prefereneces";
 
 export type SortKey =
   | "priority"
@@ -13,7 +13,7 @@ export type SortKey =
 export type FilterType = "AND" | "OR";
 
 const [FilterProvider, useFilter] = createContext(() => {
-  const { getStorageItem, setStorageItem } = useStorage();
+  const { getPreferencesItem, setPreferencesItem } = usePreferences();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTaskListPath, setActiveTaskListPath] = useState("");
   const [sortBy, _setSortBy] = useState<SortKey>("");
@@ -27,42 +27,42 @@ const [FilterProvider, useFilter] = createContext(() => {
   const setSortBy = useCallback(
     (value: SortKey) => {
       _setSortBy(value);
-      setStorageItem("sort-by", value);
+      setPreferencesItem("sort-by", value);
     },
-    [setStorageItem]
+    [setPreferencesItem]
   );
 
   const setFilterType = useCallback(
     (value: FilterType) => {
       _setFilterType(value);
-      setStorageItem("filter-type", value);
+      setPreferencesItem("filter-type", value);
 
       if (activePriorities.length > 1 && value === "AND") {
         setActivePriorities([]);
       }
     },
-    [activePriorities.length, setStorageItem]
+    [activePriorities.length, setPreferencesItem]
   );
 
   const setHideCompletedTasks = useCallback(
     (value: boolean) => {
       _setHideCompletedTasks(value);
-      setStorageItem("hide-completed-tasks", value.toString());
+      setPreferencesItem("hide-completed-tasks", value.toString());
     },
-    [setStorageItem]
+    [setPreferencesItem]
   );
 
   useEffect(() => {
     Promise.all([
-      getStorageItem<SortKey>("sort-by"),
-      getStorageItem<FilterType>("filter-type"),
-      getStorageItem("hide-completed-tasks"),
+      getPreferencesItem<SortKey>("sort-by"),
+      getPreferencesItem<FilterType>("filter-type"),
+      getPreferencesItem("hide-completed-tasks"),
     ]).then(([sortBy, filterType, hideCompletedTasks]) => {
       _setSortBy(sortBy || "");
       _setFilterType(filterType || "AND");
       _setHideCompletedTasks(hideCompletedTasks === "true");
     });
-  }, [getStorageItem]);
+  }, [getPreferencesItem]);
 
   return {
     searchTerm,

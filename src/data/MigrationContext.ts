@@ -1,19 +1,20 @@
 import { useCallback } from "react";
 import { createContext } from "../utils/Context";
-import { useStorage } from "../utils/storage";
+import { usePreferences } from "../utils/prefereneces";
 
 const [MigrationProvider, useMigration] = createContext(() => {
-  const { getStorageItem, setStorageItem, removeStorageItem } = useStorage();
+  const { getPreferencesItem, setPreferencesItem, removePreferencesItem } =
+    usePreferences();
 
   const migrate1 = useCallback(async () => {
-    const todoFilePath = await getStorageItem("todo-txt-path" as any);
+    const todoFilePath = await getPreferencesItem("todo-txt-path" as any);
     if (todoFilePath) {
       await Promise.all([
-        setStorageItem("todo-txt-paths", JSON.stringify([todoFilePath])),
-        removeStorageItem("todo-txt-path" as any),
+        setPreferencesItem("todo-txt-paths", JSON.stringify([todoFilePath])),
+        removePreferencesItem("todo-txt-path" as any),
       ]);
     }
-  }, [getStorageItem, setStorageItem, removeStorageItem]);
+  }, [getPreferencesItem, setPreferencesItem, removePreferencesItem]);
 
   return {
     migrate1,
