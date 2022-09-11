@@ -48,7 +48,7 @@ __metadata:
     cordova-res: 0.15.4
     crypto-js: 4.1.1
     date-fns: 2.29.2
-    dotenv: ^16.0.1
+    dotenv: 16.0.2
     dropbox: 10.32.0
     eslint: 8.22.0
     eslint-config-react-app: 7.0.1
@@ -77,7 +77,7 @@ __metadata:
     typescript: 4.8.3
     vite: 3.0.9
     vite-plugin-eslint: 1.8.1
-    vitest: ^0.23.2
+    vitest: 0.23.2
   languageName: unknown
   linkType: soft
 
@@ -4749,7 +4749,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.0.1":
+"dotenv@npm:16.0.2":
   version: 16.0.2
   resolution: "dotenv@npm:16.0.2"
   checksum: ca8f9ca2d67929c7771069f4c31b4e46b9932621009e658e5afd655dde2d69b77642bf36dbc9e72bc170523dfd908a9ee41c26f034c1fdc605ace3b1b4b10faf
@@ -10987,7 +10987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^0.23.2":
+"vitest@npm:0.23.2":
   version: 0.23.2
   resolution: "vitest@npm:0.23.2"
   dependencies:
