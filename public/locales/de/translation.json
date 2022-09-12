@@ -136,5 +136,9 @@
   "N": "Neue Aufgabe erstellen",
   "E": "Ausgewählte Aufgabe bearbeiten",
   "D": "Ausgewählte Aufgabe löschen",
-  "T": "Download todo.txt"
+  "T": "Download todo.txt",
+  "Task view": "Aufgabenansicht",
+  "List view": "Listenansicht",
+  "Timeline view": "Timeline Ansicht",
+  "Disabled when timeline view is active": "Deaktiviert wenn Timeline Ansicht aktiv ist"
 }

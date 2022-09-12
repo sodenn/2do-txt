@@ -136,5 +136,9 @@
   "N": "Create new task",
   "E": "Edit selected task",
   "D": "Delete selected task",
-  "T": "Download todo.txt"
+  "T": "Download todo.txt",
+  "Task view": "Task view",
+  "List view": "List view",
+  "Timeline view": "Timeline view",
+  "Disabled when timeline view is active": "Disabled when timeline view is active"
 }

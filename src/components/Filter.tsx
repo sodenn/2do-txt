@@ -5,13 +5,14 @@ import {
   MenuItem,
   Select,
   Stack,
-  Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
+import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import ChipList from "./ChipList";
+import Heading from "./Heading";
 
 const Filter = () => {
   const { t } = useTranslation();
@@ -33,6 +34,7 @@ const Filter = () => {
     setHideCompletedTasks,
     setSearchTerm,
   } = useFilter();
+  const { taskView } = useSettings();
 
   const attributes = activeTaskList ? activeTaskList : rest;
 
@@ -54,9 +56,7 @@ const Filter = () => {
     <Stack spacing={2}>
       {Object.keys(priorities).length > 0 && (
         <Box>
-          <Typography component="div" variant="subtitle1" gutterBottom>
-            {t("Priorities")}
-          </Typography>
+          <Heading gutterBottom>{t("Priorities")}</Heading>
           <ChipList
             multiple={filterType === "OR"}
             items={priorities}
@@ -74,9 +74,7 @@ const Filter = () => {
       )}
       {Object.keys(projects).length > 0 && (
         <Box>
-          <Typography component="div" variant="subtitle1" gutterBottom>
-            {t("Projects")}
-          </Typography>
+          <Heading gutterBottom>{t("Projects")}</Heading>
           <ChipList
             items={projects}
             activeItems={activeProjects}
@@ -93,9 +91,7 @@ const Filter = () => {
       )}
       {Object.keys(contexts).length > 0 && (
         <Box>
-          <Typography component="div" variant="subtitle1" gutterBottom>
-            {t("Contexts")}
-          </Typography>
+          <Heading gutterBottom>{t("Contexts")}</Heading>
           <ChipList
             items={contexts}
             activeItems={activeContexts}
@@ -112,9 +108,7 @@ const Filter = () => {
       )}
       {Object.keys(tags).length > 0 && (
         <Box>
-          <Typography component="div" variant="subtitle1" gutterBottom>
-            {t("Tags")}
-          </Typography>
+          <Heading gutterBottom>{t("Tags")}</Heading>
           <ChipList
             items={Object.keys(tags).reduce<Record<string, number>>(
               (acc, key) => {
@@ -137,9 +131,7 @@ const Filter = () => {
       )}
       {showSortBy && (
         <Box>
-          <Typography component="div" variant="subtitle1" gutterBottom>
-            {t("Filter type")}
-          </Typography>
+          <Heading gutterBottom>{t("Filter type")}</Heading>
           <Select
             fullWidth
             size="small"
@@ -157,10 +149,19 @@ const Filter = () => {
       )}
       {showSortBy && (
         <Box>
-          <Typography component="div" variant="subtitle1" gutterBottom>
+          <Heading
+            gutterBottom
+            disabled={taskView === "timeline"}
+            helperText={
+              taskView === "timeline"
+                ? t("Disabled when timeline view is active")
+                : undefined
+            }
+          >
             {t("Sort by")}
-          </Typography>
+          </Heading>
           <Select
+            disabled={taskView === "timeline"}
             fullWidth
             size="small"
             defaultValue=""
@@ -179,9 +180,7 @@ const Filter = () => {
         </Box>
       )}
       <Box>
-        <Typography component="div" variant="subtitle1">
-          {t("Status")}
-        </Typography>
+        <Heading>{t("Status")}</Heading>
         <FormControlLabel
           control={
             <Checkbox

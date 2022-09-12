@@ -13,7 +13,7 @@ interface TaskListProps {
   fileName: string;
   filePath: string;
   taskGroups: TaskGroup[];
-  flatTaskList: Task[];
+  taskList: Task[];
   focusedTaskIndex: number;
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
   showHeader?: boolean;
@@ -26,7 +26,7 @@ const TaskList = (props: TaskListProps) => {
     fileName,
     filePath,
     taskGroups,
-    flatTaskList,
+    taskList,
     focusedTaskIndex,
     listItemsRef,
     showHeader = false,
@@ -56,7 +56,7 @@ const TaskList = (props: TaskListProps) => {
               <ul style={{ padding: 0 }}>
                 {group.label && <TaskListSubheader title={group.label} />}
                 {group.items.map((task) => {
-                  const index = flatTaskList.indexOf(task);
+                  const index = taskList.indexOf(task);
                   return (
                     <TaskListItem
                       ref={(el) => {

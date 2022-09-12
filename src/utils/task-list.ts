@@ -2,6 +2,7 @@ import { isAfter, isBefore } from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
+import { useTask } from "../data/TaskContext";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
@@ -84,10 +85,18 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
     .join(lineEnding);
 }
 
-export function useTaskGroups(
-  taskLists: TaskList[],
-  activeTaskList?: TaskList
-) {
+export function useTimelineTasks() {
+  let { taskLists, activeTaskList } = useTask();
+  taskLists = activeTaskList ? [activeTaskList] : taskLists;
+  return taskLists
+    .flatMap((list) => list.items)
+    .sort((t1, t2) => timelineSort(t1.creationDate, t2.creationDate))
+    .sort((t1, t2) => timelineSort(t1.completionDate, t2.completionDate, true))
+    .sort((t1, t2) => timelineSort(t1.dueDate, t2.dueDate, true, "asc"));
+}
+
+export function useTaskGroups() {
+  let { taskLists, activeTaskList } = useTask();
   taskLists = activeTaskList ? [activeTaskList] : taskLists;
 
   const {
@@ -430,15 +439,15 @@ function sortGroups(a: TaskGroup, b: TaskGroup, sortBy: SortKey) {
     sortBy === "project" ||
     sortBy === "tag"
   ) {
-    return sortByKey(a.label, b.label);
+    return groupSortByKey(a.label, b.label);
   } else if (sortBy === "dueDate") {
-    return sortByDate(a.label, b.label);
+    return groupSortByDate(a.label, b.label);
   } else {
     return -1;
   }
 }
 
-function sortByKey(a?: string, b?: string) {
+function groupSortByKey(a?: string, b?: string) {
   if (a && !b) {
     return -1;
   } else if (!a && b) {
@@ -454,7 +463,7 @@ function sortByKey(a?: string, b?: string) {
   }
 }
 
-function sortByDate(a?: string, b?: string) {
+function groupSortByDate(a?: string, b?: string) {
   const aDate = a ? parseDate(a) : undefined;
   const bDate = b ? parseDate(b) : undefined;
   if (aDate && !bDate) {
@@ -467,6 +476,27 @@ function sortByDate(a?: string, b?: string) {
     return 1;
   } else if (aDate && bDate && isBefore(aDate, bDate)) {
     return -1;
+  } else {
+    return 0;
+  }
+}
+
+function timelineSort(
+  a?: Date,
+  b?: Date,
+  keepOriginalOrder = false,
+  direction: "asc" | "desc" = "desc"
+) {
+  if (a && !b) {
+    return -1;
+  } else if (!a && b) {
+    return keepOriginalOrder ? 0 : 1;
+  } else if (!a && !b) {
+    return keepOriginalOrder ? 0 : -1;
+  } else if (a && b && isAfter(a, b)) {
+    return direction === "desc" ? -1 : 1;
+  } else if (a && b && isBefore(a, b)) {
+    return direction === "desc" ? 1 : -1;
   } else {
     return 0;
   }

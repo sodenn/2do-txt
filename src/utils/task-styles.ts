@@ -40,14 +40,6 @@ export const dateStyle: CSSProperties = {
   fontSize: "0.75em",
 };
 
-export const completedStyle: CSSProperties = {
-  textDecoration: "line-through",
-};
-
-export const disabledStyle: CSSProperties = {
-  opacity: 0.6,
-};
-
 export const taskChipStyle = css`
   hyphens: none;
   display: inline;

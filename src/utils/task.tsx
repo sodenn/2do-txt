@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import {
   addBusinessDays,
   addDays,
@@ -8,12 +9,10 @@ import {
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
-import { PriorityTransformation } from "../data/SettingsContext";
+import { PriorityTransformation, useSettings } from "../data/SettingsContext";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import {
-  completedStyle,
   contextStyle,
-  disabledStyle,
   dueDateStyle,
   priorityBoldStyle,
   priorityStyle,
@@ -190,50 +189,56 @@ export function useFormatBody() {
     i18n: { language },
   } = useTranslation();
   const { sortBy } = useFilter();
+  const { taskView } = useSettings();
   return (task: Task) => {
-    const tokens = task.body
+    const subStrings = task.body
       .trim()
       .split(/\s+/)
       .map((t) => t.trim());
 
-    let formattedTokens = tokens.map((token, index) => {
-      if (/^@[\S]+/.test(token)) {
-        return (
-          <span key={index} className={taskChipStyle} style={contextStyle}>
-            {token}
-          </span>
-        );
-      } else if (/^\+[\S]+/.test(token)) {
-        return (
-          <span key={index} className={taskChipStyle} style={projectStyle}>
-            {token}
-          </span>
-        );
-      } else if (/[^:]+:[^/:][^:]*/.test(token)) {
-        const substrings = token.split(":");
-        const key = substrings[0].toLowerCase();
-        const translatedKey = t(key);
-        const keySuffix = translatedKey !== key ? ": " : ":";
-        const value = substrings[1];
-        const date = parseDate(value);
-        const displayKey = translatedKey + keySuffix;
-        const displayValue = date ? formatLocaleDate(date, language) : value;
-        const text = displayKey + displayValue;
-        return (
-          <span
-            key={index}
-            style={getTaskTagStyle(key)}
-            className={taskChipStyle}
-          >
-            {text}
-          </span>
-        );
-      } else {
-        return <Fragment key={index}>{token}</Fragment>;
-      }
-    });
+    const elements: ReactNode[] = subStrings
+      .map((token, index) => {
+        if (/^@\S+/.test(token)) {
+          return (
+            <span key={index} className={taskChipStyle} style={contextStyle}>
+              {token}
+            </span>
+          );
+        } else if (/^\+\S+/.test(token)) {
+          return (
+            <span key={index} className={taskChipStyle} style={projectStyle}>
+              {token}
+            </span>
+          );
+        } else if (/[^:]+:[^/:][^:]*/.test(token)) {
+          const substrings = token.split(":");
+          const key = substrings[0].toLowerCase();
+          if (key === "due" && taskView === "timeline") {
+            return undefined;
+          }
+          const translatedKey = t(key);
+          const keySuffix = translatedKey !== key ? ": " : ":";
+          const value = substrings[1];
+          const date = parseDate(value);
+          const displayKey = translatedKey + keySuffix;
+          const displayValue = date ? formatLocaleDate(date, language) : value;
+          const text = displayKey + displayValue;
+          return (
+            <span
+              key={index}
+              style={getTaskTagStyle(key)}
+              className={taskChipStyle}
+            >
+              {text}
+            </span>
+          );
+        } else {
+          return <Fragment key={index}>{token}</Fragment>;
+        }
+      })
+      .filter((e) => !!e);
 
-    if (task.priority && sortBy !== "priority") {
+    if (taskView === "list" && task.priority && sortBy !== "priority") {
       const priorityElement = (
         <span
           key={task._id}
@@ -243,19 +248,21 @@ export function useFormatBody() {
           {task.priority}
         </span>
       );
-      formattedTokens = [priorityElement, ...formattedTokens];
+      elements.unshift(priorityElement);
     }
 
     return (
-      <span
-        style={
-          task.completed ? { ...completedStyle, ...disabledStyle } : undefined
-        }
+      <Box
+        component="span"
+        sx={{
+          ...(task.completed && {
+            textDecoration: "line-through",
+            color: "text.disabled",
+          }),
+        }}
       >
-        {formattedTokens
-          .map<ReactNode>((e) => e)
-          .reduce((prev, curr) => [prev, " ", curr])}
-      </span>
+        {elements.reduce((prev, curr) => [prev, " ", curr])}
+      </Box>
     );
   };
 }

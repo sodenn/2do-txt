@@ -1,12 +1,4 @@
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useSettings } from "../data/SettingsContext";
@@ -14,8 +6,10 @@ import { useNotifications } from "../utils/notifications";
 import ArchiveModeSelect from "./ArchiveModeSelect";
 import ArchiveNowButton from "./ArchiveNowButton";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
+import Heading from "./Heading";
 import LanguageSelect from "./LanguageSelect";
 import PriorityTransformationSelect from "./PriorityTransformationSelect";
+import TaskViewSelect from "./TaskViewSelect";
 import ThemeModeSelect from "./ThemeModeSelect";
 
 const Settings = () => {
@@ -46,21 +40,19 @@ const Settings = () => {
   return (
     <Stack spacing={2}>
       <div>
-        <Typography component="div" variant="subtitle1" gutterBottom>
-          {t("Appearance")}
-        </Typography>
+        <Heading gutterBottom>{t("Appearance")}</Heading>
         <ThemeModeSelect />
       </div>
       <div>
-        <Typography component="div" variant="subtitle1" gutterBottom>
-          {t("Language")}
-        </Typography>
+        <Heading gutterBottom>{t("Task view")}</Heading>
+        <TaskViewSelect />
+      </div>
+      <div>
+        <Heading gutterBottom>{t("Language")}</Heading>
         <LanguageSelect />
       </div>
       <div>
-        <Typography component="div" variant="subtitle1">
-          {t("Dates")}
-        </Typography>
+        <Heading>{t("Dates")}</Heading>
         <FormControlLabel
           control={
             <Checkbox
@@ -81,9 +73,7 @@ const Settings = () => {
         />
       </div>
       <div>
-        <Typography component="div" variant="subtitle1">
-          {t("Notifications")}
-        </Typography>
+        <Heading>{t("Notifications")}</Heading>
         <FormControlLabel
           control={
             <Checkbox
@@ -95,41 +85,26 @@ const Settings = () => {
         />
       </div>
       <div>
-        <Stack
-          spacing={1}
-          direction="row"
-          alignItems="center"
-          sx={{ mb: "0.35em" }}
+        <Heading
+          gutterBottom
+          helperText={
+            <Trans i18nKey="Completed tasks are archived in a second file called done.txt" />
+          }
         >
-          <Typography component="div" variant="subtitle1">
-            {t("Archiving")}
-          </Typography>
-          <Tooltip
-            enterTouchDelay={0}
-            leaveTouchDelay={2000}
-            title={
-              <Trans i18nKey="Completed tasks are archived in a second file called done.txt" />
-            }
-          >
-            <HelpOutlineIcon />
-          </Tooltip>
-        </Stack>
+          {t("Archiving")}
+        </Heading>
         <Stack spacing={1}>
           <ArchiveModeSelect />
           {archiveMode === "manual" && <ArchiveNowButton />}
         </Stack>
       </div>
       <div>
-        <Typography component="div" variant="subtitle1" gutterBottom>
-          {t("Completed tasks")}
-        </Typography>
+        <Heading gutterBottom>{t("Completed tasks")}</Heading>
         <PriorityTransformationSelect />
       </div>
       {cloudStorageEnabled && (
         <div>
-          <Typography component="div" variant="subtitle1">
-            {t("Cloud storage")}
-          </Typography>
+          <Heading gutterBottom>{t("Cloud storage")}</Heading>
           <Box sx={{ mt: 1 }}>
             <CloudStorageConnectionButtons />
           </Box>
