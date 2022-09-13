@@ -26,6 +26,7 @@ __metadata:
     "@emotion/css": 11.10.0
     "@emotion/react": 11.10.4
     "@emotion/styled": 11.10.4
+    "@formkit/auto-animate": 1.0.0-beta.3
     "@mui/icons-material": 5.10.3
     "@mui/lab": 5.0.0-alpha.98
     "@mui/material": 5.10.4
@@ -2005,6 +2006,13 @@ __metadata:
     minimatch: ^3.1.2
     strip-json-comments: ^3.1.1
   checksum: 9844dcc58a44399649926d5a17a2d53d529b80d3e8c3e9d0964ae198bac77ee6bb1cf44940f30cd9c2e300f7568ec82500be42ace6cacefb08aebf9905fe208e
+  languageName: node
+  linkType: hard
+
+"@formkit/auto-animate@npm:1.0.0-beta.3":
+  version: 1.0.0-beta.3
+  resolution: "@formkit/auto-animate@npm:1.0.0-beta.3"
+  checksum: 93185c85040fc812e7187968711940eb56d41dce224e7f891ed61a790cef2025e9a148f0b10213f1955d722fe2b05d2261ef736622738898912398eea6e1b161
   languageName: node
   linkType: hard
 

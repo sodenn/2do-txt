@@ -75,7 +75,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
     } = props;
 
     const handleDeleteClick: IconButtonProps["onClick"] = (e) => {
-      e.preventDefault();
+      e.stopPropagation();
       onDelete();
     };
 
@@ -118,11 +118,11 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
                 <TaskBody task={task} />
                 <TaskDates task={task} />
               </Box>
-              <div>
+              <Box>
                 <IconButton edge="end" onClick={handleDeleteClick}>
                   <DeleteOutlineOutlinedIcon />
                 </IconButton>
-              </div>
+              </Box>
             </Stack>
           </StyledButton>
         </TimelineContent>

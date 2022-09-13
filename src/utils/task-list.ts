@@ -90,9 +90,13 @@ export function useTimelineTasks() {
   taskLists = activeTaskList ? [activeTaskList] : taskLists;
   return taskLists
     .flatMap((list) => list.items)
-    .sort((t1, t2) => timelineSort(t1.creationDate, t2.creationDate))
-    .sort((t1, t2) => timelineSort(t1.completionDate, t2.completionDate, true))
-    .sort((t1, t2) => timelineSort(t1.dueDate, t2.dueDate, true, "asc"));
+    .sort((t1, t2) =>
+      timelineSort(
+        t1.completionDate || t1.creationDate,
+        t2.completionDate || t2.creationDate
+      )
+    )
+    .sort((t1, t2) => timelineSort(t1.dueDate, t2.dueDate, "asc"));
 }
 
 export function useTaskGroups() {
@@ -481,18 +485,13 @@ function groupSortByDate(a?: string, b?: string) {
   }
 }
 
-function timelineSort(
-  a?: Date,
-  b?: Date,
-  keepOriginalOrder = false,
-  direction: "asc" | "desc" = "desc"
-) {
+function timelineSort(a?: Date, b?: Date, direction: "asc" | "desc" = "desc") {
   if (a && !b) {
     return -1;
   } else if (!a && b) {
-    return keepOriginalOrder ? 0 : 1;
+    return 0;
   } else if (!a && !b) {
-    return keepOriginalOrder ? 0 : -1;
+    return 0;
   } else if (a && b && isAfter(a, b)) {
     return direction === "desc" ? -1 : 1;
   } else if (a && b && isBefore(a, b)) {

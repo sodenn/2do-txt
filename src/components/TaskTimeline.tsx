@@ -1,4 +1,6 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Timeline } from "@mui/lab";
+import { Box } from "@mui/material";
 import { MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
@@ -21,6 +23,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
   const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { deleteTask, completeTask } = useTask();
+  const [parent] = useAutoAnimate<HTMLUListElement>();
 
   const handleDelete = (task: Task) => {
     setConfirmationDialog({
@@ -42,25 +45,26 @@ const TaskTimeline = (props: TaskTimelineProps) => {
   };
 
   return (
-    <Timeline sx={{ m: 0, pl: { xs: 0.5, sm: 1 }, py: 0 }}>
+    <Timeline ref={parent} sx={{ m: 0, pl: { xs: 0.5, sm: 1 }, py: 0 }}>
       {taskList.map((task, index) => (
-        <TaskTimelineItem
-          key={index}
-          ref={(el) => {
-            if (listItemsRef.current && el) {
-              listItemsRef.current[index] = el;
-            }
-          }}
-          hideTopConnector={index === 0}
-          hideBottomConnector={index === taskList.length - 1}
-          task={task}
-          onClick={() => setTaskDialogOptions({ open: true, task })}
-          onCheckboxClick={() => completeTask(task)}
-          onDelete={() => handleDelete(task)}
-          focused={focusedTaskIndex === index}
-          onFocus={() => onFocus(index)}
-          onBlur={onBlur}
-        />
+        <Box key={task._id}>
+          <TaskTimelineItem
+            ref={(el) => {
+              if (listItemsRef.current && el) {
+                listItemsRef.current[index] = el;
+              }
+            }}
+            hideTopConnector={index === 0}
+            hideBottomConnector={index === taskList.length - 1}
+            task={task}
+            onClick={() => setTaskDialogOptions({ open: true, task })}
+            onCheckboxClick={() => completeTask(task)}
+            onDelete={() => handleDelete(task)}
+            focused={focusedTaskIndex === index}
+            onFocus={() => onFocus(index)}
+            onBlur={onBlur}
+          />
+        </Box>
       ))}
     </Timeline>
   );

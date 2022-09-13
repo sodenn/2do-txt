@@ -31,7 +31,7 @@ import {
 } from "../utils/task";
 import {
   getCommonTaskListAttributes,
-  parseTaskList,
+  parseTaskList as _parseTaskList,
   stringifyTaskList,
   TaskList,
 } from "../utils/task-list";
@@ -48,6 +48,11 @@ interface SyncItem {
   filePath: string;
   text: string;
 }
+
+type SaveTodoFile = {
+  (filePath: string, text: string): Promise<TaskList>;
+  (taskList: TaskList): Promise<TaskList>;
+};
 
 const [TaskProvider, useTask] = createContext(() => {
   const { promptForRating } = useAppRate();
@@ -112,23 +117,20 @@ const [TaskProvider, useTask] = createContext(() => {
     [taskLists]
   );
 
-  const toTaskList = useCallback((filePath: string, text: string) => {
-    const parseResult = parseTaskList(text);
-
+  const parseTaskList = useCallback((filePath: string, text: string) => {
+    const parseResult = _parseTaskList(text);
     const fileName = getFilenameFromPath(filePath);
-
     const taskList: TaskList = {
       ...parseResult,
       filePath,
       fileName,
     };
-
     return taskList;
   }, []);
 
   const loadTodoFile = useCallback(
     async (filePath: string, text: string) => {
-      const taskList = toTaskList(filePath, text);
+      const taskList = parseTaskList(filePath, text);
       setTaskLists((value) => {
         return value.some((t) => t.filePath === filePath)
           ? value.map((t) => (t.filePath === filePath ? taskList : t))
@@ -136,7 +138,7 @@ const [TaskProvider, useTask] = createContext(() => {
       });
       return taskList;
     },
-    [toTaskList]
+    [parseTaskList]
   );
 
   const syncTodoFileWithCloudStorage = useCallback(
@@ -173,22 +175,41 @@ const [TaskProvider, useTask] = createContext(() => {
     [syncAllDoneFilesWithCloudStorage, loadTodoFile, syncAllFiles, writeFile]
   );
 
-  const saveTodoFile = useCallback(
-    async (filePath: string, text = "") => {
+  const saveTodoFile = useCallback<SaveTodoFile>(
+    async (listOrPath: string | TaskList, text?: string) => {
+      text =
+        typeof listOrPath === "string"
+          ? text || ""
+          : stringifyTaskList(listOrPath.items, listOrPath.lineEnding);
+      const filePath =
+        typeof listOrPath === "string" ? listOrPath : listOrPath.filePath;
+
       await writeFile({
         path: filePath,
         data: text,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
+
       syncTodoFileWithCloudStorage({
         filePath,
         text,
         showSnackbar: true,
         archive: false,
       }).catch((e) => void e);
+
       promptForRating().catch((e) => void e);
-      return loadTodoFile(filePath, text);
+
+      if (typeof listOrPath === "string") {
+        return loadTodoFile(filePath, text);
+      } else {
+        setTaskLists((taskLists) => {
+          return taskLists.some((t) => t.filePath === filePath)
+            ? taskLists.map((t) => (t.filePath === filePath ? listOrPath : t))
+            : [...taskLists, listOrPath];
+        });
+        return listOrPath;
+      }
     },
     [loadTodoFile, promptForRating, syncTodoFileWithCloudStorage, writeFile]
   );
@@ -224,7 +245,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const addTask = useCallback(
     (data: TaskFormData, taskList: TaskList) => {
-      const { items, lineEnding } = taskList;
+      const { items } = taskList;
       const dueDate = getDueDateValue(data.body);
       const { priority, completionDate, creationDate, ...rest } = data;
       const { projects, contexts, tags } = parseTaskBody(rest.body);
@@ -256,9 +277,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
       scheduleDueTaskNotification(newTask);
 
-      const newTaskList = [...items, newTask];
-      const text = stringifyTaskList(newTaskList, lineEnding);
-      return saveTodoFile(taskList.filePath, text);
+      return saveTodoFile({ ...taskList, items: [...items, newTask] });
     },
     [saveTodoFile, scheduleDueTaskNotification]
   );
@@ -269,8 +288,7 @@ const [TaskProvider, useTask] = createContext(() => {
       if (!taskList) {
         return;
       }
-      const { items, lineEnding } = taskList;
-      const newTaskList = items.map((t) => {
+      const items = taskList.items.map((t) => {
         if (t._id === data._id) {
           cancelNotifications({ notifications: [{ id: hashCode(t.raw) }] });
           const updatedTask: Task = {
@@ -284,8 +302,7 @@ const [TaskProvider, useTask] = createContext(() => {
           return t;
         }
       });
-      const text = stringifyTaskList(newTaskList, lineEnding);
-      return saveTodoFile(taskList.filePath, text);
+      return saveTodoFile({ ...taskList, items });
     },
     [
       cancelNotifications,
@@ -301,11 +318,9 @@ const [TaskProvider, useTask] = createContext(() => {
       if (!taskList) {
         return;
       }
-      const { items, lineEnding } = taskList;
       cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
-      const newTaskList = items.filter((t) => t._id !== task._id);
-      const text = stringifyTaskList(newTaskList, lineEnding);
-      return saveTodoFile(taskList.filePath, text);
+      const items = taskList.items.filter((t) => t._id !== task._id);
+      return saveTodoFile({ ...taskList, items });
     },
     [cancelNotifications, findTaskListByTaskId, saveTodoFile]
   );
@@ -338,33 +353,30 @@ const [TaskProvider, useTask] = createContext(() => {
 
       transformPriority(updatedTask, priorityTransformation);
 
-      const updatedList =
+      const newItems =
         archiveMode === "automatic"
           ? taskList.items.filter((i) => i._id !== task._id)
           : taskList.items.map((i) => (i._id === task._id ? updatedTask : i));
 
-      const text = stringifyTaskList(updatedList, taskList.lineEnding);
-      const newTaskList = await saveTodoFile(taskList.filePath, text);
+      const newTaskList: TaskList = { ...taskList, items: newItems };
+      await saveTodoFile(newTaskList);
 
       if (archiveMode === "automatic") {
         await archiveTask({
           taskList: newTaskList,
           task: updatedTask,
-          onSaveTodoFile: async (path, text) => {
-            await saveTodoFile(path, text);
-          },
         });
       }
     },
     [
-      cancelNotifications,
-      createCreationDate,
-      createCompletionDate,
       findTaskListByTaskId,
       priorityTransformation,
       archiveMode,
-      archiveTask,
       saveTodoFile,
+      createCompletionDate,
+      createCreationDate,
+      cancelNotifications,
+      archiveTask,
     ]
   );
 
@@ -585,7 +597,7 @@ const [TaskProvider, useTask] = createContext(() => {
   }, [fileInputRef]);
 
   const restoreTask = useCallback(
-    (filePathOrTaskList: string | TaskList, task: Task) => {
+    async (filePathOrTaskList: string | TaskList, task: Task) => {
       const taskList =
         typeof filePathOrTaskList === "string"
           ? taskLists.find((t) => t.filePath === filePathOrTaskList)
@@ -597,13 +609,14 @@ const [TaskProvider, useTask] = createContext(() => {
         );
       }
 
-      return _restoreTask({
+      const newTaskList = await _restoreTask({
         taskList,
         task,
-        onSaveTodoFile: async (path, text) => {
-          await saveTodoFile(path, text);
-        },
       });
+
+      if (newTaskList) {
+        await saveTodoFile(newTaskList);
+      }
     },
     [_restoreTask, saveTodoFile, taskLists]
   );
@@ -611,8 +624,8 @@ const [TaskProvider, useTask] = createContext(() => {
   const archiveAllTask = useCallback(() => {
     return _archiveAllTask({
       taskLists,
-      onSaveTodoFile: async (path, text) => {
-        await saveTodoFile(path, text);
+      onSaveTodoFile: async (taskList) => {
+        await saveTodoFile(taskList);
       },
     });
   }, [_archiveAllTask, saveTodoFile, taskLists]);
@@ -620,8 +633,8 @@ const [TaskProvider, useTask] = createContext(() => {
   const restoreAllArchivedTask = useCallback(() => {
     return _restoreAllArchivedTask({
       taskLists,
-      onSaveTodoFile: async (path, text) => {
-        await saveTodoFile(path, text);
+      onSaveTodoFile: async (taskList) => {
+        await saveTodoFile(taskList);
       },
     });
   }, [_restoreAllArchivedTask, saveTodoFile, taskLists]);
@@ -655,7 +668,7 @@ const [TaskProvider, useTask] = createContext(() => {
           .map((i) => {
             const text = i!.file.data;
             const filePath = i!.path;
-            return { taskList: toTaskList(filePath, text), filePath, text };
+            return { taskList: parseTaskList(filePath, text), filePath, text };
           })
       );
 
