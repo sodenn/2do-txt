@@ -13,8 +13,8 @@ import {
   Checkbox,
   IconButton,
   IconButtonProps,
+  ListItem,
   ListItemButton,
-  Stack,
   styled,
 } from "@mui/material";
 import { forwardRef } from "react";
@@ -111,20 +111,27 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             }}
           />
         </TimelineSeparator>
-        <TimelineContent sx={{ pl: 0, py: 0, px: { xs: 0, sm: 0.5 } }}>
-          <StyledButton ref={ref} onClick={onClick}>
-            <Stack spacing={1} direction="row" justifyContent="space-between">
-              <Box sx={{ py: 1 }}>
+        <TimelineContent sx={{ pl: 0, py: 1, px: { xs: 0, sm: 0.5 } }}>
+          <ListItem
+            component="div"
+            disablePadding
+            secondaryAction={
+              <IconButton edge="end" onClick={handleDeleteClick}>
+                <DeleteOutlineOutlinedIcon />
+              </IconButton>
+            }
+          >
+            <ListItemButton
+              sx={{ borderRadius: 1 }}
+              ref={ref}
+              onClick={onClick}
+            >
+              <Box>
                 <TaskBody task={task} />
                 <TaskDates task={task} />
               </Box>
-              <Box>
-                <IconButton edge="end" onClick={handleDeleteClick}>
-                  <DeleteOutlineOutlinedIcon />
-                </IconButton>
-              </Box>
-            </Stack>
-          </StyledButton>
+            </ListItemButton>
+          </ListItem>
         </TimelineContent>
       </TimelineItem>
     );
