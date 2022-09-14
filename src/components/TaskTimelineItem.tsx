@@ -116,7 +116,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             component="div"
             disablePadding
             secondaryAction={
-              <IconButton edge="end" onClick={handleDeleteClick}>
+              <IconButton tabIndex={-1} edge="end" onClick={handleDeleteClick}>
                 <DeleteOutlineOutlinedIcon />
               </IconButton>
             }
