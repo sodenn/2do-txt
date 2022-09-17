@@ -179,7 +179,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
   }, [changeLanguage, getPreferencesItem, setArchiveMode]);
 
   return {
-    language: resolvedLanguage,
+    language: resolvedLanguage as Language,
     changeLanguage,
     createCreationDate,
     createCompletionDate,

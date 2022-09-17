@@ -11,21 +11,22 @@ import {
 import {
   Box,
   Checkbox,
+  Chip,
   IconButton,
   IconButtonProps,
   ListItem,
   ListItemButton,
-  styled,
 } from "@mui/material";
+import { format } from "date-fns";
 import { forwardRef } from "react";
-import { Task } from "../utils/task";
+import { useSettings } from "../data/SettingsContext";
+import { formatDateRelative } from "../utils/date";
+import { TimelineTask } from "../utils/task-list";
 import TaskBody from "./TaskBody";
 import TaskDates from "./TaskDates";
 
 interface TimelineItemProps {
-  task: Task;
-  hideTopConnector: boolean;
-  hideBottomConnector: boolean;
+  task: TimelineTask;
   focused: boolean;
   onClick: () => void;
   onCheckboxClick: () => void;
@@ -33,32 +34,6 @@ interface TimelineItemProps {
   onFocus: () => void;
   onBlur: () => void;
 }
-
-const StyledButton = styled(ListItemButton)(({ theme }) => ({
-  "&.MuiListItemButton-root": {
-    display: "block",
-    borderRadius: theme.shape.borderRadius,
-    [theme.breakpoints.down("sm")]: {
-      padding: `${theme.spacing(1)} 0`,
-    },
-    [theme.breakpoints.up("sm")]: {
-      padding: `${theme.spacing(1)} ${theme.spacing(1.5)}`,
-    },
-    ".MuiIconButton-root": {
-      visibility: "hidden",
-    },
-    "@media (pointer: coarse)": {
-      ".MuiIconButton-root": {
-        visibility: "visible",
-      },
-    },
-    "&:hover": {
-      ".MuiIconButton-root": {
-        visibility: "visible",
-      },
-    },
-  },
-}));
 
 const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
   (props, ref) => {
@@ -70,9 +45,8 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
       onDelete,
       onFocus,
       onBlur,
-      hideTopConnector,
-      hideBottomConnector,
     } = props;
+    const { language } = useSettings();
 
     const handleDeleteClick: IconButtonProps["onClick"] = (e) => {
       e.stopPropagation();
@@ -86,32 +60,109 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
         onBlur={onBlur}
         aria-current={focused}
       >
-        <TimelineOppositeContent sx={{ flex: 0, p: 0 }} />
+        <TimelineOppositeContent
+          sx={{
+            flex: 0,
+            px: 0,
+            pt: { xs: 2, sm: task._timelineFlags.firstOfYear ? 10 : 2 },
+          }}
+        >
+          <Box
+            sx={{
+              width: 100,
+              display: {
+                xs: "hidden",
+                sm: "block",
+              },
+              visibility:
+                task._timelineFlags.firstOfToday ||
+                task._timelineFlags.firstOfDay
+                  ? "visible"
+                  : "hidden",
+              color: task._timelineFlags.firstOfToday
+                ? "primary.main"
+                : undefined,
+            }}
+          >
+            {task._timelineDate &&
+              formatDateRelative(task._timelineDate, language)}
+          </Box>
+        </TimelineOppositeContent>
         <TimelineSeparator>
           <TimelineConnector
             sx={{
               flexGrow: 0,
               pt: "10px",
-              bgcolor: "primary.main",
-              visibility: hideTopConnector ? "hidden" : "visible",
+              bgcolor:
+                task._timelineFlags.today && !task._timelineFlags.firstOfToday
+                  ? "primary.main"
+                  : "text.secondary",
+              visibility: task._timelineFlags.first ? "hidden" : "visible",
             }}
           />
+          <Box
+            sx={{
+              width: "60px",
+              alignItems: "center",
+              flexDirection: "column",
+              display: {
+                xs: "hidden",
+                sm: "inline-flex",
+              },
+              visibility: task._timelineFlags.firstOfYear
+                ? "visible"
+                : "hidden",
+              height: !task._timelineFlags.firstOfYear ? "1px" : undefined,
+            }}
+          >
+            <Chip
+              sx={{ my: 1 }}
+              label={task._timelineDate && format(task._timelineDate, "yyyy")}
+            />
+            <TimelineConnector
+              sx={{
+                flexGrow: 0,
+                pt: 2,
+                bgcolor:
+                  task._timelineFlags.today && !task._timelineFlags.firstOfToday
+                    ? "primary.main"
+                    : "text.secondary",
+              }}
+            />
+          </Box>
           <Checkbox
             size="small"
             tabIndex={-1}
             onClick={onCheckboxClick}
             checked={task.completed}
-            icon={<RadioButtonUncheckedOutlinedIcon color="primary" />}
-            checkedIcon={<RadioButtonCheckedOutlinedIcon color="primary" />}
+            icon={
+              <RadioButtonUncheckedOutlinedIcon
+                color={task._timelineFlags.today ? "primary" : "action"}
+              />
+            }
+            checkedIcon={
+              <RadioButtonCheckedOutlinedIcon
+                color={task._timelineFlags.today ? "primary" : "action"}
+              />
+            }
           />
           <TimelineConnector
             sx={{
-              bgcolor: "primary.main",
-              visibility: hideBottomConnector ? "hidden" : "visible",
+              bgcolor:
+                task._timelineFlags.today && !task._timelineFlags.lastOfToday
+                  ? "primary.main"
+                  : "text.secondary",
+              visibility: task._timelineFlags.last ? "hidden" : "visible",
             }}
           />
         </TimelineSeparator>
-        <TimelineContent sx={{ pl: 0, py: 1, px: { xs: 0, sm: 0.5 } }}>
+        <TimelineContent
+          sx={{
+            pl: 0,
+            pt: { xs: 1, sm: task._timelineFlags.firstOfYear ? 9 : 1 },
+            px: { xs: 0, sm: 0.5 },
+          }}
+        >
           <ListItem
             component="div"
             disablePadding

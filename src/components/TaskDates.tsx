@@ -1,7 +1,7 @@
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
-import { Box, Stack, styled } from "@mui/material";
+import { Box, Stack, styled, useMediaQuery, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
 import { formatLocaleDate } from "../utils/date";
@@ -25,6 +25,8 @@ const TaskDates = ({ task }: TaskDatesProps) => {
     i18n: { language },
   } = useTranslation();
   const { taskView } = useSettings();
+  const theme = useTheme();
+  const xs = useMediaQuery(theme.breakpoints.down("sm"));
   const { creationDate, completionDate, completed, dueDate } = task;
   return (
     <Stack direction="row" spacing={0.5}>
@@ -46,13 +48,13 @@ const TaskDates = ({ task }: TaskDatesProps) => {
               {formatLocaleDate(dueDate, language)}
             </TextContainer>
           )}
-          {completionDate && !dueDate && (
+          {xs && completionDate && !dueDate && (
             <TextContainer sx={{ color: "text.disabled" }}>
               <CheckCircleOutlineOutlinedIcon fontSize="small" />
               {formatLocaleDate(completionDate, language)}
             </TextContainer>
           )}
-          {creationDate && !dueDate && !completionDate && (
+          {xs && creationDate && !dueDate && !completionDate && (
             <TextContainer sx={{ color: "text.secondary" }}>
               <AccessTimeOutlinedIcon fontSize="small" />
               {formatLocaleDate(creationDate, language)}

@@ -1,7 +1,7 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { format, isBefore, subHours } from "date-fns";
+import { format, isBefore, startOfDay, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { useSnackbar } from "notistack";
@@ -273,6 +273,7 @@ const [TaskProvider, useTask] = createContext(() => {
       if (dueDate) {
         newTask.dueDate = dueDate;
       }
+      normalizeDates(newTask);
       newTask.raw = stringifyTask(newTask);
 
       scheduleDueTaskNotification(newTask);
@@ -295,6 +296,7 @@ const [TaskProvider, useTask] = createContext(() => {
             ...t,
             ...data,
           };
+          normalizeDates(updatedTask);
           updatedTask.raw = stringifyTask(updatedTask);
           scheduleDueTaskNotification(updatedTask);
           return updatedTask;
@@ -311,6 +313,18 @@ const [TaskProvider, useTask] = createContext(() => {
       scheduleDueTaskNotification,
     ]
   );
+
+  const normalizeDates = (task: Task) => {
+    if (task.completionDate) {
+      task.completionDate = startOfDay(task.completionDate);
+    }
+    if (task.creationDate) {
+      task.creationDate = startOfDay(task.creationDate);
+    }
+    if (task.dueDate) {
+      task.dueDate = startOfDay(task.dueDate);
+    }
+  };
 
   const deleteTask = useCallback(
     (task: Task) => {

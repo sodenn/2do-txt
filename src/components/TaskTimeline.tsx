@@ -7,10 +7,11 @@ import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
+import { TimelineTask } from "../utils/task-list";
 import TaskTimelineItem from "./TaskTimelineItem";
 
 interface TaskTimelineProps {
-  taskList: Task[];
+  tasks: TimelineTask[];
   focusedTaskIndex: number;
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
   onFocus: (index: number) => void;
@@ -18,7 +19,7 @@ interface TaskTimelineProps {
 }
 
 const TaskTimeline = (props: TaskTimelineProps) => {
-  const { taskList, focusedTaskIndex, listItemsRef, onFocus, onBlur } = props;
+  const { tasks, focusedTaskIndex, listItemsRef, onFocus, onBlur } = props;
   const { t } = useTranslation();
   const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
@@ -46,7 +47,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
 
   return (
     <Timeline ref={parent} sx={{ m: 0, pl: { xs: 0.5, sm: 1 }, py: 0 }}>
-      {taskList.map((task, index) => (
+      {tasks.map((task, index) => (
         <Box key={task._id}>
           <TaskTimelineItem
             ref={(el) => {
@@ -54,8 +55,6 @@ const TaskTimeline = (props: TaskTimelineProps) => {
                 listItemsRef.current[index] = el;
               }
             }}
-            hideTopConnector={index === 0}
-            hideBottomConnector={index === taskList.length - 1}
             task={task}
             onClick={() => setTaskDialogOptions({ open: true, task })}
             onCheckboxClick={() => completeTask(task)}

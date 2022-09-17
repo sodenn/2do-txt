@@ -1,10 +1,10 @@
-import { isAfter, isBefore } from "date-fns";
+import { isAfter, isBefore, isEqual, isSameDay, isSameYear } from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { groupBy } from "./array";
-import { formatDate, formatLocaleDate, parseDate } from "./date";
+import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
 
 export interface TaskListParseResult extends TaskListAttributes {
@@ -38,6 +38,19 @@ export interface TaskListFilter {
   activeContexts: string[];
   activeTags: string[];
   hideCompletedTasks: boolean;
+}
+
+export interface TimelineTask extends Task {
+  _timelineFlags: {
+    today: boolean;
+    firstOfToday: boolean;
+    lastOfToday: boolean;
+    firstOfDay: boolean;
+    firstOfYear: boolean;
+    first: boolean;
+    last: boolean;
+  };
+  _timelineDate?: Date;
 }
 
 export function parseTaskList(text?: string): TaskListParseResult {
@@ -85,18 +98,92 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
     .join(lineEnding);
 }
 
-export function useTimelineTasks() {
+export function useTimelineTasks(): TimelineTask[] {
   let { taskLists, activeTaskList } = useTask();
   taskLists = activeTaskList ? [activeTaskList] : taskLists;
-  return taskLists
-    .flatMap((list) => list.items)
-    .sort((t1, t2) =>
-      timelineSort(
-        t1.completionDate || t1.creationDate,
-        t2.completionDate || t2.creationDate
-      )
-    )
-    .sort((t1, t2) => timelineSort(t1.dueDate, t2.dueDate, "asc"));
+  const items = taskLists.flatMap((list) => list.items);
+
+  const today = todayDate();
+
+  const futureTasks: TimelineTask[] = items
+    .filter((t) => !t.dueDate)
+    .map((t) => ({ ...t, _timelineDate: t.completionDate || t.creationDate }))
+    .filter((t) => t._timelineDate && isAfter(t._timelineDate, today))
+    .sort((t1, t2) => timelineSort(t1._timelineDate, t2._timelineDate))
+    .map((t) => ({
+      ...t,
+      _timelineFlags: {
+        today: false,
+        firstOfToday: false,
+        lastOfToday: false,
+        firstOfDay: false,
+        firstOfYear: false,
+        first: false,
+        last: false,
+      },
+    }));
+
+  const dueTasks = items
+    .filter((t) => !!t.dueDate)
+    .map((t) => ({ ...t, _timelineDate: today }))
+    .sort((a, b) => timelineSort(a.dueDate, b.dueDate, "asc"));
+
+  const todayTasks: TimelineTask[] = items
+    .filter((t) => !t.dueDate)
+    .map((t) => ({ ...t, _timelineDate: t.completionDate || t.creationDate }))
+    .filter((t) => t._timelineDate && isEqual(t._timelineDate, today))
+    .sort((t1, t2) => timelineSort(t1._timelineDate, t2._timelineDate))
+    .concat(dueTasks)
+    .map((t, i, a) => ({
+      ...t,
+      _timelineFlags: {
+        today: true,
+        firstOfToday: i === 0,
+        lastOfToday: a.length === i + 1,
+        firstOfDay: false,
+        firstOfYear: false,
+        first: false,
+        last: false,
+      },
+    }));
+
+  const pastTasks: TimelineTask[] = items
+    .filter((t) => !t.dueDate)
+    .map((t) => ({ ...t, _timelineDate: t.completionDate || t.creationDate }))
+    .filter((t) => !t._timelineDate || isBefore(t._timelineDate, today))
+    .sort((t1, t2) => timelineSort(t1._timelineDate, t2._timelineDate))
+    .map((t) => ({
+      ...t,
+      _timelineFlags: {
+        today: false,
+        firstOfToday: false,
+        lastOfToday: false,
+        firstOfDay: false,
+        firstOfYear: false,
+        first: false,
+        last: false,
+      },
+    }));
+
+  return futureTasks
+    .concat(todayTasks)
+    .concat(pastTasks)
+    .map((t, i, a) => ({
+      ...t,
+      _timelineFlags: {
+        ...t._timelineFlags,
+        firstOfDay:
+          !t._timelineFlags.today &&
+          a.find((j) => isSameDay(j._timelineDate!, t._timelineDate!))?._id ===
+            t._id,
+        firstOfYear:
+          !t._timelineFlags.today &&
+          a.find((j) => isSameYear(j._timelineDate!, t._timelineDate!))?._id ===
+            t._id,
+        first: i === 0,
+        last: a.length === i + 1,
+      },
+    }));
 }
 
 export function useTaskGroups() {

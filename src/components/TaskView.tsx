@@ -7,7 +7,11 @@ import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import { Task } from "../utils/task";
-import { useTaskGroups, useTimelineTasks } from "../utils/task-list";
+import {
+  TimelineTask,
+  useTaskGroups,
+  useTimelineTasks,
+} from "../utils/task-list";
 import TaskList from "./TaskList";
 import TaskTimeline from "./TaskTimeline";
 
@@ -21,7 +25,7 @@ const TaskView = () => {
   const listItemsRef = useRef<HTMLDivElement[]>([]);
   const taskGroups = useTaskGroups();
   const timelineTasks = useTimelineTasks();
-  const taskList =
+  const tasks =
     taskView === "timeline"
       ? timelineTasks
       : taskGroups.flatMap((i) =>
@@ -29,17 +33,17 @@ const TaskView = () => {
         );
 
   useAddShortcutListener(() => focusNextListItem("down"), "ArrowDown", [
-    taskList.length,
+    tasks.length,
   ]);
 
   useAddShortcutListener(() => focusNextListItem("up"), "ArrowUp", [
-    taskList.length,
+    tasks.length,
   ]);
 
   useAddShortcutListener(
     () => {
       if (focusedTaskIndex !== -1) {
-        const focusedTask = taskList[focusedTaskIndex];
+        const focusedTask = tasks[focusedTaskIndex];
         setTaskDialogOptions({ open: true, task: focusedTask });
       }
     },
@@ -50,7 +54,7 @@ const TaskView = () => {
   useAddShortcutListener(
     () => {
       if (focusedTaskIndex !== -1) {
-        const focusedTask = taskList[focusedTaskIndex];
+        const focusedTask = tasks[focusedTaskIndex];
         setConfirmationDialog({
           open: true,
           title: t("Delete task"),
@@ -78,9 +82,9 @@ const TaskView = () => {
     if (index === -1) {
       index = 0;
     } else if (direction === "down") {
-      index = index + 1 < taskList.length ? index + 1 : 0;
+      index = index + 1 < tasks.length ? index + 1 : 0;
     } else {
-      index = index - 1 >= 0 ? index - 1 : taskList.length - 1;
+      index = index - 1 >= 0 ? index - 1 : tasks.length - 1;
     }
     listItemsRef.current[index].focus();
   };
@@ -99,7 +103,7 @@ const TaskView = () => {
                 fileName={i.fileName}
                 filePath={i.filePath}
                 taskGroups={i.groups}
-                taskList={taskList}
+                tasks={tasks}
                 focusedTaskIndex={focusedTaskIndex}
                 listItemsRef={listItemsRef}
                 showHeader={!activeTaskList}
@@ -111,7 +115,7 @@ const TaskView = () => {
       )}
       {taskView === "timeline" && (
         <TaskTimeline
-          taskList={taskList}
+          tasks={tasks as TimelineTask[]}
           focusedTaskIndex={focusedTaskIndex}
           listItemsRef={listItemsRef}
           onFocus={(index) => setFocusedTaskIndex(index)}
