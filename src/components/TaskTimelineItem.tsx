@@ -1,6 +1,9 @@
+import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
+import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import RadioButtonCheckedOutlinedIcon from "@mui/icons-material/RadioButtonCheckedOutlined";
 import RadioButtonUncheckedOutlinedIcon from "@mui/icons-material/RadioButtonUncheckedOutlined";
+import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
 import {
   TimelineConnector,
   TimelineContent,
@@ -16,14 +19,14 @@ import {
   IconButtonProps,
   ListItem,
   ListItemButton,
+  styled,
 } from "@mui/material";
 import { format } from "date-fns";
 import { forwardRef } from "react";
 import { useSettings } from "../data/SettingsContext";
-import { formatDateRelative } from "../utils/date";
+import { formatDateRelative, formatLocaleDate } from "../utils/date";
 import { TimelineTask } from "../utils/task-list";
 import TaskBody from "./TaskBody";
-import TaskDates from "./TaskDates";
 
 interface TimelineItemProps {
   task: TimelineTask;
@@ -34,6 +37,13 @@ interface TimelineItemProps {
   onFocus: () => void;
   onBlur: () => void;
 }
+
+const DateBox = styled(Box)(({ theme }) => ({
+  gap: theme.spacing(0.5),
+  display: "flex",
+  alignItems: "center",
+  ...theme.typography.body2,
+}));
 
 const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
   (props, ref) => {
@@ -63,27 +73,35 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
         <TimelineOppositeContent
           sx={{
             flex: 0,
-            px: 0,
-            pt: { xs: 2, sm: task._timelineFlags.firstOfYear ? 10 : 2 },
+            pl: 0,
+            pr: 1,
+            pt: { xs: 2, sm: task._timelineFlags.firstOfYear ? 9 : 2 },
+            display: {
+              xs: "none",
+              sm: "block",
+            },
           }}
         >
           <Box
             sx={{
               width: 100,
-              display: {
-                xs: "hidden",
-                sm: "block",
-              },
+              display: "inline-flex",
+              justifyContent: "right",
+              alignItems: "center",
+              gap: 1,
               visibility:
                 task._timelineFlags.firstOfToday ||
                 task._timelineFlags.firstOfDay
                   ? "visible"
                   : "hidden",
               color: task._timelineFlags.firstOfToday
-                ? "primary.main"
+                ? "info.main"
+                : task.completionDate
+                ? "text.secondary"
                 : undefined,
             }}
           >
+            {!!task.dueDate && <AccessAlarmOutlinedIcon fontSize="small" />}
             {task._timelineDate &&
               formatDateRelative(task._timelineDate, language)}
           </Box>
@@ -95,18 +113,17 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
               pt: "10px",
               bgcolor:
                 task._timelineFlags.today && !task._timelineFlags.firstOfToday
-                  ? "primary.main"
+                  ? "info.main"
                   : "text.secondary",
               visibility: task._timelineFlags.first ? "hidden" : "visible",
             }}
           />
           <Box
             sx={{
-              width: "60px",
               alignItems: "center",
               flexDirection: "column",
               display: {
-                xs: "hidden",
+                xs: "none",
                 sm: "inline-flex",
               },
               visibility: task._timelineFlags.firstOfYear
@@ -116,6 +133,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             }}
           >
             <Chip
+              size="small"
               sx={{ my: 1 }}
               label={task._timelineDate && format(task._timelineDate, "yyyy")}
             />
@@ -125,24 +143,33 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
                 pt: 2,
                 bgcolor:
                   task._timelineFlags.today && !task._timelineFlags.firstOfToday
-                    ? "primary.main"
+                    ? "info.main"
                     : "text.secondary",
               }}
             />
           </Box>
           <Checkbox
+            sx={{ mx: 1 }}
             size="small"
             tabIndex={-1}
             onClick={onCheckboxClick}
             checked={task.completed}
             icon={
               <RadioButtonUncheckedOutlinedIcon
-                color={task._timelineFlags.today ? "primary" : "action"}
+                sx={{
+                  color: task._timelineFlags.today
+                    ? "info.main"
+                    : "text.secondary",
+                }}
               />
             }
             checkedIcon={
-              <RadioButtonCheckedOutlinedIcon
-                color={task._timelineFlags.today ? "primary" : "action"}
+              <TaskAltOutlinedIcon
+                sx={{
+                  color: task._timelineFlags.today
+                    ? "info.main"
+                    : "text.secondary",
+                }}
               />
             }
           />
@@ -150,7 +177,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             sx={{
               bgcolor:
                 task._timelineFlags.today && !task._timelineFlags.lastOfToday
-                  ? "primary.main"
+                  ? "info.main"
                   : "text.secondary",
               visibility: task._timelineFlags.last ? "hidden" : "visible",
             }}
@@ -159,7 +186,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
         <TimelineContent
           sx={{
             pl: 0,
-            pt: { xs: 1, sm: task._timelineFlags.firstOfYear ? 9 : 1 },
+            pt: { xs: 1, sm: task._timelineFlags.firstOfYear ? 8 : 1 },
             px: { xs: 0, sm: 0.5 },
           }}
         >
@@ -168,7 +195,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             disablePadding
             secondaryAction={
               <IconButton tabIndex={-1} edge="end" onClick={handleDeleteClick}>
-                <DeleteOutlineOutlinedIcon />
+                <DeleteOutlineOutlinedIcon sx={{ color: "text.secondary" }} />
               </IconButton>
             }
           >
@@ -179,7 +206,37 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             >
               <Box>
                 <TaskBody task={task} />
-                <TaskDates task={task} />
+                {task.dueDate && (
+                  <DateBox
+                    sx={{
+                      color: "warning.main",
+                      display: {
+                        xs: "flex",
+                        sm: task._timelineFlags.today ? "flex" : "none",
+                      },
+                    }}
+                  >
+                    <AccessAlarmOutlinedIcon fontSize="small" />
+                    {formatLocaleDate(task.dueDate, language)}
+                  </DateBox>
+                )}
+                {task.completionDate && !task.dueDate && (
+                  <DateBox
+                    sx={{
+                      color: "text.disabled",
+                      display: { xs: "flex", sm: "none" },
+                    }}
+                  >
+                    <CheckCircleOutlinedIcon fontSize="small" />
+                    {formatLocaleDate(task.completionDate, language)}
+                  </DateBox>
+                )}
+                {task.creationDate && !task.dueDate && !task.completionDate && (
+                  <DateBox sx={{ color: "text.secondary" }}>
+                    <AccessTimeOutlinedIcon fontSize="small" />
+                    {formatLocaleDate(task.creationDate, language)}
+                  </DateBox>
+                )}
               </Box>
             </ListItemButton>
           </ListItem>

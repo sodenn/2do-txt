@@ -46,7 +46,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
   };
 
   return (
-    <Timeline ref={parent} sx={{ m: 0, pl: { xs: 0.5, sm: 1 }, py: 0 }}>
+    <Timeline ref={parent} sx={{ mt: 0, pl: { xs: 0.5, sm: 1 }, py: 0 }}>
       {tasks.map((task, index) => (
         <Box key={task._id}>
           <TaskTimelineItem

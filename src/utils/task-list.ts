@@ -1,4 +1,11 @@
-import { isAfter, isBefore, isEqual, isSameDay, isSameYear } from "date-fns";
+import {
+  addDays,
+  isAfter,
+  isBefore,
+  isEqual,
+  isSameDay,
+  isSameYear,
+} from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
@@ -106,8 +113,10 @@ export function useTimelineTasks(): TimelineTask[] {
   const today = todayDate();
 
   const futureTasks: TimelineTask[] = items
-    .filter((t) => !t.dueDate)
-    .map((t) => ({ ...t, _timelineDate: t.completionDate || t.creationDate }))
+    .map((t) => ({
+      ...t,
+      _timelineDate: t.dueDate || t.completionDate || t.creationDate,
+    }))
     .filter((t) => t._timelineDate && isAfter(t._timelineDate, today))
     .sort((t1, t2) => timelineSort(t1._timelineDate, t2._timelineDate))
     .map((t) => ({
@@ -124,7 +133,7 @@ export function useTimelineTasks(): TimelineTask[] {
     }));
 
   const dueTasks = items
-    .filter((t) => !!t.dueDate)
+    .filter((t) => t.dueDate && isBefore(t.dueDate, addDays(today, 1)))
     .map((t) => ({ ...t, _timelineDate: today }))
     .sort((a, b) => timelineSort(a.dueDate, b.dueDate, "asc"));
 
