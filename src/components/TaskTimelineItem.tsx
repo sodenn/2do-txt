@@ -45,6 +45,16 @@ const DateBox = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
 }));
 
+const PriorityBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: `0 ${theme.spacing(0.5)}`,
+  outline: `1px solid ${theme.palette.secondary.main}`,
+  borderRadius: theme.spacing(1),
+  color: theme.palette.secondary.main,
+  ...theme.typography.body2,
+}));
+
 const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
   (props, ref) => {
     const {
@@ -84,7 +94,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
         >
           <Box
             sx={{
-              width: 100,
+              width: 120,
               display: "inline-flex",
               justifyContent: "right",
               alignItems: "center",
@@ -101,6 +111,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
                 : undefined,
             }}
           >
+            {task.priority && <PriorityBox>{task.priority}</PriorityBox>}
             {!!task.dueDate && <AccessAlarmOutlinedIcon fontSize="small" />}
             {task._timelineDate &&
               formatDateRelative(task._timelineDate, language)}
@@ -206,37 +217,48 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             >
               <Box>
                 <TaskBody task={task} />
-                {task.dueDate && (
-                  <DateBox
-                    sx={{
-                      color: "warning.main",
-                      display: {
-                        xs: "flex",
-                        sm: task._timelineFlags.today ? "flex" : "none",
-                      },
-                    }}
-                  >
-                    <AccessAlarmOutlinedIcon fontSize="small" />
-                    {formatLocaleDate(task.dueDate, language)}
-                  </DateBox>
-                )}
-                {task.completionDate && !task.dueDate && (
-                  <DateBox
-                    sx={{
-                      color: "text.disabled",
-                      display: { xs: "flex", sm: "none" },
-                    }}
-                  >
-                    <CheckCircleOutlinedIcon fontSize="small" />
-                    {formatLocaleDate(task.completionDate, language)}
-                  </DateBox>
-                )}
-                {task.creationDate && !task.dueDate && !task.completionDate && (
-                  <DateBox sx={{ color: "text.secondary" }}>
-                    <AccessTimeOutlinedIcon fontSize="small" />
-                    {formatLocaleDate(task.creationDate, language)}
-                  </DateBox>
-                )}
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  {task.dueDate && (
+                    <DateBox
+                      sx={{
+                        color: "warning.main",
+                        display: {
+                          xs: "flex",
+                          sm: task._timelineFlags.today ? "flex" : "none",
+                        },
+                      }}
+                    >
+                      <AccessAlarmOutlinedIcon fontSize="small" />
+                      {formatLocaleDate(task.dueDate, language)}
+                    </DateBox>
+                  )}
+                  {task.completionDate && !task.dueDate && (
+                    <DateBox
+                      sx={{
+                        color: "text.disabled",
+                        display: { xs: "flex", sm: "none" },
+                      }}
+                    >
+                      <CheckCircleOutlinedIcon fontSize="small" />
+                      {formatLocaleDate(task.completionDate, language)}
+                    </DateBox>
+                  )}
+                  {task.creationDate && !task.dueDate && !task.completionDate && (
+                    <DateBox sx={{ color: "text.secondary" }}>
+                      <AccessTimeOutlinedIcon fontSize="small" />
+                      {formatLocaleDate(task.creationDate, language)}
+                    </DateBox>
+                  )}
+                  {task.priority && (
+                    <PriorityBox
+                      sx={{
+                        display: { xs: "flex", sm: "none" },
+                      }}
+                    >
+                      {task.priority}
+                    </PriorityBox>
+                  )}
+                </Box>
               </Box>
             </ListItemButton>
           </ListItem>

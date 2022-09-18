@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, BoxProps, styled } from "@mui/material";
 import {
   addBusinessDays,
   addDays,
@@ -11,15 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { PriorityTransformation, useSettings } from "../data/SettingsContext";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
-import {
-  contextStyle,
-  dueDateStyle,
-  priorityBoldStyle,
-  priorityStyle,
-  projectStyle,
-  tagStyle,
-  taskChipStyle,
-} from "./task-styles";
+import { dueDateStyle, priorityStyle, tagStyle } from "./task-styles";
 import { generateId } from "./uuid";
 
 export type Priority = "A" | "B" | "C" | "D" | string;
@@ -183,6 +175,28 @@ export function parseTaskBody(
   };
 }
 
+const SpanBox = (props: BoxProps) => <Box {...props} component="span" />;
+
+const TaskChipBox = styled(SpanBox)({
+  hyphens: "none",
+  wordBreak: "break-word",
+  textDecoration: "inherit",
+});
+
+const TaskChipBox1 = styled(SpanBox)(() => ({
+  hyphens: "none",
+  display: "inline",
+  marginTop: "2px",
+  marginBottom: "2px",
+  padding: "1px 0",
+  borderRadius: "4px",
+  wordBreak: "break-word",
+  textDecoration: "inherit",
+  "&:before, &:after": {
+    content: '"\\00a0"',
+  },
+}));
+
 export function useFormatBody() {
   const {
     t,
@@ -200,15 +214,21 @@ export function useFormatBody() {
       .map((token, index) => {
         if (/^@\S+/.test(token)) {
           return (
-            <span key={index} className={taskChipStyle} style={contextStyle}>
+            <TaskChipBox
+              sx={{ color: !task.completed ? "success.light" : undefined }}
+              key={index}
+            >
               {token}
-            </span>
+            </TaskChipBox>
           );
         } else if (/^\+\S+/.test(token)) {
           return (
-            <span key={index} className={taskChipStyle} style={projectStyle}>
+            <TaskChipBox
+              sx={{ color: !task.completed ? "info.light" : undefined }}
+              key={index}
+            >
               {token}
-            </span>
+            </TaskChipBox>
           );
         } else if (/[^:]+:[^/:][^:]*/.test(token)) {
           const substrings = token.split(":");
@@ -224,13 +244,9 @@ export function useFormatBody() {
           const displayValue = date ? formatLocaleDate(date, language) : value;
           const text = displayKey + displayValue;
           return (
-            <span
-              key={index}
-              style={getTaskTagStyle(key)}
-              className={taskChipStyle}
-            >
+            <TaskChipBox key={index} sx={{ color: getTaskColor(key) }}>
               {text}
-            </span>
+            </TaskChipBox>
           );
         } else {
           return <Fragment key={index}>{token}</Fragment>;
@@ -240,13 +256,15 @@ export function useFormatBody() {
 
     if (taskView === "list" && task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <span
+        <TaskChipBox
+          sx={{
+            fontWeight: "bold",
+            color: !task.completed ? "secondary.main" : undefined,
+          }}
           key={task._id}
-          className={taskChipStyle}
-          style={priorityBoldStyle}
         >
           {task.priority}
-        </span>
+        </TaskChipBox>
       );
       elements.unshift(priorityElement);
     }
@@ -402,6 +420,14 @@ function spliceWhere<T>(items: T[], predicate: (s: T) => boolean): T[] {
     }
   }
   return result;
+}
+
+export function getTaskColor(key: string) {
+  return key === "due"
+    ? "text.warning"
+    : key === "pri"
+    ? "text.secondary"
+    : "grey.600";
 }
 
 export function getTaskTagStyle(key: string) {
