@@ -1,20 +1,20 @@
-import { Box, Button, Grid, Stack } from "@mui/material";
+import { Box, Button, Grid, Stack, Theme, useTheme } from "@mui/material";
 import { createMentionsPlugin, useMentions } from "@react-fluent-edit/mentions";
 import { MuiFluentEdit, MuiMentionCombobox } from "@react-fluent-edit/mui";
 import { isValid } from "date-fns";
-import { KeyboardEvent, useEffect, useMemo, useRef } from "react";
+import {
+  CSSProperties,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "../utils/date";
 import { useKeyboard } from "../utils/keyboard";
 import { usePlatform, useTouchScreen } from "../utils/platform";
-import {
-  getDueDateValue,
-  getRecValue,
-  getTaskTagStyle,
-  TaskFormData,
-} from "../utils/task";
+import { getDueDateValue, getRecValue, TaskFormData } from "../utils/task";
 import { TaskList } from "../utils/task-list";
-import { contextStyle, projectStyle } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
@@ -32,8 +32,35 @@ interface TaskFormProps {
   onEnterPress: () => void;
 }
 
+export function getTagStyle(key: string, theme: Theme): CSSProperties {
+  return key === "due"
+    ? {
+        color: theme.palette.warning.contrastText,
+        backgroundColor: theme.palette.warning.light,
+        whiteSpace: "nowrap",
+      }
+    : key === "pri"
+    ? {
+        color: theme.palette.secondary.contrastText,
+        backgroundColor: theme.palette.secondary.light,
+        whiteSpace: "nowrap",
+      }
+    : {
+        color:
+          theme.palette.mode === "dark"
+            ? theme.palette.grey["900"]
+            : theme.palette.grey["100"],
+        backgroundColor:
+          theme.palette.mode === "dark"
+            ? theme.palette.grey["400"]
+            : theme.palette.grey["600"],
+        whiteSpace: "nowrap",
+      };
+}
+
 const TaskForm = (props: TaskFormProps) => {
   const platform = usePlatform();
+  const theme = useTheme();
   const rootRef = useRef<HTMLDivElement>();
   const {
     addKeyboardDidShowListener,
@@ -76,15 +103,21 @@ const TaskForm = (props: TaskFormProps) => {
         mentions: [
           {
             trigger: "+",
-            style: projectStyle,
+            style: {
+              color: theme.palette.info.contrastText,
+              backgroundColor: theme.palette.info.light,
+            },
           },
           {
             trigger: "@",
-            style: contextStyle,
+            style: {
+              color: theme.palette.success.contrastText,
+              backgroundColor: theme.palette.success.light,
+            },
           },
           ...Object.keys(tags).map((key) => ({
             trigger: `${key}:`,
-            style: getTaskTagStyle(key),
+            style: getTagStyle(key, theme),
           })),
         ],
       }),

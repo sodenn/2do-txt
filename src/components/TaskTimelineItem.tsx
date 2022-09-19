@@ -48,12 +48,173 @@ const DateBox = styled(Box)(({ theme }) => ({
 const PriorityBox = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  padding: `0 ${theme.spacing(0.5)}`,
+  padding: `0 ${theme.spacing(1)}`,
   outline: `1px solid ${theme.palette.secondary.main}`,
   borderRadius: theme.spacing(1),
   color: theme.palette.secondary.main,
   ...theme.typography.body2,
 }));
+
+function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
+  const { language } = useSettings();
+  return (
+    <Box
+      sx={{
+        width: 120,
+        display: "inline-flex",
+        justifyContent: "right",
+        alignItems: "center",
+        gap: 1,
+        visibility:
+          task._timelineFlags.firstOfToday || task._timelineFlags.firstOfDay
+            ? "visible"
+            : "hidden",
+        color: task._timelineFlags.firstOfToday
+          ? "info.main"
+          : task.completionDate
+          ? "text.secondary"
+          : undefined,
+      }}
+    >
+      {task.priority && <PriorityBox>{task.priority}</PriorityBox>}
+      {!!task.dueDate && <AccessAlarmOutlinedIcon fontSize="small" />}
+      {task._timelineDate && formatDateRelative(task._timelineDate, language)}
+    </Box>
+  );
+}
+
+function YearChip({ task }: Pick<TimelineItemProps, "task">) {
+  return (
+    <Box
+      sx={{
+        alignItems: "center",
+        flexDirection: "column",
+        display: {
+          xs: "none",
+          sm: "inline-flex",
+        },
+        visibility: task._timelineFlags.firstOfYear ? "visible" : "hidden",
+        height: !task._timelineFlags.firstOfYear ? "1px" : undefined,
+      }}
+    >
+      <Chip
+        size="small"
+        sx={{ my: 1 }}
+        label={task._timelineDate && format(task._timelineDate, "yyyy")}
+      />
+      <TimelineConnector
+        sx={{
+          flexGrow: 0,
+          pt: 2,
+          bgcolor:
+            task._timelineFlags.today && !task._timelineFlags.firstOfToday
+              ? "info.main"
+              : "text.secondary",
+        }}
+      />
+    </Box>
+  );
+}
+
+function TaskCheckbox(props: Pick<TimelineItemProps, "task" | "onClick">) {
+  const { task, onClick } = props;
+  return (
+    <Checkbox
+      sx={{ mx: 1 }}
+      size="small"
+      tabIndex={-1}
+      onClick={onClick}
+      checked={task.completed}
+      icon={
+        <RadioButtonUncheckedOutlinedIcon
+          sx={{
+            color: task._timelineFlags.today ? "info.main" : "text.secondary",
+          }}
+        />
+      }
+      checkedIcon={
+        <TaskAltOutlinedIcon
+          sx={{
+            color: task._timelineFlags.today ? "info.main" : "text.secondary",
+          }}
+        />
+      }
+    />
+  );
+}
+
+const TaskListItem = forwardRef<
+  HTMLDivElement,
+  Pick<TimelineItemProps, "task" | "onDelete" | "onClick">
+>((props, ref) => {
+  const { task, onClick, onDelete } = props;
+  const { language } = useSettings();
+
+  const handleDeleteClick: IconButtonProps["onClick"] = (e) => {
+    e.stopPropagation();
+    onDelete();
+  };
+
+  return (
+    <ListItem
+      component="div"
+      disablePadding
+      secondaryAction={
+        <IconButton tabIndex={-1} edge="end" onClick={handleDeleteClick}>
+          <DeleteOutlineOutlinedIcon sx={{ color: "text.secondary" }} />
+        </IconButton>
+      }
+    >
+      <ListItemButton sx={{ borderRadius: 1 }} ref={ref} onClick={onClick}>
+        <Box>
+          <TaskBody task={task} />
+          <Box sx={{ display: "flex", gap: 1 }}>
+            {task.dueDate && (
+              <DateBox
+                sx={{
+                  color: "warning.main",
+                  display: {
+                    xs: "flex",
+                    sm: task._timelineFlags.today ? "flex" : "none",
+                  },
+                }}
+              >
+                <AccessAlarmOutlinedIcon fontSize="small" />
+                {formatLocaleDate(task.dueDate, language)}
+              </DateBox>
+            )}
+            {task.completionDate && !task.dueDate && (
+              <DateBox
+                sx={{
+                  color: "text.disabled",
+                  display: { xs: "flex", sm: "none" },
+                }}
+              >
+                <CheckCircleOutlinedIcon fontSize="small" />
+                {formatLocaleDate(task.completionDate, language)}
+              </DateBox>
+            )}
+            {task.creationDate && !task.dueDate && !task.completionDate && (
+              <DateBox sx={{ color: "text.secondary" }}>
+                <AccessTimeOutlinedIcon fontSize="small" />
+                {formatLocaleDate(task.creationDate, language)}
+              </DateBox>
+            )}
+            {task.priority && (
+              <PriorityBox
+                sx={{
+                  display: { xs: "flex", sm: "none" },
+                }}
+              >
+                {task.priority}
+              </PriorityBox>
+            )}
+          </Box>
+        </Box>
+      </ListItemButton>
+    </ListItem>
+  );
+});
 
 const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
   (props, ref) => {
@@ -66,12 +227,6 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
       onFocus,
       onBlur,
     } = props;
-    const { language } = useSettings();
-
-    const handleDeleteClick: IconButtonProps["onClick"] = (e) => {
-      e.stopPropagation();
-      onDelete();
-    };
 
     return (
       <TimelineItem
@@ -92,30 +247,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             },
           }}
         >
-          <Box
-            sx={{
-              width: 120,
-              display: "inline-flex",
-              justifyContent: "right",
-              alignItems: "center",
-              gap: 1,
-              visibility:
-                task._timelineFlags.firstOfToday ||
-                task._timelineFlags.firstOfDay
-                  ? "visible"
-                  : "hidden",
-              color: task._timelineFlags.firstOfToday
-                ? "info.main"
-                : task.completionDate
-                ? "text.secondary"
-                : undefined,
-            }}
-          >
-            {task.priority && <PriorityBox>{task.priority}</PriorityBox>}
-            {!!task.dueDate && <AccessAlarmOutlinedIcon fontSize="small" />}
-            {task._timelineDate &&
-              formatDateRelative(task._timelineDate, language)}
-          </Box>
+          <TaskOppositeContent task={task} />
         </TimelineOppositeContent>
         <TimelineSeparator>
           <TimelineConnector
@@ -129,61 +261,8 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
               visibility: task._timelineFlags.first ? "hidden" : "visible",
             }}
           />
-          <Box
-            sx={{
-              alignItems: "center",
-              flexDirection: "column",
-              display: {
-                xs: "none",
-                sm: "inline-flex",
-              },
-              visibility: task._timelineFlags.firstOfYear
-                ? "visible"
-                : "hidden",
-              height: !task._timelineFlags.firstOfYear ? "1px" : undefined,
-            }}
-          >
-            <Chip
-              size="small"
-              sx={{ my: 1 }}
-              label={task._timelineDate && format(task._timelineDate, "yyyy")}
-            />
-            <TimelineConnector
-              sx={{
-                flexGrow: 0,
-                pt: 2,
-                bgcolor:
-                  task._timelineFlags.today && !task._timelineFlags.firstOfToday
-                    ? "info.main"
-                    : "text.secondary",
-              }}
-            />
-          </Box>
-          <Checkbox
-            sx={{ mx: 1 }}
-            size="small"
-            tabIndex={-1}
-            onClick={onCheckboxClick}
-            checked={task.completed}
-            icon={
-              <RadioButtonUncheckedOutlinedIcon
-                sx={{
-                  color: task._timelineFlags.today
-                    ? "info.main"
-                    : "text.secondary",
-                }}
-              />
-            }
-            checkedIcon={
-              <TaskAltOutlinedIcon
-                sx={{
-                  color: task._timelineFlags.today
-                    ? "info.main"
-                    : "text.secondary",
-                }}
-              />
-            }
-          />
+          <YearChip task={task} />
+          <TaskCheckbox onClick={onCheckboxClick} task={task} />
           <TimelineConnector
             sx={{
               bgcolor:
@@ -201,67 +280,12 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             px: { xs: 0, sm: 0.5 },
           }}
         >
-          <ListItem
-            component="div"
-            disablePadding
-            secondaryAction={
-              <IconButton tabIndex={-1} edge="end" onClick={handleDeleteClick}>
-                <DeleteOutlineOutlinedIcon sx={{ color: "text.secondary" }} />
-              </IconButton>
-            }
-          >
-            <ListItemButton
-              sx={{ borderRadius: 1 }}
-              ref={ref}
-              onClick={onClick}
-            >
-              <Box>
-                <TaskBody task={task} />
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  {task.dueDate && (
-                    <DateBox
-                      sx={{
-                        color: "warning.main",
-                        display: {
-                          xs: "flex",
-                          sm: task._timelineFlags.today ? "flex" : "none",
-                        },
-                      }}
-                    >
-                      <AccessAlarmOutlinedIcon fontSize="small" />
-                      {formatLocaleDate(task.dueDate, language)}
-                    </DateBox>
-                  )}
-                  {task.completionDate && !task.dueDate && (
-                    <DateBox
-                      sx={{
-                        color: "text.disabled",
-                        display: { xs: "flex", sm: "none" },
-                      }}
-                    >
-                      <CheckCircleOutlinedIcon fontSize="small" />
-                      {formatLocaleDate(task.completionDate, language)}
-                    </DateBox>
-                  )}
-                  {task.creationDate && !task.dueDate && !task.completionDate && (
-                    <DateBox sx={{ color: "text.secondary" }}>
-                      <AccessTimeOutlinedIcon fontSize="small" />
-                      {formatLocaleDate(task.creationDate, language)}
-                    </DateBox>
-                  )}
-                  {task.priority && (
-                    <PriorityBox
-                      sx={{
-                        display: { xs: "flex", sm: "none" },
-                      }}
-                    >
-                      {task.priority}
-                    </PriorityBox>
-                  )}
-                </Box>
-              </Box>
-            </ListItemButton>
-          </ListItem>
+          <TaskListItem
+            ref={ref}
+            task={task}
+            onDelete={onDelete}
+            onClick={onClick}
+          />
         </TimelineContent>
       </TimelineItem>
     );

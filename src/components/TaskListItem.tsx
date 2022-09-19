@@ -1,8 +1,8 @@
 import { Checkbox, ListItemButton, Stack, styled } from "@mui/material";
 import { forwardRef, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Task } from "../utils/task";
 import TaskBody from "./TaskBody";
-import TaskDates from "./TaskDates";
 import TaskListItemMenu from "./TaskListItemMenu";
 
 const TaskItemButton = styled(ListItemButton)`
@@ -22,6 +22,11 @@ const TaskItemButton = styled(ListItemButton)`
   }
 `;
 
+const DateContainer = styled("div")({
+  opacity: 0.5,
+  fontSize: "0.75em",
+});
+
 interface TaskListItemProps {
   task: Task;
   focused: boolean;
@@ -37,6 +42,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
     const checkboxRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLUListElement>(null);
     const menuButtonRef = useRef<HTMLButtonElement>(null);
+    const { t } = useTranslation();
 
     const handleItemClick = (event: any) => {
       const checkboxClick =
@@ -97,7 +103,16 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
               }}
             >
               <TaskBody task={task} />
-              <TaskDates task={task} />
+              {task.completionDate && (
+                <DateContainer>
+                  {t("Completed", { completionDate: task.completionDate })}
+                </DateContainer>
+              )}
+              {task.creationDate && !task.completed && (
+                <DateContainer>
+                  {t("Created", { creationDate: task.creationDate })}
+                </DateContainer>
+              )}
             </Stack>
             <div>
               <TaskListItemMenu

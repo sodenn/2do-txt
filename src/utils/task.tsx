@@ -1,4 +1,4 @@
-import { Box, BoxProps, styled } from "@mui/material";
+import { Box, BoxProps, styled, useTheme } from "@mui/material";
 import {
   addBusinessDays,
   addDays,
@@ -11,8 +11,29 @@ import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { PriorityTransformation, useSettings } from "../data/SettingsContext";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
-import { dueDateStyle, priorityStyle, tagStyle } from "./task-styles";
 import { generateId } from "./uuid";
+
+const SpanBox = (props: BoxProps) => <Box {...props} component="span" />;
+
+const TextComp = styled(SpanBox)({
+  hyphens: "none",
+  wordBreak: "break-word",
+  textDecoration: "inherit",
+});
+
+const ChipComp = styled(SpanBox)(() => ({
+  hyphens: "none",
+  display: "inline",
+  marginTop: "2px",
+  marginBottom: "2px",
+  padding: "1px 0",
+  borderRadius: "4px",
+  wordBreak: "break-word",
+  textDecoration: "inherit",
+  "&:before, &:after": {
+    content: '"\\00a0"',
+  },
+}));
 
 export type Priority = "A" | "B" | "C" | "D" | string;
 
@@ -175,35 +196,20 @@ export function parseTaskBody(
   };
 }
 
-const SpanBox = (props: BoxProps) => <Box {...props} component="span" />;
-
-const TaskChipBox = styled(SpanBox)({
-  hyphens: "none",
-  wordBreak: "break-word",
-  textDecoration: "inherit",
-});
-
-const TaskChipBox1 = styled(SpanBox)(() => ({
-  hyphens: "none",
-  display: "inline",
-  marginTop: "2px",
-  marginBottom: "2px",
-  padding: "1px 0",
-  borderRadius: "4px",
-  wordBreak: "break-word",
-  textDecoration: "inherit",
-  "&:before, &:after": {
-    content: '"\\00a0"',
-  },
-}));
-
 export function useFormatBody() {
+  const { taskView } = useSettings();
+  const {
+    palette: { mode },
+  } = useTheme();
+  const priority = taskView === "list";
+  const chips = taskView === "list";
+  const dueDate = taskView === "list";
+  const TagComp = chips ? ChipComp : TextComp;
   const {
     t,
     i18n: { language },
   } = useTranslation();
   const { sortBy } = useFilter();
-  const { taskView } = useSettings();
   return (task: Task) => {
     const subStrings = task.body
       .trim()
@@ -214,26 +220,40 @@ export function useFormatBody() {
       .map((token, index) => {
         if (/^@\S+/.test(token)) {
           return (
-            <TaskChipBox
-              sx={{ color: !task.completed ? "success.light" : undefined }}
+            <TagComp
+              sx={{
+                color: task.completed
+                  ? undefined
+                  : chips
+                  ? "success.contrastText"
+                  : "success.main",
+                bgcolor: !task.completed && chips ? "success.light" : undefined,
+              }}
               key={index}
             >
               {token}
-            </TaskChipBox>
+            </TagComp>
           );
         } else if (/^\+\S+/.test(token)) {
           return (
-            <TaskChipBox
-              sx={{ color: !task.completed ? "info.light" : undefined }}
+            <TagComp
+              sx={{
+                color: task.completed
+                  ? undefined
+                  : chips
+                  ? "info.contrastText"
+                  : "info.main",
+                bgcolor: !task.completed && chips ? "info.light" : undefined,
+              }}
               key={index}
             >
               {token}
-            </TaskChipBox>
+            </TagComp>
           );
         } else if (/[^:]+:[^/:][^:]*/.test(token)) {
           const substrings = token.split(":");
           const key = substrings[0].toLowerCase();
-          if (key === "due" && taskView === "timeline") {
+          if (key === "due" && !dueDate) {
             return undefined;
           }
           const translatedKey = t(key);
@@ -244,9 +264,37 @@ export function useFormatBody() {
           const displayValue = date ? formatLocaleDate(date, language) : value;
           const text = displayKey + displayValue;
           return (
-            <TaskChipBox key={index} sx={{ color: getTaskColor(key) }}>
+            <TagComp
+              key={index}
+              sx={{
+                color: chips
+                  ? key === "due"
+                    ? "warning.contrastText"
+                    : key === "pri"
+                    ? "secondary.contrastText"
+                    : mode === "dark"
+                    ? "grey.900"
+                    : "grey.100"
+                  : key === "due"
+                  ? "text.warning"
+                  : key === "pri"
+                  ? "text.secondary"
+                  : mode === "dark"
+                  ? "grey.500"
+                  : "grey.600",
+                bgcolor: !chips
+                  ? undefined
+                  : key === "due"
+                  ? "warning.light"
+                  : key === "pri"
+                  ? "secondary.light"
+                  : mode === "dark"
+                  ? "grey.400"
+                  : "grey.600",
+              }}
+            >
               {text}
-            </TaskChipBox>
+            </TagComp>
           );
         } else {
           return <Fragment key={index}>{token}</Fragment>;
@@ -254,17 +302,22 @@ export function useFormatBody() {
       })
       .filter((e) => !!e);
 
-    if (taskView === "list" && task.priority && sortBy !== "priority") {
+    if (priority && task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <TaskChipBox
+        <TagComp
           sx={{
             fontWeight: "bold",
-            color: !task.completed ? "secondary.main" : undefined,
+            color: task.completed
+              ? undefined
+              : chips
+              ? "secondary.contrastText"
+              : "secondary.main",
+            bgcolor: !task.completed && chips ? "secondary.main" : undefined,
           }}
           key={task._id}
         >
           {task.priority}
-        </TaskChipBox>
+        </TagComp>
       );
       elements.unshift(priorityElement);
     }
@@ -420,20 +473,4 @@ function spliceWhere<T>(items: T[], predicate: (s: T) => boolean): T[] {
     }
   }
   return result;
-}
-
-export function getTaskColor(key: string) {
-  return key === "due"
-    ? "text.warning"
-    : key === "pri"
-    ? "text.secondary"
-    : "grey.600";
-}
-
-export function getTaskTagStyle(key: string) {
-  return key === "due"
-    ? dueDateStyle
-    : key === "pri"
-    ? priorityStyle
-    : tagStyle;
 }
