@@ -64,7 +64,7 @@ const TaskDialog = () => {
       return;
     }
     closeDialog();
-    if (task?._id) {
+    if (task) {
       editTask({ raw, _id: task._id });
     } else if (selectedTaskList) {
       addTask({ raw }, selectedTaskList);
@@ -79,7 +79,13 @@ const TaskDialog = () => {
 
   const handleEnter = () => {
     setRaw(rawText(createCreationDate, task));
-    setSelectedTaskList(() => findTaskListByTaskId(task?._id));
+    setSelectedTaskList(() => {
+      if (task) {
+        return findTaskListByTaskId(task._id);
+      } else if (activeTaskList) {
+        return activeTaskList;
+      }
+    });
     setKey(key + 1);
   };
 
