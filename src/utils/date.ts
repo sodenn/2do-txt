@@ -1,35 +1,4 @@
-import { format, formatRelative, Locale, parseISO, startOfDay } from "date-fns";
-import { de, enUS } from "date-fns/locale";
-import { Language } from "../data/SettingsContext";
-
-const formatRelativeDe: Record<any, any> = {
-  lastWeek: "d. LLL.",
-  yesterday: "d. LLL.",
-  today: "'Heute'",
-  tomorrow: "d. LLL.",
-  nextWeek: "d. LLL.",
-  other: "d. LLL.",
-};
-
-const formatRelativeLocaleEn: Record<any, any> = {
-  lastWeek: "d LLL",
-  yesterday: "d LLL",
-  today: "'Today'",
-  tomorrow: "d LLL",
-  nextWeek: "d LLL",
-  other: "d LLL",
-};
-
-const locales: { [key: string]: Locale } = {
-  de: {
-    ...de,
-    formatRelative: (token) => formatRelativeDe[token],
-  },
-  en: {
-    ...enUS,
-    formatRelative: (token) => formatRelativeLocaleEn[token],
-  },
-};
+import { format, parseISO, startOfDay } from "date-fns";
 
 export function formatLocaleDate(date: Date, locale?: string) {
   return date.toLocaleDateString(locale, {
@@ -52,11 +21,6 @@ export function formatLocalDateTime(date: Date, locale?: string) {
 
 export function formatDate(date: Date): string {
   return format(date, "yyyy-MM-dd");
-}
-
-export function formatDateRelative(date: Date, lang: Language = "en"): string {
-  const now = todayDate();
-  return formatRelative(date, now, { locale: locales[lang] });
 }
 
 export function parseDate(str: string): Date | undefined {

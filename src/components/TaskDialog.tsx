@@ -14,35 +14,16 @@ import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
-import { Task, TaskFormData } from "../utils/task";
+import { formatDate, todayDate } from "../utils/date";
+import { Task } from "../utils/task";
 import { TaskList } from "../utils/task-list";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 import TaskForm from "./TaskForm";
 
-const initialTaskFormData: TaskFormData = {
-  body: "",
-  creationDate: undefined,
-  completionDate: undefined,
-};
-
-const createFormData = (
-  createCreationDate: boolean,
-  activeTask?: Task
-): TaskFormData => {
-  if (activeTask) {
-    return {
-      _id: activeTask._id,
-      body: activeTask.body,
-      priority: activeTask.priority,
-      creationDate: activeTask.creationDate,
-      completionDate: activeTask.completionDate,
-    };
-  } else {
-    const creationDate = createCreationDate ? new Date() : undefined;
-    return { ...initialTaskFormData, creationDate };
-  }
+const rawText = (createCreationDate: boolean, task?: Task): string => {
+  return task ? task.raw : createCreationDate ? formatDate(todayDate()) : "";
 };
 
 const TaskDialog = () => {
@@ -65,12 +46,12 @@ const TaskDialog = () => {
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const { createCreationDate } = useSettings();
   const [key, setKey] = useState(0);
-  const [formData, setFormData] = useState<TaskFormData>(initialTaskFormData);
+  const [raw, setRaw] = useState(rawText(createCreationDate, task));
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
   const [divider, setDivider] = useState(false);
-  const formDisabled = !formData.body || (!activeTaskList && !selectedTaskList);
+  const formDisabled = !raw || (!activeTaskList && !selectedTaskList);
   const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
@@ -83,36 +64,28 @@ const TaskDialog = () => {
       return;
     }
     closeDialog();
-    if (formData._id) {
-      editTask(formData);
+    if (task?._id) {
+      editTask({ raw, _id: task._id });
     } else if (selectedTaskList) {
-      addTask(formData, selectedTaskList);
+      addTask({ raw }, selectedTaskList);
     }
   };
 
-  const handleChange = (data: TaskFormData) => {
-    setFormData((currentValue) => ({ ...currentValue, ...data }));
-  };
+  const handleChange = (raw: string) => setRaw(raw);
 
   const handleFileSelect = (taskList?: TaskList) => {
     setSelectedTaskList(taskList);
   };
 
   const handleEnter = () => {
-    setFormData(createFormData(createCreationDate, task));
-    setSelectedTaskList(() => {
-      if (task) {
-        return findTaskListByTaskId(task._id);
-      } else if (activeTaskList) {
-        return activeTaskList;
-      }
-    });
+    setRaw(rawText(createCreationDate, task));
+    setSelectedTaskList(() => findTaskListByTaskId(task?._id));
     setKey(key + 1);
   };
 
   const handleExit = () => {
     setTaskDialogOptions({ open: false });
-    setFormData(createFormData(createCreationDate));
+    setRaw(rawText(createCreationDate));
     setSelectedTaskList(undefined);
   };
 
@@ -132,8 +105,8 @@ const TaskDialog = () => {
     <FluentEditProvider providers={[<MentionsProvider />]}>
       <TaskForm
         key={key}
-        completed={!!task?.completed}
-        formData={formData}
+        raw={raw}
+        newTask={!!task?._id}
         contexts={Object.keys(contexts)}
         projects={Object.keys(projects)}
         tags={tags}
@@ -157,7 +130,7 @@ const TaskDialog = () => {
           TransitionProps={TransitionProps}
         >
           <DialogTitle>
-            {!!formData._id ? t("Edit Task") : t("Create Task")}
+            {!!task?._id ? t("Edit Task") : t("Create Task")}
           </DialogTitle>
           <DialogContent>{taskForm}</DialogContent>
           <DialogActions>
@@ -191,7 +164,7 @@ const TaskDialog = () => {
               "aria-label": "Save task",
             }}
           >
-            {!!formData._id ? t("Edit Task") : t("Create Task")}
+            {!!task?._id ? t("Edit Task") : t("Create Task")}
           </FullScreenDialogTitle>
           <FullScreenDialogContent onScroll={(top) => setDivider(top > 12)}>
             {taskForm}

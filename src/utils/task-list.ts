@@ -137,6 +137,19 @@ export function useTimelineTasks(): TimelineTask[] {
     .map((t) => ({ ...t, _timelineDate: today }))
     .sort((a, b) => timelineSort(a.dueDate, b.dueDate, "asc"));
 
+  // +Button
+  items.unshift({
+    _id: "-1",
+    _order: 0,
+    body: "+",
+    completed: false,
+    creationDate: today,
+    tags: {},
+    contexts: [],
+    projects: [],
+    raw: "+",
+  });
+
   const todayTasks: TimelineTask[] = items
     .filter((t) => !t.dueDate)
     .map((t) => ({ ...t, _timelineDate: t.completionDate || t.creationDate }))
@@ -186,7 +199,7 @@ export function useTimelineTasks(): TimelineTask[] {
           a.find((j) => isSameDay(j._timelineDate!, t._timelineDate!))?._id ===
             t._id,
         firstOfYear:
-          !t._timelineFlags.today &&
+          (!t._timelineFlags.today || t._timelineFlags.firstOfToday) &&
           a.find((j) => isSameYear(j._timelineDate!, t._timelineDate!))?._id ===
             t._id,
         first: i === 0,

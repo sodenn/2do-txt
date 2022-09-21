@@ -1,7 +1,7 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { format, isBefore, startOfDay, subHours } from "date-fns";
+import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { useSnackbar } from "notistack";
@@ -22,9 +22,7 @@ import { usePreferences } from "../utils/preferences";
 import {
   createDueDateRegex,
   createNextRecurringTask,
-  getDueDateValue,
-  parseTaskBody,
-  stringifyTask,
+  parseTask,
   Task,
   TaskFormData,
   transformPriority,
@@ -246,17 +244,24 @@ const [TaskProvider, useTask] = createContext(() => {
   const addTask = useCallback(
     (data: TaskFormData, taskList: TaskList) => {
       const { items } = taskList;
-      const dueDate = getDueDateValue(data.body);
-      const { priority, completionDate, creationDate, ...rest } = data;
-      const { projects, contexts, tags } = parseTaskBody(rest.body);
-
+      const {
+        priority,
+        completionDate,
+        creationDate,
+        dueDate,
+        projects,
+        contexts,
+        tags,
+        raw,
+        ...rest
+      } = parseTask(data.raw);
       const newTask: Task = {
         ...rest,
         projects,
         contexts,
         tags,
         completed: false,
-        raw: "",
+        raw: raw,
         _id: generateId(),
         _order: items.length,
       };
@@ -273,8 +278,6 @@ const [TaskProvider, useTask] = createContext(() => {
       if (dueDate) {
         newTask.dueDate = dueDate;
       }
-      normalizeDates(newTask);
-      newTask.raw = stringifyTask(newTask);
 
       scheduleDueTaskNotification(newTask);
 
@@ -284,20 +287,15 @@ const [TaskProvider, useTask] = createContext(() => {
   );
 
   const editTask = useCallback(
-    (data: TaskFormData) => {
-      const taskList = findTaskListByTaskId(data._id);
+    ({ raw, _id }: TaskFormData) => {
+      const taskList = findTaskListByTaskId(_id);
       if (!taskList) {
         return;
       }
       const items = taskList.items.map((t) => {
-        if (t._id === data._id) {
+        if (t._id === _id) {
           cancelNotifications({ notifications: [{ id: hashCode(t.raw) }] });
-          const updatedTask: Task = {
-            ...t,
-            ...data,
-          };
-          normalizeDates(updatedTask);
-          updatedTask.raw = stringifyTask(updatedTask);
+          const updatedTask: Task = { ...parseTask(raw), _id };
           scheduleDueTaskNotification(updatedTask);
           return updatedTask;
         } else {
@@ -313,18 +311,6 @@ const [TaskProvider, useTask] = createContext(() => {
       scheduleDueTaskNotification,
     ]
   );
-
-  const normalizeDates = (task: Task) => {
-    if (task.completionDate) {
-      task.completionDate = startOfDay(task.completionDate);
-    }
-    if (task.creationDate) {
-      task.creationDate = startOfDay(task.creationDate);
-    }
-    if (task.dueDate) {
-      task.dueDate = startOfDay(task.dueDate);
-    }
-  };
 
   const deleteTask = useCallback(
     (task: Task) => {

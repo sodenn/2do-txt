@@ -9,6 +9,7 @@ import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
 import { TimelineTask } from "../utils/task-list";
 import TaskTimelineItem from "./TaskTimelineItem";
+import TimelineAddButton from "./TimelineAddButton";
 
 interface TaskTimelineProps {
   tasks: TimelineTask[];
@@ -49,20 +50,25 @@ const TaskTimeline = (props: TaskTimelineProps) => {
     <Timeline ref={parent} sx={{ mt: 0, pl: { xs: 0.5, sm: 1 }, py: 0 }}>
       {tasks.map((task, index) => (
         <Box key={task._id}>
-          <TaskTimelineItem
-            ref={(el) => {
-              if (listItemsRef.current && el) {
-                listItemsRef.current[index] = el;
-              }
-            }}
-            task={task}
-            onClick={() => setTaskDialogOptions({ open: true, task })}
-            onCheckboxClick={() => completeTask(task)}
-            onDelete={() => handleDelete(task)}
-            focused={focusedTaskIndex === index}
-            onFocus={() => onFocus(index)}
-            onBlur={onBlur}
-          />
+          {!task._timelineFlags.firstOfToday && (
+            <TaskTimelineItem
+              ref={(el) => {
+                if (listItemsRef.current && el) {
+                  listItemsRef.current[index] = el;
+                }
+              }}
+              task={task}
+              onClick={() => setTaskDialogOptions({ open: true, task })}
+              onCheckboxClick={() => completeTask(task)}
+              onDelete={() => handleDelete(task)}
+              focused={focusedTaskIndex === index}
+              onFocus={() => onFocus(index)}
+              onBlur={onBlur}
+            />
+          )}
+          {task._timelineFlags.firstOfToday && (
+            <TimelineAddButton flags={task._timelineFlags} />
+          )}
         </Box>
       ))}
     </Timeline>

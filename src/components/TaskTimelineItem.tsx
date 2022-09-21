@@ -24,9 +24,14 @@ import {
 import { format } from "date-fns";
 import { forwardRef } from "react";
 import { useSettings } from "../data/SettingsContext";
-import { formatDateRelative, formatLocaleDate } from "../utils/date";
+import { formatLocaleDate } from "../utils/date";
 import { TimelineTask } from "../utils/task-list";
 import TaskBody from "./TaskBody";
+
+const locales = {
+  de: "d. LLL.",
+  en: "d LLL",
+};
 
 interface TimelineItemProps {
   task: TimelineTask;
@@ -65,20 +70,13 @@ function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
         justifyContent: "right",
         alignItems: "center",
         gap: 1,
-        visibility:
-          task._timelineFlags.firstOfToday || task._timelineFlags.firstOfDay
-            ? "visible"
-            : "hidden",
-        color: task._timelineFlags.firstOfToday
-          ? "info.main"
-          : task.completionDate
-          ? "text.secondary"
-          : undefined,
+        visibility: task._timelineFlags.firstOfDay ? "visible" : "hidden",
+        color: task.completionDate ? "text.secondary" : undefined,
       }}
     >
       {task.priority && <PriorityBox>{task.priority}</PriorityBox>}
       {!!task.dueDate && <AccessAlarmOutlinedIcon fontSize="small" />}
-      {task._timelineDate && formatDateRelative(task._timelineDate, language)}
+      {task._timelineDate && format(task._timelineDate, locales[language])}
     </Box>
   );
 }
@@ -275,8 +273,8 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
         </TimelineSeparator>
         <TimelineContent
           sx={{
-            pl: 0,
             pt: { xs: 1, sm: task._timelineFlags.firstOfYear ? 8 : 1 },
+            pb: 1,
             px: { xs: 0, sm: 0.5 },
           }}
         >

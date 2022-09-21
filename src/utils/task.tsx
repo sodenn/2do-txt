@@ -53,10 +53,7 @@ export interface Task {
 }
 
 export interface TaskFormData {
-  body: string;
-  priority?: string;
-  creationDate?: Date;
-  completionDate?: Date;
+  raw: string;
   _id?: string;
 }
 

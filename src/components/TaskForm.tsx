@@ -13,7 +13,13 @@ import { useTranslation } from "react-i18next";
 import { formatDate } from "../utils/date";
 import { useKeyboard } from "../utils/keyboard";
 import { usePlatform, useTouchScreen } from "../utils/platform";
-import { getDueDateValue, getRecValue, TaskFormData } from "../utils/task";
+import {
+  getDueDateValue,
+  getRecValue,
+  parseTask,
+  stringifyTask,
+  Task,
+} from "../utils/task";
 import { TaskList } from "../utils/task-list";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
@@ -21,13 +27,13 @@ import PrioritySelect from "./PrioritySelect";
 import RecurrenceSelect from "./RecurrenceSelect";
 
 interface TaskFormProps {
-  formData: TaskFormData;
+  raw: string;
+  newTask: boolean;
+  taskLists: TaskList[];
   projects: string[];
   contexts: string[];
   tags: Record<string, string[]>;
-  taskLists: TaskList[];
-  completed: boolean;
-  onChange: (value: TaskFormData) => void;
+  onChange: (raw: string) => void;
   onFileSelect: (value?: TaskList) => void;
   onEnterPress: () => void;
 }
@@ -69,16 +75,17 @@ const TaskForm = (props: TaskFormProps) => {
   } = useKeyboard();
   const hasTouchScreen = useTouchScreen();
   const {
-    formData,
+    raw,
+    newTask: isNewTask,
     projects,
     tags: _tags,
     contexts,
     taskLists,
-    completed,
     onChange,
     onFileSelect,
     onEnterPress,
   } = props;
+  const formData = { ...parseTask(raw) };
   const { t } = useTranslation();
   const tags = useMemo(() => {
     const tags = { ..._tags };
@@ -89,8 +96,8 @@ const TaskForm = (props: TaskFormProps) => {
   }, [_tags]);
   const rec = getRecValue(formData.body);
   const dueDate = getDueDateValue(formData.body);
-  const showCreationDate = !!formData._id;
-  const showCompletionDate = !!formData._id && completed;
+  const showCreationDate = isNewTask;
+  const showCompletionDate = isNewTask && formData.completed;
   const mdGridItems =
     (showCreationDate || showCompletionDate) &&
     !(showCreationDate && showCompletionDate)
@@ -122,7 +129,7 @@ const TaskForm = (props: TaskFormProps) => {
         ],
       }),
     ],
-    [tags]
+    [tags, theme]
   );
 
   const handleDueDateChange = (value: Date | null) => {
@@ -151,6 +158,16 @@ const TaskForm = (props: TaskFormProps) => {
     }
   };
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      onEnterPress();
+    }
+  };
+
+  const handleChange = (data: Partial<Task>) => {
+    onChange(stringifyTask({ ...formData, ...data }));
+  };
+
   useEffect(() => {
     addKeyboardDidShowListener((info) => {
       rootRef.current?.style.setProperty(
@@ -166,12 +183,6 @@ const TaskForm = (props: TaskFormProps) => {
     };
   });
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
-      onEnterPress();
-    }
-  };
-
   return (
     <Stack ref={rootRef}>
       <Box sx={{ mb: 2 }}>
@@ -184,7 +195,7 @@ const TaskForm = (props: TaskFormProps) => {
           spellCheck={false}
           initialValue={formData.body}
           onKeyDown={handleKeyDown}
-          onChange={(body) => onChange({ ...formData, body: body || "" })}
+          onChange={(body) => handleChange({ body })}
           autoFocus
           singleLine
           plugins={plugins}
@@ -240,7 +251,7 @@ const TaskForm = (props: TaskFormProps) => {
         >
           <PrioritySelect
             value={formData.priority}
-            onChange={(priority) => onChange({ ...formData, priority })}
+            onChange={(priority) => handleChange({ priority })}
           />
         </Grid>
         {showCreationDate && (
@@ -251,7 +262,7 @@ const TaskForm = (props: TaskFormProps) => {
               value={formData.creationDate}
               onChange={(value) => {
                 if (!value || isValid(value)) {
-                  onChange({ ...formData, creationDate: value ?? undefined });
+                  handleChange({ creationDate: value ?? undefined });
                 }
               }}
             />
@@ -265,7 +276,7 @@ const TaskForm = (props: TaskFormProps) => {
               value={formData.completionDate}
               onChange={(value) => {
                 if (!value || isValid(value)) {
-                  onChange({ ...formData, completionDate: value ?? undefined });
+                  handleChange({ completionDate: value ?? undefined });
                 }
               }}
             />

@@ -140,5 +140,7 @@
   "Task view": "Aufgabenansicht",
   "List view": "Listenansicht",
   "Timeline view": "Timeline Ansicht",
-  "Disabled when timeline view is active": "Deaktiviert wenn Timeline Ansicht aktiv ist"
+  "Disabled when timeline view is active": "Deaktiviert wenn Timeline Ansicht aktiv ist",
+  "Add task for today": "Neue Aufgabe",
+  "Today": "Heute"
 }

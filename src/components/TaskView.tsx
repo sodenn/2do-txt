@@ -18,7 +18,7 @@ import TaskTimeline from "./TaskTimeline";
 const TaskView = () => {
   const { t } = useTranslation();
   const { taskView } = useSettings();
-  const { activeTaskList, deleteTask } = useTask();
+  const { taskLists, activeTaskList, deleteTask } = useTask();
   const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
@@ -88,6 +88,10 @@ const TaskView = () => {
     }
     listItemsRef.current[index].focus();
   };
+
+  if (taskLists.flatMap((l) => l.items).length === 0) {
+    return null;
+  }
 
   return (
     <>
