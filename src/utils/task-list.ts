@@ -54,6 +54,7 @@ export interface TimelineTask extends Task {
     lastOfToday: boolean;
     firstOfDay: boolean;
     firstOfYear: boolean;
+    firstWithoutDate: boolean;
     first: boolean;
     last: boolean;
   };
@@ -106,13 +107,32 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
 }
 
 export function useTimelineTasks(): TimelineTask[] {
-  let { taskLists, activeTaskList } = useTask();
-  taskLists = activeTaskList ? [activeTaskList] : taskLists;
+  const { taskLists: allTaskLists, activeTaskList } = useTask();
+  const taskLists = activeTaskList ? [activeTaskList] : allTaskLists;
   const items = taskLists.flatMap((list) => list.items);
+  const {
+    filterType,
+    searchTerm,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
+    hideCompletedTasks,
+  } = useFilter();
+
+  const filteredTasks = filterTasks(items, {
+    type: filterType,
+    searchTerm,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
+    hideCompletedTasks,
+  });
 
   const today = todayDate();
 
-  const futureTasks: TimelineTask[] = items
+  const futureTasks: TimelineTask[] = filteredTasks
     .map((t) => ({
       ...t,
       _timelineDate: t.dueDate || t.completionDate || t.creationDate,
@@ -127,18 +147,19 @@ export function useTimelineTasks(): TimelineTask[] {
         lastOfToday: false,
         firstOfDay: false,
         firstOfYear: false,
+        firstWithoutDate: false,
         first: false,
         last: false,
       },
     }));
 
-  const dueTasks = items
+  const dueTasks = filteredTasks
     .filter((t) => t.dueDate && isBefore(t.dueDate, addDays(today, 1)))
     .map((t) => ({ ...t, _timelineDate: today }))
     .sort((a, b) => timelineSort(a.dueDate, b.dueDate, "asc"));
 
   // +Button
-  items.unshift({
+  filteredTasks.unshift({
     _id: "-1",
     _order: 0,
     body: "+",
@@ -150,7 +171,7 @@ export function useTimelineTasks(): TimelineTask[] {
     raw: "+",
   });
 
-  const todayTasks: TimelineTask[] = items
+  const todayTasks: TimelineTask[] = filteredTasks
     .filter((t) => !t.dueDate)
     .map((t) => ({ ...t, _timelineDate: t.completionDate || t.creationDate }))
     .filter((t) => t._timelineDate && isEqual(t._timelineDate, today))
@@ -164,12 +185,13 @@ export function useTimelineTasks(): TimelineTask[] {
         lastOfToday: a.length === i + 1,
         firstOfDay: false,
         firstOfYear: false,
+        firstWithoutDate: false,
         first: false,
         last: false,
       },
     }));
 
-  const pastTasks: TimelineTask[] = items
+  const pastTasks: TimelineTask[] = filteredTasks
     .filter((t) => !t.dueDate)
     .map((t) => ({ ...t, _timelineDate: t.completionDate || t.creationDate }))
     .filter((t) => !t._timelineDate || isBefore(t._timelineDate, today))
@@ -182,6 +204,7 @@ export function useTimelineTasks(): TimelineTask[] {
         lastOfToday: false,
         firstOfDay: false,
         firstOfYear: false,
+        firstWithoutDate: false,
         first: false,
         last: false,
       },
@@ -202,6 +225,8 @@ export function useTimelineTasks(): TimelineTask[] {
           (!t._timelineFlags.today || t._timelineFlags.firstOfToday) &&
           a.find((j) => isSameYear(j._timelineDate!, t._timelineDate!))?._id ===
             t._id,
+        firstWithoutDate:
+          !t._timelineDate && a.find((j) => !j._timelineDate)?._id === t._id,
         first: i === 0,
         last: a.length === i + 1,
       },
@@ -215,6 +240,7 @@ export function useTaskGroups() {
   const {
     sortBy,
     searchTerm,
+    filterType,
     activePriorities,
     activeProjects,
     activeContexts,
@@ -222,11 +248,9 @@ export function useTaskGroups() {
     hideCompletedTasks,
   } = useFilter();
 
-  const { filterType } = useFilter();
-
   const filteredTaskLists = taskLists.map((taskList) => ({
     ...taskList,
-    items: filterTaskList(taskList.items, {
+    items: filterTasks(taskList.items, {
       type: filterType,
       searchTerm,
       activePriorities,
@@ -234,7 +258,7 @@ export function useTaskGroups() {
       activeContexts,
       activeTags,
       hideCompletedTasks,
-    }),
+    }).sort(sortByOriginalOrder),
   }));
 
   const formatGroupLabel = useFormatGroupLabel();
@@ -352,7 +376,10 @@ function orTypePredicate(
   };
 }
 
-export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
+export function filterTasks<T extends Task>(
+  tasks: T[],
+  filter: TaskListFilter
+) {
   const {
     type,
     searchTerm,
@@ -362,8 +389,7 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
     activeTags,
     hideCompletedTasks,
   } = filter;
-
-  const filteredList = taskList.filter(
+  return tasks.filter(
     type === "OR"
       ? orTypePredicate(
           hideCompletedTasks,
@@ -382,8 +408,6 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
           activeTags
         )
   );
-
-  return filteredList.sort(sortByOriginalOrder);
 }
 
 export function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {

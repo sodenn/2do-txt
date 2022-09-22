@@ -142,5 +142,6 @@
   "Timeline view": "Timeline Ansicht",
   "Disabled when timeline view is active": "Deaktiviert wenn Timeline Ansicht aktiv ist",
   "Add task for today": "Neue Aufgabe",
-  "Today": "Heute"
+  "Today": "Heute",
+  "Without date": "Kein Datum"
 }

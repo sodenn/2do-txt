@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import { format } from "date-fns";
 import { forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
 import { formatLocaleDate } from "../utils/date";
 import { TimelineTask } from "../utils/task-list";
@@ -62,6 +63,7 @@ const PriorityBox = styled(Box)(({ theme }) => ({
 
 function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
   const { language } = useSettings();
+  const { t } = useTranslation();
   return (
     <Box
       sx={{
@@ -70,13 +72,17 @@ function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
         justifyContent: "right",
         alignItems: "center",
         gap: 1,
-        visibility: task._timelineFlags.firstOfDay ? "visible" : "hidden",
+        visibility:
+          task._timelineFlags.firstOfDay || task._timelineFlags.firstWithoutDate
+            ? "visible"
+            : "hidden",
         color: task.completionDate ? "text.secondary" : undefined,
       }}
     >
       {task.priority && <PriorityBox>{task.priority}</PriorityBox>}
       {!!task.dueDate && <AccessAlarmOutlinedIcon fontSize="small" />}
       {task._timelineDate && format(task._timelineDate, locales[language])}
+      {task._timelineFlags.firstWithoutDate && t("Without date")}
     </Box>
   );
 }
@@ -193,7 +199,12 @@ const TaskListItem = forwardRef<
               </DateBox>
             )}
             {task.creationDate && !task.dueDate && !task.completionDate && (
-              <DateBox sx={{ color: "text.secondary" }}>
+              <DateBox
+                sx={{
+                  color: "text.secondary",
+                  display: { xs: "flex", sm: "none" },
+                }}
+              >
                 <AccessTimeOutlinedIcon fontSize="small" />
                 {formatLocaleDate(task.creationDate, language)}
               </DateBox>
