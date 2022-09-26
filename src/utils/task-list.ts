@@ -9,7 +9,6 @@ import {
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
-import { useTask } from "../data/TaskContext";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
@@ -106,9 +105,11 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
     .join(lineEnding);
 }
 
-export function useTimelineTasks(): TimelineTask[] {
-  const { taskLists: allTaskLists, activeTaskList } = useTask();
-  const taskLists = activeTaskList ? [activeTaskList] : allTaskLists;
+export function useTimelineTasks(
+  taskLists: TaskList[],
+  activeTaskList?: TaskList
+): TimelineTask[] {
+  taskLists = activeTaskList ? [activeTaskList] : taskLists;
   const items = taskLists.flatMap((list) => list.items);
   const {
     filterType,
@@ -233,8 +234,10 @@ export function useTimelineTasks(): TimelineTask[] {
     }));
 }
 
-export function useTaskGroups() {
-  let { taskLists, activeTaskList } = useTask();
+export function useTaskGroups(
+  taskLists: TaskList[],
+  activeTaskList?: TaskList
+) {
   taskLists = activeTaskList ? [activeTaskList] : taskLists;
 
   const {

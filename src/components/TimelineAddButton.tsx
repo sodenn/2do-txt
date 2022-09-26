@@ -37,7 +37,7 @@ const YearChip = ({ date, flags }: TimelineAddButtonProps) => {
         sx={{
           flexGrow: 0,
           pt: 2,
-          bgcolor: "text.secondary",
+          bgcolor: "action.disabled",
         }}
       />
     </Box>
@@ -68,6 +68,7 @@ const TimelineAddButton = ({ flags }: TimelineAddButtonProps) => {
           sx={{
             width: 120,
             color: "info.main",
+            fontWeight: "bold",
           }}
         >
           {t("Today")}
@@ -76,7 +77,7 @@ const TimelineAddButton = ({ flags }: TimelineAddButtonProps) => {
       <TimelineSeparator>
         <TimelineConnector
           sx={{
-            bgcolor: "text.secondary",
+            bgcolor: "action.disabled",
             visibility: flags.first ? "hidden" : "visible",
           }}
         />
@@ -89,7 +90,9 @@ const TimelineAddButton = ({ flags }: TimelineAddButtonProps) => {
           <AddOutlinedIcon />
         </IconButton>
         <TimelineConnector
-          sx={{ bgcolor: flags.lastOfToday ? "text.secondary" : "info.main" }}
+          sx={{
+            bgcolor: flags.lastOfToday ? "action.disabled" : "info.main",
+          }}
         />
       </TimelineSeparator>
       <TimelineContent

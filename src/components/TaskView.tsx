@@ -23,8 +23,8 @@ const TaskView = () => {
   const { setConfirmationDialog } = useConfirmationDialog();
   const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
   const listItemsRef = useRef<HTMLDivElement[]>([]);
-  const taskGroups = useTaskGroups();
-  const timelineTasks = useTimelineTasks();
+  const taskGroups = useTaskGroups(taskLists, activeTaskList);
+  const timelineTasks = useTimelineTasks(taskLists, activeTaskList);
   const tasks =
     taskView === "timeline"
       ? timelineTasks
@@ -89,7 +89,7 @@ const TaskView = () => {
     listItemsRef.current[index].focus();
   };
 
-  if (taskLists.flatMap((l) => l.items).length === 0) {
+  if (taskLists.length === 0) {
     return null;
   }
 

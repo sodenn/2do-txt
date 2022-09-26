@@ -76,7 +76,7 @@ function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
           task._timelineFlags.firstOfDay || task._timelineFlags.firstWithoutDate
             ? "visible"
             : "hidden",
-        color: task.completionDate ? "text.secondary" : undefined,
+        color: "text.secondary",
       }}
     >
       {task.priority && <PriorityBox>{task.priority}</PriorityBox>}
@@ -113,7 +113,7 @@ function YearChip({ task }: Pick<TimelineItemProps, "task">) {
           bgcolor:
             task._timelineFlags.today && !task._timelineFlags.firstOfToday
               ? "info.main"
-              : "text.secondary",
+              : "action.disabled",
         }}
       />
     </Box>
@@ -129,17 +129,18 @@ function TaskCheckbox(props: Pick<TimelineItemProps, "task" | "onClick">) {
       tabIndex={-1}
       onClick={onClick}
       checked={task.completed}
+      color={task._timelineFlags.today ? "primary" : "default"}
       icon={
         <RadioButtonUncheckedOutlinedIcon
           sx={{
-            color: task._timelineFlags.today ? "info.main" : "text.secondary",
+            color: task._timelineFlags.today ? "info.main" : "action.active",
           }}
         />
       }
       checkedIcon={
         <TaskAltOutlinedIcon
           sx={{
-            color: task._timelineFlags.today ? "info.main" : "text.secondary",
+            color: task._timelineFlags.today ? "info.main" : "action.active",
           }}
         />
       }
@@ -165,7 +166,7 @@ const TaskListItem = forwardRef<
       disablePadding
       secondaryAction={
         <IconButton tabIndex={-1} edge="end" onClick={handleDeleteClick}>
-          <DeleteOutlineOutlinedIcon sx={{ color: "text.secondary" }} />
+          <DeleteOutlineOutlinedIcon />
         </IconButton>
       }
     >
@@ -266,7 +267,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
               bgcolor:
                 task._timelineFlags.today && !task._timelineFlags.firstOfToday
                   ? "info.main"
-                  : "text.secondary",
+                  : "action.disabled",
               visibility: task._timelineFlags.first ? "hidden" : "visible",
             }}
           />
@@ -277,7 +278,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
               bgcolor:
                 task._timelineFlags.today && !task._timelineFlags.lastOfToday
                   ? "info.main"
-                  : "text.secondary",
+                  : "action.disabled",
               visibility: task._timelineFlags.last ? "hidden" : "visible",
             }}
           />
