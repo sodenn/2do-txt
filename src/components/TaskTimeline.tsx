@@ -13,14 +13,14 @@ import TimelineAddButton from "./TimelineAddButton";
 
 interface TaskTimelineProps {
   tasks: TimelineTask[];
-  focusedTaskIndex: number;
+  focusedTaskId?: string;
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
   onFocus: (index: number) => void;
   onBlur: () => void;
 }
 
 const TaskTimeline = (props: TaskTimelineProps) => {
-  const { tasks, focusedTaskIndex, listItemsRef, onFocus, onBlur } = props;
+  const { tasks, focusedTaskId, listItemsRef, onFocus, onBlur } = props;
   const { t } = useTranslation();
   const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
@@ -47,7 +47,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
   };
 
   return (
-    <Timeline ref={parent} sx={{ mt: 0, pl: { xs: 0.5, sm: 1 }, py: 0 }}>
+    <Timeline ref={parent} sx={{ mt: 0, px: { xs: 0, sm: 1 }, py: 0 }}>
       {tasks.map((task, index) => (
         <Box key={task._id}>
           {!task._timelineFlags.firstOfToday && (
@@ -61,7 +61,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
               onClick={() => setTaskDialogOptions({ open: true, task })}
               onCheckboxClick={() => completeTask(task)}
               onDelete={() => handleDelete(task)}
-              focused={focusedTaskIndex === index}
+              focused={focusedTaskId === task._id}
               onFocus={() => onFocus(index)}
               onBlur={onBlur}
             />

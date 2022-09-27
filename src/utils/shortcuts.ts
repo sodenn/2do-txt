@@ -1,15 +1,15 @@
 import { useEffect } from "react";
 
 export const useAddShortcutListener = (
-  listener: (key: string) => void,
+  listener: (event: KeyboardEvent) => void,
   key: string,
   deps?: any[]
 ) => {
   useEffect(() => {
-    const handler = (ev: any) => {
+    const handler = (ev: KeyboardEvent) => {
       const sameKey = ev.key.toLowerCase() === key.toLowerCase();
-      const isInput =
-        ev.target.nodeName === "INPUT" || ev.target.isContentEditable;
+      const target = ev.target as any;
+      const isInput = target.nodeName === "INPUT" || target.isContentEditable;
 
       const presentations = document.querySelectorAll<HTMLDivElement>(
         '[role="presentation"]'
@@ -26,7 +26,7 @@ export const useAddShortcutListener = (
 
       if (!isBackdropOpen && !isInput && sameKey) {
         ev.preventDefault();
-        listener(key);
+        listener(ev);
       }
     };
 

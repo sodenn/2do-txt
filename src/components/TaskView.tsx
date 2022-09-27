@@ -21,7 +21,7 @@ const TaskView = () => {
   const { taskLists, activeTaskList, deleteTask } = useTask();
   const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
-  const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1);
+  const [focusedTaskId, setFocusedTaskId] = useState<string>();
   const listItemsRef = useRef<HTMLDivElement[]>([]);
   const taskGroups = useTaskGroups(taskLists, activeTaskList);
   const timelineTasks = useTimelineTasks(taskLists, activeTaskList);
@@ -42,9 +42,11 @@ const TaskView = () => {
 
   useAddShortcutListener(
     () => {
-      if (focusedTaskIndex !== -1) {
-        const focusedTask = tasks[focusedTaskIndex];
-        setTaskDialogOptions({ open: true, task: focusedTask });
+      if (focusedTaskId) {
+        const task = tasks.find((t) => t._id === focusedTaskId);
+        if (task) {
+          setTaskDialogOptions({ open: true, task });
+        }
       }
     },
     "e",
@@ -53,24 +55,26 @@ const TaskView = () => {
 
   useAddShortcutListener(
     () => {
-      if (focusedTaskIndex !== -1) {
-        const focusedTask = tasks[focusedTaskIndex];
-        setConfirmationDialog({
-          open: true,
-          title: t("Delete task"),
-          content: t("Are you sure you want to delete this task?"),
-          buttons: [
-            {
-              text: t("Cancel"),
-            },
-            {
-              text: t("Delete task"),
-              handler: () => {
-                deleteTask(focusedTask);
+      if (focusedTaskId) {
+        const task = tasks.find((t) => t._id === focusedTaskId);
+        if (task) {
+          setConfirmationDialog({
+            open: true,
+            title: t("Delete task"),
+            content: t("Are you sure you want to delete this task?"),
+            buttons: [
+              {
+                text: t("Cancel"),
               },
-            },
-          ],
-        });
+              {
+                text: t("Delete task"),
+                handler: () => {
+                  deleteTask(task);
+                },
+              },
+            ],
+          });
+        }
       }
     },
     "d",
@@ -78,13 +82,15 @@ const TaskView = () => {
   );
 
   const focusNextListItem = (direction: "up" | "down") => {
-    let index = focusedTaskIndex;
-    if (index === -1) {
-      index = 0;
-    } else if (direction === "down") {
-      index = index + 1 < tasks.length ? index + 1 : 0;
-    } else {
-      index = index - 1 >= 0 ? index - 1 : tasks.length - 1;
+    let index = 0;
+    const task = tasks.find((t) => t._id === focusedTaskId);
+    if (task) {
+      index = tasks.indexOf(task);
+      if (direction === "down") {
+        index = index + 1 < tasks.length ? index + 1 : 0;
+      } else {
+        index = index - 1 >= 0 ? index - 1 : tasks.length - 1;
+      }
     }
     listItemsRef.current[index].focus();
   };
@@ -108,11 +114,11 @@ const TaskView = () => {
                 filePath={i.filePath}
                 taskGroups={i.groups}
                 tasks={tasks}
-                focusedTaskIndex={focusedTaskIndex}
+                focusedTaskId={focusedTaskId}
                 listItemsRef={listItemsRef}
                 showHeader={!activeTaskList}
-                onFocus={(index) => setFocusedTaskIndex(index)}
-                onBlur={() => setFocusedTaskIndex(-1)}
+                onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
+                onBlur={() => setFocusedTaskId(undefined)}
               />
             ))}
         </Stack>
@@ -120,10 +126,10 @@ const TaskView = () => {
       {taskView === "timeline" && (
         <TaskTimeline
           tasks={tasks as TimelineTask[]}
-          focusedTaskIndex={focusedTaskIndex}
+          focusedTaskId={focusedTaskId}
           listItemsRef={listItemsRef}
-          onFocus={(index) => setFocusedTaskIndex(index)}
-          onBlur={() => setFocusedTaskIndex(-1)}
+          onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
+          onBlur={() => setFocusedTaskId(undefined)}
         />
       )}
     </>

@@ -22,7 +22,7 @@ import {
   styled,
 } from "@mui/material";
 import { format } from "date-fns";
-import { forwardRef } from "react";
+import { forwardRef, KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../data/SettingsContext";
 import { formatLocaleDate } from "../utils/date";
@@ -51,16 +51,6 @@ const DateBox = styled(Box)(({ theme }) => ({
   ...theme.typography.body2,
 }));
 
-const PriorityBox = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  padding: `0 ${theme.spacing(1)}`,
-  outline: `1px solid ${theme.palette.secondary.main}`,
-  borderRadius: theme.spacing(1),
-  color: theme.palette.secondary.main,
-  ...theme.typography.body2,
-}));
-
 function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
   const { language } = useSettings();
   const { t } = useTranslation();
@@ -79,7 +69,6 @@ function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
         color: "text.secondary",
       }}
     >
-      {task.priority && <PriorityBox>{task.priority}</PriorityBox>}
       {!!task.dueDate && <AccessAlarmOutlinedIcon fontSize="small" />}
       {task._timelineDate && format(task._timelineDate, locales[language])}
       {task._timelineFlags.firstWithoutDate && t("Without date")}
@@ -150,14 +139,21 @@ function TaskCheckbox(props: Pick<TimelineItemProps, "task" | "onClick">) {
 
 const TaskListItem = forwardRef<
   HTMLDivElement,
-  Pick<TimelineItemProps, "task" | "onDelete" | "onClick">
+  Pick<TimelineItemProps, "task" | "onDelete" | "onClick" | "onCheckboxClick">
 >((props, ref) => {
-  const { task, onClick, onDelete } = props;
+  const { task, onClick, onDelete, onCheckboxClick } = props;
   const { language } = useSettings();
 
   const handleDeleteClick: IconButtonProps["onClick"] = (e) => {
     e.stopPropagation();
     onDelete();
+  };
+
+  const handleKey = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === " ") {
+      event.preventDefault();
+      onCheckboxClick();
+    }
   };
 
   return (
@@ -170,7 +166,12 @@ const TaskListItem = forwardRef<
         </IconButton>
       }
     >
-      <ListItemButton sx={{ borderRadius: 1 }} ref={ref} onClick={onClick}>
+      <ListItemButton
+        sx={{ borderRadius: 1, pl: { xs: 0, sm: 2 } }}
+        ref={ref}
+        onClick={onClick}
+        onKeyUp={handleKey}
+      >
         <Box>
           <TaskBody task={task} />
           <Box sx={{ display: "flex", gap: 1 }}>
@@ -209,15 +210,6 @@ const TaskListItem = forwardRef<
                 <AccessTimeOutlinedIcon fontSize="small" />
                 {formatLocaleDate(task.creationDate, language)}
               </DateBox>
-            )}
-            {task.priority && (
-              <PriorityBox
-                sx={{
-                  display: { xs: "flex", sm: "none" },
-                }}
-              >
-                {task.priority}
-              </PriorityBox>
             )}
           </Box>
         </Box>
@@ -287,7 +279,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
           sx={{
             pt: { xs: 1, sm: task._timelineFlags.firstOfYear ? 8 : 1 },
             pb: 1,
-            px: { xs: 0, sm: 0.5 },
+            px: 0,
           }}
         >
           <TaskListItem
@@ -295,6 +287,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
             task={task}
             onDelete={onDelete}
             onClick={onClick}
+            onCheckboxClick={onCheckboxClick}
           />
         </TimelineContent>
       </TimelineItem>

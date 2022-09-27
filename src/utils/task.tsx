@@ -1,4 +1,4 @@
-import { Box, BoxProps, styled, useTheme } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import {
   addBusinessDays,
   addDays,
@@ -8,32 +8,12 @@ import {
 } from "date-fns";
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import PriorityBox from "../components/PriorityBox";
+import TagBox from "../components/TagBox";
 import { useFilter } from "../data/FilterContext";
 import { PriorityTransformation, useSettings } from "../data/SettingsContext";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { generateId } from "./uuid";
-
-const SpanBox = (props: BoxProps) => <Box {...props} component="span" />;
-
-const TextComp = styled(SpanBox)({
-  hyphens: "none",
-  wordBreak: "break-word",
-  textDecoration: "inherit",
-});
-
-const ChipComp = styled(SpanBox)(() => ({
-  hyphens: "none",
-  display: "inline",
-  marginTop: "2px",
-  marginBottom: "2px",
-  padding: "1px 0",
-  borderRadius: "4px",
-  wordBreak: "break-word",
-  textDecoration: "inherit",
-  "&:before, &:after": {
-    content: '"\\00a0"',
-  },
-}));
 
 export type Priority = "A" | "B" | "C" | "D" | string;
 
@@ -198,10 +178,8 @@ export function useFormatBody() {
   const {
     palette: { mode },
   } = useTheme();
-  const priority = taskView === "list";
   const chips = taskView === "list";
   const dueDate = taskView === "list";
-  const TagComp = chips ? ChipComp : TextComp;
   const {
     t,
     i18n: { language },
@@ -217,7 +195,8 @@ export function useFormatBody() {
       .map((token, index) => {
         if (/^@\S+/.test(token)) {
           return (
-            <TagComp
+            <TagBox
+              chip={chips}
               sx={{
                 color: task.completed
                   ? undefined
@@ -229,11 +208,12 @@ export function useFormatBody() {
               key={index}
             >
               {token}
-            </TagComp>
+            </TagBox>
           );
         } else if (/^\+\S+/.test(token)) {
           return (
-            <TagComp
+            <TagBox
+              chip={chips}
               sx={{
                 color: task.completed
                   ? undefined
@@ -245,7 +225,7 @@ export function useFormatBody() {
               key={index}
             >
               {token}
-            </TagComp>
+            </TagBox>
           );
         } else if (/[^:]+:[^/:][^:]*/.test(token)) {
           const substrings = token.split(":");
@@ -261,8 +241,9 @@ export function useFormatBody() {
           const displayValue = date ? formatLocaleDate(date, language) : value;
           const text = displayKey + displayValue;
           return (
-            <TagComp
+            <TagBox
               key={index}
+              chip={chips}
               sx={{
                 color: chips
                   ? key === "due"
@@ -291,7 +272,7 @@ export function useFormatBody() {
               }}
             >
               {text}
-            </TagComp>
+            </TagBox>
           );
         } else {
           return <Fragment key={index}>{token}</Fragment>;
@@ -299,22 +280,11 @@ export function useFormatBody() {
       })
       .filter((e) => !!e);
 
-    if (priority && task.priority && sortBy !== "priority") {
+    if (task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <TagComp
-          sx={{
-            fontWeight: "bold",
-            color: task.completed
-              ? undefined
-              : chips
-              ? "secondary.contrastText"
-              : "secondary.main",
-            bgcolor: !task.completed && chips ? "secondary.main" : undefined,
-          }}
-          key={task._id}
-        >
+        <PriorityBox chip={chips} completed={task.completed} key={task._id}>
           {task.priority}
-        </TagComp>
+        </PriorityBox>
       );
       elements.unshift(priorityElement);
     }
