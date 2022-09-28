@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
   await page.locator('[aria-label="Toggle menu"]').click();
 });
 
-test.describe("Appearance", () => {
+test.describe.parallel("Appearance", () => {
   test("should use the system setting as the default theme mode", async ({
     page,
   }) => {

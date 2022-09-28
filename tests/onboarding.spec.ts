@@ -43,7 +43,7 @@ test.describe("Example file", () => {
   });
 });
 
-test.describe("File import", () => {
+test.describe.parallel("File import", () => {
   // webkit: Selecting multiple files does not work in the test
   test.skip(({ browserName }) => browserName === "webkit");
 

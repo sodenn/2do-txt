@@ -69,6 +69,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
         <TaskItemButton
           ref={ref}
           aria-label="Task"
+          data-testid="task-button"
           aria-current={focused}
           onClick={handleItemClick}
           onFocus={onFocus}

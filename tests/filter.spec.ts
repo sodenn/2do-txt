@@ -8,7 +8,7 @@ async function openTodoTxt(page: Page) {
   return page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
 }
 
-test.describe("Search", () => {
+test.describe.parallel("Search", () => {
   test("should not show the search bar when no files are open", async ({
     page,
   }) => {
@@ -113,7 +113,7 @@ test.describe("Search", () => {
   });
 });
 
-test.describe("Filter", () => {
+test.describe.parallel("Filter", () => {
   test("should allow me to filter tasks by priority", async ({ page }) => {
     await openTodoTxt(page);
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);

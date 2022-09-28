@@ -174,11 +174,11 @@ const TaskListItem = forwardRef<
       }
     >
       <ListItemButton
+        data-testid="task-button"
         sx={{ borderRadius: 1, pl: { xs: 0, sm: 2 } }}
         ref={ref}
         onClick={onClick}
         onKeyUp={handleKey}
-        aria-label="Task"
         aria-current={focused}
       >
         <Box>

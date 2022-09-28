@@ -18,8 +18,8 @@ async function openTodoTxt(page: Page) {
   await page.waitForTimeout(200);
 }
 
-test.describe("Task List", () => {
-  for (const taskView of ["list"]) {
+test.describe.parallel("Task View", () => {
+  for (const taskView of ["list", "timeline"]) {
     test(`${taskView}: should render an empty task list`, async ({ page }) => {
       await expect(page.locator('[aria-label="Task list"]')).not.toBeVisible();
     });
@@ -37,17 +37,21 @@ test.describe("Task List", () => {
     }) => {
       await openTodoTxt(page);
       await expect(
-        page.locator('[aria-label="Task"]').nth(0)
+        page.locator('[data-testid="task-button"]').nth(0)
       ).not.toBeFocused();
       await page.keyboard.press("Tab"); // window
       await page.keyboard.press("Tab"); // file menu
       await page.keyboard.press("Tab"); // first list item
-      await expect(page.locator('[aria-label="Task"]').nth(0)).toBeFocused();
+      await expect(
+        page.locator('[data-testid="task-button"]').nth(0)
+      ).toBeFocused();
       await page.keyboard.press("Tab");
       await expect(
-        page.locator('[aria-label="Task"]').nth(0)
+        page.locator('[data-testid="task-button"]').nth(0)
       ).not.toBeFocused();
-      await expect(page.locator('[aria-label="Task"]').nth(1)).toBeFocused();
+      await expect(
+        page.locator('[data-testid="task-button"]').nth(1)
+      ).toBeFocused();
     });
 
     test(`${taskView}: should navigate through task list by using the arrow keys`, async ({
@@ -55,16 +59,22 @@ test.describe("Task List", () => {
     }) => {
       await openTodoTxt(page);
       await page.keyboard.press("ArrowDown");
-      await expect(page.locator('[aria-label="Task"]').nth(0)).toBeFocused();
+      await expect(
+        page.locator('[data-testid="task-button"]').nth(0)
+      ).toBeFocused();
       await page.keyboard.press("ArrowDown");
       await expect(
-        page.locator('[aria-label="Task"]').nth(0)
+        page.locator('[data-testid="task-button"]').nth(0)
       ).not.toBeFocused();
-      await expect(page.locator('[aria-label="Task"]').nth(1)).toBeFocused();
-      await page.keyboard.press("ArrowUp");
-      await expect(page.locator('[aria-label="Task"]').nth(0)).toBeFocused();
       await expect(
-        page.locator('[aria-label="Task"]').nth(1)
+        page.locator('[data-testid="task-button"]').nth(1)
+      ).toBeFocused();
+      await page.keyboard.press("ArrowUp");
+      await expect(
+        page.locator('[data-testid="task-button"]').nth(0)
+      ).toBeFocused();
+      await expect(
+        page.locator('[data-testid="task-button"]').nth(1)
       ).not.toBeFocused();
     });
 
@@ -72,9 +82,10 @@ test.describe("Task List", () => {
       page,
     }) => {
       await openTodoTxt(page);
-      const taskCheckbox = page.locator(
-        '[aria-label="Task"]:nth-child(1) input[type="checkbox"]'
-      );
+      const taskCheckbox = page
+        .locator('[aria-label="Task"]')
+        .nth(0)
+        .locator('input[type="checkbox"]');
       await expect(taskCheckbox).not.toBeChecked();
       await taskCheckbox.click();
       await expect(taskCheckbox).toBeChecked();
@@ -88,9 +99,10 @@ test.describe("Task List", () => {
       page,
     }) => {
       await openTodoTxt(page);
-      const taskCheckbox = page.locator(
-        '[aria-label="Task"]:nth-child(1) input[type="checkbox"]'
-      );
+      const taskCheckbox = page
+        .locator('[aria-label="Task"]')
+        .nth(0)
+        .locator('input[type="checkbox"]');
       await taskCheckbox.focus();
       await expect(taskCheckbox).not.toBeChecked();
       await page.keyboard.press("Space");
@@ -101,7 +113,7 @@ test.describe("Task List", () => {
       page,
     }) => {
       await openTodoTxt(page);
-      await page.locator('[aria-label="Task"]:nth-child(1)').focus();
+      await page.locator('[data-testid="task-button"]').nth(0).focus();
       await page.keyboard.press("e");
       await expect(page.locator('[aria-label="Task dialog"]')).toBeVisible();
     });
@@ -110,12 +122,17 @@ test.describe("Task List", () => {
       page,
     }) => {
       await openTodoTxt(page);
-      await page.locator('[aria-label="Task"]:nth-child(1)').focus();
+      await page.locator('[data-testid="task-button"]').nth(0).focus();
       await page.keyboard.press("Enter");
       await expect(page.locator('[aria-label="Task dialog"]')).toBeVisible();
     });
 
-    test(`${taskView}: should hide completed task`, async ({ page }) => {
+    test(`${taskView}: should hide completed task`, async ({
+      page,
+    }, testInfo) => {
+      if (testInfo.title.startsWith("timeline:")) {
+        test.skip();
+      }
       await openTodoTxt(page);
 
       // enable "Hide completed" tasks
@@ -123,13 +140,15 @@ test.describe("Task List", () => {
       await page.locator('[aria-label="Hide completed tasks"]').click();
       await page.keyboard.press("Escape");
 
-      const taskItem = page.locator('[aria-label="Task"]:nth-child(1)');
+      const taskItem = page.locator('[data-testid="task-button"]').nth(0);
 
       await expect(taskItem).toHaveText(
         "Ask John for a jogging session @Private"
       );
       await page
-        .locator('[aria-label="Task"]:nth-child(1) input[type="checkbox"]')
+        .locator('[aria-label="Task"]')
+        .nth(0)
+        .locator('input[type="checkbox"]')
         .click();
       await expect(taskItem).not.toHaveText(
         "Ask John for a jogging session @Private"
@@ -138,12 +157,15 @@ test.describe("Task List", () => {
 
     test(`${taskView}: should delete a task via the task menu`, async ({
       page,
-    }) => {
+    }, testInfo) => {
+      if (testInfo.title.startsWith("timeline:")) {
+        test.skip();
+      }
       await openTodoTxt(page);
       await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
-      const listItem = page.locator('[aria-label="Task"]').nth(1);
-      await listItem.hover();
-      await listItem.locator('[aria-label="Task menu"]').click();
+      const taskButton = page.locator('[data-testid="task-button"]').nth(1);
+      await taskButton.hover();
+      await taskButton.locator('[aria-label="Task menu"]').click();
       await page.locator('[role="menuitem"][aria-label="Delete task"]').click();
       await page
         .locator('[aria-label="Confirmation Dialog"] [aria-label="Delete"]')
