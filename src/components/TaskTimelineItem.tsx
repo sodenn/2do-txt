@@ -119,6 +119,10 @@ function TaskCheckbox(props: Pick<TimelineItemProps, "task" | "onClick">) {
       onClick={onClick}
       checked={task.completed}
       color={task._timelineFlags.today ? "primary" : "default"}
+      inputProps={{
+        "aria-label": "Complete task",
+        "aria-checked": task.completed,
+      }}
       icon={
         <RadioButtonUncheckedOutlinedIcon
           sx={{
@@ -139,9 +143,12 @@ function TaskCheckbox(props: Pick<TimelineItemProps, "task" | "onClick">) {
 
 const TaskListItem = forwardRef<
   HTMLDivElement,
-  Pick<TimelineItemProps, "task" | "onDelete" | "onClick" | "onCheckboxClick">
+  Pick<
+    TimelineItemProps,
+    "task" | "focused" | "onDelete" | "onClick" | "onCheckboxClick"
+  >
 >((props, ref) => {
-  const { task, onClick, onDelete, onCheckboxClick } = props;
+  const { task, focused, onClick, onDelete, onCheckboxClick } = props;
   const { language } = useSettings();
 
   const handleDeleteClick: IconButtonProps["onClick"] = (e) => {
@@ -171,6 +178,8 @@ const TaskListItem = forwardRef<
         ref={ref}
         onClick={onClick}
         onKeyUp={handleKey}
+        aria-label="Task"
+        aria-current={focused}
       >
         <Box>
           <TaskBody task={task} />
@@ -231,12 +240,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
     } = props;
 
     return (
-      <TimelineItem
-        sx={{ minHeight: 0 }}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        aria-current={focused}
-      >
+      <TimelineItem sx={{ minHeight: 0 }} onFocus={onFocus} onBlur={onBlur}>
         <TimelineOppositeContent
           sx={{
             flex: 0,
@@ -285,6 +289,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
           <TaskListItem
             ref={ref}
             task={task}
+            focused={focused}
             onDelete={onDelete}
             onClick={onClick}
             onCheckboxClick={onCheckboxClick}

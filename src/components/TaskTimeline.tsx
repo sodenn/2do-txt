@@ -47,14 +47,23 @@ const TaskTimeline = (props: TaskTimelineProps) => {
   };
 
   return (
-    <Timeline ref={parent} sx={{ mt: 0, px: { xs: 0, sm: 1 }, py: 0 }}>
+    <Timeline
+      aria-label="Task list"
+      ref={parent}
+      sx={{ mt: 0, px: { xs: 0, sm: 1 }, py: 0 }}
+    >
       {tasks.map((task, index) => (
         <Box key={task._id}>
           {!task._timelineFlags.firstOfToday && (
             <TaskTimelineItem
               ref={(el) => {
                 if (listItemsRef.current && el) {
-                  listItemsRef.current[index] = el;
+                  const notFocusablePredecessor = tasks.some(
+                    (t, idx) => t._id === "-1" && idx < index
+                  );
+                  listItemsRef.current[
+                    notFocusablePredecessor ? index - 1 : index
+                  ] = el;
                 }
               }}
               task={task}

@@ -83,13 +83,21 @@ const TaskView = () => {
 
   const focusNextListItem = (direction: "up" | "down") => {
     let index = 0;
+    let length = tasks.length;
     const task = tasks.find((t) => t._id === focusedTaskId);
     if (task) {
       index = tasks.indexOf(task);
+      const notFocusablePredecessor = tasks.some(
+        (t, idx) => t._id === "-1" && idx < index
+      );
+      if (notFocusablePredecessor) {
+        index = index - 1;
+        length = length - 1;
+      }
       if (direction === "down") {
-        index = index + 1 < tasks.length ? index + 1 : 0;
+        index = index + 1 < length ? index + 1 : 0;
       } else {
-        index = index - 1 >= 0 ? index - 1 : tasks.length - 1;
+        index = index - 1 >= 0 ? index - 1 : length - 1;
       }
     }
     listItemsRef.current[index].focus();
