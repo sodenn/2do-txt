@@ -141,7 +141,6 @@ const FileInput = (props: FileInputProps) => {
       data-testid="file-picker"
       style={{ display: "none" }}
       ref={fileInputRef}
-      accept="text/plain"
       type="file"
       onChange={handleChange}
       onClick={handleClick}
