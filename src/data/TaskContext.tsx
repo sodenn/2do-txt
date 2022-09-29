@@ -295,7 +295,11 @@ const [TaskProvider, useTask] = createContext(() => {
       const items = taskList.items.map((t) => {
         if (t._id === _id) {
           cancelNotifications({ notifications: [{ id: hashCode(t.raw) }] });
-          const updatedTask: Task = { ...parseTask(raw), _id };
+          const updatedTask: Task = {
+            ...parseTask(raw),
+            _id,
+            _order: t._order,
+          };
           scheduleDueTaskNotification(updatedTask);
           return updatedTask;
         } else {

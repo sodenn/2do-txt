@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Box, List, Typography } from "@mui/material";
 import { MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
@@ -37,6 +38,7 @@ const TaskList = (props: TaskListProps) => {
   const { completeTask } = useTask();
   const { setTaskDialogOptions } = useTaskDialog();
   const hasItems = taskGroups.some((g) => g.items.length > 0);
+  const [parent] = useAutoAnimate<HTMLUListElement>();
 
   return (
     <Box>
@@ -53,7 +55,7 @@ const TaskList = (props: TaskListProps) => {
         <List aria-label="Task list" subheader={<li />}>
           {taskGroups.map((group) => (
             <li key={group.label}>
-              <ul style={{ padding: 0 }}>
+              <ul ref={parent} style={{ padding: 0 }}>
                 {group.label && <TaskListSubheader title={group.label} />}
                 {group.items.map((task) => {
                   const index = tasks.indexOf(task);
