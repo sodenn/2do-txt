@@ -155,7 +155,10 @@ export function useTimelineTasks(
     }));
 
   const dueTasks = filteredTasks
-    .filter((t) => t.dueDate && isBefore(t.dueDate, addDays(today, 1)))
+    .filter(
+      (t) =>
+        t.dueDate && !t.completionDate && isBefore(t.dueDate, addDays(today, 1))
+    )
     .map((t) => ({ ...t, _timelineDate: today }))
     .sort((a, b) => timelineSort(a.dueDate, b.dueDate, "asc"));
 
@@ -173,7 +176,7 @@ export function useTimelineTasks(
   });
 
   const todayTasks: TimelineTask[] = filteredTasks
-    .filter((t) => !t.dueDate)
+    .filter((t) => !(t.dueDate && !t.completionDate))
     .map((t) => ({ ...t, _timelineDate: t.completionDate || t.creationDate }))
     .filter((t) => t._timelineDate && isEqual(t._timelineDate, today))
     .sort((t1, t2) => timelineSort(t1._timelineDate, t2._timelineDate))
@@ -193,7 +196,7 @@ export function useTimelineTasks(
     }));
 
   const pastTasks: TimelineTask[] = filteredTasks
-    .filter((t) => !t.dueDate)
+    .filter((t) => !(t.dueDate && !t.completionDate))
     .map((t) => ({ ...t, _timelineDate: t.completionDate || t.creationDate }))
     .filter((t) => !t._timelineDate || isBefore(t._timelineDate, today))
     .sort((t1, t2) => timelineSort(t1._timelineDate, t2._timelineDate))

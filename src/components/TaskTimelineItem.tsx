@@ -184,7 +184,7 @@ const TaskListItem = forwardRef<
         <Box>
           <TaskBody task={task} />
           <Box sx={{ display: "flex", gap: 1 }}>
-            {task.dueDate && (
+            {task.dueDate && !task.completionDate && (
               <DateBox
                 sx={{
                   color: "warning.main",
@@ -198,7 +198,7 @@ const TaskListItem = forwardRef<
                 {formatLocaleDate(task.dueDate, language)}
               </DateBox>
             )}
-            {task.completionDate && !task.dueDate && (
+            {task.completionDate && (
               <DateBox
                 sx={{
                   color: "text.disabled",
