@@ -324,6 +324,7 @@ const [TaskProvider, useTask] = createContext(() => {
       }
       cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
       const items = taskList.items.filter((t) => t._id !== task._id);
+      items.filter((t) => t._order > task._order).forEach((t) => t._order--);
       return saveTodoFile({ ...taskList, items });
     },
     [cancelNotifications, findTaskListByTaskId, saveTodoFile]
