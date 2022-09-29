@@ -67,6 +67,7 @@
   "File Name": "File Name",
   "Create": "Create",
   "No tasks": "No tasks",
+  "No tasks found": "No tasks found",
   "Enable cloud storage sync": "Enable {{cloudStorage}} sync",
   "Disable cloud storage sync": "Disable {{cloudStorage}} sync",
   "Resolve file conflict": "File conflict",

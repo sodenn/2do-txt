@@ -1,9 +1,10 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Timeline } from "@mui/lab";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
+import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
@@ -25,6 +26,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
   const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { deleteTask, completeTask } = useTask();
+  const { searchTerm } = useFilter();
   const [parent] = useAutoAnimate<HTMLUListElement>();
 
   const handleDelete = (task: Task) => {
@@ -45,6 +47,20 @@ const TaskTimeline = (props: TaskTimelineProps) => {
       ],
     });
   };
+
+  if (
+    tasks.filter((t) => !t._timelineFlags.firstOfToday).length === 0 &&
+    searchTerm
+  ) {
+    return (
+      <Typography
+        sx={{ mt: 1, mx: 2, mb: 3, fontStyle: "italic" }}
+        color="text.disabled"
+      >
+        {t("No tasks found")}
+      </Typography>
+    );
+  }
 
   return (
     <Timeline
