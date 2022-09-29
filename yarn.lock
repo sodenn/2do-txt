@@ -33,7 +33,7 @@ __metadata:
     "@mui/x-date-pickers": 5.0.3
     "@playwright/test": 1.25.1
     "@react-fluent-edit/core": 1.0.3
-    "@react-fluent-edit/mentions": 1.0.3
+    "@react-fluent-edit/mentions": 2.1.0
     "@react-fluent-edit/mui": 1.0.3
     "@semantic-release/changelog": 6.0.1
     "@semantic-release/git": 10.0.1
@@ -2883,6 +2883,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-fluent-edit/core@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@react-fluent-edit/core@npm:2.1.0"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    slate: ^0.81.3
+    slate-history: ^0.66.0
+    slate-react: ^0.81.0
+  checksum: 653246924d4a11c0e91608662655c46a95fc3ffe3de5d7c2d592f21a5db90b542218d217951e3beac0de1297b4ce82fe79a9779257464b645588c0e7174df106
+  languageName: node
+  linkType: hard
+
 "@react-fluent-edit/mentions@npm:1.0.3":
   version: 1.0.3
   resolution: "@react-fluent-edit/mentions@npm:1.0.3"
@@ -2895,6 +2908,21 @@ __metadata:
     slate-history: ^0.66.0
     slate-react: ^0.81.0
   checksum: 2e5a52d779019f91fc6c459f28c73821895a75e9662996f604e34ecc559d1f3e06bf9ded313368a8d52ff0a736a6c39ea0090558fcc530d08658225a5551c801
+  languageName: node
+  linkType: hard
+
+"@react-fluent-edit/mentions@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@react-fluent-edit/mentions@npm:2.1.0"
+  dependencies:
+    "@react-fluent-edit/core": 2.1.0
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    slate: ^0.81.3
+    slate-history: ^0.66.0
+    slate-react: ^0.81.0
+  checksum: 0cbea40589b16da340f5aff74e6da74799791610dcb9412f0823917a3252022b355bd92481fd1405d94e00d66ad6bf3e04a1a70b0e79a1719c084e3d692d7278
   languageName: node
   linkType: hard
 

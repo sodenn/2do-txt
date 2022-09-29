@@ -39,7 +39,7 @@
     "@mui/system": "5.10.7",
     "@mui/x-date-pickers": "5.0.3",
     "@react-fluent-edit/core": "1.0.3",
-    "@react-fluent-edit/mentions": "1.0.3",
+    "@react-fluent-edit/mentions": "2.1.0",
     "@react-fluent-edit/mui": "1.0.3",
     "capacitor-rate-app": "3.0.0",
     "cordova-plugin-inappbrowser": "5.0.0",
