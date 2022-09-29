@@ -34,7 +34,7 @@ __metadata:
     "@playwright/test": 1.25.1
     "@react-fluent-edit/core": 1.0.3
     "@react-fluent-edit/mentions": 1.0.3
-    "@react-fluent-edit/mui": 1.0.3
+    "@react-fluent-edit/mui": 2.1.0
     "@semantic-release/changelog": 6.0.1
     "@semantic-release/git": 10.0.1
     "@types/file-saver": 2.0.5
@@ -2883,6 +2883,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-fluent-edit/core@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@react-fluent-edit/core@npm:2.1.0"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    slate: ^0.81.3
+    slate-history: ^0.66.0
+    slate-react: ^0.81.0
+  checksum: 653246924d4a11c0e91608662655c46a95fc3ffe3de5d7c2d592f21a5db90b542218d217951e3beac0de1297b4ce82fe79a9779257464b645588c0e7174df106
+  languageName: node
+  linkType: hard
+
 "@react-fluent-edit/mentions@npm:1.0.3":
   version: 1.0.3
   resolution: "@react-fluent-edit/mentions@npm:1.0.3"
@@ -2898,12 +2911,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-fluent-edit/mui@npm:1.0.3":
-  version: 1.0.3
-  resolution: "@react-fluent-edit/mui@npm:1.0.3"
+"@react-fluent-edit/mentions@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@react-fluent-edit/mentions@npm:2.1.0"
   dependencies:
-    "@react-fluent-edit/core": 1.0.3
-    "@react-fluent-edit/mentions": 1.0.3
+    "@react-fluent-edit/core": 2.1.0
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    slate: ^0.81.3
+    slate-history: ^0.66.0
+    slate-react: ^0.81.0
+  checksum: 0cbea40589b16da340f5aff74e6da74799791610dcb9412f0823917a3252022b355bd92481fd1405d94e00d66ad6bf3e04a1a70b0e79a1719c084e3d692d7278
+  languageName: node
+  linkType: hard
+
+"@react-fluent-edit/mui@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@react-fluent-edit/mui@npm:2.1.0"
+  dependencies:
+    "@react-fluent-edit/core": 2.1.0
+    "@react-fluent-edit/mentions": 2.1.0
   peerDependencies:
     "@emotion/react": ^11.9.3
     "@emotion/styled": ^11.9.3
@@ -2913,7 +2941,7 @@ __metadata:
     slate: ^0.81.3
     slate-history: ^0.66.0
     slate-react: ^0.81.0
-  checksum: 6c85f2f5458d149414a383377798c52df0864bec784826a53e91eb54432ec7c38598f978686b3607dea8b3cfdda5450335f090bf4fec4f92a11de3a82a93bce0
+  checksum: 636c501329dc4ef6aa51ba6723c97c5ea71bcd89ff1f9fcc9f01a822b54250b5642c2ffcb8bf95abe97f710c179112ce0136acd4aa6107c0444fc18308ce2dbb
   languageName: node
   linkType: hard
 
