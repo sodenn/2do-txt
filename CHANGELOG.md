@@ -1,3 +1,39 @@
+## [1.14.1](https://github.com/sodenn/2do-txt/compare/v1.14.0...v1.14.1) (2022-09-29)
+
+
+### Bug Fixes
+
+* **deps:** pin dependencies ([#569](https://github.com/sodenn/2do-txt/issues/569)) ([3022ae9](https://github.com/sodenn/2do-txt/commit/3022ae9870ea1824f8f55ea13ab5e05c4720ec7a))
+* **deps:** pin dependency @mui/x-date-pickers to 5.0.0-beta.2 ([#586](https://github.com/sodenn/2do-txt/issues/586)) ([fafa829](https://github.com/sodenn/2do-txt/commit/fafa829d5742712eb2f9367e952eb90c51a8fe64))
+* **deps:** update dependencies (non-major) ([#664](https://github.com/sodenn/2do-txt/issues/664)) ([935b7c8](https://github.com/sodenn/2do-txt/commit/935b7c8c949d2dc51703d9f4c3fd6397fdfd2312))
+* **deps:** update dependency @capacitor/filesystem to v4.1.0 ([#645](https://github.com/sodenn/2do-txt/issues/645)) ([b3dd5ef](https://github.com/sodenn/2do-txt/commit/b3dd5efebfbbfd1061beb80e43a9747037e321a0))
+* **deps:** update dependency @date-io/date-fns to v2.15.0 ([#614](https://github.com/sodenn/2do-txt/issues/614)) ([4eede29](https://github.com/sodenn/2do-txt/commit/4eede295c956cdbf31d0c98a0c1f10a6be04dc10))
+* **deps:** update dependency @mui/material to v5.10.1 ([#626](https://github.com/sodenn/2do-txt/issues/626)) ([1e65e50](https://github.com/sodenn/2do-txt/commit/1e65e50f5a923d7e49c593d227a7e302301dbbf5))
+* **deps:** update dependency @mui/x-date-pickers to v5.0.0-beta.4 ([#608](https://github.com/sodenn/2do-txt/issues/608)) ([184f545](https://github.com/sodenn/2do-txt/commit/184f545a03a01fdb938acd048e0d41f4ccb9ad0b))
+* **deps:** update dependency capacitor-rate-app to v3 ([#620](https://github.com/sodenn/2do-txt/issues/620)) ([d19fcd1](https://github.com/sodenn/2do-txt/commit/d19fcd11235d0315d8f524b7ee1126e3ee892222))
+* **deps:** update dependency date-fns to v2.29.1 ([#579](https://github.com/sodenn/2do-txt/issues/579)) ([59f9906](https://github.com/sodenn/2do-txt/commit/59f99067ff51ab255a97522eedc900f3d7238418))
+* **deps:** update dependency date-fns to v2.29.2 ([#630](https://github.com/sodenn/2do-txt/issues/630)) ([ac9d521](https://github.com/sodenn/2do-txt/commit/ac9d521b3c136f6ccb211614366864e1cef86bbe))
+* **deps:** update dependency i18next to v21.8.16 ([#596](https://github.com/sodenn/2do-txt/issues/596)) ([76f6fde](https://github.com/sodenn/2do-txt/commit/76f6fde12af5ed41d6e5864e3c351747151524c7))
+* **deps:** update dependency i18next to v21.9.0 ([#611](https://github.com/sodenn/2do-txt/issues/611)) ([3a55f2d](https://github.com/sodenn/2do-txt/commit/3a55f2d6c92338f1e998d60ba15133aa090e3e0b))
+* **deps:** update dependency i18next to v21.9.1 ([#628](https://github.com/sodenn/2do-txt/issues/628)) ([fef86f2](https://github.com/sodenn/2do-txt/commit/fef86f2fe1ba0f000ff70d3f24245e7879f470ca))
+* **deps:** update dependency i18next-browser-languagedetector to v6.1.5 ([#616](https://github.com/sodenn/2do-txt/issues/616)) ([6eae659](https://github.com/sodenn/2do-txt/commit/6eae659d50967f540e2df6524dd3b8dbfc8e90a6))
+* **deps:** update dependency jszip to v3.10.1 ([#605](https://github.com/sodenn/2do-txt/issues/605)) ([06ec304](https://github.com/sodenn/2do-txt/commit/06ec304dd53dbb14b7751162066b23583ce81cd3))
+* **deps:** update dependency react-i18next to v11.18.3 ([#590](https://github.com/sodenn/2do-txt/issues/590)) ([ac6bf3d](https://github.com/sodenn/2do-txt/commit/ac6bf3da00310e09f1b55b4f9ec8ddf123456b7b))
+* **deps:** update dependency react-i18next to v11.18.4 ([#622](https://github.com/sodenn/2do-txt/issues/622)) ([666315e](https://github.com/sodenn/2do-txt/commit/666315e844bef4a7f079332231f3945e580f4e07))
+* **deps:** update dependency react-i18next to v11.18.5 ([#642](https://github.com/sodenn/2do-txt/issues/642)) ([34b6152](https://github.com/sodenn/2do-txt/commit/34b61520c2e33c574e63d8b2c610fa00cae1ea60))
+* **deps:** update dependency slate to v0.82.0 ([#593](https://github.com/sodenn/2do-txt/issues/593)) ([d5a1ad7](https://github.com/sodenn/2do-txt/commit/d5a1ad7abe2b136a23d3bbaccb795d58ec6d9f15))
+* **deps:** update dependency slate-react to v0.82.0 ([#594](https://github.com/sodenn/2do-txt/issues/594)) ([b43f8cd](https://github.com/sodenn/2do-txt/commit/b43f8cdee7a8c1a13f1dc9cefeb39328f45d6582))
+* **deps:** update emotion monorepo to v11.10.0 ([#598](https://github.com/sodenn/2do-txt/issues/598)) ([6e9a0a8](https://github.com/sodenn/2do-txt/commit/6e9a0a8997044f0e100b2c11ab01fa5244b707ff))
+* **deps:** update emotion monorepo to v11.10.4 ([#652](https://github.com/sodenn/2do-txt/issues/652)) ([56e27a9](https://github.com/sodenn/2do-txt/commit/56e27a9980091a5fa89dc8aad41b6df5b0a94272))
+* **deps:** update material-ui monorepo ([#577](https://github.com/sodenn/2do-txt/issues/577)) ([2a220ad](https://github.com/sodenn/2do-txt/commit/2a220ad1c095e169594a4fce6c45bc739a427afe))
+* **deps:** update material-ui monorepo ([#588](https://github.com/sodenn/2do-txt/issues/588)) ([a9617bb](https://github.com/sodenn/2do-txt/commit/a9617bbedb6b48384380bb92a35a7d579266ba23))
+* **deps:** update material-ui monorepo ([#603](https://github.com/sodenn/2do-txt/issues/603)) ([9e6a488](https://github.com/sodenn/2do-txt/commit/9e6a488e2bf1a3437cce3aa2b605174601da6ae2))
+* **deps:** update material-ui monorepo ([#612](https://github.com/sodenn/2do-txt/issues/612)) ([733df80](https://github.com/sodenn/2do-txt/commit/733df80235d923680c9093963503fa629b6323fe))
+* **deps:** update material-ui monorepo ([#619](https://github.com/sodenn/2do-txt/issues/619)) ([2dcec16](https://github.com/sodenn/2do-txt/commit/2dcec168d95b29237b17e729f6eb35863c972acc))
+* **deps:** update material-ui monorepo ([#633](https://github.com/sodenn/2do-txt/issues/633)) ([ab79e4b](https://github.com/sodenn/2do-txt/commit/ab79e4bbba17e78bb7be9164eca1633f428b40e2))
+* **deps:** update material-ui monorepo ([#650](https://github.com/sodenn/2do-txt/issues/650)) ([a5be08b](https://github.com/sodenn/2do-txt/commit/a5be08ba5ba10ee0c7401d7849a1bb104de1b2d7))
+* **FilePicker:** make files in the 2do.txt folder selectable via the file picker ([#676](https://github.com/sodenn/2do-txt/issues/676)) ([f8bc7d4](https://github.com/sodenn/2do-txt/commit/f8bc7d44d5e6e6618613c55242195819c2740290))
+
 # [1.14.0](https://github.com/sodenn/2do-txt/compare/v1.13.0...v1.14.0) (2022-05-27)
 
 
