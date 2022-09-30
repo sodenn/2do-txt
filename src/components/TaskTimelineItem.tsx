@@ -69,7 +69,9 @@ function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
         color: "text.secondary",
       }}
     >
-      {!!task.dueDate && <AccessAlarmOutlinedIcon fontSize="small" />}
+      {!!task.dueDate && !task.completionDate && (
+        <AccessAlarmOutlinedIcon fontSize="small" />
+      )}
       {task._timelineDate && format(task._timelineDate, locales[language])}
       {task._timelineFlags.firstWithoutDate && t("Without date")}
     </Box>

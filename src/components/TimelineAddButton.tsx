@@ -57,7 +57,7 @@ const TimelineAddButton = ({ flags }: TimelineAddButtonProps) => {
           flex: 0,
           pl: 0,
           pr: 1,
-          pt: flags.first ? 9 : 2,
+          pt: flags.first || flags.firstOfYear ? 9 : 2,
           display: {
             xs: "none",
             sm: "block",
@@ -99,7 +99,7 @@ const TimelineAddButton = ({ flags }: TimelineAddButtonProps) => {
         sx={{
           cursor: "pointer",
           pb: 1,
-          pt: { xs: 1, sm: flags.first ? 8 : 1 },
+          pt: { xs: 1, sm: flags.first || flags.firstOfYear ? 8 : 1 },
           px: { xs: 0, sm: 0.5 },
         }}
         onClick={handleClick}
