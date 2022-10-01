@@ -15,8 +15,9 @@
 **2do.txt** is a task management that uses the [todo.txt](https://github.com/todotxt/todo.txt) format. 2do.txt simplifies the work with todo.txt files by providing convenience functions such as sorting and filtering of tasks, autocomplete or notifications for due tasks.
 
 <p align="center">
-  <img width="600" src="./resources/screenshot1.png" alt="Screenshot">
-  <img width="600" src="./resources/screenshot2.png" alt="Screenshot">
+  <img width="600" style="border-radius: 6px;" src="./resources/screenshot1.png" alt="Screenshot">
+  <img width="600" style="border-radius: 6px;" src="./resources/screenshot2.png" alt="Screenshot">
+  <img width="600" style="border-radius: 6px;" src="./resources/screenshot3.png" alt="Screenshot">
 </p>
 
 ## About todo.txt
