@@ -103,7 +103,8 @@ const TaskForm = (props: TaskFormProps) => {
     !(showCreationDate && showCompletionDate)
       ? 4
       : 6;
-  const { openMentionsCombobox, removeMentions, addMention } = useMentions();
+  const { openMentionsCombobox, removeMentions, addMention, renameMentions } =
+    useMentions();
   const plugins = useMemo(
     () => [
       createMentionsPlugin({
@@ -137,9 +138,8 @@ const TaskForm = (props: TaskFormProps) => {
       return;
     }
     if (value) {
-      removeMentions({ trigger: "due:" });
-      addMention({
-        text: formatDate(value),
+      renameMentions({
+        newText: formatDate(value),
         trigger: "due:",
       });
     } else {
@@ -149,8 +149,8 @@ const TaskForm = (props: TaskFormProps) => {
 
   const handleRecChange = (value: string | null) => {
     if (value) {
-      addMention({
-        text: value,
+      renameMentions({
+        newText: value,
         trigger: "rec:",
       });
     } else {

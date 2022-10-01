@@ -60,6 +60,16 @@ export interface TimelineTask extends Task {
   _timelineDate?: Date;
 }
 
+export function updateTaskList(taskList: TaskList): TaskList {
+  const attributes = getTaskListAttributes(taskList.items, false);
+  const incomplete = getTaskListAttributes(taskList.items, true);
+  return {
+    ...taskList,
+    ...attributes,
+    incomplete,
+  };
+}
+
 export function parseTaskList(text?: string): TaskListParseResult {
   if (text) {
     const lineEnding = /\r\n/.test(text) ? "\r\n" : "\n";

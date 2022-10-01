@@ -32,6 +32,7 @@ import {
   parseTaskList as _parseTaskList,
   stringifyTaskList,
   TaskList,
+  updateTaskList,
 } from "../utils/task-list";
 import { generateId } from "../utils/uuid";
 import { useArchivedTask } from "./ArchivedTaskContext";
@@ -201,10 +202,13 @@ const [TaskProvider, useTask] = createContext(() => {
       if (typeof listOrPath === "string") {
         return loadTodoFile(filePath, text);
       } else {
+        const updatedTaskList = updateTaskList(listOrPath);
         setTaskLists((taskLists) => {
           return taskLists.some((t) => t.filePath === filePath)
-            ? taskLists.map((t) => (t.filePath === filePath ? listOrPath : t))
-            : [...taskLists, listOrPath];
+            ? taskLists.map((t) =>
+                t.filePath === filePath ? updatedTaskList : t
+              )
+            : [...taskLists, updatedTaskList];
         });
         return listOrPath;
       }
