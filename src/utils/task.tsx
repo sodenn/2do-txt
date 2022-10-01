@@ -246,7 +246,9 @@ export function useFormatBody() {
               chip={chips}
               sx={{
                 color: chips
-                  ? key === "due"
+                  ? task.completed
+                    ? undefined
+                    : key === "due"
                     ? "warning.contrastText"
                     : key === "pri"
                     ? "secondary.contrastText"
@@ -260,15 +262,16 @@ export function useFormatBody() {
                   : mode === "dark"
                   ? "grey.500"
                   : "grey.600",
-                bgcolor: !chips
-                  ? undefined
-                  : key === "due"
-                  ? "warning.light"
-                  : key === "pri"
-                  ? "secondary.light"
-                  : mode === "dark"
-                  ? "grey.400"
-                  : "grey.600",
+                bgcolor:
+                  !chips || task.completed
+                    ? undefined
+                    : key === "due"
+                    ? "warning.light"
+                    : key === "pri"
+                    ? "secondary.light"
+                    : mode === "dark"
+                    ? "grey.400"
+                    : "grey.600",
               }}
             >
               {text}
