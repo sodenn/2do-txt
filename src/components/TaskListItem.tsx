@@ -5,22 +5,24 @@ import { Task } from "../utils/task";
 import TaskBody from "./TaskBody";
 import TaskListItemMenu from "./TaskListItemMenu";
 
-const TaskItemButton = styled(ListItemButton)`
-  border-radius: ${({ theme }: any) => theme.shape.borderRadius}px;
-  .MuiIconButton-root {
-    visibility: hidden;
-  }
-  @media (pointer: coarse) {
-    .MuiIconButton-root {
-      visibility: visible;
-    }
-  }
-  &:hover {
-    .MuiIconButton-root {
-      visibility: visible;
-    }
-  }
-`;
+const TaskItemButton = styled(ListItemButton)(({ theme }) => ({
+  [theme.breakpoints.up("sm")]: {
+    borderRadius: theme.shape.borderRadius,
+  },
+  ".MuiIconButton-root": {
+    visibility: "hidden",
+  },
+  "@media (pointer: coarse)": {
+    ".MuiIconButton-root": {
+      visibility: "visible",
+    },
+  },
+  "&:hover": {
+    ".MuiIconButton-root": {
+      visibility: "visible",
+    },
+  },
+}));
 
 const DateContainer = styled("div")({
   opacity: 0.5,

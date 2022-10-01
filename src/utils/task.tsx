@@ -245,6 +245,7 @@ export function useFormatBody() {
               key={index}
               chip={chips}
               sx={{
+                whiteSpace: "nowrap",
                 color: chips
                   ? task.completed
                     ? undefined

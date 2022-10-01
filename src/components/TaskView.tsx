@@ -97,7 +97,7 @@ const TaskView = () => {
       if (direction === "down") {
         index = index + 1 < length ? index + 1 : 0;
       } else {
-        index = index - 1 >= 0 ? index - 1 : length - 1;
+        index = index - 1 >= 0 ? index - 1 : listItemsRef.current.length - 1;
       }
     }
     listItemsRef.current[index].focus();
