@@ -103,7 +103,7 @@ const TaskForm = (props: TaskFormProps) => {
     !(showCreationDate && showCompletionDate)
       ? 4
       : 6;
-  const { openMentionsCombobox, removeMentions, addMention, renameMentions } =
+  const { openMentionsCombobox, removeMentions, renameMentions } =
     useMentions();
   const plugins = useMemo(
     () => [
