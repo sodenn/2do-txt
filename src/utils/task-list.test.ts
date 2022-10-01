@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import { arrayMove } from "./array";
 import {
   convertToTaskGroups,
-  filterTaskList,
+  filterTasks,
   getCommonTaskListAttributes,
   parseTaskList,
+  sortByOriginalOrder,
   TaskList,
   TaskListFilter,
 } from "./task-list";
@@ -211,7 +212,7 @@ x 2. task +ProjB
       hideCompletedTasks: false,
     };
 
-    const filteredList = filterTaskList(items, filter);
+    const filteredList = filterTasks(items, filter).sort(sortByOriginalOrder);
 
     expect(filteredList.length).toBe(1);
 
@@ -235,7 +236,7 @@ x 2. task +ProjB
       hideCompletedTasks: false,
     };
 
-    const filteredList = filterTaskList(items, filter);
+    const filteredList = filterTasks(items, filter).sort(sortByOriginalOrder);
 
     expect(filteredList.length).toBe(1);
 
@@ -259,7 +260,7 @@ x 2. task +ProjB
       hideCompletedTasks: false,
     };
 
-    const filteredList = filterTaskList(items, filter);
+    const filteredList = filterTasks(items, filter).sort(sortByOriginalOrder);
 
     expect(filteredList.length).toBe(3);
   });
@@ -281,7 +282,7 @@ x 2. task +ProjB
       hideCompletedTasks: true,
     };
 
-    const filteredList = filterTaskList(items, filter);
+    const filteredList = filterTasks(items, filter).sort(sortByOriginalOrder);
 
     expect(filteredList.length).toBe(2);
   });

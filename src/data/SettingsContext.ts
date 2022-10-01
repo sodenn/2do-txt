@@ -7,31 +7,32 @@ export type Language = "de" | "en";
 
 export type ArchiveMode = "no-archiving" | "automatic" | "manual";
 
+export type TaskView = "list" | "timeline";
+
 export type PriorityTransformation = "keep" | "remove" | "archive";
 
 const [SettingsProvider, useSettings] = createContext(() => {
-  const { i18n } = useTranslation();
-  const [settingsInitialized, setSettingsInitialized] = useState(false);
-  const [language, setLanguage] = useState<Language>(
-    (i18n.resolvedLanguage as Language) || "en"
-  );
+  const {
+    i18n: { resolvedLanguage, changeLanguage: _changeLanguage },
+  } = useTranslation();
   const { getPreferencesItem, setPreferencesItem } = usePreferences();
+  const [settingsInitialized, setSettingsInitialized] = useState(false);
   const [createCreationDate, setCreateCreationDate] = useState(true);
   const [createCompletionDate, setCreateCompletionDate] = useState(true);
   const [showNotifications, _setShowNotifications] = useState(false);
   const [archiveMode, _setArchiveMode] = useState<ArchiveMode>("no-archiving");
+  const [taskView, _setTaskView] = useState<TaskView>("list");
   const [priorityTransformation, _setPriorityTransformation] =
     useState<PriorityTransformation>("keep");
 
   const changeLanguage = useCallback(
     (language: Language) => {
-      if (language && i18n.resolvedLanguage !== language) {
-        setLanguage(language);
-        i18n.changeLanguage(language);
+      if (language && resolvedLanguage !== language) {
+        _changeLanguage(language);
         setPreferencesItem("language", language);
       }
     },
-    [i18n, setPreferencesItem]
+    [_changeLanguage, resolvedLanguage, setPreferencesItem]
   );
 
   const toggleCreateCompletionDate = useCallback(() => {
@@ -62,6 +63,14 @@ const [SettingsProvider, useSettings] = createContext(() => {
     (value: ArchiveMode) => {
       setPreferencesItem("archive-mode", value);
       _setArchiveMode(value);
+    },
+    [setPreferencesItem]
+  );
+
+  const setTaskView = useCallback(
+    (value: TaskView) => {
+      setPreferencesItem("task-view", value);
+      _setTaskView(value);
     },
     [setPreferencesItem]
   );
@@ -140,6 +149,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
       getPreferencesItem("create-creation-date"),
       getPreferencesItem("create-completion-date"),
       getPreferencesItem<ArchiveMode>("archive-mode"),
+      getPreferencesItem<TaskView>("task-view"),
       getPreferencesItem<PriorityTransformation>("priority-transformation"),
       getPreferencesItem<Language>("language"),
     ]).then(
@@ -148,6 +158,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
         createCreationDate,
         createCompletionDate,
         archiveMode,
+        taskView,
         completedTaskPriority,
         language,
       ]) => {
@@ -159,6 +170,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
           createCompletionDate === null ? true : createCompletionDate === "true"
         );
         _setArchiveMode(archiveMode || "no-archiving");
+        _setTaskView(taskView || "list");
         _setPriorityTransformation(completedTaskPriority || "keep");
         changeLanguage(language || "en");
         setSettingsInitialized(true);
@@ -167,11 +179,13 @@ const [SettingsProvider, useSettings] = createContext(() => {
   }, [changeLanguage, getPreferencesItem, setArchiveMode]);
 
   return {
-    language,
+    language: resolvedLanguage as Language,
     changeLanguage,
     createCreationDate,
     createCompletionDate,
     archiveMode,
+    taskView,
+    setTaskView,
     setArchiveMode,
     priorityTransformation,
     setCompletedTaskPriority,

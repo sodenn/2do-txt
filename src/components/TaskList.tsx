@@ -13,8 +13,8 @@ interface TaskListProps {
   fileName: string;
   filePath: string;
   taskGroups: TaskGroup[];
-  flatTaskList: Task[];
-  focusedTaskIndex: number;
+  tasks: Task[];
+  focusedTaskId?: string;
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
   showHeader?: boolean;
   onFocus: (index: number) => void;
@@ -26,8 +26,8 @@ const TaskList = (props: TaskListProps) => {
     fileName,
     filePath,
     taskGroups,
-    flatTaskList,
-    focusedTaskIndex,
+    tasks,
+    focusedTaskId,
     listItemsRef,
     showHeader = false,
     onFocus,
@@ -56,7 +56,7 @@ const TaskList = (props: TaskListProps) => {
               <ul style={{ padding: 0 }}>
                 {group.label && <TaskListSubheader title={group.label} />}
                 {group.items.map((task) => {
-                  const index = flatTaskList.indexOf(task);
+                  const index = tasks.indexOf(task);
                   return (
                     <TaskListItem
                       ref={(el) => {
@@ -66,7 +66,7 @@ const TaskList = (props: TaskListProps) => {
                       }}
                       key={index}
                       task={task}
-                      focused={focusedTaskIndex === index}
+                      focused={focusedTaskId === task._id}
                       onClick={() => setTaskDialogOptions({ open: true, task })}
                       onCheckboxClick={() => completeTask(task)}
                       onFocus={() => onFocus(index)}

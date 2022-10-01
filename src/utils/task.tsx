@@ -1,3 +1,4 @@
+import { Box, useTheme } from "@mui/material";
 import {
   addBusinessDays,
   addDays,
@@ -7,20 +8,11 @@ import {
 } from "date-fns";
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import PriorityBox from "../components/PriorityBox";
+import TagBox from "../components/TagBox";
 import { useFilter } from "../data/FilterContext";
-import { PriorityTransformation } from "../data/SettingsContext";
+import { PriorityTransformation, useSettings } from "../data/SettingsContext";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
-import {
-  completedStyle,
-  contextStyle,
-  disabledStyle,
-  dueDateStyle,
-  priorityBoldStyle,
-  priorityStyle,
-  projectStyle,
-  tagStyle,
-  taskChipStyle,
-} from "./task-styles";
 import { generateId } from "./uuid";
 
 export type Priority = "A" | "B" | "C" | "D" | string;
@@ -41,10 +33,7 @@ export interface Task {
 }
 
 export interface TaskFormData {
-  body: string;
-  priority?: string;
-  creationDate?: Date;
-  completionDate?: Date;
+  raw: string;
   _id?: string;
 }
 
@@ -185,77 +174,137 @@ export function parseTaskBody(
 }
 
 export function useFormatBody() {
+  const { taskView } = useSettings();
+  const {
+    palette: { mode },
+  } = useTheme();
+  const chips = taskView === "list";
+  const dueDate = taskView === "list";
   const {
     t,
     i18n: { language },
   } = useTranslation();
   const { sortBy } = useFilter();
   return (task: Task) => {
-    const tokens = task.body
+    const subStrings = task.body
       .trim()
       .split(/\s+/)
       .map((t) => t.trim());
 
-    let formattedTokens = tokens.map((token, index) => {
-      if (/^@[\S]+/.test(token)) {
-        return (
-          <span key={index} className={taskChipStyle} style={contextStyle}>
-            {token}
-          </span>
-        );
-      } else if (/^\+[\S]+/.test(token)) {
-        return (
-          <span key={index} className={taskChipStyle} style={projectStyle}>
-            {token}
-          </span>
-        );
-      } else if (/[^:]+:[^/:][^:]*/.test(token)) {
-        const substrings = token.split(":");
-        const key = substrings[0].toLowerCase();
-        const translatedKey = t(key);
-        const keySuffix = translatedKey !== key ? ": " : ":";
-        const value = substrings[1];
-        const date = parseDate(value);
-        const displayKey = translatedKey + keySuffix;
-        const displayValue = date ? formatLocaleDate(date, language) : value;
-        const text = displayKey + displayValue;
-        return (
-          <span
-            key={index}
-            style={getTaskTagStyle(key)}
-            className={taskChipStyle}
-          >
-            {text}
-          </span>
-        );
-      } else {
-        return <Fragment key={index}>{token}</Fragment>;
-      }
-    });
+    const elements: ReactNode[] = subStrings
+      .map((token, index) => {
+        if (/^@\S+/.test(token)) {
+          return (
+            <TagBox
+              chip={chips}
+              sx={{
+                color: task.completed
+                  ? undefined
+                  : chips
+                  ? "success.contrastText"
+                  : "success.main",
+                bgcolor: !task.completed && chips ? "success.light" : undefined,
+              }}
+              key={index}
+            >
+              {token}
+            </TagBox>
+          );
+        } else if (/^\+\S+/.test(token)) {
+          return (
+            <TagBox
+              chip={chips}
+              sx={{
+                color: task.completed
+                  ? undefined
+                  : chips
+                  ? "info.contrastText"
+                  : "info.main",
+                bgcolor: !task.completed && chips ? "info.light" : undefined,
+              }}
+              key={index}
+            >
+              {token}
+            </TagBox>
+          );
+        } else if (/[^:]+:[^/:][^:]*/.test(token)) {
+          const substrings = token.split(":");
+          const key = substrings[0].toLowerCase();
+          if (key === "due" && !dueDate) {
+            return undefined;
+          }
+          const translatedKey = t(key);
+          const keySuffix = translatedKey !== key ? ": " : ":";
+          const value = substrings[1];
+          const date = parseDate(value);
+          const displayKey = translatedKey + keySuffix;
+          const displayValue = date ? formatLocaleDate(date, language) : value;
+          const text = displayKey + displayValue;
+          return (
+            <TagBox
+              key={index}
+              chip={chips}
+              sx={{
+                whiteSpace: "nowrap",
+                color: chips
+                  ? task.completed
+                    ? undefined
+                    : key === "due"
+                    ? "warning.contrastText"
+                    : key === "pri"
+                    ? "secondary.contrastText"
+                    : mode === "dark"
+                    ? "grey.900"
+                    : "grey.100"
+                  : key === "due"
+                  ? "text.warning"
+                  : key === "pri"
+                  ? "text.secondary"
+                  : mode === "dark"
+                  ? "grey.500"
+                  : "grey.600",
+                bgcolor:
+                  !chips || task.completed
+                    ? undefined
+                    : key === "due"
+                    ? "warning.light"
+                    : key === "pri"
+                    ? "secondary.light"
+                    : mode === "dark"
+                    ? "grey.400"
+                    : "grey.600",
+              }}
+            >
+              {text}
+            </TagBox>
+          );
+        } else {
+          return <Fragment key={index}>{token}</Fragment>;
+        }
+      })
+      .filter((e) => !!e);
 
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <span
-          key={task._id}
-          className={taskChipStyle}
-          style={priorityBoldStyle}
-        >
+        <PriorityBox chip={chips} completed={task.completed} key={task._id}>
           {task.priority}
-        </span>
+        </PriorityBox>
       );
-      formattedTokens = [priorityElement, ...formattedTokens];
+      elements.unshift(priorityElement);
     }
 
     return (
-      <span
-        style={
-          task.completed ? { ...completedStyle, ...disabledStyle } : undefined
-        }
+      <Box
+        component="span"
+        sx={{
+          ...(task.completed && {
+            textDecoration: "line-through",
+            color: "text.disabled",
+          }),
+        }}
       >
-        {formattedTokens
-          .map<ReactNode>((e) => e)
-          .reduce((prev, curr) => [prev, " ", curr])}
-      </span>
+        {elements.reduce((prev, curr) => [prev, " ", curr])}
+      </Box>
     );
   };
 }
@@ -395,12 +444,4 @@ function spliceWhere<T>(items: T[], predicate: (s: T) => boolean): T[] {
     }
   }
   return result;
-}
-
-export function getTaskTagStyle(key: string) {
-  return key === "due"
-    ? dueDateStyle
-    : key === "pri"
-    ? priorityStyle
-    : tagStyle;
 }

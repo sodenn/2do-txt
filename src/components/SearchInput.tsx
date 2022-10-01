@@ -84,19 +84,18 @@ const SearchInput = (props: SearchInputProps) => {
         <SearchIcon color="action" />
       </SearchIconWrapper>
       <StyledInputBase
-        // @ts-ignore
         endAdornment={
-          value &&
-          onReset && (
-            <IconButton
-              aria-label="Clear search term"
-              size="small"
-              sx={{ mr: 1 }}
-              onClick={() => onReset()}
-            >
-              <CloseOutlined fontSize="inherit" />
-            </IconButton>
-          )
+          <IconButton
+            aria-label="Clear search term"
+            size="small"
+            sx={{
+              mr: 1,
+              visibility: value && onReset ? "visible" : "hidden",
+            }}
+            onClick={onReset}
+          >
+            <CloseOutlined fontSize="inherit" />
+          </IconButton>
         }
         value={value}
         onKeyDown={handleKeyDown}

@@ -1,5 +1,12 @@
 import SearchIcon from "@mui/icons-material/Search";
-import { Box, Fade, IconButton, InputBaseProps } from "@mui/material";
+import {
+  Box,
+  Fade,
+  IconButton,
+  InputBaseProps,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { forwardRef, useRef, useState } from "react";
 import SearchInput from "./SearchInput";
 
@@ -13,6 +20,8 @@ const ExpandableSearch = forwardRef<HTMLInputElement, ExpandableSearchProps>(
     const [showButton, setShowButton] = useState(!value);
     const [showInput, setShowInput] = useState(!!value);
     const containerRef = useRef<HTMLDivElement>();
+    const theme = useTheme();
+    const xs = useMediaQuery(theme.breakpoints.down("sm"));
 
     const handleBlur = () => {
       if (!value) {
@@ -63,44 +72,46 @@ const ExpandableSearch = forwardRef<HTMLInputElement, ExpandableSearchProps>(
 
     return (
       <>
-        <Box sx={{ display: { xs: "none", sm: "flex" } }}>{input}</Box>
-        <Box
-          sx={{
-            flex: 1,
-            display: { xs: "flex", sm: "none" },
-            overflow: "hidden",
-            alignItems: "center",
-          }}
-          ref={containerRef}
-        >
-          <Box sx={{ flex: 1 }}>
-            <Fade
-              in={showInput}
-              unmountOnExit
-              onEntered={handleEnteredInput}
-              onExited={handleExitedInput}
-            >
-              <div>{input}</div>
-            </Fade>
-          </Box>
-          <Box sx={{ flexShrink: 0 }}>
-            <Fade
-              in={showButton}
-              unmountOnExit
-              onExit={handleExitButton}
-              onExited={handleExitedButton}
-            >
-              <IconButton
-                size="large"
-                color="inherit"
-                aria-label="Expand search bar"
-                onClick={() => setShowButton(false)}
+        {!xs && <Box sx={{ display: "flex" }}>{input}</Box>}
+        {xs && (
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              overflow: "hidden",
+              alignItems: "center",
+            }}
+            ref={containerRef}
+          >
+            <Box sx={{ flex: 1 }}>
+              <Fade
+                in={showInput}
+                unmountOnExit
+                onEntered={handleEnteredInput}
+                onExited={handleExitedInput}
               >
-                <SearchIcon />
-              </IconButton>
-            </Fade>
+                <div>{input}</div>
+              </Fade>
+            </Box>
+            <Box sx={{ flexShrink: 0 }}>
+              <Fade
+                in={showButton}
+                unmountOnExit
+                onExit={handleExitButton}
+                onExited={handleExitedButton}
+              >
+                <IconButton
+                  size="large"
+                  color="inherit"
+                  aria-label="Expand search bar"
+                  onClick={() => setShowButton(false)}
+                >
+                  <SearchIcon />
+                </IconButton>
+              </Fade>
+            </Box>
           </Box>
-        </Box>
+        )}
       </>
     );
   }

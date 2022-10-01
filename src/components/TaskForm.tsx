@@ -1,8 +1,14 @@
-import { Box, Button, Grid, Stack } from "@mui/material";
+import { Box, Button, Grid, Stack, Theme, useTheme } from "@mui/material";
 import { createMentionsPlugin, useMentions } from "@react-fluent-edit/mentions";
 import { MuiFluentEdit, MuiMentionCombobox } from "@react-fluent-edit/mui";
 import { isValid } from "date-fns";
-import { KeyboardEvent, useEffect, useMemo, useRef } from "react";
+import {
+  CSSProperties,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "../utils/date";
 import { useKeyboard } from "../utils/keyboard";
@@ -10,30 +16,57 @@ import { usePlatform, useTouchScreen } from "../utils/platform";
 import {
   getDueDateValue,
   getRecValue,
-  getTaskTagStyle,
-  TaskFormData,
+  parseTask,
+  stringifyTask,
+  Task,
 } from "../utils/task";
 import { TaskList } from "../utils/task-list";
-import { contextStyle, projectStyle } from "../utils/task-styles";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
 import RecurrenceSelect from "./RecurrenceSelect";
 
 interface TaskFormProps {
-  formData: TaskFormData;
+  raw: string;
+  newTask: boolean;
+  taskLists: TaskList[];
   projects: string[];
   contexts: string[];
   tags: Record<string, string[]>;
-  taskLists: TaskList[];
-  completed: boolean;
-  onChange: (value: TaskFormData) => void;
+  onChange: (raw: string) => void;
   onFileSelect: (value?: TaskList) => void;
   onEnterPress: () => void;
 }
 
+export function getTagStyle(key: string, theme: Theme): CSSProperties {
+  return key === "due"
+    ? {
+        color: theme.palette.warning.contrastText,
+        backgroundColor: theme.palette.warning.light,
+        whiteSpace: "nowrap",
+      }
+    : key === "pri"
+    ? {
+        color: theme.palette.secondary.contrastText,
+        backgroundColor: theme.palette.secondary.light,
+        whiteSpace: "nowrap",
+      }
+    : {
+        color:
+          theme.palette.mode === "dark"
+            ? theme.palette.grey["900"]
+            : theme.palette.grey["100"],
+        backgroundColor:
+          theme.palette.mode === "dark"
+            ? theme.palette.grey["400"]
+            : theme.palette.grey["600"],
+        whiteSpace: "nowrap",
+      };
+}
+
 const TaskForm = (props: TaskFormProps) => {
   const platform = usePlatform();
+  const theme = useTheme();
   const rootRef = useRef<HTMLDivElement>();
   const {
     addKeyboardDidShowListener,
@@ -42,16 +75,17 @@ const TaskForm = (props: TaskFormProps) => {
   } = useKeyboard();
   const hasTouchScreen = useTouchScreen();
   const {
-    formData,
+    raw,
+    newTask: isNewTask,
     projects,
     tags: _tags,
     contexts,
     taskLists,
-    completed,
     onChange,
     onFileSelect,
     onEnterPress,
   } = props;
+  const formData = { ...parseTask(raw) };
   const { t } = useTranslation();
   const tags = useMemo(() => {
     const tags = { ..._tags };
@@ -62,34 +96,41 @@ const TaskForm = (props: TaskFormProps) => {
   }, [_tags]);
   const rec = getRecValue(formData.body);
   const dueDate = getDueDateValue(formData.body);
-  const showCreationDate = !!formData._id;
-  const showCompletionDate = !!formData._id && completed;
+  const showCreationDate = isNewTask;
+  const showCompletionDate = isNewTask && formData.completed;
   const mdGridItems =
     (showCreationDate || showCompletionDate) &&
     !(showCreationDate && showCompletionDate)
       ? 4
       : 6;
-  const { openMentionsCombobox, removeMentions, addMention } = useMentions();
+  const { openMentionsCombobox, removeMentions, renameMentions } =
+    useMentions();
   const plugins = useMemo(
     () => [
       createMentionsPlugin({
         mentions: [
           {
             trigger: "+",
-            style: projectStyle,
+            style: {
+              color: theme.palette.info.contrastText,
+              backgroundColor: theme.palette.info.light,
+            },
           },
           {
             trigger: "@",
-            style: contextStyle,
+            style: {
+              color: theme.palette.success.contrastText,
+              backgroundColor: theme.palette.success.light,
+            },
           },
           ...Object.keys(tags).map((key) => ({
             trigger: `${key}:`,
-            style: getTaskTagStyle(key),
+            style: getTagStyle(key, theme),
           })),
         ],
       }),
     ],
-    [tags]
+    [tags, theme]
   );
 
   const handleDueDateChange = (value: Date | null) => {
@@ -97,9 +138,8 @@ const TaskForm = (props: TaskFormProps) => {
       return;
     }
     if (value) {
-      removeMentions({ trigger: "due:" });
-      addMention({
-        text: formatDate(value),
+      renameMentions({
+        newText: formatDate(value),
         trigger: "due:",
       });
     } else {
@@ -109,13 +149,23 @@ const TaskForm = (props: TaskFormProps) => {
 
   const handleRecChange = (value: string | null) => {
     if (value) {
-      addMention({
-        text: value,
+      renameMentions({
+        newText: value,
         trigger: "rec:",
       });
     } else {
       removeMentions({ trigger: "rec:" });
     }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      onEnterPress();
+    }
+  };
+
+  const handleChange = (data: Partial<Task>) => {
+    onChange(stringifyTask({ ...formData, ...data }));
   };
 
   useEffect(() => {
@@ -133,12 +183,6 @@ const TaskForm = (props: TaskFormProps) => {
     };
   });
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
-      onEnterPress();
-    }
-  };
-
   return (
     <Stack ref={rootRef}>
       <Box sx={{ mb: 2 }}>
@@ -151,7 +195,7 @@ const TaskForm = (props: TaskFormProps) => {
           spellCheck={false}
           initialValue={formData.body}
           onKeyDown={handleKeyDown}
-          onChange={(body) => onChange({ ...formData, body: body || "" })}
+          onChange={(body) => handleChange({ body })}
           autoFocus
           singleLine
           plugins={plugins}
@@ -207,7 +251,7 @@ const TaskForm = (props: TaskFormProps) => {
         >
           <PrioritySelect
             value={formData.priority}
-            onChange={(priority) => onChange({ ...formData, priority })}
+            onChange={(priority) => handleChange({ priority })}
           />
         </Grid>
         {showCreationDate && (
@@ -218,7 +262,7 @@ const TaskForm = (props: TaskFormProps) => {
               value={formData.creationDate}
               onChange={(value) => {
                 if (!value || isValid(value)) {
-                  onChange({ ...formData, creationDate: value ?? undefined });
+                  handleChange({ creationDate: value ?? undefined });
                 }
               }}
             />
@@ -232,7 +276,7 @@ const TaskForm = (props: TaskFormProps) => {
               value={formData.completionDate}
               onChange={(value) => {
                 if (!value || isValid(value)) {
-                  onChange({ ...formData, completionDate: value ?? undefined });
+                  handleChange({ completionDate: value ?? undefined });
                 }
               }}
             />

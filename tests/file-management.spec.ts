@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test.describe("Reorder Files", () => {
+test.describe.parallel("Reorder Files", () => {
   // webkit: Selecting multiple files does not work in the test
   test.skip(({ browserName }) => browserName === "webkit");
 

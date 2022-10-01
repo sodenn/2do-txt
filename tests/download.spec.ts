@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await page.waitForTimeout(100);
 });
 
-test.describe("Download", () => {
+test.describe.parallel("Download", () => {
   test("should download a todo.txt file", async ({ page }) => {
     const [download] = await Promise.all([
       // Start waiting for the download

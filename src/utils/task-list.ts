@@ -1,9 +1,16 @@
-import { isAfter, isBefore } from "date-fns";
+import {
+  addDays,
+  isAfter,
+  isBefore,
+  isEqual,
+  isSameDay,
+  isSameYear,
+} from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
 import { groupBy } from "./array";
-import { formatDate, formatLocaleDate, parseDate } from "./date";
+import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
 
 export interface TaskListParseResult extends TaskListAttributes {
@@ -37,6 +44,30 @@ export interface TaskListFilter {
   activeContexts: string[];
   activeTags: string[];
   hideCompletedTasks: boolean;
+}
+
+export interface TimelineTask extends Task {
+  _timelineFlags: {
+    today: boolean;
+    firstOfToday: boolean;
+    lastOfToday: boolean;
+    firstOfDay: boolean;
+    firstOfYear: boolean;
+    firstWithoutDate: boolean;
+    first: boolean;
+    last: boolean;
+  };
+  _timelineDate?: Date;
+}
+
+export function updateTaskList(taskList: TaskList): TaskList {
+  const attributes = getTaskListAttributes(taskList.items, false);
+  const incomplete = getTaskListAttributes(taskList.items, true);
+  return {
+    ...taskList,
+    ...attributes,
+    incomplete,
+  };
 }
 
 export function parseTaskList(text?: string): TaskListParseResult {
@@ -84,6 +115,144 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
     .join(lineEnding);
 }
 
+export function useTimelineTasks(
+  taskLists: TaskList[],
+  activeTaskList?: TaskList
+): TimelineTask[] {
+  taskLists = activeTaskList ? [activeTaskList] : taskLists;
+  const items = taskLists.flatMap((list) => list.items);
+  const {
+    filterType,
+    searchTerm,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
+    hideCompletedTasks,
+  } = useFilter();
+
+  const filteredTasks = filterTasks(items, {
+    type: filterType,
+    searchTerm,
+    activePriorities,
+    activeProjects,
+    activeContexts,
+    activeTags,
+    hideCompletedTasks,
+  });
+
+  const today = todayDate();
+
+  const futureTasks: TimelineTask[] = filteredTasks
+    .map((t) => ({
+      ...t,
+      _timelineDate: t.completionDate || t.dueDate || t.creationDate,
+    }))
+    .filter((t) => t._timelineDate && isAfter(t._timelineDate, today))
+    .sort((t1, t2) => timelineSort(t1._timelineDate, t2._timelineDate))
+    .map((t) => ({
+      ...t,
+      _timelineFlags: {
+        today: false,
+        firstOfToday: false,
+        lastOfToday: false,
+        firstOfDay: false,
+        firstOfYear: false,
+        firstWithoutDate: false,
+        first: false,
+        last: false,
+      },
+    }));
+
+  const dueTasks = filteredTasks
+    .filter(
+      (t) =>
+        t.dueDate && !t.completionDate && isBefore(t.dueDate, addDays(today, 1))
+    )
+    .map((t) => ({ ...t, _timelineDate: today }))
+    .sort((a, b) => timelineSort(a.dueDate, b.dueDate, "asc"));
+
+  // +Button
+  filteredTasks.unshift({
+    _id: "-1",
+    _order: 0,
+    body: "+",
+    completed: false,
+    creationDate: today,
+    tags: {},
+    contexts: [],
+    projects: [],
+    raw: "+",
+  });
+
+  const todayTasks: TimelineTask[] = filteredTasks
+    .filter((t) => !(t.dueDate && !t.completionDate))
+    .map((t) => ({
+      ...t,
+      _timelineDate: t.completionDate || t.dueDate || t.creationDate,
+    }))
+    .filter((t) => t._timelineDate && isEqual(t._timelineDate, today))
+    .sort((t1, t2) => timelineSort(t1._timelineDate, t2._timelineDate))
+    .concat(dueTasks)
+    .map((t, i, a) => ({
+      ...t,
+      _timelineFlags: {
+        today: true,
+        firstOfToday: i === 0,
+        lastOfToday: a.length === i + 1,
+        firstOfDay: false,
+        firstOfYear: false,
+        firstWithoutDate: false,
+        first: false,
+        last: false,
+      },
+    }));
+
+  const pastTasks: TimelineTask[] = filteredTasks
+    .filter((t) => !(t.dueDate && !t.completionDate))
+    .map((t) => ({
+      ...t,
+      _timelineDate: t.completionDate || t.dueDate || t.creationDate,
+    }))
+    .filter((t) => !t._timelineDate || isBefore(t._timelineDate, today))
+    .sort((t1, t2) => timelineSort(t1._timelineDate, t2._timelineDate))
+    .map((t) => ({
+      ...t,
+      _timelineFlags: {
+        today: false,
+        firstOfToday: false,
+        lastOfToday: false,
+        firstOfDay: false,
+        firstOfYear: false,
+        firstWithoutDate: false,
+        first: false,
+        last: false,
+      },
+    }));
+
+  return futureTasks
+    .concat(todayTasks)
+    .concat(pastTasks)
+    .map((t, i, a) => ({
+      ...t,
+      _timelineFlags: {
+        ...t._timelineFlags,
+        firstOfDay:
+          !t._timelineFlags.today &&
+          a.find((j) => isSameDay(j._timelineDate!, t._timelineDate!))?._id ===
+            t._id,
+        firstOfYear:
+          (!t._timelineFlags.today || t._timelineFlags.firstOfToday) &&
+          a.find((j) => isSameYear(j._timelineDate!, t._timelineDate!))?._id ===
+            t._id,
+        firstWithoutDate:
+          !t._timelineDate && a.find((j) => !j._timelineDate)?._id === t._id,
+        first: i === 0,
+        last: a.length === i + 1,
+      },
+    }));
+}
+
 export function useTaskGroups(
   taskLists: TaskList[],
   activeTaskList?: TaskList
@@ -93,6 +262,7 @@ export function useTaskGroups(
   const {
     sortBy,
     searchTerm,
+    filterType,
     activePriorities,
     activeProjects,
     activeContexts,
@@ -100,11 +270,9 @@ export function useTaskGroups(
     hideCompletedTasks,
   } = useFilter();
 
-  const { filterType } = useFilter();
-
   const filteredTaskLists = taskLists.map((taskList) => ({
     ...taskList,
-    items: filterTaskList(taskList.items, {
+    items: filterTasks(taskList.items, {
       type: filterType,
       searchTerm,
       activePriorities,
@@ -112,7 +280,7 @@ export function useTaskGroups(
       activeContexts,
       activeTags,
       hideCompletedTasks,
-    }),
+    }).sort(sortByOriginalOrder),
   }));
 
   const formatGroupLabel = useFormatGroupLabel();
@@ -230,7 +398,10 @@ function orTypePredicate(
   };
 }
 
-export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
+export function filterTasks<T extends Task>(
+  tasks: T[],
+  filter: TaskListFilter
+) {
   const {
     type,
     searchTerm,
@@ -240,8 +411,7 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
     activeTags,
     hideCompletedTasks,
   } = filter;
-
-  const filteredList = taskList.filter(
+  return tasks.filter(
     type === "OR"
       ? orTypePredicate(
           hideCompletedTasks,
@@ -260,8 +430,6 @@ export function filterTaskList(taskList: Task[], filter: TaskListFilter) {
           activeTags
         )
   );
-
-  return filteredList.sort(sortByOriginalOrder);
 }
 
 export function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
@@ -430,15 +598,15 @@ function sortGroups(a: TaskGroup, b: TaskGroup, sortBy: SortKey) {
     sortBy === "project" ||
     sortBy === "tag"
   ) {
-    return sortByKey(a.label, b.label);
+    return groupSortByKey(a.label, b.label);
   } else if (sortBy === "dueDate") {
-    return sortByDate(a.label, b.label);
+    return groupSortByDate(a.label, b.label);
   } else {
     return -1;
   }
 }
 
-function sortByKey(a?: string, b?: string) {
+function groupSortByKey(a?: string, b?: string) {
   if (a && !b) {
     return -1;
   } else if (!a && b) {
@@ -454,7 +622,7 @@ function sortByKey(a?: string, b?: string) {
   }
 }
 
-function sortByDate(a?: string, b?: string) {
+function groupSortByDate(a?: string, b?: string) {
   const aDate = a ? parseDate(a) : undefined;
   const bDate = b ? parseDate(b) : undefined;
   if (aDate && !bDate) {
@@ -467,6 +635,22 @@ function sortByDate(a?: string, b?: string) {
     return 1;
   } else if (aDate && bDate && isBefore(aDate, bDate)) {
     return -1;
+  } else {
+    return 0;
+  }
+}
+
+function timelineSort(a?: Date, b?: Date, direction: "asc" | "desc" = "desc") {
+  if (a && !b) {
+    return -1;
+  } else if (!a && b) {
+    return 0;
+  } else if (!a && !b) {
+    return 0;
+  } else if (a && b && isAfter(a, b)) {
+    return direction === "desc" ? -1 : 1;
+  } else if (a && b && isBefore(a, b)) {
+    return direction === "desc" ? 1 : -1;
   } else {
     return 0;
   }

@@ -15,8 +15,6 @@ import { useArchivedTasksDialog } from "./ArchivedTasksDialogContext";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useSettings } from "./SettingsContext";
 
-type SaveTodoFile = (filePath: string, text: string) => Promise<void>;
-
 interface SyncItem {
   filePath: string;
   text: string;
@@ -24,13 +22,17 @@ interface SyncItem {
 
 interface ArchiveAllTaskOptions {
   taskLists: TaskList[];
-  onSaveTodoFile: SaveTodoFile;
+  onSaveTodoFile: (taskLists: TaskList) => Promise<void>;
 }
 
 interface RestoreTaskOptions {
   taskList: TaskList;
   task: Task;
-  onSaveTodoFile: SaveTodoFile;
+}
+
+interface ArchiveTaskOptions {
+  taskList: TaskList;
+  task: Task;
 }
 
 const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
@@ -243,7 +245,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
   );
 
   const restoreTask = useCallback(
-    async ({ taskList, task, onSaveTodoFile }: RestoreTaskOptions) => {
+    async ({ taskList, task }: RestoreTaskOptions) => {
       const { filePath, lineEnding, items } = taskList;
 
       const doneFilePath = getArchiveFilePath(filePath);
@@ -260,25 +262,17 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         (i) => i.raw !== task.raw
       );
 
-      const todoFileText =
+      const newItems =
         archiveMode === "automatic"
-          ? stringifyTaskList(
-              [
-                ...items,
-                { ...task, completed: false, completionDate: undefined },
-              ].map((i, index) => ({
-                ...i,
-                _order: index,
-              })),
-              lineEnding
-            )
-          : stringifyTaskList(
-              [...items, task].map((i, index) => ({
-                ...i,
-                _order: index,
-              })),
-              lineEnding
-            );
+          ? [...items, { ...task, completed: false, completionDate: undefined }]
+          : [...items, task];
+      const newTaskList: TaskList = {
+        ...taskList,
+        items: newItems.map((i, index) => ({
+          ...i,
+          _order: index,
+        })),
+      };
 
       const doneFileText = stringifyTaskList(completedTasks, lineEnding);
 
@@ -292,13 +286,13 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         await saveDoneFile(filePath, doneFileText);
       }
 
-      return onSaveTodoFile(filePath, todoFileText);
+      return newTaskList;
     },
     [archiveMode, deleteCloudFile, deleteFile, loadDoneFile, saveDoneFile]
   );
 
   const archiveTask = useCallback(
-    async (opt: RestoreTaskOptions) => {
+    async (opt: ArchiveTaskOptions) => {
       const { task, taskList } = opt;
       const filePath = taskList.filePath;
 
@@ -385,10 +379,15 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         taskLists.map(async (taskList) => {
           const { filePath, items, lineEnding } = taskList;
 
-          const todoFileText = stringifyTaskList(
-            items.filter((i) => !i.completed),
-            lineEnding
-          );
+          const newTaskList: TaskList = {
+            ...taskList,
+            items: taskList.items
+              .filter((i) => !i.completed)
+              .map((i, index) => ({
+                ...i,
+                _order: index,
+              })),
+          };
 
           const completedTasks = await loadDoneFile(filePath);
           const newCompletedTasks = items.filter((i) => i.completed);
@@ -421,14 +420,14 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               result.conflict.option === "cloud"
             ) {
               await Promise.all([
-                onSaveTodoFile(filePath, todoFileText),
+                onSaveTodoFile(newTaskList),
                 saveDoneFile(filePath, result.conflict.text),
               ]);
             }
           }
 
           await Promise.all([
-            onSaveTodoFile(filePath, todoFileText),
+            onSaveTodoFile(newTaskList),
             saveDoneFile(filePath, doneFileText),
           ]);
 
@@ -466,16 +465,18 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             return;
           }
 
-          const text = stringifyTaskList(
-            [...taskList.items, ...completedTaskList.items].map((i, index) => ({
-              ...i,
-              _order: index,
-            })),
-            taskList.lineEnding
-          );
+          const newTaskList: TaskList = {
+            ...taskList,
+            items: [...taskList.items, ...completedTaskList.items].map(
+              (i, index) => ({
+                ...i,
+                _order: index,
+              })
+            ),
+          };
 
           await Promise.all([
-            onSaveTodoFile(taskList.filePath, text),
+            onSaveTodoFile(newTaskList),
             deleteFile({
               path: doneFilePath,
               directory: Directory.Documents,

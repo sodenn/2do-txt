@@ -1,26 +1,33 @@
 import { Checkbox, ListItemButton, Stack, styled } from "@mui/material";
 import { forwardRef, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Task } from "../utils/task";
 import TaskBody from "./TaskBody";
-import TaskDates from "./TaskDates";
 import TaskListItemMenu from "./TaskListItemMenu";
 
-const TaskItemButton = styled(ListItemButton)`
-  border-radius: ${({ theme }: any) => theme.shape.borderRadius}px;
-  .MuiIconButton-root {
-    visibility: hidden;
-  }
-  @media (pointer: coarse) {
-    .MuiIconButton-root {
-      visibility: visible;
-    }
-  }
-  &:hover {
-    .MuiIconButton-root {
-      visibility: visible;
-    }
-  }
-`;
+const TaskItemButton = styled(ListItemButton)(({ theme }) => ({
+  [theme.breakpoints.up("sm")]: {
+    borderRadius: theme.shape.borderRadius,
+  },
+  ".MuiIconButton-root": {
+    visibility: "hidden",
+  },
+  "@media (pointer: coarse)": {
+    ".MuiIconButton-root": {
+      visibility: "visible",
+    },
+  },
+  "&:hover": {
+    ".MuiIconButton-root": {
+      visibility: "visible",
+    },
+  },
+}));
+
+const DateContainer = styled("div")({
+  opacity: 0.5,
+  fontSize: "0.75em",
+});
 
 interface TaskListItemProps {
   task: Task;
@@ -37,6 +44,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
     const checkboxRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLUListElement>(null);
     const menuButtonRef = useRef<HTMLButtonElement>(null);
+    const { t } = useTranslation();
 
     const handleItemClick = (event: any) => {
       const checkboxClick =
@@ -63,6 +71,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
         <TaskItemButton
           ref={ref}
           aria-label="Task"
+          data-testid="task-button"
           aria-current={focused}
           onClick={handleItemClick}
           onFocus={onFocus}
@@ -97,7 +106,16 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
               }}
             >
               <TaskBody task={task} />
-              <TaskDates task={task} />
+              {task.completionDate && (
+                <DateContainer>
+                  {t("Completed", { completionDate: task.completionDate })}
+                </DateContainer>
+              )}
+              {task.creationDate && !task.completed && (
+                <DateContainer>
+                  {t("Created", { creationDate: task.creationDate })}
+                </DateContainer>
+              )}
             </Stack>
             <div>
               <TaskListItemMenu

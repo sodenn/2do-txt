@@ -67,6 +67,7 @@
   "File Name": "File Name",
   "Create": "Create",
   "No tasks": "No tasks",
+  "No tasks found": "No tasks found",
   "Enable cloud storage sync": "Enable {{cloudStorage}} sync",
   "Disable cloud storage sync": "Disable {{cloudStorage}} sync",
   "Resolve file conflict": "File conflict",
@@ -136,5 +137,13 @@
   "N": "Create new task",
   "E": "Edit selected task",
   "D": "Delete selected task",
-  "T": "Download todo.txt"
+  "T": "Download todo.txt",
+  "Task view": "Task view",
+  "List view": "List view",
+  "Timeline view": "Timeline view",
+  "Disabled when timeline view is active": "Disabled when timeline view is active",
+  "Add task for today": "Add task for today",
+  "Today": "Today",
+  "Without date": "Without date",
+  "New": "New"
 }

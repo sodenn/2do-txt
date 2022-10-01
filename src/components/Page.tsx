@@ -12,7 +12,7 @@ import Onboarding from "./Onboarding";
 import ShortcutsDialog from "./ShortcutsDialog";
 import SideSheet, { MainContainer } from "./SideSheet";
 import TaskDialog from "./TaskDialog";
-import TaskLists from "./TaskLists";
+import TaskView from "./TaskView";
 
 const SafeAreaContainer = styled(Container)`
   padding-right: env(safe-area-inset-right);
@@ -50,7 +50,7 @@ const Page = () => {
         <SideSheet />
         <MainContainer ref={scrollContainer}>
           <SafeAreaContainer disableGutters>
-            <TaskLists />
+            <TaskView />
             <Onboarding />
           </SafeAreaContainer>
         </MainContainer>

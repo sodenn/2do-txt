@@ -8,7 +8,7 @@ async function openTodoTxt(page: Page) {
   return page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
 }
 
-test.describe("Search", () => {
+test.describe.parallel("Search", () => {
   test("should not show the search bar when no files are open", async ({
     page,
   }) => {
@@ -24,7 +24,7 @@ test.describe("Search", () => {
       await page.locator('[aria-label="Expand search bar"]').click();
       await Promise.all([
         page.waitForNavigation({ url: "http://127.0.0.1:5173/?term=invoice" }),
-        page.locator('[aria-label="Search for tasks"]').nth(1).fill("invoice"),
+        page.locator('[aria-label="Search for tasks"]').fill("invoice"),
       ]);
     } else {
       await Promise.all([
@@ -82,19 +82,14 @@ test.describe("Search", () => {
     test.skip(!isMobile, "mobile only");
     await openTodoTxt(page);
     await page.locator('[aria-label="Expand search bar"]').click();
-    await page
-      .locator('[aria-label="Search for tasks"]')
-      .nth(1)
-      .fill("invoice");
+    await page.locator('[aria-label="Search for tasks"]').fill("invoice");
 
     await expect(
-      page.locator('[aria-label="Search for tasks"]').nth(1)
+      page.locator('[aria-label="Search for tasks"]')
     ).not.toBeEmpty();
 
-    await page.locator('button[aria-label="Clear search term"]').nth(1).click();
-    await expect(
-      page.locator('[aria-label="Search for tasks"]').nth(1)
-    ).toBeEmpty();
+    await page.locator('button[aria-label="Clear search term"]').click();
+    await expect(page.locator('[aria-label="Search for tasks"]')).toBeEmpty();
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
   });
 
@@ -105,7 +100,7 @@ test.describe("Search", () => {
     await openTodoTxt(page);
     if (isMobile) {
       await page.locator("[aria-label='Expand search bar']").click();
-      await page.locator('[aria-label="Search for tasks"]').nth(1).fill("---");
+      await page.locator('[aria-label="Search for tasks"]').fill("---");
     } else {
       await page.locator('[aria-label="Search for tasks"]').fill("---");
     }
@@ -113,7 +108,7 @@ test.describe("Search", () => {
   });
 });
 
-test.describe("Filter", () => {
+test.describe.parallel("Filter", () => {
   test("should allow me to filter tasks by priority", async ({ page }) => {
     await openTodoTxt(page);
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);

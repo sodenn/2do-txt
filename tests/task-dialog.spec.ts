@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 
 const delay = { delay: 30 };
 
-test.describe("Task dialog", () => {
+test.describe.parallel("Task dialog", () => {
   test("should allow me to open and close the task dialog via shortcut", async ({
     page,
   }) => {
