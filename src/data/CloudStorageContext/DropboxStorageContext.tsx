@@ -15,8 +15,8 @@ import {
   UploadFileOptions,
 } from "../../types/cloud-storage.types";
 import { createContext } from "../../utils/Context";
-import { usePlatform } from "../../utils/platform";
-import { useSecureStorage } from "../../utils/secure-storage";
+import { getPlatform } from "../../utils/platform";
+import { getSecureStorage } from "../../utils/secure-storage";
 import { useNetwork } from "../NetworkContext";
 import DropboxContentHasher from "./DropboxContentHasher";
 
@@ -31,8 +31,8 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     setSecureStorageItem,
     getSecureStorageItem,
     removeSecureStorageItem,
-  } = useSecureStorage();
-  const platform = usePlatform();
+  } = getSecureStorage();
+  const platform = getPlatform();
   const { checkNetworkStatus } = useNetwork();
   const [authError, setAuthError] = useState(false);
   const dbxRef = useRef<Dropbox | null>(null);

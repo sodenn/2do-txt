@@ -11,8 +11,8 @@ import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useConfirmationDialog } from "../../data/ConfirmationDialogContext";
 import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
 import { useTask } from "../../data/TaskContext";
-import { getFilenameFromPath, useFilesystem } from "../../utils/filesystem";
-import { usePlatform } from "../../utils/platform";
+import { getFilenameFromPath, getFilesystem } from "../../utils/filesystem";
+import { getPlatform } from "../../utils/platform";
 import CloseFileList from "./CloseFileList";
 import FileActionButton from "./FileActionButton";
 import OpenFileList from "./OpenFileList";
@@ -23,12 +23,12 @@ interface CloseOptions {
 }
 
 const FileManagementDialog = () => {
-  const platform = usePlatform();
+  const platform = getPlatform();
   const { fileManagementDialogOpen, setFileManagementDialogOpen } =
     useFileManagementDialog();
   const { unlinkCloudFile, unlinkCloudArchiveFile } = useCloudStorage();
   const { setConfirmationDialog } = useConfirmationDialog();
-  const { readdir, deleteFile } = useFilesystem();
+  const { readdir, deleteFile } = getFilesystem();
   const { t } = useTranslation();
   const { taskLists, closeTodoFile } = useTask();
   const [closedFiles, setClosedFiles] = useState<string[]>([]);

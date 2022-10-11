@@ -1,10 +1,10 @@
 import { Capacitor } from "@capacitor/core";
 
-export function usePlatform() {
+export function getPlatform() {
   return Capacitor.getPlatform();
 }
 
-export function useTouchScreen() {
+export function hasTouchScreen() {
   if ("maxTouchPoints" in navigator) {
     return navigator.maxTouchPoints > 0;
   } else if ("msMaxTouchPoints" in navigator) {

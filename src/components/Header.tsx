@@ -2,7 +2,7 @@ import { AppBar, Box, Fade, styled, Toolbar } from "@mui/material";
 import { useState } from "react";
 import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
-import { usePlatform } from "../utils/platform";
+import { getPlatform } from "../utils/platform";
 import AddTaskButton from "./AddTaskButton";
 import DownloadButton from "./DownloadButton";
 import FileMenu from "./FileMenu";
@@ -21,7 +21,7 @@ const SafeAreaAppBar = styled(AppBar)`
 `;
 
 const Header = ({ divider = false }: HeaderProps) => {
-  const platform = usePlatform();
+  const platform = getPlatform();
   const { activeTaskList, taskLists } = useTask();
   const { sideSheetOpen } = useSideSheet();
   const [expanded, setExpanded] = useState(false);

@@ -2,12 +2,11 @@ import { RateApp } from "capacitor-rate-app";
 import { addWeeks, isAfter } from "date-fns";
 import { useCallback } from "react";
 import { parseDate } from "./date";
-import { usePlatform } from "./platform";
-import { usePreferences } from "./preferences";
+import { getPlatform } from "./platform";
+import { getPreferencesItem, setPreferencesItem } from "./preferences";
 
 export function useAppRate() {
-  const { getPreferencesItem, setPreferencesItem } = usePreferences();
-  const platform = usePlatform();
+  const platform = getPlatform();
 
   const getNextRatingRequestDate = useCallback(
     () => addWeeks(new Date(), 2),
@@ -20,15 +19,12 @@ export function useAppRate() {
       return 0;
     }
     return parseInt(counter);
-  }, [getPreferencesItem]);
+  }, []);
 
-  const increaseCounter = useCallback(
-    async (counter: number) => {
-      const newValue = counter + 1;
-      await setPreferencesItem("app-rate-counter", newValue.toString());
-    },
-    [setPreferencesItem]
-  );
+  const increaseCounter = useCallback(async (counter: number) => {
+    const newValue = counter + 1;
+    await setPreferencesItem("app-rate-counter", newValue.toString());
+  }, []);
 
   const setNextRatingRequestDate = useCallback(
     (nextRatingRequestDate = getNextRatingRequestDate()) => {
@@ -37,7 +33,7 @@ export function useAppRate() {
         nextRatingRequestDate.toISOString()
       );
     },
-    [getNextRatingRequestDate, setPreferencesItem]
+    [getNextRatingRequestDate]
   );
 
   const getNextRatingRequestDateFromStorage = useCallback(async () => {
@@ -58,7 +54,7 @@ export function useAppRate() {
       await setNextRatingRequestDate(nextRatingRequestDate);
       return nextRatingRequestDate;
     }
-  }, [getNextRatingRequestDate, getPreferencesItem, setNextRatingRequestDate]);
+  }, [getNextRatingRequestDate, setNextRatingRequestDate]);
 
   const isTimeForRatingRequest = useCallback(async () => {
     const currentDate = new Date();

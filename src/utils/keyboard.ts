@@ -1,10 +1,10 @@
 import { Keyboard, KeyboardStyleOptions } from "@capacitor/keyboard";
 import { KeyboardInfo } from "@capacitor/keyboard/dist/esm/definitions";
 import { useCallback } from "react";
-import { usePlatform } from "./platform";
+import { getPlatform } from "./platform";
 
 export function useKeyboard() {
-  const platform = usePlatform();
+  const platform = getPlatform();
 
   const addKeyboardDidShowListener = useCallback(
     (listener: (info: KeyboardInfo) => void) => {

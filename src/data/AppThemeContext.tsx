@@ -13,10 +13,12 @@ import {
 import { deDE, enUS, Localization } from "@mui/material/locale";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLoaderData } from "react-router-dom";
 import { WithChildren } from "../types/common";
 import { createContext } from "../utils/Context";
 import { useKeyboard } from "../utils/keyboard";
-import { usePreferences } from "../utils/preferences";
+import { setPreferencesItem } from "../utils/preferences";
+import { LoaderData } from "./loader";
 
 const translations: Record<string, Localization> = {
   en: enUS,
@@ -101,7 +103,6 @@ const getPaletteMode = (
 };
 
 const [AppThemeProvider, useAppTheme] = createContext(() => {
-  const { getPreferencesItem, setPreferencesItem } = usePreferences();
   const {
     i18n: { language },
   } = useTranslation();
@@ -109,6 +110,7 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [themeMode, _setThemeMode] = useState<ThemeMode>("system");
   const paletteMode = getPaletteMode(themeMode, prefersDarkMode);
+  const data = useLoaderData() as LoaderData;
   const theme = useMemo(
     () => createTheme(getThemeOptions(paletteMode), translations[language]),
     [language, paletteMode]
@@ -147,14 +149,12 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
             : KeyboardStyle.Default,
       });
     },
-    [setKeyboardStyle, setPreferencesItem, theme.palette.background.default]
+    [setKeyboardStyle, theme.palette.background.default]
   );
 
   useEffect(() => {
-    getPreferencesItem("theme-mode").then((themeMode) =>
-      setThemeMode((themeMode as ThemeMode) || "system")
-    );
-  }, [getPreferencesItem, setThemeMode, prefersDarkMode]);
+    setThemeMode(data.themeMode);
+  }, [setThemeMode, prefersDarkMode, data.themeMode]);
 
   return {
     setThemeMode,

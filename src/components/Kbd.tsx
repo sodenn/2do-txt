@@ -1,6 +1,6 @@
 import { styled } from "@mui/material";
 import { WithChildren } from "../types/common";
-import { usePlatform, useTouchScreen } from "../utils/platform";
+import { getPlatform, hasTouchScreen } from "../utils/platform";
 
 const StyledKbd = styled("kbd")`
   padding: 0 0.4em;
@@ -13,10 +13,10 @@ const StyledKbd = styled("kbd")`
 `;
 
 const Kbd = ({ children }: WithChildren) => {
-  const hasTouchScreen = useTouchScreen();
-  const platform = usePlatform();
+  const touchScreen = hasTouchScreen();
+  const platform = getPlatform();
 
-  if (hasTouchScreen || platform === "ios" || platform === "android") {
+  if (touchScreen || platform === "ios" || platform === "android") {
     return null;
   }
 

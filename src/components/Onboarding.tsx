@@ -6,7 +6,7 @@ import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useLoading } from "../data/LoadingContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
-import { usePlatform } from "../utils/platform";
+import { getPlatform } from "../utils/platform";
 import CloudFileImportButtons from "./CloudFileImportButtons";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 import CreateExampleFileButton from "./CreateExampleFileButton";
@@ -24,7 +24,7 @@ const StyledBox = styled("div")`
 
 const Onboarding = () => {
   const { t } = useTranslation();
-  const platform = usePlatform();
+  const platform = getPlatform();
   const { loading } = useLoading();
   const { setFileCreateDialog } = useFileCreateDialog();
   const { taskLists, openTodoFilePicker } = useTask();

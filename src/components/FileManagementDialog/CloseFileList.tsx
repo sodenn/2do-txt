@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useFilter } from "../../data/FilterContext";
 import { useSettings } from "../../data/SettingsContext";
 import { useTask } from "../../data/TaskContext";
-import { useFilesystem } from "../../utils/filesystem";
+import { getFilesystem } from "../../utils/filesystem";
 import StartEllipsis from "../StartEllipsis";
 import CloseFileItemMenu from "./CloseFileItemMenu";
 
@@ -17,7 +17,7 @@ interface CloseFileListProps {
 const CloseFileList = (props: CloseFileListProps) => {
   const { list, onOpen, onDelete } = props;
   const { t } = useTranslation();
-  const { readFile } = useFilesystem();
+  const { readFile } = getFilesystem();
   const { loadTodoFile } = useTask();
   const { addTodoFilePath } = useSettings();
   const { setActiveTaskListPath } = useFilter();

@@ -23,11 +23,11 @@ import { useFileCreateDialog } from "../../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
 import { useTask } from "../../data/TaskContext";
 import { cloudStorages } from "../../types/cloud-storage.types";
-import { usePlatform } from "../../utils/platform";
+import { getPlatform } from "../../utils/platform";
 
 const FileActionButton = () => {
   const { t } = useTranslation();
-  const platform = usePlatform();
+  const platform = getPlatform();
   const { openTodoFilePicker } = useTask();
   const { setFileCreateDialog } = useFileCreateDialog();
   const { setFileManagementDialogOpen } = useFileManagementDialog();

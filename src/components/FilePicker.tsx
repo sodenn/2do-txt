@@ -7,7 +7,7 @@ import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { WithChildren } from "../types/common";
-import { usePlatform } from "../utils/platform";
+import { getPlatform } from "../utils/platform";
 
 const Root = styled("div")(() => ({
   height: "100%",
@@ -51,7 +51,7 @@ const FileInput = (props: FileInputProps) => {
   const { files, clearFiles } = props;
   const { setActiveTaskListPath } = useFilter();
   const { addTodoFilePath } = useSettings();
-  const platform = usePlatform();
+  const platform = getPlatform();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
