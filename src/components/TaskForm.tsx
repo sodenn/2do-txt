@@ -10,7 +10,7 @@ import {
   useRef,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { formatDate } from "../utils/date";
+import { formatDate, isDateEqual } from "../utils/date";
 import { useKeyboard } from "../utils/keyboard";
 import { usePlatform, useTouchScreen } from "../utils/platform";
 import {
@@ -134,7 +134,7 @@ const TaskForm = (props: TaskFormProps) => {
   );
 
   const handleDueDateChange = (value: Date | null) => {
-    if ((value && !isValid(value)) || value?.getDate() === dueDate?.getDate()) {
+    if ((value && !isValid(value)) || isDateEqual(value, dueDate)) {
       return;
     }
     if (value) {
