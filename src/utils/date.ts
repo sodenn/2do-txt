@@ -1,4 +1,4 @@
-import { format, parseISO, startOfDay } from "date-fns";
+import { format, isEqual, parseISO, startOfDay } from "date-fns";
 
 export function formatLocaleDate(date: Date, locale?: string) {
   return date.toLocaleDateString(locale, {
@@ -41,6 +41,16 @@ export function dateReviver(key: string, value: any) {
   } else {
     return value;
   }
+}
+
+export function isDateEqual(date1?: Date | null, date2?: Date | null): boolean {
+  if (!date1 && !date2) {
+    return true;
+  }
+  if (date1 && date2) {
+    return isEqual(date1, date2);
+  }
+  return false;
 }
 
 export const isDate = (date: Date | undefined): date is Date => !!date;
