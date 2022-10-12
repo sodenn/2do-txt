@@ -4,7 +4,7 @@
   "description": "todo.txt-compatible task manager",
   "license": "GPL-3.0",
   "private": true,
-  "packageManager": "yarn@3.2.3",
+  "packageManager": "yarn@3.2.4",
   "engines": {
     "yarn": ">=3.2.2"
   },
