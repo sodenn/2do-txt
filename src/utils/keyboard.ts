@@ -1,48 +1,31 @@
 import { Keyboard, KeyboardStyleOptions } from "@capacitor/keyboard";
 import { KeyboardInfo } from "@capacitor/keyboard/dist/esm/definitions";
-import { useCallback } from "react";
 import { getPlatform } from "./platform";
 
-export function useKeyboard() {
-  const platform = getPlatform();
+const platform = getPlatform();
 
-  const addKeyboardDidShowListener = useCallback(
-    (listener: (info: KeyboardInfo) => void) => {
-      if (platform === "ios" || platform === "android") {
-        Keyboard.addListener("keyboardDidShow", listener);
-      }
-    },
-    [platform]
-  );
+export function addKeyboardDidShowListener(
+  listener: (info: KeyboardInfo) => void
+) {
+  if (platform === "ios" || platform === "android") {
+    Keyboard.addListener("keyboardDidShow", listener);
+  }
+}
 
-  const addKeyboardDidHideListener = useCallback(
-    (listener: () => void) => {
-      if (platform === "ios" || platform === "android") {
-        Keyboard.addListener("keyboardDidHide", listener);
-      }
-    },
-    [platform]
-  );
+export function addKeyboardDidHideListener(listener: () => void) {
+  if (platform === "ios" || platform === "android") {
+    Keyboard.addListener("keyboardDidHide", listener);
+  }
+}
 
-  const removeAllKeyboardListeners = useCallback(() => {
-    if (platform === "ios" || platform === "android") {
-      Keyboard.removeAllListeners().catch((e) => void e);
-    }
-  }, [platform]);
+export function removeAllKeyboardListeners() {
+  if (platform === "ios" || platform === "android") {
+    Keyboard.removeAllListeners().catch((e) => void e);
+  }
+}
 
-  const setKeyboardStyle = useCallback(
-    (options: KeyboardStyleOptions) => {
-      if (platform === "ios" || platform === "android") {
-        Keyboard.setStyle(options).catch((e) => void e);
-      }
-    },
-    [platform]
-  );
-
-  return {
-    addKeyboardDidShowListener,
-    addKeyboardDidHideListener,
-    removeAllKeyboardListeners,
-    setKeyboardStyle,
-  };
+export function setKeyboardStyle(options: KeyboardStyleOptions) {
+  if (platform === "ios" || platform === "android") {
+    Keyboard.setStyle(options).catch((e) => void e);
+  }
 }

@@ -152,22 +152,12 @@ const FileCreateDialog = () => {
         });
       });
     }
-  }, [
-    getUniqueFilePath,
-    createNewFile,
-    open,
-    platform,
-    setFileCreateDialog,
-    handleClose,
-  ]);
-
-  useEffect(() => {
     if (platform !== "electron" && open) {
       getUniqueFilePath(defaultTodoFilePath).then(({ fileName }) =>
         setFileName(fileName)
       );
     }
-  }, [getUniqueFilePath, platform, open]);
+  }, [platform, open, getUniqueFilePath, createNewFile, handleClose]);
 
   if (platform === "electron") {
     return null;

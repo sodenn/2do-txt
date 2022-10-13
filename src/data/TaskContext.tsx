@@ -7,7 +7,7 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router-dom";
-import { useAppRate } from "../utils/app-rate";
+import { promptForRating } from "../utils/app-rate";
 import { createContext } from "../utils/Context";
 import { todayDate } from "../utils/date";
 import {
@@ -40,7 +40,6 @@ import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
 import { LoaderData, TodoFile } from "./loader";
-import { useLoading } from "./LoadingContext";
 import { useSettings } from "./SettingsContext";
 
 interface SyncItem {
@@ -55,8 +54,7 @@ type SaveTodoFile = {
 
 const [TaskProvider, useTask] = createContext(() => {
   const data = useLoaderData() as LoaderData;
-  const { promptForRating } = useAppRate();
-  const { getUri, readFile, writeFile, deleteFile, isFile } = getFilesystem();
+  const { getUri, writeFile, deleteFile, isFile } = getFilesystem();
   const { enqueueSnackbar } = useSnackbar();
   const { setConfirmationDialog } = useConfirmationDialog();
   const {
@@ -67,9 +65,7 @@ const [TaskProvider, useTask] = createContext(() => {
     archiveMode,
     priorityTransformation,
     removeTodoFilePath,
-    getTodoFilePaths,
   } = useSettings();
-  const { setTaskContextLoading } = useLoading();
   const {
     syncAllFiles,
     syncFileThrottled,
@@ -86,6 +82,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
+  const [initialized, setInitialized] = useState(false);
   const {
     syncAllDoneFilesWithCloudStorage,
     saveDoneFile,
@@ -211,7 +208,7 @@ const [TaskProvider, useTask] = createContext(() => {
         return listOrPath;
       }
     },
-    [loadTodoFile, promptForRating, syncTodoFileWithCloudStorage, writeFile]
+    [loadTodoFile, syncTodoFileWithCloudStorage, writeFile]
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -675,7 +672,7 @@ const [TaskProvider, useTask] = createContext(() => {
         );
       }
     }
-    setTaskContextLoading(false);
+    setInitialized(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -703,6 +700,7 @@ const [TaskProvider, useTask] = createContext(() => {
     createNewTodoFile,
     fileInputRef,
     openTodoFilePicker,
+    initialized,
   };
 });
 

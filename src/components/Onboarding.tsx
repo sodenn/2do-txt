@@ -3,7 +3,6 @@ import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
-import { useLoading } from "../data/LoadingContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { getPlatform } from "../utils/platform";
@@ -25,13 +24,12 @@ const StyledBox = styled("div")`
 const Onboarding = () => {
   const { t } = useTranslation();
   const platform = getPlatform();
-  const { loading } = useLoading();
   const { setFileCreateDialog } = useFileCreateDialog();
-  const { taskLists, openTodoFilePicker } = useTask();
+  const { taskLists, openTodoFilePicker, initialized } = useTask();
 
   return (
     <StyledBox
-      sx={{ display: !loading && taskLists.length === 0 ? "flex" : "none" }}
+      sx={{ display: initialized && taskLists.length === 0 ? "flex" : "none" }}
     >
       <Stack spacing={1}>
         <Box sx={{ py: 1, textAlign: "center" }}>

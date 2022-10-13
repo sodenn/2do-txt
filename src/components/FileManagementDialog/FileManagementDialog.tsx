@@ -65,12 +65,6 @@ const FileManagementDialog = () => {
     listAllFiles().then(listClosedFiles);
   }, [listAllFiles, listClosedFiles]);
 
-  useEffect(() => {
-    if (fileManagementDialogOpen) {
-      listFiles();
-    }
-  }, [listFiles, fileManagementDialogOpen]);
-
   const openDeleteConfirmationDialog = (filePath: string) => {
     return new Promise<boolean>((resolve) => {
       setConfirmationDialog({
@@ -137,6 +131,12 @@ const FileManagementDialog = () => {
   const handleCloseDialog = () => {
     setFileManagementDialogOpen(false);
   };
+
+  useEffect(() => {
+    if (fileManagementDialogOpen) {
+      listFiles();
+    }
+  }, [listFiles, fileManagementDialogOpen]);
 
   return (
     <Dialog

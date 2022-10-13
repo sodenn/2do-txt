@@ -11,12 +11,12 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { deDE, enUS, Localization } from "@mui/material/locale";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router-dom";
 import { WithChildren } from "../types/common";
 import { createContext } from "../utils/Context";
-import { useKeyboard } from "../utils/keyboard";
+import { setKeyboardStyle } from "../utils/keyboard";
 import { setPreferencesItem } from "../utils/preferences";
 import { LoaderData } from "./loader";
 
@@ -102,59 +102,47 @@ const getPaletteMode = (
   }
 };
 
+function applyThemeMode(theme: Theme, mode: ThemeMode) {
+  setPreferencesItem("theme-mode", mode);
+
+  const themeColorMetaTag = document.querySelector('meta[name="theme-color"]');
+  if (themeColorMetaTag) {
+    themeColorMetaTag.setAttribute("content", theme.palette.background.default);
+  }
+
+  StatusBar.setStyle({
+    style:
+      mode === "light"
+        ? Style.Light
+        : mode === "dark"
+        ? Style.Dark
+        : Style.Default,
+  }).catch((error) => void error);
+
+  setKeyboardStyle({
+    style:
+      mode === "light"
+        ? KeyboardStyle.Light
+        : mode === "dark"
+        ? KeyboardStyle.Dark
+        : KeyboardStyle.Default,
+  });
+}
+
 const [AppThemeProvider, useAppTheme] = createContext(() => {
   const {
     i18n: { language },
   } = useTranslation();
-  const { setKeyboardStyle } = useKeyboard();
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const [themeMode, _setThemeMode] = useState<ThemeMode>("system");
-  const paletteMode = getPaletteMode(themeMode, prefersDarkMode);
   const data = useLoaderData() as LoaderData;
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const [themeMode, setThemeMode] = useState<ThemeMode>(data.themeMode);
+  const paletteMode = getPaletteMode(themeMode, prefersDarkMode);
   const theme = useMemo(
     () => createTheme(getThemeOptions(paletteMode), translations[language]),
     [language, paletteMode]
   );
 
-  const setThemeMode = useCallback(
-    (mode: ThemeMode) => {
-      _setThemeMode(mode);
-      setPreferencesItem("theme-mode", mode);
-
-      const themeColorMetaTag = document.querySelector(
-        'meta[name="theme-color"]'
-      );
-      if (themeColorMetaTag) {
-        themeColorMetaTag.setAttribute(
-          "content",
-          theme.palette.background.default
-        );
-      }
-
-      StatusBar.setStyle({
-        style:
-          mode === "light"
-            ? Style.Light
-            : mode === "dark"
-            ? Style.Dark
-            : Style.Default,
-      }).catch((error) => void error);
-
-      setKeyboardStyle({
-        style:
-          mode === "light"
-            ? KeyboardStyle.Light
-            : mode === "dark"
-            ? KeyboardStyle.Dark
-            : KeyboardStyle.Default,
-      });
-    },
-    [setKeyboardStyle, theme.palette.background.default]
-  );
-
-  useEffect(() => {
-    setThemeMode(data.themeMode);
-  }, [setThemeMode, prefersDarkMode, data.themeMode]);
+  useEffect(() => applyThemeMode(theme, themeMode), [theme, themeMode]);
 
   return {
     setThemeMode,
@@ -166,12 +154,12 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
 const AppTheme = ({ children }: WithChildren) => {
   return (
     <AppThemeProvider>
-      <AppThemeChild>{children}</AppThemeChild>
+      <AppThemeInternal>{children}</AppThemeInternal>
     </AppThemeProvider>
   );
 };
 
-const AppThemeChild = ({ children }: WithChildren) => {
+const AppThemeInternal = ({ children }: WithChildren) => {
   const { theme } = useAppTheme();
   return (
     <ThemeProvider theme={theme}>

@@ -11,7 +11,11 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "../utils/date";
-import { useKeyboard } from "../utils/keyboard";
+import {
+  addKeyboardDidHideListener,
+  addKeyboardDidShowListener,
+  removeAllKeyboardListeners,
+} from "../utils/keyboard";
 import { getPlatform, hasTouchScreen } from "../utils/platform";
 import {
   getDueDateValue,
@@ -68,11 +72,6 @@ const TaskForm = (props: TaskFormProps) => {
   const platform = getPlatform();
   const theme = useTheme();
   const rootRef = useRef<HTMLDivElement>();
-  const {
-    addKeyboardDidShowListener,
-    addKeyboardDidHideListener,
-    removeAllKeyboardListeners,
-  } = useKeyboard();
   const touchScreen = hasTouchScreen();
   const {
     raw,

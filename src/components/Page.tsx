@@ -1,6 +1,5 @@
 import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useLoading } from "../data/LoadingContext";
 import ArchivedTasksDialog from "./ArchivedTasksDialog";
 import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -21,7 +20,6 @@ const SafeAreaContainer = styled(Container)`
 `;
 
 const Page = () => {
-  const { loading } = useLoading();
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
 
@@ -34,11 +32,7 @@ const Page = () => {
         element.removeEventListener("scroll", listener);
       };
     }
-  }, [scrollContainer, loading]);
-
-  if (loading) {
-    return null;
-  }
+  }, [scrollContainer]);
 
   return (
     <FilePicker>
