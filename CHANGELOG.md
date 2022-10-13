@@ -1,3 +1,16 @@
+# [1.15.0](https://github.com/sodenn/2do-txt/compare/v1.14.1...v1.15.0) (2022-10-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies (non-major) ([#666](https://github.com/sodenn/2do-txt/issues/666)) ([52172ca](https://github.com/sodenn/2do-txt/commit/52172ca3a46a1adfa7a30ec4bca29e8d5eda8199))
+* **TaskForm:** make sure that the due date can always be updated ([#683](https://github.com/sodenn/2do-txt/issues/683)) ([9f294df](https://github.com/sodenn/2do-txt/commit/9f294dfecdfd3cadb902613a850359acd5b086d5))
+
+
+### Features
+
+* timeline view ([#670](https://github.com/sodenn/2do-txt/issues/670)) ([84ca081](https://github.com/sodenn/2do-txt/commit/84ca081102083892d7236ead952765ac293af1cb))
+
 ## [1.14.1](https://github.com/sodenn/2do-txt/compare/v1.14.0...v1.14.1) (2022-09-29)
 
 
