@@ -35,6 +35,7 @@ jobs:
           node-version: v16.13.0
       - run: corepack enable
       - run: yarn install
+      - run: npx playwright install --with-deps
       - run: npx playwright test --project="${{ matrix.project }}" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       - uses: actions/upload-artifact@v3
         if: always()
