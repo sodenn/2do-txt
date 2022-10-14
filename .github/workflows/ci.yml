@@ -26,8 +26,8 @@ jobs:
       fail-fast: false
       matrix:
         project: [ "chromium", "Mobile Safari" ]
-        shardIndex: [ 1, 2, 3, 4, 5 ]
-        shardTotal: [ 5 ]
+        shardIndex: [ 1, 2, 3 ]
+        shardTotal: [ 3 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -35,7 +35,7 @@ jobs:
           node-version: v16.13.0
       - run: corepack enable
       - run: yarn install
-      - run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      - run: npx playwright test --project="${{ matrix.project }}" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
