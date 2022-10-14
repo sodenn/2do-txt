@@ -41,7 +41,7 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     if (platform === "ios" || platform === "android") {
       return redirectUri;
     } else {
-      return window.location.origin;
+      return `${window.location.origin}/dropbox`;
     }
   }, [platform]);
 

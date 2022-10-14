@@ -19,6 +19,10 @@ const router = createBrowserRouter([
         path: "/",
         element: <Page />,
       },
+      {
+        path: "/dropbox",
+        element: <Page />,
+      },
     ],
   },
 ]);

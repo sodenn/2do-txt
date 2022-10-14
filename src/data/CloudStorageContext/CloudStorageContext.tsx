@@ -3,7 +3,12 @@ import { throttle } from "lodash";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useLoaderData, useSearchParams } from "react-router-dom";
+import {
+  useLoaderData,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import DropboxIcon from "../../components/DropboxIcon";
 import {
   CloudArchiveFileRef,
@@ -110,6 +115,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const platform = getPlatform();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const {
     dropboxInit,
@@ -138,7 +145,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   const cloudStorageEnabled =
     platform === "ios" ||
     platform === "android" ||
-    import.meta.env.REACT_APP_ENABLE_WEB_CLOUD_STORAGE === "true";
+    import.meta.env.VITE_ENABLE_WEB_CLOUD_STORAGE === "true";
 
   const handleError = useCallback((error: any) => {
     if (error instanceof CloudFileUnauthorizedError) {
@@ -851,11 +858,14 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
   useEffect(() => {
     const code = searchParams.get("code");
-    if (code) {
+    const pathname = location.pathname;
+    if (code && pathname === "/dropbox") {
       searchParams.delete("code");
+      navigate("/");
       requestTokens({ cloudStorage: "Dropbox", authorizationCode: code });
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     getCloudFileRefByFilePath,
