@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("Onboarding", () => {
-  test("should show the onboarding header", async ({ page }) => {
+  test("should display the onboarding header", async ({ page }) => {
     await expect(page.locator("text=Get Started").first()).toBeVisible();
   });
 });
@@ -14,15 +14,12 @@ test.describe("Onboarding", () => {
 test.describe("New file", () => {
   test("should allow me to create a new file", async ({ page }) => {
     await page.locator('[aria-label="Create task"]').click();
-
     await expect(page.locator('[aria-label="File name"]')).toHaveValue(
       "todo.txt"
     );
-
     await page.locator('[aria-label="Create file"]').click();
-
     await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
-
+    // The task dialog should open and the focus should be in the editor
     await expect(page.locator('[aria-label="Text editor"]')).toBeFocused();
   });
 });
@@ -30,26 +27,21 @@ test.describe("New file", () => {
 test.describe("Example file", () => {
   test("should allow me to create an example file", async ({ page }) => {
     await page.locator('[aria-label="Create example file"]').click();
-
     await expect(page.locator('[aria-label="File name"]')).toHaveValue(
       "todo.txt"
     );
-
     await page.locator('[aria-label="Create file"]').click();
-
     await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
-
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
   });
 });
 
-test.describe.parallel("File import", () => {
+test.describe("File import", () => {
   // webkit: Selecting multiple files does not work in the test
   test.skip(({ browserName }) => browserName === "webkit");
 
   test("should allow me to import files", async ({ page }) => {
     const content = readFileSync("public/todo.txt");
-
     await expect(page.locator("text=Import todo.txt")).toBeVisible();
 
     await page.setInputFiles('[data-testid="file-picker"]', {
@@ -57,7 +49,6 @@ test.describe.parallel("File import", () => {
       mimeType: "text/plain",
       buffer: Buffer.from(content),
     });
-
     await expect(page.locator('[aria-label="File menu"]')).toHaveText(
       "todo1.txt"
     );
@@ -67,15 +58,12 @@ test.describe.parallel("File import", () => {
       mimeType: "text/plain",
       buffer: Buffer.from(content),
     });
-
     await expect(page.locator('[aria-label="File menu"]')).toHaveText(
       "todo2.txt"
     );
 
     await page.locator('[aria-label="File menu"]').click();
-
     await page.locator("text=All").click();
-
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(16);
   });
 
@@ -83,7 +71,6 @@ test.describe.parallel("File import", () => {
     page,
   }) => {
     const content = readFileSync("public/todo.txt");
-
     const dataTransfer = await page.evaluateHandle((text) => {
       const dt = new DataTransfer();
       const file = new File([text], "todo.txt", {

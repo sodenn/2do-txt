@@ -1,14 +1,15 @@
-import { expect, Page, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
+const withoutFile = ["should not show the search bar when no files are open"];
+
+test.beforeEach(async ({ page }, testInfo) => {
   await page.goto("http://127.0.0.1:5173");
+  if (!withoutFile.includes(testInfo.title)) {
+    await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
+  }
 });
 
-async function openTodoTxt(page: Page) {
-  return page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
-}
-
-test.describe.parallel("Search", () => {
+test.describe("Search", () => {
   test("should not show the search bar when no files are open", async ({
     page,
   }) => {
@@ -18,7 +19,6 @@ test.describe.parallel("Search", () => {
   });
 
   test("should allow me to search for tasks", async ({ page, isMobile }) => {
-    await openTodoTxt(page);
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     if (isMobile) {
       await page.locator('[aria-label="Expand search bar"]').click();
@@ -32,7 +32,6 @@ test.describe.parallel("Search", () => {
         page.locator('[aria-label="Search for tasks"]').fill("invoice"),
       ]);
     }
-
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(1);
   });
 
@@ -41,15 +40,12 @@ test.describe.parallel("Search", () => {
     isMobile,
   }) => {
     test.skip(!!isMobile, "desktop only");
-    await openTodoTxt(page);
     await expect(
       page.locator('[aria-label="Search for tasks"]')
     ).not.toBeFocused();
 
     await page.keyboard.press("f");
-
     await expect(page.locator('[aria-label="Search for tasks"]')).toBeFocused();
-
     await page.keyboard.press("Escape");
 
     await expect(
@@ -62,7 +58,6 @@ test.describe.parallel("Search", () => {
     isMobile,
   }) => {
     test.skip(!!isMobile, "desktop only");
-    await openTodoTxt(page);
     await page.locator('[aria-label="Search for tasks"]').fill("invoice");
 
     await expect(
@@ -80,7 +75,6 @@ test.describe.parallel("Search", () => {
     isMobile,
   }) => {
     test.skip(!isMobile, "mobile only");
-    await openTodoTxt(page);
     await page.locator('[aria-label="Expand search bar"]').click();
     await page.locator('[aria-label="Search for tasks"]').fill("invoice");
 
@@ -97,7 +91,6 @@ test.describe.parallel("Search", () => {
     page,
     isMobile,
   }) => {
-    await openTodoTxt(page);
     if (isMobile) {
       await page.locator("[aria-label='Expand search bar']").click();
       await page.locator('[aria-label="Search for tasks"]').fill("---");
@@ -108,9 +101,8 @@ test.describe.parallel("Search", () => {
   });
 });
 
-test.describe.parallel("Filter", () => {
+test.describe("Filter", () => {
   test("should allow me to filter tasks by priority", async ({ page }) => {
-    await openTodoTxt(page);
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
     await page.locator('[aria-label="A is used 2 times"]').click();
@@ -121,7 +113,6 @@ test.describe.parallel("Filter", () => {
   });
 
   test("should allow me to filter tasks by project", async ({ page }) => {
-    await openTodoTxt(page);
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
     await page.locator('[aria-label="CompanyA is used 1 times"]').click();
@@ -132,7 +123,6 @@ test.describe.parallel("Filter", () => {
   });
 
   test("should allow me to filter tasks by context", async ({ page }) => {
-    await openTodoTxt(page);
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
     await page.locator('[aria-label="Private is used 4 times"]').click();
@@ -143,7 +133,6 @@ test.describe.parallel("Filter", () => {
   });
 
   test("should allow me to hide completed tasks", async ({ page }) => {
-    await openTodoTxt(page);
     await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
     await page.keyboard.press("m");
     await expect(
@@ -157,7 +146,6 @@ test.describe.parallel("Filter", () => {
   });
 
   test("should allow me to sort tasks by priority", async ({ page }) => {
-    await openTodoTxt(page);
     await page.keyboard.press("m");
     await page.locator('[aria-label="Sort tasks"]').click();
     await page.locator('text="Priority"').click();
@@ -174,7 +162,6 @@ test.describe.parallel("Filter", () => {
 
   test("should clear active filter", async ({ page, isMobile }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
-    await openTodoTxt(page);
     await page.keyboard.press("m");
     await page.locator('[aria-label="Private is used 4 times"]').click();
     await page.locator('[aria-label="CompanyA is used 1 times"]').click();
@@ -185,7 +172,6 @@ test.describe.parallel("Filter", () => {
 
 test.describe("Menu", () => {
   test("should allow me to toggle the menu via shortcut", async ({ page }) => {
-    await openTodoTxt(page);
     await page.keyboard.press("m");
     await expect(page.locator('[aria-label="Open menu"]')).toBeVisible();
     await page.keyboard.press("m");

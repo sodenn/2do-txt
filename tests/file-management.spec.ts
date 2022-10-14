@@ -3,15 +3,12 @@ import { readFileSync } from "fs";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://127.0.0.1:5173");
-
   const content = readFileSync("public/todo.txt");
-
   await page.setInputFiles('[data-testid="file-picker"]', {
     name: "todo1.txt",
     mimeType: "text/plain",
     buffer: Buffer.from(content),
   });
-
   await page.setInputFiles('[data-testid="file-picker"]', {
     name: "todo2.txt",
     mimeType: "text/plain",
@@ -19,14 +16,14 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test.describe.parallel("Reorder Files", () => {
+test.describe("Reorder Files", () => {
   // webkit: Selecting multiple files does not work in the test
   test.skip(({ browserName }) => browserName === "webkit");
 
-  test("should allow me to order file lists using drag and drop", async ({
+  test("should allow me to order task lists using drag and drop", async ({
     page,
   }) => {
-    // show all files
+    // show all task lists
     await page.locator('[aria-label="File menu"]').click();
     await page.locator('[role="menuitem"] >> text=All').click();
 
@@ -40,23 +37,16 @@ test.describe.parallel("Reorder Files", () => {
     await expect(page.locator("h5").nth(1)).toHaveText("todo2.txt");
 
     // swap order of the two files via drag & drop
-
     const source = page.locator('[aria-label="Draggable file todo2.txt"]');
-
     const destination = page.locator('[aria-label="Draggable file todo1.txt"]');
-
     const destinationPosition = await destination.boundingBox();
-
     await source.hover();
-
     await page.mouse.down();
-
     await page.mouse.move(
       destinationPosition!.x + destinationPosition!.width / 2,
       destinationPosition!.y + destinationPosition!.height / 2,
       { steps: 10 }
     );
-
     await page.mouse.up();
 
     // check new sort order
@@ -69,7 +59,7 @@ test.describe.parallel("Reorder Files", () => {
     await page.locator('[aria-label="File menu"]').click();
     await page.locator('[role="menuitem"] >> text="Manage todo.txt"').click();
 
-    // current number of open files
+    // check current number of open files
     await expect(page.locator('[aria-label="File management"] li')).toHaveCount(
       2
     );

@@ -18,7 +18,7 @@ async function openTodoTxt(page: Page) {
   await page.waitForTimeout(200);
 }
 
-test.describe.parallel("Task View", () => {
+test.describe("Task View", () => {
   for (const taskView of ["list", "timeline"]) {
     test(`${taskView}: should render an empty task list`, async ({ page }) => {
       await expect(page.locator('[aria-label="Task list"]')).not.toBeVisible();

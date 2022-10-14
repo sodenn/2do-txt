@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await page.waitForTimeout(100);
 });
 
-test.describe.parallel("Download", () => {
+test.describe("Download", () => {
   test("should download a todo.txt file", async ({ page }) => {
     const [download] = await Promise.all([
       // Start waiting for the download
@@ -20,12 +20,13 @@ test.describe.parallel("Download", () => {
   });
 
   test("should download todo.txt and done.txt", async ({ page }) => {
-    // activate automatic archiving
+    // activate archiving
     await page.keyboard.press("m");
     await page.locator('[role="tab"][aria-label="Settings"]').click();
     await page.locator('[aria-label="Select archive mode"]').click();
     await page.locator('[data-value="automatic"]').click();
     await page.keyboard.press("Escape");
+
     const [download] = await Promise.all([
       // Start waiting for the download
       page.waitForEvent("download"),
