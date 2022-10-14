@@ -111,7 +111,7 @@ export const cloudStorageIconsSmall: Record<CloudStorage, ReactNode> = {
   Dropbox: <DropboxIcon fontSize="small" />,
 };
 
-const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
+const [BaseCloudStorageProvider, useCloudStorage] = createContext(() => {
   const platform = getPlatform();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -754,7 +754,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         filePath
       );
       const ref = archive ? cloudArchiveFileRef : cloudFileRef;
-
       if (!ref) {
         return;
       }
@@ -868,6 +867,8 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   }, []);
 
   return {
+    initializeCloudStorages,
+    requestTokens,
     getCloudFileRefByFilePath,
     getCloudArchiveFileRefByFilePath,
     cloudStorageEnabled,
@@ -882,7 +883,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     listCloudFiles,
     downloadFile,
     deleteCloudFile,
-    requestTokens,
     linkCloudFile,
     linkCloudArchiveFile,
     getCloudArchiveFileMetaData,
@@ -896,7 +896,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 const CloudStorageProvider = ({ children }: WithChildren) => {
   return (
     <DropboxStorageProvider>
-      <CloudStorageProviderInternal>{children}</CloudStorageProviderInternal>
+      <BaseCloudStorageProvider>{children}</BaseCloudStorageProvider>
     </DropboxStorageProvider>
   );
 };

@@ -19,20 +19,20 @@ import {
 const { getSecureStorageItem } = getSecureStorage();
 const { readFile } = getFilesystem();
 
-export interface TodoFile {
+interface TodoFileSuccess {
   type: "success";
   filePath: string;
   file: ReadFileResult;
 }
 
-export interface TodoFileError {
+interface TodoFileError {
   type: "error";
   filePath: string;
 }
 
-export type TodoFileResult = TodoFile | TodoFileError;
+type TodoFile = TodoFileSuccess | TodoFileError;
 
-export interface TodoFiles {
+interface TodoFiles {
   files: { taskList: TaskList; filePath: string; text: string }[];
   errors: TodoFileError[];
 }
@@ -53,21 +53,23 @@ export interface LoaderData {
   connectedCloudStorages: Record<CloudStorage, boolean>;
 }
 
-async function loadTodoFiles() {
+async function loadTodoFiles(): Promise<TodoFiles> {
   const filePaths = await getTodoFilePaths();
-  const result: TodoFileResult[] = await Promise.all(
+  const result: TodoFile[] = await Promise.all(
     filePaths.map((filePath) =>
       readFile({
         path: filePath,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       })
-        .then((file) => ({ type: "success", filePath, file } as TodoFile))
+        .then(
+          (file) => ({ type: "success", filePath, file } as TodoFileSuccess)
+        )
         .catch(() => ({ type: "error", filePath } as TodoFileError))
     )
   );
   const files = result
-    .filter((i): i is TodoFile => i.type === "success")
+    .filter((i): i is TodoFileSuccess => i.type === "success")
     .map((i) => {
       const text = i.file.data;
       const filePath = i.filePath;
@@ -87,14 +89,15 @@ async function loadTodoFiles() {
   };
 }
 
-const loadCloudStorages = () =>
-  Promise.all(
+function loadCloudStorages() {
+  return Promise.all(
     cloudStorages.map((cloudStorage) =>
       getSecureStorageItem(`${cloudStorage}-refresh-token`).then(
         (refreshToken) => ({ cloudStorage, connected: !!refreshToken })
       )
     )
   ).then((result) => ({ result }));
+}
 
 export async function loader(): Promise<LoaderData> {
   await migrate1();
