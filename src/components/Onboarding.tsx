@@ -25,12 +25,10 @@ const Onboarding = () => {
   const { t } = useTranslation();
   const platform = getPlatform();
   const { setFileCreateDialog } = useFileCreateDialog();
-  const { taskLists, openTodoFilePicker, initialized } = useTask();
+  const { taskLists, openTodoFilePicker } = useTask();
 
   return (
-    <StyledBox
-      sx={{ display: initialized && taskLists.length === 0 ? "flex" : "none" }}
-    >
+    <StyledBox sx={{ display: taskLists.length === 0 ? "flex" : "none" }}>
       <Stack spacing={1}>
         <Box sx={{ py: 1, textAlign: "center" }}>
           <img src={logo} alt="Logo" height={96} style={{ opacity: 0.2 }} />

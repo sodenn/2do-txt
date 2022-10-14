@@ -1,10 +1,11 @@
 import { Directory, Encoding, ReadFileResult } from "@capacitor/filesystem";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { CloudStorage, cloudStorages } from "../types/cloud-storage.types";
-import { getFilesystem } from "../utils/filesystem";
+import { getFilenameFromPath, getFilesystem } from "../utils/filesystem";
 import { migrate1 } from "../utils/migrations";
 import { getPreferencesItem } from "../utils/preferences";
 import { getSecureStorage } from "../utils/secure-storage";
+import { parseTaskList, TaskList } from "../utils/task-list";
 import { ThemeMode } from "./AppThemeContext";
 import { FilterType, SortKey } from "./FilterContext";
 import {
@@ -20,16 +21,21 @@ const { readFile } = getFilesystem();
 
 export interface TodoFile {
   type: "success";
-  path: string;
+  filePath: string;
   file: ReadFileResult;
 }
 
 export interface TodoFileError {
   type: "error";
-  path: string;
+  filePath: string;
 }
 
 export type TodoFileResult = TodoFile | TodoFileError;
+
+export interface TodoFiles {
+  files: { taskList: TaskList; filePath: string; text: string }[];
+  errors: TodoFileError[];
+}
 
 export interface LoaderData {
   sortBy: SortKey;
@@ -43,25 +49,41 @@ export interface LoaderData {
   priorityTransformation: PriorityTransformation;
   language: Language;
   themeMode: ThemeMode;
-  todoFiles: TodoFileResult[];
+  todoFiles: TodoFiles;
   connectedCloudStorages: Record<CloudStorage, boolean>;
 }
 
 async function loadTodoFiles() {
   const filePaths = await getTodoFilePaths();
   const result: TodoFileResult[] = await Promise.all(
-    filePaths.map((path) =>
+    filePaths.map((filePath) =>
       readFile({
-        path,
+        path: filePath,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
       })
-        .then((file) => ({ type: "success", path, file } as TodoFile))
-        .catch(() => ({ type: "error", path } as TodoFileError))
+        .then((file) => ({ type: "success", filePath, file } as TodoFile))
+        .catch(() => ({ type: "error", filePath } as TodoFileError))
     )
   );
+  const files = result
+    .filter((i): i is TodoFile => i.type === "success")
+    .map((i) => {
+      const text = i.file.data;
+      const filePath = i.filePath;
+      const parseResult = parseTaskList(text);
+      const fileName = getFilenameFromPath(filePath);
+      const taskList: TaskList = {
+        ...parseResult,
+        filePath,
+        fileName,
+      };
+      return { taskList, filePath, text };
+    });
+  const errors = result.filter((i): i is TodoFileError => i.type === "error");
   return {
-    result,
+    files,
+    errors,
   };
 }
 
@@ -119,7 +141,7 @@ export async function loader(): Promise<LoaderData> {
       priorityTransformation: completedTaskPriority || "keep",
       language: language || "en",
       themeMode: themeMode || "system",
-      todoFiles: todoFiles.result,
+      todoFiles: todoFiles,
       connectedCloudStorages: cloudStorages.result.reduce((prev, curr) => {
         prev[curr.cloudStorage] = curr.connected;
         return prev;

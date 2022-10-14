@@ -39,7 +39,7 @@ import { useArchivedTask } from "./ArchivedTaskContext";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
-import { LoaderData, TodoFile } from "./loader";
+import { LoaderData } from "./loader";
 import { useSettings } from "./SettingsContext";
 
 interface SyncItem {
@@ -81,8 +81,9 @@ const [TaskProvider, useTask] = createContext(() => {
   const platform = getPlatform();
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
-  const [initialized, setInitialized] = useState(false);
+  const [taskLists, setTaskLists] = useState<TaskList[]>(
+    data.todoFiles.files.map((f) => f.taskList)
+  );
   const {
     syncAllDoneFilesWithCloudStorage,
     saveDoneFile,
@@ -644,35 +645,18 @@ const [TaskProvider, useTask] = createContext(() => {
   }, [_restoreAllArchivedTask, saveTodoFile, taskLists]);
 
   useEffect(() => {
-    const readFileResult = data.todoFiles
-      .filter((i) => !!i)
-      .filter((i): i is TodoFile => {
-        if (i.type === "error") {
-          enqueueSnackbar(t("File not found"), {
-            variant: "error",
-          });
-          removeTodoFilePath(i.path);
-          return false;
-        } else {
-          return true;
-        }
-      })
-      .map((i) => {
-        const text = i!.file.data;
-        const filePath = i!.path;
-        return { taskList: parseTaskList(filePath, text), filePath, text };
+    data.todoFiles.errors.forEach((err) => {
+      enqueueSnackbar(t("File not found"), {
+        variant: "error",
       });
-    syncAllTodoFilesWithCloudStorage(readFileResult).catch((e) => void e);
-    const taskLists = readFileResult.map((i) => i.taskList);
-    if (taskLists) {
-      setTaskLists(taskLists);
-      if (shouldNotificationsBeRescheduled()) {
-        taskLists.forEach((taskList) =>
-          scheduleDueTaskNotifications(taskList.items)
-        );
-      }
+      removeTodoFilePath(err.filePath);
+    });
+    syncAllTodoFilesWithCloudStorage(data.todoFiles.files).catch((e) => void e);
+    if (shouldNotificationsBeRescheduled()) {
+      taskLists.forEach((taskList) =>
+        scheduleDueTaskNotifications(taskList.items)
+      );
     }
-    setInitialized(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -700,7 +684,6 @@ const [TaskProvider, useTask] = createContext(() => {
     createNewTodoFile,
     fileInputRef,
     openTodoFilePicker,
-    initialized,
   };
 });
 
