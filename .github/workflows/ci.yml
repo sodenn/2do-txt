@@ -18,7 +18,16 @@ jobs:
       - run: yarn install
       - run: yarn test
   e2e:
+    name: 'e2e Tests - ${{ matrix.project }} - Shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }}'
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.27.0-focal
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [ chromium, Mobile Safari ]
+        shardIndex: [ 1, 2, 3, 4, 5 ]
+        shardTotal: [ 5 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -26,14 +35,13 @@ jobs:
           node-version: v16.13.0
       - run: corepack enable
       - run: yarn install
-      - run: npx playwright install --with-deps
-      - run: yarn test:e2e
+      - run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
+          retention-days: 3
   hygiene:
     runs-on: ubuntu-latest
     steps:
