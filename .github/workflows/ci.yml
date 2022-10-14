@@ -20,8 +20,8 @@ jobs:
   e2e:
     name: 'e2e Tests - ${{ matrix.project }} - Shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }}'
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.27.0-focal
+#    container:
+#      image: mcr.microsoft.com/playwright:v1.27.0-focal
     strategy:
       fail-fast: false
       matrix:
