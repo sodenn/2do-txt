@@ -14,11 +14,11 @@ interface HeaderProps {
   divider?: boolean;
 }
 
-const SafeAreaAppBar = styled(AppBar)`
-  padding-top: env(safe-area-inset-top);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-`;
+const SafeAreaAppBar = styled(AppBar)({
+  paddingTop: "env(safe-area-inset-top)",
+  paddingLeft: "env(safe-area-inset-left)",
+  paddingRight: "env(safe-area-inset-right)",
+});
 
 const Header = ({ divider = false }: HeaderProps) => {
   const platform = getPlatform();

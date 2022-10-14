@@ -10,16 +10,16 @@ import CloudFileImportButtons from "./CloudFileImportButtons";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 import CreateExampleFileButton from "./CreateExampleFileButton";
 
-const StyledBox = styled("div")`
-  display: flex;
-  justify-content: center;
-  padding-top: ${({ theme }) => theme.spacing(10)};
-  padding-bottom: ${({ theme }) => theme.spacing(5)};
-  @media screen and (max-height: 480px) {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-`;
+const StyledBox = styled("div")(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  paddingTop: theme.spacing(10),
+  paddingBottom: theme.spacing(5),
+  "@media screen and (max-height: 480px)": {
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+}));
 
 const Onboarding = () => {
   const { t } = useTranslation();

@@ -23,11 +23,11 @@ interface FullScreenDialogTitleProps extends WithChildren {
   };
 }
 
-export const StyledAppBar = styled(AppBar)`
-  padding-top: env(safe-area-inset-top);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-`;
+export const StyledAppBar = styled(AppBar)({
+  paddingTop: "env(safe-area-inset-top)",
+  paddingLeft: "env(safe-area-inset-left)",
+  paddingRight: "env(safe-area-inset-right)",
+});
 
 const FullScreenDialogTitle = (props: FullScreenDialogTitleProps) => {
   const { divider, onClose, accept, children } = props;

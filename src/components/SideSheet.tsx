@@ -65,6 +65,16 @@ const Main = styled("main", {
   },
 }));
 
+const SaveAreaHeader = styled("div")({
+  paddingTop: "env(safe-area-inset-top)",
+  paddingLeft: "env(safe-area-inset-left)",
+});
+
+const SaveAreaContent = styled("div")({
+  paddingBottom: "env(safe-area-inset-bottom)",
+  paddingLeft: "env(safe-area-inset-left)",
+});
+
 export const MainContainer = forwardRef<HTMLDivElement, WithChildren>(
   ({ children }, ref) => {
     const { sideSheetOpen } = useSideSheet();
@@ -75,16 +85,6 @@ export const MainContainer = forwardRef<HTMLDivElement, WithChildren>(
     );
   }
 );
-
-const SaveAreaHeader = styled("div")`
-  padding-top: env(safe-area-inset-top);
-  padding-left: env(safe-area-inset-left);
-`;
-
-const SaveAreaContent = styled("div")`
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-`;
 
 const SideSheet = () => {
   const { t } = useTranslation();

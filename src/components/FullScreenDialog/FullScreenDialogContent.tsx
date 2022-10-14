@@ -2,11 +2,11 @@ import { Box, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { WithChildren } from "../../types/common";
 
-const SafeArea = styled("div")`
-  padding-right: env(safe-area-inset-right);
-  padding-left: env(safe-area-inset-left);
-  padding-bottom: env(safe-area-inset-bottom);
-`;
+const SafeArea = styled("div")({
+  paddingRight: "env(safe-area-inset-right)",
+  paddingLeft: "env(safe-area-inset-left)",
+  paddingBottom: "env(safe-area-inset-bottom)",
+});
 
 interface FullScreenDialogContentProps extends WithChildren {
   onScroll?: (top: number) => void;

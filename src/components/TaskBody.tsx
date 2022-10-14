@@ -5,10 +5,10 @@ interface TaskBodyProps {
   task: Task;
 }
 
-const TextContainer = styled("span")`
-  font-size: 0.9em;
-  hyphens: auto;
-`;
+const TextContainer = styled("span")({
+  fontSize: "0.9em",
+  hyphens: "auto",
+});
 
 const TaskBody = ({ task }: TaskBodyProps) => {
   const formatBody = useFormatBody();

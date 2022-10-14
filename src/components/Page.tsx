@@ -13,11 +13,11 @@ import SideSheet, { MainContainer } from "./SideSheet";
 import TaskDialog from "./TaskDialog";
 import TaskView from "./TaskView";
 
-const SafeAreaContainer = styled(Container)`
-  padding-right: env(safe-area-inset-right);
-  padding-left: env(safe-area-inset-left);
-  padding-bottom: env(safe-area-inset-bottom);
-`;
+const SafeAreaContainer = styled(Container)({
+  paddingRight: "env(safe-area-inset-right)",
+  paddingLeft: "env(safe-area-inset-left)",
+  paddingBottom: "env(safe-area-inset-bottom)",
+});
 
 const Page = () => {
   const scrollContainer = useRef<HTMLDivElement | null>(null);

@@ -8,16 +8,16 @@ interface ChipListProps {
   color?: "info" | "success" | "warning" | "secondary";
 }
 
-const List = styled("ul")`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  row-gap: ${({ theme }) => theme.spacing(1.5)};
-  column-gap: ${({ theme }) => theme.spacing(1)};
-  list-style: none;
-  padding: 0;
-  margin: 0;
-`;
+const List = styled("ul")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
+  rowGap: theme.spacing(1.5),
+  columnGap: theme.spacing(1),
+  listStyle: "none",
+  padding: 0,
+  margin: 0,
+}));
 
 const ChipList = (props: ChipListProps) => {
   const {
