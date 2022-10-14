@@ -96,7 +96,7 @@ const getStyle = (props: TagBoxProps, mode: PaletteMode) => {
 };
 
 const TagBox = (props: TagBoxProps) => {
-  const { chip, ...rest } = props;
+  const { chip, tagKey, completed, ...rest } = props;
   const {
     palette: { mode },
   } = useTheme();
