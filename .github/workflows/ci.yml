@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [ chromium, Mobile Safari ]
+        project: [ "chromium", "Mobile Safari" ]
         shardIndex: [ 1, 2, 3, 4, 5 ]
         shardTotal: [ 5 ]
     steps:
