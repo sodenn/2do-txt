@@ -20,14 +20,12 @@ jobs:
   e2e:
     name: 'e2e Tests - ${{ matrix.project }} - Shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }}'
     runs-on: ubuntu-latest
-#    container:
-#      image: mcr.microsoft.com/playwright:v1.27.0-focal
     strategy:
       fail-fast: false
       matrix:
         project: [ "chromium", "Mobile Safari" ]
-        shardIndex: [ 1, 2, 3 ]
-        shardTotal: [ 3 ]
+        shardIndex: [ 1, 2 ]
+        shardTotal: [ 2 ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
