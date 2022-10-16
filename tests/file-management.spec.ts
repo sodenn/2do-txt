@@ -89,7 +89,7 @@ test.describe("Reorder Files", () => {
     await expect(page.getByTestId("draggable-file")).toHaveCount(1);
   });
 
-  test.only("should display an error notification if a file cannot be found", async ({
+  test("should display an error notification if a file cannot be found", async ({
     page,
   }) => {
     await page.evaluate(() => {
