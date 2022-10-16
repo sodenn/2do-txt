@@ -1,19 +1,25 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "fs";
 
-test.beforeEach(async ({ page }) => {
+const withoutFile = [
+  "should display an error notification if a file cannot be found",
+];
+
+test.beforeEach(async ({ page }, testInfo) => {
   await page.goto("http://127.0.0.1:5173");
-  const content = readFileSync("public/todo.txt");
-  await page.setInputFiles('[data-testid="file-picker"]', {
-    name: "todo1.txt",
-    mimeType: "text/plain",
-    buffer: Buffer.from(content),
-  });
-  await page.setInputFiles('[data-testid="file-picker"]', {
-    name: "todo2.txt",
-    mimeType: "text/plain",
-    buffer: Buffer.from(content),
-  });
+  if (!withoutFile.includes(testInfo.title)) {
+    const content = readFileSync("public/todo.txt");
+    await page.setInputFiles('[data-testid="file-picker"]', {
+      name: "todo1.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(content),
+    });
+    await page.setInputFiles('[data-testid="file-picker"]', {
+      name: "todo2.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(content),
+    });
+  }
 });
 
 test.describe("Reorder Files", () => {
@@ -81,5 +87,18 @@ test.describe("Reorder Files", () => {
 
     // check number of open files
     await expect(page.getByTestId("draggable-file")).toHaveCount(1);
+  });
+
+  test.only("should display an error notification if a file cannot be found", async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      localStorage.setItem("CapacitorStorage.todo-txt-paths", '["todo.txt"]');
+    });
+    await page.reload();
+    await expect(page.getByRole("alert")).toHaveText("File not found");
+    await page.evaluate(() => {
+      return localStorage["CapacitorStorage.todo-txt-paths"] === "[]";
+    });
   });
 });
