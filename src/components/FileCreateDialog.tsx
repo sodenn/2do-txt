@@ -187,7 +187,7 @@ const FileCreateDialog = () => {
         <TextField
           value={fileName}
           onChange={(event) => setFileName(event.target.value)}
-          autoFocus
+          autoFocus={["ios", "android"].every((p) => p !== platform)}
           margin="normal"
           label={t("File Name")}
           fullWidth
