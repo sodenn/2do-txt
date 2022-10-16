@@ -33,7 +33,6 @@ const ChipList = (props: ChipListProps) => {
       {Object.entries(items).map(([item, usages], index) => (
         <li key={index}>
           <Badge
-            aria-label={`${item} is used ${usages} times`}
             badgeContent={usages === 1 ? undefined : usages}
             color="primary"
             anchorOrigin={{
@@ -52,6 +51,7 @@ const ChipList = (props: ChipListProps) => {
               label={item}
               color={color}
               onClick={() => onClick?.(item)}
+              aria-label={`${item} is used ${usages} times`}
             />
           </Badge>
         </li>

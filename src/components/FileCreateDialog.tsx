@@ -165,7 +165,6 @@ const FileCreateDialog = () => {
 
   return (
     <Dialog
-      aria-label="File dialog"
       open={open}
       onClose={handleClose}
       TransitionProps={{ onExited: handleExited }}

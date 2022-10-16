@@ -2,7 +2,7 @@ import { expect, Page, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://127.0.0.1:5173");
-  await page.locator('[aria-label="Toggle menu"]').click();
+  await page.getByRole("button", { name: "Toggle menu" }).click();
 });
 
 test.describe("Appearance", () => {
@@ -10,7 +10,7 @@ test.describe("Appearance", () => {
     page,
   }) => {
     await expect(
-      page.locator('[aria-label="Select theme mode"]')
+      page.getByRole("button", { name: "Select theme mode" })
     ).toContainText("System");
     await checkInLocalStorage(page, "theme-mode", "system");
   });
@@ -18,16 +18,16 @@ test.describe("Appearance", () => {
   test("should allow me to switch between light mode to dark mode", async ({
     page,
   }) => {
-    await page.locator('[aria-label="Select theme mode"]').click();
-    await page.locator("text=Light").click();
+    await page.getByRole("button", { name: "Select theme mode" }).click();
+    await page.getByRole("option", { name: "Light" }).click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
       "#fff"
     );
     await checkInLocalStorage(page, "theme-mode", "light");
 
-    await page.locator('[aria-label="Select theme mode"]').click();
-    await page.locator("text=Dark").click();
+    await page.getByRole("button", { name: "Select theme mode" }).click();
+    await page.getByRole("option", { name: "Dark" }).click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
       "#0a1726"
@@ -41,19 +41,19 @@ test.describe("Language", () => {
     page,
   }) => {
     // select English
-    await page.locator('[aria-label="Select language"]').click();
-    await page.locator('[role="option"] >> text=English').click();
+    await page.getByRole("button", { name: "Select language" }).click();
+    await page.getByRole("option", { name: "English" }).click();
     await expect(
-      page.locator('[aria-label="Select language"] >> [role="button"]')
+      page.getByRole("button", { name: "Select language" })
     ).toHaveText("English");
     await expect(page.locator("text=Language").first()).toBeVisible();
     await checkInLocalStorage(page, "language", "en");
 
     // select German
-    await page.locator('[aria-label="Select language"]').click();
-    await page.locator('[role="option"] >> text=German').click();
+    await page.getByRole("button", { name: "Select language" }).click();
+    await page.getByRole("option", { name: "German" }).click();
     await expect(
-      page.locator('[aria-label="Select language"] >> [role="button"]')
+      page.getByRole("button", { name: "Select language" })
     ).toHaveText("Deutsch");
     await expect(page.locator("text=Sprache").first()).toBeVisible();
     await checkInLocalStorage(page, "language", "de");

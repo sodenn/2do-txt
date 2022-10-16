@@ -24,12 +24,12 @@ test.describe("Reorder Files", () => {
     page,
   }) => {
     // show all task lists
-    await page.locator('[aria-label="File menu"]').click();
-    await page.locator('[role="menuitem"] >> text=All').click();
+    await page.getByRole("button", { name: "File menu" }).click();
+    await page.getByRole("menuitem", { name: "All" }).click();
 
     // open file management dialog
-    await page.locator('[aria-label="File menu"]').click();
-    await page.locator('[role="menuitem"] >> text="Manage todo.txt"').click();
+    await page.getByRole("button", { name: "File menu" }).click();
+    await page.getByRole("menuitem", { name: "Manage todo.txt" }).click();
 
     // check current sort order
     await expect(page.locator("h5")).toHaveCount(2);
@@ -37,8 +37,12 @@ test.describe("Reorder Files", () => {
     await expect(page.locator("h5").nth(1)).toHaveText("todo2.txt");
 
     // swap order of the two files via drag & drop
-    const source = page.locator('[aria-label="Draggable file todo2.txt"]');
-    const destination = page.locator('[aria-label="Draggable file todo1.txt"]');
+    const source = page.getByRole("listitem", {
+      name: "Draggable file todo2.txt",
+    });
+    const destination = page.getByRole("listitem", {
+      name: "Draggable file todo1.txt",
+    });
     const destinationPosition = await destination.boundingBox();
     await source.hover();
     await page.mouse.down();
@@ -56,26 +60,26 @@ test.describe("Reorder Files", () => {
 
   test("should allow me to close a file", async ({ page }) => {
     // open file management dialog
-    await page.locator('[aria-label="File menu"]').click();
-    await page.locator('[role="menuitem"] >> text="Manage todo.txt"').click();
+    await page.getByRole("button", { name: "File menu" }).click();
+    await page.getByRole("menuitem", { name: "Manage todo.txt" }).click();
 
     // check current number of open files
-    await expect(page.locator('[aria-label="File management"] li')).toHaveCount(
-      2
-    );
+    await expect(page.getByTestId("draggable-file")).toHaveCount(2);
 
-    // open the context menu of the first file in the list
-    await page.locator('button[aria-label="File actions"]').nth(0).click();
+    // open the menu of the first file in the list
+    await page.getByRole("button", { name: "File actions" }).nth(0).click();
 
     // click "Delete" in the context menu
-    await page.locator('li[aria-label="Delete file"]').click();
+    await page
+      .getByRole("menuitem", {
+        name: "Delete file",
+      })
+      .click();
 
     // confirm deletion
-    await page.locator('button[aria-label="Delete"]').click();
+    await page.getByRole("button", { name: "Delete" }).click();
 
     // check number of open files
-    await expect(page.locator('[aria-label="File management"] li')).toHaveCount(
-      1
-    );
+    await expect(page.getByTestId("draggable-file")).toHaveCount(1);
   });
 });

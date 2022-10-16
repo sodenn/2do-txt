@@ -7,14 +7,18 @@ const LanguageSelect = () => {
   const { language, changeLanguage } = useSettings();
   return (
     <Select
-      aria-label="Select language"
       fullWidth
       size="small"
       value={language}
+      inputProps={{ "aria-label": "Select language" }}
       onChange={(event) => changeLanguage(event.target.value as Language)}
     >
-      <MenuItem value="en">{t("English")}</MenuItem>
-      <MenuItem value="de">{t("German")}</MenuItem>
+      <MenuItem value="en" aria-label="English">
+        {t("English")}
+      </MenuItem>
+      <MenuItem value="de" aria-label="German">
+        {t("German")}
+      </MenuItem>
     </Select>
   );
 };

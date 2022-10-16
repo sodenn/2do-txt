@@ -13,26 +13,28 @@ test.describe("Onboarding", () => {
 
 test.describe("New file", () => {
   test("should allow me to create a new file", async ({ page }) => {
-    await page.locator('[aria-label="Create task"]').click();
-    await expect(page.locator('[aria-label="File name"]')).toHaveValue(
+    await page.getByRole("button", { name: "Create task" }).click();
+    await expect(page.getByRole("textbox", { name: "File name" })).toHaveValue(
       "todo.txt"
     );
-    await page.locator('[aria-label="Create file"]').click();
+    await page.getByRole("button", { name: "Create file" }).click();
     await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor
-    await expect(page.locator('[aria-label="Text editor"]')).toBeFocused();
+    await expect(
+      page.getByRole("textbox", { name: "Text editor" })
+    ).toBeFocused();
   });
 });
 
 test.describe("Example file", () => {
   test("should allow me to create an example file", async ({ page }) => {
-    await page.locator('[aria-label="Create example file"]').click();
-    await expect(page.locator('[aria-label="File name"]')).toHaveValue(
+    await page.getByRole("button", { name: "Create example file" }).click();
+    await expect(page.getByRole("textbox", { name: "File name" })).toHaveValue(
       "todo.txt"
     );
-    await page.locator('[aria-label="Create file"]').click();
+    await page.getByRole("button", { name: "Create file" }).click();
     await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
-    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
+    await expect(page.getByTestId("task")).toHaveCount(8);
   });
 });
 
@@ -42,14 +44,16 @@ test.describe("File import", () => {
 
   test("should allow me to import files", async ({ page }) => {
     const content = readFileSync("public/todo.txt");
-    await expect(page.locator("text=Import todo.txt")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Import todo.txt" })
+    ).toBeVisible();
 
     await page.setInputFiles('[data-testid="file-picker"]', {
       name: "todo1.txt",
       mimeType: "text/plain",
       buffer: Buffer.from(content),
     });
-    await expect(page.locator('[aria-label="File menu"]')).toHaveText(
+    await expect(page.getByRole("button", { name: "File menu" })).toHaveText(
       "todo1.txt"
     );
 
@@ -58,13 +62,13 @@ test.describe("File import", () => {
       mimeType: "text/plain",
       buffer: Buffer.from(content),
     });
-    await expect(page.locator('[aria-label="File menu"]')).toHaveText(
+    await expect(page.getByRole("button", { name: "File menu" })).toHaveText(
       "todo2.txt"
     );
 
-    await page.locator('[aria-label="File menu"]').click();
-    await page.locator("text=All").click();
-    await expect(page.locator('[aria-label="Task"]')).toHaveCount(16);
+    await page.getByRole("button", { name: "File menu" }).click();
+    await page.getByRole("menuitem", { name: "All" }).click();
+    await expect(page.getByTestId("task")).toHaveCount(16);
   });
 
   test("should allow me to import files via drag and drop", async ({
@@ -85,6 +89,6 @@ test.describe("File import", () => {
       dataTransfer,
     });
 
-    await expect(page.locator('[aria-label="Task"]')).toHaveCount(8);
+    await expect(page.getByTestId("task")).toHaveCount(8);
   });
 });

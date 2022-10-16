@@ -68,64 +68,65 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
 
     return useMemo(
       () => (
-        <TaskItemButton
-          ref={ref}
-          aria-label="Task"
-          data-testid="task-button"
-          aria-current={focused}
-          onClick={handleItemClick}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          dense
-        >
-          <Stack
-            px={{ xs: 0.5, sm: 0 }}
-            direction="row"
-            spacing={0.5}
-            sx={{ width: "100%" }}
+        <div data-testid="task">
+          <TaskItemButton
+            ref={ref}
+            data-testid="task-button"
+            aria-current={focused}
+            onClick={handleItemClick}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            dense
           >
-            <div>
-              <Checkbox
-                ref={checkboxRef}
-                inputProps={{
-                  "aria-label": "Complete task",
-                  "aria-checked": task.completed,
-                }}
-                onClick={onCheckboxClick}
-                edge="start"
-                checked={task.completed}
-                tabIndex={-1}
-              />
-            </div>
             <Stack
-              direction="column"
-              style={{
-                paddingTop: 10,
-                paddingBottom: 10,
-                flex: "auto",
-              }}
+              px={{ xs: 0.5, sm: 0 }}
+              direction="row"
+              spacing={0.5}
+              sx={{ width: "100%" }}
             >
-              <TaskBody task={task} />
-              {task.completionDate && (
-                <DateContainer>
-                  {t("Completed", { completionDate: task.completionDate })}
-                </DateContainer>
-              )}
-              {task.creationDate && !task.completed && (
-                <DateContainer>
-                  {t("Created", { creationDate: task.creationDate })}
-                </DateContainer>
-              )}
+              <div>
+                <Checkbox
+                  ref={checkboxRef}
+                  inputProps={{
+                    "aria-label": "Complete task",
+                    "aria-checked": task.completed,
+                  }}
+                  onClick={onCheckboxClick}
+                  edge="start"
+                  checked={task.completed}
+                  tabIndex={-1}
+                />
+              </div>
+              <Stack
+                direction="column"
+                style={{
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  flex: "auto",
+                }}
+              >
+                <TaskBody task={task} />
+                {task.completionDate && (
+                  <DateContainer>
+                    {t("Completed", { completionDate: task.completionDate })}
+                  </DateContainer>
+                )}
+                {task.creationDate && !task.completed && (
+                  <DateContainer>
+                    {t("Created", { creationDate: task.creationDate })}
+                  </DateContainer>
+                )}
+              </Stack>
+              <div>
+                <TaskListItemMenu
+                  task={task}
+                  menuRef={menuRef}
+                  menuButtonRef={menuButtonRef}
+                />
+              </div>
             </Stack>
-            <div>
-              <TaskListItemMenu
-                task={task}
-                menuRef={menuRef}
-                menuButtonRef={menuButtonRef}
-              />
-            </div>
-          </Stack>
-        </TaskItemButton>
+          </TaskItemButton>
+        </div>
       ),
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [task, focused]

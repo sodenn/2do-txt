@@ -29,7 +29,6 @@ const ConfirmationDialog = () => {
   return (
     <Dialog
       maxWidth="xs"
-      aria-label="Confirmation Dialog"
       open={open}
       onClose={handleClose}
       TransitionProps={{

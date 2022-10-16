@@ -15,15 +15,17 @@ test.describe("Task dialog", () => {
   }) => {
     await page.waitForTimeout(1000);
     await page.keyboard.press("n");
-    await expect(page.locator('[aria-label="Task dialog"]')).toBeVisible();
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
     await page.keyboard.press("Escape");
-    await expect(page.locator('[aria-label="Task dialog"]')).not.toBeVisible();
+    await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
   test("should allow me to add a task with contexts", async ({ page }) => {
-    await page.locator('button[aria-label="Add task"]').click();
+    await page.getByRole("button", { name: "Add task" }).click();
 
-    await expect(page.locator('[aria-label="Text editor"]')).toBeFocused();
+    await expect(
+      page.getByRole("textbox", { name: "Text editor" })
+    ).toBeFocused();
 
     await page.type(
       '[aria-label="Text editor"]',
@@ -45,12 +47,12 @@ test.describe("Task dialog", () => {
     );
 
     // save the task
-    await page.click('[type="button"][aria-label="Save task"]');
+    await page.getByRole("button", { name: "Save task" }).click();
 
     // make sure the task is part of the list
     await expect(
       page.locator(
-        '[aria-label="Task"] >> text=Play soccer with friends @Private @Holiday'
+        '[data-testid="task"] >> text=Play soccer with friends @Private @Holiday'
       )
     ).toBeVisible();
   });
@@ -205,6 +207,10 @@ test.describe("Task dialog", () => {
       delay
     );
 
+    await page
+      .getByRole("textbox", { name: "Text editor" })
+      .evaluate((e) => e.blur());
+
     // make sure context was added
     await expect(page.locator('[data-testid="mention-pr"]')).toHaveText("@pr");
 
@@ -321,7 +327,7 @@ test.describe("Task dialog", () => {
   test("should consider pressing the escape key", async ({ page }) => {
     await page.locator('button[aria-label="Add task"]').click();
 
-    await expect(page.locator('[aria-label="Task dialog"]')).toHaveCount(1);
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
 
     // open dropdown menu with suggestions
     await page.type('[aria-label="Text editor"]', "@Private");
@@ -330,13 +336,13 @@ test.describe("Task dialog", () => {
     await page.keyboard.press("Escape");
 
     // make sure that the dialog is still open
-    await expect(page.locator('[aria-label="Task dialog"]')).toHaveCount(1);
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
 
     // close the dialog by pressing the Escape key
     await page.keyboard.press("Escape");
 
     // make sure that the dialog is closed
-    await expect(page.locator('[aria-label="Task dialog"]')).toHaveCount(0);
+    await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
   test("should insert spaces when adding mentions via keyboard", async ({

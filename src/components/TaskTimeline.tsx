@@ -70,7 +70,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
     >
       {tasks.map((task, index) => (
         <Box
-          aria-label={!task._timelineFlags.firstOfToday ? "Task" : undefined}
+          data-testid={!task._timelineFlags.firstOfToday ? "task" : undefined}
           key={task._id}
         >
           {!task._timelineFlags.firstOfToday && (

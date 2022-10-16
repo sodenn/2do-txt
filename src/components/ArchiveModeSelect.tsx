@@ -22,12 +22,18 @@ const ArchiveModeSelect = () => {
       fullWidth
       size="small"
       value={archiveMode}
-      aria-label="Select archive mode"
+      inputProps={{ "aria-label": "Select archive mode" }}
       onChange={(event) => handleChange(event.target.value as ArchiveMode)}
     >
-      <MenuItem value="no-archiving">{t("No archiving")}</MenuItem>
-      <MenuItem value="manual">{t("Archive manually")}</MenuItem>
-      <MenuItem value="automatic">{t("Archive automatically")}</MenuItem>
+      <MenuItem value="no-archiving" aria-label="No archiving">
+        {t("No archiving")}
+      </MenuItem>
+      <MenuItem value="manual" aria-label="Archive manually">
+        {t("Archive manually")}
+      </MenuItem>
+      <MenuItem value="automatic" aria-label="Archive automatically">
+        {t("Archive automatically")}
+      </MenuItem>
     </Select>
   );
 };

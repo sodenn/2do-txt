@@ -21,11 +21,13 @@ const TaskViewSelect = () => {
       fullWidth
       size="small"
       value={taskView}
-      aria-label="Select task view"
+      inputProps={{ "aria-label": "Select task view" }}
       onChange={(event) => handleChange(event.target.value as TaskView)}
     >
-      <MenuItem value="list">{t("List View")}</MenuItem>
-      <MenuItem value="timeline">
+      <MenuItem value="list" aria-label="List View">
+        {t("List View")}
+      </MenuItem>
+      <MenuItem value="timeline" aria-label="Timeline View">
         <NewBadge till={new Date("2023-01-01T00:00:00.000Z")}>
           {t("Timeline View")}
         </NewBadge>

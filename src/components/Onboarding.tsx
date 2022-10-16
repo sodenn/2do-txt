@@ -56,7 +56,9 @@ const Onboarding = () => {
         <CreateExampleFileButton />
         <Button
           onClick={openTodoFilePicker}
-          aria-label="Open todo.txt"
+          aria-label={
+            platform === "electron" ? "Open todo.txt" : "Import todo.txt"
+          }
           startIcon={<FolderOpenOutlinedIcon />}
           fullWidth
           variant="outlined"
