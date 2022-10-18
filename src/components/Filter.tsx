@@ -189,7 +189,7 @@ const Filter = () => {
             />
           }
           aria-label="Hide completed tasks"
-          label={t("Hide completed tasks") as string}
+          label={t("Hide completed tasks")}
         />
       </Box>
     </Stack>

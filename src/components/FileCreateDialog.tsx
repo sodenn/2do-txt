@@ -198,7 +198,7 @@ const FileCreateDialog = () => {
                   onChange={() => handleSelectCloudStorage(cloudStorage)}
                 />
               }
-              label={t("Sync with cloud storage", { cloudStorage }) as string}
+              label={t("Sync with cloud storage", { cloudStorage })}
             />
           ))}
       </DialogContent>

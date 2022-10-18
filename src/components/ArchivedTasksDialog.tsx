@@ -76,7 +76,7 @@ const ArchivedTasksDialog = () => {
               secondaryAction={
                 <Tooltip
                   disableTouchListener
-                  title={t("Restore task") as string}
+                  title={t("Restore task")}
                 >
                   <IconButton
                     onClick={() => handleRestore(task)}
