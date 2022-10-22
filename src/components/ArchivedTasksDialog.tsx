@@ -58,7 +58,6 @@ const ArchivedTasksDialog = () => {
 
   return (
     <Dialog
-      aria-label="Archived tasks dialog"
       maxWidth="sm"
       scroll="paper"
       fullWidth
@@ -75,10 +74,7 @@ const ArchivedTasksDialog = () => {
             <ListItem
               key={index}
               secondaryAction={
-                <Tooltip
-                  disableTouchListener
-                  title={t("Restore task") as string}
-                >
+                <Tooltip disableTouchListener title={t("Restore task")}>
                   <IconButton
                     onClick={() => handleRestore(task)}
                     edge="end"

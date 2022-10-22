@@ -3,6 +3,12 @@ import { throttle } from "lodash";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import {
+  useLoaderData,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import DropboxIcon from "../../components/DropboxIcon";
 import {
   CloudArchiveFileRef,
@@ -24,10 +30,14 @@ import {
   getArchiveFilePath,
   getFilenameFromPath,
 } from "../../utils/filesystem";
-import { usePlatform } from "../../utils/platform";
-import { usePreferences } from "../../utils/preferences";
-import { useSecureStorage } from "../../utils/secure-storage";
+import { getPlatform } from "../../utils/platform";
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "../../utils/preferences";
+import { getSecureStorage } from "../../utils/secure-storage";
 import { useConfirmationDialog } from "../ConfirmationDialogContext";
+import { LoaderData } from "../loader";
 import { useNetwork } from "../NetworkContext";
 import {
   DropboxStorageProvider,
@@ -101,9 +111,12 @@ export const cloudStorageIconsSmall: Record<CloudStorage, ReactNode> = {
   Dropbox: <DropboxIcon fontSize="small" />,
 };
 
-const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
-  const platform = usePlatform();
+const [BaseCloudStorageProvider, useCloudStorage] = createContext(() => {
+  const platform = getPlatform();
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const {
     dropboxInit,
@@ -121,18 +134,18 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     useState<CloudFileDialogOptions>({
       open: false,
     });
-  const { getSecureStorageItem, removeSecureStorageItem } = useSecureStorage();
+  const { getSecureStorageItem, removeSecureStorageItem } = getSecureStorage();
   const { setConfirmationDialog } = useConfirmationDialog();
-  const { getPreferencesItem, setPreferencesItem } = usePreferences();
   const { checkNetworkStatus } = useNetwork();
   const initRef = useRef<Promise<void> | null>(null);
+  const data = useLoaderData() as LoaderData;
   const [connectedCloudStorages, setConnectedCloudStorages] = useState<
     Record<CloudStorage, boolean>
-  >({ Dropbox: false });
+  >(data.connectedCloudStorages);
   const cloudStorageEnabled =
     platform === "ios" ||
     platform === "android" ||
-    import.meta.env.REACT_APP_ENABLE_WEB_CLOUD_STORAGE === "true";
+    import.meta.env.VITE_ENABLE_WEB_CLOUD_STORAGE === "true";
 
   const handleError = useCallback((error: any) => {
     if (error instanceof CloudFileUnauthorizedError) {
@@ -174,7 +187,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       await setPreferencesItem("cloud-files", JSON.stringify([]));
       return [];
     }
-  }, [getPreferencesItem, setPreferencesItem]);
+  }, []);
 
   const getCloudArchiveFileRefs = useCallback(async (): Promise<
     CloudArchiveFileRef[]
@@ -193,7 +206,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       await setPreferencesItem("cloud-archive-files", JSON.stringify([]));
       return [];
     }
-  }, [getPreferencesItem, setPreferencesItem]);
+  }, []);
 
   const initializeCloudStorages = useCallback(async () => {
     const cloudFiles = await getCloudFileRefs();
@@ -235,7 +248,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         )
       );
     },
-    [dropboxUnlink, getCloudFileRefs, setPreferencesItem]
+    [dropboxUnlink, getCloudFileRefs]
   );
 
   const linkCloudFile = useCallback(
@@ -249,7 +262,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 
       await setPreferencesItem("cloud-files", JSON.stringify(newCloudFiles));
     },
-    [getCloudFileRefs, setPreferencesItem]
+    [getCloudFileRefs]
   );
 
   const linkCloudArchiveFile = useCallback(
@@ -266,7 +279,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         JSON.stringify(newArchiveCloudFiles)
       );
     },
-    [getCloudArchiveFileRefs, setPreferencesItem]
+    [getCloudArchiveFileRefs]
   );
 
   const getCloudFileRefByFilePath = useCallback(
@@ -709,7 +722,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
       );
       await setPreferencesItem("cloud-files", JSON.stringify(newCloudFiles));
     },
-    [getCloudFileRefByFilePath, getCloudFileRefs, setPreferencesItem]
+    [getCloudFileRefByFilePath, getCloudFileRefs]
   );
 
   const unlinkCloudArchiveFile = useCallback(
@@ -731,11 +744,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         JSON.stringify(newCloudArchiveFiles)
       );
     },
-    [
-      getCloudArchiveFileRefByFilePath,
-      getCloudArchiveFileRefs,
-      setPreferencesItem,
-    ]
+    [getCloudArchiveFileRefByFilePath, getCloudArchiveFileRefs]
   );
 
   const deleteCloudFile = useCallback(
@@ -745,7 +754,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
         filePath
       );
       const ref = archive ? cloudArchiveFileRef : cloudFileRef;
-
       if (!ref) {
         return;
       }
@@ -848,22 +856,19 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
   );
 
   useEffect(() => {
-    Promise.all(
-      cloudStorages.map((cloudStorage) =>
-        getSecureStorageItem(`${cloudStorage}-refresh-token`).then(
-          (refreshToken) => ({ cloudStorage, connected: !!refreshToken })
-        )
-      )
-    ).then((result) => {
-      const value = result.reduce((prev, curr) => {
-        prev[curr.cloudStorage] = curr.connected;
-        return prev;
-      }, {} as Record<CloudStorage, boolean>);
-      setConnectedCloudStorages(value);
-    });
-  }, [getSecureStorageItem]);
+    const code = searchParams.get("code");
+    const pathname = location.pathname;
+    if (code && pathname === "/dropbox") {
+      searchParams.delete("code");
+      navigate("/");
+      requestTokens({ cloudStorage: "Dropbox", authorizationCode: code });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
+    initializeCloudStorages,
+    requestTokens,
     getCloudFileRefByFilePath,
     getCloudArchiveFileRefByFilePath,
     cloudStorageEnabled,
@@ -878,7 +883,6 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
     listCloudFiles,
     downloadFile,
     deleteCloudFile,
-    requestTokens,
     linkCloudFile,
     linkCloudArchiveFile,
     getCloudArchiveFileMetaData,
@@ -892,7 +896,7 @@ const [CloudStorageProviderInternal, useCloudStorage] = createContext(() => {
 const CloudStorageProvider = ({ children }: WithChildren) => {
   return (
     <DropboxStorageProvider>
-      <CloudStorageProviderInternal>{children}</CloudStorageProviderInternal>
+      <BaseCloudStorageProvider>{children}</BaseCloudStorageProvider>
     </DropboxStorageProvider>
   );
 };

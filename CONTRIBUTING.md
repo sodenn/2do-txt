@@ -28,12 +28,12 @@ Here is a quick guide to doing code contributions to this app.
 If you want to start the Desktop App (Electron), run the following commands (⚠️ Hot Reload is not supported).
 ```sh
 yarn build # Always necessary after code changes have been made
-yarn start:electron
+yarn electron:start
 ```
 
 ### iOS
 If you want to start the iOS App, run the following commands (⚠️ Hot Reload is not supported).
 ```sh
 yarn build # Always necessary after code changes have been made
-yarn start:ios
+yarn ios:start
 ```

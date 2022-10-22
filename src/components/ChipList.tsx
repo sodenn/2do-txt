@@ -8,16 +8,16 @@ interface ChipListProps {
   color?: "info" | "success" | "warning" | "secondary";
 }
 
-const List = styled("ul")`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  row-gap: ${({ theme }) => theme.spacing(1.5)};
-  column-gap: ${({ theme }) => theme.spacing(1)};
-  list-style: none;
-  padding: 0;
-  margin: 0;
-`;
+const List = styled("ul")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
+  rowGap: theme.spacing(1.5),
+  columnGap: theme.spacing(1),
+  listStyle: "none",
+  padding: 0,
+  margin: 0,
+}));
 
 const ChipList = (props: ChipListProps) => {
   const {
@@ -33,7 +33,6 @@ const ChipList = (props: ChipListProps) => {
       {Object.entries(items).map(([item, usages], index) => (
         <li key={index}>
           <Badge
-            aria-label={`${item} is used ${usages} times`}
             badgeContent={usages === 1 ? undefined : usages}
             color="primary"
             anchorOrigin={{
@@ -52,6 +51,7 @@ const ChipList = (props: ChipListProps) => {
               label={item}
               color={color}
               onClick={() => onClick?.(item)}
+              aria-label={`${item} is used ${usages} times`}
             />
           </Badge>
         </li>

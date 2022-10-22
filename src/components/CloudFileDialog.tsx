@@ -9,11 +9,11 @@ import {
   DialogContent,
   DialogTitle,
   List,
-  ListItem,
+  ListItemButton,
   Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
@@ -50,15 +50,17 @@ const CloudFileDialog = () => {
   const [cloudFileRefs, setCloudFileRefs] = useState<CloudFileRef[]>([]);
   const { archiveMode, setArchiveMode } = useSettings();
   const { enqueueSnackbar } = useSnackbar();
-  const listItems = !files
-    ? []
-    : files.items
+  const listItems = useMemo(
+    () =>
+      files?.items
         .filter((i) => i.type !== "folder")
         .filter(
           (i) =>
             i.name !== import.meta.env.VITE_ARCHIVE_FILE_NAME &&
             !i.name.endsWith(`_${import.meta.env.VITE_ARCHIVE_FILE_NAME}`)
-        );
+        ) ?? [],
+    [files]
+  );
 
   const handleClose = () => {
     setLoading(false);
@@ -131,7 +133,7 @@ const CloudFileDialog = () => {
     setFileCreateDialog({ open: true });
   };
 
-  const handleLoadItems = useCallback(
+  const loadItems = useCallback(
     (path = root) => {
       if (cloudStorage) {
         listCloudFiles({ path, cloudStorage }).then((result) => {
@@ -161,7 +163,7 @@ const CloudFileDialog = () => {
     return cloudFileRefs.some((c) => c.path === cloudFile.path);
   };
 
-  const listItemTitle = (cloudFile: CloudFile) => {
+  const getItemTitle = (cloudFile: CloudFile) => {
     const doneFile = files?.items.find(
       (i) => i.path === getArchiveFilePath(cloudFile.path)
     );
@@ -174,12 +176,12 @@ const CloudFileDialog = () => {
 
   useEffect(() => {
     if (open) {
-      handleLoadItems(root);
+      loadItems(root);
       getCloudFileRefs()
         .then((refs) => refs.filter((ref) => ref.cloudStorage === cloudStorage))
         .then(setCloudFileRefs);
     }
-  }, [handleLoadItems, open, getCloudFileRefs, cloudStorage]);
+  }, [loadItems, open, getCloudFileRefs, cloudStorage]);
 
   return (
     <Dialog
@@ -218,8 +220,7 @@ const CloudFileDialog = () => {
             {listItems
               .map((i) => i as CloudFile)
               .map((cloudFile, idx) => (
-                <ListItem
-                  button
+                <ListItemButton
                   disabled={disableItem(cloudFile)}
                   key={idx}
                   onClick={() => setSelectedFile(cloudFile)}
@@ -230,7 +231,7 @@ const CloudFileDialog = () => {
                 >
                   <Box sx={{ overflow: "hidden", flex: 1 }}>
                     <StartEllipsis sx={{ my: 0.5 }}>
-                      {listItemTitle(cloudFile)}
+                      {getItemTitle(cloudFile)}
                     </StartEllipsis>
                     <StartEllipsis
                       sx={{ my: 0.5 }}
@@ -245,12 +246,12 @@ const CloudFileDialog = () => {
                       <SyncOutlinedIcon color="disabled" />
                     </Box>
                   )}
-                </ListItem>
+                </ListItemButton>
               ))}
             {files?.hasMore && (
-              <ListItem button onClick={() => handleLoadMoreItems()}>
+              <ListItemButton onClick={() => handleLoadMoreItems()}>
                 <StartEllipsis sx={{ my: 0.5 }}>{t("Load more")}</StartEllipsis>
-              </ListItem>
+              </ListItemButton>
             )}
           </List>
         )}

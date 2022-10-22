@@ -1,4 +1,4 @@
-import { Box, useTheme } from "@mui/material";
+import { Box } from "@mui/material";
 import {
   addBusinessDays,
   addDays,
@@ -143,11 +143,11 @@ export function parseTaskBody(
     .map((t) => t.trim());
 
   const contexts = spliceWhere(tokens, (s) => /^@[\S]+/.test(s))
-    .map((t) => t.substr(1))
+    .map((t) => t.substring(1))
     .filter((t) => t.length > 0);
 
   const projects = spliceWhere(tokens, (s) => /^\+[\S]+/.test(s))
-    .map((t) => t.substr(1))
+    .map((t) => t.substring(1))
     .filter((t) => t.length > 0);
 
   const tags: Record<string, string[]> = {};
@@ -175,9 +175,6 @@ export function parseTaskBody(
 
 export function useFormatBody() {
   const { taskView } = useSettings();
-  const {
-    palette: { mode },
-  } = useTheme();
   const chips = taskView === "list";
   const dueDate = taskView === "list";
   const {
@@ -197,14 +194,8 @@ export function useFormatBody() {
           return (
             <TagBox
               chip={chips}
-              sx={{
-                color: task.completed
-                  ? undefined
-                  : chips
-                  ? "success.contrastText"
-                  : "success.main",
-                bgcolor: !task.completed && chips ? "success.light" : undefined,
-              }}
+              completed={task.completed}
+              type="context"
               key={index}
             >
               {token}
@@ -214,14 +205,8 @@ export function useFormatBody() {
           return (
             <TagBox
               chip={chips}
-              sx={{
-                color: task.completed
-                  ? undefined
-                  : chips
-                  ? "info.contrastText"
-                  : "info.main",
-                bgcolor: !task.completed && chips ? "info.light" : undefined,
-              }}
+              completed={task.completed}
+              type="project"
               key={index}
             >
               {token}
@@ -244,36 +229,9 @@ export function useFormatBody() {
             <TagBox
               key={index}
               chip={chips}
-              sx={{
-                whiteSpace: "nowrap",
-                color: chips
-                  ? task.completed
-                    ? undefined
-                    : key === "due"
-                    ? "warning.contrastText"
-                    : key === "pri"
-                    ? "secondary.contrastText"
-                    : mode === "dark"
-                    ? "grey.900"
-                    : "grey.100"
-                  : key === "due"
-                  ? "text.warning"
-                  : key === "pri"
-                  ? "text.secondary"
-                  : mode === "dark"
-                  ? "grey.500"
-                  : "grey.600",
-                bgcolor:
-                  !chips || task.completed
-                    ? undefined
-                    : key === "due"
-                    ? "warning.light"
-                    : key === "pri"
-                    ? "secondary.light"
-                    : mode === "dark"
-                    ? "grey.400"
-                    : "grey.600",
-              }}
+              completed={task.completed}
+              type="tag"
+              tagKey={key}
             >
               {text}
             </TagBox>

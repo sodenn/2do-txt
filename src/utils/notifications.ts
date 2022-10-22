@@ -7,8 +7,8 @@ import {
 import { isAfter, subDays } from "date-fns";
 import { useCallback, useEffect } from "react";
 import { dateReviver } from "./date";
-import { usePlatform } from "./platform";
-import { usePreferences } from "./preferences";
+import { getPlatform } from "./platform";
+import { getPreferencesItem, setPreferencesItem } from "./preferences";
 
 interface ReceivedNotifications {
   id: number;
@@ -16,8 +16,7 @@ interface ReceivedNotifications {
 }
 
 export function useNotifications() {
-  const { setPreferencesItem, getPreferencesItem } = usePreferences();
-  const platform = usePlatform();
+  const platform = getPlatform();
 
   // Notifications in the browser must be re-scheduled because they are based on setTimeout
   const shouldNotificationsBeRescheduled = useCallback(() => {
@@ -32,7 +31,7 @@ export function useNotifications() {
       : [];
 
     return receivedNotifications;
-  }, [getPreferencesItem]);
+  }, []);
 
   useEffect(() => {
     if (!shouldNotificationsBeRescheduled()) {
@@ -122,11 +121,7 @@ export function useNotifications() {
         JSON.stringify(newReceivedNotifications)
       );
     },
-    [
-      getReceivedNotifications,
-      setPreferencesItem,
-      shouldNotificationsBeRescheduled,
-    ]
+    [getReceivedNotifications, shouldNotificationsBeRescheduled]
   );
 
   return {

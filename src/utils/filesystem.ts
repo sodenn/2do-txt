@@ -12,8 +12,7 @@ import {
   ReadFileOptions,
   WriteFileOptions,
 } from "@capacitor/filesystem/dist/esm/definitions";
-import { useCallback } from "react";
-import { usePlatform } from "./platform";
+import { getPlatform } from "./platform";
 
 declare global {
   interface Window {
@@ -70,7 +69,7 @@ export function getArchiveFilePath(filePath: string) {
       );
 }
 
-async function _getUniqueFilePath(
+async function getUniqueFilePath(
   filePath: string,
   isFile: (options: ReadFileOptions) => Promise<boolean>
 ): Promise<{ filePath: string; fileName: string }> {
@@ -93,140 +92,84 @@ async function _getUniqueFilePath(
   return { fileName, filePath: newFilePath };
 }
 
-export function useFilesystem() {
-  const platform = usePlatform();
-  const electronFilesystem = useElectronFilesystem();
-
-  const getUri = useCallback(async (options: GetUriOptions) => {
+const defaultFilesystem = Object.freeze({
+  async getUri(options: GetUriOptions) {
     return Filesystem.getUri(options);
-  }, []);
-
-  const readFile = useCallback(async (options: ReadFileOptions) => {
+  },
+  async readFile(options: ReadFileOptions) {
     return Filesystem.readFile(options);
-  }, []);
-
-  const writeFile = useCallback(async (options: WriteFileOptions) => {
+  },
+  async writeFile(options: WriteFileOptions) {
     return Filesystem.writeFile(options);
-  }, []);
-
-  const deleteFile = useCallback(async (options: DeleteFileOptions) => {
+  },
+  async deleteFile(options: DeleteFileOptions) {
     return Filesystem.deleteFile(options);
-  }, []);
-
-  const readdir = useCallback(async (options: ReaddirOptions) => {
+  },
+  async readdir(options: ReaddirOptions) {
     return Filesystem.readdir(options);
-  }, []);
-
-  const isFile = useCallback(
-    async (options: ReadFileOptions) => {
-      return readFile(options)
-        .then(() => {
-          return true;
-        })
-        .catch(() => {
-          return false;
-        });
-    },
-    [readFile]
-  );
-
-  const getUniqueFilePath = useCallback(
-    async (filePath: string) => {
-      return _getUniqueFilePath(filePath, isFile);
-    },
-    [isFile]
-  );
-
-  if (platform === "electron") {
-    return electronFilesystem;
-  } else {
-    return {
-      getUri,
-      readFile,
-      writeFile,
-      deleteFile,
-      readdir,
-      isFile,
-      getUniqueFilePath,
-    };
-  }
-}
-
-function useElectronFilesystem() {
-  const getUri = useCallback(
-    async (options: GetUriOptions): Promise<GetUriResult> => {
-      throw new Error("Not implemented");
-    },
-    []
-  );
-
-  const readFile = useCallback(
-    async ({ path, encoding }: ReadFileOptions): Promise<ReadFileResult> => {
-      const buffer = await window.electron.readFile(path, {
-        encoding: encoding ? encoding.toString() : undefined,
+  },
+  async isFile(options: ReadFileOptions) {
+    return defaultFilesystem
+      .readFile(options)
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        return false;
       });
-      return { data: buffer.toString() };
-    },
-    []
-  );
+  },
+  async getUniqueFilePath(filePath: string) {
+    return getUniqueFilePath(filePath, defaultFilesystem.isFile);
+  },
+});
 
-  const writeFile = useCallback(
-    async ({
-      path,
-      data,
-      encoding,
-      recursive,
-    }: WriteFileOptions): Promise<WriteFileResult> => {
-      const { writeFile, mkdir } = window.electron;
-      if (recursive) {
-        await mkdir(path, { recursive: true }).catch(() => undefined);
-      }
-      await writeFile(path, data, {
-        encoding: encoding ? encoding.toString() : undefined,
-      });
-      return { uri: path };
-    },
-    []
-  );
-
-  const deleteFile = useCallback(
-    async ({ path }: DeleteFileOptions): Promise<void> => {
-      await window.electron.deleteFile(path);
-    },
-    []
-  );
-
-  const readdir = useCallback(async (options: ReaddirOptions) => {
+const electronFilesystem = Object.freeze({
+  async getUri(options: GetUriOptions): Promise<GetUriResult> {
     throw new Error("Not implemented");
-  }, []);
+  },
+  async readFile({ path, encoding }: ReadFileOptions): Promise<ReadFileResult> {
+    const buffer = await window.electron.readFile(path, {
+      encoding: encoding ? encoding.toString() : undefined,
+    });
+    return { data: buffer.toString() };
+  },
+  async writeFile({
+    path,
+    data,
+    encoding,
+    recursive,
+  }: WriteFileOptions): Promise<WriteFileResult> {
+    const { writeFile, mkdir } = window.electron;
+    if (recursive) {
+      await mkdir(path, { recursive: true }).catch(() => undefined);
+    }
+    await writeFile(path, data, {
+      encoding: encoding ? encoding.toString() : undefined,
+    });
+    return { uri: path };
+  },
+  async deleteFile({ path }: DeleteFileOptions): Promise<void> {
+    await window.electron.deleteFile(path);
+  },
+  async readdir(options: ReaddirOptions) {
+    throw new Error("Not implemented");
+  },
+  async isFile(options: ReadFileOptions): Promise<boolean> {
+    return electronFilesystem
+      .readFile(options)
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
+  },
+  async getUniqueFilePath(filePath: string) {
+    return getUniqueFilePath(filePath, electronFilesystem.isFile);
+  },
+});
 
-  const isFile = useCallback(
-    async (options: ReadFileOptions) => {
-      return readFile(options)
-        .then(() => {
-          return true;
-        })
-        .catch(() => {
-          return false;
-        });
-    },
-    [readFile]
-  );
-
-  const getUniqueFilePath = useCallback(
-    async (filePath: string) => {
-      return _getUniqueFilePath(filePath, isFile);
-    },
-    [isFile]
-  );
-
-  return {
-    getUri,
-    readFile,
-    writeFile,
-    deleteFile,
-    readdir,
-    isFile,
-    getUniqueFilePath,
-  };
+export function getFilesystem() {
+  const platform = getPlatform();
+  return platform === "electron" ? electronFilesystem : defaultFilesystem;
 }

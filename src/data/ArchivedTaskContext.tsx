@@ -7,7 +7,7 @@ import { createContext } from "../utils/Context";
 import {
   getArchiveFilePath,
   getFilenameFromPath,
-  useFilesystem,
+  getFilesystem,
 } from "../utils/filesystem";
 import { Task } from "../utils/task";
 import { parseTaskList, stringifyTaskList, TaskList } from "../utils/task-list";
@@ -36,7 +36,7 @@ interface ArchiveTaskOptions {
 }
 
 const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
-  const { readFile, writeFile, deleteFile, isFile } = useFilesystem();
+  const { readFile, writeFile, deleteFile, isFile } = getFilesystem();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { setArchivedTasksDialog } = useArchivedTasksDialog();
   const { archiveMode, setArchiveMode } = useSettings();

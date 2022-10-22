@@ -1,98 +1,80 @@
 import { RateApp } from "capacitor-rate-app";
 import { addWeeks, isAfter } from "date-fns";
-import { useCallback } from "react";
 import { parseDate } from "./date";
-import { usePlatform } from "./platform";
-import { usePreferences } from "./preferences";
+import { getPlatform } from "./platform";
+import { getPreferencesItem, setPreferencesItem } from "./preferences";
 
-export function useAppRate() {
-  const { getPreferencesItem, setPreferencesItem } = usePreferences();
-  const platform = usePlatform();
+function getNextRatingRequestDate() {
+  return addWeeks(new Date(), 2);
+}
 
-  const getNextRatingRequestDate = useCallback(
-    () => addWeeks(new Date(), 2),
-    []
+async function getCounter() {
+  const counter = await getPreferencesItem("app-rate-counter");
+  if (!counter) {
+    return 0;
+  }
+  return parseInt(counter);
+}
+
+async function increaseCounter(counter: number) {
+  const newValue = counter + 1;
+  await setPreferencesItem("app-rate-counter", newValue.toString());
+}
+
+function setNextRatingRequestDate(
+  nextRatingRequestDate = getNextRatingRequestDate()
+) {
+  return setPreferencesItem(
+    "app-rate-date",
+    nextRatingRequestDate.toISOString()
   );
+}
 
-  const getCounter = useCallback(async () => {
-    const counter = await getPreferencesItem("app-rate-counter");
-    if (!counter) {
-      return 0;
-    }
-    return parseInt(counter);
-  }, [getPreferencesItem]);
+export async function getNextRatingRequestDateFromStorage() {
+  const dateStr = await getPreferencesItem("app-rate-date");
 
-  const increaseCounter = useCallback(
-    async (counter: number) => {
-      const newValue = counter + 1;
-      await setPreferencesItem("app-rate-counter", newValue.toString());
-    },
-    [setPreferencesItem]
-  );
+  if (!dateStr) {
+    const nextRatingRequestDate = getNextRatingRequestDate();
+    await setNextRatingRequestDate(nextRatingRequestDate);
+    return nextRatingRequestDate;
+  }
 
-  const setNextRatingRequestDate = useCallback(
-    (nextRatingRequestDate = getNextRatingRequestDate()) => {
-      return setPreferencesItem(
-        "app-rate-date",
-        nextRatingRequestDate.toISOString()
-      );
-    },
-    [getNextRatingRequestDate, setPreferencesItem]
-  );
+  const date = parseDate(dateStr);
 
-  const getNextRatingRequestDateFromStorage = useCallback(async () => {
-    const dateStr = await getPreferencesItem("app-rate-date");
+  if (date) {
+    return date;
+  } else {
+    const nextRatingRequestDate = getNextRatingRequestDate();
+    await setNextRatingRequestDate(nextRatingRequestDate);
+    return nextRatingRequestDate;
+  }
+}
 
-    if (!dateStr) {
-      const nextRatingRequestDate = getNextRatingRequestDate();
-      await setNextRatingRequestDate(nextRatingRequestDate);
-      return nextRatingRequestDate;
-    }
+async function isTimeForRatingRequest() {
+  const currentDate = new Date();
+  const nextRatingRequestDate = await getNextRatingRequestDateFromStorage();
+  return isAfter(currentDate, nextRatingRequestDate);
+}
 
-    const date = parseDate(dateStr);
+export async function promptForRating() {
+  const platform = getPlatform();
+  if (platform !== "ios" && platform !== "android") {
+    return;
+  }
 
-    if (date) {
-      return date;
-    } else {
-      const nextRatingRequestDate = getNextRatingRequestDate();
-      await setNextRatingRequestDate(nextRatingRequestDate);
-      return nextRatingRequestDate;
-    }
-  }, [getNextRatingRequestDate, getPreferencesItem, setNextRatingRequestDate]);
+  const timeForRatingRequest = await isTimeForRatingRequest();
+  if (!timeForRatingRequest) {
+    return;
+  }
 
-  const isTimeForRatingRequest = useCallback(async () => {
-    const currentDate = new Date();
-    const nextRatingRequestDate = await getNextRatingRequestDateFromStorage();
-    return isAfter(currentDate, nextRatingRequestDate);
-  }, [getNextRatingRequestDateFromStorage]);
+  const counter = await getCounter();
+  if (counter > 3) {
+    return;
+  }
 
-  const promptForRating = useCallback(async () => {
-    if (platform !== "ios" && platform !== "android") {
-      return;
-    }
-
-    const timeForRatingRequest = await isTimeForRatingRequest();
-    if (!timeForRatingRequest) {
-      return;
-    }
-
-    const counter = await getCounter();
-    if (counter > 3) {
-      return;
-    }
-
-    await Promise.all([
-      setNextRatingRequestDate(),
-      increaseCounter(counter),
-      RateApp.requestReview(),
-    ]);
-  }, [
-    platform,
-    getCounter,
-    increaseCounter,
-    setNextRatingRequestDate,
-    isTimeForRatingRequest,
+  await Promise.all([
+    setNextRatingRequestDate(),
+    increaseCounter(counter),
+    RateApp.requestReview(),
   ]);
-
-  return { promptForRating };
 }

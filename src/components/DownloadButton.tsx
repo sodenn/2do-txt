@@ -4,13 +4,13 @@ import ShareIcon from "@mui/icons-material/Share";
 import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
-import { usePlatform } from "../utils/platform";
+import { getPlatform } from "../utils/platform";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import Kbd from "./Kbd";
 
 const DownloadButton = (props: IconButtonProps) => {
   const { t } = useTranslation();
-  const platform = usePlatform();
+  const platform = getPlatform();
   const { downloadTodoFile, shareTodoFile } = useTask();
 
   const download = () => {

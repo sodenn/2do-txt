@@ -10,8 +10,6 @@ import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
 import { FileCreateDialogProvider } from "./FileCreateDialogContext";
 import { FileManagementDialogProvider } from "./FileManagementDialogContext";
 import { FilterProvider } from "./FilterContext";
-import { LoadingProvider } from "./LoadingContext";
-import { MigrationProvider } from "./MigrationContext";
 import { NetworkProvider } from "./NetworkContext";
 import { SettingsProvider } from "./SettingsContext";
 import { ShortcutsDialogProvider } from "./ShortcutsDialogContext";
@@ -32,37 +30,33 @@ const ProviderBundle = ({ children }: WithChildren) => {
           }}
           TransitionComponent={Grow as any}
         >
-          <LoadingProvider>
-            <MigrationProvider>
-              <ConfirmationDialogProvider>
-                <NetworkProvider>
-                  <CloudStorageProvider>
-                    <SettingsProvider>
-                      <FilterProvider>
-                        <SideSheetProvider>
-                          <ArchivedTasksDialogProvider>
-                            <ArchivedTaskProvider>
-                              <TaskProvider>
-                                <FileManagementDialogProvider>
-                                  <ShortcutsDialogProvider>
-                                    <FileCreateDialogProvider>
-                                      <TaskDialogProvider>
-                                        {children}
-                                      </TaskDialogProvider>
-                                    </FileCreateDialogProvider>
-                                  </ShortcutsDialogProvider>
-                                </FileManagementDialogProvider>
-                              </TaskProvider>
-                            </ArchivedTaskProvider>
-                          </ArchivedTasksDialogProvider>
-                        </SideSheetProvider>
-                      </FilterProvider>
-                    </SettingsProvider>
-                  </CloudStorageProvider>
-                </NetworkProvider>
-              </ConfirmationDialogProvider>
-            </MigrationProvider>
-          </LoadingProvider>
+          <ConfirmationDialogProvider>
+            <NetworkProvider>
+              <CloudStorageProvider>
+                <SettingsProvider>
+                  <FilterProvider>
+                    <SideSheetProvider>
+                      <ArchivedTasksDialogProvider>
+                        <ArchivedTaskProvider>
+                          <TaskProvider>
+                            <FileManagementDialogProvider>
+                              <ShortcutsDialogProvider>
+                                <FileCreateDialogProvider>
+                                  <TaskDialogProvider>
+                                    {children}
+                                  </TaskDialogProvider>
+                                </FileCreateDialogProvider>
+                              </ShortcutsDialogProvider>
+                            </FileManagementDialogProvider>
+                          </TaskProvider>
+                        </ArchivedTaskProvider>
+                      </ArchivedTasksDialogProvider>
+                    </SideSheetProvider>
+                  </FilterProvider>
+                </SettingsProvider>
+              </CloudStorageProvider>
+            </NetworkProvider>
+          </ConfirmationDialogProvider>
         </SnackbarProvider>
       </AppTheme>
     </Suspense>

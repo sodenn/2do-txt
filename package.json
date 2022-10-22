@@ -74,7 +74,7 @@
     "build": "vite build",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "test:record": "playwright codegen localhost:3000",
+    "test:record": "playwright codegen http://127.0.0.1:5173",
     "lint": "node_modules/.bin/eslint ./src --max-warnings=0 --ext .ts,.tsx",
     "format": "prettier --check ./src",
     "resources": "cordova-res ios --skip-config --copy",

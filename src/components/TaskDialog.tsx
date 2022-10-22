@@ -128,7 +128,7 @@ const TaskDialog = () => {
     <>
       {!fullScreenDialog && (
         <Dialog
-          aria-label="Task dialog"
+          data-testid="task-dialog"
           maxWidth="sm"
           fullWidth
           open={open}
@@ -155,7 +155,7 @@ const TaskDialog = () => {
       )}
       {fullScreenDialog && (
         <FullScreenDialog
-          aria-label="Task dialog"
+          data-testid="task-dialog"
           open={open}
           onClose={closeDialog}
           TransitionProps={TransitionProps}

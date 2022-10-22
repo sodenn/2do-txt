@@ -1,6 +1,5 @@
 import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useLoading } from "../data/LoadingContext";
 import ArchivedTasksDialog from "./ArchivedTasksDialog";
 import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -14,14 +13,13 @@ import SideSheet, { MainContainer } from "./SideSheet";
 import TaskDialog from "./TaskDialog";
 import TaskView from "./TaskView";
 
-const SafeAreaContainer = styled(Container)`
-  padding-right: env(safe-area-inset-right);
-  padding-left: env(safe-area-inset-left);
-  padding-bottom: env(safe-area-inset-bottom);
-`;
+const SafeAreaContainer = styled(Container)({
+  paddingRight: "env(safe-area-inset-right)",
+  paddingLeft: "env(safe-area-inset-left)",
+  paddingBottom: "env(safe-area-inset-bottom)",
+});
 
 const Page = () => {
-  const { loading } = useLoading();
   const scrollContainer = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
 
@@ -34,11 +32,7 @@ const Page = () => {
         element.removeEventListener("scroll", listener);
       };
     }
-  }, [scrollContainer, loading]);
-
-  if (loading) {
-    return null;
-  }
+  }, [scrollContainer]);
 
   return (
     <FilePicker>

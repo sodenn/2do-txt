@@ -11,8 +11,12 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDate, isDateEqual } from "../utils/date";
-import { useKeyboard } from "../utils/keyboard";
-import { usePlatform, useTouchScreen } from "../utils/platform";
+import {
+  addKeyboardDidHideListener,
+  addKeyboardDidShowListener,
+  removeAllKeyboardListeners,
+} from "../utils/keyboard";
+import { getPlatform, hasTouchScreen } from "../utils/platform";
 import {
   getDueDateValue,
   getRecValue,
@@ -65,15 +69,10 @@ export function getTagStyle(key: string, theme: Theme): CSSProperties {
 }
 
 const TaskForm = (props: TaskFormProps) => {
-  const platform = usePlatform();
+  const platform = getPlatform();
   const theme = useTheme();
   const rootRef = useRef<HTMLDivElement>();
-  const {
-    addKeyboardDidShowListener,
-    addKeyboardDidHideListener,
-    removeAllKeyboardListeners,
-  } = useKeyboard();
-  const hasTouchScreen = useTouchScreen();
+  const touchScreen = hasTouchScreen();
   const {
     raw,
     newTask: isNewTask,
@@ -213,7 +212,7 @@ const TaskForm = (props: TaskFormProps) => {
         </MuiFluentEdit>
       </Box>
       <Grid spacing={2} container>
-        {(hasTouchScreen || platform === "ios" || platform === "android") && (
+        {(touchScreen || platform === "ios" || platform === "android") && (
           <Grid item xs={12}>
             <Box sx={{ display: "flex", flex: 1, height: "100%" }}>
               <Button

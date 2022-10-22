@@ -19,17 +19,17 @@ import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { CloudStorage } from "../types/cloud-storage.types";
-import { useFilesystem } from "../utils/filesystem";
-import { usePlatform } from "../utils/platform";
+import { getFilesystem } from "../utils/filesystem";
+import { getPlatform } from "../utils/platform";
 
 const defaultTodoFilePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
 
 const FileCreateDialog = () => {
   const { t } = useTranslation();
-  const { isFile, getUniqueFilePath } = useFilesystem();
+  const { isFile, getUniqueFilePath } = getFilesystem();
   const { addTodoFilePath } = useSettings();
   const [fileName, setFileName] = useState("");
-  const platform = usePlatform();
+  const platform = getPlatform();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { setActiveTaskListPath } = useFilter();
   const { uploadFileAndResolveConflict, connectedCloudStorages } =
@@ -152,22 +152,12 @@ const FileCreateDialog = () => {
         });
       });
     }
-  }, [
-    getUniqueFilePath,
-    createNewFile,
-    open,
-    platform,
-    setFileCreateDialog,
-    handleClose,
-  ]);
-
-  useEffect(() => {
     if (platform !== "electron" && open) {
       getUniqueFilePath(defaultTodoFilePath).then(({ fileName }) =>
         setFileName(fileName)
       );
     }
-  }, [getUniqueFilePath, platform, open]);
+  }, [platform, open, getUniqueFilePath, createNewFile, handleClose]);
 
   if (platform === "electron") {
     return null;
@@ -175,7 +165,6 @@ const FileCreateDialog = () => {
 
   return (
     <Dialog
-      aria-label="File dialog"
       open={open}
       onClose={handleClose}
       TransitionProps={{ onExited: handleExited }}
@@ -209,7 +198,7 @@ const FileCreateDialog = () => {
                   onChange={() => handleSelectCloudStorage(cloudStorage)}
                 />
               }
-              label={t("Sync with cloud storage", { cloudStorage }) as string}
+              label={t("Sync with cloud storage", { cloudStorage })}
             />
           ))}
       </DialogContent>

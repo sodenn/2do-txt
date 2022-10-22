@@ -6,13 +6,13 @@ test.beforeEach(async ({ page }) => {
   await page.waitForTimeout(100);
 });
 
-test.describe.parallel("Download", () => {
+test.describe("Download", () => {
   test("should download a todo.txt file", async ({ page }) => {
     const [download] = await Promise.all([
       // Start waiting for the download
       page.waitForEvent("download"),
       // Perform the action that initiates download
-      page.locator('[aria-label="Download todo.txt"]').click(),
+      page.getByRole("button", { name: "Download todo.txt" }).click(),
     ]);
     // Wait for the download process to complete
     await download.path();
@@ -20,17 +20,18 @@ test.describe.parallel("Download", () => {
   });
 
   test("should download todo.txt and done.txt", async ({ page }) => {
-    // activate automatic archiving
-    await page.keyboard.press("m");
-    await page.locator('[role="tab"][aria-label="Settings"]').click();
-    await page.locator('[aria-label="Select archive mode"]').click();
-    await page.locator('[data-value="automatic"]').click();
+    // activate archiving
+    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await page.getByRole("tab", { name: "Settings" }).click();
+    await page.getByRole("button", { name: "Select archive mode" }).click();
+    await page.getByRole("option", { name: "Archive automatically" }).click();
     await page.keyboard.press("Escape");
+
     const [download] = await Promise.all([
       // Start waiting for the download
       page.waitForEvent("download"),
       // Perform the action that initiates download
-      page.locator('[aria-label="Download todo.txt"]').click(),
+      page.getByRole("button", { name: "Download todo.txt" }).click(),
     ]);
     // Wait for the download process to complete
     await download.path();

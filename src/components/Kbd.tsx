@@ -1,22 +1,22 @@
 import { styled } from "@mui/material";
 import { WithChildren } from "../types/common";
-import { usePlatform, useTouchScreen } from "../utils/platform";
+import { getPlatform, hasTouchScreen } from "../utils/platform";
 
-const StyledKbd = styled("kbd")`
-  padding: 0 0.4em;
-  opacity: 0.5;
-  text-align: center;
-  font-weight: 600;
-  border: none;
-  border-radius: ${({ theme }) => theme.shape.borderRadius}px;
-  box-shadow: 0 0 0 1px ${({ theme }) => theme.palette.text.primary};
-`;
+const StyledKbd = styled("kbd")(({ theme }) => ({
+  padding: "0 0.4em",
+  opacity: 0.5,
+  textAlign: "center",
+  fontWeight: 600,
+  border: "none",
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: `0 0 0 1px ${theme.palette.text.primary}`,
+}));
 
 const Kbd = ({ children }: WithChildren) => {
-  const hasTouchScreen = useTouchScreen();
-  const platform = usePlatform();
+  const touchScreen = hasTouchScreen();
+  const platform = getPlatform();
 
-  if (hasTouchScreen || platform === "ios" || platform === "android") {
+  if (touchScreen || platform === "ios" || platform === "android") {
     return null;
   }
 

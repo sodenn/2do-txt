@@ -2,16 +2,15 @@ import { alpha, Chip, ListSubheader, styled } from "@mui/material";
 import { useMemo } from "react";
 import { useFilter } from "../data/FilterContext";
 
-const StyledListSubheader = styled(ListSubheader)`
+const StyledListSubheader = styled(ListSubheader)(({ theme }) => ({
   // avoid scrollbar overlapping (Safari mobile)
-  top: -1px;
-  margin-right: ${({ theme }) => theme.spacing(1)};
-  background: linear-gradient(
+  top: -1,
+  background: `linear-gradient(
     to top,
-    ${({ theme }) => alpha(theme.palette.background.default, 0)},
-    ${({ theme }) => theme.palette.background.default} 15%
-  );
-`;
+    ${alpha(theme.palette.background.default, 0)},
+    ${theme.palette.background.default} 15%
+  )`,
+}));
 
 interface TaskListSubheaderProps {
   title: string;

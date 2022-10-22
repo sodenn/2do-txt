@@ -25,8 +25,8 @@ import {
   CloudFileUnauthorizedError,
   CloudStorage,
 } from "../../types/cloud-storage.types";
-import { getArchiveFilePath, useFilesystem } from "../../utils/filesystem";
-import { usePlatform } from "../../utils/platform";
+import { getArchiveFilePath, getFilesystem } from "../../utils/filesystem";
+import { getPlatform } from "../../utils/platform";
 
 interface CloseOptions {
   filePath: string;
@@ -61,7 +61,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
   } = useCloudStorage();
   const { saveTodoFile, saveDoneFile } = useTask();
   const { enqueueSnackbar } = useSnackbar();
-  const { readFile, isFile } = useFilesystem();
+  const { readFile, isFile } = getFilesystem();
   const [loading, setLoading] = useState(false);
 
   const handleCloudSync = async () => {
@@ -184,9 +184,9 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const platform = usePlatform();
+  const platform = getPlatform();
   const { enqueueSnackbar } = useSnackbar();
-  const { readFile } = useFilesystem();
+  const { readFile } = getFilesystem();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
   const deleteFile =
     platform === "web" || platform === "ios" || platform === "android";

@@ -1,38 +1,41 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "fs";
 
-test.beforeEach(async ({ page }) => {
+const withoutFile = [
+  "should display an error notification if a file cannot be found",
+];
+
+test.beforeEach(async ({ page }, testInfo) => {
   await page.goto("http://127.0.0.1:5173");
-
-  const content = readFileSync("public/todo.txt");
-
-  await page.setInputFiles('[data-testid="file-picker"]', {
-    name: "todo1.txt",
-    mimeType: "text/plain",
-    buffer: Buffer.from(content),
-  });
-
-  await page.setInputFiles('[data-testid="file-picker"]', {
-    name: "todo2.txt",
-    mimeType: "text/plain",
-    buffer: Buffer.from(content),
-  });
+  if (!withoutFile.includes(testInfo.title)) {
+    const content = readFileSync("public/todo.txt");
+    await page.setInputFiles('[data-testid="file-picker"]', {
+      name: "todo1.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(content),
+    });
+    await page.setInputFiles('[data-testid="file-picker"]', {
+      name: "todo2.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(content),
+    });
+  }
 });
 
-test.describe.parallel("Reorder Files", () => {
+test.describe("Reorder Files", () => {
   // webkit: Selecting multiple files does not work in the test
   test.skip(({ browserName }) => browserName === "webkit");
 
-  test("should allow me to order file lists using drag and drop", async ({
+  test("should allow me to order task lists using drag and drop", async ({
     page,
   }) => {
-    // show all files
-    await page.locator('[aria-label="File menu"]').click();
-    await page.locator('[role="menuitem"] >> text=All').click();
+    // show all task lists
+    await page.getByRole("button", { name: "File menu" }).click();
+    await page.getByRole("menuitem", { name: "All" }).click();
 
     // open file management dialog
-    await page.locator('[aria-label="File menu"]').click();
-    await page.locator('[role="menuitem"] >> text="Manage todo.txt"').click();
+    await page.getByRole("button", { name: "File menu" }).click();
+    await page.getByRole("menuitem", { name: "Manage todo.txt" }).click();
 
     // check current sort order
     await expect(page.locator("h5")).toHaveCount(2);
@@ -40,23 +43,20 @@ test.describe.parallel("Reorder Files", () => {
     await expect(page.locator("h5").nth(1)).toHaveText("todo2.txt");
 
     // swap order of the two files via drag & drop
-
-    const source = page.locator('[aria-label="Draggable file todo2.txt"]');
-
-    const destination = page.locator('[aria-label="Draggable file todo1.txt"]');
-
+    const source = page.getByRole("listitem", {
+      name: "Draggable file todo2.txt",
+    });
+    const destination = page.getByRole("listitem", {
+      name: "Draggable file todo1.txt",
+    });
     const destinationPosition = await destination.boundingBox();
-
     await source.hover();
-
     await page.mouse.down();
-
     await page.mouse.move(
       destinationPosition!.x + destinationPosition!.width / 2,
       destinationPosition!.y + destinationPosition!.height / 2,
       { steps: 10 }
     );
-
     await page.mouse.up();
 
     // check new sort order
@@ -66,26 +66,39 @@ test.describe.parallel("Reorder Files", () => {
 
   test("should allow me to close a file", async ({ page }) => {
     // open file management dialog
-    await page.locator('[aria-label="File menu"]').click();
-    await page.locator('[role="menuitem"] >> text="Manage todo.txt"').click();
+    await page.getByRole("button", { name: "File menu" }).click();
+    await page.getByRole("menuitem", { name: "Manage todo.txt" }).click();
 
-    // current number of open files
-    await expect(page.locator('[aria-label="File management"] li')).toHaveCount(
-      2
-    );
+    // check current number of open files
+    await expect(page.getByTestId("draggable-file")).toHaveCount(2);
 
-    // open the context menu of the first file in the list
-    await page.locator('button[aria-label="File actions"]').nth(0).click();
+    // open the menu of the first file in the list
+    await page.getByRole("button", { name: "File actions" }).nth(0).click();
 
     // click "Delete" in the context menu
-    await page.locator('li[aria-label="Delete file"]').click();
+    await page
+      .getByRole("menuitem", {
+        name: "Delete file",
+      })
+      .click();
 
     // confirm deletion
-    await page.locator('button[aria-label="Delete"]').click();
+    await page.getByRole("button", { name: "Delete" }).click();
 
     // check number of open files
-    await expect(page.locator('[aria-label="File management"] li')).toHaveCount(
-      1
-    );
+    await expect(page.getByTestId("draggable-file")).toHaveCount(1);
+  });
+
+  test("should display an error notification if a file cannot be found", async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      localStorage.setItem("CapacitorStorage.todo-txt-paths", '["todo.txt"]');
+    });
+    await page.reload();
+    await expect(page.getByRole("alert")).toHaveText("File not found");
+    await page.evaluate(() => {
+      return localStorage["CapacitorStorage.todo-txt-paths"] === "[]";
+    });
   });
 });

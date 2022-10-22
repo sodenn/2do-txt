@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLoaderData } from "react-router-dom";
 import { createContext } from "../utils/Context";
-import { usePreferences } from "../utils/preferences";
+import { getPreferencesItem, setPreferencesItem } from "../utils/preferences";
+import { LoaderData } from "./loader";
 
 export type Language = "de" | "en";
 
@@ -11,19 +13,37 @@ export type TaskView = "list" | "timeline";
 
 export type PriorityTransformation = "keep" | "remove" | "archive";
 
+export async function getTodoFilePaths() {
+  const pathStr = await getPreferencesItem("todo-txt-paths");
+  try {
+    const paths: string[] = pathStr ? JSON.parse(pathStr) : [];
+    return paths;
+  } catch (e) {
+    await setPreferencesItem("todo-txt-paths", JSON.stringify([]));
+    return [];
+  }
+}
+
 const [SettingsProvider, useSettings] = createContext(() => {
   const {
     i18n: { resolvedLanguage, changeLanguage: _changeLanguage },
   } = useTranslation();
-  const { getPreferencesItem, setPreferencesItem } = usePreferences();
-  const [settingsInitialized, setSettingsInitialized] = useState(false);
-  const [createCreationDate, setCreateCreationDate] = useState(true);
-  const [createCompletionDate, setCreateCompletionDate] = useState(true);
-  const [showNotifications, _setShowNotifications] = useState(false);
-  const [archiveMode, _setArchiveMode] = useState<ArchiveMode>("no-archiving");
-  const [taskView, _setTaskView] = useState<TaskView>("list");
+  const data = useLoaderData() as LoaderData;
+  const [createCreationDate, setCreateCreationDate] = useState(
+    data.createCreationDate
+  );
+  const [createCompletionDate, setCreateCompletionDate] = useState(
+    data.createCompletionDate
+  );
+  const [showNotifications, _setShowNotifications] = useState(
+    data.showNotifications
+  );
+  const [archiveMode, _setArchiveMode] = useState<ArchiveMode>(
+    data.archiveMode
+  );
+  const [taskView, _setTaskView] = useState<TaskView>(data.taskView);
   const [priorityTransformation, _setPriorityTransformation] =
-    useState<PriorityTransformation>("keep");
+    useState<PriorityTransformation>(data.priorityTransformation);
 
   const changeLanguage = useCallback(
     (language: Language) => {
@@ -32,7 +52,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
         setPreferencesItem("language", language);
       }
     },
-    [_changeLanguage, resolvedLanguage, setPreferencesItem]
+    [_changeLanguage, resolvedLanguage]
   );
 
   const toggleCreateCompletionDate = useCallback(() => {
@@ -41,7 +61,7 @@ const [SettingsProvider, useSettings] = createContext(() => {
       setPreferencesItem("create-completion-date", newValue.toString());
       return newValue;
     });
-  }, [setCreateCompletionDate, setPreferencesItem]);
+  }, [setCreateCompletionDate]);
 
   const toggleCreateCreationDate = useCallback(() => {
     setCreateCreationDate((value) => {
@@ -49,134 +69,71 @@ const [SettingsProvider, useSettings] = createContext(() => {
       setPreferencesItem("create-creation-date", newValue.toString());
       return newValue;
     });
-  }, [setCreateCreationDate, setPreferencesItem]);
+  }, [setCreateCreationDate]);
 
-  const setShowNotifications = useCallback(
-    (value: boolean) => {
-      setPreferencesItem("show-notifications", value.toString());
-      _setShowNotifications(value);
-    },
-    [setPreferencesItem]
-  );
+  const setShowNotifications = useCallback((value: boolean) => {
+    setPreferencesItem("show-notifications", value.toString());
+    _setShowNotifications(value);
+  }, []);
 
-  const setArchiveMode = useCallback(
-    (value: ArchiveMode) => {
-      setPreferencesItem("archive-mode", value);
-      _setArchiveMode(value);
-    },
-    [setPreferencesItem]
-  );
+  const setArchiveMode = useCallback((value: ArchiveMode) => {
+    setPreferencesItem("archive-mode", value);
+    _setArchiveMode(value);
+  }, []);
 
-  const setTaskView = useCallback(
-    (value: TaskView) => {
-      setPreferencesItem("task-view", value);
-      _setTaskView(value);
-    },
-    [setPreferencesItem]
-  );
+  const setTaskView = useCallback((value: TaskView) => {
+    setPreferencesItem("task-view", value);
+    _setTaskView(value);
+  }, []);
 
   const setCompletedTaskPriority = useCallback(
     (value: PriorityTransformation) => {
       setPreferencesItem("priority-transformation", value);
       _setPriorityTransformation(value);
     },
-    [setPreferencesItem]
+    []
   );
 
-  const getTodoFilePaths = useCallback(async () => {
-    const pathStr = await getPreferencesItem("todo-txt-paths");
+  const addTodoFilePath = useCallback(async (filePath: string) => {
+    const filePathsStr = await getPreferencesItem("todo-txt-paths");
+
+    let filePaths: string[] = [];
     try {
-      const paths: string[] = pathStr ? JSON.parse(pathStr) : [];
-      return paths;
+      if (filePathsStr) {
+        filePaths = JSON.parse(filePathsStr);
+      }
     } catch (e) {
-      await setPreferencesItem("todo-txt-paths", JSON.stringify([]));
-      return [];
+      //
     }
-  }, [getPreferencesItem, setPreferencesItem]);
 
-  const addTodoFilePath = useCallback(
-    async (filePath: string) => {
-      const filePathsStr = await getPreferencesItem("todo-txt-paths");
+    const alreadyExists = filePaths.some((p) => p === filePath);
 
-      let filePaths: string[] = [];
+    if (alreadyExists) {
+      return;
+    }
+
+    await setPreferencesItem(
+      "todo-txt-paths",
+      JSON.stringify([...filePaths, filePath])
+    );
+  }, []);
+
+  const removeTodoFilePath = useCallback(async (filePath: string) => {
+    const filePathsStr = await getPreferencesItem("todo-txt-paths");
+    let updatedFilePathsStr = JSON.stringify([]);
+
+    if (filePathsStr) {
       try {
-        if (filePathsStr) {
-          filePaths = JSON.parse(filePathsStr);
-        }
+        const filePaths: string[] = JSON.parse(filePathsStr);
+        const updatedFilePaths = filePaths.filter((path) => path !== filePath);
+        updatedFilePathsStr = JSON.stringify(updatedFilePaths);
       } catch (e) {
         //
       }
+    }
 
-      const alreadyExists = filePaths.some((p) => p === filePath);
-
-      if (alreadyExists) {
-        return;
-      }
-
-      await setPreferencesItem(
-        "todo-txt-paths",
-        JSON.stringify([...filePaths, filePath])
-      );
-    },
-    [getPreferencesItem, setPreferencesItem]
-  );
-
-  const removeTodoFilePath = useCallback(
-    async (filePath: string) => {
-      const filePathsStr = await getPreferencesItem("todo-txt-paths");
-      let updatedFilePathsStr = JSON.stringify([]);
-
-      if (filePathsStr) {
-        try {
-          const filePaths: string[] = JSON.parse(filePathsStr);
-          const updatedFilePaths = filePaths.filter(
-            (path) => path !== filePath
-          );
-          updatedFilePathsStr = JSON.stringify(updatedFilePaths);
-        } catch (e) {
-          //
-        }
-      }
-
-      await setPreferencesItem("todo-txt-paths", updatedFilePathsStr);
-    },
-    [getPreferencesItem, setPreferencesItem]
-  );
-
-  useEffect(() => {
-    Promise.all([
-      getPreferencesItem("show-notifications"),
-      getPreferencesItem("create-creation-date"),
-      getPreferencesItem("create-completion-date"),
-      getPreferencesItem<ArchiveMode>("archive-mode"),
-      getPreferencesItem<TaskView>("task-view"),
-      getPreferencesItem<PriorityTransformation>("priority-transformation"),
-      getPreferencesItem<Language>("language"),
-    ]).then(
-      ([
-        showNotifications,
-        createCreationDate,
-        createCompletionDate,
-        archiveMode,
-        taskView,
-        completedTaskPriority,
-        language,
-      ]) => {
-        _setShowNotifications(showNotifications === "true");
-        setCreateCreationDate(
-          createCreationDate === null ? true : createCreationDate === "true"
-        );
-        setCreateCompletionDate(
-          createCompletionDate === null ? true : createCompletionDate === "true"
-        );
-        _setArchiveMode(archiveMode || "no-archiving");
-        _setTaskView(taskView || "list");
-        _setPriorityTransformation(completedTaskPriority || "keep");
-        changeLanguage(language || "en");
-        setSettingsInitialized(true);
-      }
-    );
-  }, [changeLanguage, getPreferencesItem, setArchiveMode]);
+    await setPreferencesItem("todo-txt-paths", updatedFilePathsStr);
+  }, []);
 
   return {
     language: resolvedLanguage as Language,
@@ -196,7 +153,6 @@ const [SettingsProvider, useSettings] = createContext(() => {
     getTodoFilePaths,
     addTodoFilePath,
     removeTodoFilePath,
-    settingsInitialized,
   };
 });
 

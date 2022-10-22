@@ -22,7 +22,7 @@ import { useFilter } from "../data/FilterContext";
 import { useShortcutsDialog } from "../data/ShortcutsDialogContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
-import { usePlatform, useTouchScreen } from "../utils/platform";
+import { getPlatform, hasTouchScreen } from "../utils/platform";
 import DropboxIcon from "./DropboxIcon";
 import StartEllipsis from "./StartEllipsis";
 
@@ -32,8 +32,8 @@ const menuMaxWidth = 350;
 
 const FileMenu = () => {
   const { t } = useTranslation();
-  const platform = usePlatform();
-  const hasTouchScreen = useTouchScreen();
+  const platform = getPlatform();
+  const touchScreen = hasTouchScreen();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const { setShortcutsDialogOpen } = useShortcutsDialog();
   const { setFileCreateDialog } = useFileCreateDialog();
@@ -88,7 +88,7 @@ const FileMenu = () => {
   return (
     <>
       <Button
-        sx={{ maxWidth: { xs: buttonMaxWidthXs, md: buttonMaxWidth }, pl: 1 }}
+        sx={{ maxWidth: { xs: buttonMaxWidthXs, md: buttonMaxWidth }, pl: 2 }}
         size="large"
         aria-label="File menu"
         startIcon={<img src={logo} alt="Logo" height={22} />}
@@ -170,7 +170,7 @@ const FileMenu = () => {
             <ListItemText>{t("Manage todo.txt")}</ListItemText>
           </MenuItem>
         )}
-        {!hasTouchScreen && (
+        {!touchScreen && (
           <MenuItem onClick={handleKeyboardShortcutsClick}>
             <ListItemIcon>
               <QuestionMarkOutlinedIcon fontSize="small" />

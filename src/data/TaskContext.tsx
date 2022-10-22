@@ -1,24 +1,24 @@
 import { Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
-import { SplashScreen } from "@capacitor/splash-screen";
 import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useAppRate } from "../utils/app-rate";
+import { useLoaderData } from "react-router-dom";
+import { promptForRating } from "../utils/app-rate";
 import { createContext } from "../utils/Context";
 import { todayDate } from "../utils/date";
 import {
   getFilenameFromPath,
   getFileNameWithoutEnding,
-  useFilesystem,
+  getFilesystem,
 } from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
 import { useNotifications } from "../utils/notifications";
-import { usePlatform } from "../utils/platform";
-import { usePreferences } from "../utils/preferences";
+import { getPlatform } from "../utils/platform";
+import { setPreferencesItem } from "../utils/preferences";
 import {
   createDueDateRegex,
   createNextRecurringTask,
@@ -39,8 +39,7 @@ import { useArchivedTask } from "./ArchivedTaskContext";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
-import { useLoading } from "./LoadingContext";
-import { useMigration } from "./MigrationContext";
+import { LoaderData } from "./loader";
 import { useSettings } from "./SettingsContext";
 
 interface SyncItem {
@@ -54,24 +53,19 @@ type SaveTodoFile = {
 };
 
 const [TaskProvider, useTask] = createContext(() => {
-  const { promptForRating } = useAppRate();
-  const { getUri, readFile, writeFile, deleteFile, isFile } = useFilesystem();
-  const { setPreferencesItem } = usePreferences();
-  const { migrate1 } = useMigration();
+  const data = useLoaderData() as LoaderData;
+  const { getUri, writeFile, deleteFile, isFile } = getFilesystem();
   const { enqueueSnackbar } = useSnackbar();
   const { setConfirmationDialog } = useConfirmationDialog();
   const {
     addTodoFilePath,
-    settingsInitialized,
     showNotifications,
     createCreationDate,
     createCompletionDate,
     archiveMode,
     priorityTransformation,
     removeTodoFilePath,
-    getTodoFilePaths,
   } = useSettings();
-  const { setTaskContextLoading } = useLoading();
   const {
     syncAllFiles,
     syncFileThrottled,
@@ -84,10 +78,12 @@ const [TaskProvider, useTask] = createContext(() => {
     shouldNotificationsBeRescheduled,
   } = useNotifications();
   const { t } = useTranslation();
-  const platform = usePlatform();
+  const platform = getPlatform();
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
+  const [taskLists, setTaskLists] = useState<TaskList[]>(
+    data.todoFiles.files.map((f) => f.taskList)
+  );
   const {
     syncAllDoneFilesWithCloudStorage,
     saveDoneFile,
@@ -213,7 +209,7 @@ const [TaskProvider, useTask] = createContext(() => {
         return listOrPath;
       }
     },
-    [loadTodoFile, promptForRating, syncTodoFileWithCloudStorage, writeFile]
+    [loadTodoFile, syncTodoFileWithCloudStorage, writeFile]
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -538,7 +534,7 @@ const [TaskProvider, useTask] = createContext(() => {
       );
       setTaskLists(reorderedList);
     },
-    [setPreferencesItem, taskLists]
+    [taskLists]
   );
 
   const createNewTodoFile = useCallback(
@@ -649,55 +645,20 @@ const [TaskProvider, useTask] = createContext(() => {
   }, [_restoreAllArchivedTask, saveTodoFile, taskLists]);
 
   useEffect(() => {
-    if (!settingsInitialized) {
-      return;
-    }
-    const initialize = async () => {
-      await migrate1();
-      const filePaths = await getTodoFilePaths();
-
-      const readFileResult = await Promise.all(
-        filePaths.map((path) =>
-          readFile({
-            path,
-            directory: Directory.Documents,
-            encoding: Encoding.UTF8,
-          })
-            .then((file) => ({ file, path }))
-            .catch(() => {
-              enqueueSnackbar(t("File not found"), {
-                variant: "error",
-              });
-              removeTodoFilePath(path);
-            })
-        )
-      ).then((result) =>
-        result
-          .filter((i) => !!i)
-          .map((i) => {
-            const text = i!.file.data;
-            const filePath = i!.path;
-            return { taskList: parseTaskList(filePath, text), filePath, text };
-          })
+    data.todoFiles.errors.forEach((err) => {
+      enqueueSnackbar(t("File not found"), {
+        variant: "error",
+      });
+      removeTodoFilePath(err.filePath);
+    });
+    syncAllTodoFilesWithCloudStorage(data.todoFiles.files).catch((e) => void e);
+    if (shouldNotificationsBeRescheduled()) {
+      taskLists.forEach((taskList) =>
+        scheduleDueTaskNotifications(taskList.items)
       );
-
-      syncAllTodoFilesWithCloudStorage(readFileResult).catch((e) => void e);
-
-      const taskLists = readFileResult.map((i) => i.taskList);
-
-      if (taskLists) {
-        setTaskLists(taskLists);
-        if (shouldNotificationsBeRescheduled()) {
-          taskLists.forEach((taskList) =>
-            scheduleDueTaskNotifications(taskList.items)
-          );
-        }
-      }
-      setTaskContextLoading(false);
-    };
-    initialize().finally(() => SplashScreen.hide());
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settingsInitialized]);
+  }, []);
 
   return {
     ...commonTaskListAttributes,

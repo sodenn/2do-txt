@@ -18,9 +18,9 @@ import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
 import Kbd from "./Kbd";
 
-const ListIconButton = styled(IconButton)`
-  padding: 9px; // use the same padding as the checkbox on the opposite side
-`;
+const ListIconButton = styled(IconButton)({
+  padding: 9, // use the same padding as the checkbox on the opposite side
+});
 
 interface TaskListItemMenuProps {
   task: Task;

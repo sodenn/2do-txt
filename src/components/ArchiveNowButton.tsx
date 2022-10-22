@@ -6,7 +6,11 @@ const ArchiveNowButton = () => {
   const { t } = useTranslation();
   const { archiveAllTask } = useTask();
   return (
-    <Button variant="outlined" onClick={archiveAllTask}>
+    <Button
+      variant="outlined"
+      aria-label="Archive now"
+      onClick={archiveAllTask}
+    >
       {t("Archive now")}
     </Button>
   );
