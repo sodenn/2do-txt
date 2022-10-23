@@ -41,7 +41,7 @@
   "Create todo.txt": "todo.txt erstellen",
   "Open todo.txt": "todo.txt öffnen",
   "Open": "Öffnen",
-  "File not found": "Datei nicht gefunden",
+  "File not found": "Datei nicht gefunden: {{filePath}}",
   "Reminder": "Erinnerung",
   "Notifications": "Benachrichtigungen",
   "Due tasks": "Fällige Aufgaben",

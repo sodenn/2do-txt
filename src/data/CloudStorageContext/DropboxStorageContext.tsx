@@ -190,11 +190,9 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
         authUrl,
         redirectUrl,
       }).catch((error) => {
-        if (error.message !== "Browser closed by user") {
-          console.error(
-            "Failed to authenticate with cloud storage",
-            error.message
-          );
+        const message = error.message || "";
+        if (!message.includes("Browser closed by user")) {
+          console.error("Failed to authenticate with cloud storage:", message);
           enqueueSnackbar(
             t("Failed to authenticate with cloud storage", {
               cloudStorage: "Dropbox",

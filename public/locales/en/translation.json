@@ -41,7 +41,7 @@
   "Create todo.txt": "Create todo.txt",
   "Open todo.txt": "Open todo.txt",
   "Open": "Open",
-  "File not found": "File not found",
+  "File not found": "File not found: {{filePath}}",
   "Reminder": "Reminder",
   "Notifications": "Notifications",
   "Due tasks": "Due tasks",

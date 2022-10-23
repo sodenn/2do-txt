@@ -17,6 +17,8 @@ export function setupOauthHandling() {
       authWindow.show();
       authWindow.webContents.session.webRequest.onHeadersReceived(null);
 
+      let isResolved = false;
+
       const filter = {
         urls: [`${redirectUrl}*`],
       };
@@ -25,6 +27,7 @@ export function setupOauthHandling() {
         authWindow.webContents.session.webRequest.onBeforeRequest(
           filter,
           ({ url }) => {
+            isResolved = true;
             const urlParams = Object.fromEntries(new URL(url).searchParams);
             resolve(JSON.stringify(urlParams));
             authWindow.close();
@@ -32,7 +35,11 @@ export function setupOauthHandling() {
         );
       });
 
-      authWindow.on("close", reject);
+      authWindow.on("close", () => {
+        if (!isResolved) {
+          reject(new Error("Browser closed by user"));
+        }
+      });
     });
   });
 }

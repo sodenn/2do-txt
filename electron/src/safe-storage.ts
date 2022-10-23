@@ -42,7 +42,7 @@ export function setupSafeStorage() {
 
   ipcMain.handle("removeSecureStorageItem", async (event, key) => {
     try {
-      store.reset(key);
+      store.delete(key);
     } catch (e) {
       console.error(e);
     }

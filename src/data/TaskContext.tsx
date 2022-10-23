@@ -646,7 +646,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
   useEffect(() => {
     data.todoFiles.errors.forEach((err) => {
-      enqueueSnackbar(t("File not found"), {
+      enqueueSnackbar(t("File not found", { filePath: err.filePath }), {
         variant: "error",
       });
       removeTodoFilePath(err.filePath);
