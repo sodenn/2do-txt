@@ -15,6 +15,7 @@ import {
   UploadFileOptions,
 } from "../../types/cloud-storage.types";
 import { createContext } from "../../utils/Context";
+import { oauth } from "../../utils/oath";
 import { getPlatform } from "../../utils/platform";
 import { getSecureStorage } from "../../utils/secure-storage";
 import { useNetwork } from "../NetworkContext";
@@ -36,14 +37,15 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
   const { checkNetworkStatus } = useNetwork();
   const [authError, setAuthError] = useState(false);
   const dbxRef = useRef<Dropbox | null>(null);
+  const useInAppBrowser = ["ios", "android", "electron"].includes(platform);
 
   const getRedirectUrl = useCallback(() => {
-    if (platform === "ios" || platform === "android") {
+    if (useInAppBrowser) {
       return redirectUri;
     } else {
       return `${window.location.origin}/dropbox`;
     }
-  }, [platform]);
+  }, [useInAppBrowser]);
 
   const resetTokens = useCallback(async () => {
     await Promise.all([
@@ -183,49 +185,38 @@ export const [DropboxStorageProvider, useDropboxStorage] = createContext(() => {
     // reset current dropbox client reference, since the token used will no longer be valid
     dbxRef.current = null;
 
-    if (platform === "ios" || platform === "android") {
-      return new Promise<void>((resolve, reject) => {
-        // @ts-ignore
-        const ref = cordova.InAppBrowser.open(
-          authUrl,
-          "_blank",
-          "location=yes"
-        );
-
-        const listener = async (event: any) => {
-          // Ignore the dropbox authorize screen
-          if (event && event.url.indexOf("oauth2/authorize") > -1) {
-            return;
-          }
-
-          ref.removeEventListener("loadstart", listener);
-          ref.close();
-
-          // Check the redirect uri
-          if (event.url.indexOf(redirectUrl) > -1) {
-            const authorizationCode = event.url.split("=")[1].split("&")[0];
-            if (authorizationCode) {
-              await dropboxRequestTokens(codeVerifier, authorizationCode);
-              resolve();
-            } else {
-              reject();
+    if (useInAppBrowser) {
+      const params = await oauth({
+        authUrl,
+        redirectUrl,
+      }).catch((error) => {
+        if (error.message !== "Browser closed by user") {
+          console.error(
+            "Failed to authenticate with cloud storage",
+            error.message
+          );
+          enqueueSnackbar(
+            t("Failed to authenticate with cloud storage", {
+              cloudStorage: "Dropbox",
+            }),
+            {
+              variant: "error",
             }
-          } else {
-            reject();
-          }
-        };
-
-        ref.addEventListener("loadstart", listener);
+          );
+        }
+        throw error;
       });
+      await dropboxRequestTokens(codeVerifier, params.code);
     } else {
       await setSecureStorageItem("Dropbox-code-verifier", codeVerifier);
       window.location.href = authUrl;
     }
   }, [
+    t,
     getRedirectUrl,
-    platform,
+    useInAppBrowser,
     dropboxRequestTokens,
-    dbxRef,
+    enqueueSnackbar,
     setSecureStorageItem,
   ]);
 

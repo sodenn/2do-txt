@@ -9,6 +9,8 @@ import electronIsDev from "electron-is-dev";
 import unhandled from "electron-unhandled";
 import { autoUpdater } from "electron-updater";
 import { setupFileHandling } from "./file-handling";
+import { setupOauthHandling } from "./oauth";
+import { setupSafeStorage } from "./safe-storage";
 import {
   ElectronCapacitorApp,
   setupContentSecurityPolicy,
@@ -55,6 +57,8 @@ if (electronIsDev) {
 }
 
 setupFileHandling(myCapacitorApp.getMainWindow());
+setupSafeStorage();
+setupOauthHandling();
 
 // Run Application
 (async () => {

@@ -143,8 +143,7 @@ const [BaseCloudStorageProvider, useCloudStorage] = createContext(() => {
     Record<CloudStorage, boolean>
   >(data.connectedCloudStorages);
   const cloudStorageEnabled =
-    platform === "ios" ||
-    platform === "android" ||
+    ["ios", "android", "electron"].includes(platform) ||
     import.meta.env.VITE_ENABLE_WEB_CLOUD_STORAGE === "true";
 
   const handleError = useCallback((error: any) => {
@@ -164,7 +163,7 @@ const [BaseCloudStorageProvider, useCloudStorage] = createContext(() => {
       } else {
         throw new Error(`Unknown cloud storage "${cloudStorage}"`);
       }
-      if (platform === "ios" || platform === "android") {
+      if (["ios", "android", "electron"].includes(platform)) {
         setConnectedCloudStorages((curr) => ({
           ...curr,
           [cloudStorage]: true,
@@ -619,7 +618,7 @@ const [BaseCloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   const isAuthenticationInProgress = useCallback(() => {
-    if (platform !== "ios" && platform !== "android") {
+    if (!["ios", "android", "electron"].includes(platform)) {
       return Promise.all(
         cloudStorages.map((cloudStorage) =>
           getSecureStorageItem(`${cloudStorage}-code-verifier`)
@@ -859,8 +858,7 @@ const [BaseCloudStorageProvider, useCloudStorage] = createContext(() => {
     const code = searchParams.get("code");
     const pathname = location.pathname;
     if (code && pathname === "/dropbox") {
-      searchParams.delete("code");
-      navigate("/");
+      navigate("/", { replace: true });
       requestTokens({ cloudStorage: "Dropbox", authorizationCode: code });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -68,6 +68,7 @@
   "Create": "Erstellen",
   "No tasks": "Keine Aufgaben",
   "No tasks found": "Keine Aufgaben gefunden",
+  "Failed to authenticate with cloud storage": "Fehler beim Authentifizieren mit {{cloudStorage}}",
   "Enable cloud storage sync": "{{cloudStorage}} Sync aktivieren",
   "Disable cloud storage sync": "{{cloudStorage}} Sync deaktivieren",
   "Resolve file conflict": "Dateikonflikt",
