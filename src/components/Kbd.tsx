@@ -1,5 +1,5 @@
 import { styled } from "@mui/material";
-import { WithChildren } from "../types/common";
+import { WithChildren } from "../types/common.types";
 import { getPlatform, hasTouchScreen } from "../utils/platform";
 
 const StyledKbd = styled("kbd")(({ theme }) => ({

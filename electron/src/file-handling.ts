@@ -1,5 +1,5 @@
 import * as fs from "fs";
-
+import path from "path";
 const { ipcMain, dialog } = require("electron");
 
 export function setupFileHandling(mainWindow: Electron.BrowserWindow) {
@@ -23,5 +23,17 @@ export function setupFileHandling(mainWindow: Electron.BrowserWindow) {
       defaultPath: fileName,
     });
     return result.canceled ? undefined : result.filePath;
+  });
+
+  ipcMain.handle("selectFolder", async (event, buttonLabel) => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      buttonLabel: buttonLabel,
+      properties: ["openDirectory"],
+    });
+    return result.canceled ? undefined : result.filePaths[0];
+  });
+
+  ipcMain.handle("join", async (event, paths) => {
+    return path.join(...paths);
   });
 }

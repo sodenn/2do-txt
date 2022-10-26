@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
-import { WithChildren } from "../types/common";
+import { WithChildren } from "../types/common.types";
 import { getPlatform } from "../utils/platform";
 
 const Root = styled("div")(() => ({

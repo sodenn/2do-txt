@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ReactNode } from "react";
-import { WithChildren } from "../../types/common";
+import { WithChildren } from "../../types/common.types";
 
 interface FullScreenDialogTitleProps extends WithChildren {
   divider?: boolean;

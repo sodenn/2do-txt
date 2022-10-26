@@ -24,7 +24,7 @@ import {
   SyncFileResult,
   UpdateMode,
 } from "../../types/cloud-storage.types";
-import { WithChildren } from "../../types/common";
+import { WithChildren } from "../../types/common.types";
 import { createContext } from "../../utils/Context";
 import {
   getArchiveFilePath,

@@ -1,7 +1,7 @@
 import { Badge, styled } from "@mui/material";
 import { isAfter } from "date-fns";
 import { useTranslation } from "react-i18next";
-import { WithChildren } from "../types/common";
+import { WithChildren } from "../types/common.types";
 import { todayDate } from "../utils/date";
 
 interface NewBadgeProps extends WithChildren {

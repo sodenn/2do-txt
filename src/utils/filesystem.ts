@@ -14,25 +14,6 @@ import {
 } from "@capacitor/filesystem/dist/esm/definitions";
 import { getPlatform } from "./platform";
 
-declare global {
-  interface Window {
-    electron: {
-      readFile: (
-        path: string,
-        options?: { encoding?: string | null | undefined }
-      ) => Promise<Buffer>;
-      writeFile: (
-        path: string,
-        data: string,
-        options?: { encoding?: string | null | undefined }
-      ) => Promise<void>;
-      deleteFile: (path: string) => Promise<void>;
-      mkdir: (path: string, options?: { recursive: boolean }) => Promise<void>;
-      saveFile: (fileName: string) => Promise<string | undefined>;
-    };
-  }
-}
-
 export function getFilenameFromPath(filePath: string) {
   return filePath.replace(/^.*[\\/]/, "");
 }
@@ -57,7 +38,6 @@ export function getArchiveFilePath(filePath: string) {
   if (!fileNameWithoutEnding) {
     return;
   }
-
   return fileName === import.meta.env.VITE_DEFAULT_FILE_NAME
     ? filePath.replace(
         new RegExp(`${fileName}$`),
@@ -121,6 +101,12 @@ const defaultFilesystem = Object.freeze({
   async getUniqueFilePath(filePath: string) {
     return getUniqueFilePath(filePath, defaultFilesystem.isFile);
   },
+  async selectFolder(): Promise<string | undefined> {
+    throw new Error("Not implemented");
+  },
+  async join(...paths: string[]): Promise<string> {
+    throw new Error("Not implemented");
+  },
 });
 
 const electronFilesystem = Object.freeze({
@@ -166,6 +152,12 @@ const electronFilesystem = Object.freeze({
   },
   async getUniqueFilePath(filePath: string) {
     return getUniqueFilePath(filePath, electronFilesystem.isFile);
+  },
+  async selectFolder(buttonLabel?: string): Promise<string | undefined> {
+    return window.electron.selectFolder(buttonLabel);
+  },
+  async join(...paths: string[]): Promise<string> {
+    return window.electron.join(paths);
   },
 });
 

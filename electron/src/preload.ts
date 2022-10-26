@@ -23,4 +23,7 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.invoke("setSecureStorageItem", key, value),
   removeSecureStorageItem: (key: string) =>
     ipcRenderer.invoke("removeSecureStorageItem", key),
+  selectFolder: (buttonLabel?: string) =>
+    ipcRenderer.invoke("selectFolder", buttonLabel),
+  join: (paths: string[]) => ipcRenderer.invoke("join", paths),
 });

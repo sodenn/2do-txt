@@ -50,16 +50,13 @@ const webSecureStorage = Object.freeze({
 
 const electronSecureStorage = Object.freeze({
   async getSecureStorageItem(key: SecureStorageKeys): Promise<string | null> {
-    // @ts-ignore
     return window.electron.getSecureStorageItem(key);
   },
   async setSecureStorageItem(key: SecureStorageKeys, value: string) {
-    // @ts-ignore
-    window.electron.setSecureStorageItem(key, value);
+    await window.electron.setSecureStorageItem(key, value);
   },
   async removeSecureStorageItem(key: SecureStorageKeys) {
-    // @ts-ignore
-    window.electron.removeSecureStorageItem(key);
+    await window.electron.removeSecureStorageItem(key);
   },
 });
 

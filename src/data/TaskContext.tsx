@@ -538,17 +538,17 @@ const [TaskProvider, useTask] = createContext(() => {
   );
 
   const createNewTodoFile = useCallback(
-    async (fileName: string, text = "") => {
+    async (filePath: string, text = "") => {
       const exists = await isFile({
         directory: Directory.Documents,
-        path: fileName,
+        path: filePath,
       });
 
-      const saveFile = async (fileName: string, text: string) => {
-        await addTodoFilePath(fileName);
-        const taskList = await saveTodoFile(fileName, text);
+      const saveFile = async (filePath: string, text: string) => {
+        await addTodoFilePath(filePath);
+        const taskList = await saveTodoFile(filePath, text);
         scheduleDueTaskNotifications(taskList.items).catch((e) => void e);
-        return fileName;
+        return filePath;
       };
 
       if (exists) {
@@ -560,7 +560,7 @@ const [TaskProvider, useTask] = createContext(() => {
               content: (
                 <Trans
                   i18nKey="todo.txt already exists. Do you want to replace it"
-                  values={{ fileName }}
+                  values={{ filePath }}
                 />
               ),
               buttons: [
@@ -573,8 +573,8 @@ const [TaskProvider, useTask] = createContext(() => {
                 {
                   text: t("Replace"),
                   handler: async () => {
-                    await saveFile(fileName, text);
-                    resolve(fileName);
+                    await saveFile(filePath, text);
+                    resolve(filePath);
                   },
                 },
               ],
@@ -584,7 +584,7 @@ const [TaskProvider, useTask] = createContext(() => {
           }
         });
       } else {
-        return saveFile(fileName, text);
+        return saveFile(filePath, text);
       }
     },
     [

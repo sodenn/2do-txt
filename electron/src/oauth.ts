@@ -5,7 +5,7 @@ export function setupOauthHandling() {
     return new Promise<string>((resolve, reject) => {
       const authWindow = new BrowserWindow({
         width: 800,
-        height: 600,
+        height: 800,
         show: false,
         webPreferences: {
           nodeIntegration: false,

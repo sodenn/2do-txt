@@ -14,7 +14,7 @@ import { deDE, enUS, Localization } from "@mui/material/locale";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router-dom";
-import { WithChildren } from "../types/common";
+import { WithChildren } from "../types/common.types";
 import { createContext } from "../utils/Context";
 import { setKeyboardStyle } from "../utils/keyboard";
 import { setPreferencesItem } from "../utils/preferences";
