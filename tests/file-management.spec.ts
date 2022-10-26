@@ -96,7 +96,9 @@ test.describe("Reorder Files", () => {
       localStorage.setItem("CapacitorStorage.todo-txt-paths", '["todo.txt"]');
     });
     await page.reload();
-    await expect(page.getByRole("alert")).toHaveText("File not found");
+    await expect(page.getByRole("alert")).toHaveText(
+      "File not found: todo.txt"
+    );
     await page.evaluate(() => {
       return localStorage["CapacitorStorage.todo-txt-paths"] === "[]";
     });
