@@ -1,4 +1,4 @@
-import { Directory, Encoding } from "@capacitor/filesystem";
+import { Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
@@ -143,7 +143,6 @@ const [TaskProvider, useTask] = createContext(() => {
         await writeFile({
           path: opt.filePath,
           data: result,
-          directory: Directory.Documents,
           encoding: Encoding.UTF8,
         });
         return loadTodoFile(opt.filePath, result);
@@ -160,7 +159,6 @@ const [TaskProvider, useTask] = createContext(() => {
             writeFile({
               path: i.filePath,
               data: i.text,
-              directory: Directory.Documents,
               encoding: Encoding.UTF8,
             }).then(() => loadTodoFile(i.filePath, i.text));
           })
@@ -182,7 +180,6 @@ const [TaskProvider, useTask] = createContext(() => {
       await writeFile({
         path: filePath,
         data: text,
-        directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
 
@@ -389,7 +386,6 @@ const [TaskProvider, useTask] = createContext(() => {
     async (filePath: string) => {
       await deleteFile({
         path: filePath,
-        directory: Directory.Documents,
       }).catch(() => console.debug("File does not exist"));
     },
     [deleteFile]
@@ -500,17 +496,14 @@ const [TaskProvider, useTask] = createContext(() => {
         const result = await writeFile({
           data: zip.zipContent as string,
           path: zip.zipFilename,
-          directory: Directory.Documents,
         });
         const uri = result.uri;
         await Share.share({ url: uri });
         await deleteFile({
           path: zip.zipFilename,
-          directory: Directory.Documents,
         });
       } else {
         const result = await getUri({
-          directory: Directory.Documents,
           path: activeTaskList.filePath,
         });
         const uri = result.uri;
@@ -540,7 +533,6 @@ const [TaskProvider, useTask] = createContext(() => {
   const createNewTodoFile = useCallback(
     async (filePath: string, text = "") => {
       const exists = await isFile({
-        directory: Directory.Documents,
         path: filePath,
       });
 

@@ -1,5 +1,6 @@
 import {
   Directory,
+  Encoding,
   Filesystem,
   GetUriOptions,
   GetUriResult,
@@ -12,6 +13,7 @@ import {
   ReadFileOptions,
   WriteFileOptions,
 } from "@capacitor/filesystem/dist/esm/definitions";
+import { WithOptional } from "../types/common.types";
 import { getPlatform } from "./platform";
 
 export function getFilenameFromPath(filePath: string) {
@@ -73,24 +75,43 @@ async function getUniqueFilePath(
 }
 
 const defaultFilesystem = Object.freeze({
-  async getUri(options: GetUriOptions) {
-    return Filesystem.getUri(options);
+  async getUri({
+    directory = Directory.Documents,
+    ...options
+  }: WithOptional<GetUriOptions, "directory">) {
+    return Filesystem.getUri({ directory, ...options });
   },
-  async readFile(options: ReadFileOptions) {
-    return Filesystem.readFile(options);
+  async readFile({
+    directory = Directory.Documents,
+    encoding = Encoding.UTF8,
+    ...options
+  }: ReadFileOptions) {
+    return Filesystem.readFile({ directory, encoding, ...options });
   },
-  async writeFile(options: WriteFileOptions) {
-    return Filesystem.writeFile(options);
+  async writeFile({
+    directory = Directory.Documents,
+    ...options
+  }: WriteFileOptions) {
+    return Filesystem.writeFile({ directory, ...options });
   },
-  async deleteFile(options: DeleteFileOptions) {
-    return Filesystem.deleteFile(options);
+  async deleteFile({
+    directory = Directory.Documents,
+    ...options
+  }: DeleteFileOptions) {
+    return Filesystem.deleteFile({ directory, ...options });
   },
-  async readdir(options: ReaddirOptions) {
-    return Filesystem.readdir(options);
+  async readdir({
+    directory = Directory.Documents,
+    ...options
+  }: ReaddirOptions) {
+    return Filesystem.readdir({ directory, ...options });
   },
-  async isFile(options: ReadFileOptions) {
+  async isFile({
+    directory = Directory.Documents,
+    ...options
+  }: ReadFileOptions) {
     return defaultFilesystem
-      .readFile(options)
+      .readFile({ directory, ...options })
       .then(() => {
         return true;
       })
@@ -110,10 +131,15 @@ const defaultFilesystem = Object.freeze({
 });
 
 const electronFilesystem = Object.freeze({
-  async getUri(options: GetUriOptions): Promise<GetUriResult> {
+  async getUri(
+    options: WithOptional<GetUriOptions, "directory">
+  ): Promise<GetUriResult> {
     throw new Error("Not implemented");
   },
-  async readFile({ path, encoding }: ReadFileOptions): Promise<ReadFileResult> {
+  async readFile({
+    path,
+    encoding = Encoding.UTF8,
+  }: ReadFileOptions): Promise<ReadFileResult> {
     const buffer = await window.electron.readFile(path, {
       encoding: encoding ? encoding.toString() : undefined,
     });

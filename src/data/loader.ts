@@ -1,4 +1,4 @@
-import { Directory, Encoding, ReadFileResult } from "@capacitor/filesystem";
+import { ReadFileResult } from "@capacitor/filesystem";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { CloudStorage, cloudStorages } from "../types/cloud-storage.types";
 import { getFilenameFromPath, getFilesystem } from "../utils/filesystem";
@@ -59,8 +59,6 @@ async function loadTodoFiles(): Promise<TodoFiles> {
     filePaths.map((filePath) =>
       readFile({
         path: filePath,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
       })
         .then(
           (file) => ({ type: "success", filePath, file } as TodoFileSuccess)

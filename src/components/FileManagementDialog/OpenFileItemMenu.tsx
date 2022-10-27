@@ -1,5 +1,4 @@
 import { Clipboard } from "@capacitor/clipboard";
-import { Directory, Encoding } from "@capacitor/filesystem";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
@@ -73,8 +72,6 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
       if (!cloudFileRef) {
         const readFileResult = await readFile({
           path: filePath,
-          directory: Directory.Documents,
-          encoding: Encoding.UTF8,
         });
 
         const uploadResult = await uploadFileAndResolveConflict({
@@ -89,14 +86,11 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
         if (archiveFilePath) {
           const localArchiveFileExists = await isFile({
             path: archiveFilePath,
-            directory: Directory.Documents,
           });
 
           if (localArchiveFileExists) {
             const readArchiveFileResult = await readFile({
               path: filePath,
-              directory: Directory.Documents,
-              encoding: Encoding.UTF8,
             });
 
             const uploadArchiveResult = await uploadFileAndResolveConflict({
@@ -205,13 +199,11 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   };
 
   const handleCopyToClipboard = async () => {
-    const result = await readFile({
+    const { data } = await readFile({
       path: filePath,
-      directory: Directory.Documents,
-      encoding: Encoding.UTF8,
     });
     await Clipboard.write({
-      string: result.data,
+      string: data,
     });
     enqueueSnackbar(t("Copied to clipboard"), { variant: "info" });
     handleClose();
