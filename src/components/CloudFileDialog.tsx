@@ -25,7 +25,8 @@ import {
   CloudFileRef,
   ListCloudItemResult,
 } from "../types/cloud-storage.types";
-import { getArchiveFilePath } from "../utils/filesystem";
+import { getArchiveFilePath, getFilesystem } from "../utils/filesystem";
+import { getPlatform } from "../utils/platform";
 import StartEllipsis from "./StartEllipsis";
 
 const root = "";
@@ -43,6 +44,8 @@ const CloudFileDialog = () => {
     cloudFileDialogOptions: { open, cloudStorage },
     setCloudFileDialogOptions,
   } = useCloudStorage();
+  const platform = getPlatform();
+  const { selectFolder, join } = getFilesystem();
   const { setFileCreateDialog } = useFileCreateDialog();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
@@ -89,7 +92,19 @@ const CloudFileDialog = () => {
       cloudStorage,
     });
 
-    await createNewTodoFile(selectedFile.name, text);
+    let filePath: string;
+    if (platform === "electron") {
+      const folder = await selectFolder(t("Select"));
+      if (!folder) {
+        setLoading(false);
+        return;
+      }
+      filePath = await join(folder, selectedFile.name);
+    } else {
+      filePath = selectedFile.name;
+    }
+
+    await createNewTodoFile(filePath, text);
 
     const archiveFilePath = getArchiveFilePath(selectedFile.path);
 
@@ -102,10 +117,10 @@ const CloudFileDialog = () => {
         cloudFilePath: archiveFile.path,
         cloudStorage,
       });
-      await saveDoneFile(selectedFile.name, archiveText);
+      await saveDoneFile(filePath, archiveText);
       await linkCloudArchiveFile({
         ...archiveFile,
-        localFilePath: selectedFile.name,
+        localFilePath: filePath,
         cloudStorage,
       });
       if (archiveMode === "no-archiving") {
@@ -119,11 +134,11 @@ const CloudFileDialog = () => {
 
     await linkCloudFile({
       ...selectedFile,
-      localFilePath: selectedFile.name,
+      localFilePath: filePath,
       lastSync: new Date().toISOString(),
       cloudStorage,
     });
-    setActiveTaskListPath(selectedFile.name);
+    setActiveTaskListPath(filePath);
 
     handleClose();
   };
@@ -179,9 +194,14 @@ const CloudFileDialog = () => {
       loadItems(root);
       getCloudFileRefs()
         .then((refs) => refs.filter((ref) => ref.cloudStorage === cloudStorage))
+        .then((refs) =>
+          refs.filter((ref) =>
+            taskLists.some((t) => t.filePath === ref.localFilePath)
+          )
+        )
         .then(setCloudFileRefs);
     }
-  }, [loadItems, open, getCloudFileRefs, cloudStorage]);
+  }, [loadItems, open, getCloudFileRefs, cloudStorage, taskLists]);
 
   return (
     <Dialog

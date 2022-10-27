@@ -1,4 +1,3 @@
-import { Directory } from "@capacitor/filesystem";
 import {
   Button,
   Checkbox,
@@ -100,7 +99,6 @@ const FileCreateDialog = () => {
     }
 
     const exists = await isFile({
-      directory: Directory.Documents,
       path: fileName,
     });
 

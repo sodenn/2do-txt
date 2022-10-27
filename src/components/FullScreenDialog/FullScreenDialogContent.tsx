@@ -1,6 +1,6 @@
 import { Box, styled } from "@mui/material";
 import { useEffect, useState } from "react";
-import { WithChildren } from "../../types/common";
+import { WithChildren } from "../../types/common.types";
 
 const SafeArea = styled("div")({
   paddingRight: "env(safe-area-inset-right)",

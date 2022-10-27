@@ -1,7 +1,7 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { Suspense } from "react";
-import { WithChildren } from "../types/common";
+import { WithChildren } from "../types/common.types";
 import { AppTheme } from "./AppThemeContext";
 import { ArchivedTaskProvider } from "./ArchivedTaskContext";
 import { ArchivedTasksDialogProvider } from "./ArchivedTasksDialogContext";

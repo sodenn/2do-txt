@@ -1,4 +1,3 @@
-import { Directory } from "@capacitor/filesystem";
 import {
   Dialog,
   DialogActions,
@@ -37,7 +36,6 @@ const FileManagementDialog = () => {
     if (platform !== "electron") {
       return readdir({
         path: "",
-        directory: Directory.Documents,
       }).then((result) => {
         return result.files.map((f) => f.name);
       });
@@ -118,7 +116,6 @@ const FileManagementDialog = () => {
     }
     deleteFile({
       path: filePath,
-      directory: Directory.Documents,
     })
       .catch((error) => {
         console.debug(error);

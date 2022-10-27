@@ -48,7 +48,23 @@ const webSecureStorage = Object.freeze({
   },
 });
 
+const electronSecureStorage = Object.freeze({
+  async getSecureStorageItem(key: SecureStorageKeys): Promise<string | null> {
+    return window.electron.getSecureStorageItem(key);
+  },
+  async setSecureStorageItem(key: SecureStorageKeys, value: string) {
+    await window.electron.setSecureStorageItem(key, value);
+  },
+  async removeSecureStorageItem(key: SecureStorageKeys) {
+    await window.electron.removeSecureStorageItem(key);
+  },
+});
+
 export function getSecureStorage() {
   const platform = getPlatform();
-  return platform === "ios" ? iosSecureStorage : webSecureStorage;
+  return platform === "ios"
+    ? iosSecureStorage
+    : platform === "electron"
+    ? electronSecureStorage
+    : webSecureStorage;
 }

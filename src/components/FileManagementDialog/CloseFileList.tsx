@@ -1,4 +1,3 @@
-import { Directory, Encoding } from "@capacitor/filesystem";
 import { List, ListItem, ListItemButton, ListSubheader } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useFilter } from "../../data/FilterContext";
@@ -23,12 +22,10 @@ const CloseFileList = (props: CloseFileListProps) => {
   const { setActiveTaskListPath } = useFilter();
 
   const handleOpen = async (filePath: string) => {
-    const result = await readFile({
+    const { data } = await readFile({
       path: filePath,
-      directory: Directory.Documents,
-      encoding: Encoding.UTF8,
     });
-    loadTodoFile(filePath, result.data).then(() => {
+    loadTodoFile(filePath, data).then(() => {
       setActiveTaskListPath(filePath);
       addTodoFilePath(filePath);
       onOpen();

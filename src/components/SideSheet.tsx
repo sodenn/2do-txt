@@ -13,7 +13,7 @@ import { forwardRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
-import { WithChildren } from "../types/common";
+import { WithChildren } from "../types/common.types";
 import Filter from "./Filter";
 import Settings from "./Settings";
 

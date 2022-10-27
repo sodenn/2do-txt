@@ -15,4 +15,15 @@ contextBridge.exposeInMainWorld("electron", {
   ) => ipcRenderer.invoke("writeFile", path, data, options),
   deleteFile: (path: string) => ipcRenderer.invoke("deleteFile", path),
   saveFile: (title?: string) => ipcRenderer.invoke("saveFile", title),
+  oauth: (authUrl: string, redirectUrl: string) =>
+    ipcRenderer.invoke("oauth", authUrl, redirectUrl),
+  getSecureStorageItem: (key: string) =>
+    ipcRenderer.invoke("getSecureStorageItem", key),
+  setSecureStorageItem: (key: string, value: string) =>
+    ipcRenderer.invoke("setSecureStorageItem", key, value),
+  removeSecureStorageItem: (key: string) =>
+    ipcRenderer.invoke("removeSecureStorageItem", key),
+  selectFolder: (buttonLabel?: string) =>
+    ipcRenderer.invoke("selectFolder", buttonLabel),
+  join: (paths: string[]) => ipcRenderer.invoke("join", paths),
 });

@@ -1,4 +1,4 @@
-import { Directory, Encoding } from "@capacitor/filesystem";
+import { Encoding } from "@capacitor/filesystem";
 import { Button } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
@@ -71,8 +71,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           const addSyncOption = async () => {
             const readResult = await readFile({
               path: doneFilePath,
-              directory: Directory.Documents,
-              encoding: Encoding.UTF8,
             }).catch((e) => void e);
             if (readResult) {
               syncOptions.push({
@@ -89,7 +87,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               unlinkCloudArchiveFile(filePath),
               deleteFile({
                 path: doneFilePath,
-                directory: Directory.Documents,
               }),
             ]);
             return archiveMode !== "no-archiving" ? "disable" : "do-nothing";
@@ -112,7 +109,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             await writeFile({
               path: doneFilePath,
               data: text,
-              directory: Directory.Documents,
               encoding: Encoding.UTF8,
             });
 
@@ -150,7 +146,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
           const exists = await isFile({
             path,
-            directory: Directory.Documents,
           });
           if (!exists) {
             return;
@@ -159,7 +154,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           await writeFile({
             path,
             data: i.text,
-            directory: Directory.Documents,
             encoding: Encoding.UTF8,
           });
         })
@@ -193,7 +187,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       await writeFile({
         path: doneFilePath,
         data: text,
-        directory: Directory.Documents,
         encoding: Encoding.UTF8,
       });
 
@@ -207,7 +200,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           writeFile({
             path: doneFilePath,
             data: result,
-            directory: Directory.Documents,
             encoding: Encoding.UTF8,
           });
         }
@@ -225,8 +217,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
       const result = await readFile({
         path: doneFilePath,
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
       }).catch((e) => void e);
 
       if (!result) {
@@ -279,7 +269,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       if (completedTasks.length === 0) {
         await deleteFile({
           path: doneFilePath,
-          directory: Directory.Documents,
         });
         deleteCloudFile(filePath, true).catch((e) => void e);
       } else {
@@ -479,7 +468,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             onSaveTodoFile(newTaskList),
             deleteFile({
               path: doneFilePath,
-              directory: Directory.Documents,
             }),
           ]);
 

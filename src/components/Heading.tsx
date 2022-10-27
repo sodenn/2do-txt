@@ -1,7 +1,7 @@
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Stack, Tooltip, Typography } from "@mui/material";
 import { ReactNode } from "react";
-import { WithChildren } from "../types/common";
+import { WithChildren } from "../types/common.types";
 
 interface HeadingProps extends WithChildren {
   disabled?: boolean;
