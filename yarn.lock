@@ -57,7 +57,7 @@ __metadata:
     file-saver: 2.0.5
     i18next: 21.10.0
     i18next-browser-languagedetector: 7.0.0
-    i18next-http-backend: 1.4.4
+    i18next-http-backend: 2.0.0
     import-sort-style-module: 6.0.0
     jszip: 3.10.1
     lodash.throttle: 4.1.1
@@ -6266,12 +6266,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-http-backend@npm:1.4.4":
-  version: 1.4.4
-  resolution: "i18next-http-backend@npm:1.4.4"
+"i18next-http-backend@npm:2.0.0":
+  version: 2.0.0
+  resolution: "i18next-http-backend@npm:2.0.0"
   dependencies:
     cross-fetch: 3.1.5
-  checksum: 760a5f96a97f2cbcb0db1ec84dd29781592d11360ad96493ade66300c4013e7cef8f978c790db8c123fab1d21c672248e0c78a1eded5031e68372fe1c4055858
+  checksum: 2e2c8f427880540ce82a37367f095a9e4b2c816602443d1729a64062b6cedbaeb503a013e3fe5df0aa077ed0c252eb490d3c87245ef2945dbf2a11abad9872fe
   languageName: node
   linkType: hard
 
