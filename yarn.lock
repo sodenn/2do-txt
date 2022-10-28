@@ -55,7 +55,7 @@ __metadata:
     eslint-config-react-app: 7.0.1
     eslint-plugin-react-hooks: 4.6.0
     file-saver: 2.0.5
-    i18next: 21.10.0
+    i18next: 22.0.3
     i18next-browser-languagedetector: 7.0.0
     i18next-http-backend: 1.4.4
     import-sort-style-module: 6.0.0
@@ -6275,12 +6275,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:21.10.0":
-  version: 21.10.0
-  resolution: "i18next@npm:21.10.0"
+"i18next@npm:22.0.3":
+  version: 22.0.3
+  resolution: "i18next@npm:22.0.3"
   dependencies:
     "@babel/runtime": ^7.17.2
-  checksum: f997985e2d4d15a62a0936a82ff6420b97f3f971e776fe685bdd50b4de0cb4dc2198bc75efe6b152844794ebd5040d8060d6d152506a687affad534834836d81
+  checksum: 0ae40923e81f366c6e30126fad070b9188ee567374eb8046dc43ca9dd8bf3c4a3751c2e4c3f60f8d5cfcdb1925b884580cbb6cabfffba684f37c22a019d7f2b2
   languageName: node
   linkType: hard
 
