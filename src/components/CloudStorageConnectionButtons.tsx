@@ -1,89 +1,85 @@
 import { LoadingButton } from "@mui/lab";
-import { Button, Stack } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { CloudStorage } from "../data/CloudStorageContext/cloud-storage.types";
 import {
   cloudStorageIcons,
+  cloudStorages,
   useCloudStorage,
-} from "../data/CloudStorageContext";
-import { CloudStorage, cloudStorages } from "../types/cloud-storage.types";
+} from "../data/CloudStorageContext/CloudStorageContext";
+import SplitButton, { SplitButtonItem } from "./SplitButton";
 
 interface CloudStorageConnectionButtonsProps {
-  connect?: boolean;
-  disconnect?: boolean;
+  status: "connect" | "disconnect";
 }
 
-interface CloudStorageConnectionButtonProps
-  extends CloudStorageConnectionButtonsProps {
-  cloudStorage: CloudStorage;
-}
+export const CloudStorageConnectionButtons = ({
+  status,
+}: CloudStorageConnectionButtonsProps) => {
+  const {
+    cloudStorageEnabled,
+    cloudStorageClients,
+    authenticate,
+    disconnectCloudStorage,
+  } = useCloudStorage();
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
+  const filteredCloudStorages = cloudStorages.filter((cloudStorage) => {
+    const client = cloudStorageClients[cloudStorage];
+    return status === "connect"
+      ? client.status === "disconnected"
+      : client.status === "connected";
+  });
 
-const CloudStorageConnectionButtons = (
-  props: CloudStorageConnectionButtonsProps
-) => {
-  const { cloudStorageEnabled } = useCloudStorage();
+  const handleClick = async (cloudStorage: CloudStorage) => {
+    if (status === "connect") {
+      setLoading(true);
+      authenticate(cloudStorage).finally(() => setLoading(false));
+    } else {
+      disconnectCloudStorage(cloudStorage);
+    }
+  };
 
-  if (!cloudStorageEnabled) {
+  if (!cloudStorageEnabled || filteredCloudStorages.length === 0) {
     return null;
   }
 
-  return (
-    <Stack spacing={1}>
-      {cloudStorages.map((cloudStorage, idx) => (
-        <CloudStorageConnectionButton
-          key={idx}
-          {...props}
-          cloudStorage={cloudStorage}
-        />
-      ))}
-    </Stack>
-  );
-};
-
-const CloudStorageConnectionButton = (
-  props: CloudStorageConnectionButtonProps
-) => {
-  const { cloudStorage, connect = true, disconnect = true } = props;
-  const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
-  const { connectedCloudStorages, authenticate, unlinkCloudStorage } =
-    useCloudStorage();
-
-  const cloudStorageConnected = connectedCloudStorages[cloudStorage];
-
-  const handleAuthenticate = async () => {
-    setLoading(true);
-    authenticate(cloudStorage).finally(() => setLoading(false));
-  };
-
-  if (disconnect && cloudStorageConnected) {
-    return (
-      <Button
-        variant="outlined"
-        startIcon={cloudStorageIcons[cloudStorage]}
-        fullWidth
-        onClick={() => unlinkCloudStorage(cloudStorage)}
-      >
-        {t("Disconnect from cloud storage", { cloudStorage })}
-      </Button>
-    );
-  }
-
-  if (connect && !cloudStorageConnected) {
+  if (filteredCloudStorages.length === 1) {
+    const cloudStorage = filteredCloudStorages[0];
     return (
       <LoadingButton
-        loading={loading}
+        loading={status === "connect" ? loading : undefined}
         variant="outlined"
         startIcon={cloudStorageIcons[cloudStorage]}
         fullWidth
-        onClick={handleAuthenticate}
+        onClick={() => handleClick(cloudStorage)}
       >
-        {t("Connect to cloud storage", { cloudStorage })}
+        {status === "connect"
+          ? t("Connect to cloud storage", { cloudStorage })
+          : t("Disconnect from cloud storage", { cloudStorage })}
       </LoadingButton>
     );
   }
 
-  return null;
+  return (
+    <SplitButton
+      loading={status === "connect" ? loading : undefined}
+      aria-label={status === "connect" ? "Connect" : "Disconnect"}
+    >
+      {filteredCloudStorages.map((cloudStorage) => (
+        <SplitButtonItem
+          key={cloudStorage}
+          label={
+            status === "connect"
+              ? t("Connect to cloud storage", { cloudStorage })
+              : t("Disconnect from cloud storage", { cloudStorage })
+          }
+          icon={cloudStorageIcons[cloudStorage]}
+          onClick={() => handleClick(cloudStorage)}
+        />
+      ))}
+    </SplitButton>
+  );
 };
 
 export default CloudStorageConnectionButtons;

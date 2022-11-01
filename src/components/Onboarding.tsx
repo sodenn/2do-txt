@@ -7,7 +7,7 @@ import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { getPlatform } from "../utils/platform";
 import CloudFileImportButtons from "./CloudFileImportButtons";
-import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
+import { CloudStorageConnectionButtons } from "./CloudStorageConnectionButtons";
 import CreateExampleFileButton from "./CreateExampleFileButton";
 
 const StyledBox = styled("div")(({ theme }) => ({
@@ -67,7 +67,7 @@ const Onboarding = () => {
           {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
         </Button>
         <CloudFileImportButtons />
-        <CloudStorageConnectionButtons disconnect={false} />
+        <CloudStorageConnectionButtons status="connect" />
       </Stack>
     </StyledBox>
   );

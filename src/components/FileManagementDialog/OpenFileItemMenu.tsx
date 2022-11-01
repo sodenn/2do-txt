@@ -15,15 +15,12 @@ import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  cloudStorageIcons,
-  useCloudStorage,
-} from "../../data/CloudStorageContext";
-import { useTask } from "../../data/TaskContext";
-import {
   CloudFileRef,
   CloudFileUnauthorizedError,
   CloudStorage,
-} from "../../types/cloud-storage.types";
+  cloudStorageIcons,
+  useCloudStorage,
+} from "../../data/CloudStorageContext";
 import { getArchiveFilePath, getFilesystem } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
 
@@ -54,11 +51,10 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
   const { t } = useTranslation();
   const {
     unlinkCloudFile,
-    uploadFileAndResolveConflict,
-    connectedCloudStorages,
+    cloudStorageClients,
     cloudStorageEnabled,
+    uploadFile,
   } = useCloudStorage();
-  const { saveTodoFile, saveDoneFile } = useTask();
   const { enqueueSnackbar } = useSnackbar();
   const { readFile, isFile } = getFilesystem();
   const [loading, setLoading] = useState(false);
@@ -74,10 +70,9 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
           path: filePath,
         });
 
-        const uploadResult = await uploadFileAndResolveConflict({
+        const uploadResult = await uploadFile({
           filePath,
           text: readFileResult.data,
-          mode: "create",
           cloudStorage,
           archive: false,
         });
@@ -87,40 +82,20 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
           const localArchiveFileExists = await isFile({
             path: archiveFilePath,
           });
-
           if (localArchiveFileExists) {
             const readArchiveFileResult = await readFile({
               path: filePath,
             });
-
-            const uploadArchiveResult = await uploadFileAndResolveConflict({
+            await uploadFile({
               filePath,
               text: readArchiveFileResult.data,
-              mode: "create",
               cloudStorage,
               archive: true,
             }).catch((e) => void e);
-
-            if (
-              uploadArchiveResult &&
-              uploadArchiveResult.type === "conflict" &&
-              uploadArchiveResult.conflict.option === "cloud"
-            ) {
-              const text = uploadArchiveResult.conflict.text;
-              await saveDoneFile(filePath, text);
-            }
           }
         }
 
-        if (uploadResult && uploadResult.type === "no-conflict") {
-          onChange(uploadResult.ref as CloudFileRef);
-        } else if (uploadResult && uploadResult.type === "conflict") {
-          if (uploadResult.conflict.option === "cloud") {
-            const text = uploadResult.conflict.text;
-            await saveTodoFile(filePath, text);
-          }
-          onChange(uploadResult.conflict.ref as CloudFileRef);
-        }
+        onChange(uploadResult);
       } else {
         await unlinkCloudFile(filePath);
         onChange(undefined);
@@ -143,7 +118,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
 
   if (
     !cloudStorageEnabled ||
-    !connectedCloudStorages[cloudStorage] ||
+    cloudStorageClients[cloudStorage].status === "disconnected" ||
     (cloudFileRef && cloudStorage !== cloudFileRef.cloudStorage)
   ) {
     return null;

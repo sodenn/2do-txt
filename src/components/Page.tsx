@@ -12,6 +12,7 @@ import ShortcutsDialog from "./ShortcutsDialog";
 import SideSheet, { MainContainer } from "./SideSheet";
 import TaskDialog from "./TaskDialog";
 import TaskView from "./TaskView";
+import WebDAVDialog from "./WebDAVDialog";
 
 const SafeAreaContainer = styled(Container)({
   paddingRight: "env(safe-area-inset-right)",
@@ -56,6 +57,7 @@ const Page = () => {
       <ConfirmationDialog />
       <ArchivedTasksDialog />
       <ShortcutsDialog />
+      <WebDAVDialog />
     </FilePicker>
   );
 };

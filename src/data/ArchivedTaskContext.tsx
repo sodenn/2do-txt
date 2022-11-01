@@ -48,15 +48,15 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     deleteCloudFile,
     getCloudFileRefByFilePath,
     getCloudArchiveFileRefByFilePath,
-    uploadFileAndResolveConflict,
     getCloudArchiveFileMetaData,
     downloadFile,
+    uploadFile,
   } = useCloudStorage();
   const { t } = useTranslation();
 
   const syncAllDoneFilesWithCloudStorage = useCallback(
     async (items: SyncItem[]) => {
-      const syncOptions: SyncFileOptions[] = [];
+      const syncOptions: Omit<SyncFileOptions, "cloudStorageClients">[] = [];
 
       const updateArchiveMode = await Promise.all(
         items.map(async ({ filePath }) => {
@@ -270,7 +270,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         await deleteFile({
           path: doneFilePath,
         });
-        deleteCloudFile(filePath, true).catch((e) => void e);
+        deleteCloudFile({ filePath, archive: true }).catch((e) => void e);
       } else {
         await saveDoneFile(filePath, doneFileText);
       }
@@ -295,22 +295,13 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       const fileRef = await getCloudFileRefByFilePath(filePath);
 
       if (fileRef) {
-        const result = await uploadFileAndResolveConflict({
+        await uploadFile({
           filePath: filePath,
           text: text,
           cloudStorage: fileRef.cloudStorage,
-          mode: "update",
           archive: true,
         });
-        if (
-          result &&
-          result.type === "conflict" &&
-          result.conflict.option === "cloud"
-        ) {
-          await saveDoneFile(filePath, result.conflict.text);
-        } else {
-          await saveDoneFile(filePath, text);
-        }
+        await saveDoneFile(filePath, text);
       } else {
         await saveDoneFile(filePath, text);
       }
@@ -357,7 +348,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       restoreTask,
       saveDoneFile,
       setArchivedTasksDialog,
-      uploadFileAndResolveConflict,
+      uploadFile,
       t,
     ]
   );
@@ -396,23 +387,12 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
           const fileRef = await getCloudFileRefByFilePath(filePath);
           if (fileRef) {
-            const result = await uploadFileAndResolveConflict({
+            await uploadFile({
               filePath,
               text: doneFileText,
               cloudStorage: fileRef.cloudStorage,
-              mode: "update",
               archive: true,
             });
-            if (
-              result &&
-              result.type === "conflict" &&
-              result.conflict.option === "cloud"
-            ) {
-              await Promise.all([
-                onSaveTodoFile(newTaskList),
-                saveDoneFile(filePath, result.conflict.text),
-              ]);
-            }
           }
 
           await Promise.all([
@@ -435,7 +415,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       getCloudFileRefByFilePath,
       loadDoneFile,
       saveDoneFile,
-      uploadFileAndResolveConflict,
+      uploadFile,
       t,
     ]
   );
@@ -476,7 +456,9 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             { variant: "success" }
           );
 
-          deleteCloudFile(taskList.filePath, true).catch((e) => void e);
+          deleteCloudFile({ filePath: taskList.filePath, archive: true }).catch(
+            (e) => void e
+          );
         })
       );
     },

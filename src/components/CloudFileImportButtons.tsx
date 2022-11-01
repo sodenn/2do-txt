@@ -1,21 +1,25 @@
 import { Button, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
+  CloudStorage,
   cloudStorageIcons,
+  cloudStorages,
   useCloudStorage,
 } from "../data/CloudStorageContext";
-import { CloudStorage, cloudStorages } from "../types/cloud-storage.types";
 
 interface CloudFileImportButtonProps {
   cloudStorage: CloudStorage;
 }
 
 const CloudFileImportButtons = () => {
-  const { cloudStorageEnabled, connectedCloudStorages } = useCloudStorage();
+  const { cloudStorageEnabled, cloudStorageClients } = useCloudStorage();
 
   if (
     !cloudStorageEnabled ||
-    cloudStorages.every((cloudStorage) => !connectedCloudStorages[cloudStorage])
+    cloudStorages.every(
+      (cloudStorage) =>
+        cloudStorageClients[cloudStorage].status === "disconnected"
+    )
   ) {
     return null;
   }
@@ -23,7 +27,10 @@ const CloudFileImportButtons = () => {
   return (
     <Stack spacing={1}>
       {cloudStorages
-        .filter((cloudStorage) => connectedCloudStorages[cloudStorage])
+        .filter(
+          (cloudStorage) =>
+            cloudStorageClients[cloudStorage].status === "connected"
+        )
         .map((cloudStorage, idx) => (
           <CloudFileImportButton key={idx} cloudStorage={cloudStorage} />
         ))}

@@ -6,6 +6,7 @@ import {
   ButtonGroup,
   ClickAwayListener,
   Grow,
+  IconProps,
   ListItemIcon,
   MenuItem,
   MenuList,
@@ -13,16 +14,16 @@ import {
   Popper,
   useTheme,
 } from "@mui/material";
-import { ReactNode, useRef, useState } from "react";
+import React, { ReactNode, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  cloudStorageIconsSmall,
+  cloudStorageIcons,
+  cloudStorages,
   useCloudStorage,
 } from "../../data/CloudStorageContext";
 import { useFileCreateDialog } from "../../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
 import { useTask } from "../../data/TaskContext";
-import { cloudStorages } from "../../types/cloud-storage.types";
 import { getPlatform } from "../../utils/platform";
 
 const FileActionButton = () => {
@@ -32,7 +33,7 @@ const FileActionButton = () => {
   const { setFileCreateDialog } = useFileCreateDialog();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const {
-    connectedCloudStorages,
+    cloudStorageClients,
     cloudStorageEnabled,
     setCloudFileDialogOptions,
   } = useCloudStorage();
@@ -64,12 +65,18 @@ const FileActionButton = () => {
   cloudStorages
     .filter(
       (cloudStorage) =>
-        cloudStorageEnabled && connectedCloudStorages[cloudStorage]
+        cloudStorageEnabled &&
+        cloudStorageClients[cloudStorage].status === "connected"
     )
     .forEach((cloudStorage) => {
+      const icon = cloudStorageIcons[cloudStorage];
       options.push({
         label: t("Import from cloud storage", { cloudStorage }),
-        icon: cloudStorageIconsSmall[cloudStorage],
+        icon: React.isValidElement<IconProps>(icon)
+          ? React.cloneElement(icon, {
+              fontSize: "small",
+            })
+          : icon,
         click: () => {
           setCloudFileDialogOptions({ open: true, cloudStorage });
           setFileManagementDialogOpen(false);

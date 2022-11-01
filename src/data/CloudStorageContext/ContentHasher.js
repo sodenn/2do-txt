@@ -55,4 +55,8 @@ class DropboxContentHasher {
   }
 }
 
-export default DropboxContentHasher;
+export default function generateContentHash(text) {
+  const hasher = new DropboxContentHasher();
+  hasher.update(text);
+  return hasher.digest();
+}

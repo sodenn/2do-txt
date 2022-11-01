@@ -147,5 +147,11 @@
   "Add task for today": "Add task for today",
   "Today": "Today",
   "Without date": "Without date",
-  "New": "New"
+  "New": "New",
+  "WebDAV Server": "WebDAV Server",
+  "URL": "URL",
+  "Username": "Username",
+  "Password": "Password",
+  "Connection Error": "Connection Error",
+  "Connect": "Connect"
 }
