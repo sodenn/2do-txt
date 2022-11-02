@@ -458,24 +458,22 @@ export async function syncFile(
     ? syncResult.cloudFile
     : cloudArchiveFileRef;
 
-  if (syncResult.type === "server" || syncResult.type === "local") {
-    if (newCloudFile) {
-      await linkFile({
-        ...newCloudFile,
-        localFilePath: filePath,
-        lastSync: new Date().toISOString(),
-        cloudStorage,
-      });
-    } else if (newCloudArchiveFile) {
-      await linkArchiveFile({
-        ...newCloudArchiveFile,
-        localFilePath: filePath,
-        cloudStorage,
-      });
-    }
+  if (newCloudFile) {
+    await linkFile({
+      ...newCloudFile,
+      localFilePath: filePath,
+      lastSync: new Date().toISOString(),
+      cloudStorage,
+    });
+  } else if (newCloudArchiveFile) {
+    await linkArchiveFile({
+      ...newCloudArchiveFile,
+      localFilePath: filePath,
+      cloudStorage,
+    });
   }
 
-  if (syncResult.type === "local") {
+  if (syncResult.type === "server") {
     return syncResult.content;
   }
 }

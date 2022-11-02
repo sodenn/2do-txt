@@ -131,12 +131,12 @@ export interface SyncFileOptionsInternal<T> {
 }
 
 interface SyncFileLocalResult {
-  type: "server";
+  type: "local";
   cloudFile: CloudFile;
 }
 
 interface SyncFileServerResult {
-  type: "local";
+  type: "server";
   cloudFile: CloudFile;
   content: string;
 }

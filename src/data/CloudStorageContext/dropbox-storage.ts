@@ -280,7 +280,7 @@ export async function syncFile(
       client,
     });
     return {
-      type: "server",
+      type: "local",
       cloudFile,
     };
   }
@@ -306,7 +306,7 @@ export async function syncFile(
       client,
     });
     return {
-      type: "server",
+      type: "local",
       cloudFile,
     };
   }
@@ -318,7 +318,7 @@ export async function syncFile(
       client,
     });
     return {
-      type: "local",
+      type: "server",
       cloudFile: serverVersion,
       content,
     };
