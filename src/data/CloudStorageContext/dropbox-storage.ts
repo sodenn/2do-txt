@@ -75,12 +75,7 @@ export async function createClient(): Promise<Dropbox | unknown> {
   });
 
   // refresh access token
-  // await dbx.checkUser({ query: "check" }).catch((error) => {
-  //   if (error.status === 401) {
-  //     throw new CloudFileUnauthorizedError();
-  //   }
-  // });
-  await dbx.filesListFolder({ path: "" }).catch((error) => {
+  await dbx.checkUser({ query: "check" }).catch((error) => {
     if (error.status === 401) {
       throw new CloudFileUnauthorizedError("Dropbox");
     }

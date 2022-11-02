@@ -280,6 +280,14 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
 
   const syncFile = useCallback(
     async (opt: Omit<SyncFileOptions, "cloudStorageClients">) => {
+      const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
+      const cloudArchiveFileRef = await getCloudArchiveFileRefByFilePath(
+        opt.filePath
+      );
+      if (!cloudFileRef && !cloudArchiveFileRef) {
+        return;
+      }
+
       if (!connected) {
         throw new Error("Network connection lost");
       }
