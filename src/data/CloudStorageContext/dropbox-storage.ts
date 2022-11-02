@@ -60,7 +60,12 @@ export async function authenticate(): Promise<void> {
 export async function createClient(): Promise<Dropbox | unknown> {
   const refreshToken = await getSecureStorageItem("Dropbox-refresh-token");
   if (!refreshToken) {
-    await resetTokens();
+    const authenticationInProgress = await getSecureStorageItem(
+      "Dropbox-code-verifier"
+    );
+    if (!authenticationInProgress) {
+      await resetTokens();
+    }
     return;
   }
 
@@ -75,7 +80,7 @@ export async function createClient(): Promise<Dropbox | unknown> {
   //     throw new CloudFileUnauthorizedError();
   //   }
   // });
-  await dbx.filesListFolder({ path: "/" }).catch((error) => {
+  await dbx.filesListFolder({ path: "" }).catch((error) => {
     if (error.status === 401) {
       throw new CloudFileUnauthorizedError("Dropbox");
     }
@@ -90,7 +95,7 @@ export async function requestAccessToken(code: string): Promise<void> {
   await removeSecureStorageItem("Dropbox-code-verifier");
 
   if (!codeVerifier) {
-    return;
+    throw new Error("Missing code verifier");
   }
 
   const dbxAuth = new DropboxAuth({

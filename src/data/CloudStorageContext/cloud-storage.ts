@@ -11,9 +11,9 @@ import {
   CloudFile,
   CloudFileRef,
   CloudStorage,
-  CloudStorageClient,
   CloudStorageClientConnected,
   CloudStorageClientDisconnected,
+  CloudStorageClients,
   DeleteFileOptions,
   DeleteFileOptionsInternal,
   DownloadFileOptions,
@@ -155,6 +155,9 @@ export async function deleteFile(opt: DeleteFileOptions) {
 
   const { cloudStorage } = ref;
   const client = cloudStorageClients[cloudStorage];
+  if (client.status === "disconnected") {
+    throw new Error(`${cloudStorage} client is disconnected`);
+  }
   const deleteFileImpl:
     | ((opt: DeleteFileOptionsInternal<any>) => Promise<void>)
     | undefined =
@@ -169,9 +172,17 @@ export async function deleteFile(opt: DeleteFileOptions) {
   }
 
   if (archive) {
-    await deleteFileImpl({ path: ref.path, client, cloudStorage });
+    await deleteFileImpl({
+      path: ref.path,
+      client: client.instance,
+      cloudStorage,
+    });
   } else {
-    await deleteFileImpl({ path: ref.path, client, cloudStorage });
+    await deleteFileImpl({
+      path: ref.path,
+      client: client.instance,
+      cloudStorage,
+    });
     if (cloudArchiveFileRef) {
       await deleteFileImpl({
         path: cloudArchiveFileRef.path,
@@ -207,9 +218,7 @@ export async function unlinkCloudArchiveFile(filePath: string) {
   );
 }
 
-export async function loadClients(): Promise<
-  Record<CloudStorage, CloudStorageClient>
-> {
+export async function loadClients(): Promise<CloudStorageClients> {
   const promises = cloudStorages.map((cloudStorage) =>
     createClient(cloudStorage)
       .then((instance) =>
@@ -237,7 +246,7 @@ export async function loadClients(): Promise<
   return clients.reduce((prev, curr) => {
     prev[curr.cloudStorage] = curr;
     return prev;
-  }, {} as Record<CloudStorage, CloudStorageClient>);
+  }, {} as CloudStorageClients);
 }
 
 export async function createClient(
@@ -307,19 +316,20 @@ export async function getCloudArchiveFileMetaData(
     return;
   }
 
-  try {
-    const client = cloudStorageClients[cloudStorage];
-    const metaData = await getFileMetaData({
-      path: archiveFilePath,
-      cloudStorage,
-      client,
-    });
-    return { ...metaData, cloudStorage };
-  } catch (error) {
+  const client = cloudStorageClients[cloudStorage];
+  if (client.status === "disconnected") {
+    throw new Error(`${cloudStorage} client is disconnected`);
+  }
+
+  return await getFileMetaData({
+    path: archiveFilePath,
+    cloudStorage,
+    client: client.instance,
+  }).catch((error) => {
     if (!(error instanceof CloudFileNotFoundError)) {
       throw error;
     }
-  }
+  });
 }
 
 export async function downloadFile(opt: DownloadFileOptions<any>) {
@@ -470,9 +480,7 @@ export async function syncFile(
   }
 }
 
-export async function syncAllFiles(
-  opt: SyncFileOptions[]
-): Promise<{ text: string; filePath: string }[]> {
+export async function getFilteredSyncOptions(opt: SyncFileOptions[]) {
   const optFiltered: SyncFileOptions[] = [];
   for (const i of opt) {
     const ref = i.archive
@@ -482,20 +490,20 @@ export async function syncAllFiles(
       optFiltered.push(i);
     }
   }
+  return optFiltered;
+}
 
-  if (optFiltered.length === 0) {
-    return [];
-  }
-
+export async function syncAllFiles(
+  syncOptions: SyncFileOptions[]
+): Promise<{ text: string; filePath: string }[]> {
   const results: { text: string; filePath: string }[] = [];
   await Promise.all(
-    optFiltered.map(async (opt) => {
+    syncOptions.map(async (opt) => {
       const text = await syncFile(opt);
       if (text) {
         results.push({ text, filePath: opt.filePath });
       }
     })
   );
-
   return results;
 }

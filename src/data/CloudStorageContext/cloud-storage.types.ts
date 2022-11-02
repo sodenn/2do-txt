@@ -16,6 +16,8 @@ export interface CloudFolder {
 
 export type CloudItem = CloudFile | CloudFolder;
 
+export type CloudStorageClients = Record<CloudStorage, CloudStorageClient>;
+
 export interface CloudFileRef extends CloudFile {
   localFilePath: string;
   lastSync: string;
@@ -73,7 +75,7 @@ export interface FileMetaDataOptions<T> {
 
 export interface GetCloudArchiveFileMetaDataOptions {
   filePath: string;
-  cloudStorageClients: Record<CloudStorage, CloudStorageClient>;
+  cloudStorageClients: CloudStorageClients;
 }
 
 export interface ListCloudItemResult {
@@ -105,7 +107,7 @@ export interface UploadFileOptionsInternal<T> {
 export interface DeleteFileOptions {
   filePath: string;
   archive: boolean;
-  cloudStorageClients: Record<CloudStorage, CloudStorageClient>;
+  cloudStorageClients: CloudStorageClients;
 }
 
 export interface DeleteFileOptionsInternal<T> {
@@ -118,7 +120,7 @@ export interface SyncFileOptions {
   filePath: string;
   text: string;
   archive: boolean;
-  cloudStorageClients: Record<CloudStorage, CloudStorageClient>;
+  cloudStorageClients: CloudStorageClients;
   showSnackbar?: boolean;
 }
 

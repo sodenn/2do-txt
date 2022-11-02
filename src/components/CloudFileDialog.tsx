@@ -15,16 +15,16 @@ import {
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
-import { useFileCreateDialog } from "../data/FileCreateDialogContext";
-import { useFilter } from "../data/FilterContext";
-import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
 import {
   CloudFile,
   CloudFileRef,
   ListCloudItemResult,
-} from "../types/cloud-storage.types";
+  useCloudStorage,
+} from "../data/CloudStorageContext";
+import { useFileCreateDialog } from "../data/FileCreateDialogContext";
+import { useFilter } from "../data/FilterContext";
+import { useSettings } from "../data/SettingsContext";
+import { useTask } from "../data/TaskContext";
 import { getArchiveFilePath, getFilesystem } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
 import StartEllipsis from "./StartEllipsis";

@@ -21,6 +21,8 @@ import {
   getCloudArchiveFileMetaData as _getCloudArchiveFileMetaData,
   getCloudArchiveFileRefByFilePath,
   getCloudFileRefByFilePath,
+  getCloudFileRefs,
+  getFilteredSyncOptions,
   unlinkCloudArchiveFile,
   unlinkCloudFile,
 } from "./cloud-storage";
@@ -176,7 +178,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
 
   const authenticate = useCallback(
     async (cloudStorage: CloudStorage) => {
-      if (["dropbox"].includes(cloudStorage)) {
+      if (["Dropbox"].includes(cloudStorage)) {
         return oauth2Authenticate(cloudStorage);
       }
       if (cloudStorage === "WebDAV") {
@@ -237,7 +239,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     openSessionExpiredAlert,
   ]);
 
-  const listFiles = useCallback(
+  const listCloudFiles = useCallback(
     (opt: Omit<ListCloudFilesOptions<void>, "client">) => {
       const client = getClient(opt.cloudStorage);
       return cloud.listFiles({ ...opt, client });
@@ -326,6 +328,14 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         throw new Error("Network connection lost");
       }
 
+      const syncOptions = await getFilteredSyncOptions(
+        opt.map((o) => ({ ...o, cloudStorageClients }))
+      );
+
+      if (syncOptions.length === 0) {
+        return [];
+      }
+
       const snackbar = enqueueSnackbar("", {
         variant: "info",
         persist: true,
@@ -336,9 +346,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         ),
       });
 
-      const results = await cloud
-        .syncAllFiles(opt.map((o) => ({ ...o, cloudStorageClients })))
-        .catch(handleError);
+      const results = await cloud.syncAllFiles(syncOptions).catch(handleError);
 
       closeSnackbar(snackbar);
 
@@ -382,7 +390,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     linkCloudFile,
     linkCloudArchiveFile,
     unlinkCloudStorage,
-    listFiles,
+    listCloudFiles,
     getFileMetaData,
     downloadFile,
     uploadFile,
@@ -394,6 +402,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     unlinkCloudArchiveFile,
     getCloudArchiveFileMetaData,
     cloudFileDialogOptions,
+    getCloudFileRefs,
     setCloudFileDialogOptions,
     getCloudFileRefByFilePath,
     getCloudArchiveFileRefByFilePath,

@@ -10,14 +10,13 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
+import { CloudStorage, useCloudStorage } from "../data/CloudStorageContext";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
-import { CloudStorage } from "../types/cloud-storage.types";
 import { getFilesystem } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
 
@@ -31,8 +30,7 @@ const FileCreateDialog = () => {
   const platform = getPlatform();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { setActiveTaskListPath } = useFilter();
-  const { uploadFileAndResolveConflict, connectedCloudStorages } =
-    useCloudStorage();
+  const { uploadFile, cloudStorageClients } = useCloudStorage();
   const { saveTodoFile } = useTask();
   const {
     fileCreateDialog: { open, createExampleFile, createFirstTask },
@@ -74,22 +72,16 @@ const FileCreateDialog = () => {
   const createTodoFileAndSync = async () => {
     handleClose();
     await createNewFile(fileName);
-    if (selectedCloudStorage && connectedCloudStorages[selectedCloudStorage]) {
-      const result = await uploadFileAndResolveConflict({
+    if (
+      selectedCloudStorage &&
+      cloudStorageClients[selectedCloudStorage].status === "connected"
+    ) {
+      await uploadFile({
         filePath: fileName,
         text: "",
-        mode: "create",
         cloudStorage: selectedCloudStorage,
         archive: false,
       });
-      if (
-        result &&
-        result.type === "conflict" &&
-        result.conflict.option === "cloud"
-      ) {
-        const text = result.conflict.text;
-        await saveTodoFile(fileName, text);
-      }
     }
   };
 
@@ -183,8 +175,8 @@ const FileCreateDialog = () => {
             "aria-label": "File name",
           }}
         />
-        {Object.entries(connectedCloudStorages)
-          .filter(([_, connected]) => connected)
+        {Object.entries(cloudStorageClients)
+          .filter(([_, client]) => client.status === "connected")
           .map(([cloudStorage]) => cloudStorage as CloudStorage)
           .map((cloudStorage) => (
             <FormControlLabel
