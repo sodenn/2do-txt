@@ -8,9 +8,8 @@ import {
   Typography,
 } from "@mui/material";
 import { forwardRef, useEffect, useState } from "react";
-import { useCloudStorage } from "../../data/CloudStorageContext";
+import { CloudFileRef, useCloudStorage } from "../../data/CloudStorageContext";
 import { useSettings } from "../../data/SettingsContext";
-import { CloudFileRef } from "../../types/cloud-storage.types";
 import { formatLocalDateTime, parseDate } from "../../utils/date";
 import StartEllipsis from "../StartEllipsis";
 import OpenFileItemMenu from "./OpenFileItemMenu";

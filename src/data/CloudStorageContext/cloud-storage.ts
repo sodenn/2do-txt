@@ -325,11 +325,13 @@ export async function getCloudArchiveFileMetaData(
     path: archiveFilePath,
     cloudStorage,
     client: client.instance,
-  }).catch((error) => {
-    if (!(error instanceof CloudFileNotFoundError)) {
-      throw error;
-    }
-  });
+  })
+    .then((metaData) => ({ ...metaData, cloudStorage }))
+    .catch((error) => {
+      if (!(error instanceof CloudFileNotFoundError)) {
+        throw error;
+      }
+    });
 }
 
 export async function downloadFile(opt: DownloadFileOptions<any>) {

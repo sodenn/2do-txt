@@ -48,5 +48,6 @@ jobs:
           node-version: 16
       - run: corepack enable
       - run: yarn install
+      - run: yarn typecheck
       - run: yarn lint
-      - run: yarn format
+      - run: yarn fmt:check

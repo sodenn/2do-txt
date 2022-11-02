@@ -1,12 +1,12 @@
 import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CloudStorage } from "../data/CloudStorageContext/cloud-storage.types";
 import {
+  CloudStorage,
   cloudStorageIcons,
   cloudStorages,
   useCloudStorage,
-} from "../data/CloudStorageContext/CloudStorageContext";
+} from "../data/CloudStorageContext";
 import SplitButton, { SplitButtonItem } from "./SplitButton";
 
 interface CloudStorageConnectionButtonsProps {
@@ -20,7 +20,7 @@ export const CloudStorageConnectionButtons = ({
     cloudStorageEnabled,
     cloudStorageClients,
     authenticate,
-    disconnectCloudStorage,
+    unlinkCloudStorage,
   } = useCloudStorage();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ export const CloudStorageConnectionButtons = ({
       setLoading(true);
       authenticate(cloudStorage).finally(() => setLoading(false));
     } else {
-      disconnectCloudStorage(cloudStorage);
+      unlinkCloudStorage(cloudStorage);
     }
   };
 
