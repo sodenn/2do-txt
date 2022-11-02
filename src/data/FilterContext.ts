@@ -1,3 +1,4 @@
+import { isEqual } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { useLoaderData, useSearchParams } from "react-router-dom";
 import { createContext } from "../utils/Context";
@@ -94,7 +95,10 @@ const [FilterProvider, useFilter] = createContext(() => {
     if (activeTags.length > 0) {
       params.tags = activeTags.join(",");
     }
-    setSearchParams(params);
+    const currentParams = Object.fromEntries(searchParams);
+    if (!isEqual(params, currentParams)) {
+      setSearchParams(params);
+    }
   }, [
     searchTerm,
     activeTaskListPath,
@@ -103,6 +107,7 @@ const [FilterProvider, useFilter] = createContext(() => {
     activeContexts,
     activeTags,
     setSearchParams,
+    searchParams,
   ]);
 
   return {
