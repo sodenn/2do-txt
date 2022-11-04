@@ -18,17 +18,15 @@ export const CloudStorageConnectionButtons = ({
 }: CloudStorageConnectionButtonsProps) => {
   const {
     cloudStorageEnabled,
-    cloudStorageClients,
+    connectedCloudStorages,
     authenticate,
     unlinkCloudStorage,
   } = useCloudStorage();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const filteredCloudStorages = cloudStorages.filter((cloudStorage) => {
-    const client = cloudStorageClients[cloudStorage];
-    return status === "connect"
-      ? client.status === "disconnected"
-      : client.status === "connected";
+    const connected = connectedCloudStorages[cloudStorage];
+    return status === "connect" ? !connected : connected;
   });
 
   const handleClick = async (cloudStorage: CloudStorage) => {

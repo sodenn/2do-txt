@@ -51,7 +51,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
   const { t } = useTranslation();
   const {
     unlinkCloudFile,
-    cloudStorageClients,
+    connectedCloudStorages,
     cloudStorageEnabled,
     uploadFile,
   } = useCloudStorage();
@@ -118,7 +118,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
 
   if (
     !cloudStorageEnabled ||
-    cloudStorageClients[cloudStorage].status === "disconnected" ||
+    !connectedCloudStorages[cloudStorage] ||
     (cloudFileRef && cloudStorage !== cloudFileRef.cloudStorage)
   ) {
     return null;

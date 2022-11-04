@@ -41,7 +41,7 @@ const FileMenu = () => {
   const {
     setCloudFileDialogOptions,
     cloudStorageEnabled,
-    cloudStorageClients,
+    connectedCloudStorages,
   } = useCloudStorage();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -152,7 +152,7 @@ const FileMenu = () => {
         )}
         {taskLists.length < 4 &&
           cloudStorageEnabled &&
-          cloudStorageClients["Dropbox"].status === "connected" && (
+          connectedCloudStorages["Dropbox"] && (
             <MenuItem onClick={handleImportFromCloudStorage}>
               <ListItemIcon>
                 <DropboxIcon fontSize="small" />

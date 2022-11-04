@@ -23,9 +23,9 @@ import {
   ListCloudItemResult,
   RequestAccessTokenOptions,
   SyncFileOptions,
-  SyncFileResult,
   UnlinkOptions,
   UploadFileOptions,
+  WithClients,
 } from "./cloud-storage.types";
 import * as dropbox from "./dropbox-storage";
 import * as webdav from "./webdav-storage";
@@ -44,36 +44,36 @@ export class CloudFileNotFoundError extends Error {
   }
 }
 
-export async function authenticate(cloudStorage: CloudStorage): Promise<void> {
+function $(cloudStorage: CloudStorage) {
   switch (cloudStorage) {
     case "Dropbox":
-      return dropbox.authenticate();
+      return dropbox;
     case "WebDAV":
-      return webdav.authenticate();
+      return webdav;
     default:
       throw new Error(`Unknown cloud storage "${cloudStorage}"`);
   }
 }
 
+export async function authenticate(cloudStorage: CloudStorage): Promise<void> {
+  return $(cloudStorage).authenticate();
+}
+
 export async function linkFile(cloudFile: CloudFileRef) {
   const cloudFiles = await getCloudFileRefs();
-
   const newCloudFiles = [
     ...cloudFiles.filter((c) => c.path !== cloudFile.path),
     { ...cloudFile },
   ];
-
   await setPreferencesItem("cloud-files", JSON.stringify(newCloudFiles));
 }
 
 export async function linkArchiveFile(cloudFile: CloudArchiveFileRef) {
   const cloudArchiveFiles = await getCloudArchiveFileRefs();
-
   const newArchiveCloudFiles = [
     ...cloudArchiveFiles.filter((c) => c.path !== cloudFile.path),
     { ...cloudFile },
   ];
-
   await setPreferencesItem(
     "cloud-archive-files",
     JSON.stringify(newArchiveCloudFiles)
@@ -82,15 +82,7 @@ export async function linkArchiveFile(cloudFile: CloudArchiveFileRef) {
 
 export async function unlink(opt: UnlinkOptions<any>) {
   const { cloudStorage, client } = opt;
-
-  if (cloudStorage === "Dropbox") {
-    await dropbox.unlink(client);
-  } else if (cloudStorage === "WebDAV") {
-    await webdav.resetTokens();
-  } else {
-    throw new Error(`Unknown cloud storage "${cloudStorage}"`);
-  }
-
+  await $(cloudStorage).unlink(client);
   const cloudFiles = await getCloudFileRefs();
   await setPreferencesItem(
     "cloud-files",
@@ -137,9 +129,7 @@ export async function unlinkCloudFile(filePath: string) {
   if (!cloudFileRef) {
     throw new Error(`No cloud file found for local file path "${filePath}"`);
   }
-
   const cloudFiles = await getCloudFileRefs();
-
   const newCloudFiles = cloudFiles.filter((c) => c.path !== cloudFileRef.path);
   await setPreferencesItem("cloud-files", JSON.stringify(newCloudFiles));
 }
@@ -171,25 +161,18 @@ export async function deleteFile(opt: DeleteFileOptions) {
     throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
   }
 
-  if (archive) {
+  await deleteFileImpl({
+    path: ref.path,
+    client: client.instance,
+    cloudStorage,
+  });
+
+  if (!archive && cloudArchiveFileRef) {
     await deleteFileImpl({
-      path: ref.path,
-      client: client.instance,
+      path: cloudArchiveFileRef.path,
+      client,
       cloudStorage,
     });
-  } else {
-    await deleteFileImpl({
-      path: ref.path,
-      client: client.instance,
-      cloudStorage,
-    });
-    if (cloudArchiveFileRef) {
-      await deleteFileImpl({
-        path: cloudArchiveFileRef.path,
-        client,
-        cloudStorage,
-      });
-    }
   }
 
   if (archive) {
@@ -206,9 +189,7 @@ export async function unlinkCloudArchiveFile(filePath: string) {
       `No cloud archive file found for local file path "${filePath}"`
     );
   }
-
   const cloudArchiveFiles = await getCloudArchiveFileRefs();
-
   const newCloudArchiveFiles = cloudArchiveFiles.filter(
     (c) => c.path !== archiveFile.path
   );
@@ -252,14 +233,7 @@ export async function loadClients(): Promise<CloudStorageClients> {
 export async function createClient(
   cloudStorage: CloudStorage
 ): Promise<unknown> {
-  switch (cloudStorage) {
-    case "Dropbox":
-      return dropbox.createClient();
-    case "WebDAV":
-      return webdav.createClient();
-    default:
-      throw new Error(`Unknown cloud storage "${cloudStorage}"`);
-  }
+  return $(cloudStorage).createClient();
 }
 
 export async function requestAccessToken(
@@ -277,27 +251,13 @@ export async function requestAccessToken(
 export async function listFiles(
   opt: ListCloudFilesOptions<any>
 ): Promise<ListCloudItemResult> {
-  switch (opt.cloudStorage) {
-    case "Dropbox":
-      return dropbox.listFiles(opt);
-    case "WebDAV":
-      return webdav.listFiles(opt);
-    default:
-      throw new Error(`Unknown cloud storage "${opt.cloudStorage}"`);
-  }
+  return $(opt.cloudStorage).listFiles(opt);
 }
 
 export async function getFileMetaData(
   opt: FileMetaDataOptions<any>
 ): Promise<CloudFile> {
-  switch (opt.cloudStorage) {
-    case "Dropbox":
-      return dropbox.getFileMetaData(opt);
-    case "WebDAV":
-      return webdav.getFileMetaData(opt);
-    default:
-      throw new Error(`Unknown cloud storage "${opt.cloudStorage}"`);
-  }
+  return $(opt.cloudStorage).getFileMetaData(opt);
 }
 
 export async function getCloudArchiveFileMetaData(
@@ -335,87 +295,50 @@ export async function getCloudArchiveFileMetaData(
 }
 
 export async function downloadFile(opt: DownloadFileOptions<any>) {
-  switch (opt.cloudStorage) {
-    case "Dropbox":
-      return dropbox.downloadFile(opt);
-    case "WebDAV":
-      return webdav.downloadFile(opt);
-    default:
-      throw new Error(`Unknown cloud storage "${opt.cloudStorage}"`);
-  }
+  return $(opt.cloudStorage).downloadFile(opt);
 }
 
 export async function uploadFile(
   opt: UploadFileOptions
 ): Promise<CloudFileRef> {
   const { filePath, text, cloudStorage, archive, client } = opt;
-
   if (archive) {
     const archiveFilePath = getArchiveFilePath(filePath);
     if (!archiveFilePath) {
       throw new Error(`Unable to get archive file path from "${filePath}"`);
     }
-
-    let archiveFile: CloudFile | undefined = undefined;
-    if (cloudStorage === "Dropbox") {
-      archiveFile = await dropbox.uploadFile({
-        path: getFilenameFromPath(archiveFilePath),
-        content: text,
-        client,
-      });
-    } else if (cloudStorage === "WebDAV") {
-      archiveFile = await webdav.uploadFile({
-        path: getFilenameFromPath(archiveFilePath),
-        content: text,
-        client,
-      });
-    } else {
-      throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
-    }
-
+    const archiveFile = await $(opt.cloudStorage).uploadFile({
+      path: getFilenameFromPath(archiveFilePath),
+      content: text,
+      client,
+    });
     const cloudArchiveFileRef = {
       ...archiveFile,
       localFilePath: filePath,
       lastSync: new Date().toISOString(),
       cloudStorage,
     };
-
     await linkArchiveFile(cloudArchiveFileRef);
-
     return cloudArchiveFileRef;
   } else {
-    let cloudFile: CloudFile | undefined = undefined;
-    if (cloudStorage === "Dropbox") {
-      cloudFile = await dropbox.uploadFile({
-        path: getFilenameFromPath(filePath),
-        content: text,
-        client,
-      });
-    } else if (cloudStorage === "WebDAV") {
-      cloudFile = await webdav.uploadFile({
-        path: getFilenameFromPath(filePath),
-        content: text,
-        client,
-      });
-    } else {
-      throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
-    }
-
+    const cloudFile = await $(opt.cloudStorage).uploadFile({
+      path: getFilenameFromPath(filePath),
+      content: text,
+      client,
+    });
     const cloudFileRef = {
       ...cloudFile,
       localFilePath: filePath,
       lastSync: new Date().toISOString(),
       cloudStorage,
     };
-
     await linkFile(cloudFileRef);
-
     return cloudFileRef;
   }
 }
 
 export async function syncFile(
-  opt: SyncFileOptions
+  opt: SyncFileOptions & WithClients
 ): Promise<string | undefined> {
   const { filePath, text, archive, cloudStorageClients } = opt;
   const cloudFileRef = await getCloudFileRefByFilePath(filePath);
@@ -433,22 +356,11 @@ export async function syncFile(
     throw new Error(`${cloudStorage} client is disconnected`);
   }
 
-  let syncResult: SyncFileResult = undefined;
-  if (cloudStorage === "Dropbox") {
-    syncResult = await dropbox.syncFile({
-      localContent: text,
-      localVersion: ref,
-      client: client.instance,
-    });
-  } else if (cloudStorage === "WebDAV") {
-    syncResult = await webdav.syncFile({
-      localContent: text,
-      localVersion: ref,
-      client: client.instance,
-    });
-  } else {
-    throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
-  }
+  const syncResult = await $(cloudStorage).syncFile({
+    localContent: text,
+    localVersion: ref,
+    client: client.instance,
+  });
 
   if (!syncResult) {
     return;
@@ -494,7 +406,7 @@ export async function getFilteredSyncOptions(opt: SyncFileOptions[]) {
 }
 
 export async function syncAllFiles(
-  syncOptions: SyncFileOptions[]
+  syncOptions: (SyncFileOptions & WithClients)[]
 ): Promise<{ text: string; filePath: string }[]> {
   const results: { text: string; filePath: string }[] = [];
   await Promise.all(

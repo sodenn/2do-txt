@@ -2,7 +2,7 @@ import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import { Alert, Button, CircularProgress } from "@mui/material";
 import { throttle } from "lodash";
 import { SnackbarKey, useSnackbar } from "notistack";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   useLoaderData,
@@ -279,7 +279,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   const syncFile = useCallback(
-    async (opt: Omit<SyncFileOptions, "cloudStorageClients">) => {
+    async (opt: SyncFileOptions) => {
       const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
       const cloudArchiveFileRef = await getCloudArchiveFileRefByFilePath(
         opt.filePath
@@ -331,14 +331,12 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   const syncAllFiles = useCallback(
-    async (opt: Omit<SyncFileOptions, "cloudStorageClients">[]) => {
+    async (opt: SyncFileOptions[]) => {
       if (!connected) {
         throw new Error("Network connection lost");
       }
 
-      const syncOptions = await getFilteredSyncOptions(
-        opt.map((o) => ({ ...o, cloudStorageClients }))
-      );
+      const syncOptions = await getFilteredSyncOptions(opt);
 
       if (syncOptions.length === 0) {
         return [];
@@ -354,7 +352,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         ),
       });
 
-      const results = await cloud.syncAllFiles(syncOptions).catch(handleError);
+      const results = await cloud
+        .syncAllFiles(syncOptions.map((o) => ({ ...o, cloudStorageClients })))
+        .catch(handleError);
 
       closeSnackbar(snackbar);
 
@@ -387,13 +387,22 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     [cloudStorageClients]
   );
 
+  const connectedCloudStorages = useMemo(
+    () =>
+      Object.values(cloudStorageClients).reduce((prev, curr) => {
+        prev[curr.cloudStorage] = curr.status === "connected";
+        return prev;
+      }, {} as Record<CloudStorage, boolean>),
+    [cloudStorageClients]
+  );
+
   useEffect(() => {
     requestTokens().then();
   }, [requestTokens]);
 
   return {
     cloudStorageEnabled,
-    cloudStorageClients,
+    connectedCloudStorages,
     authenticate,
     linkCloudFile,
     linkCloudArchiveFile,

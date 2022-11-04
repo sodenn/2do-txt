@@ -56,7 +56,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
   const syncAllDoneFilesWithCloudStorage = useCallback(
     async (items: SyncItem[]) => {
-      const syncOptions: Omit<SyncFileOptions, "cloudStorageClients">[] = [];
+      const syncOptions: SyncFileOptions[] = [];
 
       const updateArchiveMode = await Promise.all(
         items.map(async ({ filePath }) => {

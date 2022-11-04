@@ -89,7 +89,7 @@ async function loadTodoFiles(): Promise<TodoFiles> {
   };
 }
 
-export async function loader(args: any): Promise<LoaderData> {
+export async function loader(): Promise<LoaderData> {
   await migrate1();
   const data = await Promise.all([
     getPreferencesItem<SortKey>("sort-by"),

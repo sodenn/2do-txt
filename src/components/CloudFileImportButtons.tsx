@@ -12,14 +12,11 @@ interface CloudFileImportButtonProps {
 }
 
 const CloudFileImportButtons = () => {
-  const { cloudStorageEnabled, cloudStorageClients } = useCloudStorage();
+  const { cloudStorageEnabled, connectedCloudStorages } = useCloudStorage();
 
   if (
     !cloudStorageEnabled ||
-    cloudStorages.every(
-      (cloudStorage) =>
-        cloudStorageClients[cloudStorage].status === "disconnected"
-    )
+    cloudStorages.every((cloudStorage) => !connectedCloudStorages[cloudStorage])
   ) {
     return null;
   }
@@ -27,10 +24,7 @@ const CloudFileImportButtons = () => {
   return (
     <Stack spacing={1}>
       {cloudStorages
-        .filter(
-          (cloudStorage) =>
-            cloudStorageClients[cloudStorage].status === "connected"
-        )
+        .filter((cloudStorage) => connectedCloudStorages[cloudStorage])
         .map((cloudStorage, idx) => (
           <CloudFileImportButton key={idx} cloudStorage={cloudStorage} />
         ))}

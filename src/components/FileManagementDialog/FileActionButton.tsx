@@ -33,7 +33,7 @@ const FileActionButton = () => {
   const { setFileCreateDialog } = useFileCreateDialog();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const {
-    cloudStorageClients,
+    connectedCloudStorages,
     cloudStorageEnabled,
     setCloudFileDialogOptions,
   } = useCloudStorage();
@@ -65,8 +65,7 @@ const FileActionButton = () => {
   cloudStorages
     .filter(
       (cloudStorage) =>
-        cloudStorageEnabled &&
-        cloudStorageClients[cloudStorage].status === "connected"
+        cloudStorageEnabled && connectedCloudStorages[cloudStorage]
     )
     .forEach((cloudStorage) => {
       const icon = cloudStorageIcons[cloudStorage];

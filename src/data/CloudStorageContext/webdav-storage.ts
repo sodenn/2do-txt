@@ -28,6 +28,10 @@ export async function resetTokens() {
   ]).catch((e) => void e);
 }
 
+export async function unlink(_: any) {
+  return resetTokens();
+}
+
 export async function listFiles(
   opt: ListCloudFilesOptions<any>
 ): Promise<ListCloudItemResult> {

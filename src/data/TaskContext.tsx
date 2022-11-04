@@ -137,7 +137,7 @@ const [TaskProvider, useTask] = createContext(() => {
   );
 
   const syncTodoFileWithCloudStorage = useCallback(
-    async (opt: Omit<SyncFileOptions, "cloudStorageClients">) => {
+    async (opt: SyncFileOptions) => {
       const result = await syncFileThrottled(opt);
       if (result) {
         await writeFile({

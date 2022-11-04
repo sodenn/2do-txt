@@ -73,9 +73,12 @@ export interface FileMetaDataOptions<T> {
   client: T;
 }
 
-export interface GetCloudArchiveFileMetaDataOptions {
-  filePath: string;
+export interface WithClients {
   cloudStorageClients: CloudStorageClients;
+}
+
+export interface GetCloudArchiveFileMetaDataOptions extends WithClients {
+  filePath: string;
 }
 
 export interface ListCloudItemResult {
@@ -104,10 +107,9 @@ export interface UploadFileOptionsInternal<T> {
   client: T;
 }
 
-export interface DeleteFileOptions {
+export interface DeleteFileOptions extends WithClients {
   filePath: string;
   archive: boolean;
-  cloudStorageClients: CloudStorageClients;
 }
 
 export interface DeleteFileOptionsInternal<T> {
@@ -120,7 +122,6 @@ export interface SyncFileOptions {
   filePath: string;
   text: string;
   archive: boolean;
-  cloudStorageClients: CloudStorageClients;
   showSnackbar?: boolean;
 }
 
