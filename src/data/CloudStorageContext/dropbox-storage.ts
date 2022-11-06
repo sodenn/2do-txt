@@ -15,7 +15,7 @@ import {
   ListCloudItemResult,
   SyncFileOptionsInternal,
   SyncFileResult,
-  UploadFileOptionsInternal,
+  UploadFileOptions,
 } from "./cloud-storage.types";
 import generateContentHash from "./ContentHasher";
 
@@ -131,7 +131,7 @@ export async function unlink(client?: Dropbox): Promise<void> {
 }
 
 export async function listFiles(
-  opt: ListCloudFilesOptions<Dropbox>
+  opt: Omit<ListCloudFilesOptions<Dropbox>, "cloudStorage">
 ): Promise<ListCloudItemResult> {
   const { path, cursor, client } = opt;
 
@@ -151,8 +151,7 @@ export async function listFiles(
     items: result.entries
       .filter(
         (e) =>
-          !!e.path_lower &&
-          (e[".tag"] === "folder" || (e[".tag"] === "file" && !!e.content_hash))
+          !!e.path_lower && (e[".tag"] === "folder" || e[".tag"] === "file")
       )
       .map((e) => {
         if (e[".tag"] === "folder") {
@@ -166,7 +165,6 @@ export async function listFiles(
             name: e.name,
             path: e.path_lower as string,
             rev: e.rev,
-            contentHash: e.content_hash as string,
             type: "file",
           };
         } else {
@@ -198,7 +196,6 @@ export async function getFileMetaData(
   return {
     name: item.name,
     path: item.path_lower,
-    contentHash: item.content_hash!,
     rev: item.rev,
     type: "file",
   };
@@ -228,26 +225,22 @@ export async function downloadFile(
 }
 
 export async function uploadFile(
-  opt: UploadFileOptionsInternal<Dropbox>
+  opt: Omit<UploadFileOptions<Dropbox>, "cloudStorage" | "archive">
 ): Promise<CloudFile> {
-  const { path, content, client } = opt;
-  const dropboxPath = path.startsWith("/") ? path : `/${path}`;
+  const { filePath, text, client } = opt;
+  const dropboxPath = filePath.startsWith("/") ? filePath : `/${filePath}`;
   const {
-    result: { name, path_lower, rev, content_hash },
+    result: { name, path_lower, rev },
   } = await client
     .filesUpload({
       path: dropboxPath,
-      contents: content,
+      contents: text,
       mode: { ".tag": "overwrite" },
     })
     .catch(handleError);
-
-  const contentHash = content_hash || generateContentHash(content);
-
   return {
     name,
     path: path_lower!,
-    contentHash,
     rev: rev,
     type: "file",
   };
@@ -275,8 +268,8 @@ export async function syncFile(
   // create file on Dropbox
   if (!serverVersion) {
     const cloudFile = await uploadFile({
-      path: localVersion.path,
-      content: localContent,
+      filePath: localVersion.path,
+      text: localContent,
       client,
     });
     return {
@@ -301,8 +294,8 @@ export async function syncFile(
     localContentHash !== serverVersion.contentHash
   ) {
     const cloudFile = await uploadFile({
-      path: localVersion.path,
-      content: localContent,
+      filePath: localVersion.path,
+      text: localContent,
       client,
     });
     return {

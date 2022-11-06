@@ -13,6 +13,7 @@ import { Task } from "../utils/task";
 import { parseTaskList, stringifyTaskList, TaskList } from "../utils/task-list";
 import { useArchivedTasksDialog } from "./ArchivedTasksDialogContext";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
+import generateContentHash from "./CloudStorageContext/ContentHasher";
 import { useSettings } from "./SettingsContext";
 
 interface SyncItem {
@@ -114,6 +115,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
             await linkCloudArchiveFile({
               localFilePath: filePath,
+              contentHash: generateContentHash(text),
               ...metaData,
             });
 

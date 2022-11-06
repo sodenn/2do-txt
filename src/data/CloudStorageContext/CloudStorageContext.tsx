@@ -18,7 +18,7 @@ import { useNetwork } from "../NetworkContext";
 import * as cloud from "./cloud-storage";
 import {
   CloudFileUnauthorizedError,
-  getCloudArchiveFileMetaData as _getCloudArchiveFileMetaData,
+  getArchiveFileMetaData,
   getCloudArchiveFileRefByFilePath,
   getCloudFileRefByFilePath,
   getCloudFileRefs,
@@ -28,16 +28,17 @@ import {
 } from "./cloud-storage";
 import {
   CloudArchiveFileRef,
-  CloudFileDialogOptions,
   CloudFileRef,
   CloudStorage,
+} from "./cloud-storage.types";
+import {
+  CloudFileDialogOptions,
   DeleteFileOptions,
   DownloadFileOptions,
-  FileMetaDataOptions,
   ListCloudFilesOptions,
   SyncFileOptions,
   UploadFileOptions,
-} from "./cloud-storage.types";
+} from "./CloudStorageContext.types";
 import { useWebDAVDialog } from "./WebDAVDialogContext";
 
 const platform = getPlatform();
@@ -188,12 +189,15 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     [oauth2Authenticate, webDAVAuthenticate]
   );
 
-  const linkCloudFile = useCallback(async (cloudFile: CloudFileRef) => {
-    return cloud.linkFile(cloudFile);
-  }, []);
+  const linkCloudFile = useCallback(
+    async (cloudFile: Required<CloudFileRef>) => {
+      return cloud.linkFile(cloudFile);
+    },
+    []
+  );
 
   const linkCloudArchiveFile = useCallback(
-    async (cloudFile: CloudArchiveFileRef) => {
+    async (cloudFile: Required<CloudArchiveFileRef>) => {
       return cloud.linkArchiveFile(cloudFile);
     },
     []
@@ -240,23 +244,15 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   ]);
 
   const listCloudFiles = useCallback(
-    (opt: Omit<ListCloudFilesOptions<void>, "client">) => {
+    (opt: ListCloudFilesOptions) => {
       const client = getClient(opt.cloudStorage);
       return cloud.listFiles({ ...opt, client });
     },
     [getClient]
   );
 
-  const getFileMetaData = useCallback(
-    (opt: Omit<FileMetaDataOptions<void>, "client">) => {
-      const client = getClient(opt.cloudStorage);
-      return cloud.getFileMetaData({ ...opt, client });
-    },
-    [getClient]
-  );
-
   const downloadFile = useCallback(
-    (opt: Omit<DownloadFileOptions<void>, "client">) => {
+    (opt: DownloadFileOptions) => {
       const client = getClient(opt.cloudStorage);
       return cloud.downloadFile({ ...opt, client }).catch(handleError);
     },
@@ -264,7 +260,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   const uploadFile = useCallback(
-    (opt: Omit<UploadFileOptions, "client">) => {
+    (opt: UploadFileOptions) => {
       const client = getClient(opt.cloudStorage);
       return cloud.uploadFile({ ...opt, client }).catch(handleError);
     },
@@ -272,7 +268,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   const deleteCloudFile = useCallback(
-    (opt: Omit<DeleteFileOptions, "cloudStorageClients">) => {
+    (opt: DeleteFileOptions) => {
       return cloud.deleteFile({ ...opt, cloudStorageClients });
     },
     [cloudStorageClients]
@@ -382,7 +378,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
 
   const getCloudArchiveFileMetaData = useCallback(
     (filePath: string) => {
-      return _getCloudArchiveFileMetaData({ filePath, cloudStorageClients });
+      return getArchiveFileMetaData({ filePath, cloudStorageClients });
     },
     [cloudStorageClients]
   );
@@ -408,7 +404,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     linkCloudArchiveFile,
     unlinkCloudStorage,
     listCloudFiles,
-    getFileMetaData,
     downloadFile,
     uploadFile,
     deleteCloudFile,

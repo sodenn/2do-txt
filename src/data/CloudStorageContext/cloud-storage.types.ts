@@ -1,11 +1,30 @@
 export type CloudStorage = "Dropbox" | "WebDAV";
 
+export interface CloudStorageMethods {
+  authenticate: () => Promise<void>;
+  unlink: (client: any) => Promise<void>;
+  createClient: () => Promise<any>;
+  listFiles: (
+    opt: Omit<ListCloudFilesOptions, "cloudStorage">
+  ) => Promise<ListCloudItemResult>;
+  getFileMetaData: (
+    opt: Omit<FileMetaDataOptions, "cloudStorage">
+  ) => Promise<CloudFile>;
+  downloadFile: (
+    opt: Omit<DownloadFileOptions, "cloudStorage">
+  ) => Promise<string>;
+  uploadFile: (
+    opt: Omit<UploadFileOptions, "cloudStorage" | "archive">
+  ) => Promise<CloudFile>;
+  syncFile: (opt: SyncFileOptionsInternal<any>) => Promise<SyncFileResult>;
+}
+
 export interface CloudFile {
   name: string;
   path: string;
   rev: string;
-  contentHash: string;
   type: "file";
+  contentHash?: string;
 }
 
 export interface CloudFolder {
@@ -24,12 +43,7 @@ export interface CloudFileRef extends CloudFile {
   cloudStorage: CloudStorage;
 }
 
-export interface CloudFileDialogOptions {
-  open: boolean;
-  cloudStorage?: CloudStorage;
-}
-
-export interface UnlinkOptions<T> {
+export interface UnlinkOptions<T = any> {
   cloudStorage: CloudStorage;
   client?: T;
 }
@@ -60,14 +74,14 @@ export type CloudStorageClient =
   | CloudStorageClientConnected
   | CloudStorageClientDisconnected;
 
-export interface ListCloudFilesOptions<T> {
+export interface ListCloudFilesOptions<T = any> {
   path?: string;
   cursor?: string;
   cloudStorage: CloudStorage;
   client: T;
 }
 
-export interface FileMetaDataOptions<T> {
+export interface FileMetaDataOptions<T = any> {
   path: string;
   cloudStorage: CloudStorage;
   client: T;
@@ -87,23 +101,17 @@ export interface ListCloudItemResult {
   hasMore: boolean;
 }
 
-export interface DownloadFileOptions<T> {
+export interface DownloadFileOptions<T = any> {
   cloudFilePath: string;
   cloudStorage: CloudStorage;
   client: T;
 }
 
-export interface UploadFileOptions {
+export interface UploadFileOptions<T = any> {
   text: string;
   filePath: string;
   cloudStorage: CloudStorage;
   archive: boolean;
-  client: any;
-}
-
-export interface UploadFileOptionsInternal<T> {
-  path: string;
-  content: string;
   client: T;
 }
 

@@ -4,7 +4,8 @@ export type SecureStorageKeys =
   | "Dropbox-refresh-token"
   | "Dropbox-code-verifier"
   | "WebDAV-username"
-  | "WebDAV-password";
+  | "WebDAV-password"
+  | "WebDAV-url";
 
 const prefix = "SecureStorage.";
 

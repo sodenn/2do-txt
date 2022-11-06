@@ -101,7 +101,8 @@
     "slate": "0.84.0",
     "slate-history": "0.66.0",
     "slate-react": "0.83.2",
-    "typeface-roboto": "1.1.13"
+    "typeface-roboto": "1.1.13",
+    "webdav": "^4.11.0"
   },
   "devDependencies": {
     "@capacitor/cli": "4.4.0",

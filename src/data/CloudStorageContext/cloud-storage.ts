@@ -8,16 +8,15 @@ import {
 } from "../../utils/preferences";
 import {
   CloudArchiveFileRef,
-  CloudFile,
   CloudFileRef,
   CloudStorage,
   CloudStorageClientConnected,
   CloudStorageClientDisconnected,
   CloudStorageClients,
+  CloudStorageMethods,
   DeleteFileOptions,
   DeleteFileOptionsInternal,
   DownloadFileOptions,
-  FileMetaDataOptions,
   GetCloudArchiveFileMetaDataOptions,
   ListCloudFilesOptions,
   ListCloudItemResult,
@@ -27,6 +26,7 @@ import {
   UploadFileOptions,
   WithClients,
 } from "./cloud-storage.types";
+import generateContentHash from "./ContentHasher";
 import * as dropbox from "./dropbox-storage";
 import * as webdav from "./webdav-storage";
 
@@ -44,7 +44,7 @@ export class CloudFileNotFoundError extends Error {
   }
 }
 
-function $(cloudStorage: CloudStorage) {
+function $(cloudStorage: CloudStorage): CloudStorageMethods {
   switch (cloudStorage) {
     case "Dropbox":
       return dropbox;
@@ -80,7 +80,7 @@ export async function linkArchiveFile(cloudFile: CloudArchiveFileRef) {
   );
 }
 
-export async function unlink(opt: UnlinkOptions<any>) {
+export async function unlink(opt: UnlinkOptions) {
   const { cloudStorage, client } = opt;
   await $(cloudStorage).unlink(client);
   const cloudFiles = await getCloudFileRefs();
@@ -249,18 +249,12 @@ export async function requestAccessToken(
 }
 
 export async function listFiles(
-  opt: ListCloudFilesOptions<any>
+  opt: ListCloudFilesOptions
 ): Promise<ListCloudItemResult> {
   return $(opt.cloudStorage).listFiles(opt);
 }
 
-export async function getFileMetaData(
-  opt: FileMetaDataOptions<any>
-): Promise<CloudFile> {
-  return $(opt.cloudStorage).getFileMetaData(opt);
-}
-
-export async function getCloudArchiveFileMetaData(
+export async function getArchiveFileMetaData(
   opt: GetCloudArchiveFileMetaDataOptions
 ) {
   const { filePath, cloudStorageClients } = opt;
@@ -281,11 +275,11 @@ export async function getCloudArchiveFileMetaData(
     throw new Error(`${cloudStorage} client is disconnected`);
   }
 
-  return await getFileMetaData({
-    path: archiveFilePath,
-    cloudStorage,
-    client: client.instance,
-  })
+  return await $(cloudStorage)
+    .getFileMetaData({
+      path: archiveFilePath,
+      client: client.instance,
+    })
     .then((metaData) => ({ ...metaData, cloudStorage }))
     .catch((error) => {
       if (!(error instanceof CloudFileNotFoundError)) {
@@ -294,7 +288,7 @@ export async function getCloudArchiveFileMetaData(
     });
 }
 
-export async function downloadFile(opt: DownloadFileOptions<any>) {
+export async function downloadFile(opt: DownloadFileOptions) {
   return $(opt.cloudStorage).downloadFile(opt);
 }
 
@@ -302,18 +296,20 @@ export async function uploadFile(
   opt: UploadFileOptions
 ): Promise<CloudFileRef> {
   const { filePath, text, cloudStorage, archive, client } = opt;
+  const contentHash = generateContentHash(text);
   if (archive) {
     const archiveFilePath = getArchiveFilePath(filePath);
     if (!archiveFilePath) {
       throw new Error(`Unable to get archive file path from "${filePath}"`);
     }
     const archiveFile = await $(opt.cloudStorage).uploadFile({
-      path: getFilenameFromPath(archiveFilePath),
-      content: text,
+      filePath: getFilenameFromPath(archiveFilePath),
+      text,
       client,
     });
     const cloudArchiveFileRef = {
       ...archiveFile,
+      contentHash,
       localFilePath: filePath,
       lastSync: new Date().toISOString(),
       cloudStorage,
@@ -322,12 +318,13 @@ export async function uploadFile(
     return cloudArchiveFileRef;
   } else {
     const cloudFile = await $(opt.cloudStorage).uploadFile({
-      path: getFilenameFromPath(filePath),
-      content: text,
+      filePath: getFilenameFromPath(filePath),
+      text,
       client,
     });
     const cloudFileRef = {
       ...cloudFile,
+      contentHash,
       localFilePath: filePath,
       lastSync: new Date().toISOString(),
       cloudStorage,
@@ -367,14 +364,18 @@ export async function syncFile(
   }
 
   const newCloudFile = !archive ? syncResult.cloudFile : cloudFileRef;
-
   const newCloudArchiveFile = archive
     ? syncResult.cloudFile
     : cloudArchiveFileRef;
+  const contentHash =
+    syncResult.type === "server"
+      ? generateContentHash(syncResult.content)
+      : generateContentHash(text);
 
   if (newCloudFile) {
     await linkFile({
       ...newCloudFile,
+      contentHash,
       localFilePath: filePath,
       lastSync: new Date().toISOString(),
       cloudStorage,
@@ -382,6 +383,7 @@ export async function syncFile(
   } else if (newCloudArchiveFile) {
     await linkArchiveFile({
       ...newCloudArchiveFile,
+      contentHash,
       localFilePath: filePath,
       cloudStorage,
     });

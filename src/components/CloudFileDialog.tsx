@@ -21,6 +21,7 @@ import {
   ListCloudItemResult,
   useCloudStorage,
 } from "../data/CloudStorageContext";
+import generateContentHash from "../data/CloudStorageContext/ContentHasher";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
@@ -119,7 +120,7 @@ const CloudFileDialog = () => {
       });
       await saveDoneFile(filePath, archiveText);
       await linkCloudArchiveFile({
-        ...archiveFile,
+        ...{ ...archiveFile, contentHash: generateContentHash(archiveText) },
         localFilePath: filePath,
         cloudStorage,
       });
@@ -133,7 +134,7 @@ const CloudFileDialog = () => {
     }
 
     await linkCloudFile({
-      ...selectedFile,
+      ...{ ...selectedFile, contentHash: generateContentHash(text) },
       localFilePath: filePath,
       lastSync: new Date().toISOString(),
       cloudStorage,

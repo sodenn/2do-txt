@@ -1,5 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Test" type="NodeJSConfigurationType" application-parameters="run --threads false $FilePathRelativeToProjectRoot$" path-to-js-file="node_modules/vitest/vitest.mjs" working-dir="$PROJECT_DIR$">
-    <method v="2" />
-  </configuration>
-</component>
