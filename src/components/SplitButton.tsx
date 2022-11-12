@@ -53,7 +53,6 @@ const SplitButton = (props: SplitButtonProps) => {
 
   const handleClick: ButtonProps["onClick"] = (event) => {
     const option = options[selectedIndex];
-    console.info(`You clicked ${selectedIndex}`);
     if (option.onClick) {
       option.onClick(event);
     }

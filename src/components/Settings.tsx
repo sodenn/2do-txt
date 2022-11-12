@@ -106,8 +106,7 @@ const Settings = () => {
         <div>
           <Heading gutterBottom>{t("Cloud storage")}</Heading>
           <Stack sx={{ mt: 1 }} spacing={1}>
-            <CloudStorageConnectionButtons status="connect" />
-            <CloudStorageConnectionButtons status="disconnect" />
+            <CloudStorageConnectionButtons />
           </Stack>
         </div>
       )}

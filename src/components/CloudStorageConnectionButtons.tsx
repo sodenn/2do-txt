@@ -10,7 +10,7 @@ import {
 import SplitButton, { SplitButtonItem } from "./SplitButton";
 
 interface CloudStorageConnectionButtonsProps {
-  status: "connect" | "disconnect";
+  status?: "connect" | "disconnect";
 }
 
 export const CloudStorageConnectionButtons = ({
@@ -26,11 +26,16 @@ export const CloudStorageConnectionButtons = ({
   const [loading, setLoading] = useState(false);
   const filteredCloudStorages = cloudStorages.filter((cloudStorage) => {
     const connected = connectedCloudStorages[cloudStorage];
-    return status === "connect" ? !connected : connected;
+    return typeof status === "undefined"
+      ? true
+      : status === "connect"
+      ? !connected
+      : connected;
   });
 
   const handleClick = async (cloudStorage: CloudStorage) => {
-    if (status === "connect") {
+    const connected = connectedCloudStorages[cloudStorage];
+    if (!connected) {
       setLoading(true);
       authenticate(cloudStorage).finally(() => setLoading(false));
     } else {
@@ -46,31 +51,28 @@ export const CloudStorageConnectionButtons = ({
     const cloudStorage = filteredCloudStorages[0];
     return (
       <LoadingButton
-        loading={status === "connect" ? loading : undefined}
+        loading={loading}
         variant="outlined"
         startIcon={cloudStorageIcons[cloudStorage]}
         fullWidth
         onClick={() => handleClick(cloudStorage)}
       >
-        {status === "connect"
-          ? t("Connect to cloud storage", { cloudStorage })
-          : t("Disconnect from cloud storage", { cloudStorage })}
+        {connectedCloudStorages[cloudStorage]
+          ? t("Disconnect from cloud storage", { cloudStorage })
+          : t("Connect to cloud storage", { cloudStorage })}
       </LoadingButton>
     );
   }
 
   return (
-    <SplitButton
-      loading={status === "connect" ? loading : undefined}
-      aria-label={status === "connect" ? "Connect" : "Disconnect"}
-    >
+    <SplitButton loading={loading}>
       {filteredCloudStorages.map((cloudStorage) => (
         <SplitButtonItem
           key={cloudStorage}
           label={
-            status === "connect"
-              ? t("Connect to cloud storage", { cloudStorage })
-              : t("Disconnect from cloud storage", { cloudStorage })
+            connectedCloudStorages[cloudStorage]
+              ? t("Disconnect from cloud storage", { cloudStorage })
+              : t("Connect to cloud storage", { cloudStorage })
           }
           icon={cloudStorageIcons[cloudStorage]}
           onClick={() => handleClick(cloudStorage)}

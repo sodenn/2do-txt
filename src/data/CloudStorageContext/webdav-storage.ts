@@ -14,21 +14,32 @@ import {
   UploadFileOptions,
 } from "./cloud-storage.types";
 
+interface Credentials {
+  username: string;
+  password: string;
+  url: string;
+}
+
 const { getSecureStorageItem, setSecureStorageItem, removeSecureStorageItem } =
   getSecureStorage();
 
-export async function saveWebDAVCredentials(): Promise<void> {
+export async function saveWebDAVCredentials(
+  credentials: Credentials
+): Promise<void> {
+  const { username, password, url } = credentials;
   await Promise.all([
-    setSecureStorageItem("WebDAV-username", ""),
-    setSecureStorageItem("WebDAV-password", ""),
-    setSecureStorageItem("WebDAV-url", ""),
+    setSecureStorageItem("WebDAV-username", username),
+    setSecureStorageItem("WebDAV-password", password),
+    setSecureStorageItem("WebDAV-url", url),
   ]);
-  // test connection
-  const client = await createClient().catch(async (error) => {
+  try {
+    const client = await createClient();
+    // test connection
+    await listFiles({ path: "/", client });
+  } catch (error) {
     await resetTokens();
     throw error;
-  });
-  await listFiles({ path: "/", client });
+  }
 }
 
 export async function authenticate(): Promise<void> {
@@ -62,27 +73,34 @@ export async function unlink(_: any) {
 export async function listFiles(
   opt: Omit<ListCloudFilesOptions<WebDAVClient>, "cloudStorage">
 ): Promise<ListCloudItemResult> {
-  const { path, client } = opt;
-  if (!path) {
-    throw new Error("WebDAV listFiles: path is undefined");
-  }
+  const { client } = opt;
+  const path = opt.path || "/";
   const result = (await client.getDirectoryContents(path, {
     details: false,
   })) as FileStat[];
-  const items: CloudItem[] = result.map((r) =>
-    r.type === "file"
-      ? {
-          name: r.filename,
-          path: r.basename,
-          rev: r.lastmod,
-          type: "file",
-        }
-      : { name: r.filename, path: r.basename, type: "folder" }
-  );
+  const items: CloudItem[] = result
+    .filter((r) => !r.filename.endsWith("/webdav"))
+    .filter((r) => !path || !r.filename.endsWith(path))
+    .map((r) =>
+      r.type === "file"
+        ? {
+            name: r.basename,
+            path: getPath(r),
+            rev: r.lastmod,
+            type: "file",
+          }
+        : { name: r.basename, path: getPath(r), type: "folder" }
+    );
   return {
     items,
     hasMore: false,
   };
+}
+
+function getPath(fileStat: FileStat) {
+  const search = "/webdav";
+  const start = fileStat.filename.indexOf(search);
+  return fileStat.filename.substring(start + search.length);
 }
 
 export async function getFileMetaData(

@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCloudStorage } from "../data/CloudStorageContext";
+import { saveWebDAVCredentials } from "../data/CloudStorageContext/webdav-storage";
 import { useWebDAVDialog } from "../data/CloudStorageContext/WebDAVDialogContext";
 
 const WebDavDialog = () => {
@@ -23,12 +25,18 @@ const WebDavDialog = () => {
   const [url, setUrl] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<any>();
+  const { createClient } = useCloudStorage();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError(undefined);
     setConnected(true);
-    setWebDAVDialog({ open: false });
+    await saveWebDAVCredentials({ username, password, url })
+      .then(() => {
+        setWebDAVDialog({ open: false });
+        return createClient("WebDAV");
+      })
+      .catch(setError);
   };
 
   const handleClose = () => {
@@ -62,6 +70,7 @@ const WebDavDialog = () => {
             fullWidth
             variant="outlined"
             type="url"
+            placeholder="E.g. https://example.com/remote.php/webdav"
             inputProps={{
               "aria-label": "URL",
             }}
@@ -89,9 +98,9 @@ const WebDavDialog = () => {
             }}
           />
           {error && (
-            <Alert severity="error">
+            <Alert severity="warning" variant="outlined">
               <AlertTitle>{t("Connection Error")}</AlertTitle>
-              {error}
+              {error.message}
             </Alert>
           )}
         </Stack>

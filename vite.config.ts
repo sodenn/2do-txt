@@ -9,6 +9,11 @@ const eslintOptions: any = {
 };
 
 export default defineConfig({
+  server: {
+    proxy: {
+      "/webdav": "http://localhost:8080/remote.php",
+    },
+  },
   build: {
     outDir: "./build",
   },

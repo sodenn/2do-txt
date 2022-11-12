@@ -32,7 +32,6 @@ import {
   CloudStorage,
 } from "./cloud-storage.types";
 import {
-  CloudFileDialogOptions,
   DeleteFileOptions,
   DownloadFileOptions,
   ListCloudFilesOptions,
@@ -63,10 +62,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const [cloudStorageClients, setCloudStorageClients] = useState(
     data.cloudStorageClients
   );
-  const [cloudFileDialogOptions, setCloudFileDialogOptions] =
-    useState<CloudFileDialogOptions>({
-      open: false,
-    });
   const cloudStorageEnabled =
     ["ios", "android", "electron"].includes(platform) ||
     import.meta.env.VITE_ENABLE_WEB_CLOUD_STORAGE === "true";
@@ -397,6 +392,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   }, [requestTokens]);
 
   return {
+    createClient,
     cloudStorageEnabled,
     connectedCloudStorages,
     authenticate,
@@ -413,9 +409,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     unlinkCloudFile,
     unlinkCloudArchiveFile,
     getCloudArchiveFileMetaData,
-    cloudFileDialogOptions,
     getCloudFileRefs,
-    setCloudFileDialogOptions,
     getCloudFileRefByFilePath,
     getCloudArchiveFileRefByFilePath,
   };

@@ -1,10 +1,5 @@
 import { CloudStorage } from "./cloud-storage.types";
 
-export interface CloudFileDialogOptions {
-  open: boolean;
-  cloudStorage?: CloudStorage;
-}
-
 export interface DeleteFileOptions {
   filePath: string;
   archive: boolean;

@@ -10,10 +10,11 @@ const SafeArea = styled("div")({
 
 interface FullScreenDialogContentProps extends WithChildren {
   onScroll?: (top: number) => void;
+  disableGutters?: boolean;
 }
 
 const FullScreenDialogContent = (props: FullScreenDialogContentProps) => {
-  const { children, onScroll } = props;
+  const { children, disableGutters, onScroll } = props;
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -33,7 +34,7 @@ const FullScreenDialogContent = (props: FullScreenDialogContentProps) => {
         flex: "1 1 auto",
         position: "relative",
         overflowY: "auto",
-        px: 2,
+        px: disableGutters ? 0 : 2,
         py: 1,
       }}
     >

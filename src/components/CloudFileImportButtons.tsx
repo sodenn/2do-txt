@@ -4,6 +4,7 @@ import {
   CloudStorage,
   cloudStorageIcons,
   cloudStorages,
+  useCloudFileDialog,
   useCloudStorage,
 } from "../data/CloudStorageContext";
 
@@ -36,7 +37,7 @@ const CloudFileImportButton = ({
   cloudStorage,
 }: CloudFileImportButtonProps) => {
   const { t } = useTranslation();
-  const { setCloudFileDialogOptions } = useCloudStorage();
+  const { setCloudFileDialogOptions } = useCloudFileDialog();
 
   return (
     <Button
