@@ -248,8 +248,11 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
 
   const downloadFile = useCallback(
     (opt: DownloadFileOptions) => {
+      const { cloudStorage, cloudFilePath } = opt;
       const client = getClient(opt.cloudStorage);
-      return cloud.downloadFile({ ...opt, client }).catch(handleError);
+      return cloud
+        .downloadFile({ filePath: cloudFilePath, cloudStorage, client })
+        .catch(handleError);
     },
     [getClient, handleError]
   );
@@ -343,13 +346,10 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         ),
       });
 
-      const results = await cloud
+      return cloud
         .syncAllFiles(syncOptions.map((o) => ({ ...o, cloudStorageClients })))
-        .catch(handleError);
-
-      closeSnackbar(snackbar);
-
-      return results;
+        .catch(handleError)
+        .finally(() => closeSnackbar(snackbar));
     },
     [
       closeSnackbar,
@@ -387,6 +387,14 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     [cloudStorageClients]
   );
 
+  const connectedCloudStorages = useMemo(
+    () =>
+      Object.entries(cloudStoragesConnectionStatus)
+        .filter(([_, connected]) => connected)
+        .map(([cloudStorage]) => cloudStorage as CloudStorage),
+    [cloudStoragesConnectionStatus]
+  );
+
   useEffect(() => {
     requestTokens().then();
   }, [requestTokens]);
@@ -395,6 +403,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     createClient,
     cloudStorageEnabled,
     cloudStoragesConnectionStatus,
+    connectedCloudStorages,
     authenticate,
     linkCloudFile,
     linkCloudArchiveFile,

@@ -150,6 +150,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
 
 const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   const { filePath, cloudFileRef, onChange, onClose } = props;
+  const { connectedCloudStorages } = useCloudStorage();
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -201,14 +202,17 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
       >
-        <CloudStorageMenuItem
-          cloudStorage="Dropbox"
-          onClick={handleClose}
-          onChange={onChange}
-          filePath={filePath}
-          onLoad={setCloudSyncLoading}
-          cloudFileRef={cloudFileRef}
-        />
+        {connectedCloudStorages.map((cloudStorage) => (
+          <CloudStorageMenuItem
+            key={cloudStorage}
+            cloudStorage={cloudStorage}
+            onClick={handleClose}
+            onChange={onChange}
+            filePath={filePath}
+            onLoad={setCloudSyncLoading}
+            cloudFileRef={cloudFileRef}
+          />
+        ))}
         <MenuItem onClick={handleCopyToClipboard}>
           <ListItemIcon>
             <ContentCopyIcon />

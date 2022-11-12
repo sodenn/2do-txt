@@ -102,7 +102,7 @@ export interface ListCloudItemResult {
 }
 
 export interface DownloadFileOptions<T = any> {
-  cloudFilePath: string;
+  filePath: string;
   cloudStorage: CloudStorage;
   client: T;
 }
@@ -121,7 +121,7 @@ export interface DeleteFileOptions extends WithClients {
 }
 
 export interface DeleteFileOptionsInternal<T> {
-  path: string;
+  filePath: string;
   cloudStorage: CloudStorage;
   client: T;
 }

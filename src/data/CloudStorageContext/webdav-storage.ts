@@ -131,9 +131,9 @@ export async function getFileMetaData(
 export async function downloadFile(
   opt: Omit<DownloadFileOptions<WebDAVClient>, "cloudStorage">
 ): Promise<string> {
-  const { cloudFilePath, client } = opt;
+  const { filePath, client } = opt;
   return (await client
-    .getFileContents(cloudFilePath, {
+    .getFileContents(filePath, {
       format: "text",
     })
     .catch(handleError)) as string;
@@ -144,10 +144,8 @@ export async function uploadFile(
 ): Promise<CloudFile> {
   const { filePath, text, client } = opt;
   const uploaded = await client
-    .putFileContents(filePath, text, { contentLength: undefined })
-    .catch((error) => {
-      return handleError(error);
-    });
+    .putFileContents(filePath, text)
+    .catch(handleError);
   if (!uploaded) {
     throw new Error("Unable to upload file");
   }
@@ -155,8 +153,8 @@ export async function uploadFile(
 }
 
 export async function deleteFile(opt: DeleteFileOptionsInternal<WebDAVClient>) {
-  const { path, client } = opt;
-  return client.deleteFile(path);
+  const { filePath, client } = opt;
+  return client.deleteFile(filePath);
 }
 
 export async function syncFile(
@@ -215,7 +213,7 @@ export async function syncFile(
   // use server file
   if (localVersion.rev !== serverVersion.rev) {
     const content = await downloadFile({
-      cloudFilePath: serverVersion.path,
+      filePath: serverVersion.path,
       client,
     });
     return {

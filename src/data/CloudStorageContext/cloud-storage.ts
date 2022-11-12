@@ -162,14 +162,14 @@ export async function deleteFile(opt: DeleteFileOptions) {
   }
 
   await deleteFileImpl({
-    path: ref.path,
+    filePath: ref.path,
     client: client.instance,
     cloudStorage,
   });
 
   if (!archive && cloudArchiveFileRef) {
     await deleteFileImpl({
-      path: cloudArchiveFileRef.path,
+      filePath: cloudArchiveFileRef.path,
       client,
       cloudStorage,
     });

@@ -30,7 +30,8 @@ const FileCreateDialog = () => {
   const platform = getPlatform();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { setActiveTaskListPath } = useFilter();
-  const { uploadFile, cloudStoragesConnectionStatus } = useCloudStorage();
+  const { uploadFile, cloudStoragesConnectionStatus, connectedCloudStorages } =
+    useCloudStorage();
   const { saveTodoFile } = useTask();
   const {
     fileCreateDialog: { open, createExampleFile, createFirstTask },
@@ -175,22 +176,19 @@ const FileCreateDialog = () => {
             "aria-label": "File name",
           }}
         />
-        {Object.entries(cloudStoragesConnectionStatus)
-          .filter(([_, connected]) => connected)
-          .map(([cloudStorage]) => cloudStorage as CloudStorage)
-          .map((cloudStorage) => (
-            <FormControlLabel
-              key={cloudStorage}
-              control={
-                <Checkbox
-                  aria-label="Sync with cloud storage"
-                  checked={selectedCloudStorage === cloudStorage}
-                  onChange={() => handleSelectCloudStorage(cloudStorage)}
-                />
-              }
-              label={t("Sync with cloud storage", { cloudStorage })}
-            />
-          ))}
+        {connectedCloudStorages.map((cloudStorage) => (
+          <FormControlLabel
+            key={cloudStorage}
+            control={
+              <Checkbox
+                aria-label="Sync with cloud storage"
+                checked={selectedCloudStorage === cloudStorage}
+                onChange={() => handleSelectCloudStorage(cloudStorage)}
+              />
+            }
+            label={t("Sync with cloud storage", { cloudStorage })}
+          />
+        ))}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t("Cancel")}</Button>

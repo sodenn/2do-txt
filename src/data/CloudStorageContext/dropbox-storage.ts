@@ -204,11 +204,11 @@ export async function getFileMetaData(
 export async function downloadFile(
   opt: Omit<DownloadFileOptions<Dropbox>, "cloudStorage">
 ): Promise<string> {
-  const { cloudFilePath, client } = opt;
+  const { filePath, client } = opt;
 
   const res = await client
     .filesDownload({
-      path: cloudFilePath,
+      path: filePath,
     })
     .catch(handleError);
 
@@ -247,8 +247,8 @@ export async function uploadFile(
 }
 
 export async function deleteFile(opt: DeleteFileOptionsInternal<Dropbox>) {
-  const { path, client } = opt;
-  await client.filesDeleteV2({ path }).catch(handleError);
+  const { filePath, client } = opt;
+  await client.filesDeleteV2({ path: filePath }).catch(handleError);
 }
 
 export async function syncFile(
@@ -307,7 +307,7 @@ export async function syncFile(
   // use server file
   if (localVersion.rev !== serverVersion.rev) {
     const content = await downloadFile({
-      cloudFilePath: serverVersion.path,
+      filePath: serverVersion.path,
       client,
     });
     return {

@@ -1,7 +1,6 @@
 import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
-  CloudStorage,
   cloudStorageIcons,
   useCloudFileDialog,
   useCloudStorage,
@@ -11,11 +10,7 @@ import SplitButton, { SplitButtonItem } from "./SplitButton";
 const CloudFileImportButtons = () => {
   const { t } = useTranslation();
   const { setCloudFileDialogOptions } = useCloudFileDialog();
-  const { cloudStorageEnabled, cloudStoragesConnectionStatus } =
-    useCloudStorage();
-  const connectedCloudStorages = Object.entries(cloudStoragesConnectionStatus)
-    .filter(([, connected]) => connected)
-    .map(([cloudStorage]) => cloudStorage as CloudStorage);
+  const { cloudStorageEnabled, connectedCloudStorages } = useCloudStorage();
 
   if (!cloudStorageEnabled || connectedCloudStorages.length === 0) {
     return null;
