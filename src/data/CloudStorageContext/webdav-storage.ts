@@ -1,6 +1,9 @@
 import { createClient as _createClient, FileStat, WebDAVClient } from "webdav";
 import { getSecureStorage } from "../../utils/secure-storage";
-import { CloudFileUnauthorizedError } from "./cloud-storage";
+import {
+  CloudFileNotFoundError,
+  CloudFileUnauthorizedError,
+} from "./cloud-storage";
 import {
   CloudFile,
   CloudItem,
@@ -13,6 +16,7 @@ import {
   SyncFileResult,
   UploadFileOptions,
 } from "./cloud-storage.types";
+import generateContentHash from "./ContentHasher";
 
 interface Credentials {
   username: string;
@@ -75,25 +79,31 @@ export async function listFiles(
 ): Promise<ListCloudItemResult> {
   const { client } = opt;
   const path = opt.path || "/";
-  const result = (await client.getDirectoryContents(path, {
-    details: false,
-  })) as FileStat[];
-  const items: CloudItem[] = result
+  const results = (await client
+    .getDirectoryContents(path, {
+      details: false,
+    })
+    .catch(handleError)) as FileStat[];
+  const items: CloudItem[] = results
     .filter((r) => !r.filename.endsWith("/webdav"))
     .filter((r) => !path || !r.filename.endsWith(path))
     .map((r) =>
       r.type === "file"
-        ? {
-            name: r.basename,
-            path: getPath(r),
-            rev: r.lastmod,
-            type: "file",
-          }
+        ? mapToCloudFile(r)
         : { name: r.basename, path: getPath(r), type: "folder" }
     );
   return {
     items,
     hasMore: false,
+  };
+}
+
+function mapToCloudFile(fileStat: FileStat): CloudFile {
+  return {
+    name: fileStat.basename,
+    path: getPath(fileStat),
+    rev: fileStat.lastmod,
+    type: "file",
   };
 }
 
@@ -106,27 +116,122 @@ function getPath(fileStat: FileStat) {
 export async function getFileMetaData(
   opt: Omit<FileMetaDataOptions<WebDAVClient>, "cloudStorage">
 ): Promise<CloudFile> {
-  throw new Error("Not yet implemented");
+  const { path, client } = opt;
+  const results = (await client
+    .getDirectoryContents(path, {
+      details: false,
+    })
+    .catch(handleError)) as FileStat[];
+  if (results.length !== 1) {
+    throw new CloudFileNotFoundError();
+  }
+  return mapToCloudFile(results[0]);
 }
 
 export async function downloadFile(
-  opt: Omit<DownloadFileOptions, "cloudStorage">
+  opt: Omit<DownloadFileOptions<WebDAVClient>, "cloudStorage">
 ): Promise<string> {
-  throw new Error("Not yet implemented");
+  const { cloudFilePath, client } = opt;
+  return (await client
+    .getFileContents(cloudFilePath, {
+      format: "text",
+    })
+    .catch(handleError)) as string;
 }
 
 export async function uploadFile(
   opt: Omit<UploadFileOptions<WebDAVClient>, "cloudStorage" | "archive">
 ): Promise<CloudFile> {
-  throw new Error("Not yet implemented");
+  const { filePath, text, client } = opt;
+  const uploaded = await client
+    .putFileContents(filePath, text, { contentLength: undefined })
+    .catch((error) => {
+      return handleError(error);
+    });
+  if (!uploaded) {
+    throw new Error("Unable to upload file");
+  }
+  return getFileMetaData({ path: filePath, client }).catch(handleError);
 }
 
 export async function deleteFile(opt: DeleteFileOptionsInternal<WebDAVClient>) {
-  throw new Error("Not yet implemented");
+  const { path, client } = opt;
+  return client.deleteFile(path);
 }
 
 export async function syncFile(
   opt: SyncFileOptionsInternal<WebDAVClient>
 ): Promise<SyncFileResult> {
-  throw new Error("Not yet implemented");
+  const { localVersion, localContent, client } = opt;
+
+  const serverVersion = await getFileMetaData({
+    path: localVersion.path,
+    client,
+  }).catch((error) => {
+    if (!(error instanceof CloudFileNotFoundError)) {
+      throw error;
+    }
+  });
+
+  // create file
+  if (!serverVersion) {
+    const cloudFile = await uploadFile({
+      filePath: localVersion.path,
+      text: localContent,
+      client,
+    });
+    return {
+      type: "local",
+      cloudFile,
+    };
+  }
+
+  const localContentHash = generateContentHash(localContent);
+
+  // no action needed
+  if (
+    localVersion.rev === serverVersion.rev &&
+    localContentHash === serverVersion.contentHash
+  ) {
+    return;
+  }
+
+  // update server file
+  if (
+    localVersion.rev === serverVersion.rev &&
+    localContentHash !== serverVersion.contentHash
+  ) {
+    const cloudFile = await uploadFile({
+      filePath: localVersion.path,
+      text: localContent,
+      client,
+    });
+    return {
+      type: "local",
+      cloudFile,
+    };
+  }
+
+  // use server file
+  if (localVersion.rev !== serverVersion.rev) {
+    const content = await downloadFile({
+      cloudFilePath: serverVersion.path,
+      client,
+    });
+    return {
+      type: "server",
+      cloudFile: serverVersion,
+      content,
+    };
+  }
+}
+
+async function handleError(error: any): Promise<never> {
+  if (error.status === 401) {
+    await resetTokens();
+    throw new CloudFileUnauthorizedError("Dropbox");
+  } else if (error.status === 404) {
+    throw new CloudFileNotFoundError();
+  }
+  throw error;
 }

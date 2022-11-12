@@ -248,7 +248,7 @@ export async function uploadFile(
 
 export async function deleteFile(opt: DeleteFileOptionsInternal<Dropbox>) {
   const { path, client } = opt;
-  await client.filesDeleteV2({ path });
+  await client.filesDeleteV2({ path }).catch(handleError);
 }
 
 export async function syncFile(
