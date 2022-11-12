@@ -15,7 +15,10 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
+import {
+  useCloudFileDialog,
+  useCloudStorage,
+} from "../data/CloudStorageContext";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../data/FileManagementDialogContext";
 import { useFilter } from "../data/FilterContext";
@@ -38,11 +41,9 @@ const FileMenu = () => {
   const { setShortcutsDialogOpen } = useShortcutsDialog();
   const { setFileCreateDialog } = useFileCreateDialog();
   const { taskLists, activeTaskList, openTodoFilePicker } = useTask();
-  const {
-    setCloudFileDialogOptions,
-    cloudStorageEnabled,
-    connectedCloudStorages,
-  } = useCloudStorage();
+  const { cloudStorageEnabled, cloudStoragesConnectionStatus } =
+    useCloudStorage();
+  const { setCloudFileDialogOptions } = useCloudFileDialog();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -152,7 +153,7 @@ const FileMenu = () => {
         )}
         {taskLists.length < 4 &&
           cloudStorageEnabled &&
-          connectedCloudStorages["Dropbox"] && (
+          cloudStoragesConnectionStatus["Dropbox"] && (
             <MenuItem onClick={handleImportFromCloudStorage}>
               <ListItemIcon>
                 <DropboxIcon fontSize="small" />

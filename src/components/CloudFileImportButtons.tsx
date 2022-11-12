@@ -1,53 +1,53 @@
-import { Button, Stack } from "@mui/material";
+import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
   CloudStorage,
   cloudStorageIcons,
-  cloudStorages,
   useCloudFileDialog,
   useCloudStorage,
 } from "../data/CloudStorageContext";
-
-interface CloudFileImportButtonProps {
-  cloudStorage: CloudStorage;
-}
+import SplitButton, { SplitButtonItem } from "./SplitButton";
 
 const CloudFileImportButtons = () => {
-  const { cloudStorageEnabled, connectedCloudStorages } = useCloudStorage();
+  const { t } = useTranslation();
+  const { setCloudFileDialogOptions } = useCloudFileDialog();
+  const { cloudStorageEnabled, cloudStoragesConnectionStatus } =
+    useCloudStorage();
+  const connectedCloudStorages = Object.entries(cloudStoragesConnectionStatus)
+    .filter(([, connected]) => connected)
+    .map(([cloudStorage]) => cloudStorage as CloudStorage);
 
-  if (
-    !cloudStorageEnabled ||
-    cloudStorages.every((cloudStorage) => !connectedCloudStorages[cloudStorage])
-  ) {
+  if (!cloudStorageEnabled || connectedCloudStorages.length === 0) {
     return null;
   }
 
-  return (
-    <Stack spacing={1}>
-      {cloudStorages
-        .filter((cloudStorage) => connectedCloudStorages[cloudStorage])
-        .map((cloudStorage, idx) => (
-          <CloudFileImportButton key={idx} cloudStorage={cloudStorage} />
-        ))}
-    </Stack>
-  );
-};
-
-const CloudFileImportButton = ({
-  cloudStorage,
-}: CloudFileImportButtonProps) => {
-  const { t } = useTranslation();
-  const { setCloudFileDialogOptions } = useCloudFileDialog();
+  if (connectedCloudStorages.length === 1) {
+    const cloudStorage = connectedCloudStorages[0];
+    return (
+      <Button
+        aria-label={`Import todo.txt from ${cloudStorage}`}
+        onClick={() => setCloudFileDialogOptions({ open: true, cloudStorage })}
+        startIcon={cloudStorageIcons[cloudStorage]}
+        variant="outlined"
+      >
+        {t("Import from cloud storage", { cloudStorage })}
+      </Button>
+    );
+  }
 
   return (
-    <Button
-      aria-label={`Import todo.txt from ${cloudStorage}`}
-      onClick={() => setCloudFileDialogOptions({ open: true, cloudStorage })}
-      startIcon={cloudStorageIcons[cloudStorage]}
-      variant="outlined"
-    >
-      {t("Import from cloud storage", { cloudStorage })}
-    </Button>
+    <SplitButton aria-label={`Import todo.txt from cloud storage`}>
+      {connectedCloudStorages.map((cloudStorage) => (
+        <SplitButtonItem
+          key={cloudStorage}
+          label={t("Import from cloud storage", { cloudStorage })}
+          icon={cloudStorageIcons[cloudStorage]}
+          onClick={() =>
+            setCloudFileDialogOptions({ open: true, cloudStorage })
+          }
+        />
+      ))}
+    </SplitButton>
   );
 };
 

@@ -44,7 +44,6 @@ import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent"
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 
 interface CloudFileDialogContentProps {
-  open: boolean;
   cloudStorage?: CloudStorage;
   onSelect: (cloudFile?: CloudFile) => void;
   onFilesChange: (files?: ListCloudItemResult) => void;
@@ -195,7 +194,6 @@ const CloudFileDialog = () => {
           disableGutters
         >
           <CloudFileDialogContent
-            open={open}
             cloudStorage={cloudStorage}
             onSelect={setSelectedFile}
             onFilesChange={setFiles}
@@ -221,7 +219,6 @@ const CloudFileDialog = () => {
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <CloudFileDialogContent
-          open={open}
           cloudStorage={cloudStorage}
           onSelect={setSelectedFile}
           onFilesChange={setFiles}
@@ -247,7 +244,7 @@ const CloudFileDialog = () => {
 };
 
 const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
-  const { open, cloudStorage, onSelect, onFilesChange } = props;
+  const { cloudStorage, onSelect, onFilesChange } = props;
   const { t } = useTranslation();
   const { taskLists } = useTask();
   const { listCloudFiles, getCloudFileRefs } = useCloudStorage();
@@ -317,25 +314,23 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
   };
 
   useEffect(() => {
-    if (open) {
-      loadItems(currentPath);
-      getCloudFileRefs()
-        .then((refs) => refs.filter((ref) => ref.cloudStorage === cloudStorage))
-        .then((refs) =>
-          refs.filter((ref) =>
-            taskLists.some((t) => t.filePath === ref.localFilePath)
-          )
+    loadItems(currentPath);
+    getCloudFileRefs()
+      .then((refs) => refs.filter((ref) => ref.cloudStorage === cloudStorage))
+      .then((refs) =>
+        refs.filter((ref) =>
+          taskLists.some((t) => t.filePath === ref.localFilePath)
         )
-        .then(setCloudFileRefs);
-    }
+      )
+      .then(setCloudFileRefs);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
       {!files && (
-        <Box sx={{ textAlign: "center", my: 2 }}>
-          <CircularProgress />
+        <Box sx={{ textAlign: "center", my: 3 }}>
+          <CircularProgress size={30} />
         </Box>
       )}
       {files && files.items.length === 0 && (

@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import {
   CloudStorage,
   cloudStorageIcons,
-  cloudStorages,
   useCloudStorage,
 } from "../data/CloudStorageContext";
 import SplitButton, { SplitButtonItem } from "./SplitButton";
@@ -18,23 +17,24 @@ export const CloudStorageConnectionButtons = ({
 }: CloudStorageConnectionButtonsProps) => {
   const {
     cloudStorageEnabled,
-    connectedCloudStorages,
+    cloudStoragesConnectionStatus,
     authenticate,
     unlinkCloudStorage,
   } = useCloudStorage();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const filteredCloudStorages = cloudStorages.filter((cloudStorage) => {
-    const connected = connectedCloudStorages[cloudStorage];
-    return typeof status === "undefined"
-      ? true
-      : status === "connect"
-      ? !connected
-      : connected;
-  });
+  const filteredCloudStorages = Object.entries(cloudStoragesConnectionStatus)
+    .filter(([, connected]) => {
+      return typeof status === "undefined"
+        ? true
+        : status === "connect"
+        ? !connected
+        : connected;
+    })
+    .map(([cloudStorages]) => cloudStorages as CloudStorage);
 
   const handleClick = async (cloudStorage: CloudStorage) => {
-    const connected = connectedCloudStorages[cloudStorage];
+    const connected = cloudStoragesConnectionStatus[cloudStorage];
     if (!connected) {
       setLoading(true);
       authenticate(cloudStorage).finally(() => setLoading(false));
@@ -57,7 +57,7 @@ export const CloudStorageConnectionButtons = ({
         fullWidth
         onClick={() => handleClick(cloudStorage)}
       >
-        {connectedCloudStorages[cloudStorage]
+        {cloudStoragesConnectionStatus[cloudStorage]
           ? t("Disconnect from cloud storage", { cloudStorage })
           : t("Connect to cloud storage", { cloudStorage })}
       </LoadingButton>
@@ -70,7 +70,7 @@ export const CloudStorageConnectionButtons = ({
         <SplitButtonItem
           key={cloudStorage}
           label={
-            connectedCloudStorages[cloudStorage]
+            cloudStoragesConnectionStatus[cloudStorage]
               ? t("Disconnect from cloud storage", { cloudStorage })
               : t("Connect to cloud storage", { cloudStorage })
           }

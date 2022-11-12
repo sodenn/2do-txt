@@ -17,8 +17,9 @@ import {
 import React, { ReactNode, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  CloudStorage,
   cloudStorageIcons,
-  cloudStorages,
+  useCloudFileDialog,
   useCloudStorage,
 } from "../../data/CloudStorageContext";
 import { useFileCreateDialog } from "../../data/FileCreateDialogContext";
@@ -32,11 +33,9 @@ const FileActionButton = () => {
   const { openTodoFilePicker } = useTask();
   const { setFileCreateDialog } = useFileCreateDialog();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
-  const {
-    connectedCloudStorages,
-    cloudStorageEnabled,
-    setCloudFileDialogOptions,
-  } = useCloudStorage();
+  const { cloudStoragesConnectionStatus, cloudStorageEnabled } =
+    useCloudStorage();
+  const { setCloudFileDialogOptions } = useCloudFileDialog();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
@@ -62,11 +61,9 @@ const FileActionButton = () => {
     },
   ];
 
-  cloudStorages
-    .filter(
-      (cloudStorage) =>
-        cloudStorageEnabled && connectedCloudStorages[cloudStorage]
-    )
+  Object.entries(cloudStoragesConnectionStatus)
+    .filter(([, connected]) => cloudStorageEnabled && connected)
+    .map(([cloudStorages]) => cloudStorages as CloudStorage)
     .forEach((cloudStorage) => {
       const icon = cloudStorageIcons[cloudStorage];
       options.push({

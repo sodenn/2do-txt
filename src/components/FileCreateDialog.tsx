@@ -30,7 +30,7 @@ const FileCreateDialog = () => {
   const platform = getPlatform();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { setActiveTaskListPath } = useFilter();
-  const { uploadFile, connectedCloudStorages } = useCloudStorage();
+  const { uploadFile, cloudStoragesConnectionStatus } = useCloudStorage();
   const { saveTodoFile } = useTask();
   const {
     fileCreateDialog: { open, createExampleFile, createFirstTask },
@@ -72,7 +72,10 @@ const FileCreateDialog = () => {
   const createTodoFileAndSync = async () => {
     handleClose();
     await createNewFile(fileName);
-    if (selectedCloudStorage && connectedCloudStorages[selectedCloudStorage]) {
+    if (
+      selectedCloudStorage &&
+      cloudStoragesConnectionStatus[selectedCloudStorage]
+    ) {
       await uploadFile({
         filePath: fileName,
         text: "",
@@ -172,7 +175,7 @@ const FileCreateDialog = () => {
             "aria-label": "File name",
           }}
         />
-        {Object.entries(connectedCloudStorages)
+        {Object.entries(cloudStoragesConnectionStatus)
           .filter(([_, connected]) => connected)
           .map(([cloudStorage]) => cloudStorage as CloudStorage)
           .map((cloudStorage) => (

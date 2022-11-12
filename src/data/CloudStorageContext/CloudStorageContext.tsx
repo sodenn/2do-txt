@@ -378,7 +378,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     [cloudStorageClients]
   );
 
-  const connectedCloudStorages = useMemo(
+  const cloudStoragesConnectionStatus = useMemo(
     () =>
       Object.values(cloudStorageClients).reduce((prev, curr) => {
         prev[curr.cloudStorage] = curr.status === "connected";
@@ -394,7 +394,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   return {
     createClient,
     cloudStorageEnabled,
-    connectedCloudStorages,
+    cloudStoragesConnectionStatus,
     authenticate,
     linkCloudFile,
     linkCloudArchiveFile,
