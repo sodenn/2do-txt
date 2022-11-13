@@ -1,14 +1,17 @@
 import {
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
   FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
   TextField,
 } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { CloudStorage, useCloudStorage } from "../data/CloudStorageContext";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
@@ -119,10 +122,8 @@ const FileCreateDialog = () => {
     }
   };
 
-  const handleSelectCloudStorage = (cloudStorage: CloudStorage) => {
-    setSelectedCloudStorage((currentValue) =>
-      currentValue === cloudStorage ? undefined : cloudStorage
-    );
+  const handleCloudStorageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSelectedCloudStorage(event.target.value as CloudStorage);
   };
 
   const handleClose = useCallback(
@@ -156,6 +157,8 @@ const FileCreateDialog = () => {
 
   return (
     <Dialog
+      maxWidth="xs"
+      fullWidth
       open={open}
       onClose={handleClose}
       TransitionProps={{ onExited: handleExited }}
@@ -176,19 +179,29 @@ const FileCreateDialog = () => {
             "aria-label": "File name",
           }}
         />
-        {connectedCloudStorages.map((cloudStorage) => (
-          <FormControlLabel
-            key={cloudStorage}
-            control={
-              <Checkbox
-                aria-label="Sync with cloud storage"
-                checked={selectedCloudStorage === cloudStorage}
-                onChange={() => handleSelectCloudStorage(cloudStorage)}
+        <FormControl sx={{ mt: 1 }}>
+          <FormLabel id="cloud-sync">{t("Sync with cloud storage")}</FormLabel>
+          <RadioGroup
+            aria-labelledby="cloud-sync"
+            aria-label="Sync with cloud storage"
+            value={selectedCloudStorage}
+            onChange={handleCloudStorageChange}
+          >
+            <FormControlLabel
+              value="no-sync"
+              control={<Radio />}
+              label={t("Not sync")}
+            />
+            {connectedCloudStorages.map((cloudStorage) => (
+              <FormControlLabel
+                key={cloudStorage}
+                value={cloudStorage}
+                control={<Radio />}
+                label={cloudStorage}
               />
-            }
-            label={t("Sync with cloud storage", { cloudStorage })}
-          />
-        ))}
+            ))}
+          </RadioGroup>
+        </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t("Cancel")}</Button>

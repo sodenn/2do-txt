@@ -293,7 +293,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
           persist: true,
           content: (
             <Alert severity="info" icon={<CircularProgress size="1em" />}>
-              {t("Syncing with cloud storage")}
+              {t("Sync with cloud storage")}
             </Alert>
           ),
         });
@@ -341,7 +341,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         persist: true,
         content: (
           <Alert severity="info" icon={<CircularProgress size="1em" />}>
-            {t("Syncing with cloud storage")}
+            {t("Sync with cloud storage")}
           </Alert>
         ),
       });

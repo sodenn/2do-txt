@@ -96,8 +96,7 @@
   "There are no todo.txt files": "Keine todo.txt Dateien auf {{cloudStorage}} vorhanden.",
   "Existing todo.txt files can be synchronized": "Bereits existierende todo.txt Dateien können jederzeit unter <strong>todo.txt verwalten</strong> synchronisiert werden.",
   "Error syncing file to cloud storage": "Fehler beim Synchronisieren der Datei mit {{cloudStorage}}.",
-  "Syncing with cloud storage": "Synchronisiere mit Cloud-Speicher",
-  "Sync with cloud storage": "Mit {{cloudStorage}} synchronisieren",
+  "Sync with cloud storage": "Synchronisiere mit Cloud-Speicher",
   "Connected to cloud storage": "Verbunden mit {{cloudStorage}}",
   "Drop todo.txt file here": "todo.txt Datei hier ablegen",
   "Filter type": "Filtertyp",
@@ -154,5 +153,6 @@
   "Password": "Passwort",
   "Connection Error": "Verbindungsfehler",
   "Connect": "Verbinden",
-  "Back": "Zurück"
+  "Back": "Zurück",
+  "Not sync": "Nicht synchronisieren"
 }

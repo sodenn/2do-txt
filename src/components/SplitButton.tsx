@@ -12,6 +12,7 @@ import {
   MenuList,
   Paper,
   Popper,
+  useTheme,
 } from "@mui/material";
 import React, { useMemo } from "react";
 import { WithChildren } from "../types/common.types";
@@ -38,6 +39,7 @@ const SplitButton = (props: SplitButtonProps) => {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const theme = useTheme();
   const options = useMemo(
     () =>
       React.Children.map(children, (child) => {
@@ -110,14 +112,13 @@ const SplitButton = (props: SplitButtonProps) => {
       </ButtonGroup>
       <Popper
         sx={{
-          zIndex: 1,
+          zIndex: theme.zIndex.modal,
         }}
         open={open}
         anchorEl={anchorRef.current}
         placement="bottom-end"
         role={undefined}
         transition
-        disablePortal
       >
         {({ TransitionProps, placement }) => (
           <Grow
@@ -133,7 +134,6 @@ const SplitButton = (props: SplitButtonProps) => {
                   {options.map((option, index) => (
                     <MenuItem
                       key={index}
-                      disabled={index === 2}
                       selected={index === selectedIndex}
                       onClick={(event) => handleMenuItemClick(event, index)}
                     >

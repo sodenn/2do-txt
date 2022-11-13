@@ -1,7 +1,5 @@
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import QuestionMarkOutlinedIcon from "@mui/icons-material/QuestionMarkOutlined";
@@ -15,18 +13,12 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  useCloudFileDialog,
-  useCloudStorage,
-} from "../data/CloudStorageContext";
-import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../data/FileManagementDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useShortcutsDialog } from "../data/ShortcutsDialogContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
-import { getPlatform, hasTouchScreen } from "../utils/platform";
-import DropboxIcon from "./DropboxIcon";
+import { hasTouchScreen } from "../utils/platform";
 import StartEllipsis from "./StartEllipsis";
 
 const buttonMaxWidthXs = 170;
@@ -35,15 +27,10 @@ const menuMaxWidth = 350;
 
 const FileMenu = () => {
   const { t } = useTranslation();
-  const platform = getPlatform();
   const touchScreen = hasTouchScreen();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const { setShortcutsDialogOpen } = useShortcutsDialog();
-  const { setFileCreateDialog } = useFileCreateDialog();
-  const { taskLists, activeTaskList, openTodoFilePicker } = useTask();
-  const { cloudStorageEnabled, cloudStoragesConnectionStatus } =
-    useCloudStorage();
-  const { setCloudFileDialogOptions } = useCloudFileDialog();
+  const { taskLists, activeTaskList } = useTask();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -61,24 +48,9 @@ const FileMenu = () => {
     handleClose();
   };
 
-  const handleImportFromCloudStorage = () => {
-    handleClose();
-    setCloudFileDialogOptions({ open: true, cloudStorage: "Dropbox" });
-  };
-
-  const handleCreateFile = () => {
-    setFileCreateDialog({ open: true });
-    handleClose();
-  };
-
   const handleManageFile = () => {
     handleClose();
     setFileManagementDialogOpen(true);
-  };
-
-  const handleOpenFile = () => {
-    handleClose();
-    openTodoFilePicker();
   };
 
   const handleKeyboardShortcutsClick = () => {
@@ -131,38 +103,6 @@ const FileMenu = () => {
             </MenuItem>
           ))}
         {taskLists.length > 1 && <Divider />}
-        {taskLists.length < 4 && (
-          <MenuItem onClick={handleCreateFile}>
-            <ListItemIcon>
-              <AddOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>{t("Create todo.txt")}</ListItemText>
-          </MenuItem>
-        )}
-        {taskLists.length < 4 && (
-          <MenuItem onClick={handleOpenFile}>
-            <ListItemIcon>
-              <FolderOpenOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>
-              {platform === "electron"
-                ? t("Open todo.txt")
-                : t("Import todo.txt")}
-            </ListItemText>
-          </MenuItem>
-        )}
-        {taskLists.length < 4 &&
-          cloudStorageEnabled &&
-          cloudStoragesConnectionStatus["Dropbox"] && (
-            <MenuItem onClick={handleImportFromCloudStorage}>
-              <ListItemIcon>
-                <DropboxIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>
-                {t("Import from cloud storage", { cloudStorage: "Dropbox" })}
-              </ListItemText>
-            </MenuItem>
-          )}
         {taskLists.length > 0 && (
           <MenuItem onClick={handleManageFile}>
             <ListItemIcon>

@@ -12,7 +12,7 @@ import { useFileManagementDialog } from "../../data/FileManagementDialogContext"
 import { useTask } from "../../data/TaskContext";
 import { getFilenameFromPath, getFilesystem } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
-import CloseFileList from "./CloseFileList";
+import ClosedFileList from "./ClosedFileList";
 import FileActionButton from "./FileActionButton";
 import OpenFileList from "./OpenFileList";
 
@@ -149,7 +149,7 @@ const FileManagementDialog = () => {
           subheader={closedFiles.length > 0}
           onClose={handleCloseFile}
         />
-        <CloseFileList
+        <ClosedFileList
           list={closedFiles}
           onOpen={handleCloseDialog}
           onDelete={handleDeleteFile}
