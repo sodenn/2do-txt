@@ -90,7 +90,7 @@ export async function listFiles(
     .map((r) =>
       r.type === "file"
         ? mapToCloudFile(r)
-        : { name: r.basename, path: getPath(r), type: "folder" }
+        : { name: r.basename, path: r.filename, type: "folder" }
     );
   return {
     items,
@@ -101,16 +101,10 @@ export async function listFiles(
 function mapToCloudFile(fileStat: FileStat): CloudFile {
   return {
     name: fileStat.basename,
-    path: getPath(fileStat),
+    path: fileStat.filename,
     rev: fileStat.lastmod,
     type: "file",
   };
-}
-
-function getPath(fileStat: FileStat) {
-  const search = "/webdav";
-  const start = fileStat.filename.indexOf(search);
-  return fileStat.filename.substring(start + search.length);
 }
 
 export async function getFileMetaData(

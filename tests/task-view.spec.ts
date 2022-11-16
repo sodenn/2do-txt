@@ -4,7 +4,7 @@ const withoutFile = ["should render an empty task list"];
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.skip(!!isMobile, "desktop only");
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
   if (withoutFile.every((f) => !testInfo.title.includes(f))) {
     await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
   }

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "fs";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
 });
 
 test.describe("Onboarding", () => {
@@ -18,7 +18,7 @@ test.describe("New file", () => {
       "todo.txt"
     );
     await page.getByRole("button", { name: "Create file" }).click();
-    await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
+    await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor
     await expect(
       page.getByRole("textbox", { name: "Text editor" })
@@ -33,7 +33,7 @@ test.describe("Example file", () => {
       "todo.txt"
     );
     await page.getByRole("button", { name: "Create file" }).click();
-    await expect(page).toHaveURL("http://127.0.0.1:5173/?active=todo.txt");
+    await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     await expect(page.getByTestId("task")).toHaveCount(8);
   });
 });

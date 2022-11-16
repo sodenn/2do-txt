@@ -6,7 +6,7 @@ const withoutFile = [
 ];
 
 test.beforeEach(async ({ page }, testInfo) => {
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
   if (!withoutFile.includes(testInfo.title)) {
     const content = readFileSync("public/todo.txt");
     await page.setInputFiles('[data-testid="file-picker"]', {

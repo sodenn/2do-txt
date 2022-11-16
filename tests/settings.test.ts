@@ -1,7 +1,7 @@
 import { expect, Page, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
   await page.getByRole("button", { name: "Toggle menu" }).click();
 });
 

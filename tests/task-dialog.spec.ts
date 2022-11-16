@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { formatDate } from "../src/utils/date";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
   await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
 });
 

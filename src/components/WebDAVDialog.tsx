@@ -11,9 +11,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
+import { useCloudStorage, useWebDAVDialog } from "../data/CloudStorageContext";
 import { saveWebDAVCredentials } from "../data/CloudStorageContext/webdav-storage";
-import { useWebDAVDialog } from "../data/CloudStorageContext/WebDAVDialogContext";
 
 const WebDavDialog = () => {
   const {
