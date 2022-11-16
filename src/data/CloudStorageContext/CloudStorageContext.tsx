@@ -42,8 +42,6 @@ import { useWebDAVDialog } from "./WebDAVDialogContext";
 
 const platform = getPlatform();
 
-export const cloudStorages: CloudStorage[] = ["Dropbox", "WebDAV"];
-
 export const cloudStorageIcons: Record<CloudStorage, ReactNode> = {
   Dropbox: <DropboxIcon />,
   WebDAV: <StorageOutlinedIcon />,
@@ -125,21 +123,23 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       if (!connected) {
         throw new Error("Network connection lost");
       }
-      const client = data.cloudStorageClients[cloudStorage];
+      const client = cloudStorageClients[cloudStorage];
       if (client.status === "disconnected") {
         openSessionExpiredAlert(cloudStorage);
-      } else {
+      } else if (client.instance) {
         return client.instance;
+      } else {
+        throw new Error("Client not initialized");
       }
     },
-    [connected, data, openSessionExpiredAlert]
+    [cloudStorageClients, connected, openSessionExpiredAlert]
   );
 
   const createClient = useCallback(async (cloudStorage: CloudStorage) => {
     const client = await cloud.createClient(cloudStorage);
     setCloudStorageClients((current) => ({
       ...current,
-      [cloudStorage]: { client, cloudStorage, status: "connected" },
+      [cloudStorage]: { instance: client, cloudStorage, status: "connected" },
     }));
   }, []);
 

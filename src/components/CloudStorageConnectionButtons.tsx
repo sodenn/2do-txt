@@ -51,6 +51,7 @@ export const CloudStorageConnectionButtons = ({
     const cloudStorage = filteredCloudStorages[0];
     return (
       <LoadingButton
+        aria-label="Connect to cloud storage"
         loading={loading}
         variant="outlined"
         startIcon={cloudStorageIcons[cloudStorage]}
@@ -65,7 +66,7 @@ export const CloudStorageConnectionButtons = ({
   }
 
   return (
-    <SplitButton loading={loading}>
+    <SplitButton loading={loading} aria-label="Connect to cloud storage">
       {filteredCloudStorages.map((cloudStorage) => (
         <SplitButtonItem
           key={cloudStorage}

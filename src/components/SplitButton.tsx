@@ -27,6 +27,7 @@ interface SplitButtonItemProps {
   icon?: React.ReactNode;
   label: React.ReactNode;
   onClick: ButtonProps["onClick"];
+  "aria-label"?: string | undefined;
 }
 
 export const SplitButtonItem = (props: SplitButtonItemProps) => {
@@ -89,12 +90,12 @@ const SplitButton = (props: SplitButtonProps) => {
         disabled={loading}
         variant="outlined"
         ref={anchorRef}
-        aria-label={props["aria-label"]}
       >
         <Button
           fullWidth
           disabled={loading}
           onClick={handleClick}
+          aria-label={options[selectedIndex]["aria-label"]}
           startIcon={options[selectedIndex].icon}
         >
           {options[selectedIndex].label}
@@ -103,7 +104,7 @@ const SplitButton = (props: SplitButtonProps) => {
           size="small"
           aria-controls={open ? id : undefined}
           aria-expanded={open ? "true" : undefined}
-          aria-label="Split Button"
+          aria-label={props["aria-label"]}
           aria-haspopup="menu"
           onClick={handleToggle}
         >
@@ -134,6 +135,7 @@ const SplitButton = (props: SplitButtonProps) => {
                   {options.map((option, index) => (
                     <MenuItem
                       key={index}
+                      aria-label={option["aria-label"]}
                       selected={index === selectedIndex}
                       onClick={(event) => handleMenuItemClick(event, index)}
                     >
