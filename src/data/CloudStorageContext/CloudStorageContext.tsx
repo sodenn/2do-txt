@@ -56,7 +56,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const [authError, setAuthError] = useState(false);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { connected } = useNetwork();
-  const { setWebDAVDialog } = useWebDAVDialog();
+  const { setWebDAVDialogOpen } = useWebDAVDialog();
   const [cloudStorageClients, setCloudStorageClients] = useState(
     data.cloudStorageClients
   );
@@ -169,8 +169,8 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   const webDAVAuthenticate = useCallback(() => {
-    setWebDAVDialog({ open: true });
-  }, [setWebDAVDialog]);
+    setWebDAVDialogOpen(true);
+  }, [setWebDAVDialogOpen]);
 
   const authenticate = useCallback(
     async (cloudStorage: CloudStorage) => {
@@ -400,6 +400,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   }, [requestTokens]);
 
   return {
+    openStorageConnectedAlert,
     createClient,
     cloudStorageEnabled,
     cloudStoragesConnectionStatus,

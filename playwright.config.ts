@@ -46,6 +46,9 @@ const config: PlaywrightTestConfig = {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--disable-web-security", "--disable-site-isolation-trials"],
+        },
       },
     },
 
@@ -98,9 +101,12 @@ const config: PlaywrightTestConfig = {
   /* Run your local dev server before starting the tests */
   webServer: {
     command: "yarn start",
-    url: "http://127.0.0.1:5173/",
+    url: "http://localhost:5173/",
     reuseExistingServer: !process.env.CI,
     timeout: 2 * 60 * 1000,
+    env: {
+      VITE_ENABLE_WEB_CLOUD_STORAGE: "true",
+    },
   },
 };
 

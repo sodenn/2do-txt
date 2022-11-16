@@ -15,31 +15,24 @@ import { useCloudStorage, useWebDAVDialog } from "../data/CloudStorageContext";
 import { saveWebDAVCredentials } from "../data/CloudStorageContext/webdav-storage";
 
 const WebDavDialog = () => {
-  const {
-    webDAVDialog: { open, onClose },
-    setWebDAVDialog,
-  } = useWebDAVDialog();
+  const { webDAVDialogOpen, setWebDAVDialogOpen } = useWebDAVDialog();
   const { t } = useTranslation();
-  const [connected, setConnected] = useState(false);
   const [url, setUrl] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<any>();
-  const { createClient } = useCloudStorage();
+  const { createClient, openStorageConnectedAlert } = useCloudStorage();
 
   const handleSubmit = async () => {
     setError(undefined);
-    setConnected(true);
-    await saveWebDAVCredentials({ username, password, url })
-      .then(() => {
-        setWebDAVDialog({ open: false });
-        return createClient("WebDAV");
-      })
-      .catch(setError);
-  };
-
-  const handleClose = () => {
-    onClose?.(connected);
+    try {
+      await saveWebDAVCredentials({ username, password, url });
+      setWebDAVDialogOpen(false);
+      await createClient("WebDAV");
+      await openStorageConnectedAlert("WebDAV");
+    } catch (error) {
+      setError(error);
+    }
   };
 
   const handleExit = () => {
@@ -52,8 +45,7 @@ const WebDavDialog = () => {
     <Dialog
       maxWidth="sm"
       fullWidth
-      open={open}
-      onClose={handleClose}
+      open={webDAVDialogOpen}
       TransitionProps={{
         onExited: handleExit,
       }}
@@ -105,9 +97,7 @@ const WebDavDialog = () => {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setWebDAVDialog({ open: false })}>
-          {t("Close")}
-        </Button>
+        <Button onClick={() => setWebDAVDialogOpen(false)}>{t("Close")}</Button>
         <Button aria-label="Connect" onClick={handleSubmit}>
           {t("Connect")}
         </Button>
