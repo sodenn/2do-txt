@@ -39,6 +39,7 @@ const WebDavDialog = () => {
     setUrl("");
     setUsername("");
     setPassword("");
+    setError(undefined);
   };
 
   return (
