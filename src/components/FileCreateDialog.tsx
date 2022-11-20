@@ -44,6 +44,7 @@ const FileCreateDialog = () => {
   const [selectedCloudStorage, setSelectedCloudStorage] = useState<
     CloudStorage | undefined
   >("Dropbox");
+  const [skip, setSkip] = useState<boolean>();
 
   const createNewFile = useCallback(
     async (filePath: string) => {
@@ -73,7 +74,12 @@ const FileCreateDialog = () => {
     ]
   );
 
-  const createTodoFileAndSync = async () => {
+  const handleClose = useCallback(
+    () => setFileCreateDialog((current) => ({ ...current, open: false })),
+    [setFileCreateDialog]
+  );
+
+  const createTodoFileAndSync = useCallback(async () => {
     handleClose();
     await createNewFile(fileName);
     if (
@@ -87,7 +93,14 @@ const FileCreateDialog = () => {
         archive: false,
       });
     }
-  };
+  }, [
+    cloudStoragesConnectionStatus,
+    createNewFile,
+    fileName,
+    handleClose,
+    selectedCloudStorage,
+    uploadFile,
+  ]);
 
   const handleSave = async () => {
     if (!fileName) {
@@ -126,32 +139,62 @@ const FileCreateDialog = () => {
     setSelectedCloudStorage(event.target.value as CloudStorage);
   };
 
-  const handleClose = useCallback(
-    () => setFileCreateDialog((current) => ({ ...current, open: false })),
-    [setFileCreateDialog]
-  );
+  const handleExited = () => {
+    setFileCreateDialog({ open: false });
+    setFileName("");
+    setSkip(undefined);
+    setSelectedCloudStorage("Dropbox");
+  };
 
-  const handleExited = () => setFileCreateDialog({ open: false });
+  const skipFileCreateDialog = useCallback(async () => {
+    if (!open || platform === "electron" || connectedCloudStorages.length > 0) {
+      setSkip(false);
+      return;
+    }
+    const exists = await isFile({ path: defaultTodoFilePath });
+    if (!exists) {
+      await createTodoFileAndSync();
+      handleClose();
+      setSkip(true);
+    } else {
+      setSkip(false);
+    }
+  }, [
+    connectedCloudStorages.length,
+    createTodoFileAndSync,
+    handleClose,
+    isFile,
+    open,
+    platform,
+  ]);
+
+  const openDesktopDialog = useCallback(async () => {
+    if (platform !== "electron" || !open) {
+      return;
+    }
+    const { fileName } = await getUniqueFilePath(defaultTodoFilePath);
+    const filePath = await window.electron.saveFile(fileName);
+    handleClose();
+    if (filePath) {
+      createNewFile(filePath).catch((e) => console.debug(e));
+    }
+  }, [createNewFile, getUniqueFilePath, handleClose, open, platform]);
+
+  const initFileName = useCallback(async () => {
+    if (platform === "electron" || !open) {
+      return;
+    }
+    const { fileName } = await getUniqueFilePath(defaultTodoFilePath);
+    setFileName(fileName);
+  }, [getUniqueFilePath, open, platform]);
 
   useEffect(() => {
-    if (platform === "electron" && open) {
-      getUniqueFilePath(defaultTodoFilePath).then(({ fileName }) => {
-        window.electron.saveFile(fileName).then((filePath) => {
-          handleClose();
-          if (filePath) {
-            createNewFile(filePath).catch((e) => console.debug(e));
-          }
-        });
-      });
-    }
-    if (platform !== "electron" && open) {
-      getUniqueFilePath(defaultTodoFilePath).then(({ fileName }) =>
-        setFileName(fileName)
-      );
-    }
-  }, [platform, open, getUniqueFilePath, createNewFile, handleClose]);
+    Promise.all([openDesktopDialog(), initFileName()]).then(
+      skipFileCreateDialog
+    );
+  }, [initFileName, openDesktopDialog, skipFileCreateDialog]);
 
-  if (platform === "electron") {
+  if (platform === "electron" || typeof skip === "undefined" || skip) {
     return null;
   }
 
@@ -179,29 +222,33 @@ const FileCreateDialog = () => {
             "aria-label": "File name",
           }}
         />
-        <FormControl sx={{ mt: 1 }}>
-          <FormLabel id="cloud-sync">{t("Sync with cloud storage")}</FormLabel>
-          <RadioGroup
-            aria-labelledby="cloud-sync"
-            aria-label="Sync with cloud storage"
-            value={selectedCloudStorage}
-            onChange={handleCloudStorageChange}
-          >
-            <FormControlLabel
-              value="no-sync"
-              control={<Radio />}
-              label={t("Not sync")}
-            />
-            {connectedCloudStorages.map((cloudStorage) => (
+        {connectedCloudStorages.length > 0 && (
+          <FormControl sx={{ mt: 1 }}>
+            <FormLabel id="cloud-sync">
+              {t("Sync with cloud storage")}
+            </FormLabel>
+            <RadioGroup
+              aria-labelledby="cloud-sync"
+              aria-label="Sync with cloud storage"
+              value={selectedCloudStorage}
+              onChange={handleCloudStorageChange}
+            >
               <FormControlLabel
-                key={cloudStorage}
-                value={cloudStorage}
+                value="no-sync"
                 control={<Radio />}
-                label={cloudStorage}
+                label={t("Not sync")}
               />
-            ))}
-          </RadioGroup>
-        </FormControl>
+              {connectedCloudStorages.map((cloudStorage) => (
+                <FormControlLabel
+                  key={cloudStorage}
+                  value={cloudStorage}
+                  control={<Radio />}
+                  label={cloudStorage}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t("Cancel")}</Button>

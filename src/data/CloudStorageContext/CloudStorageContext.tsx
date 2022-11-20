@@ -31,6 +31,7 @@ import {
   CloudFileRef,
   CloudStorage,
 } from "./cloud-storage.types";
+import { useCloudFileDialog } from "./CloudFileDialogContext";
 import {
   DeleteFileOptions,
   DownloadFileOptions,
@@ -57,6 +58,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { connected } = useNetwork();
   const { setWebDAVDialogOpen } = useWebDAVDialog();
+  const { setCloudFileDialogOptions } = useCloudFileDialog();
   const [cloudStorageClients, setCloudStorageClients] = useState(
     data.cloudStorageClients
   );
@@ -163,9 +165,10 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       // Note: web platform goes a different way because a redirect is used
       if (["ios", "android", "electron"].includes(platform)) {
         await createClient(cloudStorage);
+        await setCloudFileDialogOptions({ cloudStorage, open: true });
       }
     },
-    [createClient, enqueueSnackbar, t]
+    [createClient, enqueueSnackbar, setCloudFileDialogOptions, t]
   );
 
   const webDAVAuthenticate = useCallback(() => {
@@ -219,13 +222,16 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       location.pathname === "/dropbox" ? "Dropbox" : undefined;
     if (code && cloudStorage) {
       navigate("/", { replace: true });
-      cloud
+      return cloud
         .requestAccessToken({ cloudStorage, code })
         .then(() => createClient(cloudStorage))
         .then(() => openStorageConnectedAlert(cloudStorage))
+        .then(() => cloudStorage)
         .catch((error) => {
           if (error instanceof CloudFileUnauthorizedError) {
             openSessionExpiredAlert(cloudStorage);
+          } else {
+            throw error;
           }
         });
     }
@@ -396,8 +402,13 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   useEffect(() => {
-    requestTokens().then();
-  }, [requestTokens]);
+    requestTokens().then((cloudStorage) => {
+      if (cloudStorage) {
+        setCloudFileDialogOptions({ cloudStorage, open: true });
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     openStorageConnectedAlert,
