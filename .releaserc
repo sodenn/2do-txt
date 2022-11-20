@@ -16,8 +16,12 @@
       name: "main",
     },
     {
-      name: "pre/rc",
-      prerelease: "rc"
+      name: "beta",
+      prerelease: true
+    },
+    {
+      name: "feat/*",
+      prerelease: '${name.replace(/^feat\//g, "")}'
     }
   ]
 }
