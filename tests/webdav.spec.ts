@@ -8,9 +8,6 @@ test("should connect with WebDAV", async ({ page }) => {
   await replayFromHar(page);
   await connectToWebDAV(page);
   await expect(page.getByText("Connected to WebDAV")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Import todo.txt from WebDAV" })
-  ).toBeVisible();
 });
 
 test("should not connect with WebDAV", async ({ page }) => {
@@ -21,9 +18,6 @@ test("should not connect with WebDAV", async ({ page }) => {
 test("should import todo.txt from WebDAV", async ({ page }) => {
   await replayFromHar(page);
   await connectToWebDAV(page);
-  await page
-    .getByRole("button", { name: "Import todo.txt from WebDAV" })
-    .click();
   await page.getByRole("button", { name: "Documents /Documents" }).click();
   await page
     .getByRole("button", { name: "todo.txt /Documents/todo.txt" })
@@ -36,9 +30,6 @@ test("should import todo.txt from WebDAV", async ({ page }) => {
 test("should sync todo.txt with WebDAV", async ({ page }) => {
   await replayFromHar(page);
   await connectToWebDAV(page);
-  await page
-    .getByRole("button", { name: "Import todo.txt from WebDAV" })
-    .click();
   await page.getByRole("button", { name: "Documents /Documents" }).click();
   await page
     .getByRole("button", { name: "todo.txt /Documents/todo.txt" })
@@ -56,9 +47,6 @@ test("should sync todo.txt with WebDAV", async ({ page }) => {
 test("should navigate back and forward", async ({ page }) => {
   await replayFromHar(page);
   await connectToWebDAV(page);
-  await page
-    .getByRole("button", { name: "Import todo.txt from WebDAV" })
-    .click();
   await page.getByRole("button", { name: "Documents /Documents" }).click();
   await page.getByRole("button", { name: "Back" }).click();
   await page.getByRole("button", { name: "Documents /Documents" }).click();

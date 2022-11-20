@@ -14,10 +14,6 @@ test.describe("Onboarding", () => {
 test.describe("New file", () => {
   test("should allow me to create a new file", async ({ page }) => {
     await page.getByRole("button", { name: "Create task" }).click();
-    await expect(page.getByRole("textbox", { name: "File name" })).toHaveValue(
-      "todo.txt"
-    );
-    await page.getByRole("button", { name: "Create file" }).click();
     await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor
     await expect(
@@ -29,10 +25,6 @@ test.describe("New file", () => {
 test.describe("Example file", () => {
   test("should allow me to create an example file", async ({ page }) => {
     await page.getByRole("button", { name: "Create example file" }).click();
-    await expect(page.getByRole("textbox", { name: "File name" })).toHaveValue(
-      "todo.txt"
-    );
-    await page.getByRole("button", { name: "Create file" }).click();
     await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     await expect(page.getByTestId("task")).toHaveCount(8);
   });
