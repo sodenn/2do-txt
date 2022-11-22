@@ -132,6 +132,7 @@ export class ElectronCapacitorApp {
       height: this.mainWindowState.height,
       autoHideMenuBar: true,
       webPreferences: {
+        webSecurity: false,
         nodeIntegration: true,
         contextIsolation: true,
         // Use preload to inject the electron varriant overrides for capacitor plugins.

@@ -114,7 +114,7 @@ const CloudFileDialog = () => {
 
     let filePath: string;
     if (platform === "electron") {
-      const folder = await selectFolder(t("Select"));
+      const folder = await selectFolder(t("Select folder"));
       if (!folder) {
         setLoading(false);
         return;

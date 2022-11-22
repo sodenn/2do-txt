@@ -79,28 +79,30 @@ const FileCreateDialog = () => {
     [setFileCreateDialog]
   );
 
-  const createTodoFileAndSync = useCallback(async () => {
-    handleClose();
-    await createNewFile(fileName);
-    if (
-      selectedCloudStorage &&
-      cloudStoragesConnectionStatus[selectedCloudStorage]
-    ) {
-      await uploadFile({
-        filePath: fileName,
-        text: "",
-        cloudStorage: selectedCloudStorage,
-        archive: false,
-      });
-    }
-  }, [
-    cloudStoragesConnectionStatus,
-    createNewFile,
-    fileName,
-    handleClose,
-    selectedCloudStorage,
-    uploadFile,
-  ]);
+  const createTodoFileAndSync = useCallback(
+    async (fileName: string) => {
+      handleClose();
+      await createNewFile(fileName);
+      if (
+        selectedCloudStorage &&
+        cloudStoragesConnectionStatus[selectedCloudStorage]
+      ) {
+        await uploadFile({
+          filePath: fileName,
+          text: "",
+          cloudStorage: selectedCloudStorage,
+          archive: false,
+        });
+      }
+    },
+    [
+      cloudStoragesConnectionStatus,
+      createNewFile,
+      handleClose,
+      selectedCloudStorage,
+      uploadFile,
+    ]
+  );
 
   const handleSave = async () => {
     if (!fileName) {
@@ -126,12 +128,12 @@ const FileCreateDialog = () => {
           },
           {
             text: t("Replace"),
-            handler: createTodoFileAndSync,
+            handler: () => createTodoFileAndSync(fileName),
           },
         ],
       });
     } else {
-      await createTodoFileAndSync();
+      await createTodoFileAndSync(fileName);
     }
   };
 
@@ -146,27 +148,35 @@ const FileCreateDialog = () => {
     setSelectedCloudStorage("Dropbox");
   };
 
-  const skipFileCreateDialog = useCallback(async () => {
-    if (!open || platform === "electron" || connectedCloudStorages.length > 0) {
-      setSkip(false);
-      return;
-    }
-    const exists = await isFile({ path: defaultTodoFilePath });
-    if (!exists) {
-      await createTodoFileAndSync();
-      handleClose();
-      setSkip(true);
-    } else {
-      setSkip(false);
-    }
-  }, [
-    connectedCloudStorages.length,
-    createTodoFileAndSync,
-    handleClose,
-    isFile,
-    open,
-    platform,
-  ]);
+  const skipFileCreateDialog = useCallback(
+    async (fileName?: string) => {
+      if (
+        !open ||
+        !fileName ||
+        platform === "electron" ||
+        connectedCloudStorages.length > 0
+      ) {
+        setSkip(false);
+        return;
+      }
+      const exists = await isFile({ path: defaultTodoFilePath });
+      if (!exists) {
+        await createTodoFileAndSync(fileName);
+        handleClose();
+        setSkip(true);
+      } else {
+        setSkip(false);
+      }
+    },
+    [
+      connectedCloudStorages.length,
+      createTodoFileAndSync,
+      handleClose,
+      isFile,
+      open,
+      platform,
+    ]
+  );
 
   const openDesktopDialog = useCallback(async () => {
     if (platform !== "electron" || !open) {
@@ -186,11 +196,12 @@ const FileCreateDialog = () => {
     }
     const { fileName } = await getUniqueFilePath(defaultTodoFilePath);
     setFileName(fileName);
+    return fileName;
   }, [getUniqueFilePath, open, platform]);
 
   useEffect(() => {
-    Promise.all([openDesktopDialog(), initFileName()]).then(
-      skipFileCreateDialog
+    Promise.all([initFileName(), openDesktopDialog()]).then(([fileName]) =>
+      skipFileCreateDialog(fileName)
     );
   }, [initFileName, openDesktopDialog, skipFileCreateDialog]);
 
