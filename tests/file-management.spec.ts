@@ -72,14 +72,12 @@ test.describe("Reorder Files", () => {
     // check current number of open files
     await expect(page.getByTestId("draggable-file")).toHaveCount(2);
 
-    // open the menu of the first file in the list
-    await page.getByRole("button", { name: "File actions" }).nth(0).click();
-
     // click "Delete" in the context menu
     await page
-      .getByRole("menuitem", {
+      .getByRole("button", {
         name: "Delete file",
       })
+      .nth(0)
       .click();
 
     // confirm deletion

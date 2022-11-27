@@ -178,7 +178,7 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
         disableTouchListener
         title={deleteFile ? t("Delete") : t("Close")}
       >
-        <IconButton onClick={handleCloseFile}>
+        <IconButton aria-label="Delete file" onClick={handleCloseFile}>
           {deleteFile && <DeleteOutlineOutlinedIcon />}
           {!deleteFile && <CloseOutlinedIcon />}
         </IconButton>

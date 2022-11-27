@@ -58,7 +58,6 @@ test("should navigate back and forward", async ({ page }) => {
 async function openWebDAVDialog(page: Page) {
   await page.getByRole("button", { name: "Connect to cloud storage" }).click();
   await page.getByRole("menuitem", { name: "Connect to WebDAV" }).click();
-  await page.getByRole("button", { name: "Connect to WebDAV" }).click();
 }
 
 async function connectToWebDAV(page: Page) {
