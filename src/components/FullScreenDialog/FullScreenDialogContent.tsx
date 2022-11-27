@@ -33,7 +33,7 @@ const FullScreenDialogContent = (props: FullScreenDialogContentProps) => {
         root.removeEventListener("scroll", listener);
       };
     }
-  }, [root]);
+  }, [root, setDivider]);
 
   useEffect(() => {
     addKeyboardDidShowListener((info) => {
