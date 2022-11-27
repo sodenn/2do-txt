@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import {
   CloudFileRef,
   CloudFileUnauthorizedError,
@@ -100,11 +100,15 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
         await unlinkCloudFile(filePath);
         onChange(undefined);
       }
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof CloudFileUnauthorizedError)) {
         console.debug(e);
         enqueueSnackbar(
-          t(`Error syncing file to cloud storage`, { cloudStorage }),
+          <Trans
+            i18nKey="Error syncing file to cloud storage"
+            values={{ cloudStorage, message: e.message }}
+            components={{ code: <code style={{ marginLeft: 5 }} /> }}
+          />,
           {
             variant: "warning",
           }

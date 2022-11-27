@@ -47,6 +47,7 @@ interface CloudFileDialogContentProps {
   cloudStorage?: CloudStorage;
   onSelect: (cloudFile?: CloudFile) => void;
   onFilesChange: (files?: ListCloudItemResult) => void;
+  onClose: () => void;
 }
 
 interface CloudFileButtonProps {
@@ -192,6 +193,7 @@ const CloudFileDialog = () => {
             cloudStorage={cloudStorage}
             onSelect={setSelectedFile}
             onFilesChange={setFiles}
+            onClose={handleClose}
           />
         </FullScreenDialogContent>
       </FullScreenDialog>
@@ -217,6 +219,7 @@ const CloudFileDialog = () => {
           cloudStorage={cloudStorage}
           onSelect={setSelectedFile}
           onFilesChange={setFiles}
+          onClose={handleClose}
         />
       </DialogContent>
       <DialogActions>
@@ -239,9 +242,10 @@ const CloudFileDialog = () => {
 };
 
 const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
-  const { cloudStorage, onSelect, onFilesChange } = props;
+  const { cloudStorage, onSelect, onFilesChange, onClose } = props;
   const { t } = useTranslation();
   const { taskLists } = useTask();
+  const { enqueueSnackbar } = useSnackbar();
   const { listCloudFiles, getCloudFileRefs } = useCloudStorage();
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListCloudItemResult | undefined>();
@@ -287,10 +291,28 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
               onFilesChange(result);
             }
           })
+          .catch((e: any) => {
+            onClose();
+            enqueueSnackbar(
+              <Trans
+                i18nKey="Error connecting with cloud storage"
+                values={{ cloudStorage, message: e.message }}
+                components={{ code: <code style={{ marginLeft: 5 }} /> }}
+              />,
+              { variant: "warning" }
+            );
+          })
           .finally(() => setLoading(false));
       }
     },
-    [cloudStorage, currentPath, listCloudFiles, onFilesChange]
+    [
+      cloudStorage,
+      currentPath,
+      enqueueSnackbar,
+      listCloudFiles,
+      onClose,
+      onFilesChange,
+    ]
   );
 
   const handleLoadMoreItems = (path = currentPath) => {
