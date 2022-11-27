@@ -10,6 +10,8 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -22,11 +24,16 @@ import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { getFilesystem } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
+import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
+import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
+import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 
 const defaultTodoFilePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
 
 const FileCreateDialog = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const { isFile, getUniqueFilePath } = getFilesystem();
   const { addTodoFilePath } = useSettings();
   const [fileName, setFileName] = useState("");
@@ -42,9 +49,12 @@ const FileCreateDialog = () => {
   } = useFileCreateDialog();
   const { setTaskDialogOptions } = useTaskDialog();
   const [selectedCloudStorage, setSelectedCloudStorage] = useState<
-    CloudStorage | undefined
-  >("Dropbox");
+    CloudStorage | "no-sync"
+  >("no-sync");
   const [skip, setSkip] = useState<boolean>();
+  const title = createExampleFile
+    ? t("Create example file")
+    : t("Create todo.txt");
 
   const createNewFile = useCallback(
     async (filePath: string) => {
@@ -85,6 +95,7 @@ const FileCreateDialog = () => {
       await createNewFile(fileName);
       if (
         selectedCloudStorage &&
+        selectedCloudStorage !== "no-sync" &&
         cloudStoragesConnectionStatus[selectedCloudStorage]
       ) {
         await uploadFile({
@@ -150,12 +161,10 @@ const FileCreateDialog = () => {
 
   const skipFileCreateDialog = useCallback(
     async (fileName?: string) => {
-      if (
-        !open ||
-        !fileName ||
-        platform === "electron" ||
-        connectedCloudStorages.length > 0
-      ) {
+      if (!open || !fileName) {
+        return;
+      }
+      if (platform === "electron" || connectedCloudStorages.length > 0) {
         setSkip(false);
         return;
       }
@@ -209,6 +218,72 @@ const FileCreateDialog = () => {
     return null;
   }
 
+  const dialogContent = (
+    <>
+      <TextField
+        value={fileName}
+        onChange={(event) => setFileName(event.target.value)}
+        autoFocus={["ios", "android"].every((p) => p !== platform)}
+        margin="normal"
+        label={t("File Name")}
+        fullWidth
+        variant="outlined"
+        inputProps={{
+          "aria-label": "File name",
+        }}
+      />
+      {connectedCloudStorages.length > 0 && (
+        <FormControl sx={{ mt: 1 }}>
+          <FormLabel id="cloud-sync">{t("Sync with cloud storage")}</FormLabel>
+          <RadioGroup
+            aria-labelledby="cloud-sync"
+            aria-label="Sync with cloud storage"
+            value={selectedCloudStorage}
+            onChange={handleCloudStorageChange}
+          >
+            <FormControlLabel
+              value="no-sync"
+              control={<Radio />}
+              label={t("Not sync")}
+            />
+            {connectedCloudStorages.map((cloudStorage) => (
+              <FormControlLabel
+                key={cloudStorage}
+                value={cloudStorage}
+                control={<Radio />}
+                label={cloudStorage}
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
+      )}
+    </>
+  );
+
+  if (fullScreenDialog) {
+    return (
+      <FullScreenDialog
+        data-testid="file-create-dialog"
+        open={open}
+        onClose={handleClose}
+        TransitionProps={{ onExited: handleExited }}
+      >
+        <FullScreenDialogTitle
+          onClose={handleClose}
+          accept={{
+            text: t("Create"),
+            disabled: !fileName,
+            onClick: handleSave,
+            "aria-label": "Create file",
+          }}
+        >
+          {title}
+        </FullScreenDialogTitle>
+        <FullScreenDialogContent>{dialogContent}</FullScreenDialogContent>
+      </FullScreenDialog>
+    );
+  }
+
   return (
     <Dialog
       maxWidth="xs"
@@ -217,50 +292,8 @@ const FileCreateDialog = () => {
       onClose={handleClose}
       TransitionProps={{ onExited: handleExited }}
     >
-      <DialogTitle>
-        {createExampleFile ? t("Create example file") : t("Create todo.txt")}
-      </DialogTitle>
-      <DialogContent>
-        <TextField
-          value={fileName}
-          onChange={(event) => setFileName(event.target.value)}
-          autoFocus={["ios", "android"].every((p) => p !== platform)}
-          margin="normal"
-          label={t("File Name")}
-          fullWidth
-          variant="outlined"
-          inputProps={{
-            "aria-label": "File name",
-          }}
-        />
-        {connectedCloudStorages.length > 0 && (
-          <FormControl sx={{ mt: 1 }}>
-            <FormLabel id="cloud-sync">
-              {t("Sync with cloud storage")}
-            </FormLabel>
-            <RadioGroup
-              aria-labelledby="cloud-sync"
-              aria-label="Sync with cloud storage"
-              value={selectedCloudStorage}
-              onChange={handleCloudStorageChange}
-            >
-              <FormControlLabel
-                value="no-sync"
-                control={<Radio />}
-                label={t("Not sync")}
-              />
-              {connectedCloudStorages.map((cloudStorage) => (
-                <FormControlLabel
-                  key={cloudStorage}
-                  value={cloudStorage}
-                  control={<Radio />}
-                  label={cloudStorage}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        )}
-      </DialogContent>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>{dialogContent}</DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t("Cancel")}</Button>
         <Button

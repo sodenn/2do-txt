@@ -1,16 +1,34 @@
-import { Button } from "@mui/material";
+import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  CloudStorage,
   cloudStorageIcons,
   useCloudFileDialog,
   useCloudStorage,
 } from "../data/CloudStorageContext";
-import SplitButton, { SplitButtonItem } from "./SplitButton";
 
 const CloudFileImportButtons = () => {
   const { t } = useTranslation();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { setCloudFileDialogOptions } = useCloudFileDialog();
   const { cloudStorageEnabled, connectedCloudStorages } = useCloudStorage();
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuItemClick = (cloudStorage: CloudStorage) => {
+    handleClose();
+    setCloudFileDialogOptions({ open: true, cloudStorage });
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   if (!cloudStorageEnabled || connectedCloudStorages.length === 0) {
     return null;
@@ -31,18 +49,39 @@ const CloudFileImportButtons = () => {
   }
 
   return (
-    <SplitButton aria-label={`Import todo.txt from cloud storage`}>
-      {connectedCloudStorages.map((cloudStorage) => (
-        <SplitButtonItem
-          key={cloudStorage}
-          label={t("Import from cloud storage", { cloudStorage })}
-          icon={cloudStorageIcons[cloudStorage]}
-          onClick={() =>
-            setCloudFileDialogOptions({ open: true, cloudStorage })
-          }
-        />
-      ))}
-    </SplitButton>
+    <>
+      <Button
+        variant="outlined"
+        fullWidth
+        onClick={handleClick}
+        aria-label="Import todo.txt from cloud storage"
+        startIcon={<CloudOutlinedIcon />}
+        endIcon={<KeyboardArrowDownIcon />}
+      >
+        {t("Import from cloud storage", { cloudStorage: t("Cloud storage") })}
+      </Button>
+      <Menu
+        sx={{ mt: 0.5 }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        {connectedCloudStorages.map((cloudStorage) => (
+          <MenuItem onClick={() => handleMenuItemClick(cloudStorage)}>
+            <ListItemIcon>{cloudStorageIcons[cloudStorage]}</ListItemIcon>
+            {t("Import from cloud storage", { cloudStorage })}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   );
 };
 

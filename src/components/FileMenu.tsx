@@ -1,5 +1,8 @@
+import { Clipboard } from "@capacitor/clipboard";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import DownloadIcon from "@mui/icons-material/Download";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import QuestionMarkOutlinedIcon from "@mui/icons-material/QuestionMarkOutlined";
@@ -11,6 +14,7 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
+import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFileManagementDialog } from "../data/FileManagementDialogContext";
@@ -18,7 +22,8 @@ import { useFilter } from "../data/FilterContext";
 import { useShortcutsDialog } from "../data/ShortcutsDialogContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
-import { hasTouchScreen } from "../utils/platform";
+import { getFilesystem } from "../utils/filesystem";
+import { getPlatform, hasTouchScreen } from "../utils/platform";
 import StartEllipsis from "./StartEllipsis";
 
 const buttonMaxWidthXs = 170;
@@ -26,12 +31,15 @@ const buttonMaxWidth = 300;
 const menuMaxWidth = 350;
 
 const FileMenu = () => {
+  const platform = getPlatform();
   const { t } = useTranslation();
   const touchScreen = hasTouchScreen();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const { setShortcutsDialogOpen } = useShortcutsDialog();
-  const { taskLists, activeTaskList } = useTask();
+  const { taskLists, activeTaskList, downloadTodoFile } = useTask();
   const { setActiveTaskListPath } = useFilter();
+  const { readFile } = getFilesystem();
+  const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -41,11 +49,12 @@ const FileMenu = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+    return new Promise((resolve) => setTimeout(resolve, 200));
   };
 
-  const handleSetActiveList = (filePath: string) => {
+  const handleSetActiveList = async (filePath: string) => {
+    await handleClose();
     setActiveTaskListPath(filePath);
-    handleClose();
   };
 
   const handleManageFile = () => {
@@ -56,6 +65,17 @@ const FileMenu = () => {
   const handleKeyboardShortcutsClick = () => {
     handleClose();
     setShortcutsDialogOpen(true);
+  };
+
+  const handleCopyToClipboard = async (filePath: string) => {
+    const { data } = await readFile({
+      path: filePath,
+    });
+    await Clipboard.write({
+      string: data,
+    });
+    enqueueSnackbar(t("Copied to clipboard"), { variant: "info" });
+    handleClose();
   };
 
   return (
@@ -78,6 +98,27 @@ const FileMenu = () => {
         open={open}
         onClose={handleClose}
       >
+        {activeTaskList && platform === "web" && (
+          <MenuItem aria-label="Download todo.txt" onClick={downloadTodoFile}>
+            <ListItemIcon>
+              <DownloadIcon />
+            </ListItemIcon>
+            <ListItemText>{t("Download")}</ListItemText>
+          </MenuItem>
+        )}
+        {activeTaskList && (platform === "electron" || platform === "web") && (
+          <MenuItem
+            onClick={() => handleCopyToClipboard(activeTaskList.filePath)}
+          >
+            <ListItemIcon>
+              <ContentCopyIcon />
+            </ListItemIcon>
+            <ListItemText>{t("Copy to clipboard")}</ListItemText>
+          </MenuItem>
+        )}
+        {activeTaskList && (platform === "electron" || platform === "web") && (
+          <Divider />
+        )}
         {taskLists.length > 1 && (
           <MenuItem
             selected={!activeTaskList}
@@ -102,7 +143,6 @@ const FileMenu = () => {
               <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
             </MenuItem>
           ))}
-        {taskLists.length > 1 && <Divider />}
         {taskLists.length > 0 && (
           <MenuItem onClick={handleManageFile}>
             <ListItemIcon>
@@ -111,6 +151,7 @@ const FileMenu = () => {
             <ListItemText>{t("Manage todo.txt")}</ListItemText>
           </MenuItem>
         )}
+        {!touchScreen && taskLists.length > 1 && <Divider />}
         {!touchScreen && (
           <MenuItem onClick={handleKeyboardShortcutsClick}>
             <ListItemIcon>

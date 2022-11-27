@@ -1,7 +1,8 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import { IconProps } from "@mui/material";
-import React from "react";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Button, IconProps, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import React, { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CloudStorage,
@@ -13,7 +14,6 @@ import { useFileCreateDialog } from "../../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
 import { useTask } from "../../data/TaskContext";
 import { getPlatform } from "../../utils/platform";
-import SplitButton, { SplitButtonItem } from "../SplitButton";
 
 const FileActionButton = () => {
   const { t } = useTranslation();
@@ -23,6 +23,16 @@ const FileActionButton = () => {
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const { connectedCloudStorages } = useCloudStorage();
   const { setCloudFileDialogOptions } = useCloudFileDialog();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleCreateFile = () => {
     setFileCreateDialog({ open: true });
@@ -49,28 +59,51 @@ const FileActionButton = () => {
   };
 
   return (
-    <SplitButton>
-      <SplitButtonItem
-        label={t("Create todo.txt")}
-        onClick={handleCreateFile}
-        icon={<AddOutlinedIcon fontSize="small" />}
-      />
-      <SplitButtonItem
-        label={
-          platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")
-        }
-        onClick={handleOpenFile}
-        icon={<FolderOpenOutlinedIcon fontSize="small" />}
-      />
-      {connectedCloudStorages.map((cloudStorage) => (
-        <SplitButtonItem
-          key={cloudStorage}
-          label={t("Import from cloud storage", { cloudStorage })}
-          onClick={() => handleImportFromStorage(cloudStorage)}
-          icon={renderCloudStorageIcon(cloudStorage)}
-        />
-      ))}
-    </SplitButton>
+    <>
+      <Button
+        onClick={handleClick}
+        aria-label="Choose action"
+        endIcon={<KeyboardArrowDownIcon />}
+      >
+        {t("Choose action")}
+      </Button>
+      <Menu
+        sx={{ mt: 0.5 }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleCreateFile}>
+          <ListItemIcon>
+            <AddOutlinedIcon />
+          </ListItemIcon>
+          {t("Create todo.txt")}
+        </MenuItem>
+        <MenuItem onClick={handleOpenFile}>
+          <ListItemIcon>
+            <FolderOpenOutlinedIcon />
+          </ListItemIcon>
+          {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
+        </MenuItem>
+        {connectedCloudStorages.map((cloudStorage) => (
+          <MenuItem
+            key={cloudStorage}
+            onClick={() => handleImportFromStorage(cloudStorage)}
+          >
+            <ListItemIcon>{renderCloudStorageIcon(cloudStorage)}</ListItemIcon>
+            {t("Import from cloud storage", { cloudStorage })}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   );
 };
 

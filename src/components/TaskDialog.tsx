@@ -50,7 +50,6 @@ const TaskDialog = () => {
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
-  const [divider, setDivider] = useState(false);
   const formDisabled = !raw || (!activeTaskList && !selectedTaskList);
   const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
@@ -133,7 +132,6 @@ const TaskDialog = () => {
         TransitionProps={TransitionProps}
       >
         <FullScreenDialogTitle
-          divider={divider}
           onClose={closeDialog}
           accept={{
             text: t("Save"),
@@ -144,9 +142,7 @@ const TaskDialog = () => {
         >
           {!!task?._id ? t("Edit Task") : t("Create Task")}
         </FullScreenDialogTitle>
-        <FullScreenDialogContent onScroll={(top) => setDivider(top > 12)}>
-          {taskForm}
-        </FullScreenDialogContent>
+        <FullScreenDialogContent>{taskForm}</FullScreenDialogContent>
       </FullScreenDialog>
     );
   }

@@ -1,14 +1,14 @@
-import { Clipboard } from "@capacitor/clipboard";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   CircularProgress,
   IconButton,
   ListItemIcon,
+  ListItemText,
   Menu,
   MenuItem,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
@@ -118,8 +118,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
 
   if (
     !cloudStorageEnabled ||
-    !cloudStoragesConnectionStatus[cloudStorage] ||
-    (cloudFileRef && cloudStorage !== cloudFileRef.cloudStorage)
+    (!cloudStoragesConnectionStatus[cloudStorage] && !cloudFileRef)
   ) {
     return null;
   }
@@ -151,12 +150,11 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
 const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   const { filePath, cloudFileRef, onChange, onClose } = props;
   const { connectedCloudStorages } = useCloudStorage();
+  const cloudStorages = [...connectedCloudStorages];
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const platform = getPlatform();
-  const { enqueueSnackbar } = useSnackbar();
-  const { readFile } = getFilesystem();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
   const deleteFile =
     platform === "web" || platform === "ios" || platform === "android";
@@ -174,16 +172,21 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
     handleClose();
   };
 
-  const handleCopyToClipboard = async () => {
-    const { data } = await readFile({
-      path: filePath,
-    });
-    await Clipboard.write({
-      string: data,
-    });
-    enqueueSnackbar(t("Copied to clipboard"), { variant: "info" });
-    handleClose();
-  };
+  if (cloudStorages.length === 0 && !cloudFileRef) {
+    return (
+      <Tooltip
+        disableTouchListener
+        title={deleteFile ? t("Delete") : t("Close")}
+      >
+        <IconButton onClick={handleCloseFile}>
+          {deleteFile && <DeleteOutlineOutlinedIcon />}
+          {!deleteFile && <CloseOutlinedIcon />}
+        </IconButton>
+      </Tooltip>
+    );
+  } else if (cloudFileRef) {
+    cloudStorages.push(cloudFileRef.cloudStorage);
+  }
 
   return (
     <>
@@ -202,7 +205,7 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
       >
-        {connectedCloudStorages.map((cloudStorage) => (
+        {cloudStorages.map((cloudStorage) => (
           <CloudStorageMenuItem
             key={cloudStorage}
             cloudStorage={cloudStorage}
@@ -210,21 +213,19 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
             onChange={onChange}
             filePath={filePath}
             onLoad={setCloudSyncLoading}
-            cloudFileRef={cloudFileRef}
+            cloudFileRef={
+              cloudFileRef?.cloudStorage === cloudStorage
+                ? cloudFileRef
+                : undefined
+            }
           />
         ))}
-        <MenuItem onClick={handleCopyToClipboard}>
-          <ListItemIcon>
-            <ContentCopyIcon />
-          </ListItemIcon>
-          <Typography>{t("Copy to clipboard")}</Typography>
-        </MenuItem>
         <MenuItem onClick={handleCloseFile} aria-label="Delete file">
           <ListItemIcon>
             {deleteFile && <DeleteOutlineOutlinedIcon />}
             {!deleteFile && <CloseOutlinedIcon />}
           </ListItemIcon>
-          <Typography>{deleteFile ? t("Delete") : t("Close")}</Typography>
+          <ListItemText>{deleteFile ? t("Delete") : t("Close")}</ListItemText>
         </MenuItem>
       </Menu>
     </>

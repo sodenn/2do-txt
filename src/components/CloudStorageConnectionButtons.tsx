@@ -1,12 +1,14 @@
+import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { LoadingButton } from "@mui/lab";
-import { useState } from "react";
+import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CloudStorage,
   cloudStorageIcons,
   useCloudStorage,
 } from "../data/CloudStorageContext";
-import SplitButton, { SplitButtonItem } from "./SplitButton";
 
 interface CloudStorageConnectionButtonsProps {
   status?: "connect" | "disconnect";
@@ -22,6 +24,7 @@ export const CloudStorageConnectionButtons = ({
     unlinkCloudStorage,
   } = useCloudStorage();
   const { t } = useTranslation();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [loading, setLoading] = useState(false);
   const filteredCloudStorages = Object.entries(cloudStoragesConnectionStatus)
     .filter(([, connected]) => {
@@ -32,8 +35,18 @@ export const CloudStorageConnectionButtons = ({
         : connected;
     })
     .map(([cloudStorages]) => cloudStorages as CloudStorage);
+  const open = Boolean(anchorEl);
 
-  const handleClick = async (cloudStorage: CloudStorage) => {
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleItemClick = async (cloudStorage: CloudStorage) => {
+    handleClose();
     const connected = cloudStoragesConnectionStatus[cloudStorage];
     if (!connected) {
       setLoading(true);
@@ -56,7 +69,7 @@ export const CloudStorageConnectionButtons = ({
         variant="outlined"
         startIcon={cloudStorageIcons[cloudStorage]}
         fullWidth
-        onClick={() => handleClick(cloudStorage)}
+        onClick={() => handleItemClick(cloudStorage)}
       >
         {cloudStoragesConnectionStatus[cloudStorage]
           ? t("Disconnect from cloud storage", { cloudStorage })
@@ -66,20 +79,44 @@ export const CloudStorageConnectionButtons = ({
   }
 
   return (
-    <SplitButton loading={loading} aria-label="Connect to cloud storage">
-      {filteredCloudStorages.map((cloudStorage) => (
-        <SplitButtonItem
-          key={cloudStorage}
-          label={
-            cloudStoragesConnectionStatus[cloudStorage]
+    <>
+      <Button
+        variant="outlined"
+        fullWidth
+        onClick={handleClick}
+        aria-label="Connect to cloud storage"
+        startIcon={<CloudOutlinedIcon />}
+        endIcon={<KeyboardArrowDownIcon />}
+      >
+        {t("Connect to cloud storage", { cloudStorage: t("Cloud storage") })}
+      </Button>
+      <Menu
+        sx={{ mt: 0.5 }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        {filteredCloudStorages.map((cloudStorage) => (
+          <MenuItem
+            key={cloudStorage}
+            onClick={() => handleItemClick(cloudStorage)}
+          >
+            <ListItemIcon>{cloudStorageIcons[cloudStorage]}</ListItemIcon>
+            {cloudStoragesConnectionStatus[cloudStorage]
               ? t("Disconnect from cloud storage", { cloudStorage })
-              : t("Connect to cloud storage", { cloudStorage })
-          }
-          icon={cloudStorageIcons[cloudStorage]}
-          onClick={() => handleClick(cloudStorage)}
-        />
-      ))}
-    </SplitButton>
+              : t("Connect to cloud storage", { cloudStorage })}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   );
 };
 

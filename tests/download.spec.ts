@@ -8,11 +8,12 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("Download", () => {
   test("should download a todo.txt file", async ({ page }) => {
+    await page.getByRole("button", { name: "File menu" }).click();
     const [download] = await Promise.all([
       // Start waiting for the download
       page.waitForEvent("download"),
       // Perform the action that initiates download
-      page.getByRole("button", { name: "Download todo.txt" }).click(),
+      page.getByRole("menuitem", { name: "Download todo.txt" }).click(),
     ]);
     // Wait for the download process to complete
     await download.path();
@@ -27,11 +28,12 @@ test.describe("Download", () => {
     await page.getByRole("option", { name: "Archive automatically" }).click();
     await page.keyboard.press("Escape");
 
+    await page.getByRole("button", { name: "File menu" }).click();
     const [download] = await Promise.all([
       // Start waiting for the download
       page.waitForEvent("download"),
       // Perform the action that initiates download
-      page.getByRole("button", { name: "Download todo.txt" }).click(),
+      page.getByRole("menuitem", { name: "Download todo.txt" }).click(),
     ]);
     // Wait for the download process to complete
     await download.path();

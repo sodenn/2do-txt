@@ -83,7 +83,6 @@ const CloudFileDialog = () => {
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListCloudItemResult | undefined>();
   const { archiveMode, setArchiveMode } = useSettings();
-  const [divider, setDivider] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClose = () => {
@@ -172,13 +171,12 @@ const CloudFileDialog = () => {
   if (fullScreenDialog) {
     return (
       <FullScreenDialog
-        data-testid="task-dialog"
+        data-testid="cloud-file-dialog"
         open={open}
         onClose={handleClose}
         TransitionProps={TransitionProps}
       >
         <FullScreenDialogTitle
-          divider={divider}
           onClose={handleClose}
           accept={{
             text: t("Import"),
@@ -189,10 +187,7 @@ const CloudFileDialog = () => {
         >
           {cloudStorage}
         </FullScreenDialogTitle>
-        <FullScreenDialogContent
-          onScroll={(top) => setDivider(top > 12)}
-          disableGutters
-        >
+        <FullScreenDialogContent disableGutters>
           <CloudFileDialogContent
             cloudStorage={cloudStorage}
             onSelect={setSelectedFile}

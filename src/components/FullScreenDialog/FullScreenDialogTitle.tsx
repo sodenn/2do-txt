@@ -11,9 +11,9 @@ import {
 } from "@mui/material";
 import { ReactNode } from "react";
 import { WithChildren } from "../../types/common.types";
+import { useFullScreenDialog } from "./FullScreenDialogContext";
 
 interface FullScreenDialogTitleProps extends WithChildren {
-  divider?: boolean;
   onClose: () => void;
   accept: {
     text?: ReactNode;
@@ -30,7 +30,8 @@ export const StyledAppBar = styled(AppBar)({
 });
 
 const FullScreenDialogTitle = (props: FullScreenDialogTitleProps) => {
-  const { divider, onClose, accept, children } = props;
+  const { onClose, accept, children } = props;
+  const { divider } = useFullScreenDialog();
   return (
     <Box style={{ flex: "none" }}>
       <StyledAppBar position="static" color="transparent" elevation={0}>
@@ -49,7 +50,6 @@ const FullScreenDialogTitle = (props: FullScreenDialogTitleProps) => {
           {accept && (
             <Button
               sx={{ mr: -1.5 }}
-              autoFocus
               color="inherit"
               onClick={accept.onClick}
               disabled={accept.disabled}
