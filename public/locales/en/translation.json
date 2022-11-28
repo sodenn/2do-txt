@@ -149,6 +149,7 @@
   "Without date": "Without date",
   "New": "New",
   "WebDAV Server": "WebDAV Server",
+  "WebDAV example URL": "e.g. https://example.com/remote.php/webdav",
   "URL": "URL",
   "Username": "Username",
   "Password": "Password",

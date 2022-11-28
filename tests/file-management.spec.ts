@@ -35,7 +35,7 @@ test.describe("Reorder Files", () => {
 
     // open file management dialog
     await page.getByRole("button", { name: "File menu" }).click();
-    await page.getByRole("menuitem", { name: "Manage todo.txt" }).click();
+    await page.getByRole("menuitem", { name: "Files…" }).click();
 
     // check current sort order
     await expect(page.locator("h5")).toHaveCount(2);
@@ -67,17 +67,19 @@ test.describe("Reorder Files", () => {
   test("should allow me to close a file", async ({ page }) => {
     // open file management dialog
     await page.getByRole("button", { name: "File menu" }).click();
-    await page.getByRole("menuitem", { name: "Manage todo.txt" }).click();
+    await page.getByRole("menuitem", { name: "Files…" }).click();
 
     // check current number of open files
     await expect(page.getByTestId("draggable-file")).toHaveCount(2);
 
+    // open the menu of the first file in the list
+    await page.getByRole("button", { name: "File actions" }).nth(0).click();
+
     // click "Delete" in the context menu
     await page
-      .getByRole("button", {
+      .getByRole("menuitem", {
         name: "Delete file",
       })
-      .nth(0)
       .click();
 
     // confirm deletion

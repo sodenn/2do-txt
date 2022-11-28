@@ -71,6 +71,7 @@ const WebDavDialog = () => {
         fullWidth
         variant="outlined"
         type="url"
+        helperText={t("WebDAV example URL")}
         inputProps={{
           "aria-label": "URL",
         }}
