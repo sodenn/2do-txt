@@ -143,7 +143,7 @@ const FileManagementDialog = () => {
       open={fileManagementDialogOpen}
       onClose={handleCloseDialog}
     >
-      <DialogTitle>{t("Manage todo.txt")}</DialogTitle>
+      <DialogTitle>{t("Files")}</DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <OpenFileList
           subheader={closedFiles.length > 0}

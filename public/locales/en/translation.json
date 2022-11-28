@@ -79,7 +79,6 @@
   "Import todo.txt": "Import todo.txt",
   "todo.txt already exists. Do you want to replace it": "<strong>{{filePath}}</strong> already exists. Do you want to replace it?",
   "Replace": "Replace",
-  "Manage todo.txt": "Manage todo.txt",
   "Open files": "Open files",
   "Closed files": "Closed files",
   "Copy to clipboard": "Copy to clipboard",
@@ -157,5 +156,7 @@
   "Connect": "Connect",
   "Back": "Back",
   "Not sync": "Not sync",
-  "Choose action": "Choose action"
+  "Choose action": "Choose action",
+  "Files": "Files",
+  "Files…": "Files…"
 }

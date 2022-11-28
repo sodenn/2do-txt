@@ -136,9 +136,10 @@ const WebDavDialog = () => {
 
   return (
     <Dialog
-      maxWidth="sm"
+      maxWidth="xs"
       fullWidth
       open={webDAVDialogOpen}
+      onClose={handleClose}
       TransitionProps={TransitionProps}
     >
       <DialogTitle>{t("WebDAV Server")}</DialogTitle>

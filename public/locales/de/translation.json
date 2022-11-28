@@ -79,7 +79,6 @@
   "Import todo.txt": "todo.txt importieren",
   "todo.txt already exists. Do you want to replace it": "<strong>{{filePath}}</strong> existiert bereits. Möchtest du die Datei ersetzen?",
   "Replace": "Ersetzen",
-  "Manage todo.txt": "todo.txt verwalten",
   "Open files": "Geöffnete Dateien",
   "Closed files": "Geschlossene Dateien",
   "Copy to clipboard": "In Zwischenablage kopieren",
@@ -157,5 +156,7 @@
   "Connect": "Verbinden",
   "Back": "Zurück",
   "Not sync": "Nicht synchronisieren",
-  "Choose action": "Aktion wählen"
+  "Choose action": "Aktion wählen",
+  "Files": "Dateien",
+  "Files…": "Dateien…"
 }

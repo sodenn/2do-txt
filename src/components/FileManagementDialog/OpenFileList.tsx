@@ -17,6 +17,7 @@ import { CloudFileRef, useCloudStorage } from "../../data/CloudStorageContext";
 import { useSettings } from "../../data/SettingsContext";
 import { useTask } from "../../data/TaskContext";
 import { formatLocalDateTime, parseDate } from "../../utils/date";
+import { TaskList } from "../../utils/task-list";
 import StartEllipsis from "../StartEllipsis";
 import OpenFileItemMenu from "./OpenFileItemMenu";
 
@@ -28,6 +29,8 @@ interface OpenFileListProps {
 interface FileListItemProps {
   filePath: string;
   onClose: (options: CloseOptions) => void;
+  taskList: TaskList;
+  onDownload: (taskList: TaskList) => void;
 }
 
 export interface CloseOptions {
@@ -39,7 +42,7 @@ const OpenFileList = memo((props: OpenFileListProps) => {
   const { subheader, onClose } = props;
   const wrapper = useRef<HTMLDivElement>(null);
   const [container, setContainer] = useState<Element | null>(null);
-  const { taskLists, reorderTaskList } = useTask();
+  const { taskLists, reorderTaskList, downloadTodoFile } = useTask();
   const [items, setItems] = useState(taskLists.map((t) => t.filePath));
   const { t } = useTranslation();
 
@@ -84,7 +87,15 @@ const OpenFileList = memo((props: OpenFileListProps) => {
           </List>
         )}
         renderItem={({ value, props }) => (
-          <FileListItem filePath={value} onClose={onClose} {...props} />
+          <FileListItem
+            taskList={taskLists.find((t) => t.filePath === value)!}
+            filePath={value}
+            onClose={onClose}
+            onDownload={() =>
+              downloadTodoFile(taskLists.find((t) => t.filePath === value))
+            }
+            {...props}
+          />
         )}
         onChange={handleChange}
       />
@@ -94,7 +105,7 @@ const OpenFileList = memo((props: OpenFileListProps) => {
 
 const FileListItem = forwardRef<HTMLLIElement, FileListItemProps>(
   (props, ref) => {
-    const { filePath, onClose, ...rest } = props;
+    const { filePath, taskList, onClose, onDownload, ...rest } = props;
     const { language } = useSettings();
     const { getCloudFileRefByFilePath } = useCloudStorage();
     const [cloudFileRef, setCloudFileRef] = useState<CloudFileRef>();
@@ -116,6 +127,7 @@ const FileListItem = forwardRef<HTMLLIElement, FileListItemProps>(
             cloudFileRef={cloudFileRef}
             onChange={setCloudFileRef}
             onClose={onClose}
+            onDownloadClick={() => onDownload(taskList)}
           />
         }
         {...rest}
