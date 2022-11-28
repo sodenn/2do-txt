@@ -1,7 +1,6 @@
 import { KeyboardStyle } from "@capacitor/keyboard";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import {
-  alpha,
   createTheme,
   CssBaseline,
   PaletteMode,
@@ -27,32 +26,16 @@ const translations: Record<string, Localization> = {
 
 export type ThemeMode = PaletteMode | "system";
 
-const buttonFocusStyle = (theme: Theme) => ({
-  backgroundColor: alpha(
-    theme.palette.text.primary,
-    theme.palette.action.hoverOpacity
-  ),
-});
-
 const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
   components: {
     MuiButtonBase: {
       defaultProps: {
-        disableRipple: true,
+        disableTouchRipple: true,
       },
     },
-    MuiIconButton: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          "&:focus": buttonFocusStyle(theme),
-        }),
-      },
-    },
-    MuiCheckbox: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          "&.Mui-focusVisible": buttonFocusStyle(theme),
-        }),
+    MuiTab: {
+      defaultProps: {
+        disableTouchRipple: true,
       },
     },
     MuiButton: {
@@ -61,20 +44,6 @@ const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
         style: {
           textTransform: "none",
         },
-      },
-      styleOverrides: {
-        outlined: ({ theme }) => ({
-          "&:focus": buttonFocusStyle(theme),
-        }),
-        text: ({ theme }) => ({
-          "&:focus": buttonFocusStyle(theme),
-        }),
-      },
-    },
-    MuiButtonGroup: {
-      defaultProps: {
-        disableElevation: true,
-        disableRipple: true,
       },
     },
   },
