@@ -28,40 +28,40 @@ jobs:
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
-#  attach-binaries:
-#    name: Attach binaries to GitHub Release
-#    needs: release
-#    runs-on: ${{ matrix.os }}
-#    strategy:
-#      matrix:
-#        os: [ ubuntu-latest, macos-latest, windows-latest ]
-#      fail-fast: false
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: actions/setup-node@v3
-#        with:
-#          node-version: 16
-#      - uses: actions/download-artifact@v3
-#        with:
-#          name: electron
-#          path: electron
-#      - name: Sets env vars for macOS code signing
-#        if: matrix.os == 'macos-latest'
-#        run: |
-#          echo "CSC_LINK<<EOF" >> $GITHUB_ENV
-#          echo "${{ secrets.CSC_LINK }}" >> $GITHUB_ENV
-#          echo "EOF" >> $GITHUB_ENV
-#          echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
-#          echo "APPLEID=${{ secrets.APPLEID }}" >> $GITHUB_ENV
-#          echo "APPLEIDPASS=${{ secrets.APPLEIDPASS }}" >> $GITHUB_ENV
-#      - run: corepack enable
-#      - run: yarn install
-#        working-directory: electron
-#      - run: npm --no-git-tag-version version ${{ needs.release.outputs.releaseVersion }}
-#        working-directory: electron
-#        continue-on-error: true
-#      - run: yarn electron:make
-#        working-directory: electron
-#        env:
-#          GH_TOKEN: '${{ secrets.github_token }}'
-#          EP_GH_IGNORE_TIME: true
+  attach-binaries:
+    name: Attach binaries to GitHub Release
+    needs: release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: actions/download-artifact@v3
+        with:
+          name: electron
+          path: electron
+      - name: Sets env vars for macOS code signing
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "CSC_LINK<<EOF" >> $GITHUB_ENV
+          echo "${{ secrets.CSC_LINK }}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
+          echo "APPLEID=${{ secrets.APPLEID }}" >> $GITHUB_ENV
+          echo "APPLEIDPASS=${{ secrets.APPLEIDPASS }}" >> $GITHUB_ENV
+      - run: corepack enable
+      - run: yarn install
+        working-directory: electron
+      - run: npm --no-git-tag-version version ${{ needs.release.outputs.releaseVersion }}
+        working-directory: electron
+        continue-on-error: true
+      - run: yarn electron:make
+        working-directory: electron
+        env:
+          GH_TOKEN: '${{ secrets.github_token }}'
+          EP_GH_IGNORE_TIME: true
