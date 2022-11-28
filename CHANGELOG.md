@@ -1,3 +1,20 @@
+# [1.16.0-webdav.1](https://github.com/sodenn/2do-txt/compare/v1.15.0...v1.16.0-webdav.1) (2022-11-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies (non-major) ([#677](https://github.com/sodenn/2do-txt/issues/677)) ([69ba4b1](https://github.com/sodenn/2do-txt/commit/69ba4b1e79417c4bc973b337ac46405173304ec0))
+* **deps:** update dependencies (non-major) ([#689](https://github.com/sodenn/2do-txt/issues/689)) ([8d5720f](https://github.com/sodenn/2do-txt/commit/8d5720fc817658ee357a38bed01132870ae3399a))
+* **deps:** update dependency i18next to v22 ([#691](https://github.com/sodenn/2do-txt/issues/691)) ([79c7931](https://github.com/sodenn/2do-txt/commit/79c79316235cef9bac9b75dea6485a63791abae9))
+* **deps:** update dependency i18next-browser-languagedetector to v7 ([#695](https://github.com/sodenn/2do-txt/issues/695)) ([eda75a5](https://github.com/sodenn/2do-txt/commit/eda75a50162f47e9e8e7520c70aac6ef0ec1e913))
+* **deps:** update dependency i18next-http-backend to v2 ([#696](https://github.com/sodenn/2do-txt/issues/696)) ([379cacf](https://github.com/sodenn/2do-txt/commit/379cacf1f79601c188f8106b8745fef6acd91f8f))
+* **deps:** update dependency react-i18next to v12 ([#692](https://github.com/sodenn/2do-txt/issues/692)) ([71adefb](https://github.com/sodenn/2do-txt/commit/71adefb000a91cf146e62da89ebc69d14c63e349))
+
+
+### Features
+
+* dropbox support for the desktop app ([#693](https://github.com/sodenn/2do-txt/issues/693)) ([7811953](https://github.com/sodenn/2do-txt/commit/7811953f67066050b5474a02280ef6cc01c36ea8))
+
 # [1.15.0](https://github.com/sodenn/2do-txt/compare/v1.14.1...v1.15.0) (2022-10-12)
 
 
