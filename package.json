@@ -32,7 +32,7 @@
     "ios:res": "cordova-res ios --skip-config --copy",
     "electron:sync": "npx cap sync @capacitor-community/electron",
     "electron:start": "yarn build && yarn electron:sync && npx cap open @capacitor-community/electron",
-    "semantic-release": "semantic-release --dryRun --debug"
+    "semantic-release": "semantic-release --dry-run --debug"
   },
   "eslintConfig": {
     "extends": [
