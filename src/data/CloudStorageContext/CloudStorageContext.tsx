@@ -3,7 +3,7 @@ import { Alert, Button, CircularProgress } from "@mui/material";
 import { throttle } from "lodash";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import {
   useLoaderData,
   useLocation,
@@ -105,6 +105,20 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     [authError, closeSnackbar, enqueueSnackbar, t]
   );
 
+  const openConnectionErrorAlert = useCallback(
+    (error: any) => {
+      enqueueSnackbar(
+        <Trans
+          i18nKey="Error connecting with cloud storage"
+          values={{ cloudStorage: t("Cloud storage"), message: error.message }}
+          components={{ code: <code style={{ marginLeft: 5 }} /> }}
+        />,
+        { variant: "warning" }
+      );
+    },
+    [enqueueSnackbar, t]
+  );
+
   const handleError = useCallback(
     (error: any) => {
       if (error instanceof CloudFileUnauthorizedError) {
@@ -114,10 +128,12 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
           [cloudStorage]: { cloudStorage, status: "disconnected" },
         }));
         openSessionExpiredAlert(cloudStorage);
+      } else {
+        openConnectionErrorAlert(error);
       }
       throw error;
     },
-    [openSessionExpiredAlert]
+    [openConnectionErrorAlert, openSessionExpiredAlert]
   );
 
   const getClient = useCallback(
