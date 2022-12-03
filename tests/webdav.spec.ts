@@ -44,7 +44,7 @@ test("should sync todo.txt with WebDAV", async ({ page }) => {
     .locator('input[type="checkbox"]');
   await taskCheckbox.click();
   await expect(page.getByText("Sync with cloud storage")).toBeVisible({
-    timeout: 7000,
+    timeout: 10000,
   });
 });
 
