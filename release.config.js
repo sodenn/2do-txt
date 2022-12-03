@@ -11,6 +11,7 @@ const config = {
     },
     {
       name: "feat/*",
+      // eslint-disable-next-line no-template-curly-in-string
       prerelease: '${name.replace(/^feat\\//g, "")}',
     },
   ],
