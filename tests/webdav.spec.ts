@@ -38,13 +38,14 @@ test("should sync todo.txt with WebDAV", async ({ page }) => {
     .getByRole("button", { name: "todo.txt /Documents/todo.txt" })
     .click();
   await page.getByRole("button", { name: "Import" }).click();
-  await page.waitForSelector("text=Connected to WebDAV", { state: "hidden" });
   const taskCheckbox = page
     .getByTestId("task")
     .nth(0)
     .locator('input[type="checkbox"]');
   await taskCheckbox.click();
-  await expect(page.getByText("Sync with cloud storage")).toBeVisible();
+  await expect(page.getByText("Sync with cloud storage")).toBeVisible({
+    timeout: 7000,
+  });
 });
 
 test("should navigate back and forward", async ({ page }) => {

@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
 });
 
-const delay = { delay: 30 };
+const delay = { delay: 40 };
 
 test.describe("Task dialog", () => {
   test("should allow me to open and close the task dialog via shortcut", async ({
