@@ -11,7 +11,7 @@ const config = {
     },
     {
       name: "feat/*",
-      prerelease: '${name.replace(/^feat//g, "")}',
+      prerelease: '${name.replace(/^feat\\//g, "")}',
     },
   ],
 };
