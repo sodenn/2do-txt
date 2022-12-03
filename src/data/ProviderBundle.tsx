@@ -32,7 +32,7 @@ const ProviderBundle = ({ children }: WithChildren) => {
             vertical: "bottom",
             horizontal: "right",
           }}
-          TransitionComponent={Grow as any}
+          TransitionComponent={Grow}
         >
           <ConfirmationDialogProvider>
             <NetworkProvider>

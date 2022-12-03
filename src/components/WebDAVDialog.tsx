@@ -13,11 +13,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  useCloudFileDialog,
-  useCloudStorage,
-  useWebDAVDialog,
-} from "../data/CloudStorageContext";
+import { useCloudStorage, useWebDAVDialog } from "../data/CloudStorageContext";
 import { saveWebDAVCredentials } from "../data/CloudStorageContext/webdav-storage";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
@@ -32,7 +28,6 @@ const WebDavDialog = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<any>();
   const { createClient, openStorageConnectedAlert } = useCloudStorage();
-  const { setCloudFileDialogOptions } = useCloudFileDialog();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSubmit = async () => {
@@ -42,7 +37,6 @@ const WebDavDialog = () => {
       setWebDAVDialogOpen(false);
       await createClient("WebDAV");
       await openStorageConnectedAlert("WebDAV");
-      await setCloudFileDialogOptions({ cloudStorage: "WebDAV", open: true });
     } catch (error) {
       setError(error);
     }
