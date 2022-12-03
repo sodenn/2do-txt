@@ -34,7 +34,7 @@ test.describe("Task dialog", () => {
     );
 
     // select "Private" from the mention list
-    await page.locator('[role="menuitem"] >> text="Private"').click();
+    await page.locator('[role="menuitem"] >> text="Private"').click(delay);
 
     // open the mention popover
     await page.type('[aria-label="Text editor"]', "@", delay);

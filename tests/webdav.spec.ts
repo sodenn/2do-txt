@@ -30,11 +30,6 @@ test("should import todo.txt from WebDAV", async ({ page }) => {
 });
 
 test("should sync todo.txt with WebDAV", async ({ page, context }) => {
-  // emulate network throttling
-  await context.route("**/*", async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    await route.continue();
-  });
   await replayFromHar(page);
   await connectToWebDAV(page);
   await openWebDAVImportDialog(page);
@@ -43,14 +38,20 @@ test("should sync todo.txt with WebDAV", async ({ page, context }) => {
     .getByRole("button", { name: "todo.txt /Documents/todo.txt" })
     .click();
   await page.getByRole("button", { name: "Import" }).click();
+  await page.waitForSelector("text=Connected to WebDAV");
+  const firstSyncDate = await getLastSyncDate(page);
+
+  // trigger second sync
   const taskCheckbox = page
     .getByTestId("task")
     .nth(0)
     .locator('input[type="checkbox"]');
   await taskCheckbox.click();
-  await expect(page.getByText("Sync with cloud storage")).toBeVisible({
-    timeout: 10000,
-  });
+  // remote calls are throttled (5s)
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  const secondSyncDate = await getLastSyncDate(page);
+
+  expect(firstSyncDate).not.toBe(secondSyncDate);
 });
 
 test("should navigate back and forward", async ({ page }) => {
@@ -90,4 +91,13 @@ async function replayFromHar(page: Page) {
   await page.routeFromHAR("tests/webdav.har", {
     url: "**/webdav/**",
   });
+}
+
+async function getLastSyncDate(page: Page) {
+  const firstSyncDateHandle = await page.evaluateHandle(() => {
+    const arr = JSON.parse(localStorage["CapacitorStorage.cloud-files"]);
+    return arr[0];
+  });
+  const firstSync = await firstSyncDateHandle.jsonValue();
+  return firstSync.lastSync;
 }
