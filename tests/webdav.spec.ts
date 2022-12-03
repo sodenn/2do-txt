@@ -94,6 +94,7 @@ async function replayFromHar(page: Page) {
 }
 
 async function getLastSyncDate(page: Page) {
+  await new Promise((resolve) => setTimeout(resolve, 300));
   const firstSyncDateHandle = await page.evaluateHandle(() => {
     const arr = JSON.parse(localStorage["CapacitorStorage.cloud-files"]);
     return arr[0];
