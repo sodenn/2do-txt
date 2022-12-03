@@ -418,11 +418,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   useEffect(() => {
-    requestTokens().then((cloudStorage) => {
-      if (cloudStorage) {
-        setCloudFileDialogOptions({ cloudStorage, open: true });
-      }
-    });
+    requestTokens();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
