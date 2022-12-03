@@ -29,7 +29,12 @@ test("should import todo.txt from WebDAV", async ({ page }) => {
   await expect(page.getByTestId("task")).toHaveCount(8);
 });
 
-test("should sync todo.txt with WebDAV", async ({ page }) => {
+test("should sync todo.txt with WebDAV", async ({ page, context }) => {
+  // emulate network throttling
+  await context.route("**/*", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await route.continue();
+  });
   await replayFromHar(page);
   await connectToWebDAV(page);
   await openWebDAVImportDialog(page);

@@ -200,13 +200,15 @@ const FileCreateDialog = () => {
   }, [createNewFile, getUniqueFilePath, handleClose, open, platform]);
 
   const initFileName = useCallback(async () => {
-    if (platform === "electron" || !open) {
+    if (platform === "electron" || !open || fileName) {
       return;
     }
-    const { fileName } = await getUniqueFilePath(defaultTodoFilePath);
-    setFileName(fileName);
-    return fileName;
-  }, [getUniqueFilePath, open, platform]);
+    const { fileName: _fileName } = await getUniqueFilePath(
+      defaultTodoFilePath
+    );
+    setFileName(_fileName);
+    return _fileName;
+  }, [getUniqueFilePath, open, platform, fileName]);
 
   useEffect(() => {
     Promise.all([initFileName(), openDesktopDialog()]).then(([fileName]) =>
