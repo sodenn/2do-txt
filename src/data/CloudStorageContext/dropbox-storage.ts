@@ -44,6 +44,7 @@ export async function authenticate(): Promise<void> {
   )) as string;
 
   const codeVerifier = dbxAuth.getCodeVerifier();
+  await setSecureStorageItem("Dropbox-code-verifier", codeVerifier);
 
   if (useInAppBrowser) {
     const params = await oauth({
@@ -52,7 +53,6 @@ export async function authenticate(): Promise<void> {
     });
     await requestAccessToken(params.code);
   } else {
-    await setSecureStorageItem("Dropbox-code-verifier", codeVerifier);
     window.location.href = authUrl;
   }
 }

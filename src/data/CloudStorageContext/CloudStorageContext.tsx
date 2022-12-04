@@ -31,7 +31,6 @@ import {
   CloudFileRef,
   CloudStorage,
 } from "./cloud-storage.types";
-import { useCloudFileDialog } from "./CloudFileDialogContext";
 import {
   DeleteFileOptions,
   DownloadFileOptions,
@@ -58,7 +57,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { connected } = useNetwork();
   const { setWebDAVDialogOpen } = useWebDAVDialog();
-  const { setCloudFileDialogOptions } = useCloudFileDialog();
   const [cloudStorageClients, setCloudStorageClients] = useState(
     data.cloudStorageClients
   );
@@ -181,10 +179,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       // Note: web platform goes a different way because a redirect is used
       if (["ios", "android", "electron"].includes(platform)) {
         await createClient(cloudStorage);
-        await setCloudFileDialogOptions({ cloudStorage, open: true });
       }
     },
-    [createClient, enqueueSnackbar, setCloudFileDialogOptions, t]
+    [createClient, enqueueSnackbar, t]
   );
 
   const webDAVAuthenticate = useCallback(() => {
