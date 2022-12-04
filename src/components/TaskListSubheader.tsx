@@ -5,6 +5,10 @@ import { useFilter } from "../data/FilterContext";
 const StyledListSubheader = styled(ListSubheader)(({ theme }) => ({
   // avoid scrollbar overlapping (Safari mobile)
   top: -1,
+  paddingLeft: 0,
+  paddingRight: 0,
+  marginLeft: theme.spacing(2),
+  marginRight: theme.spacing(2),
   background: `linear-gradient(
     to top,
     ${alpha(theme.palette.background.default, 0)},
