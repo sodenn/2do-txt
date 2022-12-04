@@ -201,7 +201,7 @@ const FileCreateDialog = () => {
 
   const initFileName = useCallback(async () => {
     if (platform === "electron" || !open || fileName) {
-      return;
+      return fileName;
     }
     const { fileName: _fileName } = await getUniqueFilePath(
       defaultTodoFilePath
@@ -214,7 +214,7 @@ const FileCreateDialog = () => {
     Promise.all([initFileName(), openDesktopDialog()]).then(([fileName]) =>
       skipFileCreateDialog(fileName)
     );
-  }, [initFileName, openDesktopDialog, skipFileCreateDialog]);
+  }, [initFileName, openDesktopDialog, skipFileCreateDialog, open]);
 
   if (platform === "electron" || typeof skip === "undefined" || skip) {
     return null;
