@@ -18,7 +18,7 @@ declare global {
       getSecureStorageItem: (key: string) => Promise<string | null>;
       setSecureStorageItem: (key: string, value: string) => Promise<void>;
       removeSecureStorageItem: (key: string) => Promise<void>;
-      themeReady: () => Promise<void>;
+      hideSplashScreen: () => Promise<void>;
     };
   }
 }

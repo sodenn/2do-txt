@@ -26,5 +26,5 @@ contextBridge.exposeInMainWorld("electron", {
   selectFolder: (buttonLabel?: string) =>
     ipcRenderer.invoke("selectFolder", buttonLabel),
   join: (paths: string[]) => ipcRenderer.invoke("join", paths),
-  themeReady: () => ipcRenderer.invoke("theme-ready"),
+  hideSplashScreen: () => ipcRenderer.invoke("hide-splash-screen"),
 });

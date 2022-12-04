@@ -2,5 +2,7 @@ import { ipcMain } from "electron";
 import { ElectronCapacitorApp } from "./setup";
 
 export function setupSplashScreen(electronCapacitorApp: ElectronCapacitorApp) {
-  ipcMain.handle("theme-ready", () => electronCapacitorApp.hideSplashScreen());
+  ipcMain.handle("hide-splash-screen", () =>
+    electronCapacitorApp.hideSplashScreen()
+  );
 }
