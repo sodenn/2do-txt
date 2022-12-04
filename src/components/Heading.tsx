@@ -30,7 +30,12 @@ const Heading = ({
         {children}
       </Typography>
       {helperText && (
-        <Tooltip enterTouchDelay={0} leaveTouchDelay={2000} title={helperText}>
+        <Tooltip
+          disableTouchListener={false}
+          enterTouchDelay={0}
+          leaveTouchDelay={2000}
+          title={helperText}
+        >
           <HelpOutlineIcon color={disabled ? "action" : undefined} />
         </Tooltip>
       )}

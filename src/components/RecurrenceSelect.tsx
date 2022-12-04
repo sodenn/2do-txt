@@ -103,7 +103,11 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
           value={amount}
           endAdornment={
             <InputAdornment position="end">
-              <Tooltip enterTouchDelay={200} title={t("Strict recurrence")}>
+              <Tooltip
+                disableTouchListener={false}
+                enterTouchDelay={200}
+                title={t("Strict recurrence")}
+              >
                 <IconButton
                   aria-label="Toggle strict mode"
                   onClick={() => handleChangeStrict(!strict)}

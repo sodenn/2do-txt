@@ -9,11 +9,15 @@ const AddTaskButton = (props: IconButtonProps) => {
   const { t } = useTranslation();
   const { setTaskDialogOptions } = useTaskDialog();
 
+  const handleClick: IconButtonProps["onClick"] = (event) => {
+    event.currentTarget.blur();
+    setTaskDialogOptions({ open: true });
+  };
+
   useAddShortcutListener(() => setTaskDialogOptions({ open: true }), "n");
 
   return (
     <Tooltip
-      disableTouchListener
       title={
         <>
           {t("Create Task")}
@@ -28,7 +32,7 @@ const AddTaskButton = (props: IconButtonProps) => {
         aria-label="Add task"
         size="large"
         color="inherit"
-        onClick={() => setTaskDialogOptions({ open: true })}
+        onClick={handleClick}
         {...props}
       >
         <AddIcon />
