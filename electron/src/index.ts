@@ -16,6 +16,7 @@ import {
   setupContentSecurityPolicy,
   setupReloadWatcher,
 } from "./setup";
+import { setupSplashScreen } from "./splash-screen";
 
 // Graceful handling of unhandled errors.
 unhandled();
@@ -59,6 +60,7 @@ if (electronIsDev) {
 setupFileHandling(myCapacitorApp.getMainWindow());
 setupSafeStorage();
 setupOauthHandling();
+setupSplashScreen(myCapacitorApp);
 
 // Run Application
 (async () => {

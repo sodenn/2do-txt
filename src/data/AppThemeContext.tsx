@@ -17,6 +17,7 @@ import { WithChildren } from "../types/common.types";
 import { createContext } from "../utils/Context";
 import { setKeyboardStyle } from "../utils/keyboard";
 import { setPreferencesItem } from "../utils/preferences";
+import { hideSplashScreen } from "../utils/splash-screen";
 import { LoaderData } from "./loader";
 
 const translations: Record<string, Localization> = {
@@ -103,6 +104,8 @@ function applyThemeMode(theme: Theme, mode: ThemeMode) {
         ? KeyboardStyle.Dark
         : KeyboardStyle.Default,
   });
+
+  hideSplashScreen();
 }
 
 const [AppThemeProvider, useAppTheme] = createContext(() => {

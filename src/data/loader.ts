@@ -1,5 +1,4 @@
 import { ReadFileResult } from "@capacitor/filesystem";
-import { SplashScreen } from "@capacitor/splash-screen";
 import { getFilenameFromPath, getFilesystem } from "../utils/filesystem";
 import { migrate1 } from "../utils/migrations";
 import { getPreferencesItem } from "../utils/preferences";
@@ -88,7 +87,7 @@ async function loadTodoFiles(): Promise<TodoFiles> {
 
 export async function loader(): Promise<LoaderData> {
   await migrate1();
-  const data = await Promise.all([
+  return Promise.all([
     getPreferencesItem<SortKey>("sort-by"),
     getPreferencesItem<FilterType>("filter-type"),
     getPreferencesItem("hide-completed-tasks"),
@@ -135,6 +134,4 @@ export async function loader(): Promise<LoaderData> {
       cloudStorageClients,
     })
   );
-  setTimeout(() => SplashScreen.hide(), 150);
-  return data;
 }
