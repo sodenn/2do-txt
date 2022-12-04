@@ -38,6 +38,13 @@ const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
         disableTouchRipple: true,
       },
     },
+    MuiTooltip: {
+      defaultProps: {
+        enterDelay: 700,
+        enterNextDelay: 700,
+        disableTouchListener: true,
+      },
+    },
     MuiButton: {
       defaultProps: {
         disableElevation: true,
