@@ -109,6 +109,16 @@ export class ElectronCapacitorApp {
     return this.customScheme;
   }
 
+  hideSplashScreen() {
+    // When the web app is loaded we hide the splashscreen if needed and show the mainwindow.
+    if (this.CapacitorFileConfig.electron?.splashScreenEnabled) {
+      this.SplashScreen.getSplashWindow().hide();
+    }
+    if (!this.CapacitorFileConfig.electron?.hideMainWindowOnLaunch) {
+      this.MainWindow.show();
+    }
+  }
+
   async init(): Promise<void> {
     const icon = nativeImage.createFromPath(
       join(
@@ -227,16 +237,7 @@ export class ElectronCapacitorApp {
     // Link electron plugins into the system.
     setupCapacitorElectronPlugins();
 
-    // When the web app is loaded we hide the splashscreen if needed and show the mainwindow.
     this.MainWindow.webContents.on("dom-ready", () => {
-      setTimeout(() => {
-        if (this.CapacitorFileConfig.electron?.splashScreenEnabled) {
-          this.SplashScreen.getSplashWindow().hide();
-        }
-        if (!this.CapacitorFileConfig.electron?.hideMainWindowOnLaunch) {
-          this.MainWindow.show();
-        }
-      }, 200);
       setTimeout(() => {
         if (electronIsDev) {
           this.MainWindow.webContents.openDevTools();

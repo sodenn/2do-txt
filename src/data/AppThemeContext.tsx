@@ -1,4 +1,5 @@
 import { KeyboardStyle } from "@capacitor/keyboard";
+import { SplashScreen } from "@capacitor/splash-screen";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import {
   createTheme,
@@ -103,6 +104,9 @@ function applyThemeMode(theme: Theme, mode: ThemeMode) {
         ? KeyboardStyle.Dark
         : KeyboardStyle.Default,
   });
+
+  SplashScreen.hide();
+  window.electron.themeReady();
 }
 
 const [AppThemeProvider, useAppTheme] = createContext(() => {
