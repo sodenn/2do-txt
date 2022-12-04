@@ -6,6 +6,9 @@ const config: CapacitorConfig = {
   webDir: "build",
   bundledWebRuntime: false,
   plugins: {
+    CapacitorHttp: {
+      enabled: true,
+    },
     SplashScreen: {
       launchAutoHide: false,
       backgroundColor: "#90caf9",

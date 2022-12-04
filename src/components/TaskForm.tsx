@@ -2,20 +2,9 @@ import { Box, Button, Grid, Stack, Theme, useTheme } from "@mui/material";
 import { createMentionsPlugin, useMentions } from "@react-fluent-edit/mentions";
 import { MuiFluentEdit, MuiMentionCombobox } from "@react-fluent-edit/mui";
 import { isValid } from "date-fns";
-import {
-  CSSProperties,
-  KeyboardEvent,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import { CSSProperties, KeyboardEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDate, isDateEqual } from "../utils/date";
-import {
-  addKeyboardDidHideListener,
-  addKeyboardDidShowListener,
-  removeAllKeyboardListeners,
-} from "../utils/keyboard";
 import { getPlatform, hasTouchScreen } from "../utils/platform";
 import {
   getDueDateValue,
@@ -71,7 +60,6 @@ export function getTagStyle(key: string, theme: Theme): CSSProperties {
 const TaskForm = (props: TaskFormProps) => {
   const platform = getPlatform();
   const theme = useTheme();
-  const rootRef = useRef<HTMLDivElement>();
   const touchScreen = hasTouchScreen();
   const {
     raw,
@@ -167,23 +155,8 @@ const TaskForm = (props: TaskFormProps) => {
     onChange(stringifyTask({ ...formData, ...data }));
   };
 
-  useEffect(() => {
-    addKeyboardDidShowListener((info) => {
-      rootRef.current?.style.setProperty(
-        "padding-bottom",
-        info.keyboardHeight + "px"
-      );
-    });
-    addKeyboardDidHideListener(() => {
-      rootRef.current?.style.removeProperty("padding-bottom");
-    });
-    return () => {
-      removeAllKeyboardListeners();
-    };
-  });
-
   return (
-    <Stack ref={rootRef}>
+    <Stack>
       <Box sx={{ mb: 2 }}>
         <MuiFluentEdit
           label={t("Description")}

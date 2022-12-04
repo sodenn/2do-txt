@@ -4,9 +4,9 @@ import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
 import { getPlatform } from "../utils/platform";
 import AddTaskButton from "./AddTaskButton";
-import DownloadButton from "./DownloadButton";
 import FileMenu from "./FileMenu";
 import SearchBar from "./SearchBar";
+import ShareButton from "./ShareButton";
 import { HeaderContainer } from "./SideSheet";
 import SideSheetButton from "./SideSheetButton";
 
@@ -26,7 +26,8 @@ const Header = ({ divider = false }: HeaderProps) => {
   const { sideSheetOpen } = useSideSheet();
   const [expanded, setExpanded] = useState(false);
   const showTodoFileDownloadButton =
-    platform !== "electron" && (activeTaskList || taskLists.length === 1);
+    (platform === "ios" || platform === "android") &&
+    (activeTaskList || taskLists.length === 1);
 
   return (
     <Box style={{ flex: "none", marginBottom: 2 }}>
@@ -50,9 +51,7 @@ const Header = ({ divider = false }: HeaderProps) => {
                 edge={!showTodoFileDownloadButton ? "end" : undefined}
               />
             )}
-            {showTodoFileDownloadButton && (
-              <DownloadButton sx={{ flexGrow: 0 }} />
-            )}
+            {showTodoFileDownloadButton && <ShareButton sx={{ flexGrow: 0 }} />}
           </Toolbar>
         </SafeAreaAppBar>
       </HeaderContainer>

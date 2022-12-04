@@ -5,7 +5,11 @@ import { WithChildren } from "../types/common.types";
 import { AppTheme } from "./AppThemeContext";
 import { ArchivedTaskProvider } from "./ArchivedTaskContext";
 import { ArchivedTasksDialogProvider } from "./ArchivedTasksDialogContext";
-import { CloudStorageProvider } from "./CloudStorageContext";
+import {
+  CloudFileDialogProvider,
+  CloudStorageProvider,
+  WebDAVDialogProvider,
+} from "./CloudStorageContext";
 import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
 import { FileCreateDialogProvider } from "./FileCreateDialogContext";
 import { FileManagementDialogProvider } from "./FileManagementDialogContext";
@@ -28,33 +32,37 @@ const ProviderBundle = ({ children }: WithChildren) => {
             vertical: "bottom",
             horizontal: "right",
           }}
-          TransitionComponent={Grow as any}
+          TransitionComponent={Grow}
         >
           <ConfirmationDialogProvider>
             <NetworkProvider>
-              <CloudStorageProvider>
-                <SettingsProvider>
-                  <FilterProvider>
-                    <SideSheetProvider>
-                      <ArchivedTasksDialogProvider>
-                        <ArchivedTaskProvider>
-                          <TaskProvider>
-                            <FileManagementDialogProvider>
-                              <ShortcutsDialogProvider>
-                                <FileCreateDialogProvider>
-                                  <TaskDialogProvider>
-                                    {children}
-                                  </TaskDialogProvider>
-                                </FileCreateDialogProvider>
-                              </ShortcutsDialogProvider>
-                            </FileManagementDialogProvider>
-                          </TaskProvider>
-                        </ArchivedTaskProvider>
-                      </ArchivedTasksDialogProvider>
-                    </SideSheetProvider>
-                  </FilterProvider>
-                </SettingsProvider>
-              </CloudStorageProvider>
+              <CloudFileDialogProvider>
+                <WebDAVDialogProvider>
+                  <CloudStorageProvider>
+                    <SettingsProvider>
+                      <FilterProvider>
+                        <SideSheetProvider>
+                          <ArchivedTasksDialogProvider>
+                            <ArchivedTaskProvider>
+                              <TaskProvider>
+                                <FileManagementDialogProvider>
+                                  <ShortcutsDialogProvider>
+                                    <FileCreateDialogProvider>
+                                      <TaskDialogProvider>
+                                        {children}
+                                      </TaskDialogProvider>
+                                    </FileCreateDialogProvider>
+                                  </ShortcutsDialogProvider>
+                                </FileManagementDialogProvider>
+                              </TaskProvider>
+                            </ArchivedTaskProvider>
+                          </ArchivedTasksDialogProvider>
+                        </SideSheetProvider>
+                      </FilterProvider>
+                    </SettingsProvider>
+                  </CloudStorageProvider>
+                </WebDAVDialogProvider>
+              </CloudFileDialogProvider>
             </NetworkProvider>
           </ConfirmationDialogProvider>
         </SnackbarProvider>

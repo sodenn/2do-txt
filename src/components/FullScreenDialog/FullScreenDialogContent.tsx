@@ -1,6 +1,12 @@
 import { Box, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import { WithChildren } from "../../types/common.types";
+import {
+  addKeyboardDidHideListener,
+  addKeyboardDidShowListener,
+  removeAllKeyboardListeners,
+} from "../../utils/keyboard";
+import { useFullScreenDialog } from "./FullScreenDialogContext";
 
 const SafeArea = styled("div")({
   paddingRight: "env(safe-area-inset-right)",
@@ -9,22 +15,37 @@ const SafeArea = styled("div")({
 });
 
 interface FullScreenDialogContentProps extends WithChildren {
-  onScroll?: (top: number) => void;
+  disableGutters?: boolean;
 }
 
 const FullScreenDialogContent = (props: FullScreenDialogContentProps) => {
-  const { children, onScroll } = props;
+  const { children, disableGutters } = props;
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
+  const { setDivider } = useFullScreenDialog();
 
   useEffect(() => {
     if (root) {
-      const listener = () => onScroll?.(root.scrollTop);
+      const listener = () => {
+        setDivider(root.scrollTop > 12);
+      };
       root.addEventListener("scroll", listener);
       return () => {
         root.removeEventListener("scroll", listener);
       };
     }
-  }, [onScroll, root]);
+  }, [root, setDivider]);
+
+  useEffect(() => {
+    addKeyboardDidShowListener((info) => {
+      root?.style.setProperty("padding-bottom", info.keyboardHeight + "px");
+    });
+    addKeyboardDidHideListener(() => {
+      root?.style.removeProperty("padding-bottom");
+    });
+    return () => {
+      removeAllKeyboardListeners();
+    };
+  }, [root]);
 
   return (
     <Box
@@ -33,7 +54,7 @@ const FullScreenDialogContent = (props: FullScreenDialogContentProps) => {
         flex: "1 1 auto",
         position: "relative",
         overflowY: "auto",
-        px: 2,
+        px: disableGutters ? 0 : 2,
         py: 1,
       }}
     >

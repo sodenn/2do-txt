@@ -2,28 +2,27 @@ import { Clipboard } from "@capacitor/clipboard";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import DownloadIcon from "@mui/icons-material/Download";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   CircularProgress,
   IconButton,
   ListItemIcon,
+  ListItemText,
   Menu,
   MenuItem,
   Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  cloudStorageIcons,
-  useCloudStorage,
-} from "../../data/CloudStorageContext";
-import { useTask } from "../../data/TaskContext";
+import { Trans, useTranslation } from "react-i18next";
 import {
   CloudFileRef,
   CloudFileUnauthorizedError,
   CloudStorage,
-} from "../../types/cloud-storage.types";
+  cloudStorageIcons,
+  useCloudStorage,
+} from "../../data/CloudStorageContext";
 import { getArchiveFilePath, getFilesystem } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
 
@@ -37,6 +36,7 @@ interface OpenFileItemMenuProps {
   cloudFileRef?: CloudFileRef;
   onChange: (cloudFileRef?: CloudFileRef) => void;
   onClose: (options: CloseOptions) => void;
+  onDownloadClick: () => void;
 }
 
 interface CloudStorageMenuItemProps {
@@ -54,11 +54,10 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
   const { t } = useTranslation();
   const {
     unlinkCloudFile,
-    uploadFileAndResolveConflict,
-    connectedCloudStorages,
+    cloudStoragesConnectionStatus,
     cloudStorageEnabled,
+    uploadFile,
   } = useCloudStorage();
-  const { saveTodoFile, saveDoneFile } = useTask();
   const { enqueueSnackbar } = useSnackbar();
   const { readFile, isFile } = getFilesystem();
   const [loading, setLoading] = useState(false);
@@ -74,10 +73,9 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
           path: filePath,
         });
 
-        const uploadResult = await uploadFileAndResolveConflict({
+        const uploadResult = await uploadFile({
           filePath,
           text: readFileResult.data,
-          mode: "create",
           cloudStorage,
           archive: false,
         });
@@ -87,49 +85,33 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
           const localArchiveFileExists = await isFile({
             path: archiveFilePath,
           });
-
           if (localArchiveFileExists) {
             const readArchiveFileResult = await readFile({
               path: filePath,
             });
-
-            const uploadArchiveResult = await uploadFileAndResolveConflict({
+            await uploadFile({
               filePath,
               text: readArchiveFileResult.data,
-              mode: "create",
               cloudStorage,
               archive: true,
             }).catch((e) => void e);
-
-            if (
-              uploadArchiveResult &&
-              uploadArchiveResult.type === "conflict" &&
-              uploadArchiveResult.conflict.option === "cloud"
-            ) {
-              const text = uploadArchiveResult.conflict.text;
-              await saveDoneFile(filePath, text);
-            }
           }
         }
 
-        if (uploadResult && uploadResult.type === "no-conflict") {
-          onChange(uploadResult.ref as CloudFileRef);
-        } else if (uploadResult && uploadResult.type === "conflict") {
-          if (uploadResult.conflict.option === "cloud") {
-            const text = uploadResult.conflict.text;
-            await saveTodoFile(filePath, text);
-          }
-          onChange(uploadResult.conflict.ref as CloudFileRef);
-        }
+        onChange(uploadResult);
       } else {
         await unlinkCloudFile(filePath);
         onChange(undefined);
       }
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof CloudFileUnauthorizedError)) {
         console.debug(e);
         enqueueSnackbar(
-          t(`Error syncing file to cloud storage`, { cloudStorage }),
+          <Trans
+            i18nKey="Error syncing file to cloud storage"
+            values={{ cloudStorage, message: e.message }}
+            components={{ code: <code style={{ marginLeft: 5 }} /> }}
+          />,
           {
             variant: "warning",
           }
@@ -143,8 +125,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
 
   if (
     !cloudStorageEnabled ||
-    !connectedCloudStorages[cloudStorage] ||
-    (cloudFileRef && cloudStorage !== cloudFileRef.cloudStorage)
+    (!cloudStoragesConnectionStatus[cloudStorage] && !cloudFileRef)
   ) {
     return null;
   }
@@ -174,14 +155,16 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
 };
 
 const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
-  const { filePath, cloudFileRef, onChange, onClose } = props;
+  const { filePath, cloudFileRef, onChange, onClose, onDownloadClick } = props;
+  const { connectedCloudStorages } = useCloudStorage();
   const { t } = useTranslation();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
   const platform = getPlatform();
   const { enqueueSnackbar } = useSnackbar();
-  const { readFile } = getFilesystem();
+  const [anchorEl, setAnchorEl] = useState(null);
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
+  const { readFile } = getFilesystem();
+  const open = Boolean(anchorEl);
+  const cloudStorages = [...connectedCloudStorages];
   const deleteFile =
     platform === "web" || platform === "ios" || platform === "android";
 
@@ -209,6 +192,10 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
     handleClose();
   };
 
+  if (cloudFileRef && !cloudStorages.includes(cloudFileRef.cloudStorage)) {
+    cloudStorages.push(cloudFileRef.cloudStorage);
+  }
+
   return (
     <>
       <IconButton
@@ -226,26 +213,43 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
       >
-        <CloudStorageMenuItem
-          cloudStorage="Dropbox"
-          onClick={handleClose}
-          onChange={onChange}
-          filePath={filePath}
-          onLoad={setCloudSyncLoading}
-          cloudFileRef={cloudFileRef}
-        />
-        <MenuItem onClick={handleCopyToClipboard}>
-          <ListItemIcon>
-            <ContentCopyIcon />
-          </ListItemIcon>
-          <Typography>{t("Copy to clipboard")}</Typography>
-        </MenuItem>
+        {cloudStorages.map((cloudStorage) => (
+          <CloudStorageMenuItem
+            key={cloudStorage}
+            cloudStorage={cloudStorage}
+            onClick={handleClose}
+            onChange={onChange}
+            filePath={filePath}
+            onLoad={setCloudSyncLoading}
+            cloudFileRef={
+              cloudFileRef?.cloudStorage === cloudStorage
+                ? cloudFileRef
+                : undefined
+            }
+          />
+        ))}
+        {(platform === "electron" || platform === "web") && (
+          <MenuItem onClick={handleCopyToClipboard}>
+            <ListItemIcon>
+              <ContentCopyIcon />
+            </ListItemIcon>
+            <Typography>{t("Copy to clipboard")}</Typography>
+          </MenuItem>
+        )}
+        {platform === "web" && (
+          <MenuItem aria-label="Download todo.txt" onClick={onDownloadClick}>
+            <ListItemIcon>
+              <DownloadIcon />
+            </ListItemIcon>
+            <ListItemText>{t("Download")}</ListItemText>
+          </MenuItem>
+        )}
         <MenuItem onClick={handleCloseFile} aria-label="Delete file">
           <ListItemIcon>
             {deleteFile && <DeleteOutlineOutlinedIcon />}
             {!deleteFile && <CloseOutlinedIcon />}
           </ListItemIcon>
-          <Typography>{deleteFile ? t("Delete") : t("Close")}</Typography>
+          <ListItemText>{deleteFile ? t("Delete") : t("Close")}</ListItemText>
         </MenuItem>
       </Menu>
     </>

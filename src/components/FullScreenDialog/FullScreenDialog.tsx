@@ -7,6 +7,7 @@ import {
   SlideProps,
 } from "@mui/material";
 import { forwardRef } from "react";
+import { FullScreenDialogProvider } from "./FullScreenDialogContext";
 
 const Transition = forwardRef<HTMLCollection, SlideProps>(
   ({ children, ...rest }, ref) => {
@@ -26,15 +27,17 @@ const PaperComponent = (props: PaperProps) => {
 
 const FullScreenDialog = ({ children, ...rest }: DialogProps) => {
   return (
-    <Dialog
-      sx={{ display: "flex", flexDirection: "column" }}
-      fullScreen
-      TransitionComponent={Transition}
-      PaperComponent={PaperComponent}
-      {...rest}
-    >
-      {children}
-    </Dialog>
+    <FullScreenDialogProvider>
+      <Dialog
+        sx={{ display: "flex", flexDirection: "column" }}
+        fullScreen
+        TransitionComponent={Transition}
+        PaperComponent={PaperComponent}
+        {...rest}
+      >
+        {children}
+      </Dialog>
+    </FullScreenDialogProvider>
   );
 };
 

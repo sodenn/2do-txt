@@ -1,10 +1,8 @@
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
+import KeyboardIcon from "@mui/icons-material/Keyboard";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import QuestionMarkOutlinedIcon from "@mui/icons-material/QuestionMarkOutlined";
 import {
   Button,
   Divider,
@@ -15,15 +13,12 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
-import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../data/FileManagementDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useShortcutsDialog } from "../data/ShortcutsDialogContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
-import { getPlatform, hasTouchScreen } from "../utils/platform";
-import DropboxIcon from "./DropboxIcon";
+import { hasTouchScreen } from "../utils/platform";
 import StartEllipsis from "./StartEllipsis";
 
 const buttonMaxWidthXs = 170;
@@ -32,17 +27,10 @@ const menuMaxWidth = 350;
 
 const FileMenu = () => {
   const { t } = useTranslation();
-  const platform = getPlatform();
   const touchScreen = hasTouchScreen();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const { setShortcutsDialogOpen } = useShortcutsDialog();
-  const { setFileCreateDialog } = useFileCreateDialog();
-  const { taskLists, activeTaskList, openTodoFilePicker } = useTask();
-  const {
-    setCloudFileDialogOptions,
-    cloudStorageEnabled,
-    connectedCloudStorages,
-  } = useCloudStorage();
+  const { taskLists, activeTaskList } = useTask();
   const { setActiveTaskListPath } = useFilter();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -53,31 +41,17 @@ const FileMenu = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+    return new Promise((resolve) => setTimeout(resolve, 200));
   };
 
-  const handleSetActiveList = (filePath: string) => {
+  const handleSetActiveList = async (filePath: string) => {
+    await handleClose();
     setActiveTaskListPath(filePath);
-    handleClose();
-  };
-
-  const handleImportFromCloudStorage = () => {
-    handleClose();
-    setCloudFileDialogOptions({ open: true, cloudStorage: "Dropbox" });
-  };
-
-  const handleCreateFile = () => {
-    setFileCreateDialog({ open: true });
-    handleClose();
   };
 
   const handleManageFile = () => {
     handleClose();
     setFileManagementDialogOpen(true);
-  };
-
-  const handleOpenFile = () => {
-    handleClose();
-    openTodoFilePicker();
   };
 
   const handleKeyboardShortcutsClick = () => {
@@ -129,51 +103,19 @@ const FileMenu = () => {
               <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
             </MenuItem>
           ))}
-        {taskLists.length > 1 && <Divider />}
-        {taskLists.length < 4 && (
-          <MenuItem onClick={handleCreateFile}>
-            <ListItemIcon>
-              <AddOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>{t("Create todo.txt")}</ListItemText>
-          </MenuItem>
-        )}
-        {taskLists.length < 4 && (
-          <MenuItem onClick={handleOpenFile}>
-            <ListItemIcon>
-              <FolderOpenOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>
-              {platform === "electron"
-                ? t("Open todo.txt")
-                : t("Import todo.txt")}
-            </ListItemText>
-          </MenuItem>
-        )}
-        {taskLists.length < 4 &&
-          cloudStorageEnabled &&
-          connectedCloudStorages["Dropbox"] && (
-            <MenuItem onClick={handleImportFromCloudStorage}>
-              <ListItemIcon>
-                <DropboxIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>
-                {t("Import from cloud storage", { cloudStorage: "Dropbox" })}
-              </ListItemText>
-            </MenuItem>
-          )}
         {taskLists.length > 0 && (
           <MenuItem onClick={handleManageFile}>
             <ListItemIcon>
               <AllInboxRoundedIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText>{t("Manage todo.txt")}</ListItemText>
+            <ListItemText>{t("Files…")}</ListItemText>
           </MenuItem>
         )}
+        {!touchScreen && taskLists.length > 1 && <Divider />}
         {!touchScreen && (
           <MenuItem onClick={handleKeyboardShortcutsClick}>
             <ListItemIcon>
-              <QuestionMarkOutlinedIcon fontSize="small" />
+              <KeyboardIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>{t("Keyboard Shortcuts")}</ListItemText>
           </MenuItem>

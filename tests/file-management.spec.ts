@@ -6,7 +6,7 @@ const withoutFile = [
 ];
 
 test.beforeEach(async ({ page }, testInfo) => {
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
   if (!withoutFile.includes(testInfo.title)) {
     const content = readFileSync("public/todo.txt");
     await page.setInputFiles('[data-testid="file-picker"]', {
@@ -35,7 +35,7 @@ test.describe("Reorder Files", () => {
 
     // open file management dialog
     await page.getByRole("button", { name: "File menu" }).click();
-    await page.getByRole("menuitem", { name: "Manage todo.txt" }).click();
+    await page.getByRole("menuitem", { name: "Files…" }).click();
 
     // check current sort order
     await expect(page.locator("h5")).toHaveCount(2);
@@ -67,7 +67,7 @@ test.describe("Reorder Files", () => {
   test("should allow me to close a file", async ({ page }) => {
     // open file management dialog
     await page.getByRole("button", { name: "File menu" }).click();
-    await page.getByRole("menuitem", { name: "Manage todo.txt" }).click();
+    await page.getByRole("menuitem", { name: "Files…" }).click();
 
     // check current number of open files
     await expect(page.getByTestId("draggable-file")).toHaveCount(2);

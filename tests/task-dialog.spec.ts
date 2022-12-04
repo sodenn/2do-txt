@@ -3,11 +3,11 @@ import { format } from "date-fns";
 import { formatDate } from "../src/utils/date";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
   await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
 });
 
-const delay = { delay: 30 };
+const delay = { delay: 40 };
 
 test.describe("Task dialog", () => {
   test("should allow me to open and close the task dialog via shortcut", async ({
@@ -34,7 +34,7 @@ test.describe("Task dialog", () => {
     );
 
     // select "Private" from the mention list
-    await page.locator('[role="menuitem"] >> text="Private"').click();
+    await page.locator('[role="menuitem"] >> text="Private"').click(delay);
 
     // open the mention popover
     await page.type('[aria-label="Text editor"]', "@", delay);

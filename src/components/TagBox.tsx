@@ -11,7 +11,7 @@ import {
 interface TagBoxProps extends BoxProps {
   chip: boolean;
   completed: boolean;
-  type: "context" | "project" | "tag";
+  type?: "context" | "project" | "tag";
   tagKey?: string;
 }
 

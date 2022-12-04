@@ -1,89 +1,125 @@
+import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { LoadingButton } from "@mui/lab";
-import { Button, Stack } from "@mui/material";
-import { useState } from "react";
+import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  CloudStorage,
   cloudStorageIcons,
   useCloudStorage,
 } from "../data/CloudStorageContext";
-import { CloudStorage, cloudStorages } from "../types/cloud-storage.types";
 
 interface CloudStorageConnectionButtonsProps {
-  connect?: boolean;
-  disconnect?: boolean;
+  status?: "connect" | "disconnect";
 }
 
-interface CloudStorageConnectionButtonProps
-  extends CloudStorageConnectionButtonsProps {
-  cloudStorage: CloudStorage;
-}
+export const CloudStorageConnectionButtons = ({
+  status,
+}: CloudStorageConnectionButtonsProps) => {
+  const {
+    cloudStorageEnabled,
+    cloudStoragesConnectionStatus,
+    authenticate,
+    unlinkCloudStorage,
+  } = useCloudStorage();
+  const { t } = useTranslation();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [loading, setLoading] = useState(false);
+  const filteredCloudStorages = Object.entries(cloudStoragesConnectionStatus)
+    .filter(([, connected]) => {
+      return typeof status === "undefined"
+        ? true
+        : status === "connect"
+        ? !connected
+        : connected;
+    })
+    .map(([cloudStorages]) => cloudStorages as CloudStorage);
+  const open = Boolean(anchorEl);
 
-const CloudStorageConnectionButtons = (
-  props: CloudStorageConnectionButtonsProps
-) => {
-  const { cloudStorageEnabled } = useCloudStorage();
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  if (!cloudStorageEnabled) {
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleItemClick = async (cloudStorage: CloudStorage) => {
+    handleClose();
+    const connected = cloudStoragesConnectionStatus[cloudStorage];
+    if (!connected) {
+      setLoading(true);
+      authenticate(cloudStorage).finally(() => setLoading(false));
+    } else {
+      unlinkCloudStorage(cloudStorage);
+    }
+  };
+
+  if (!cloudStorageEnabled || filteredCloudStorages.length === 0) {
     return null;
   }
 
-  return (
-    <Stack spacing={1}>
-      {cloudStorages.map((cloudStorage, idx) => (
-        <CloudStorageConnectionButton
-          key={idx}
-          {...props}
-          cloudStorage={cloudStorage}
-        />
-      ))}
-    </Stack>
-  );
-};
-
-const CloudStorageConnectionButton = (
-  props: CloudStorageConnectionButtonProps
-) => {
-  const { cloudStorage, connect = true, disconnect = true } = props;
-  const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
-  const { connectedCloudStorages, authenticate, unlinkCloudStorage } =
-    useCloudStorage();
-
-  const cloudStorageConnected = connectedCloudStorages[cloudStorage];
-
-  const handleAuthenticate = async () => {
-    setLoading(true);
-    authenticate(cloudStorage).finally(() => setLoading(false));
-  };
-
-  if (disconnect && cloudStorageConnected) {
-    return (
-      <Button
-        variant="outlined"
-        startIcon={cloudStorageIcons[cloudStorage]}
-        fullWidth
-        onClick={() => unlinkCloudStorage(cloudStorage)}
-      >
-        {t("Disconnect from cloud storage", { cloudStorage })}
-      </Button>
-    );
-  }
-
-  if (connect && !cloudStorageConnected) {
+  if (filteredCloudStorages.length === 1) {
+    const cloudStorage = filteredCloudStorages[0];
     return (
       <LoadingButton
+        aria-label="Connect to cloud storage"
         loading={loading}
         variant="outlined"
         startIcon={cloudStorageIcons[cloudStorage]}
         fullWidth
-        onClick={handleAuthenticate}
+        onClick={() => handleItemClick(cloudStorage)}
       >
-        {t("Connect to cloud storage", { cloudStorage })}
+        {cloudStoragesConnectionStatus[cloudStorage]
+          ? t("Disconnect from cloud storage", { cloudStorage })
+          : t("Connect to cloud storage", { cloudStorage })}
       </LoadingButton>
     );
   }
 
-  return null;
+  return (
+    <>
+      <Button
+        variant="outlined"
+        fullWidth
+        onClick={handleClick}
+        aria-label="Connect to cloud storage"
+        startIcon={<CloudOutlinedIcon />}
+        endIcon={<KeyboardArrowDownIcon />}
+      >
+        {status === "connect"
+          ? t("Connect to cloud storage", { cloudStorage: t("Cloud storage") })
+          : t("Cloud storage connection")}
+      </Button>
+      <Menu
+        sx={{ mt: 0.5 }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        {filteredCloudStorages.map((cloudStorage) => (
+          <MenuItem
+            key={cloudStorage}
+            onClick={() => handleItemClick(cloudStorage)}
+          >
+            <ListItemIcon>{cloudStorageIcons[cloudStorage]}</ListItemIcon>
+            {cloudStoragesConnectionStatus[cloudStorage]
+              ? t("Disconnect from cloud storage", { cloudStorage })
+              : t("Connect to cloud storage", { cloudStorage })}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
 };
 
 export default CloudStorageConnectionButtons;

@@ -37,6 +37,7 @@ const PriorityBox = ({
     return (
       <TagBox
         chip={true}
+        completed={false}
         sx={{
           fontWeight: "bold",
           color: completed ? undefined : "secondary.contrastText",

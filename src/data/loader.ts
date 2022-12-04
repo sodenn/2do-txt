@@ -1,12 +1,15 @@
 import { ReadFileResult } from "@capacitor/filesystem";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { CloudStorage, cloudStorages } from "../types/cloud-storage.types";
 import { getFilenameFromPath, getFilesystem } from "../utils/filesystem";
 import { migrate1 } from "../utils/migrations";
 import { getPreferencesItem } from "../utils/preferences";
-import { getSecureStorage } from "../utils/secure-storage";
 import { parseTaskList, TaskList } from "../utils/task-list";
 import { ThemeMode } from "./AppThemeContext";
+import * as cloudStorage from "./CloudStorageContext/cloud-storage";
+import {
+  CloudStorage,
+  CloudStorageClient,
+} from "./CloudStorageContext/cloud-storage.types";
 import { FilterType, SortKey } from "./FilterContext";
 import {
   ArchiveMode,
@@ -16,7 +19,6 @@ import {
   TaskView,
 } from "./SettingsContext";
 
-const { getSecureStorageItem } = getSecureStorage();
 const { readFile } = getFilesystem();
 
 interface TodoFileSuccess {
@@ -50,7 +52,7 @@ export interface LoaderData {
   language: Language;
   themeMode: ThemeMode;
   todoFiles: TodoFiles;
-  connectedCloudStorages: Record<CloudStorage, boolean>;
+  cloudStorageClients: Record<CloudStorage, CloudStorageClient>;
 }
 
 async function loadTodoFiles(): Promise<TodoFiles> {
@@ -87,16 +89,6 @@ async function loadTodoFiles(): Promise<TodoFiles> {
   };
 }
 
-function loadCloudStorages() {
-  return Promise.all(
-    cloudStorages.map((cloudStorage) =>
-      getSecureStorageItem(`${cloudStorage}-refresh-token`).then(
-        (refreshToken) => ({ cloudStorage, connected: !!refreshToken })
-      )
-    )
-  ).then((result) => ({ result }));
-}
-
 export async function loader(): Promise<LoaderData> {
   await migrate1();
   const data = await Promise.all([
@@ -112,7 +104,7 @@ export async function loader(): Promise<LoaderData> {
     getPreferencesItem<Language>("language"),
     getPreferencesItem<ThemeMode>("theme-mode"),
     loadTodoFiles(),
-    loadCloudStorages(),
+    cloudStorage.loadClients(),
   ]).then(
     ([
       sortBy,
@@ -127,7 +119,7 @@ export async function loader(): Promise<LoaderData> {
       language,
       themeMode,
       todoFiles,
-      cloudStorages,
+      cloudStorageClients,
     ]) => ({
       sortBy: sortBy ?? "",
       filterType: filterType || "AND",
@@ -143,10 +135,7 @@ export async function loader(): Promise<LoaderData> {
       language: language || "en",
       themeMode: themeMode || "system",
       todoFiles: todoFiles,
-      connectedCloudStorages: cloudStorages.result.reduce((prev, curr) => {
-        prev[curr.cloudStorage] = curr.connected;
-        return prev;
-      }, {} as Record<CloudStorage, boolean>),
+      cloudStorageClients,
     })
   );
   await SplashScreen.hide();

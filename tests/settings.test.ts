@@ -1,7 +1,7 @@
 import { expect, Page, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
   await page.getByRole("button", { name: "Toggle menu" }).click();
 });
 
@@ -47,7 +47,6 @@ test.describe("Language", () => {
       page.getByRole("button", { name: "Select language" })
     ).toHaveText("English");
     await expect(page.locator("text=Language").first()).toBeVisible();
-    await checkInLocalStorage(page, "language", "en");
 
     // select German
     await page.getByRole("button", { name: "Select language" }).click();
@@ -62,8 +61,9 @@ test.describe("Language", () => {
 
 async function checkInLocalStorage(page: Page, key: string, value: string) {
   const arg = JSON.stringify({ key, value });
-  return await page.evaluate((_arg) => {
+  const result = await page.evaluate((_arg) => {
     const arg = JSON.parse(_arg);
     return localStorage[`CapacitorStorage.${arg.key}`] === arg.value;
   }, arg);
+  expect(result).toBe(true);
 }

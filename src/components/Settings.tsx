@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel, Stack } from "@mui/material";
+import { Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useSettings } from "../data/SettingsContext";
@@ -105,9 +105,9 @@ const Settings = () => {
       {cloudStorageEnabled && (
         <div>
           <Heading gutterBottom>{t("Cloud storage")}</Heading>
-          <Box sx={{ mt: 1 }}>
+          <Stack sx={{ mt: 1 }} spacing={1}>
             <CloudStorageConnectionButtons />
-          </Box>
+          </Stack>
         </div>
       )}
     </Stack>

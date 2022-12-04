@@ -50,7 +50,6 @@ const TaskDialog = () => {
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
-  const [divider, setDivider] = useState(false);
   const formDisabled = !raw || (!activeTaskList && !selectedTaskList);
   const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
@@ -124,60 +123,56 @@ const TaskDialog = () => {
     </FluentEditProvider>
   );
 
-  return (
-    <>
-      {!fullScreenDialog && (
-        <Dialog
-          data-testid="task-dialog"
-          maxWidth="sm"
-          fullWidth
-          open={open}
-          onClose={handleClose}
-          TransitionProps={TransitionProps}
-        >
-          <DialogTitle>
-            {!!task?._id ? t("Edit Task") : t("Create Task")}
-          </DialogTitle>
-          <DialogContent>{taskForm}</DialogContent>
-          <DialogActions>
-            <Button tabIndex={-1} onClick={closeDialog}>
-              {t("Cancel")}
-            </Button>
-            <Button
-              aria-label="Save task"
-              disabled={formDisabled}
-              onClick={handleSave}
-            >
-              {t("Save")}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-      {fullScreenDialog && (
-        <FullScreenDialog
-          data-testid="task-dialog"
-          open={open}
+  if (fullScreenDialog) {
+    return (
+      <FullScreenDialog
+        data-testid="task-dialog"
+        open={open}
+        onClose={closeDialog}
+        TransitionProps={TransitionProps}
+      >
+        <FullScreenDialogTitle
           onClose={closeDialog}
-          TransitionProps={TransitionProps}
+          accept={{
+            text: t("Save"),
+            disabled: formDisabled,
+            onClick: handleSave,
+            "aria-label": "Save task",
+          }}
         >
-          <FullScreenDialogTitle
-            divider={divider}
-            onClose={closeDialog}
-            accept={{
-              text: t("Save"),
-              disabled: formDisabled,
-              onClick: handleSave,
-              "aria-label": "Save task",
-            }}
-          >
-            {!!task?._id ? t("Edit Task") : t("Create Task")}
-          </FullScreenDialogTitle>
-          <FullScreenDialogContent onScroll={(top) => setDivider(top > 12)}>
-            {taskForm}
-          </FullScreenDialogContent>
-        </FullScreenDialog>
-      )}
-    </>
+          {!!task?._id ? t("Edit Task") : t("Create Task")}
+        </FullScreenDialogTitle>
+        <FullScreenDialogContent>{taskForm}</FullScreenDialogContent>
+      </FullScreenDialog>
+    );
+  }
+
+  return (
+    <Dialog
+      data-testid="task-dialog"
+      maxWidth="sm"
+      fullWidth
+      open={open}
+      onClose={handleClose}
+      TransitionProps={TransitionProps}
+    >
+      <DialogTitle>
+        {!!task?._id ? t("Edit Task") : t("Create Task")}
+      </DialogTitle>
+      <DialogContent>{taskForm}</DialogContent>
+      <DialogActions>
+        <Button tabIndex={-1} onClick={closeDialog}>
+          {t("Cancel")}
+        </Button>
+        <Button
+          aria-label="Save task"
+          disabled={formDisabled}
+          onClick={handleSave}
+        >
+          {t("Save")}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

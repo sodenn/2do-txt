@@ -132,6 +132,8 @@ export class ElectronCapacitorApp {
       height: this.mainWindowState.height,
       autoHideMenuBar: true,
       webPreferences: {
+        webSecurity: false,
+        allowRunningInsecureContent: false,
         nodeIntegration: true,
         contextIsolation: true,
         // Use preload to inject the electron varriant overrides for capacitor plugins.
@@ -254,8 +256,8 @@ export function setupContentSecurityPolicy(customScheme: string): void {
         ...details.responseHeaders,
         "Content-Security-Policy": [
           electronIsDev
-            ? `default-src ${customScheme}://* 'unsafe-inline' devtools://* 'unsafe-eval' data:; connect-src 'self' ws: https://api.dropboxapi.com https://content.dropboxapi.com`
-            : `default-src ${customScheme}://* 'unsafe-inline' data:; connect-src 'self' ws: https://api.dropboxapi.com https://content.dropboxapi.com`,
+            ? `default-src ${customScheme}://* 'unsafe-inline' devtools://* 'unsafe-eval' data:; connect-src *`
+            : `default-src ${customScheme}://* 'unsafe-inline' data:; connect-src *`,
         ],
       },
     });

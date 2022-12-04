@@ -12,7 +12,7 @@ import { useFileManagementDialog } from "../../data/FileManagementDialogContext"
 import { useTask } from "../../data/TaskContext";
 import { getFilenameFromPath, getFilesystem } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
-import CloseFileList from "./CloseFileList";
+import ClosedFileList from "./ClosedFileList";
 import FileActionButton from "./FileActionButton";
 import OpenFileList from "./OpenFileList";
 
@@ -143,13 +143,13 @@ const FileManagementDialog = () => {
       open={fileManagementDialogOpen}
       onClose={handleCloseDialog}
     >
-      <DialogTitle>{t("Manage todo.txt")}</DialogTitle>
+      <DialogTitle>{t("Files")}</DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <OpenFileList
           subheader={closedFiles.length > 0}
           onClose={handleCloseFile}
         />
-        <CloseFileList
+        <ClosedFileList
           list={closedFiles}
           onOpen={handleCloseDialog}
           onDelete={handleDeleteFile}

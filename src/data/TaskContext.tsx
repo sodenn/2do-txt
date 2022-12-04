@@ -470,23 +470,26 @@ const [TaskProvider, useTask] = createContext(() => {
     [loadDoneFile]
   );
 
-  const downloadTodoFile = useCallback(async () => {
-    if (activeTaskList) {
-      const { items, lineEnding, fileName } = activeTaskList;
+  const downloadTodoFile = useCallback(
+    async (taskList = activeTaskList) => {
+      if (taskList) {
+        const { items, lineEnding, fileName } = taskList;
 
-      const zip = await generateZipFile(activeTaskList);
+        const zip = await generateZipFile(taskList);
 
-      if (zip) {
-        FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
-      } else {
-        const content = stringifyTaskList(items, lineEnding);
-        const blob = new Blob([content], {
-          type: "text/plain;charset=utf-8",
-        });
-        FileSaver.saveAs(blob, fileName);
+        if (zip) {
+          FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
+        } else {
+          const content = stringifyTaskList(items, lineEnding);
+          const blob = new Blob([content], {
+            type: "text/plain;charset=utf-8",
+          });
+          FileSaver.saveAs(blob, fileName);
+        }
       }
-    }
-  }, [activeTaskList, generateZipFile]);
+    },
+    [activeTaskList, generateZipFile]
+  );
 
   const shareTodoFile = useCallback(async () => {
     if (activeTaskList) {

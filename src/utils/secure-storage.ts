@@ -2,7 +2,10 @@ import { getPlatform } from "./platform";
 
 export type SecureStorageKeys =
   | "Dropbox-refresh-token"
-  | "Dropbox-code-verifier";
+  | "Dropbox-code-verifier"
+  | "WebDAV-username"
+  | "WebDAV-password"
+  | "WebDAV-url";
 
 const prefix = "SecureStorage.";
 

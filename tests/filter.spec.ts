@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 const withoutFile = ["should not show the search bar when no files are open"];
 
 test.beforeEach(async ({ page }, testInfo) => {
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
   if (!withoutFile.includes(testInfo.title)) {
     await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
   }
@@ -23,12 +23,12 @@ test.describe("Search", () => {
     if (isMobile) {
       await page.getByRole("button", { name: "Expand search bar" }).click();
       await Promise.all([
-        page.waitForNavigation({ url: "http://127.0.0.1:5173/?term=invoice" }),
+        page.waitForNavigation({ url: "http://localhost:5173/?term=invoice" }),
         page.getByRole("search", { name: "Search for tasks" }).fill("invoice"),
       ]);
     } else {
       await Promise.all([
-        page.waitForNavigation({ url: "http://127.0.0.1:5173/?term=invoice" }),
+        page.waitForNavigation({ url: "http://localhost:5173/?term=invoice" }),
         page.getByRole("search", { name: "Search for tasks" }).fill("invoice"),
       ]);
     }
@@ -109,10 +109,10 @@ test.describe("Filter", () => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByRole("button", { name: "A is used 2 times" }).click();
-    await expect(page).toHaveURL("http://127.0.0.1:5173/?priorities=A");
+    await expect(page).toHaveURL("http://localhost:5173/?priorities=A");
     await expect(page.getByTestId("task")).toHaveCount(2);
     await page.getByRole("button", { name: "A is used 2 times" }).click();
-    await expect(page).toHaveURL("http://127.0.0.1:5173");
+    await expect(page).toHaveURL("http://localhost:5173");
   });
 
   test("should allow me to filter tasks by project", async ({ page }) => {
@@ -121,22 +121,22 @@ test.describe("Filter", () => {
     await page
       .getByRole("button", { name: "CompanyA is used 1 times" })
       .click();
-    await expect(page).toHaveURL("http://127.0.0.1:5173/?projects=CompanyA");
+    await expect(page).toHaveURL("http://localhost:5173/?projects=CompanyA");
     await expect(page.getByTestId("task")).toHaveCount(1);
     await page
       .getByRole("button", { name: "CompanyA is used 1 times" })
       .click();
-    await expect(page).toHaveURL("http://127.0.0.1:5173");
+    await expect(page).toHaveURL("http://localhost:5173");
   });
 
   test("should allow me to filter tasks by context", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByRole("button", { name: "Private is used 4 times" }).click();
-    await expect(page).toHaveURL("http://127.0.0.1:5173/?contexts=Private");
+    await expect(page).toHaveURL("http://localhost:5173/?contexts=Private");
     await expect(page.getByTestId("task")).toHaveCount(4);
     await page.getByRole("button", { name: "Private is used 4 times" }).click();
-    await expect(page).toHaveURL("http://127.0.0.1:5173");
+    await expect(page).toHaveURL("http://localhost:5173");
   });
 
   test("should allow me to hide completed tasks", async ({ page }) => {
@@ -175,7 +175,7 @@ test.describe("Filter", () => {
       .getByRole("button", { name: "CompanyA is used 1 times" })
       .click();
     await page.keyboard.press("x");
-    await expect(page).toHaveURL("http://127.0.0.1:5173");
+    await expect(page).toHaveURL("http://localhost:5173");
   });
 });
 

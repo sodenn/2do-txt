@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:5173");
   await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
   await page.getByRole("button", { name: "Toggle menu" }).click();
   await page.getByRole("tab", { name: "Settings" }).click();
