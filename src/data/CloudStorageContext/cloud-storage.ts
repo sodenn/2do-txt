@@ -10,6 +10,7 @@ import {
   CloudArchiveFileRef,
   CloudFileRef,
   CloudStorage,
+  CloudStorageClient,
   CloudStorageClientConnected,
   CloudStorageClientDisconnected,
   CloudStorageClients,
@@ -200,30 +201,45 @@ export async function unlinkCloudArchiveFile(filePath: string) {
 }
 
 export async function loadClients(): Promise<CloudStorageClients> {
-  const promises = cloudStorages.map((cloudStorage) =>
-    createClient(cloudStorage)
-      .then((instance) =>
-        instance
-          ? ({
-              instance,
-              cloudStorage,
-              status: "connected",
-            } as CloudStorageClientConnected)
-          : ({
+  const clients = await Promise.race([
+    Promise.all(
+      cloudStorages.map((cloudStorage) =>
+        createClient(cloudStorage)
+          .then((instance) =>
+            instance
+              ? ({
+                  instance,
+                  cloudStorage,
+                  status: "connected",
+                } as CloudStorageClientConnected)
+              : ({
+                  cloudStorage,
+                  status: "disconnected",
+                } as CloudStorageClientDisconnected)
+          )
+          .catch(
+            (error) =>
+              ({
+                error,
+                cloudStorage,
+                status: "disconnected",
+              } as CloudStorageClientDisconnected)
+          )
+      )
+    ),
+    new Promise<CloudStorageClient[]>((resolve) =>
+      setTimeout(
+        () =>
+          resolve(
+            cloudStorages.map((cloudStorage) => ({
               cloudStorage,
               status: "disconnected",
-            } as CloudStorageClientDisconnected)
+            }))
+          ),
+        5000
       )
-      .catch(
-        (error) =>
-          ({
-            error,
-            cloudStorage,
-            status: "disconnected",
-          } as CloudStorageClientDisconnected)
-      )
-  );
-  const clients = await Promise.all(promises);
+    ),
+  ]);
   return clients.reduce((prev, curr) => {
     prev[curr.cloudStorage] = curr;
     return prev;

@@ -5,11 +5,8 @@ import { migrate1 } from "../utils/migrations";
 import { getPreferencesItem } from "../utils/preferences";
 import { parseTaskList, TaskList } from "../utils/task-list";
 import { ThemeMode } from "./AppThemeContext";
+import { CloudStorage, CloudStorageClient } from "./CloudStorageContext";
 import * as cloudStorage from "./CloudStorageContext/cloud-storage";
-import {
-  CloudStorage,
-  CloudStorageClient,
-} from "./CloudStorageContext/cloud-storage.types";
 import { FilterType, SortKey } from "./FilterContext";
 import {
   ArchiveMode,

@@ -54,6 +54,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const location = useLocation();
   const navigate = useNavigate();
   const [authError, setAuthError] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { connected } = useNetwork();
   const { setWebDAVDialogOpen } = useWebDAVDialog();
@@ -78,6 +79,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       const handleLogin = async (key: SnackbarKey) => {
         closeSnackbar(key);
         await cloud.authenticate(cloudStorage);
+        setAuthError(false);
       };
       // Don't annoy the user, so only show the message once
       if (!authError) {
@@ -105,16 +107,23 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
 
   const openConnectionErrorAlert = useCallback(
     (error: any) => {
-      enqueueSnackbar(
-        <Trans
-          i18nKey="Error connecting with cloud storage"
-          values={{ cloudStorage: t("Cloud storage"), message: error.message }}
-          components={{ code: <code style={{ marginLeft: 5 }} /> }}
-        />,
-        { variant: "warning" }
-      );
+      // Don't annoy the user, so only show the message once
+      if (!connectionError) {
+        enqueueSnackbar(
+          <Trans
+            i18nKey="Error connecting with cloud storage"
+            values={{
+              cloudStorage: t("Cloud storage"),
+              message: error.message,
+            }}
+            components={{ code: <code style={{ marginLeft: 5 }} /> }}
+          />,
+          { variant: "warning" }
+        );
+        setConnectionError(true);
+      }
     },
-    [enqueueSnackbar, t]
+    [connectionError, enqueueSnackbar, t]
   );
 
   const handleError = useCallback(
