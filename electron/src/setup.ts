@@ -229,12 +229,14 @@ export class ElectronCapacitorApp {
 
     // When the web app is loaded we hide the splashscreen if needed and show the mainwindow.
     this.MainWindow.webContents.on("dom-ready", () => {
-      if (this.CapacitorFileConfig.electron?.splashScreenEnabled) {
-        this.SplashScreen.getSplashWindow().hide();
-      }
-      if (!this.CapacitorFileConfig.electron?.hideMainWindowOnLaunch) {
-        this.MainWindow.show();
-      }
+      setTimeout(() => {
+        if (this.CapacitorFileConfig.electron?.splashScreenEnabled) {
+          this.SplashScreen.getSplashWindow().hide();
+        }
+        if (!this.CapacitorFileConfig.electron?.hideMainWindowOnLaunch) {
+          this.MainWindow.show();
+        }
+      }, 200);
       setTimeout(() => {
         if (electronIsDev) {
           this.MainWindow.webContents.openDevTools();

@@ -135,6 +135,6 @@ export async function loader(): Promise<LoaderData> {
       cloudStorageClients,
     })
   );
-  await SplashScreen.hide();
+  setTimeout(() => SplashScreen.hide(), 150);
   return data;
 }
