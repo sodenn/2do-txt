@@ -75,7 +75,10 @@ const CloudFileImportButtons = () => {
         onClose={handleClose}
       >
         {connectedCloudStorages.map((cloudStorage) => (
-          <MenuItem onClick={() => handleMenuItemClick(cloudStorage)}>
+          <MenuItem
+            key={cloudStorage}
+            onClick={() => handleMenuItemClick(cloudStorage)}
+          >
             <ListItemIcon>{cloudStorageIcons[cloudStorage]}</ListItemIcon>
             {t("Import from cloud storage", { cloudStorage })}
           </MenuItem>
