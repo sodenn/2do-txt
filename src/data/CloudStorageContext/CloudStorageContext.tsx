@@ -286,9 +286,24 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   const uploadFile = useCallback(
-    (opt: UploadFileOptions) => {
+    async ({ archive, ...opt }: UploadFileOptions) => {
       const client = getClient(opt.cloudStorage);
-      return cloud.uploadFile({ ...opt, client }).catch(handleError);
+      if (archive) {
+        const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
+        if (!cloudFileRef) {
+          throw new Error("Missing cloud file");
+        }
+        return cloud
+          .uploadFile({
+            ...opt,
+            archive,
+            client,
+            cloudFilePath: cloudFileRef.path,
+          })
+          .catch(handleError);
+      } else {
+        return cloud.uploadFile({ ...opt, archive, client }).catch(handleError);
+      }
     },
     [getClient, handleError]
   );
