@@ -49,6 +49,7 @@ export interface UnlinkOptions<T = any> {
 }
 
 export interface CloudArchiveFileRef extends CloudFile {
+  // ⚠️ same path as {@link CloudFileRef.localFilePath}
   localFilePath: string;
   cloudStorage: CloudStorage;
 }
@@ -107,13 +108,26 @@ export interface DownloadFileOptions<T = any> {
   client: T;
 }
 
-export interface UploadFileOptions<T = any> {
+interface UploadNonArchiveFileOptions<T = any> {
   text: string;
   filePath: string;
   cloudStorage: CloudStorage;
-  archive: boolean;
+  archive: false;
   client: T;
 }
+
+interface UploadArchiveFileOptions<T = any> {
+  text: string;
+  cloudFilePath: string;
+  filePath: string;
+  cloudStorage: CloudStorage;
+  archive: true;
+  client: T;
+}
+
+export type UploadFileOptions<T = any> =
+  | UploadNonArchiveFileOptions<T>
+  | UploadArchiveFileOptions<T>;
 
 export interface DeleteFileOptions extends WithClients {
   filePath: string;

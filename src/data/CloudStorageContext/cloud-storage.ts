@@ -314,12 +314,15 @@ export async function uploadFile(
   const { filePath, text, cloudStorage, archive, client } = opt;
   const contentHash = generateContentHash(text);
   if (archive) {
-    const archiveFilePath = getArchiveFilePath(filePath);
+    const { cloudFilePath } = opt;
+    const archiveFilePath = getArchiveFilePath(cloudFilePath);
     if (!archiveFilePath) {
-      throw new Error(`Unable to get archive file path from "${filePath}"`);
+      throw new Error(
+        `Unable to get archive file path from "${cloudFilePath}"`
+      );
     }
     const archiveFile = await $(opt.cloudStorage).uploadFile({
-      filePath: getFilenameFromPath(archiveFilePath),
+      filePath: archiveFilePath,
       text,
       client,
     });
