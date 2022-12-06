@@ -4,13 +4,9 @@ import { useTask } from "../data/TaskContext";
 
 const ArchiveNowButton = () => {
   const { t } = useTranslation();
-  const { archiveAllTask } = useTask();
+  const { archiveTasks } = useTask();
   return (
-    <Button
-      variant="outlined"
-      aria-label="Archive now"
-      onClick={archiveAllTask}
-    >
+    <Button variant="outlined" aria-label="Archive now" onClick={archiveTasks}>
       {t("Archive now")}
     </Button>
   );

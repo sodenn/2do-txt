@@ -137,7 +137,8 @@ const CloudFileDialog = () => {
       });
       await saveDoneFile(filePath, archiveText);
       await linkCloudArchiveFile({
-        ...{ ...archiveFile, contentHash: generateContentHash(archiveText) },
+        ...archiveFile,
+        contentHash: generateContentHash(archiveText),
         localFilePath: filePath,
         cloudStorage,
       });
@@ -151,7 +152,8 @@ const CloudFileDialog = () => {
     }
 
     await linkCloudFile({
-      ...{ ...selectedFile, contentHash: generateContentHash(text) },
+      ...selectedFile,
+      contentHash: generateContentHash(text),
       localFilePath: filePath,
       lastSync: new Date().toISOString(),
       cloudStorage,

@@ -21,7 +21,7 @@ interface SyncItem {
   text: string;
 }
 
-interface ArchiveAllTaskOptions {
+interface ArchiveTasksOptions {
   taskLists: TaskList[];
   onSaveTodoFile: (taskLists: TaskList) => Promise<void>;
 }
@@ -55,7 +55,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
   } = useCloudStorage();
   const { t } = useTranslation();
 
-  const syncAllDoneFilesWithCloudStorage = useCallback(
+  const syncDoneFiles = useCallback(
     async (items: SyncItem[]) => {
       const syncOptions: SyncFileOptions[] = [];
 
@@ -355,8 +355,8 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     ]
   );
 
-  const archiveAllTask = useCallback(
-    async ({ onSaveTodoFile, taskLists }: ArchiveAllTaskOptions) => {
+  const archiveTasks = useCallback(
+    async ({ onSaveTodoFile, taskLists }: ArchiveTasksOptions) => {
       return Promise.all(
         taskLists.map(async (taskList) => {
           const { filePath, items, lineEnding } = taskList;
@@ -422,8 +422,8 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     ]
   );
 
-  const restoreAllArchivedTask = useCallback(
-    ({ onSaveTodoFile, taskLists }: ArchiveAllTaskOptions) => {
+  const restoreArchivedTasks = useCallback(
+    ({ onSaveTodoFile, taskLists }: ArchiveTasksOptions) => {
       return Promise.all(
         taskLists.map(async (taskList) => {
           const completedTaskList = await loadDoneFile(taskList.filePath);
@@ -468,13 +468,13 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
   );
 
   return {
-    syncAllDoneFilesWithCloudStorage,
+    syncDoneFiles,
     saveDoneFile,
     loadDoneFile,
     restoreTask,
     archiveTask,
-    archiveAllTask,
-    restoreAllArchivedTask,
+    archiveTasks,
+    restoreArchivedTasks,
   };
 });
 
