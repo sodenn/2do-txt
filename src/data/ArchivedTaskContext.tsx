@@ -5,7 +5,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
 import {
-  getArchiveFilePath,
+  getDoneFilePath,
   getFilenameFromPath,
   getFilesystem,
 } from "../utils/filesystem";
@@ -44,12 +44,12 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
   const {
     syncAllFiles,
     syncFileThrottled,
-    unlinkCloudArchiveFile,
-    linkCloudArchiveFile,
+    unlinkCloudDoneFile,
+    linkCloudDoneFile,
     deleteCloudFile,
     getCloudFileRefByFilePath,
-    getCloudArchiveFileRefByFilePath,
-    getCloudArchiveFileMetaData,
+    getCloudDoneFileRefByFilePath,
+    getCloudDoneFileMetaData,
     downloadFile,
     uploadFile,
   } = useCloudStorage();
@@ -61,9 +61,9 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
       const updateArchiveMode = await Promise.all(
         items.map(async ({ filePath }) => {
-          const doneFilePath = getArchiveFilePath(filePath);
-          const ref = await getCloudArchiveFileRefByFilePath(filePath);
-          const metaData = await getCloudArchiveFileMetaData(filePath);
+          const doneFilePath = getDoneFilePath(filePath);
+          const ref = await getCloudDoneFileRefByFilePath(filePath);
+          const metaData = await getCloudDoneFileMetaData(filePath);
 
           if (!doneFilePath) {
             return "do-nothing";
@@ -83,24 +83,24 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           };
 
           if (ref && !metaData) {
-            // archive file was deleted in the cloud, so delete the file reference
+            // done file was deleted in the cloud, so delete the file reference
             await Promise.all([
-              unlinkCloudArchiveFile(filePath),
+              unlinkCloudDoneFile(filePath),
               deleteFile({
                 path: doneFilePath,
               }),
             ]);
             return archiveMode !== "no-archiving" ? "disable" : "do-nothing";
           } else if (ref) {
-            // local archive file and cloud archive file available, add sync options
+            // local done file and cloud done file available, add sync options
             await addSyncOption();
             return archiveMode === "no-archiving" ? "enable" : "do-nothing";
           } else if (!metaData) {
-            // local archive file and cloud archive file do not exist, no sync needed
+            // local done file and cloud done file do not exist, no sync needed
             return "do-nothing";
           }
 
-          // download cloud archive file
+          // download cloud done file
           if (archiveMode === "no-archiving") {
             const text = await downloadFile({
               cloudFilePath: metaData.path,
@@ -113,7 +113,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               encoding: Encoding.UTF8,
             });
 
-            await linkCloudArchiveFile({
+            await linkCloudDoneFile({
               localFilePath: filePath,
               contentHash: generateContentHash(text),
               ...metaData,
@@ -141,7 +141,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
       syncAllFiles(syncOptions).then((syncResult) =>
         syncResult.map(async (i) => {
-          const path = getArchiveFilePath(i.filePath);
+          const path = getDoneFilePath(i.filePath);
           if (!path) {
             return;
           }
@@ -163,15 +163,15 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     },
     [
       syncAllFiles,
-      getCloudArchiveFileRefByFilePath,
-      getCloudArchiveFileMetaData,
+      getCloudDoneFileRefByFilePath,
+      getCloudDoneFileMetaData,
       readFile,
       archiveMode,
-      unlinkCloudArchiveFile,
+      unlinkCloudDoneFile,
       deleteFile,
       downloadFile,
       writeFile,
-      linkCloudArchiveFile,
+      linkCloudDoneFile,
       setArchiveMode,
       enqueueSnackbar,
       isFile,
@@ -181,7 +181,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
   const saveDoneFile = useCallback(
     async (filePath: string, text: string) => {
-      const doneFilePath = getArchiveFilePath(filePath);
+      const doneFilePath = getDoneFilePath(filePath);
       if (!doneFilePath) {
         return;
       }
@@ -212,7 +212,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
   const loadDoneFile = useCallback(
     async (filePath: string) => {
-      const doneFilePath = getArchiveFilePath(filePath);
+      const doneFilePath = getDoneFilePath(filePath);
       if (!doneFilePath) {
         return;
       }
@@ -240,7 +240,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     async ({ taskList, task }: RestoreTaskOptions) => {
       const { filePath, lineEnding, items } = taskList;
 
-      const doneFilePath = getArchiveFilePath(filePath);
+      const doneFilePath = getDoneFilePath(filePath);
       if (!doneFilePath) {
         return;
       }
@@ -402,7 +402,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             saveDoneFile(filePath, doneFileText),
           ]);
 
-          const doneFilePath = getArchiveFilePath(filePath);
+          const doneFilePath = getDoneFilePath(filePath);
           if (doneFilePath && newCompletedTasks.length > 0) {
             enqueueSnackbar(
               t("All completed tasks have been archived", { doneFilePath }),
@@ -431,7 +431,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             return;
           }
 
-          const doneFilePath = getArchiveFilePath(taskList.filePath);
+          const doneFilePath = getDoneFilePath(taskList.filePath);
           if (!doneFilePath) {
             return;
           }

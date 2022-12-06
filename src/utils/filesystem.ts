@@ -34,7 +34,7 @@ export function getFileNameWithoutEnding(fileName: string) {
   return fileNameWithoutEnding[1];
 }
 
-export function getArchiveFilePath(filePath: string) {
+export function getDoneFilePath(filePath: string) {
   const fileName = getFilenameFromPath(filePath);
   const fileNameWithoutEnding = getFileNameWithoutEnding(fileName);
   if (!fileNameWithoutEnding) {

@@ -18,16 +18,16 @@ import { useNetwork } from "../NetworkContext";
 import * as cloud from "./cloud-storage";
 import {
   CloudFileUnauthorizedError,
-  getArchiveFileMetaData,
-  getCloudArchiveFileRefByFilePath,
+  getCloudDoneFileRefByFilePath,
   getCloudFileRefByFilePath,
   getCloudFileRefs,
+  getDoneFileMetaData,
   getFilteredSyncOptions,
-  unlinkCloudArchiveFile,
+  unlinkCloudDoneFile,
   unlinkCloudFile,
 } from "./cloud-storage";
 import {
-  CloudArchiveFileRef,
+  CloudDoneFileRef,
   CloudFileRef,
   CloudStorage,
 } from "./cloud-storage.types";
@@ -216,9 +216,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     []
   );
 
-  const linkCloudArchiveFile = useCallback(
-    async (cloudFile: Required<CloudArchiveFileRef>) => {
-      return cloud.linkArchiveFile(cloudFile);
+  const linkCloudDoneFile = useCallback(
+    async (cloudFile: Required<CloudDoneFileRef>) => {
+      return cloud.linkDoneFile(cloudFile);
     },
     []
   );
@@ -318,10 +318,10 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const syncFile = useCallback(
     async (opt: SyncFileOptions) => {
       const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
-      const cloudArchiveFileRef = await getCloudArchiveFileRefByFilePath(
+      const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(
         opt.filePath
       );
-      if (!cloudFileRef && !cloudArchiveFileRef) {
+      if (!cloudFileRef && !cloudDoneFileRef) {
         return;
       }
 
@@ -414,9 +414,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     t,
   ]);
 
-  const getCloudArchiveFileMetaData = useCallback(
+  const getCloudDoneFileMetaData = useCallback(
     (filePath: string) => {
-      return getArchiveFileMetaData({ filePath, cloudStorageClients });
+      return getDoneFileMetaData({ filePath, cloudStorageClients });
     },
     [cloudStorageClients]
   );
@@ -451,7 +451,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     connectedCloudStorages,
     authenticate,
     linkCloudFile,
-    linkCloudArchiveFile,
+    linkCloudDoneFile,
     unlinkCloudStorage,
     listCloudFiles,
     downloadFile,
@@ -461,10 +461,10 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     syncAllFiles,
     syncFileThrottled,
     unlinkCloudFile,
-    unlinkCloudArchiveFile,
-    getCloudArchiveFileMetaData,
+    unlinkCloudDoneFile,
+    getCloudDoneFileMetaData,
     getCloudFileRefs,
     getCloudFileRefByFilePath,
-    getCloudArchiveFileRefByFilePath,
+    getCloudDoneFileRefByFilePath,
   };
 });
