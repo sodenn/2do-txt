@@ -14,7 +14,7 @@ export interface CloudStorageMethods {
     opt: Omit<DownloadFileOptions, "cloudStorage">
   ) => Promise<string>;
   uploadFile: (
-    opt: Omit<UploadFileOptions, "cloudStorage" | "archive">
+    opt: Omit<UploadFileOptions, "cloudStorage" | "isDoneFile">
   ) => Promise<CloudFile>;
   syncFile: (opt: SyncFileOptionsInternal<any>) => Promise<SyncFileResult>;
 }
@@ -112,7 +112,7 @@ interface UploadNonDoneFileOptions<T = any> {
   text: string;
   filePath: string;
   cloudStorage: CloudStorage;
-  archive: false;
+  isDoneFile: false;
   client: T;
 }
 
@@ -121,7 +121,7 @@ interface UploadDoneFileOptions<T = any> {
   cloudFilePath: string;
   filePath: string;
   cloudStorage: CloudStorage;
-  archive: true;
+  isDoneFile: true;
   client: T;
 }
 
@@ -131,7 +131,7 @@ export type UploadFileOptions<T = any> =
 
 export interface DeleteFileOptions extends WithClients {
   filePath: string;
-  archive: boolean;
+  isDoneFile: boolean;
 }
 
 export interface DeleteFileOptionsInternal<T> {
@@ -143,7 +143,7 @@ export interface DeleteFileOptionsInternal<T> {
 export interface SyncFileOptions {
   filePath: string;
   text: string;
-  archive: boolean;
+  isDoneFile: boolean;
   showSnackbar?: boolean;
 }
 

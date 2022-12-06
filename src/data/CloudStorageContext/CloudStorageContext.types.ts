@@ -2,7 +2,7 @@ import { CloudStorage } from "./cloud-storage.types";
 
 export interface DeleteFileOptions {
   filePath: string;
-  archive: boolean;
+  isDoneFile: boolean;
 }
 
 export interface DownloadFileOptions {
@@ -19,7 +19,7 @@ export interface ListCloudFilesOptions {
 export interface SyncFileOptions {
   filePath: string;
   text: string;
-  archive: boolean;
+  isDoneFile: boolean;
   showSnackbar?: boolean;
 }
 
@@ -27,5 +27,5 @@ export interface UploadFileOptions {
   text: string;
   filePath: string;
   cloudStorage: CloudStorage;
-  archive: boolean;
+  isDoneFile: boolean;
 }

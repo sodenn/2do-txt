@@ -131,10 +131,10 @@ export async function unlinkCloudFile(filePath: string) {
 }
 
 export async function deleteFile(opt: DeleteFileOptions) {
-  const { filePath, archive, cloudStorageClients } = opt;
+  const { filePath, isDoneFile, cloudStorageClients } = opt;
   const cloudFileRef = await getCloudFileRefByFilePath(filePath);
   const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(filePath);
-  const ref = archive ? cloudDoneFileRef : cloudFileRef;
+  const ref = isDoneFile ? cloudDoneFileRef : cloudFileRef;
   if (!ref) {
     return;
   }
@@ -163,7 +163,7 @@ export async function deleteFile(opt: DeleteFileOptions) {
     cloudStorage,
   });
 
-  if (!archive && cloudDoneFileRef) {
+  if (!isDoneFile && cloudDoneFileRef) {
     await deleteFileImpl({
       filePath: cloudDoneFileRef.path,
       client,
@@ -171,7 +171,7 @@ export async function deleteFile(opt: DeleteFileOptions) {
     });
   }
 
-  if (archive) {
+  if (isDoneFile) {
     await unlinkCloudDoneFile(filePath);
   } else {
     await unlinkCloudFile(filePath);
@@ -306,9 +306,9 @@ export async function downloadFile(opt: DownloadFileOptions) {
 export async function uploadFile(
   opt: UploadFileOptions
 ): Promise<CloudFileRef> {
-  const { filePath, text, cloudStorage, archive, client } = opt;
+  const { filePath, text, cloudStorage, isDoneFile, client } = opt;
   const contentHash = generateContentHash(text);
-  if (archive) {
+  if (isDoneFile) {
     const { cloudFilePath } = opt;
     const doneFilePath = getDoneFilePath(cloudFilePath);
     if (!doneFilePath) {
@@ -349,11 +349,11 @@ export async function uploadFile(
 export async function syncFile(
   opt: SyncFileOptions & WithClients
 ): Promise<string | undefined> {
-  const { filePath, text, archive, cloudStorageClients } = opt;
+  const { filePath, text, isDoneFile, cloudStorageClients } = opt;
   const cloudFileRef = await getCloudFileRefByFilePath(filePath);
   const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(filePath);
 
-  const _ref = archive ? cloudDoneFileRef : cloudFileRef;
+  const _ref = isDoneFile ? cloudDoneFileRef : cloudFileRef;
   if (!_ref) {
     return;
   }
@@ -375,8 +375,8 @@ export async function syncFile(
     return;
   }
 
-  const newCloudFile = !archive ? syncResult.cloudFile : cloudFileRef;
-  const newCloudDoneFile = archive ? syncResult.cloudFile : cloudDoneFileRef;
+  const newCloudFile = !isDoneFile ? syncResult.cloudFile : cloudFileRef;
+  const newCloudDoneFile = isDoneFile ? syncResult.cloudFile : cloudDoneFileRef;
   const contentHash =
     syncResult.type === "server"
       ? generateContentHash(syncResult.content)
@@ -407,7 +407,7 @@ export async function syncFile(
 export async function getFilteredSyncOptions(opt: SyncFileOptions[]) {
   const optFiltered: SyncFileOptions[] = [];
   for (const i of opt) {
-    const ref = i.archive
+    const ref = i.isDoneFile
       ? await getCloudDoneFileRefByFilePath(i.filePath)
       : await getCloudFileRefByFilePath(i.filePath);
     if (ref) {

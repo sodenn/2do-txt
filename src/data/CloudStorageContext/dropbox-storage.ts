@@ -225,7 +225,7 @@ export async function downloadFile(
 }
 
 export async function uploadFile(
-  opt: Omit<UploadFileOptions<Dropbox>, "cloudStorage" | "archive">
+  opt: Omit<UploadFileOptions<Dropbox>, "cloudStorage" | "isDoneFile">
 ): Promise<CloudFile> {
   const { filePath, text, client } = opt;
   const dropboxPath = filePath.startsWith("/") ? filePath : `/${filePath}`;
