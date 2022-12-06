@@ -100,7 +100,7 @@ const TagBox = (props: TagBoxProps) => {
   const {
     palette: { mode },
   } = useTheme();
-  const sx = getStyle(props, mode);
+  const sx = getStyle(props, mode) ?? rest.sx;
   if (chip) {
     return <ChipBox {...rest} sx={sx} />;
   }
