@@ -1,8 +1,12 @@
 import { SplashScreen } from "@capacitor/splash-screen";
+import { getPlatform } from "./platform";
 
 export function hideSplashScreen() {
+  const platform = getPlatform();
   SplashScreen.hide();
-  setTimeout(() => {
-    window.electron.hideSplashScreen();
-  }, 200);
+  if (platform === "electron") {
+    setTimeout(() => {
+      window.electron.hideSplashScreen();
+    }, 200);
+  }
 }
