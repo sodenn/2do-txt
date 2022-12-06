@@ -37,7 +37,7 @@ import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
-import { getArchiveFilePath, getFilesystem } from "../utils/filesystem";
+import { getDoneFilePath, getFilesystem } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
@@ -71,8 +71,7 @@ const CloudFileDialog = () => {
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const { createNewTodoFile, saveDoneFile, taskLists } = useTask();
   const { setActiveTaskListPath } = useFilter();
-  const { downloadFile, linkCloudFile, linkCloudArchiveFile } =
-    useCloudStorage();
+  const { downloadFile, linkCloudFile, linkCloudDoneFile } = useCloudStorage();
   const {
     cloudFileDialogOptions: { open, cloudStorage },
     setCloudFileDialogOptions,
@@ -126,18 +125,19 @@ const CloudFileDialog = () => {
 
     await createNewTodoFile(filePath, text);
 
-    const archiveFilePath = getArchiveFilePath(selectedFile.path);
-    const archiveFile = files?.items.find((i) => i.path === archiveFilePath) as
+    const doneFilePath = getDoneFilePath(selectedFile.path);
+    const doneFile = files?.items.find((i) => i.path === doneFilePath) as
       | CloudFile
       | undefined;
-    if (archiveFile && archiveFilePath) {
+    if (doneFile && doneFilePath) {
       const archiveText = await downloadFile({
-        cloudFilePath: archiveFile.path,
+        cloudFilePath: doneFile.path,
         cloudStorage,
       });
       await saveDoneFile(filePath, archiveText);
-      await linkCloudArchiveFile({
-        ...{ ...archiveFile, contentHash: generateContentHash(archiveText) },
+      await linkCloudDoneFile({
+        ...doneFile,
+        contentHash: generateContentHash(archiveText),
         localFilePath: filePath,
         cloudStorage,
       });
@@ -151,7 +151,8 @@ const CloudFileDialog = () => {
     }
 
     await linkCloudFile({
-      ...{ ...selectedFile, contentHash: generateContentHash(text) },
+      ...selectedFile,
+      contentHash: generateContentHash(text),
       localFilePath: filePath,
       lastSync: new Date().toISOString(),
       cloudStorage,

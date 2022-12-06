@@ -18,16 +18,16 @@ import { useNetwork } from "../NetworkContext";
 import * as cloud from "./cloud-storage";
 import {
   CloudFileUnauthorizedError,
-  getArchiveFileMetaData,
-  getCloudArchiveFileRefByFilePath,
+  getCloudDoneFileRefByFilePath,
   getCloudFileRefByFilePath,
   getCloudFileRefs,
+  getDoneFileMetaData,
   getFilteredSyncOptions,
-  unlinkCloudArchiveFile,
+  unlinkCloudDoneFile,
   unlinkCloudFile,
 } from "./cloud-storage";
 import {
-  CloudArchiveFileRef,
+  CloudDoneFileRef,
   CloudFileRef,
   CloudStorage,
 } from "./cloud-storage.types";
@@ -216,9 +216,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     []
   );
 
-  const linkCloudArchiveFile = useCallback(
-    async (cloudFile: Required<CloudArchiveFileRef>) => {
-      return cloud.linkArchiveFile(cloudFile);
+  const linkCloudDoneFile = useCallback(
+    async (cloudFile: Required<CloudDoneFileRef>) => {
+      return cloud.linkDoneFile(cloudFile);
     },
     []
   );
@@ -286,9 +286,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   const uploadFile = useCallback(
-    async ({ archive, ...opt }: UploadFileOptions) => {
+    async ({ isDoneFile, ...opt }: UploadFileOptions) => {
       const client = getClient(opt.cloudStorage);
-      if (archive) {
+      if (isDoneFile) {
         const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
         if (!cloudFileRef) {
           throw new Error("Missing cloud file");
@@ -296,13 +296,15 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         return cloud
           .uploadFile({
             ...opt,
-            archive,
+            isDoneFile,
             client,
             cloudFilePath: cloudFileRef.path,
           })
           .catch(handleError);
       } else {
-        return cloud.uploadFile({ ...opt, archive, client }).catch(handleError);
+        return cloud
+          .uploadFile({ ...opt, isDoneFile, client })
+          .catch(handleError);
       }
     },
     [getClient, handleError]
@@ -318,10 +320,10 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const syncFile = useCallback(
     async (opt: SyncFileOptions) => {
       const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
-      const cloudArchiveFileRef = await getCloudArchiveFileRefByFilePath(
+      const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(
         opt.filePath
       );
-      if (!cloudFileRef && !cloudArchiveFileRef) {
+      if (!cloudFileRef && !cloudDoneFileRef) {
         return;
       }
 
@@ -414,9 +416,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     t,
   ]);
 
-  const getCloudArchiveFileMetaData = useCallback(
+  const getCloudDoneFileMetaData = useCallback(
     (filePath: string) => {
-      return getArchiveFileMetaData({ filePath, cloudStorageClients });
+      return getDoneFileMetaData({ filePath, cloudStorageClients });
     },
     [cloudStorageClients]
   );
@@ -451,7 +453,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     connectedCloudStorages,
     authenticate,
     linkCloudFile,
-    linkCloudArchiveFile,
+    linkCloudDoneFile,
     unlinkCloudStorage,
     listCloudFiles,
     downloadFile,
@@ -461,10 +463,10 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     syncAllFiles,
     syncFileThrottled,
     unlinkCloudFile,
-    unlinkCloudArchiveFile,
-    getCloudArchiveFileMetaData,
+    unlinkCloudDoneFile,
+    getCloudDoneFileMetaData,
     getCloudFileRefs,
     getCloudFileRefByFilePath,
-    getCloudArchiveFileRefByFilePath,
+    getCloudDoneFileRefByFilePath,
   };
 });

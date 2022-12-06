@@ -6,14 +6,14 @@ import { useTask } from "../data/TaskContext";
 const ArchiveModeSelect = () => {
   const { t } = useTranslation();
   const { archiveMode, setArchiveMode } = useSettings();
-  const { archiveAllTask, restoreAllArchivedTask } = useTask();
+  const { archiveTasks, restoreArchivedTasks } = useTask();
 
   const handleChange = (value: ArchiveMode) => {
     setArchiveMode(value);
     if (value === "automatic") {
-      archiveAllTask();
+      archiveTasks();
     } else if (value === "no-archiving") {
-      restoreAllArchivedTask();
+      restoreArchivedTasks();
     }
   };
 

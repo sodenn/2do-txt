@@ -134,7 +134,7 @@ export async function downloadFile(
 }
 
 export async function uploadFile(
-  opt: Omit<UploadFileOptions<WebDAVClient>, "cloudStorage" | "archive">
+  opt: Omit<UploadFileOptions<WebDAVClient>, "cloudStorage" | "isDoneFile">
 ): Promise<CloudFile> {
   const { filePath, text, client } = opt;
   const uploaded = await client

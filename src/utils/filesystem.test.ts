@@ -1,34 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { getArchiveFilePath } from "./filesystem";
+import { getDoneFilePath } from "./filesystem";
 
 describe("filesystem", () => {
-  it("should get archive file path from long source path", async () => {
+  it("should get done file path from long source path", async () => {
     const filePath = `/Documents/${import.meta.env.VITE_DEFAULT_FILE_NAME}`;
-    const archiveFilePath = getArchiveFilePath(filePath);
-    expect(archiveFilePath).toBe("/Documents/done.txt");
+    const doneFilePath = getDoneFilePath(filePath);
+    expect(doneFilePath).toBe("/Documents/done.txt");
   });
 
-  it("should get archive file path from short source path", async () => {
+  it("should get done file path from short source path", async () => {
     const filePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
-    const archiveFilePath = getArchiveFilePath(filePath);
-    expect(archiveFilePath).toBe("done.txt");
+    const doneFilePath = getDoneFilePath(filePath);
+    expect(doneFilePath).toBe("done.txt");
   });
 
-  it("should return undefined if archive file path cannot be created", async () => {
+  it("should return undefined if done file path cannot be created", async () => {
     const filePath = ".txt";
-    const archiveFilePath = getArchiveFilePath(filePath);
-    expect(archiveFilePath).toBeUndefined();
+    const doneFilePath = getDoneFilePath(filePath);
+    expect(doneFilePath).toBeUndefined();
   });
 
-  it("should get archive file path with prefix (1)", async () => {
+  it("should get done file path with prefix (1)", async () => {
     const filePath = "/Documents/test.txt";
-    const archiveFilePath = getArchiveFilePath(filePath);
-    expect(archiveFilePath).toBe("/Documents/test_done.txt");
+    const doneFilePath = getDoneFilePath(filePath);
+    expect(doneFilePath).toBe("/Documents/test_done.txt");
   });
 
-  it("should get archive file path with prefix (2)", async () => {
+  it("should get done file path with prefix (2)", async () => {
     const filePath = "todo_test.txt";
-    const archiveFilePath = getArchiveFilePath(filePath);
-    expect(archiveFilePath).toBe("todo_test_done.txt");
+    const doneFilePath = getDoneFilePath(filePath);
+    expect(doneFilePath).toBe("todo_test_done.txt");
   });
 });

@@ -85,13 +85,13 @@ const [TaskProvider, useTask] = createContext(() => {
     data.todoFiles.files.map((f) => f.taskList)
   );
   const {
-    syncAllDoneFilesWithCloudStorage,
+    syncDoneFiles,
     saveDoneFile,
     loadDoneFile,
     archiveTask,
     restoreTask: _restoreTask,
-    archiveAllTask: _archiveAllTask,
-    restoreAllArchivedTask: _restoreAllArchivedTask,
+    archiveTasks: _archiveTasks,
+    restoreArchivedTasks: _restoreArchivedTasks,
   } = useArchivedTask();
 
   const commonTaskListAttributes = getCommonTaskListAttributes(taskLists);
@@ -153,7 +153,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const syncAllTodoFilesWithCloudStorage = useCallback(
     async (items: SyncItem[]) => {
-      syncAllFiles(items.map((i) => ({ ...i, archive: false }))).then(
+      syncAllFiles(items.map((i) => ({ ...i, isDoneFile: false }))).then(
         (syncResult) =>
           syncResult.forEach((i) => {
             writeFile({
@@ -163,9 +163,9 @@ const [TaskProvider, useTask] = createContext(() => {
             }).then(() => loadTodoFile(i.filePath, i.text));
           })
       );
-      syncAllDoneFilesWithCloudStorage(items);
+      syncDoneFiles(items);
     },
-    [syncAllDoneFilesWithCloudStorage, loadTodoFile, syncAllFiles, writeFile]
+    [syncDoneFiles, loadTodoFile, syncAllFiles, writeFile]
   );
 
   const saveTodoFile = useCallback<SaveTodoFile>(
@@ -187,7 +187,7 @@ const [TaskProvider, useTask] = createContext(() => {
         filePath,
         text,
         showSnackbar: true,
-        archive: false,
+        isDoneFile: false,
       }).catch((e) => void e);
 
       promptForRating().catch((e) => void e);
@@ -621,23 +621,23 @@ const [TaskProvider, useTask] = createContext(() => {
     [_restoreTask, saveTodoFile, taskLists]
   );
 
-  const archiveAllTask = useCallback(() => {
-    return _archiveAllTask({
+  const archiveTasks = useCallback(() => {
+    return _archiveTasks({
       taskLists,
       onSaveTodoFile: async (taskList) => {
         await saveTodoFile(taskList);
       },
     });
-  }, [_archiveAllTask, saveTodoFile, taskLists]);
+  }, [_archiveTasks, saveTodoFile, taskLists]);
 
-  const restoreAllArchivedTask = useCallback(() => {
-    return _restoreAllArchivedTask({
+  const restoreArchivedTasks = useCallback(() => {
+    return _restoreArchivedTasks({
       taskLists,
       onSaveTodoFile: async (taskList) => {
         await saveTodoFile(taskList);
       },
     });
-  }, [_restoreAllArchivedTask, saveTodoFile, taskLists]);
+  }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
   useEffect(() => {
     data.todoFiles.errors.forEach((err) => {
@@ -666,8 +666,8 @@ const [TaskProvider, useTask] = createContext(() => {
     editTask,
     deleteTask,
     completeTask,
-    archiveAllTask,
-    restoreAllArchivedTask,
+    archiveTasks,
+    restoreArchivedTasks,
     restoreTask,
     saveDoneFile,
     loadDoneFile,

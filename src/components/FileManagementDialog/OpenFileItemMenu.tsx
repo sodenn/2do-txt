@@ -23,7 +23,7 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "../../data/CloudStorageContext";
-import { getArchiveFilePath, getFilesystem } from "../../utils/filesystem";
+import { getDoneFilePath, getFilesystem } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
 
 interface CloseOptions {
@@ -77,23 +77,23 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
           filePath,
           text: readFileResult.data,
           cloudStorage,
-          archive: false,
+          isDoneFile: false,
         });
 
-        const archiveFilePath = getArchiveFilePath(filePath);
-        if (archiveFilePath) {
-          const localArchiveFileExists = await isFile({
-            path: archiveFilePath,
+        const doneFilePath = getDoneFilePath(filePath);
+        if (doneFilePath) {
+          const doneFileExists = await isFile({
+            path: doneFilePath,
           });
-          if (localArchiveFileExists) {
-            const readArchiveFileResult = await readFile({
+          if (doneFileExists) {
+            const readDoneFileResult = await readFile({
               path: filePath,
             });
             await uploadFile({
               filePath,
-              text: readArchiveFileResult.data,
+              text: readDoneFileResult.data,
               cloudStorage,
-              archive: true,
+              isDoneFile: true,
             }).catch((e) => void e);
           }
         }
