@@ -102,7 +102,7 @@ const FileCreateDialog = () => {
           filePath: fileName,
           text: "",
           cloudStorage: selectedCloudStorage,
-          archive: false,
+          isDoneFile: false,
         });
       }
     },

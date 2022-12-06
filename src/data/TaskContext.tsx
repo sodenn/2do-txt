@@ -153,7 +153,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const syncAllTodoFilesWithCloudStorage = useCallback(
     async (items: SyncItem[]) => {
-      syncAllFiles(items.map((i) => ({ ...i, archive: false }))).then(
+      syncAllFiles(items.map((i) => ({ ...i, isDoneFile: false }))).then(
         (syncResult) =>
           syncResult.forEach((i) => {
             writeFile({
@@ -187,7 +187,7 @@ const [TaskProvider, useTask] = createContext(() => {
         filePath,
         text,
         showSnackbar: true,
-        archive: false,
+        isDoneFile: false,
       }).catch((e) => void e);
 
       promptForRating().catch((e) => void e);

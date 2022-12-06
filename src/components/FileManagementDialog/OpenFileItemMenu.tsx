@@ -77,7 +77,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
           filePath,
           text: readFileResult.data,
           cloudStorage,
-          archive: false,
+          isDoneFile: false,
         });
 
         const doneFilePath = getDoneFilePath(filePath);
@@ -93,7 +93,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
               filePath,
               text: readDoneFileResult.data,
               cloudStorage,
-              archive: true,
+              isDoneFile: true,
             }).catch((e) => void e);
           }
         }

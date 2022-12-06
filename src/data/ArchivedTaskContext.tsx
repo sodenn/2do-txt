@@ -77,7 +77,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               syncOptions.push({
                 filePath: doneFilePath,
                 text: readResult.data,
-                archive: true,
+                isDoneFile: true,
               });
             }
           };
@@ -196,7 +196,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         filePath,
         text,
         showSnackbar: false,
-        archive: true,
+        isDoneFile: true,
       })?.then((result) => {
         if (result) {
           writeFile({
@@ -272,7 +272,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         await deleteFile({
           path: doneFilePath,
         });
-        deleteCloudFile({ filePath, archive: true }).catch((e) => void e);
+        deleteCloudFile({ filePath, isDoneFile: true }).catch((e) => void e);
       } else {
         await saveDoneFile(filePath, doneFileText);
       }
@@ -301,7 +301,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           filePath: filePath,
           text: text,
           cloudStorage: fileRef.cloudStorage,
-          archive: true,
+          isDoneFile: true,
         });
         await saveDoneFile(filePath, text);
       } else {
@@ -393,7 +393,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
               filePath,
               text: doneFileText,
               cloudStorage: fileRef.cloudStorage,
-              archive: true,
+              isDoneFile: true,
             });
           }
 
@@ -458,9 +458,10 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             { variant: "success" }
           );
 
-          deleteCloudFile({ filePath: taskList.filePath, archive: true }).catch(
-            (e) => void e
-          );
+          deleteCloudFile({
+            filePath: taskList.filePath,
+            isDoneFile: true,
+          }).catch((e) => void e);
         })
       );
     },
