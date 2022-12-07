@@ -1,3 +1,13 @@
+## [1.16.1](https://github.com/sodenn/2do-txt/compare/v1.16.0...v1.16.1) (2022-12-07)
+
+
+### Bug Fixes
+
+* **CloudStorage:** save done.txt in the same cloud directory as the todo.txt ([#709](https://github.com/sodenn/2do-txt/issues/709)) ([1553dc2](https://github.com/sodenn/2do-txt/commit/1553dc2059923a7669519b8f778e95398fe7f0ab))
+* **SplashScreen:** fix app stuck on the splash screen ([#705](https://github.com/sodenn/2do-txt/issues/705)) ([37803ab](https://github.com/sodenn/2do-txt/commit/37803abf7d5b5a3a0d75cd02c5276538ed0677f4))
+* **SplashScreen:** hide splash screen after applying the theme mode ([#708](https://github.com/sodenn/2do-txt/issues/708)) ([ba6147b](https://github.com/sodenn/2do-txt/commit/ba6147badaefc6803eb159910678eb60a895df02))
+* **SplashScreen:** run electron specific method only under the electron platform ([#712](https://github.com/sodenn/2do-txt/issues/712)) ([904d7aa](https://github.com/sodenn/2do-txt/commit/904d7aa3b9515d3e4950e1ddcc9ac8f39f4e97f3))
+
 # [1.16.0](https://github.com/sodenn/2do-txt/compare/v1.15.0...v1.16.0) (2022-12-04)
 
 
