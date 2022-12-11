@@ -160,7 +160,7 @@ const TaskForm = (props: TaskFormProps) => {
       <Box sx={{ mb: 2 }}>
         <MuiFluentEdit
           label={t("Description")}
-          placeholder={t("Enter text and tags")}
+          placeholder={t<string>("Enter text and tags")}
           aria-label="Text editor"
           autoCorrect="off"
           autoCapitalize="off"

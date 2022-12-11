@@ -12,7 +12,9 @@ const delay = { delay: 40 };
 test.describe("Task dialog", () => {
   test("should allow me to open and close the task dialog via shortcut", async ({
     page,
+    isMobile,
   }) => {
+    test.skip(!!isMobile, "not relevant for mobile browser");
     await page.waitForTimeout(1000);
     await page.keyboard.press("n");
     await expect(page.getByTestId("task-dialog")).toBeVisible();
@@ -376,13 +378,13 @@ test.describe("Task dialog", () => {
   }) => {
     await page.locator('button[aria-label="Add task"]').click();
 
-    await page.type('[aria-label="Text editor"]', "@Private");
+    await page.type('[aria-label="Text editor"]', "@Private", delay);
 
-    await page.locator('[role="menuitem"] >> text="Private"').click();
+    await page.locator('[role="menuitem"] >> text="Private"').click(delay);
 
-    await page.type('[aria-label="Text editor"]', "@Private");
+    await page.type('[aria-label="Text editor"]', "@Private", delay);
 
-    await page.locator('[role="menuitem"] >> text="Private"').click();
+    await page.locator('[role="menuitem"] >> text="Private"').click(delay);
 
     await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
       2
