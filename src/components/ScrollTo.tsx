@@ -4,14 +4,14 @@ import { Box, Fab, Fade } from "@mui/material";
 import { useIsInViewport } from "../utils/useIsInViewport";
 
 interface ScrollTopProps {
-  anchor: HTMLElement;
+  target: HTMLElement;
 }
 
-const ScrollTop = ({ anchor }: ScrollTopProps) => {
-  const { visible, direction } = useIsInViewport(anchor);
+const ScrollTo = ({ target }: ScrollTopProps) => {
+  const { visible, direction } = useIsInViewport(target);
 
   const handleClick = () => {
-    anchor.scrollIntoView({
+    target.scrollIntoView({
       block: "start",
       behavior: "smooth",
     });
@@ -28,7 +28,6 @@ const ScrollTop = ({ anchor }: ScrollTopProps) => {
     <Fade in={!visible}>
       <Box
         onClick={handleClick}
-        role="presentation"
         sx={{
           position: "fixed",
           bottom: { xs: 16, sm: 24 },
@@ -38,7 +37,7 @@ const ScrollTop = ({ anchor }: ScrollTopProps) => {
         <Fab
           color="primary"
           size="small"
-          aria-label="Scroll back"
+          aria-label="Scroll to"
           sx={{ boxShadow: "unset" }}
         >
           {icon}
@@ -48,4 +47,4 @@ const ScrollTop = ({ anchor }: ScrollTopProps) => {
   );
 };
 
-export default ScrollTop;
+export default ScrollTo;

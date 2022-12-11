@@ -9,7 +9,7 @@ import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
 import { TimelineTask } from "../utils/task-list";
-import ScrollTop from "./ScrollTop";
+import ScrollTo from "./ScrollTo";
 import TaskTimelineItem from "./TaskTimelineItem";
 import TimelineAddButton from "./TimelineAddButton";
 
@@ -109,7 +109,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
               flags={task._timelineFlags}
             />
           )}
-          {addButtonElem && <ScrollTop anchor={addButtonElem} />}
+          {addButtonElem && <ScrollTo target={addButtonElem} />}
         </Box>
       ))}
     </Timeline>
