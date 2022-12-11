@@ -1,7 +1,7 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Timeline } from "@mui/lab";
 import { Box, Typography } from "@mui/material";
-import { MutableRefObject } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFilter } from "../data/FilterContext";
@@ -9,6 +9,7 @@ import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
 import { TimelineTask } from "../utils/task-list";
+import ScrollTop from "./ScrollTop";
 import TaskTimelineItem from "./TaskTimelineItem";
 import TimelineAddButton from "./TimelineAddButton";
 
@@ -28,6 +29,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
   const { deleteTask, completeTask } = useTask();
   const { searchTerm } = useFilter();
   const [parent] = useAutoAnimate<HTMLUListElement>();
+  const [addButtonElem, setAddButtonElem] = useState<HTMLElement | null>(null);
 
   const handleDelete = (task: Task) => {
     setConfirmationDialog({
@@ -48,6 +50,13 @@ const TaskTimeline = (props: TaskTimelineProps) => {
     });
   };
 
+  useEffect(() => {
+    addButtonElem?.scrollIntoView({
+      block: "start",
+      behavior: "smooth",
+    });
+  }, [addButtonElem]);
+
   if (
     tasks.filter((t) => !t._timelineFlags.firstOfToday).length === 0 &&
     searchTerm
@@ -66,7 +75,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
     <Timeline
       aria-label="Task list"
       ref={parent}
-      sx={{ mt: 0, px: { xs: 0, sm: 1 }, py: 0 }}
+      sx={{ mt: 0, px: { xs: 0, sm: 1 }, py: 0, mb: 9 }}
     >
       {tasks.map((task, index) => (
         <Box
@@ -95,8 +104,12 @@ const TaskTimeline = (props: TaskTimelineProps) => {
             />
           )}
           {task._timelineFlags.firstOfToday && (
-            <TimelineAddButton flags={task._timelineFlags} />
+            <TimelineAddButton
+              ref={setAddButtonElem}
+              flags={task._timelineFlags}
+            />
           )}
+          {addButtonElem && <ScrollTop anchor={addButtonElem} />}
         </Box>
       ))}
     </Timeline>
