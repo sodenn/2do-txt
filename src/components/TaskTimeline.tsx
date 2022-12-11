@@ -53,7 +53,6 @@ const TaskTimeline = (props: TaskTimelineProps) => {
   useEffect(() => {
     addButtonElem?.scrollIntoView({
       block: "start",
-      behavior: "smooth",
     });
   }, [addButtonElem]);
 
