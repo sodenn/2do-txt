@@ -1,11 +1,17 @@
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { Box, Fab, Fade } from "@mui/material";
+import { Box, Fab, Fade, styled } from "@mui/material";
 import { useIsInViewport } from "../utils/useIsInViewport";
 
 interface ScrollTopProps {
   target: HTMLElement;
 }
+
+export const StyledBox = styled(Box)({
+  position: "fixed",
+  paddingRight: "env(safe-area-inset-right)",
+  paddingBottom: "env(safe-area-inset-bottom)",
+});
 
 const ScrollTo = ({ target }: ScrollTopProps) => {
   const { visible, direction } = useIsInViewport(target);
@@ -26,12 +32,11 @@ const ScrollTo = ({ target }: ScrollTopProps) => {
 
   return (
     <Fade in={!visible}>
-      <Box
+      <StyledBox
         onClick={handleClick}
         sx={{
-          position: "fixed",
-          bottom: { xs: 16, sm: 24 },
-          right: { xs: 4, sm: 24 },
+          bottom: { xs: 0, sm: 24 },
+          right: { xs: 4, sm: 32 },
         }}
       >
         <Fab
@@ -42,7 +47,7 @@ const ScrollTo = ({ target }: ScrollTopProps) => {
         >
           {icon}
         </Fab>
-      </Box>
+      </StyledBox>
     </Fade>
   );
 };

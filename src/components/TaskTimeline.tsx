@@ -74,7 +74,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
     <Timeline
       aria-label="Task list"
       ref={parent}
-      sx={{ mt: 0, px: { xs: 0, sm: 1 }, py: 0, mb: 9 }}
+      sx={{ mt: 0, px: { xs: 0, sm: 1 }, py: 0 }}
     >
       {tasks.map((task, index) => (
         <Box
