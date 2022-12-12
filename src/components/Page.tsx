@@ -22,12 +22,12 @@ const SafeAreaContainer = styled(Container)({
 
 const Page = () => {
   const scrollContainer = useRef<HTMLDivElement | null>(null);
-  const [scrollTop, setScrollTop] = useState(0);
+  const [divider, setDivider] = useState(false);
 
   useEffect(() => {
     const element = scrollContainer.current;
     if (element) {
-      const listener = () => setScrollTop(element.scrollTop);
+      const listener = () => setDivider(element.scrollTop > 12);
       element.addEventListener("scroll", listener);
       return () => {
         element.removeEventListener("scroll", listener);
@@ -37,7 +37,7 @@ const Page = () => {
 
   return (
     <FilePicker>
-      <Header divider={scrollTop > 12} />
+      <Header divider={divider} />
       <Box
         data-testid="page"
         sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
