@@ -127,6 +127,9 @@ const TaskView = () => {
                 showHeader={!activeTaskList}
                 onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
                 onBlur={() => setFocusedTaskId(undefined)}
+                onListItemClick={(task) =>
+                  setTaskDialogOptions({ task, open: true })
+                }
               />
             ))}
         </Stack>
@@ -138,6 +141,7 @@ const TaskView = () => {
           listItemsRef={listItemsRef}
           onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
           onBlur={() => setFocusedTaskId(undefined)}
+          onListItemClick={(task) => setTaskDialogOptions({ task, open: true })}
         />
       )}
     </>

@@ -1,8 +1,8 @@
 import { Box, List, Typography } from "@mui/material";
-import { MutableRefObject } from "react";
+import { isEqual } from "lodash";
+import { memo, MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { useTask } from "../data/TaskContext";
-import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
 import { TaskGroup } from "../utils/task-list";
 import TaskListHeader from "./TaskListHeader";
@@ -17,11 +17,24 @@ interface TaskListProps {
   focusedTaskId?: string;
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
   showHeader?: boolean;
+  onListItemClick: (task: Task) => void;
   onFocus: (index: number) => void;
   onBlur: () => void;
 }
 
-const TaskList = (props: TaskListProps) => {
+function propsAreEqual(prev: TaskListProps, next: TaskListProps) {
+  return (
+    prev.fileName === next.fileName &&
+    prev.filePath === next.filePath &&
+    isEqual(prev.taskGroups, next.taskGroups) &&
+    isEqual(prev.tasks, next.tasks) &&
+    prev.focusedTaskId === next.focusedTaskId &&
+    prev.listItemsRef === next.listItemsRef &&
+    prev.showHeader === next.showHeader
+  );
+}
+
+const TaskList = memo((props: TaskListProps) => {
   const {
     fileName,
     filePath,
@@ -32,10 +45,10 @@ const TaskList = (props: TaskListProps) => {
     showHeader = false,
     onFocus,
     onBlur,
+    onListItemClick,
   } = props;
   const { t } = useTranslation();
   const { completeTask } = useTask();
-  const { setTaskDialogOptions } = useTaskDialog();
   const hasItems = taskGroups.some((g) => g.items.length > 0);
 
   return (
@@ -67,7 +80,7 @@ const TaskList = (props: TaskListProps) => {
                       key={index}
                       task={task}
                       focused={focusedTaskId === task._id}
-                      onClick={() => setTaskDialogOptions({ open: true, task })}
+                      onClick={() => onListItemClick(task)}
                       onCheckboxClick={() => completeTask(task)}
                       onFocus={() => onFocus(index)}
                       onBlur={onBlur}
@@ -81,6 +94,6 @@ const TaskList = (props: TaskListProps) => {
       )}
     </Box>
   );
-};
+}, propsAreEqual);
 
 export default TaskList;

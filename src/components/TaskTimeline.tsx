@@ -1,12 +1,12 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Timeline } from "@mui/lab";
 import { Box, Typography } from "@mui/material";
-import { MutableRefObject, useEffect, useState } from "react";
+import { isEqual } from "lodash";
+import { memo, MutableRefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
-import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
 import { TimelineTask } from "../utils/task-list";
 import ScrollTo from "./ScrollTo";
@@ -19,12 +19,27 @@ interface TaskTimelineProps {
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
   onFocus: (index: number) => void;
   onBlur: () => void;
+  onListItemClick: (task: Task) => void;
 }
 
-const TaskTimeline = (props: TaskTimelineProps) => {
-  const { tasks, focusedTaskId, listItemsRef, onFocus, onBlur } = props;
+function propsAreEqual(prev: TaskTimelineProps, next: TaskTimelineProps) {
+  return (
+    isEqual(prev.tasks, next.tasks) &&
+    prev.focusedTaskId === next.focusedTaskId &&
+    prev.listItemsRef === next.listItemsRef
+  );
+}
+
+const TaskTimeline = memo((props: TaskTimelineProps) => {
+  const {
+    tasks,
+    focusedTaskId,
+    listItemsRef,
+    onFocus,
+    onBlur,
+    onListItemClick,
+  } = props;
   const { t } = useTranslation();
-  const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { deleteTask, completeTask } = useTask();
   const { searchTerm } = useFilter();
@@ -94,7 +109,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
                 }
               }}
               task={task}
-              onClick={() => setTaskDialogOptions({ open: true, task })}
+              onClick={() => onListItemClick(task)}
               onCheckboxClick={() => completeTask(task)}
               onDelete={() => handleDelete(task)}
               focused={focusedTaskId === task._id}
@@ -113,6 +128,6 @@ const TaskTimeline = (props: TaskTimelineProps) => {
       ))}
     </Timeline>
   );
-};
+}, propsAreEqual);
 
 export default TaskTimeline;
