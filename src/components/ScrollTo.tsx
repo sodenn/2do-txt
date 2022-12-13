@@ -40,6 +40,7 @@ const ScrollTo = ({ target }: ScrollTopProps) => {
         }}
       >
         <Fab
+          tabIndex={-1}
           color="primary"
           size="small"
           aria-label="Scroll to"

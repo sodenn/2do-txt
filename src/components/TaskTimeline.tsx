@@ -23,11 +23,7 @@ interface TaskTimelineProps {
 }
 
 function propsAreEqual(prev: TaskTimelineProps, next: TaskTimelineProps) {
-  return (
-    isEqual(prev.tasks, next.tasks) &&
-    prev.focusedTaskId === next.focusedTaskId &&
-    prev.listItemsRef === next.listItemsRef
-  );
+  return isEqual(prev.tasks, next.tasks);
 }
 
 const TaskTimeline = memo((props: TaskTimelineProps) => {

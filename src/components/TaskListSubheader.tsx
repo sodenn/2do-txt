@@ -3,12 +3,6 @@ import { useMemo } from "react";
 import { useFilter } from "../data/FilterContext";
 
 const StyledListSubheader = styled(ListSubheader)(({ theme }) => ({
-  // avoid scrollbar overlapping (Safari mobile)
-  top: -1,
-  paddingLeft: 0,
-  paddingRight: 0,
-  marginLeft: theme.spacing(2),
-  marginRight: theme.spacing(2),
   background: `linear-gradient(
     to top,
     ${alpha(theme.palette.background.default, 0)},
@@ -24,7 +18,16 @@ const TaskListSubheader = ({ title }: TaskListSubheaderProps) => {
   const { sortBy } = useFilter();
   return useMemo(
     () => (
-      <StyledListSubheader>
+      <StyledListSubheader
+        sx={{
+          // avoid scrollbar overlapping (Safari mobile)
+          top: { xs: -1, lg: 0 },
+          marginLeft: { xs: 2, lg: 0 },
+          paddingLeft: { lg: 2 },
+          marginRight: { xs: 2, lg: 0 },
+          paddingRight: { lg: 2 },
+        }}
+      >
         <Chip
           sx={{ px: 1 }}
           size="small"

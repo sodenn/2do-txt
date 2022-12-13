@@ -1,5 +1,5 @@
 import { Checkbox, ListItemButton, Stack, styled } from "@mui/material";
-import { forwardRef, useMemo, useRef } from "react";
+import { forwardRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Task } from "../utils/task";
 import TaskBody from "./TaskBody";
@@ -66,70 +66,66 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
       }
     };
 
-    return useMemo(
-      () => (
-        <div data-testid="task">
-          <TaskItemButton
-            ref={ref}
-            data-testid="task-button"
-            aria-current={focused}
-            onClick={handleItemClick}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            dense
+    return (
+      <div data-testid="task">
+        <TaskItemButton
+          ref={ref}
+          data-testid="task-button"
+          aria-current={focused}
+          onClick={handleItemClick}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          dense
+        >
+          <Stack
+            px={{ xs: 0.5, sm: 0 }}
+            direction="row"
+            spacing={0.5}
+            sx={{ width: "100%" }}
           >
-            <Stack
-              px={{ xs: 0.5, sm: 0 }}
-              direction="row"
-              spacing={0.5}
-              sx={{ width: "100%" }}
-            >
-              <div>
-                <Checkbox
-                  ref={checkboxRef}
-                  inputProps={{
-                    "aria-label": "Complete task",
-                    "aria-checked": task.completed,
-                  }}
-                  onClick={onCheckboxClick}
-                  edge="start"
-                  checked={task.completed}
-                  tabIndex={-1}
-                />
-              </div>
-              <Stack
-                direction="column"
-                style={{
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  flex: "auto",
+            <div>
+              <Checkbox
+                ref={checkboxRef}
+                inputProps={{
+                  "aria-label": "Complete task",
+                  "aria-checked": task.completed,
                 }}
-              >
-                <TaskBody task={task} />
-                {task.completionDate && (
-                  <DateContainer>
-                    {t("Completed", { completionDate: task.completionDate })}
-                  </DateContainer>
-                )}
-                {task.creationDate && !task.completed && (
-                  <DateContainer>
-                    {t("Created", { creationDate: task.creationDate })}
-                  </DateContainer>
-                )}
-              </Stack>
-              <div>
-                <TaskListItemMenu
-                  task={task}
-                  menuRef={menuRef}
-                  menuButtonRef={menuButtonRef}
-                />
-              </div>
+                onClick={onCheckboxClick}
+                edge="start"
+                checked={task.completed}
+                tabIndex={-1}
+              />
+            </div>
+            <Stack
+              direction="column"
+              style={{
+                paddingTop: 10,
+                paddingBottom: 10,
+                flex: "auto",
+              }}
+            >
+              <TaskBody task={task} />
+              {task.completionDate && (
+                <DateContainer>
+                  {t("Completed", { completionDate: task.completionDate })}
+                </DateContainer>
+              )}
+              {task.creationDate && !task.completed && (
+                <DateContainer>
+                  {t("Created", { creationDate: task.creationDate })}
+                </DateContainer>
+              )}
             </Stack>
-          </TaskItemButton>
-        </div>
-      ),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [task, focused]
+            <div>
+              <TaskListItemMenu
+                task={task}
+                menuRef={menuRef}
+                menuButtonRef={menuButtonRef}
+              />
+            </div>
+          </Stack>
+        </TaskItemButton>
+      </div>
     );
   }
 );

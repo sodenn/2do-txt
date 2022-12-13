@@ -28,8 +28,6 @@ function propsAreEqual(prev: TaskListProps, next: TaskListProps) {
     prev.filePath === next.filePath &&
     isEqual(prev.taskGroups, next.taskGroups) &&
     isEqual(prev.tasks, next.tasks) &&
-    prev.focusedTaskId === next.focusedTaskId &&
-    prev.listItemsRef === next.listItemsRef &&
     prev.showHeader === next.showHeader
   );
 }
