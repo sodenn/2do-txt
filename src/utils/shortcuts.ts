@@ -36,5 +36,5 @@ export const useAddShortcutListener = (
       document.removeEventListener("keydown", handler);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(key), deps]);
+  }, [key, deps]);
 };

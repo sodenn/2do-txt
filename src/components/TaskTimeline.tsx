@@ -1,14 +1,15 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Timeline } from "@mui/lab";
 import { Box, Typography } from "@mui/material";
-import { MutableRefObject } from "react";
+import { isEqual } from "lodash";
+import { memo, MutableRefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useTask } from "../data/TaskContext";
-import { useTaskDialog } from "../data/TaskDialogContext";
 import { Task } from "../utils/task";
 import { TimelineTask } from "../utils/task-list";
+import ScrollTo from "./ScrollTo";
 import TaskTimelineItem from "./TaskTimelineItem";
 import TimelineAddButton from "./TimelineAddButton";
 
@@ -18,16 +19,28 @@ interface TaskTimelineProps {
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
   onFocus: (index: number) => void;
   onBlur: () => void;
+  onListItemClick: (task: Task) => void;
 }
 
-const TaskTimeline = (props: TaskTimelineProps) => {
-  const { tasks, focusedTaskId, listItemsRef, onFocus, onBlur } = props;
+function propsAreEqual(prev: TaskTimelineProps, next: TaskTimelineProps) {
+  return isEqual(prev.tasks, next.tasks);
+}
+
+const TaskTimeline = memo((props: TaskTimelineProps) => {
+  const {
+    tasks,
+    focusedTaskId,
+    listItemsRef,
+    onFocus,
+    onBlur,
+    onListItemClick,
+  } = props;
   const { t } = useTranslation();
-  const { setTaskDialogOptions } = useTaskDialog();
   const { setConfirmationDialog } = useConfirmationDialog();
   const { deleteTask, completeTask } = useTask();
   const { searchTerm } = useFilter();
   const [parent] = useAutoAnimate<HTMLUListElement>();
+  const [addButtonElem, setAddButtonElem] = useState<HTMLElement | null>(null);
 
   const handleDelete = (task: Task) => {
     setConfirmationDialog({
@@ -47,6 +60,12 @@ const TaskTimeline = (props: TaskTimelineProps) => {
       ],
     });
   };
+
+  useEffect(() => {
+    addButtonElem?.scrollIntoView({
+      block: "start",
+    });
+  }, [addButtonElem]);
 
   if (
     tasks.filter((t) => !t._timelineFlags.firstOfToday).length === 0 &&
@@ -86,7 +105,7 @@ const TaskTimeline = (props: TaskTimelineProps) => {
                 }
               }}
               task={task}
-              onClick={() => setTaskDialogOptions({ open: true, task })}
+              onClick={() => onListItemClick(task)}
               onCheckboxClick={() => completeTask(task)}
               onDelete={() => handleDelete(task)}
               focused={focusedTaskId === task._id}
@@ -95,12 +114,16 @@ const TaskTimeline = (props: TaskTimelineProps) => {
             />
           )}
           {task._timelineFlags.firstOfToday && (
-            <TimelineAddButton flags={task._timelineFlags} />
+            <TimelineAddButton
+              ref={setAddButtonElem}
+              flags={task._timelineFlags}
+            />
           )}
+          {addButtonElem && <ScrollTo target={addButtonElem} />}
         </Box>
       ))}
     </Timeline>
   );
-};
+}, propsAreEqual);
 
 export default TaskTimeline;
