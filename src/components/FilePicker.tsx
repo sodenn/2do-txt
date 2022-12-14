@@ -9,12 +9,12 @@ import { useTask } from "../data/TaskContext";
 import { WithChildren } from "../types/common.types";
 import { getPlatform } from "../utils/platform";
 
-const Root = styled("div")(() => ({
+const Root = styled("div")({
   height: "100%",
   display: "flex",
   flexDirection: "column",
   outline: "none",
-}));
+});
 
 const Overlay = styled("div")(({ theme }) => ({
   position: "fixed",
@@ -27,13 +27,13 @@ const Overlay = styled("div")(({ theme }) => ({
   background: theme.palette.background.default,
 }));
 
-const StyledPaper = styled(Paper)(() => ({
+const StyledPaper = styled(Paper)({
   width: "100%",
   height: "100%",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-}));
+});
 
 interface FileInputProps {
   files: File[];
@@ -170,8 +170,11 @@ const FilePicker = ({ children }: WithChildren) => {
     noClick: true,
   });
 
+  const { onClick, onBlur, onKeyDown, onFocus, ...dropzoneProps } =
+    getRootProps();
+
   return (
-    <Root data-testid="dropzone" {...getRootProps()} data-shortcuts-ignore>
+    <Root data-testid="dropzone" {...dropzoneProps} data-shortcuts-ignore>
       <FileInput files={file} clearFiles={clearFiles} />
       <Fade in={isDragActive}>
         <Overlay>
