@@ -23,9 +23,9 @@ const TaskListSubheader = ({ title }: TaskListSubheaderProps) => {
           // avoid scrollbar overlapping (Safari mobile)
           top: { xs: -1, lg: 0 },
           marginLeft: { xs: 2, lg: 0 },
-          paddingLeft: { lg: 2 },
+          paddingLeft: { xs: 0, lg: 2 },
           marginRight: { xs: 2, lg: 0 },
-          paddingRight: { lg: 2 },
+          paddingRight: { xs: 0, lg: 2 },
         }}
       >
         <Chip

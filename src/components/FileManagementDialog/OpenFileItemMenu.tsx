@@ -1,4 +1,3 @@
-import { Clipboard } from "@capacitor/clipboard";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
@@ -23,6 +22,7 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "../../data/CloudStorageContext";
+import { writeToClipboard } from "../../utils/clipboard";
 import { getDoneFilePath, getFilesystem } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
 
@@ -181,15 +181,18 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
     handleClose();
   };
 
-  const handleCopyToClipboard = async () => {
-    const { data } = await readFile({
+  const handleCopyToClipboard = () => {
+    const promise = readFile({
       path: filePath,
-    });
-    await Clipboard.write({
-      string: data,
-    });
-    enqueueSnackbar(t("Copied to clipboard"), { variant: "info" });
-    handleClose();
+    }).then((result) => result.data);
+    writeToClipboard(promise)
+      .then(() =>
+        enqueueSnackbar(t("Copied to clipboard"), { variant: "info" })
+      )
+      .catch(() =>
+        enqueueSnackbar(t("Copy to clipboard failed"), { variant: "error" })
+      )
+      .finally(handleClose);
   };
 
   if (cloudFileRef && !cloudStorages.includes(cloudFileRef.cloudStorage)) {
