@@ -470,7 +470,7 @@ function getTaskListAttributes(
       return prev;
     }, {});
 
-  let tags: Record<string, string[]> = {};
+  const tags: Record<string, string[]> = {};
   taskList
     .filter((i) => !incompleteTasksOnly || !i.completed)
     .forEach((i) => {
