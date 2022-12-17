@@ -107,6 +107,7 @@ const TaskDialog = () => {
   };
 
   const taskForm = (
+    // eslint-disable-next-line react/jsx-key
     <FluentEditProvider providers={[<MentionsProvider />]}>
       <TaskForm
         key={key}
@@ -140,7 +141,7 @@ const TaskDialog = () => {
             "aria-label": "Save task",
           }}
         >
-          {!!task?._id ? t("Edit Task") : t("Create Task")}
+          {task?._id ? t("Edit Task") : t("Create Task")}
         </FullScreenDialogTitle>
         <FullScreenDialogContent>{taskForm}</FullScreenDialogContent>
       </FullScreenDialog>
@@ -156,9 +157,7 @@ const TaskDialog = () => {
       onClose={handleClose}
       TransitionProps={TransitionProps}
     >
-      <DialogTitle>
-        {!!task?._id ? t("Edit Task") : t("Create Task")}
-      </DialogTitle>
+      <DialogTitle>{task?._id ? t("Edit Task") : t("Create Task")}</DialogTitle>
       <DialogContent>{taskForm}</DialogContent>
       <DialogActions>
         <Button tabIndex={-1} onClick={closeDialog}>
