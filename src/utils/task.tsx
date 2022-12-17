@@ -91,7 +91,7 @@ export function parseTask(text: string, order = -1) {
   }
 
   let priority: string | null = null;
-  let priorityMatches = tokens[0].match(/\(([A-Z])\)/);
+  const priorityMatches = tokens[0].match(/\(([A-Z])\)/);
   if (priorityMatches) {
     priority = priorityMatches[1];
     tokens.shift();
@@ -105,7 +105,7 @@ export function parseTask(text: string, order = -1) {
     }
   }
 
-  let creationDate = parseDate(tokens[0]);
+  const creationDate = parseDate(tokens[0]);
   if (creationDate) {
     tokens.shift();
   }
