@@ -39,7 +39,7 @@ __metadata:
     "@semantic-release/changelog": 6.0.2
     "@semantic-release/git": 10.0.1
     "@types/file-saver": 2.0.5
-    "@types/node": 16.18.9
+    "@types/node": 18.11.16
     "@types/react": 18.0.26
     "@types/react-dom": 18.0.9
     "@typescript-eslint/eslint-plugin": ^5.46.1
@@ -1989,10 +1989,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:16.18.9":
-  version: 16.18.9
-  resolution: "@types/node@npm:16.18.9"
-  checksum: 7dc9cb417869592b2ad64233d06cd3eda63b8ae31d72a0811e4f5ac5a2ef01feb4d4c91159481e506c7a56951981359e75069c7fae6f0de90fc0c3c8b69a36cd
+"@types/node@npm:18.11.16":
+  version: 18.11.16
+  resolution: "@types/node@npm:18.11.16"
+  checksum: 23603ecc1cc5afdd2311671565e1bd1a8905e18ed7f05857089eebe524824a3347dd0c3de9c1c291839f7cf21bcf5633903cdf7905efa0fdc7464cc7606fc9fa
   languageName: node
   linkType: hard
 
