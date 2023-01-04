@@ -1,6 +1,10 @@
 import { Box, Button, Grid, Stack, Theme, useTheme } from "@mui/material";
-import { createMentionsPlugin, useMentions } from "@react-fluent-edit/mentions";
-import { MuiFluentEdit, MuiMentionCombobox } from "@react-fluent-edit/mui";
+import {
+  createMentionsPlugin,
+  MentionCombobox,
+  useMentions,
+} from "@react-fluent-edit/mentions";
+import { MuiFluentEdit } from "@react-fluent-edit/mui";
 import { isValid } from "date-fns";
 import { CSSProperties, KeyboardEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -169,10 +173,10 @@ const TaskForm = (props: TaskFormProps) => {
           onKeyDown={handleKeyDown}
           onChange={(body) => handleChange({ body })}
           autoFocus
-          singleLine
+          multiline={false}
           plugins={plugins}
         >
-          <MuiMentionCombobox
+          <MentionCombobox
             renderAddMentionLabel={(value) => t("Add tag", { name: value })}
             items={[
               ...projects.map((i) => ({ text: i, trigger: "+" })),
