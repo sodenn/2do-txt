@@ -33,9 +33,9 @@ __metadata:
     "@mui/system": 5.10.17
     "@mui/x-date-pickers": 5.0.10
     "@playwright/test": 1.29.1
-    "@react-fluent-edit/core": 2.2.1
-    "@react-fluent-edit/mentions": 2.2.1
-    "@react-fluent-edit/mui": 2.2.1
+    "@react-fluent-edit/core": 3.0.0
+    "@react-fluent-edit/mentions": 3.0.0
+    "@react-fluent-edit/mui": 3.0.0
     "@semantic-release/changelog": 6.0.2
     "@semantic-release/git": 10.0.1
     "@types/file-saver": 2.0.5
@@ -1591,50 +1591,50 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-fluent-edit/core@npm:2.2.1":
-  version: 2.2.1
-  resolution: "@react-fluent-edit/core@npm:2.2.1"
+"@react-fluent-edit/core@npm:3.0.0":
+  version: 3.0.0
+  resolution: "@react-fluent-edit/core@npm:3.0.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    slate: ^0.81.3
-    slate-history: ^0.66.0
-    slate-react: ^0.81.0
-  checksum: d199718664acd3f8047d85127c839394b97d98747f98c4c2caa20c979c046ba39ae6248cabbcbc1a6434f107180e9970fd10b6b35285090a43d3759a50b7e348
+    slate: ^0.81.3 || ^0.87.0
+    slate-history: ^0.66.0 || ^0.86.0
+    slate-react: ^0.81.0 || ^0.87.0
+  checksum: 6db9f2aa115177ddd27f8188f4e6ba6504e7a3999bafa71afd19a0ab03c83ed6a7729ebf49d2443a398b6ac2d2e2869a4f415f95af2e40b001a8711d1ac2e4cc
   languageName: node
   linkType: hard
 
-"@react-fluent-edit/mentions@npm:2.2.1":
-  version: 2.2.1
-  resolution: "@react-fluent-edit/mentions@npm:2.2.1"
+"@react-fluent-edit/mentions@npm:3.0.0":
+  version: 3.0.0
+  resolution: "@react-fluent-edit/mentions@npm:3.0.0"
   dependencies:
-    "@react-fluent-edit/core": 2.2.1
+    "@react-fluent-edit/core": 3.0.0
   peerDependencies:
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    slate: ^0.81.3
-    slate-history: ^0.66.0
-    slate-react: ^0.81.0
-  checksum: e4fa09dd414cf6bb8b62f1450f310b9d8852aa561c5a1413937fae867cb8274c23912f73429f6561ade9fa425ba39802cc2f8fdf7517a47ce1d2ceacb96cfbcb
+    slate: ^0.81.3 || ^0.87.0
+    slate-history: ^0.66.0 || ^0.86.0
+    slate-react: ^0.81.0 || ^0.87.0
+  checksum: 08d46ad99d95b766c18441578e7bc1a5645d3b63910366eff5d992ecaf84f6fa867ab7ac4c2c634d5a48aa40a04b2f5a9da5606391148bcbb764daaf111519c0
   languageName: node
   linkType: hard
 
-"@react-fluent-edit/mui@npm:2.2.1":
-  version: 2.2.1
-  resolution: "@react-fluent-edit/mui@npm:2.2.1"
+"@react-fluent-edit/mui@npm:3.0.0":
+  version: 3.0.0
+  resolution: "@react-fluent-edit/mui@npm:3.0.0"
   dependencies:
-    "@react-fluent-edit/core": 2.2.1
-    "@react-fluent-edit/mentions": 2.2.1
+    "@react-fluent-edit/core": 3.0.0
+    "@react-fluent-edit/mentions": 3.0.0
   peerDependencies:
     "@emotion/react": ^11.9.3
     "@emotion/styled": ^11.9.3
     "@mui/material": ^5.9.2
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    slate: ^0.81.3
-    slate-history: ^0.66.0
-    slate-react: ^0.81.0
-  checksum: a3746b8a3715ae90a29fb49db17c8edaaf94ac62dcb4a6675e83d1e06a225314295f257094c9702cabf2ad054506b54afba188dd39e7058f01169e7bfc996224
+    slate: ^0.81.3 || ^0.87.0
+    slate-history: ^0.66.0 || ^0.86.0
+    slate-react: ^0.81.0 || ^0.87.0
+  checksum: 46e2adc7e11a3002aa5f6b5f4858ad1cc2dac0855288c37187cf28defe1f83d7924230bf58109b4f1d4f4e419efe4c8dbe554d64d4398762c9c3173d17491df0
   languageName: node
   linkType: hard
 
