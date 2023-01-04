@@ -96,7 +96,7 @@
     "@mui/material": "5.10.17",
     "@mui/system": "5.10.17",
     "@mui/x-date-pickers": "5.0.10",
-    "@react-fluent-edit/core": "2.2.1",
+    "@react-fluent-edit/core": "3.0.0",
     "@react-fluent-edit/mentions": "2.2.1",
     "@react-fluent-edit/mui": "2.2.1",
     "capacitor-rate-app": "3.0.0",
