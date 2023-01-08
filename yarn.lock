@@ -10,6 +10,7 @@ __metadata:
   resolution: "2do-txt@workspace:."
   dependencies:
     "@capacitor-community/electron": 4.1.2
+    "@capacitor/app": ^4.1.1
     "@capacitor/cli": 4.6.1
     "@capacitor/clipboard": 4.1.0
     "@capacitor/core": 4.6.1
@@ -199,6 +200,15 @@ __metadata:
     mime-types: ~2.1.35
     ora: ~5.4.1
   checksum: 167c4ea897689a3df9355ba2613d23ee22b97a9ce60a29718e369aea48a588e02fded06b2f592cdd7b8dcffb7341323f2ce8ef86dbacde9df151a959bffd8855
+  languageName: node
+  linkType: hard
+
+"@capacitor/app@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@capacitor/app@npm:4.1.1"
+  peerDependencies:
+    "@capacitor/core": ^4.0.0
+  checksum: b64725478f8d7d5e900683cbb0f133bed29ec1dc3251cee94b2ff42495cfc39fcf6c41026167ed374d1406aea95cb9d48550c454a65266a9b597a3a8fc8aa729
   languageName: node
   linkType: hard
 

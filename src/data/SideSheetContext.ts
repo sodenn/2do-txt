@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { createContext } from "../utils/Context";
 import { useAddShortcutListener } from "../utils/shortcuts";
 
@@ -9,7 +9,12 @@ const [SideSheetProvider, useSideSheet] = createContext(() => {
     setSideSheetOpen(!sideSheetOpen);
   }, [sideSheetOpen]);
 
-  useAddShortcutListener(toggleSideSheet, "m", [toggleSideSheet]);
+  const shortcutListeners = useMemo(
+    () => ({ m: toggleSideSheet }),
+    [toggleSideSheet]
+  );
+
+  useAddShortcutListener(shortcutListeners);
 
   return {
     sideSheetOpen,

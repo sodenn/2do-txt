@@ -64,6 +64,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const cloudStorageEnabled =
     ["ios", "android", "electron"].includes(platform) ||
     import.meta.env.VITE_ENABLE_WEB_CLOUD_STORAGE === "true";
+  const syncMessage = t("Sync with cloud storage", {
+    cloudStorage: t("cloud storage"),
+  });
 
   const openStorageConnectedAlert = useCallback(
     (cloudStorage: CloudStorage) => {
@@ -113,7 +116,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
           <Trans
             i18nKey="Error connecting with cloud storage"
             values={{
-              cloudStorage: t("Cloud storage"),
+              cloudStorage: t("cloud storage"),
               message: error.message,
             }}
             components={{ code: <code style={{ marginLeft: 5 }} /> }}
@@ -338,7 +341,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
           persist: true,
           content: (
             <Alert severity="info" icon={<CircularProgress size="1em" />}>
-              {t("Sync with cloud storage")}
+              {syncMessage}
             </Alert>
           ),
         });
@@ -386,7 +389,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         persist: true,
         content: (
           <Alert severity="info" icon={<CircularProgress size="1em" />}>
-            {t("Sync with cloud storage")}
+            {syncMessage}
           </Alert>
         ),
       });
@@ -402,7 +405,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       connected,
       enqueueSnackbar,
       handleError,
-      t,
+      syncMessage,
     ]
   );
 

@@ -30,7 +30,7 @@ interface TodoFileError {
 
 type TodoFile = TodoFileSuccess | TodoFileError;
 
-interface TodoFiles {
+export interface TodoFiles {
   files: { taskList: TaskList; filePath: string; text: string }[];
   errors: TodoFileError[];
 }
@@ -51,7 +51,7 @@ export interface LoaderData {
   cloudStorageClients: Record<CloudStorage, CloudStorageClient>;
 }
 
-async function loadTodoFiles(): Promise<TodoFiles> {
+export async function loadTodoFiles(): Promise<TodoFiles> {
   const filePaths = await getTodoFilePaths();
   const result: TodoFile[] = await Promise.all(
     filePaths.map((filePath) =>
