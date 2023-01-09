@@ -368,7 +368,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       connected,
       enqueueSnackbar,
       handleError,
-      t,
+      syncMessage,
     ]
   );
 
