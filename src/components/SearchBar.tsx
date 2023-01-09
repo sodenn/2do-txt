@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useRef } from "react";
 import { useFilter } from "../data/FilterContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import ExpandableSearch from "./ExpandableSearch";
@@ -10,11 +10,11 @@ interface SearchBarProps {
 
 const SearchBar = ({ onExpand }: SearchBarProps) => {
   const { searchTerm, setSearchTerm } = useFilter();
-  const [searchInput, setSearchInput] = useState<HTMLInputElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (event: any) => {
     if (event.key === "Escape") {
-      searchInput?.blur();
+      searchInputRef.current?.blur();
     }
   };
 
@@ -23,8 +23,8 @@ const SearchBar = ({ onExpand }: SearchBarProps) => {
   };
 
   const shortcutListeners = useMemo(
-    () => ({ f: () => searchInput?.focus() }),
-    [searchInput]
+    () => ({ f: () => searchInputRef.current?.focus() }),
+    []
   );
 
   useAddShortcutListener(shortcutListeners);
@@ -36,7 +36,7 @@ const SearchBar = ({ onExpand }: SearchBarProps) => {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         value={searchTerm}
-        ref={setSearchInput}
+        ref={searchInputRef}
       />
     </Box>
   );

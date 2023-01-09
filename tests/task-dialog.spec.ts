@@ -356,9 +356,9 @@ test.describe("Task dialog", () => {
 
     await page.keyboard.press("Enter");
 
-    await page.type('[aria-label="Text editor"]', "@Private");
+    await page.type('[aria-label="Text editor"]', "@Private", delay);
 
-    await page.keyboard.press("Enter");
+    await page.keyboard.press("Enter", delay);
 
     await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
       2
