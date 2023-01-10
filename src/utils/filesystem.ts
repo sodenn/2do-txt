@@ -13,6 +13,15 @@ import {
   ReadFileOptions,
   WriteFileOptions,
 } from "@capacitor/filesystem/dist/esm/definitions";
+import { open, save } from "@tauri-apps/api/dialog";
+import {
+  createDir,
+  exists,
+  readTextFile,
+  removeFile,
+  writeTextFile,
+} from "@tauri-apps/api/fs";
+import { documentDir, join } from "@tauri-apps/api/path";
 import { WithOptional } from "../types/common.types";
 import { getPlatform } from "./platform";
 
@@ -125,49 +134,43 @@ const defaultFilesystem = Object.freeze({
   async selectFolder(): Promise<string | undefined> {
     throw new Error("Not implemented");
   },
+  async selectFile(): Promise<string | undefined> {
+    throw new Error("Not implemented");
+  },
   async join(...paths: string[]): Promise<string> {
     throw new Error("Not implemented");
   },
 });
 
-const electronFilesystem = Object.freeze({
+const desktopFilesystem = Object.freeze({
   async getUri(
     options: WithOptional<GetUriOptions, "directory">
   ): Promise<GetUriResult> {
     throw new Error("Not implemented");
   },
-  async readFile({
-    path,
-    encoding = Encoding.UTF8,
-  }: ReadFileOptions): Promise<ReadFileResult> {
-    const buffer = await window.electron.readFile(path, {
-      encoding: encoding ? encoding.toString() : undefined,
-    });
-    return { data: buffer.toString() };
+  async readFile({ path }: ReadFileOptions): Promise<ReadFileResult> {
+    const contents = await readTextFile(path);
+    return { data: contents };
   },
   async writeFile({
     path,
     data,
-    encoding,
     recursive,
   }: WriteFileOptions): Promise<WriteFileResult> {
-    const { writeFile, mkdir } = window.electron;
-    if (recursive) {
-      await mkdir(path, { recursive: true }).catch(() => undefined);
+    if (recursive && !(await exists(path))) {
+      await createDir(path, { recursive: true });
     }
-    await writeFile(path, data, {
-      encoding: encoding ? encoding.toString() : undefined,
-    });
+    await writeTextFile(path, data);
     return { uri: path };
   },
   async deleteFile({ path }: DeleteFileOptions): Promise<void> {
-    await window.electron.deleteFile(path);
+    await removeFile(path);
   },
   async readdir(options: ReaddirOptions) {
     throw new Error("Not implemented");
   },
   async isFile(options: ReadFileOptions): Promise<boolean> {
-    return electronFilesystem
+    return desktopFilesystem
       .readFile(options)
       .then(() => {
         return true;
@@ -177,17 +180,28 @@ const electronFilesystem = Object.freeze({
       });
   },
   async getUniqueFilePath(filePath: string) {
-    return getUniqueFilePath(filePath, electronFilesystem.isFile);
+    return getUniqueFilePath(filePath, desktopFilesystem.isFile);
   },
-  async selectFolder(buttonLabel?: string): Promise<string | undefined> {
-    return window.electron.selectFolder(buttonLabel);
+  async selectFolder(): Promise<string | undefined> {
+    const path: any = await open({
+      directory: true,
+      multiple: false,
+      defaultPath: await documentDir(),
+    });
+    return path || undefined;
+  },
+  async selectFile(defaultPath: string): Promise<string | undefined> {
+    const filePath = await save({
+      defaultPath: defaultPath,
+    });
+    return filePath ?? undefined;
   },
   async join(...paths: string[]): Promise<string> {
-    return window.electron.join(paths);
+    return await join(...paths);
   },
 });
 
 export function getFilesystem() {
   const platform = getPlatform();
-  return platform === "electron" ? electronFilesystem : defaultFilesystem;
+  return platform === "desktop" ? desktopFilesystem : defaultFilesystem;
 }

@@ -8,7 +8,6 @@
   "Appearance": "Appearance",
   "Import": "Import",
   "Delete": "Delete",
-  "Select folder": "Select folder",
   "due": "Due",
   "Created": "Created: {{creationDate, date}}",
   "Completed": "Completed: {{completionDate, date}}",

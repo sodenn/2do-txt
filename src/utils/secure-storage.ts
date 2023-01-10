@@ -67,7 +67,7 @@ export function getSecureStorage() {
   const platform = getPlatform();
   return platform === "ios"
     ? iosSecureStorage
-    : platform === "electron"
+    : platform === "desktop"
     ? electronSecureStorage
     : webSecureStorage;
 }

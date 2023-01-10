@@ -23,7 +23,7 @@ const { getSecureStorageItem, setSecureStorageItem, removeSecureStorageItem } =
   getSecureStorage();
 const dropboxClientId = import.meta.env.VITE_DROPBOX_CLIENT_ID;
 const platform = getPlatform();
-const useInAppBrowser = ["ios", "android", "electron"].includes(platform);
+const useInAppBrowser = ["ios", "android", "desktop"].includes(platform);
 const redirectUrl = useInAppBrowser
   ? "https://www.dropbox.com/1/oauth2/redirect_receiver"
   : `${window.location.origin}/dropbox`;

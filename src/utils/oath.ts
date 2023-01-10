@@ -10,7 +10,7 @@ export async function oauth(opt: OauthOptions) {
   if (platform === "ios" || platform === "android") {
     return mobileOauth(opt);
   }
-  if (platform === "electron") {
+  if (platform === "desktop") {
     return desktopOauth(opt);
   }
   throw new Error(`oauth: platform "${platform}" not supportet`);

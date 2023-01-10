@@ -34,7 +34,7 @@ const FileCreateDialog = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
-  const { isFile, getUniqueFilePath } = getFilesystem();
+  const { isFile, selectFile, getUniqueFilePath } = getFilesystem();
   const { addTodoFilePath } = useSettings();
   const [fileName, setFileName] = useState("");
   const platform = getPlatform();
@@ -164,7 +164,7 @@ const FileCreateDialog = () => {
       if (!open || !fileName) {
         return;
       }
-      if (platform === "electron" || connectedCloudStorages.length > 0) {
+      if (platform === "desktop" || connectedCloudStorages.length > 0) {
         setSkip(false);
         return;
       }
@@ -188,19 +188,26 @@ const FileCreateDialog = () => {
   );
 
   const openDesktopDialog = useCallback(async () => {
-    if (platform !== "electron" || !open) {
+    if (platform !== "desktop" || !open) {
       return;
     }
     const { fileName } = await getUniqueFilePath(defaultTodoFilePath);
-    const filePath = await window.electron.saveFile(fileName);
+    const filePath = await selectFile(fileName);
     handleClose();
     if (filePath) {
       createNewFile(filePath).catch((e) => console.debug(e));
     }
-  }, [createNewFile, getUniqueFilePath, handleClose, open, platform]);
+  }, [
+    createNewFile,
+    getUniqueFilePath,
+    handleClose,
+    open,
+    platform,
+    selectFile,
+  ]);
 
   const initFileName = useCallback(async () => {
-    if (platform === "electron" || !open || fileName) {
+    if (platform === "desktop" || !open || fileName) {
       return fileName;
     }
     const { fileName: _fileName } = await getUniqueFilePath(
@@ -216,7 +223,7 @@ const FileCreateDialog = () => {
     );
   }, [initFileName, openDesktopDialog, skipFileCreateDialog, open]);
 
-  if (platform === "electron" || typeof skip === "undefined" || skip) {
+  if (platform === "desktop" || typeof skip === "undefined" || skip) {
     return null;
   }
 

@@ -33,7 +33,7 @@ const FileManagementDialog = () => {
   const [closedFiles, setClosedFiles] = useState<string[]>([]);
 
   const listAllFiles = useCallback(async () => {
-    if (platform !== "electron") {
+    if (platform !== "desktop") {
       return readdir({
         path: "",
       }).then((result) => {

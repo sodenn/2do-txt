@@ -1,7 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 
 export function getPlatform() {
-  return Capacitor.getPlatform();
+  return (window as any).__TAURI__ ? "desktop" : Capacitor.getPlatform();
 }
 
 export function hasTouchScreen() {

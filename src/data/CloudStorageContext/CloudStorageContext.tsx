@@ -62,7 +62,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     data.cloudStorageClients
   );
   const cloudStorageEnabled =
-    ["ios", "android", "electron"].includes(platform) ||
+    ["ios", "android", "desktop"].includes(platform) ||
     import.meta.env.VITE_ENABLE_WEB_CLOUD_STORAGE === "true";
 
   const openStorageConnectedAlert = useCallback(
@@ -186,7 +186,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         throw error;
       });
       // Note: web platform goes a different way because a redirect is used
-      if (["ios", "android", "electron"].includes(platform)) {
+      if (["ios", "android", "desktop"].includes(platform)) {
         await createClient(cloudStorage);
       }
     },

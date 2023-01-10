@@ -91,7 +91,7 @@ const FileActionButton = () => {
           <ListItemIcon>
             <FolderOpenOutlinedIcon />
           </ListItemIcon>
-          {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
+          {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
         </MenuItem>
         {connectedCloudStorages.map((cloudStorage) => (
           <MenuItem

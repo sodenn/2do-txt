@@ -8,7 +8,6 @@
   "Appearance": "Erscheinungsbild",
   "Import": "Importieren",
   "Delete": "Löschen",
-  "Select folder": "Ordner Auswählen",
   "due": "Fällig",
   "Created": "Erstellt: {{creationDate, date}}",
   "Completed": "Erledigt: {{completionDate, date}}",

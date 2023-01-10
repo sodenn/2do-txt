@@ -231,7 +231,7 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
             }
           />
         ))}
-        {(platform === "electron" || platform === "web") && (
+        {(platform === "desktop" || platform === "web") && (
           <MenuItem onClick={handleCopyToClipboard}>
             <ListItemIcon>
               <ContentCopyIcon />

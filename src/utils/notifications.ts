@@ -20,7 +20,7 @@ export function useNotifications() {
 
   // Notifications in the browser must be re-scheduled because they are based on setTimeout
   const shouldNotificationsBeRescheduled = useCallback(() => {
-    return platform === "web" || platform === "electron";
+    return platform === "web" || platform === "desktop";
   }, [platform]);
 
   const getReceivedNotifications = useCallback(async () => {

@@ -56,14 +56,14 @@ const Onboarding = () => {
         <Button
           onClick={openTodoFilePicker}
           aria-label={
-            platform === "electron" ? "Open todo.txt" : "Import todo.txt"
+            platform === "desktop" ? "Open todo.txt" : "Import todo.txt"
           }
           startIcon={<FolderOpenOutlinedIcon />}
           fullWidth
           variant="outlined"
           component="span"
         >
-          {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
+          {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
         </Button>
         <CloudStorageOnboarding />
       </Stack>

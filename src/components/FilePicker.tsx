@@ -1,4 +1,5 @@
 import { Fade, Paper, styled, Typography } from "@mui/material";
+import { listen } from "@tauri-apps/api/event";
 import { useSnackbar } from "notistack";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -57,7 +58,7 @@ const FileInput = (props: FileInputProps) => {
 
   const openTodoFile = useCallback(
     async (content: string, file: File) => {
-      if (platform === "electron") {
+      if (platform === "desktop") {
         // Note: Electron adds a path property to the file object
         const filePath = (file as any).path;
         const taskList = await loadTodoFile(filePath, content);
@@ -128,6 +129,21 @@ const FileInput = (props: FileInputProps) => {
   const handleClick = (event: any) => {
     event.target.value = null;
   };
+
+  useEffect(() => {
+    const platform = getPlatform();
+    if (platform === "desktop") {
+      listen("tauri://file-drop", (event) => {
+        console.log(event);
+      });
+      listen("tauri://file-drop-hover", (event) => {
+        console.log(event);
+      });
+      listen("tauri://file-drop-cancelled", (event) => {
+        console.log(event);
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (files.length > 0) {
