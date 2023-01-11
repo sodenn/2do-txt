@@ -4,7 +4,7 @@ import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router-dom";
 import { promptForRating } from "../utils/app-rate";
@@ -80,7 +80,6 @@ const [TaskProvider, useTask] = createContext(() => {
   const { t } = useTranslation();
   const platform = getPlatform();
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [taskLists, setTaskLists] = useState<TaskList[]>(
     data.todoFiles.files.map((f) => f.taskList)
   );
@@ -592,10 +591,6 @@ const [TaskProvider, useTask] = createContext(() => {
     ]
   );
 
-  const openTodoFilePicker = useCallback(() => {
-    fileInputRef.current?.click();
-  }, [fileInputRef]);
-
   const restoreTask = useCallback(
     async (filePathOrTaskList: string | TaskList, task: Task) => {
       const taskList =
@@ -677,8 +672,6 @@ const [TaskProvider, useTask] = createContext(() => {
     findTaskListByTaskId,
     reorderTaskList,
     createNewTodoFile,
-    fileInputRef,
-    openTodoFilePicker,
   };
 });
 

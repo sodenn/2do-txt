@@ -3,6 +3,7 @@ import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
+import { useFilePicker } from "../data/FilePickerContext";
 import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
 import { getPlatform } from "../utils/platform";
@@ -24,7 +25,8 @@ const Onboarding = () => {
   const { t } = useTranslation();
   const platform = getPlatform();
   const { setFileCreateDialog } = useFileCreateDialog();
-  const { taskLists, openTodoFilePicker } = useTask();
+  const { taskLists } = useTask();
+  const { openFileDialog } = useFilePicker();
 
   return (
     <StyledBox sx={{ display: taskLists.length === 0 ? "flex" : "none" }}>
@@ -54,7 +56,7 @@ const Onboarding = () => {
         </Button>
         <CreateExampleFileButton />
         <Button
-          onClick={openTodoFilePicker}
+          onClick={openFileDialog}
           aria-label={
             platform === "desktop" ? "Open todo.txt" : "Import todo.txt"
           }
