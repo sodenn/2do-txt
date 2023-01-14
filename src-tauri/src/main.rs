@@ -3,6 +3,8 @@
   windows_subsystem = "windows"
 )]
 
+mod safe_storage;
+
 use tauri::Manager;
 // This command must be async so that it doesn't run on the main thread.
 #[tauri::command]
