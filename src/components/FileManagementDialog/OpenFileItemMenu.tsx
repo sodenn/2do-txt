@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import {
   CloudFileRef,
@@ -22,6 +22,7 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "../../data/CloudStorageContext";
+import { useTask } from "../../data/TaskContext";
 import { writeToClipboard } from "../../utils/clipboard";
 import { getDoneFilePath, getFilesystem } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
@@ -39,7 +40,7 @@ interface OpenFileItemMenuProps {
   onDownloadClick: () => void;
 }
 
-interface CloudStorageMenuItemProps {
+interface EnableCloudStorageItemProps {
   cloudStorage: CloudStorage;
   filePath: string;
   onClick: () => void;
@@ -48,7 +49,36 @@ interface CloudStorageMenuItemProps {
   cloudFileRef?: CloudFileRef;
 }
 
-const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
+interface SyncWithCloudStorageItemProps {
+  cloudFileRef: CloudFileRef;
+  onClick: () => void;
+}
+
+const SyncWithCloudStorageItem = (opt: SyncWithCloudStorageItemProps) => {
+  const { onClick, cloudFileRef } = opt;
+  const { t } = useTranslation();
+  const { syncTodoFileWithCloudStorage } = useTask();
+
+  const handleClick = () => {
+    syncTodoFileWithCloudStorage(cloudFileRef.localFilePath);
+    onClick();
+  };
+
+  return (
+    <MenuItem onClick={handleClick}>
+      <ListItemIcon>
+        {cloudStorageIcons[cloudFileRef.cloudStorage]}
+      </ListItemIcon>
+      <Typography>
+        {t("Sync with cloud storage", {
+          cloudStorage: cloudFileRef.cloudStorage,
+        })}
+      </Typography>
+    </MenuItem>
+  );
+};
+
+const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
   const { cloudStorage, filePath, cloudFileRef, onClick, onChange, onLoad } =
     props;
   const { t } = useTranslation();
@@ -62,7 +92,7 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
   const { readFile, isFile } = getFilesystem();
   const [loading, setLoading] = useState(false);
 
-  const handleCloudSync = async () => {
+  const enableCloudSync = async () => {
     onClick();
     try {
       setLoading(true);
@@ -130,26 +160,21 @@ const CloudStorageMenuItem = (props: CloudStorageMenuItemProps) => {
     return null;
   }
 
+  const buttonText = cloudFileRef
+    ? t("Disable cloud storage sync", {
+        cloudStorage,
+      })
+    : t("Enable cloud storage sync", {
+        cloudStorage,
+      });
+
   return (
-    <MenuItem onClick={handleCloudSync}>
+    <MenuItem onClick={enableCloudSync} disabled={loading}>
       <ListItemIcon>
         {loading && <CircularProgress size={24} />}
         {!loading && cloudStorageIcons[cloudStorage]}
       </ListItemIcon>
-      {cloudFileRef && (
-        <Typography>
-          {t("Disable cloud storage sync", {
-            cloudStorage,
-          })}
-        </Typography>
-      )}
-      {!cloudFileRef && (
-        <Typography>
-          {t("Enable cloud storage sync", {
-            cloudStorage,
-          })}
-        </Typography>
-      )}
+      <Typography>{buttonText}</Typography>
     </MenuItem>
   );
 };
@@ -164,7 +189,14 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
   const { readFile } = getFilesystem();
   const open = Boolean(anchorEl);
-  const cloudStorages = [...connectedCloudStorages];
+  const cloudStorages = useMemo(() => {
+    const value = [...connectedCloudStorages];
+    if (cloudFileRef && !value.includes(cloudFileRef.cloudStorage)) {
+      value.push(cloudFileRef.cloudStorage);
+    }
+    return value;
+  }, [cloudFileRef, connectedCloudStorages]);
+
   const deleteFile =
     platform === "web" || platform === "ios" || platform === "android";
 
@@ -195,10 +227,6 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
       .finally(handleClose);
   };
 
-  if (cloudFileRef && !cloudStorages.includes(cloudFileRef.cloudStorage)) {
-    cloudStorages.push(cloudFileRef.cloudStorage);
-  }
-
   return (
     <>
       <IconButton
@@ -216,8 +244,14 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
       >
+        {cloudFileRef && (
+          <SyncWithCloudStorageItem
+            cloudFileRef={cloudFileRef}
+            onClick={handleClose}
+          />
+        )}
         {cloudStorages.map((cloudStorage) => (
-          <CloudStorageMenuItem
+          <EnableCloudStorageItem
             key={cloudStorage}
             cloudStorage={cloudStorage}
             onClick={handleClose}

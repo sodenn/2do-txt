@@ -174,7 +174,7 @@ const FilePicker = ({ children }: WithChildren) => {
     getRootProps();
 
   return (
-    <Root data-testid="dropzone" {...dropzoneProps} data-shortcuts-ignore>
+    <Root data-testid="dropzone" {...dropzoneProps} data-shortcut-ignore>
       <FileInput files={file} clearFiles={clearFiles} />
       <Fade in={isDragActive}>
         <Overlay>

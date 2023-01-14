@@ -124,7 +124,7 @@ const SideSheet = () => {
 
   return (
     <SwipeableDrawer
-      data-shortcuts="m"
+      data-shortcut="m"
       data-testid="Menu"
       aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
       anchor="left"

@@ -1,6 +1,6 @@
 import { Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
-import { format, isBefore, subHours } from "date-fns";
+import { differenceInMinutes, format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { useSnackbar } from "notistack";
@@ -8,8 +8,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router-dom";
 import { promptForRating } from "../utils/app-rate";
+import { useBecomeActive } from "../utils/app-state";
 import { createContext } from "../utils/Context";
-import { todayDate } from "../utils/date";
+import { parseDate, todayDate } from "../utils/date";
 import {
   getFilenameFromPath,
   getFileNameWithoutEnding,
@@ -39,7 +40,7 @@ import { useArchivedTask } from "./ArchivedTaskContext";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
-import { LoaderData } from "./loader";
+import { LoaderData, loadTodoFiles as _loadTodoFiles } from "./loader";
 import { useSettings } from "./SettingsContext";
 
 interface SyncItem {
@@ -67,6 +68,7 @@ const [TaskProvider, useTask] = createContext(() => {
     removeTodoFilePath,
   } = useSettings();
   const {
+    getCloudFileRefs,
     syncAllFiles,
     syncFileThrottled,
     unlinkCloudFile,
@@ -137,7 +139,23 @@ const [TaskProvider, useTask] = createContext(() => {
   );
 
   const syncTodoFileWithCloudStorage = useCallback(
-    async (opt: SyncFileOptions) => {
+    async (optOrPath: SyncFileOptions | string) => {
+      let opt: SyncFileOptions;
+      if (typeof optOrPath === "string") {
+        const taskList = taskLists.find((l) => l.filePath === optOrPath);
+        if (!taskList) {
+          return;
+        }
+        const text = stringifyTaskList(taskList.items, taskList.lineEnding);
+        opt = {
+          filePath: optOrPath,
+          text,
+          isDoneFile: false,
+          showSnackbar: true,
+        };
+      } else {
+        opt = optOrPath;
+      }
       const result = await syncFileThrottled(opt);
       if (result) {
         await writeFile({
@@ -148,7 +166,7 @@ const [TaskProvider, useTask] = createContext(() => {
         return loadTodoFile(opt.filePath, result);
       }
     },
-    [loadTodoFile, syncFileThrottled, writeFile]
+    [loadTodoFile, syncFileThrottled, taskLists, writeFile]
   );
 
   const syncAllTodoFilesWithCloudStorage = useCallback(
@@ -639,6 +657,35 @@ const [TaskProvider, useTask] = createContext(() => {
     });
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
+  const becomeActiveListener = useCallback(async () => {
+    const { files, errors } = await _loadTodoFiles();
+    setTaskLists(files.map((f) => f.taskList));
+    for (const error of errors) {
+      enqueueSnackbar(t("File not found", { filePath: error.filePath }), {
+        variant: "error",
+      });
+      await removeTodoFilePath(error.filePath);
+    }
+
+    const refs = await getCloudFileRefs();
+    const outdated = refs.every((r) => {
+      const date = parseDate(r.lastSync);
+      return date && differenceInMinutes(new Date(), date) >= 2;
+    });
+    if (!outdated) {
+      return;
+    }
+    syncAllTodoFilesWithCloudStorage(files);
+  }, [
+    getCloudFileRefs,
+    syncAllTodoFilesWithCloudStorage,
+    enqueueSnackbar,
+    removeTodoFilePath,
+    t,
+  ]);
+
+  useBecomeActive(becomeActiveListener);
+
   useEffect(() => {
     data.todoFiles.errors.forEach((err) => {
       enqueueSnackbar(t("File not found", { filePath: err.filePath }), {
@@ -679,6 +726,7 @@ const [TaskProvider, useTask] = createContext(() => {
     createNewTodoFile,
     fileInputRef,
     openTodoFilePicker,
+    syncTodoFileWithCloudStorage,
   };
 });
 

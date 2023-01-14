@@ -6,6 +6,7 @@ import {
   Select,
   Stack,
 } from "@mui/material";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterType, SortKey, useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
@@ -44,13 +45,26 @@ const Filter = () => {
 
   const showSortBy = taskLists.some((list) => list.items.length > 0);
 
-  useAddShortcutListener(() => {
-    setActiveProjects([]);
-    setActiveContexts([]);
-    setActiveTags([]);
-    setActivePriorities([]);
-    setSearchTerm("");
-  }, "x");
+  const shortcutListeners = useMemo(
+    () => ({
+      x: () => {
+        setActiveProjects([]);
+        setActiveContexts([]);
+        setActiveTags([]);
+        setActivePriorities([]);
+        setSearchTerm("");
+      },
+    }),
+    [
+      setActiveContexts,
+      setActivePriorities,
+      setActiveProjects,
+      setActiveTags,
+      setSearchTerm,
+    ]
+  );
+
+  useAddShortcutListener(shortcutListeners);
 
   return (
     <Stack spacing={2}>
