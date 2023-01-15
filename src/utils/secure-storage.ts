@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/tauri";
 import { getPlatform } from "./platform";
 
 export type SecureStorageKeys =
@@ -51,15 +52,15 @@ const webSecureStorage = Object.freeze({
   },
 });
 
-const electronSecureStorage = Object.freeze({
+const desktopSecureStorage = Object.freeze({
   async getSecureStorageItem(key: SecureStorageKeys): Promise<string | null> {
-    return window.electron.getSecureStorageItem(key);
+    return invoke("get_secure_storage_item", { key });
   },
   async setSecureStorageItem(key: SecureStorageKeys, value: string) {
-    await window.electron.setSecureStorageItem(key, value);
+    return invoke("set_secure_storage_item", { key, value });
   },
   async removeSecureStorageItem(key: SecureStorageKeys) {
-    await window.electron.removeSecureStorageItem(key);
+    return invoke("remove_secure_storage_item", { key });
   },
 });
 
@@ -68,6 +69,6 @@ export function getSecureStorage() {
   return platform === "ios"
     ? iosSecureStorage
     : platform === "desktop"
-    ? electronSecureStorage
+    ? desktopSecureStorage
     : webSecureStorage;
 }

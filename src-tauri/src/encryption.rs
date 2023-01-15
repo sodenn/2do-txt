@@ -3,34 +3,39 @@ use std::str;
 use aes_gcm::{aead::{Aead, KeyInit}, Aes256Gcm, AesGcm, Key, Nonce};
 use aes_gcm::aead::consts::U12;
 use aes_gcm::aes::Aes256;
-use keyring::Entry;
+use keyring::{Entry,Error};
 use rand::{distributions::Alphanumeric, Rng, thread_rng};
 
 const NONCE_LENGTH: usize = 12;
-static SERVICE: &'static str = "2do.txt Secure Storage";
+static SERVICE: &'static str = "2do.txt Encryption Key";
 static USERNAME: &'static str = "2do.txt";
 
-fn create_cipher() -> AesGcm<Aes256, U12> {
-  let cipher: AesGcm<Aes256, U12>;
+fn retrieve_key() -> String {
   let entry = Entry::new(SERVICE, USERNAME);
-  let key_str = entry.get_password().unwrap_or_else(|_error| {
-    return String::from("");
-  });
-  if key_str.is_empty() {
-    let raw_key: String = thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(32)
-        .map(|x| x as char)
-        .collect();
-    let key = Key::<Aes256Gcm>::from_slice(&raw_key.as_bytes());
-    cipher = Aes256Gcm::new(&key);
-    entry.set_password(&raw_key).unwrap();
-  } else {
-    let slice = key_str.as_bytes();
-    let key = Key::<Aes256Gcm>::from_slice(&slice);
-    cipher = Aes256Gcm::new(key);
-  }
-  cipher
+  let key = match entry.get_password() {
+    Ok(val) => val,
+    Err(error) => match error {
+      Error::NoEntry => {
+        let new_key: String = thread_rng()
+            .sample_iter(&Alphanumeric)
+            .take(32)
+            .map(|x| x as char)
+            .collect();
+        entry.set_password(&new_key).unwrap();
+        return new_key
+      },
+      other_error => {
+        panic!("Problem retrieving key: {:?}", other_error);
+      }
+    },
+  };
+  key
+}
+
+fn create_cipher() -> AesGcm<Aes256, U12> {
+  let raw_key = retrieve_key();
+  let key = Key::<Aes256Gcm>::from_slice(&raw_key.as_bytes());
+  Aes256Gcm::new(key)
 }
 
 pub fn encrypt(plaintext: &[u8]) -> Vec<u8> {
