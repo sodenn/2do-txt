@@ -5,11 +5,13 @@
 
 use tauri::Manager;
 
+use oauth::oauth;
 use secure_storage::{
     get_secure_storage_item, remove_secure_storage_item, set_secure_storage_item,
 };
 
 mod encryption;
+mod oauth;
 mod secure_storage;
 
 // This command must be async so that it doesn't run on the main thread.
@@ -26,6 +28,7 @@ async fn close_splashscreen(window: tauri::Window) {
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
+            oauth,
             close_splashscreen,
             get_secure_storage_item,
             set_secure_storage_item,
