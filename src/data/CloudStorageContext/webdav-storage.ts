@@ -1,4 +1,3 @@
-import { createClient as _createClient, FileStat, WebDAVClient } from "webdav";
 import { getSecureStorage } from "../../utils/secure-storage";
 import {
   CloudFileNotFoundError,
@@ -17,6 +16,7 @@ import {
   UploadFileOptions,
 } from "./cloud-storage.types";
 import generateContentHash from "./ContentHasher";
+import { createWebDAVClient, FileStat, WebDAVClient } from "./webdav-client";
 
 interface Credentials {
   username: string;
@@ -59,7 +59,10 @@ export async function createClient(): Promise<WebDAVClient> {
   if (!username || !password || !url) {
     throw new CloudFileUnauthorizedError("WebDAV");
   }
-  return _createClient(url, { username, password });
+  return createWebDAVClient({
+    baseUrl: url,
+    basicAuth: { username, password },
+  });
 }
 
 export async function resetTokens() {
@@ -80,9 +83,7 @@ export async function listFiles(
   const { client } = opt;
   const path = opt.path || "/";
   const results = (await client
-    .getDirectoryContents(path, {
-      details: false,
-    })
+    .getDirectoryContents(path)
     .catch(handleError)) as FileStat[];
   const items: CloudItem[] = results
     .filter((r) => !r.filename.endsWith("/webdav"))
@@ -112,9 +113,7 @@ export async function getFileMetaData(
 ): Promise<CloudFile> {
   const { path, client } = opt;
   const results = (await client
-    .getDirectoryContents(path, {
-      details: false,
-    })
+    .getDirectoryContents(path)
     .catch(handleError)) as FileStat[];
   if (results.length !== 1) {
     throw new CloudFileNotFoundError();
@@ -127,9 +126,7 @@ export async function downloadFile(
 ): Promise<string> {
   const { filePath, client } = opt;
   return (await client
-    .getFileContents(filePath, {
-      format: "text",
-    })
+    .getFileContents(filePath, "text")
     .catch(handleError)) as string;
 }
 
