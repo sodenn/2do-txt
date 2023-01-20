@@ -1,5 +1,6 @@
 import AddIcon from "@mui/icons-material/Add";
 import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useTaskDialog } from "../data/TaskDialogContext";
 import { useAddShortcutListener } from "../utils/shortcuts";
@@ -14,7 +15,12 @@ const AddTaskButton = (props: IconButtonProps) => {
     setTaskDialogOptions({ open: true });
   };
 
-  useAddShortcutListener(() => setTaskDialogOptions({ open: true }), "n");
+  const shortcutListeners = useMemo(
+    () => ({ n: () => setTaskDialogOptions({ open: true }) }),
+    [setTaskDialogOptions]
+  );
+
+  useAddShortcutListener(shortcutListeners);
 
   return (
     <Tooltip

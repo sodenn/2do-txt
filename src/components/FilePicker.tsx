@@ -148,7 +148,7 @@ const WebFilePicker = ({ children }: WithChildren) => {
         onChange={handleChange}
         onClick={handleClick}
       />
-      <Root data-testid="dropzone" {...dropzoneProps} data-shortcuts-ignore>
+      <Root data-testid="dropzone" {...dropzoneProps} data-shortcut-ignore>
         <Fade in={isDragActive}>
           <Overlay>
             <StyledPaper>
@@ -204,7 +204,7 @@ const DesktopFilePicker = ({ children }: WithChildren) => {
   }, [processFiles]);
 
   return (
-    <Root data-testid="dropzone" data-shortcuts-ignore>
+    <Root data-testid="dropzone" data-shortcut-ignore>
       <Fade in={isDragActive}>
         <Overlay>
           <StyledPaper>

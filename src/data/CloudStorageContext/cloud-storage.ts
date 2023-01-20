@@ -61,7 +61,7 @@ export async function linkFile(cloudFile: CloudFileRef) {
   const cloudFiles = await getCloudFileRefs();
   const newCloudFiles = [
     ...cloudFiles.filter((c) => c.path !== cloudFile.path),
-    { ...cloudFile },
+    cloudFile,
   ];
   await setPreferencesItem("cloud-files", JSON.stringify(newCloudFiles));
 }

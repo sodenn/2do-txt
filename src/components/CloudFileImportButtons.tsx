@@ -58,7 +58,7 @@ const CloudFileImportButtons = () => {
         startIcon={<CloudOutlinedIcon />}
         endIcon={<KeyboardArrowDownIcon />}
       >
-        {t("Import from cloud storage", { cloudStorage: t("Cloud storage") })}
+        {t("Import from cloud storage", { cloudStorage: t("cloud storage") })}
       </Button>
       <Menu
         sx={{ mt: 0.5 }}

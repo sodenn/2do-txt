@@ -243,7 +243,9 @@ const FileCreateDialog = () => {
       />
       {connectedCloudStorages.length > 0 && (
         <FormControl sx={{ mt: 1 }}>
-          <FormLabel id="cloud-sync">{t("Sync with cloud storage")}</FormLabel>
+          <FormLabel id="cloud-sync">
+            {t("Sync with cloud storage", { cloudStorage: t("cloud storage") })}
+          </FormLabel>
           <RadioGroup
             aria-labelledby="cloud-sync"
             aria-label="Sync with cloud storage"
