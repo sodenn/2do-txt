@@ -1,6 +1,11 @@
 import { Dropbox, DropboxAuth } from "dropbox";
 import { oauth } from "../../utils/oath";
 import { getPlatform } from "../../utils/platform";
+import {
+  getPreferencesItem,
+  removePreferencesItem,
+  setPreferencesItem,
+} from "../../utils/preferences";
 import { getSecureStorage } from "../../utils/secure-storage";
 import {
   CloudFileNotFoundError,
@@ -8,6 +13,7 @@ import {
 } from "./cloud-storage";
 import {
   CloudFile,
+  CloudStorageClient,
   DeleteFileOptionsInternal,
   DownloadFileOptions,
   FileMetaDataOptions,
@@ -44,7 +50,7 @@ export async function authenticate(): Promise<void> {
   )) as string;
 
   const codeVerifier = dbxAuth.getCodeVerifier();
-  await setSecureStorageItem("Dropbox-code-verifier", codeVerifier);
+  await setPreferencesItem("Dropbox-code-verifier", codeVerifier);
 
   if (useInAppBrowser) {
     const params = await oauth({
@@ -60,7 +66,7 @@ export async function authenticate(): Promise<void> {
 export async function createClient(): Promise<Dropbox | unknown> {
   const refreshToken = await getSecureStorageItem("Dropbox-refresh-token");
   if (!refreshToken) {
-    const authenticationInProgress = await getSecureStorageItem(
+    const authenticationInProgress = await getPreferencesItem(
       "Dropbox-code-verifier"
     );
     if (!authenticationInProgress) {
@@ -75,19 +81,30 @@ export async function createClient(): Promise<Dropbox | unknown> {
   });
 
   // refresh access token
-  await dbx.checkUser({ query: "check" }).catch((error) => {
-    if (error.status === 401) {
-      throw new CloudFileUnauthorizedError("Dropbox");
-    }
-  });
+  await Promise.race([
+    dbx.checkUser({ query: "check" }).catch((error) => {
+      if (error.status === 401) {
+        throw new CloudFileUnauthorizedError("Dropbox");
+      }
+    }),
+    new Promise<CloudStorageClient[]>((_, reject) =>
+      setTimeout(
+        () =>
+          reject(
+            new Error("The connection to Dropbox could not be established.")
+          ),
+        5000
+      )
+    ),
+  ]);
 
   return dbx;
 }
 
 export async function requestAccessToken(code: string): Promise<void> {
   const { getSecureStorageItem, removeSecureStorageItem } = getSecureStorage();
-  const codeVerifier = await getSecureStorageItem("Dropbox-code-verifier");
-  await removeSecureStorageItem("Dropbox-code-verifier");
+  const codeVerifier = await getPreferencesItem("Dropbox-code-verifier");
+  await removePreferencesItem("Dropbox-code-verifier");
 
   if (!codeVerifier) {
     throw new Error("Missing code verifier");
@@ -118,7 +135,7 @@ export async function requestAccessToken(code: string): Promise<void> {
 
 export async function resetTokens(): Promise<void> {
   await Promise.all([
-    removeSecureStorageItem("Dropbox-code-verifier"),
+    removePreferencesItem("Dropbox-code-verifier"),
     removeSecureStorageItem("Dropbox-refresh-token"),
   ]).catch((e) => void e);
 }

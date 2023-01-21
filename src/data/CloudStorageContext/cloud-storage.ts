@@ -7,7 +7,6 @@ import {
   CloudDoneFileRef,
   CloudFileRef,
   CloudStorage,
-  CloudStorageClient,
   CloudStorageClientConnected,
   CloudStorageClientDisconnected,
   CloudStorageClients,
@@ -196,21 +195,19 @@ export async function unlinkCloudDoneFile(filePath: string) {
 }
 
 export async function loadClients(): Promise<CloudStorageClients> {
-  const clients = await Promise.race([
-    Promise.all(
-      cloudStorages.map((cloudStorage) =>
+  const refs = await getCloudFileRefs();
+  const clients = await Promise.all([
+    ...cloudStorages
+      .filter((storage) => refs.some((ref) => ref.cloudStorage === storage))
+      .map((cloudStorage) =>
         createClient(cloudStorage)
-          .then((instance) =>
-            instance
-              ? ({
-                  instance,
-                  cloudStorage,
-                  status: "connected",
-                } as CloudStorageClientConnected)
-              : ({
-                  cloudStorage,
-                  status: "disconnected",
-                } as CloudStorageClientDisconnected)
+          .then(
+            (instance) =>
+              ({
+                instance,
+                cloudStorage,
+                status: "connected",
+              } as CloudStorageClientConnected)
           )
           .catch(
             (error) =>
@@ -220,20 +217,16 @@ export async function loadClients(): Promise<CloudStorageClients> {
                 status: "disconnected",
               } as CloudStorageClientDisconnected)
           )
-      )
-    ),
-    new Promise<CloudStorageClient[]>((resolve) =>
-      setTimeout(
-        () =>
-          resolve(
-            cloudStorages.map((cloudStorage) => ({
-              cloudStorage,
-              status: "disconnected",
-            }))
-          ),
-        5000
-      )
-    ),
+      ),
+    ...cloudStorages
+      .filter((storage) => refs.every((ref) => ref.cloudStorage !== storage))
+      .map(
+        (cloudStorage) =>
+          ({
+            cloudStorage,
+            status: "disconnected",
+          } as CloudStorageClientDisconnected)
+      ),
   ]);
   return clients.reduce((prev, curr) => {
     prev[curr.cloudStorage] = curr;
@@ -241,9 +234,7 @@ export async function loadClients(): Promise<CloudStorageClients> {
   }, {} as CloudStorageClients);
 }
 
-export async function createClient(
-  cloudStorage: CloudStorage
-): Promise<unknown> {
+export async function createClient(cloudStorage: CloudStorage): Promise<any> {
   return $(cloudStorage).createClient();
 }
 

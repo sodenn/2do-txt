@@ -17,7 +17,8 @@ export type PreferencesKeys =
   | "hide-completed-tasks"
   | "cloud-files"
   | "cloud-archive-files"
-  | "task-view";
+  | "task-view"
+  | "Dropbox-code-verifier";
 
 export async function getPreferencesItem<T extends string>(
   key: PreferencesKeys
