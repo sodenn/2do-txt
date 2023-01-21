@@ -25,6 +25,9 @@ import { documentDir, join } from "@tauri-apps/api/path";
 import { WithOptional } from "../types/common.types";
 import { getPlatform } from "./platform";
 
+export const defaultFilePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
+export const defaultArchiveFilePath = import.meta.env.VITE_ARCHIVE_FILE_NAME!;
+
 export function getFilenameFromPath(filePath: string) {
   return filePath.replace(/^.*[\\/]/, "");
 }
@@ -49,14 +52,11 @@ export function getDoneFilePath(filePath: string) {
   if (!fileNameWithoutEnding) {
     return;
   }
-  return fileName === import.meta.env.VITE_DEFAULT_FILE_NAME
-    ? filePath.replace(
-        new RegExp(`${fileName}$`),
-        import.meta.env.VITE_ARCHIVE_FILE_NAME!
-      )
+  return fileName === defaultFilePath
+    ? filePath.replace(new RegExp(`${fileName}$`), defaultArchiveFilePath!)
     : filePath.replace(
         new RegExp(`${fileName}$`),
-        `${fileNameWithoutEnding}_${import.meta.env.VITE_ARCHIVE_FILE_NAME}`
+        `${fileNameWithoutEnding}_${defaultArchiveFilePath}`
       );
 }
 
@@ -137,6 +137,9 @@ const defaultFilesystem = Object.freeze({
   async selectFile(): Promise<string | undefined> {
     throw new Error("Not implemented");
   },
+  async saveFile(defaultPath?: string): Promise<string | undefined> {
+    throw new Error("Not implemented");
+  },
   async join(...paths: string[]): Promise<string> {
     throw new Error("Not implemented");
   },
@@ -180,7 +183,11 @@ const desktopFilesystem = Object.freeze({
       });
   },
   async getUniqueFilePath(filePath: string) {
-    return getUniqueFilePath(filePath, desktopFilesystem.isFile);
+    const docDir = await documentDir();
+    const _filePath = await join(docDir, filePath);
+    return getUniqueFilePath(_filePath, ({ path }) =>
+      desktopFilesystem.isFile({ path })
+    );
   },
   async selectFolder(): Promise<string | undefined> {
     const path: any = await open({
@@ -190,7 +197,19 @@ const desktopFilesystem = Object.freeze({
     });
     return path || undefined;
   },
-  async selectFile(defaultPath: string): Promise<string | undefined> {
+  async selectFile(): Promise<string | undefined> {
+    const filePath = await open({
+      directory: false,
+      multiple: false,
+      defaultPath: await documentDir(),
+    });
+    return Array.isArray(filePath) && filePath.length > 0
+      ? filePath[0]
+      : typeof filePath === "string"
+      ? filePath
+      : undefined;
+  },
+  async saveFile(defaultPath?: string): Promise<string | undefined> {
     const filePath = await save({
       defaultPath: defaultPath,
     });

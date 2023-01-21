@@ -43,10 +43,10 @@ const ProviderBundle = ({ children }: WithChildren) => {
                     <SettingsProvider>
                       <FilterProvider>
                         <SideSheetProvider>
-                          <FilePickerProvider>
-                            <ArchivedTasksDialogProvider>
-                              <ArchivedTaskProvider>
-                                <TaskProvider>
+                          <ArchivedTasksDialogProvider>
+                            <ArchivedTaskProvider>
+                              <TaskProvider>
+                                <FilePickerProvider>
                                   <FileManagementDialogProvider>
                                     <ShortcutsDialogProvider>
                                       <FileCreateDialogProvider>
@@ -56,10 +56,10 @@ const ProviderBundle = ({ children }: WithChildren) => {
                                       </FileCreateDialogProvider>
                                     </ShortcutsDialogProvider>
                                   </FileManagementDialogProvider>
-                                </TaskProvider>
-                              </ArchivedTaskProvider>
-                            </ArchivedTasksDialogProvider>
-                          </FilePickerProvider>
+                                </FilePickerProvider>
+                              </TaskProvider>
+                            </ArchivedTaskProvider>
+                          </ArchivedTasksDialogProvider>
                         </SideSheetProvider>
                       </FilterProvider>
                     </SettingsProvider>

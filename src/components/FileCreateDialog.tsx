@@ -22,19 +22,17 @@ import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
-import { getFilesystem } from "../utils/filesystem";
+import { defaultFilePath, getFilesystem } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 
-const defaultTodoFilePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
-
 const FileCreateDialog = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
-  const { isFile, selectFile, getUniqueFilePath } = getFilesystem();
+  const { isFile, selectFile, saveFile, getUniqueFilePath } = getFilesystem();
   const { addTodoFilePath } = useSettings();
   const [fileName, setFileName] = useState("");
   const platform = getPlatform();
@@ -168,7 +166,7 @@ const FileCreateDialog = () => {
         setSkip(false);
         return;
       }
-      const exists = await isFile({ path: defaultTodoFilePath });
+      const exists = await isFile({ path: defaultFilePath });
       if (!exists) {
         await createTodoFileAndSync(fileName);
         handleClose();
@@ -191,28 +189,19 @@ const FileCreateDialog = () => {
     if (platform !== "desktop" || !open) {
       return;
     }
-    const { fileName } = await getUniqueFilePath(defaultTodoFilePath);
-    const filePath = await selectFile(fileName);
+    const { fileName } = await getUniqueFilePath(defaultFilePath);
+    const filePath = await saveFile(fileName);
     handleClose();
     if (filePath) {
       createNewFile(filePath).catch((e) => console.debug(e));
     }
-  }, [
-    createNewFile,
-    getUniqueFilePath,
-    handleClose,
-    open,
-    platform,
-    selectFile,
-  ]);
+  }, [createNewFile, getUniqueFilePath, handleClose, open, platform, saveFile]);
 
   const initFileName = useCallback(async () => {
     if (platform === "desktop" || !open || fileName) {
       return fileName;
     }
-    const { fileName: _fileName } = await getUniqueFilePath(
-      defaultTodoFilePath
-    );
+    const { fileName: _fileName } = await getUniqueFilePath(defaultFilePath);
     setFileName(_fileName);
     return _fileName;
   }, [getUniqueFilePath, open, platform, fileName]);

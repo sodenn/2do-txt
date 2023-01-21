@@ -6,10 +6,8 @@ import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { useFilePicker } from "../data/FilePickerContext";
 import { useFilter } from "../data/FilterContext";
-import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { WithChildren } from "../types/common.types";
-import { getFilesystem } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
 
 const Root = styled("div")({
@@ -167,28 +165,12 @@ const WebFilePicker = ({ children }: WithChildren) => {
 const DesktopFilePicker = ({ children }: WithChildren) => {
   const { t } = useTranslation();
   const [isDragActive, setIsDragActive] = useState(false);
-  const { addTodoFilePath } = useSettings();
-  const { loadTodoFile, scheduleDueTaskNotifications } = useTask();
-  const { readFile } = getFilesystem();
-
-  const processFiles = useCallback(
-    async (paths?: string[]) => {
-      if (!paths || paths.length === 0) {
-        return;
-      }
-      const path = paths[0];
-      const content = await readFile({ path });
-      const taskList = await loadTodoFile(path, content.data);
-      await addTodoFilePath(path);
-      scheduleDueTaskNotifications(taskList.items);
-    },
-    [addTodoFilePath, loadTodoFile, readFile, scheduleDueTaskNotifications]
-  );
+  const { openDesktopFileDialog } = useFilePicker();
 
   useEffect(() => {
     const promise = Promise.all([
       listen("tauri://file-drop", (event) => {
-        processFiles(event.payload as string[]);
+        openDesktopFileDialog(event.payload as string[]);
         setIsDragActive(false);
       }),
       listen("tauri://file-drop-hover", (event) => {
@@ -201,7 +183,7 @@ const DesktopFilePicker = ({ children }: WithChildren) => {
     return () => {
       promise.then((listeners) => listeners.forEach((l) => l()));
     };
-  }, [processFiles]);
+  }, [openDesktopFileDialog]);
 
   return (
     <Root data-testid="dropzone" data-shortcut-ignore>

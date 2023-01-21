@@ -21,7 +21,10 @@
         "writeFile": true,
         "createDir": true,
         "removeFile": true,
-        "exists": true
+        "renameFile": true,
+        "scope": [
+          "**"
+        ]
       },
       "clipboard": {
         "writeText": true
@@ -34,7 +37,6 @@
         "all": true
       },
       "http": {
-        "all": true,
         "request": true,
         "scope": ["https://**"]
       }
@@ -81,8 +83,8 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
-        "width": 800,
+        "height": 700,
+        "width": 700,
         "resizable": true,
         "title": "2do.txt",
         "visible": false
