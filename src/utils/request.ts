@@ -80,7 +80,7 @@ function headers(opt: RequestOptions) {
     const credentials = window.btoa(`${username}:${password}`);
     headers.Authorization = `Basic ${credentials}`;
   }
-  return headers;
+  return { headers };
 }
 
 function url(opt: RequestOptions) {

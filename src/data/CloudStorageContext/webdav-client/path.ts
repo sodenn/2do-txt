@@ -32,7 +32,7 @@ export function resolve(...parts: string[]) {
 
   for (let i = parts.length - 1; i >= -1 && !resolvedAbsolute; i--) {
     // eslint-disable-next-line prefer-rest-params
-    const path = i >= 0 ? parts[i] : process.cwd();
+    const path = i >= 0 ? parts[i] : location.pathname;
 
     // Skip empty and invalid entries
     if (!path) {
