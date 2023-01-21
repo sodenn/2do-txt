@@ -7,7 +7,7 @@ import { parseXML, prepareFileFromProps } from "./dav";
 import { encodePath, normalisePath, relative } from "./path";
 import { handleResponseCode } from "./response";
 import { DAVResult, FileStat, ResponseDataDetailed } from "./types";
-import { joinURL, normaliseHREF } from "./url";
+import { extractURLPath, joinURL, normaliseHREF } from "./url";
 
 export async function getDirectoryContents(
   context: RequestContext,
@@ -31,7 +31,8 @@ export async function getDirectoryContents(
   }
   const davResp = await parseXML(responseData);
   const _remotePath = path.startsWith("/") ? path : "/" + path;
-  return getDirectoryFiles(davResp, context.baseUrl, _remotePath);
+  const serverBasePath = extractURLPath(context.baseUrl);
+  return getDirectoryFiles(davResp, serverBasePath, _remotePath);
 }
 
 function getDirectoryFiles(

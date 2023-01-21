@@ -1,9 +1,7 @@
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
-import { getClient } from "@tauri-apps/api/http";
 import { useTranslation } from "react-i18next";
-import { createWebDAVClient } from "../data/CloudStorageContext/webdav-client";
 import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFilePicker } from "../data/FilePickerContext";
 import { useTask } from "../data/TaskContext";
@@ -11,35 +9,6 @@ import logo from "../images/logo.png";
 import { getPlatform } from "../utils/platform";
 import CloudStorageOnboarding from "./CloudStorageOnboarding";
 import CreateExampleFileButton from "./CreateExampleFileButton";
-
-async function webdav() {
-  const client = await getClient();
-  const opt: any = {
-    url: "https://demo.owncloud.org/remote.php/dav/",
-    headers: {
-      Accept: "text/plain,application/xml",
-      "Content-Type": "application/json",
-      Depth: "1",
-      Authorization: "Basic ZGVtbzpkZW1v",
-    },
-    method: "PROPFIND",
-    responseType: 2,
-  };
-  const response = await client.request(opt);
-  console.log(response.data);
-}
-
-async function webdavClient() {
-  const client = createWebDAVClient({
-    baseUrl: "https://demo.owncloud.org/remote.php/dav",
-    basicAuth: {
-      username: "demo",
-      password: "demo",
-    },
-  });
-  const result = await client.getDirectoryContents("/");
-  console.log(result);
-}
 
 const StyledBox = styled("div")(({ theme }) => ({
   display: "flex",
@@ -75,8 +44,6 @@ const Onboarding = () => {
         >
           {t("Get Started")}
         </Typography>
-        <Button onClick={webdav}>WebDAV</Button>
-        <Button onClick={webdavClient}>WebDAV Client</Button>
         <Button
           aria-label="Create task"
           onClick={() =>

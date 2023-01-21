@@ -106,7 +106,8 @@ function webBody(opt: RequestOptions) {
 function desktopBody(opt: RequestOptions) {
   const contentType = opt.headers["Content-Type"];
   if (contentType === "application/octet-stream") {
-    return Body.bytes(opt.data as BufferLike);
+    const enc = new TextEncoder();
+    return Body.bytes(enc.encode(opt.data as string));
   } else if (contentType === "text/plain") {
     return Body.text(opt.data as string);
   } else {
