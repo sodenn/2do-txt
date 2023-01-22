@@ -59,7 +59,6 @@
       "identifier": "dev.sodenn.todotxt",
       "longDescription": "",
       "macOS": {
-        "license": "../LICENSE",
         "entitlements": null,
         "exceptionDomain": "",
         "frameworks": [],
