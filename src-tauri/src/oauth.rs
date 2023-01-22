@@ -16,7 +16,7 @@ pub async fn oauth(auth_url: String, redirect_url: String, app_handle: tauri::Ap
     })
     .build()
     .unwrap();
-    let queryString = rx.recv().unwrap();
-    _window.close();
-    queryString
+    let query_string = rx.recv().unwrap();
+    _window.close().unwrap();
+    query_string
 }
