@@ -12,10 +12,12 @@ import {
 
 interface CloudStorageConnectionButtonsProps {
   status?: "connect" | "disconnect";
+  onMenuItemClick?: (cloudStorage: CloudStorage) => void;
 }
 
 export const CloudStorageConnectionButtons = ({
   status,
+  onMenuItemClick,
 }: CloudStorageConnectionButtonsProps) => {
   const {
     cloudStorageEnabled,
@@ -54,6 +56,7 @@ export const CloudStorageConnectionButtons = ({
     } else {
       unlinkCloudStorage(cloudStorage);
     }
+    onMenuItemClick?.(cloudStorage);
   };
 
   if (!cloudStorageEnabled || filteredCloudStorages.length === 0) {

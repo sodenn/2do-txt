@@ -2,6 +2,7 @@ import { Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
 import { useSettings } from "../data/SettingsContext";
+import { useSideSheet } from "../data/SideSheetContext";
 import { useNotifications } from "../utils/notifications";
 import ArchiveModeSelect from "./ArchiveModeSelect";
 import ArchiveNowButton from "./ArchiveNowButton";
@@ -15,6 +16,7 @@ import ThemeModeSelect from "./ThemeModeSelect";
 const Settings = () => {
   const { t } = useTranslation();
   const { cloudStorageEnabled } = useCloudStorage();
+  const { setSideSheetOpen } = useSideSheet();
   const { checkNotificationPermissions, requestNotificationPermissions } =
     useNotifications();
   const {
@@ -106,7 +108,9 @@ const Settings = () => {
         <div>
           <Heading gutterBottom>{t("Cloud storage")}</Heading>
           <Stack sx={{ mt: 1 }} spacing={1}>
-            <CloudStorageConnectionButtons />
+            <CloudStorageConnectionButtons
+              onMenuItemClick={() => setSideSheetOpen(false)}
+            />
           </Stack>
         </div>
       )}
