@@ -9,7 +9,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "2do-txt@workspace:."
   dependencies:
-    "@capacitor-community/electron": 4.1.2
     "@capacitor/app": ^4.1.1
     "@capacitor/cli": 4.6.1
     "@capacitor/clipboard": 4.1.0
@@ -190,23 +189,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor-community/electron@npm:4.1.2":
-  version: 4.1.2
-  resolution: "@capacitor-community/electron@npm:4.1.2"
-  dependencies:
-    "@capacitor/cli": ^3.5.1
-    "@capacitor/core": ^3.5.1
-    "@ionic/utils-fs": ~3.1.6
-    chalk: ~4.1.2
-    electron-is-dev: ~2.0.0
-    events: ~3.3.0
-    fs-extra: ~9.1.0
-    mime-types: ~2.1.35
-    ora: ~5.4.1
-  checksum: 167c4ea897689a3df9355ba2613d23ee22b97a9ce60a29718e369aea48a588e02fded06b2f592cdd7b8dcffb7341323f2ce8ef86dbacde9df151a959bffd8855
-  languageName: node
-  linkType: hard
-
 "@capacitor/app@npm:^4.1.1":
   version: 4.1.1
   resolution: "@capacitor/app@npm:4.1.1"
@@ -244,33 +226,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/cli@npm:^3.5.1":
-  version: 3.8.0
-  resolution: "@capacitor/cli@npm:3.8.0"
-  dependencies:
-    "@ionic/cli-framework-output": ^2.2.1
-    "@ionic/utils-fs": ^3.1.5
-    "@ionic/utils-subprocess": ^2.1.6
-    "@ionic/utils-terminal": ^2.3.0
-    commander: ^6.0.0
-    debug: ^4.2.0
-    env-paths: ^2.2.0
-    kleur: ^4.1.1
-    native-run: ^1.5.0
-    open: ^7.4.2
-    plist: ^3.0.2
-    prompts: ^2.3.2
-    semver: ^7.3.2
-    tar: ^6.1.11
-    tslib: ^2.1.0
-    xml2js: ^0.4.23
-  bin:
-    cap: bin/capacitor
-    capacitor: bin/capacitor
-  checksum: 0abe715abfea20a54725b4f5a69f27e4561d53dad5d78744f23af78fa2affc871b33eeff07525dcebdc68def9db46c5781ea95ebee4bef53fcd43f2626ab58e6
-  languageName: node
-  linkType: hard
-
 "@capacitor/clipboard@npm:4.1.0":
   version: 4.1.0
   resolution: "@capacitor/clipboard@npm:4.1.0"
@@ -286,15 +241,6 @@ __metadata:
   dependencies:
     tslib: ^2.1.0
   checksum: e86714e96503c7feced070f98b68aedbb5cf070131ffff724e1e638f5441eb05ce4d2dd767557f0dd83214ecc523f8aad9938d1f1a91d2651f2201ff231067f6
-  languageName: node
-  linkType: hard
-
-"@capacitor/core@npm:^3.5.1":
-  version: 3.8.0
-  resolution: "@capacitor/core@npm:3.8.0"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: 6d219d959001dd1dbe0529716b18e74c8b44048b2dd5384278171d5ebe160eb5059c279815cc407be127caaead4d5bc186708a7df601415ac92ed475fbb552d3
   languageName: node
   linkType: hard
 
@@ -853,7 +799,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ionic/cli-framework-output@npm:^2.2.1, @ionic/cli-framework-output@npm:^2.2.5":
+"@ionic/cli-framework-output@npm:^2.2.5":
   version: 2.2.5
   resolution: "@ionic/cli-framework-output@npm:2.2.5"
   dependencies:
@@ -874,7 +820,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ionic/utils-fs@npm:3.1.6, @ionic/utils-fs@npm:^3.1.5, @ionic/utils-fs@npm:^3.1.6, @ionic/utils-fs@npm:~3.1.6":
+"@ionic/utils-fs@npm:3.1.6, @ionic/utils-fs@npm:^3.1.5, @ionic/utils-fs@npm:^3.1.6":
   version: 3.1.6
   resolution: "@ionic/utils-fs@npm:3.1.6"
   dependencies:
@@ -920,7 +866,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ionic/utils-subprocess@npm:^2.1.11, @ionic/utils-subprocess@npm:^2.1.6":
+"@ionic/utils-subprocess@npm:^2.1.11":
   version: 2.1.11
   resolution: "@ionic/utils-subprocess@npm:2.1.11"
   dependencies:
@@ -936,7 +882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ionic/utils-terminal@npm:2.3.3, @ionic/utils-terminal@npm:^2.3.0, @ionic/utils-terminal@npm:^2.3.3":
+"@ionic/utils-terminal@npm:2.3.3, @ionic/utils-terminal@npm:^2.3.3":
   version: 2.3.3
   resolution: "@ionic/utils-terminal@npm:2.3.3"
   dependencies:
@@ -2722,7 +2668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bl@npm:^4.0.3, bl@npm:^4.1.0":
+"bl@npm:^4.0.3":
   version: 4.1.0
   resolution: "bl@npm:4.1.0"
   dependencies:
@@ -2932,7 +2878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:^4.1.2, chalk@npm:~4.1.2":
+"chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:^4.1.2":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -3000,22 +2946,6 @@ __metadata:
     string-width: ^4.2.3
     strip-ansi: ^6.0.1
   checksum: fa1a3a7f4e8f26a18e47969c248a2b9a016391bca2588abbe77026255390bee71dc9b7b876f317f46e40164c3c5200972e77ec58b823a05154f26e81a74a54c3
-  languageName: node
-  linkType: hard
-
-"cli-cursor@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "cli-cursor@npm:3.1.0"
-  dependencies:
-    restore-cursor: ^3.1.0
-  checksum: 2692784c6cd2fd85cfdbd11f53aea73a463a6d64a77c3e098b2b4697a20443f430c220629e1ca3b195ea5ac4a97a74c2ee411f3807abf6df2b66211fec0c0a29
-  languageName: node
-  linkType: hard
-
-"cli-spinners@npm:^2.5.0":
-  version: 2.7.0
-  resolution: "cli-spinners@npm:2.7.0"
-  checksum: a9afaf73f58d1f951fb23742f503631b3cf513f43f4c7acb1b640100eb76bfa16efbcd1994d149ffc6603a6d75dd3d4a516a76f125f90dce437de9b16fd0ee6f
   languageName: node
   linkType: hard
 
@@ -3143,13 +3073,6 @@ __metadata:
   dependencies:
     delayed-stream: ~1.0.0
   checksum: 49fa4aeb4916567e33ea81d088f6584749fc90c7abec76fd516bf1c5aa5c79f3584b5ba3de6b86d26ddd64bae5329c4c7479343250cfe71c75bb366eae53bb7c
-  languageName: node
-  linkType: hard
-
-"commander@npm:^6.0.0":
-  version: 6.2.1
-  resolution: "commander@npm:6.2.1"
-  checksum: d7090410c0de6bc5c67d3ca41c41760d6d268f3c799e530aafb73b7437d1826bbf0d2a3edac33f8b57cc9887b4a986dce307fa5557e109be40eadb7c43b21742
   languageName: node
   linkType: hard
 
@@ -3643,13 +3566,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-is-dev@npm:~2.0.0":
-  version: 2.0.0
-  resolution: "electron-is-dev@npm:2.0.0"
-  checksum: 7393f46f06153d70a427ea904c60a092e50fbf1015c26c342cebb8324ada8c9e0c0f1f02867af56d9cc76f47be17da8cb311ea6bdc83343e7ebd2323ec4014c8
-  languageName: node
-  linkType: hard
-
 "elementtree@npm:^0.1.7":
   version: 0.1.7
   resolution: "elementtree@npm:0.1.7"
@@ -4106,13 +4022,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"events@npm:~3.3.0":
-  version: 3.3.0
-  resolution: "events@npm:3.3.0"
-  checksum: f6f487ad2198aa41d878fa31452f1a3c00958f46e9019286ff4787c84aac329332ab45c9cdc8c445928fc6d7ded294b9e005a7fce9426488518017831b272780
-  languageName: node
-  linkType: hard
-
 "execa@npm:^5.0.0":
   version: 5.1.1
   resolution: "execa@npm:5.1.1"
@@ -4410,7 +4319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^9.0.0, fs-extra@npm:~9.1.0":
+"fs-extra@npm:^9.0.0":
   version: 9.1.0
   resolution: "fs-extra@npm:9.1.0"
   dependencies:
@@ -5180,13 +5089,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-interactive@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "is-interactive@npm:1.0.0"
-  checksum: 824808776e2d468b2916cdd6c16acacebce060d844c35ca6d82267da692e92c3a16fdba624c50b54a63f38bdc4016055b6f443ce57d7147240de4f8cdabaf6f9
-  languageName: node
-  linkType: hard
-
 "is-lambda@npm:^1.0.1":
   version: 1.0.1
   resolution: "is-lambda@npm:1.0.1"
@@ -5305,13 +5207,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-unicode-supported@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "is-unicode-supported@npm:0.1.0"
-  checksum: a2aab86ee7712f5c2f999180daaba5f361bdad1efadc9610ff5b8ab5495b86e4f627839d085c6530363c6d6d4ecbde340fb8e54bdb83da4ba8e0865ed5513c52
-  languageName: node
-  linkType: hard
-
 "is-weakref@npm:^1.0.2":
   version: 1.0.2
   resolution: "is-weakref@npm:1.0.2"
@@ -5321,7 +5216,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-wsl@npm:^2.1.1, is-wsl@npm:^2.2.0":
+"is-wsl@npm:^2.2.0":
   version: 2.2.0
   resolution: "is-wsl@npm:2.2.0"
   dependencies:
@@ -5508,7 +5403,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kleur@npm:^4.1.1, kleur@npm:^4.1.4":
+"kleur@npm:^4.1.4":
   version: 4.1.5
   resolution: "kleur@npm:4.1.5"
   checksum: 1dc476e32741acf0b1b5b0627ffd0d722e342c1b0da14de3e8ae97821327ca08f9fb944542fb3c126d90ac5f27f9d804edbe7c585bf7d12ef495d115e0f22c12
@@ -5793,16 +5688,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"log-symbols@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "log-symbols@npm:4.1.0"
-  dependencies:
-    chalk: ^4.1.0
-    is-unicode-supported: ^0.1.0
-  checksum: fce1497b3135a0198803f9f07464165e9eb83ed02ceb2273930a6f8a508951178d8cf4f0378e9d28300a2ed2bc49050995d2bd5f53ab716bb15ac84d58c6ef74
-  languageName: node
-  linkType: hard
-
 "loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
@@ -5963,7 +5848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.12, mime-types@npm:~2.1.35":
+"mime-types@npm:^2.1.12":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -6213,7 +6098,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"native-run@npm:^1.5.0, native-run@npm:^1.6.0":
+"native-run@npm:^1.6.0":
   version: 1.7.0
   resolution: "native-run@npm:1.7.0"
   dependencies:
@@ -6734,22 +6619,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"onetime@npm:^5.1.0, onetime@npm:^5.1.2":
+"onetime@npm:^5.1.2":
   version: 5.1.2
   resolution: "onetime@npm:5.1.2"
   dependencies:
     mimic-fn: ^2.1.0
   checksum: 2478859ef817fc5d4e9c2f9e5728512ddd1dbc9fb7829ad263765bb6d3b91ce699d6e2332eef6b7dff183c2f490bd3349f1666427eaba4469fba0ac38dfd0d34
-  languageName: node
-  linkType: hard
-
-"open@npm:^7.4.2":
-  version: 7.4.2
-  resolution: "open@npm:7.4.2"
-  dependencies:
-    is-docker: ^2.0.0
-    is-wsl: ^2.1.1
-  checksum: 3333900ec0e420d64c23b831bc3467e57031461d843c801f569b2204a1acc3cd7b3ec3c7897afc9dde86491dfa289708eb92bba164093d8bd88fb2c231843c91
   languageName: node
   linkType: hard
 
@@ -6784,23 +6659,6 @@ __metadata:
     type-check: ^0.4.0
     word-wrap: ^1.2.3
   checksum: dbc6fa065604b24ea57d734261914e697bd73b69eff7f18e967e8912aa2a40a19a9f599a507fa805be6c13c24c4eae8c71306c239d517d42d4c041c942f508a0
-  languageName: node
-  linkType: hard
-
-"ora@npm:~5.4.1":
-  version: 5.4.1
-  resolution: "ora@npm:5.4.1"
-  dependencies:
-    bl: ^4.1.0
-    chalk: ^4.1.0
-    cli-cursor: ^3.1.0
-    cli-spinners: ^2.5.0
-    is-interactive: ^1.0.0
-    is-unicode-supported: ^0.1.0
-    log-symbols: ^4.1.0
-    strip-ansi: ^6.0.0
-    wcwidth: ^1.0.1
-  checksum: 28d476ee6c1049d68368c0dc922e7225e3b5600c3ede88fade8052837f9ed342625fdaa84a6209302587c8ddd9b664f71f0759833cbdb3a4cf81344057e63c63
   languageName: node
   linkType: hard
 
@@ -7136,7 +6994,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"plist@npm:^3.0.2, plist@npm:^3.0.5, plist@npm:^3.0.6":
+"plist@npm:^3.0.5, plist@npm:^3.0.6":
   version: 3.0.6
   resolution: "plist@npm:3.0.6"
   dependencies:
@@ -7278,7 +7136,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prompts@npm:^2.3.2, prompts@npm:^2.4.2":
+"prompts@npm:^2.4.2":
   version: 2.4.2
   resolution: "prompts@npm:2.4.2"
   dependencies:
@@ -7730,16 +7588,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"restore-cursor@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "restore-cursor@npm:3.1.0"
-  dependencies:
-    onetime: ^5.1.0
-    signal-exit: ^3.0.2
-  checksum: f877dd8741796b909f2a82454ec111afb84eb45890eb49ac947d87991379406b3b83ff9673a46012fca0d7844bb989f45cc5b788254cf1a39b6b5a9659de0630
-  languageName: node
-  linkType: hard
-
 "retry@npm:^0.12.0":
   version: 0.12.0
   resolution: "retry@npm:0.12.0"
@@ -8030,7 +7878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"signal-exit@npm:^3.0.2, signal-exit@npm:^3.0.3, signal-exit@npm:^3.0.7":
+"signal-exit@npm:^3.0.3, signal-exit@npm:^3.0.7":
   version: 3.0.7
   resolution: "signal-exit@npm:3.0.7"
   checksum: a2f098f247adc367dffc27845853e9959b9e88b01cb301658cfe4194352d8d2bb32e18467c786a7fe15f1d44b233ea35633d076d5e737870b7139949d1ab6318
@@ -9103,7 +8951,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wcwidth@npm:^1.0.0, wcwidth@npm:^1.0.1":
+"wcwidth@npm:^1.0.0":
   version: 1.0.1
   resolution: "wcwidth@npm:1.0.1"
   dependencies:

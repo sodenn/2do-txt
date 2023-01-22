@@ -24,15 +24,14 @@ Here is a quick guide to doing code contributions to this app.
 9. Submit a pull request to the upstream [2do.txt repository](https://github.com/sodenn/2do-txt/pulls).<br>
 > Maintainers will merge the pull request by squashing all commits and editing the commit message if necessary.
 
-### Electron (Desktop App)
-If you want to start the Desktop App (Electron), run the following commands (⚠️ Hot Reload is not supported).
+### Tauri (Desktop App)
+If you want to start the Desktop App, run the following command:
 ```sh
-yarn build # Always necessary after code changes have been made
-yarn electron:start
+yarn tauri:start
 ```
 
 ### iOS
-If you want to start the iOS App, run the following commands (⚠️ Hot Reload is not supported).
+If you want to start the iOS App, run the following commands (⚠️ Hot Reload is not supported):
 ```sh
 yarn build # Always necessary after code changes have been made
 yarn ios:start
