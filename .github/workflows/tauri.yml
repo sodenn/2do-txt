@@ -1,7 +1,6 @@
 name: Tauri
 
 on:
-  push:
   workflow_dispatch:
 
 jobs:
@@ -35,3 +34,8 @@ jobs:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ runner.os }}-dist
+          path: |
+            src-tauri/target/release/bundle/
