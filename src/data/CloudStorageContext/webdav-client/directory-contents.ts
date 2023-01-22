@@ -1,4 +1,5 @@
 import {
+  joinURL,
   request,
   RequestContext,
   RequestOptions,
@@ -7,7 +8,7 @@ import { parseXML, prepareFileFromProps } from "./dav";
 import { encodePath, normalisePath, relative } from "./path";
 import { handleResponseCode } from "./response";
 import { DAVResult, FileStat, ResponseDataDetailed } from "./types";
-import { extractURLPath, joinURL, normaliseHREF } from "./url";
+import { extractURLPath, normaliseHREF } from "./url";
 
 export async function getDirectoryContents(
   context: RequestContext,

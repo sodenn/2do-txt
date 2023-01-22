@@ -1,4 +1,5 @@
 import {
+  joinURL,
   request,
   RequestContext,
   RequestOptions,
@@ -6,7 +7,6 @@ import {
 import { encodePath } from "./path";
 import { handleResponseCode } from "./response";
 import { BufferLike, ResponseDataDetailed } from "./types";
-import { joinURL } from "./url";
 
 export async function getFileContents(
   context: RequestContext,

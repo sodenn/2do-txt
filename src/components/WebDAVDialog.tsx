@@ -49,6 +49,12 @@ const WebDavDialog = () => {
     setError(undefined);
   };
 
+  const handleEnter = () => {
+    setUrl(import.meta.env.VITE_WEBDAV_URL);
+    setUsername(import.meta.env.VITE_WEBDAV_USERNAME);
+    setPassword(import.meta.env.VITE_WEBDAV_PASSWORD);
+  };
+
   const handleClose = () => {
     setWebDAVDialogOpen(false);
   };
@@ -103,6 +109,7 @@ const WebDavDialog = () => {
 
   const TransitionProps = {
     onExited: handleExited,
+    onEnter: handleEnter,
   };
 
   if (fullScreenDialog) {

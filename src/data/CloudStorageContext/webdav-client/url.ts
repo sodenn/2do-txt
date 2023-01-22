@@ -8,19 +8,6 @@ export function normaliseHREF(href: string): string {
   }
 }
 
-export function joinURL(...parts: string[]) {
-  return parts
-    .map((part, i) => {
-      if (i === 0) {
-        return part.trim().replace(/\/*$/g, "");
-      } else {
-        return part.trim().replace(/(^\/*|\/*$)/g, "");
-      }
-    })
-    .filter((x) => x.length)
-    .join("/");
-}
-
 export function extractURLPath(fullURL: string): string {
   const url = new URL(fullURL);
   let urlPath = url.pathname;

@@ -40,6 +40,23 @@ export async function request(opt: RequestOptions): Promise<Response> {
   }
 }
 
+export function joinURL(...parts: string[]) {
+  return parts
+    .map((part, i) => {
+      if (i === 0) {
+        // remove trailing slashes (keep the leading slash on the first part)
+        return part.trim().replace(/\/*$/g, "");
+      } else if (i === parts.length - 1) {
+        // remove leading slash (keep the trailing slash on the last part)
+        return part.trim().replace(/^\/*/g, "");
+      } else {
+        // remove leading + trailing slashes
+        return part.trim().replace(/(^\/*|\/*$)/g, "");
+      }
+    })
+    .join("/");
+}
+
 async function webRequest(opt: RequestOptions) {
   const reqOptions: RequestInit = {
     method: opt.method,
@@ -84,11 +101,7 @@ function headers(opt: RequestOptions) {
 }
 
 function url(opt: RequestOptions) {
-  return (
-    opt.context.baseUrl +
-    (opt.context.baseUrl.endsWith("/") ? "" : "/") +
-    opt.path
-  );
+  return joinURL(opt.context.baseUrl, opt.path);
 }
 
 function webBody(opt: RequestOptions) {
