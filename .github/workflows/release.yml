@@ -36,44 +36,39 @@ jobs:
               repo: context.repo.repo,
               tag: "${{ needs.release.outputs.gitTag }}"
             })
-            return data
-  print-release-id:
-    runs-on: ubuntu-latest
+            return data.id
+  attach-binaries:
+    name: Attach binaries to GitHub Release
     needs: release-info
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
-      - run: echo ${{ needs.release-info.outputs.release_id }}
-#  attach-binaries:
-#    name: Attach binaries to GitHub Release
-#    needs: release-info
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        platform: [macos-latest, ubuntu-20.04, windows-latest]
-#    runs-on: ${{ matrix.platform }}
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Setup node
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 18
-#      - run: corepack enable
-#      - name: Install Rust stable
-#        uses: dtolnay/rust-toolchain@stable
-#      - name: Install dependencies (ubuntu only)
-#        if: matrix.platform == 'ubuntu-20.04'
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
-#      - name: Install dependencies
-#        run: yarn install
-#      - uses: tauri-apps/tauri-action@v0
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          ENABLE_CODE_SIGNING: ${{ secrets.APPLE_CERTIFICATE }}
-#          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-#          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-#          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-#          APPLE_ID: ${{ secrets.APPLE_ID }}
-#          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-#        with:
-#          releaseId: ${{ needs.release-info.outputs.release_id }}
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: corepack enable
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Install dependencies
+        run: yarn install
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENABLE_CODE_SIGNING: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+        with:
+          releaseId: ${{ needs.release-info.outputs.release_id }}
