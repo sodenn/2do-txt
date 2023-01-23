@@ -22,7 +22,7 @@ const config = {
 const exec = [
   "@semantic-release/exec",
   {
-    verifyConditionsCmd: "echo ::set-output name=gitTag::${lastRelease.gitTag}",
+    publishCmd: "echo ::set-output name=gitTag::${nextRelease.gitTag}",
   },
 ];
 
