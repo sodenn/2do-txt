@@ -82,16 +82,18 @@
     },
     "windows": [
       {
-        "fullscreen": false,
         "height": 700,
-        "width": 700,
-        "resizable": true,
+        "width": 950,
+        "minHeight": 600,
+        "minWidth": 500,
         "title": "2do.txt",
+        "fullscreen": false,
+        "resizable": true,
         "visible": false
       },
       {
-        "width": 600,
         "height": 600,
+        "width": 600,
         "decorations": false,
         "resizable": false,
         "url": "splashscreen.html",
