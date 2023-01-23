@@ -1,5 +1,7 @@
 const branch = process.env.GITHUB_REF_NAME ?? "";
 
+const branches = ["feat", "refactor"];
+
 const config = {
   branches: [
     {
@@ -9,11 +11,11 @@ const config = {
       name: "beta",
       prerelease: true,
     },
-    {
-      name: "feat/*",
+    ...branches.map((name) => ({
+      name: `${name}/*`,
       // eslint-disable-next-line no-template-curly-in-string
-      prerelease: '${name.replace(/^feat\\//g, "")}',
-    },
+      prerelease: `\${name.replace(/^${name}\\//g, "")}`,
+    })),
   ],
 };
 
@@ -33,7 +35,7 @@ if (branch === "main") {
   ];
 }
 
-if (branch.startsWith("feat/")) {
+if (branches.some((name) => branch.startsWith(`${name}/`))) {
   config.plugins = [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
