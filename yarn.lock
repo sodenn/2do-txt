@@ -37,6 +37,7 @@ __metadata:
     "@react-fluent-edit/mentions": 3.0.0
     "@react-fluent-edit/mui": 3.0.0
     "@semantic-release/changelog": 6.0.2
+    "@semantic-release/exec": 6.0.3
     "@semantic-release/git": 10.0.1
     "@tauri-apps/api": ^1.2.0
     "@tauri-apps/cli": ^1.2.2
@@ -1650,6 +1651,22 @@ __metadata:
   version: 3.0.0
   resolution: "@semantic-release/error@npm:3.0.0"
   checksum: 29c4391ecbefd9ea991f8fdf5ab3ceb9c4830281da56d9dbacd945c476cb86f10c3b55cd4a6597098c0ea3a59f1ec4752132abeea633e15972f49f4704e61d35
+  languageName: node
+  linkType: hard
+
+"@semantic-release/exec@npm:6.0.3":
+  version: 6.0.3
+  resolution: "@semantic-release/exec@npm:6.0.3"
+  dependencies:
+    "@semantic-release/error": ^3.0.0
+    aggregate-error: ^3.0.0
+    debug: ^4.0.0
+    execa: ^5.0.0
+    lodash: ^4.17.4
+    parse-json: ^5.0.0
+  peerDependencies:
+    semantic-release: ">=18.0.0"
+  checksum: c6ad2f02ff01a4709c4914f560d0343efea9afe993c733ff971da8bf89604a1460d87b26a1a2ace5992c5ace8e8d384cf314504e0c4b623fc8433e8e8d9e2fe0
   languageName: node
   linkType: hard
 
