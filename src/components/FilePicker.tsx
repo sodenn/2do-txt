@@ -165,12 +165,12 @@ const WebFilePicker = ({ children }: WithChildren) => {
 const DesktopFilePicker = ({ children }: WithChildren) => {
   const { t } = useTranslation();
   const [isDragActive, setIsDragActive] = useState(false);
-  const { openDesktopFileDialog } = useFilePicker();
+  const { openDesktopFile } = useFilePicker();
 
   useEffect(() => {
     const promise = Promise.all([
       listen("tauri://file-drop", (event) => {
-        openDesktopFileDialog(event.payload as string[]);
+        openDesktopFile(event.payload as string[]);
         setIsDragActive(false);
       }),
       listen("tauri://file-drop-hover", (event) => {
@@ -183,7 +183,7 @@ const DesktopFilePicker = ({ children }: WithChildren) => {
     return () => {
       promise.then((listeners) => listeners.forEach((l) => l()));
     };
-  }, [openDesktopFileDialog]);
+  }, [openDesktopFile]);
 
   return (
     <Root data-testid="dropzone" data-shortcut-ignore>

@@ -9,9 +9,9 @@ const [FilePickerProvider, useFilePicker] = createContext(() => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { addTodoFilePath } = useSettings();
   const { loadTodoFile, scheduleDueTaskNotifications } = useTask();
-  const { readFile, selectFile, getUniqueFilePath } = getFilesystem();
+  const { readFile, selectFile } = getFilesystem();
 
-  const openDesktopFileDialog = useCallback(
+  const openDesktopFile = useCallback(
     async (paths?: string[]) => {
       if (!paths || paths.length === 0) {
         return;
@@ -30,17 +30,17 @@ const [FilePickerProvider, useFilePicker] = createContext(() => {
     if (platform === "desktop") {
       const path = await selectFile();
       if (path) {
-        openDesktopFileDialog([path]);
+        openDesktopFile([path]);
       }
     } else {
       fileInputRef.current?.click();
     }
-  }, [openDesktopFileDialog, selectFile]);
+  }, [openDesktopFile, selectFile]);
 
   return {
     fileInputRef,
     openFileDialog,
-    openDesktopFileDialog,
+    openDesktopFile,
   };
 });
 

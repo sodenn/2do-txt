@@ -28,31 +28,27 @@ import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 
+interface FileCreateDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onCreateFile: (filePath: string) => Promise<void>;
+}
+
 const FileCreateDialog = () => {
-  const { t } = useTranslation();
-  const theme = useTheme();
-  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
-  const { isFile, selectFile, saveFile, getUniqueFilePath } = getFilesystem();
-  const { addTodoFilePath } = useSettings();
-  const [fileName, setFileName] = useState("");
   const platform = getPlatform();
-  const { setConfirmationDialog } = useConfirmationDialog();
-  const { setActiveTaskListPath } = useFilter();
-  const { uploadFile, cloudStoragesConnectionStatus, connectedCloudStorages } =
-    useCloudStorage();
-  const { saveTodoFile } = useTask();
   const {
-    fileCreateDialog: { open, createExampleFile, createFirstTask },
+    fileCreateDialog: { createExampleFile, createFirstTask, open },
     setFileCreateDialog,
   } = useFileCreateDialog();
+  const { saveTodoFile } = useTask();
+  const { addTodoFilePath } = useSettings();
+  const { setActiveTaskListPath } = useFilter();
   const { setTaskDialogOptions } = useTaskDialog();
-  const [selectedCloudStorage, setSelectedCloudStorage] = useState<
-    CloudStorage | "no-sync"
-  >("no-sync");
-  const [skip, setSkip] = useState<boolean>();
-  const title = createExampleFile
-    ? t("Create example file")
-    : t("Create todo.txt");
+
+  const handleClose = useCallback(
+    () => setFileCreateDialog((current) => ({ ...current, open: false })),
+    [setFileCreateDialog]
+  );
 
   const createNewFile = useCallback(
     async (filePath: string) => {
@@ -82,15 +78,80 @@ const FileCreateDialog = () => {
     ]
   );
 
-  const handleClose = useCallback(
-    () => setFileCreateDialog((current) => ({ ...current, open: false })),
-    [setFileCreateDialog]
+  if (platform === "desktop") {
+    return (
+      <DesktopFileCreateDialog
+        onCreateFile={createNewFile}
+        onClose={handleClose}
+        open={open}
+      />
+    );
+  }
+
+  return (
+    <WebFileCreateDialog
+      onCreateFile={createNewFile}
+      onClose={handleClose}
+      open={open}
+    />
   );
+};
+
+const DesktopFileCreateDialog = (props: FileCreateDialogProps) => {
+  const { onCreateFile, onClose, open } = props;
+  const { saveFile, getUniqueFilePath } = getFilesystem();
+  const [lock, setLock] = useState(open);
+
+  const openDesktopDialog = useCallback(async () => {
+    if (!open || lock) {
+      return;
+    }
+    try {
+      setLock(true);
+      const { fileName } = await getUniqueFilePath(defaultFilePath);
+      const filePath = await saveFile(fileName);
+      onClose();
+      if (filePath) {
+        onCreateFile(filePath).catch((e) => console.debug(e));
+      }
+    } finally {
+      setLock(false);
+    }
+  }, [open, lock, saveFile, onClose, getUniqueFilePath, onCreateFile]);
+
+  useEffect(() => {
+    openDesktopDialog();
+  }, [openDesktopDialog]);
+
+  return null;
+};
+
+const WebFileCreateDialog = (props: FileCreateDialogProps) => {
+  const { onCreateFile, onClose, open } = props;
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isFile, getUniqueFilePath } = getFilesystem();
+  const [fileName, setFileName] = useState("");
+  const { setConfirmationDialog } = useConfirmationDialog();
+  const { uploadFile, cloudStoragesConnectionStatus, connectedCloudStorages } =
+    useCloudStorage();
+  const {
+    fileCreateDialog: { createExampleFile, createFirstTask },
+    setFileCreateDialog,
+  } = useFileCreateDialog();
+  const [selectedCloudStorage, setSelectedCloudStorage] = useState<
+    CloudStorage | "no-sync"
+  >("no-sync");
+  const [skip, setSkip] = useState<boolean>();
+  const title = createExampleFile
+    ? t("Create example file")
+    : t("Create todo.txt");
 
   const createTodoFileAndSync = useCallback(
     async (fileName: string) => {
-      handleClose();
-      await createNewFile(fileName);
+      onClose();
+      await onCreateFile(fileName);
       if (
         selectedCloudStorage &&
         selectedCloudStorage !== "no-sync" &&
@@ -106,8 +167,8 @@ const FileCreateDialog = () => {
     },
     [
       cloudStoragesConnectionStatus,
-      createNewFile,
-      handleClose,
+      onCreateFile,
+      onClose,
       selectedCloudStorage,
       uploadFile,
     ]
@@ -157,62 +218,44 @@ const FileCreateDialog = () => {
     setSelectedCloudStorage("Dropbox");
   };
 
-  const skipFileCreateDialog = useCallback(
+  const init = useCallback(
     async (fileName?: string) => {
-      if (!open || !fileName) {
+      if (!open || fileName) {
         return;
       }
-      if (platform === "desktop" || connectedCloudStorages.length > 0) {
+
+      const { fileName: _fileName } = await getUniqueFilePath(defaultFilePath);
+      setFileName(_fileName);
+
+      if (connectedCloudStorages.length > 0) {
         setSkip(false);
         return;
       }
+
       const exists = await isFile({ path: defaultFilePath });
       if (!exists) {
-        await createTodoFileAndSync(fileName);
-        handleClose();
+        await createTodoFileAndSync(_fileName);
+        onClose();
         setSkip(true);
       } else {
         setSkip(false);
       }
     },
     [
+      open,
+      isFile,
+      onClose,
+      getUniqueFilePath,
       connectedCloudStorages.length,
       createTodoFileAndSync,
-      handleClose,
-      isFile,
-      open,
-      platform,
     ]
   );
 
-  const openDesktopDialog = useCallback(async () => {
-    if (platform !== "desktop" || !open) {
-      return;
-    }
-    const { fileName } = await getUniqueFilePath(defaultFilePath);
-    const filePath = await saveFile(fileName);
-    handleClose();
-    if (filePath) {
-      createNewFile(filePath).catch((e) => console.debug(e));
-    }
-  }, [createNewFile, getUniqueFilePath, handleClose, open, platform, saveFile]);
-
-  const initFileName = useCallback(async () => {
-    if (platform === "desktop" || !open || fileName) {
-      return fileName;
-    }
-    const { fileName: _fileName } = await getUniqueFilePath(defaultFilePath);
-    setFileName(_fileName);
-    return _fileName;
-  }, [getUniqueFilePath, open, platform, fileName]);
-
   useEffect(() => {
-    Promise.all([initFileName(), openDesktopDialog()]).then(([fileName]) =>
-      skipFileCreateDialog(fileName)
-    );
-  }, [initFileName, openDesktopDialog, skipFileCreateDialog, open]);
+    init();
+  }, [init]);
 
-  if (platform === "desktop" || typeof skip === "undefined" || skip) {
+  if (typeof skip === "undefined" || skip) {
     return null;
   }
 
@@ -221,7 +264,6 @@ const FileCreateDialog = () => {
       <TextField
         value={fileName}
         onChange={(event) => setFileName(event.target.value)}
-        autoFocus={["ios", "android"].every((p) => p !== platform)}
         margin="normal"
         label={t("File Name")}
         fullWidth
@@ -265,11 +307,11 @@ const FileCreateDialog = () => {
       <FullScreenDialog
         data-testid="file-create-dialog"
         open={open}
-        onClose={handleClose}
+        onClose={onClose}
         TransitionProps={{ onExited: handleExited }}
       >
         <FullScreenDialogTitle
-          onClose={handleClose}
+          onClose={onClose}
           accept={{
             text: t("Create"),
             disabled: !fileName,
@@ -289,13 +331,13 @@ const FileCreateDialog = () => {
       maxWidth="xs"
       fullWidth
       open={open}
-      onClose={handleClose}
+      onClose={onClose}
       TransitionProps={{ onExited: handleExited }}
     >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>{dialogContent}</DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>{t("Cancel")}</Button>
+        <Button onClick={onClose}>{t("Cancel")}</Button>
         <Button
           aria-label="Create file"
           disabled={!fileName}
