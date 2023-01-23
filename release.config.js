@@ -19,6 +19,13 @@ const config = {
   ],
 };
 
+const exec = [
+  "@semantic-release/exec",
+  {
+    publishCmd: "echo ::set-output name=nextVer::${nextRelease.version}",
+  },
+];
+
 if (branch === "main") {
   config.plugins = [
     "@semantic-release/commit-analyzer",
@@ -32,6 +39,7 @@ if (branch === "main") {
       },
     ],
     "@semantic-release/git",
+    exec,
   ];
 }
 
@@ -55,6 +63,7 @@ if (branches.some((name) => branch.startsWith(`${name}/`))) {
         npmPublish: false,
       },
     ],
+    exec,
   ];
 }
 

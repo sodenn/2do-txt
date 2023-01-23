@@ -8,7 +8,7 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.semantic.outputs }}
+      nextVer: ${{ steps.semantic.outputs.nextVer }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: release
     steps:
-      - run: echo ${{ needs.release.outputs.output1 }}
+      - run: echo ${{ needs.release.outputs.nextVer }}
 #  attach-binaries:
 #    name: Attach binaries to GitHub Release
 #    needs: release
