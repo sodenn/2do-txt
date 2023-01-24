@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      - run: corepack enable
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
       - name: Install dependencies (ubuntu only)
