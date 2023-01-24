@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "todo-txt",
+    "productName": "2do-txt",
     "version": "../package.json"
   },
   "tauri": {
