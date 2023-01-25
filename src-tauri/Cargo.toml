@@ -17,7 +17,7 @@ tauri-build = { version = "1.2.1", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.2.2", features = ["clipboard-write-text", "dialog-open", "dialog-save", "fs-create-dir", "fs-read-file", "fs-remove-file", "fs-rename-file", "fs-write-file", "http-request", "notification-all", "path-all"] }
+tauri = { version = "1.2.2", features = ["clipboard-write-text", "devtools", "dialog-open", "dialog-save", "fs-create-dir", "fs-read-file", "fs-remove-file", "fs-rename-file", "fs-write-file", "http-request", "notification-all", "path-all"] }
 keyring = "1"
 aes-gcm = "0.10.1"
 rand = "0.8.5"

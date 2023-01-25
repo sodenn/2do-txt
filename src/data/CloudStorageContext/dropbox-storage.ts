@@ -72,7 +72,7 @@ export async function createClient(): Promise<Dropbox | unknown> {
     if (!authenticationInProgress) {
       await resetTokens();
     }
-    return;
+    throw new CloudFileUnauthorizedError("Dropbox");
   }
 
   const dbx = new Dropbox({

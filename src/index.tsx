@@ -18,6 +18,7 @@ i18n
     },
     load: "languageOnly",
     fallbackLng: "en",
+    supportedLngs: ["en", "de"],
     interpolation: {
       escapeValue: false,
       format: (value, format, lng) => {
