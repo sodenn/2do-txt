@@ -159,5 +159,8 @@
   "Choose action": "Aktion wählen",
   "Files": "Dateien",
   "Files…": "Dateien…",
-  "Copy to clipboard failed": "Kopieren in die Zwischenablage fehlgeschlagen"
+  "Copy to clipboard failed": "Kopieren in die Zwischenablage fehlgeschlagen",
+  "Error": "Fehler",
+  "Error message": "Fehlermeldung",
+  "An error has occurred": "Leider ist ein Problem aufgetreten 🫤"
 }

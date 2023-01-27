@@ -160,5 +160,8 @@
   "Choose action": "Choose action",
   "Files": "Files",
   "Files…": "Files…",
-  "Copy to clipboard failed": "Copy to clipboard failed"
+  "Copy to clipboard failed": "Copy to clipboard failed",
+  "Error": "Fehler",
+  "Error message": "Error message",
+  "An error has occurred": "An error has occurred 🫤"
 }
