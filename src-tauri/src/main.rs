@@ -3,27 +3,16 @@
     windows_subsystem = "windows"
 )]
 
-use tauri::Manager;
-
 use oauth::oauth;
 use secure_storage::{
     get_secure_storage_item, remove_secure_storage_item, set_secure_storage_item,
 };
+use splashscreen::close_splashscreen;
 
 mod encryption;
 mod oauth;
 mod secure_storage;
-
-// This command must be async so that it doesn't run on the main thread.
-#[tauri::command]
-async fn close_splashscreen(window: tauri::Window) {
-    // Close splashscreen
-    if let Some(splashscreen) = window.get_window("splashscreen") {
-        splashscreen.close().unwrap();
-    }
-    // Show main window
-    window.get_window("main").unwrap().show().unwrap();
-}
+mod splashscreen;
 
 fn main() {
     tauri::Builder::default()
@@ -32,7 +21,8 @@ fn main() {
             close_splashscreen,
             get_secure_storage_item,
             set_secure_storage_item,
-            remove_secure_storage_item
+            remove_secure_storage_item,
+            close_splashscreen
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
