@@ -33,6 +33,7 @@ export interface Response {
 
 export async function request(opt: RequestOptions): Promise<Response> {
   const platform = getPlatform();
+  opt.headers = opt.headers || {};
   if (platform === "desktop") {
     return desktopRequest(opt);
   } else {
