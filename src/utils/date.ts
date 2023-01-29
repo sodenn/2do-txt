@@ -1,4 +1,11 @@
-import { format, isEqual, parseISO, startOfDay } from "date-fns";
+import {
+  format,
+  isAfter,
+  isBefore,
+  isEqual,
+  parseISO,
+  startOfDay,
+} from "date-fns";
 
 export function formatLocaleDate(date: Date, locale?: string) {
   return date.toLocaleDateString(locale, {
@@ -49,6 +56,23 @@ export function isDateEqual(date1?: Date | null, date2?: Date | null): boolean {
   }
   if (date1 && date2) {
     return isEqual(date1, date2);
+  }
+  return false;
+}
+
+export function isDateBefore(
+  date1?: Date | null,
+  date2?: Date | null
+): boolean {
+  if (date1 && date2) {
+    return isBefore(date1, date2);
+  }
+  return false;
+}
+
+export function isDateAfter(date1?: Date | null, date2?: Date | null): boolean {
+  if (date1 && date2) {
+    return isAfter(date1, date2);
   }
   return false;
 }

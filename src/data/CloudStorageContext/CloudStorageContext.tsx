@@ -22,7 +22,6 @@ import {
   getCloudFileRefByFilePath,
   getCloudFileRefs,
   getDoneFileMetaData,
-  getFilteredSyncOptions,
   unlinkCloudDoneFile,
   unlinkCloudFile,
 } from "./cloud-storage";
@@ -30,10 +29,12 @@ import {
   CloudDoneFileRef,
   CloudFileRef,
   CloudStorage,
+  WithClient,
 } from "./cloud-storage.types";
 import {
   DeleteFileOptions,
   DownloadFileOptions,
+  ExtendOptions,
   ListCloudFilesOptions,
   SyncFileOptions,
   UploadFileOptions,
@@ -292,8 +293,8 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     async ({ isDoneFile, ...opt }: UploadFileOptions) => {
       const client = getClient(opt.cloudStorage);
       if (isDoneFile) {
-        const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
-        if (!cloudFileRef) {
+        const ref = await getCloudFileRefByFilePath(opt.filePath);
+        if (!ref) {
           throw new Error("Missing cloud file");
         }
         return cloud
@@ -301,7 +302,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
             ...opt,
             isDoneFile,
             client,
-            cloudFilePath: cloudFileRef.path,
+            cloudFilePath: ref.path,
           })
           .catch(handleError);
       } else {
@@ -313,25 +314,66 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     [getClient, handleError]
   );
 
+  const extendOptions = useCallback(
+    async (opt: ExtendOptions) => {
+      const { filePath, isDoneFile } = opt;
+      const cloudFileRef = await getCloudFileRefByFilePath(filePath);
+      const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(filePath);
+      const ref = isDoneFile ? cloudDoneFileRef : cloudFileRef;
+      if (!ref) {
+        throw new Error("No cloud file reference found");
+      }
+      const { cloudStorage } = ref;
+      const client = cloudStorageClients[cloudStorage];
+      if (client.status === "disconnected") {
+        throw new Error(`${cloudStorage} client is disconnected`);
+      }
+      return {
+        ...opt,
+        client: client.instance,
+        cloudFileRef,
+        cloudDoneFileRef,
+      };
+    },
+    [cloudStorageClients]
+  );
+
   const deleteCloudFile = useCallback(
-    (opt: DeleteFileOptions) => {
-      return cloud.deleteFile({ ...opt, cloudStorageClients });
+    async (opt: DeleteFileOptions) => {
+      const optExt = await extendOptions(opt);
+      return cloud.deleteFile(optExt);
+    },
+    [extendOptions]
+  );
+
+  const getFilteredSyncOptions = useCallback(
+    async (optList: SyncFileOptions[]) => {
+      const optFiltered: (SyncFileOptions & WithClient)[] = [];
+      for (const opt of optList) {
+        const ref = opt.isDoneFile
+          ? await getCloudDoneFileRefByFilePath(opt.filePath)
+          : await getCloudFileRefByFilePath(opt.filePath);
+        if (ref) {
+          const client = cloudStorageClients[ref.cloudStorage];
+          if (client.status === "connected") {
+            optFiltered.push({ ...opt, client: client.instance });
+          }
+        }
+      }
+      return optFiltered;
     },
     [cloudStorageClients]
   );
 
   const syncFile = useCallback(
     async (opt: SyncFileOptions) => {
-      const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
-      const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(
-        opt.filePath
-      );
-      if (!cloudFileRef && !cloudDoneFileRef) {
-        return;
-      }
-
       if (!connected) {
         throw new Error("Network connection lost");
+      }
+
+      const syncOptions = await getFilteredSyncOptions([opt]);
+      if (syncOptions.length !== 1) {
+        return;
       }
 
       let snackbar: SnackbarKey | undefined;
@@ -348,10 +390,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       }
 
       return cloud
-        .syncFile({
-          ...opt,
-          cloudStorageClients,
-        })
+        .syncFile(syncOptions[0])
         .catch((error) => {
           console.debug(error);
           handleError(error);
@@ -364,9 +403,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     },
     [
       closeSnackbar,
-      cloudStorageClients,
       connected,
       enqueueSnackbar,
+      getFilteredSyncOptions,
       handleError,
       syncMessage,
     ]
@@ -379,7 +418,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       }
 
       const syncOptions = await getFilteredSyncOptions(opt);
-
       if (syncOptions.length === 0) {
         return [];
       }
@@ -395,15 +433,15 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       });
 
       return cloud
-        .syncAllFiles(syncOptions.map((o) => ({ ...o, cloudStorageClients })))
+        .syncAllFiles(syncOptions)
         .catch(handleError)
         .finally(() => closeSnackbar(snackbar));
     },
     [
       closeSnackbar,
-      cloudStorageClients,
       connected,
       enqueueSnackbar,
+      getFilteredSyncOptions,
       handleError,
       syncMessage,
     ]
@@ -412,18 +450,22 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const syncFileThrottled = useCallback(throttle(syncFile, 5000), [
     closeSnackbar,
-    cloudStorageClients,
     connected,
     enqueueSnackbar,
+    getFilteredSyncOptions,
     handleError,
-    t,
+    syncMessage,
   ]);
 
   const getCloudDoneFileMetaData = useCallback(
-    (filePath: string) => {
-      return getDoneFileMetaData({ filePath, cloudStorageClients });
+    async (filePath: string) => {
+      const { client, cloudFileRef } = await extendOptions({
+        filePath: filePath,
+        isDoneFile: false,
+      });
+      return getDoneFileMetaData({ client, cloudFileRef });
     },
-    [cloudStorageClients]
+    [extendOptions]
   );
 
   const cloudStoragesConnectionStatus = useMemo(

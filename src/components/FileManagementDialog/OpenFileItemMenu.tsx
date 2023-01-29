@@ -84,6 +84,7 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
   const { t } = useTranslation();
   const {
     unlinkCloudFile,
+    unlinkCloudDoneFile,
     cloudStoragesConnectionStatus,
     cloudStorageEnabled,
     uploadFile,
@@ -130,7 +131,10 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
 
         onChange(uploadResult);
       } else {
-        await unlinkCloudFile(filePath);
+        await Promise.all([
+          unlinkCloudFile(filePath),
+          unlinkCloudDoneFile(filePath),
+        ]).catch((e) => void e);
         onChange(undefined);
       }
     } catch (e: any) {

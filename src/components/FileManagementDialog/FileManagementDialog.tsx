@@ -94,8 +94,6 @@ const FileManagementDialog = () => {
         handleCloseDialog();
       }
       closeTodoFile(filePath).then(listFiles);
-      unlinkCloudFile(filePath).catch((e) => void e);
-      unlinkCloudDoneFile(filePath).catch((e) => void e);
     };
 
     if (deleteFile) {

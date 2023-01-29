@@ -43,7 +43,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
   const { archiveMode, setArchiveMode } = useSettings();
   const {
     syncAllFiles,
-    syncFileThrottled,
+    syncFile,
     unlinkCloudDoneFile,
     linkCloudDoneFile,
     deleteCloudFile,
@@ -192,7 +192,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         encoding: Encoding.UTF8,
       });
 
-      syncFileThrottled({
+      syncFile({
         filePath,
         text,
         showSnackbar: false,
@@ -207,7 +207,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         }
       });
     },
-    [syncFileThrottled, writeFile]
+    [syncFile, writeFile]
   );
 
   const loadDoneFile = useCallback(

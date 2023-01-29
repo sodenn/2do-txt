@@ -29,3 +29,8 @@ export interface UploadFileOptions {
   cloudStorage: CloudStorage;
   isDoneFile: boolean;
 }
+
+export interface ExtendOptions {
+  filePath: string;
+  isDoneFile: boolean;
+}

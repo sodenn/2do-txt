@@ -1,3 +1,4 @@
+import { isDateAfter, isDateBefore, isDateEqual } from "../../utils/date";
 import { getSecureStorage } from "../../utils/secure-storage";
 import {
   CloudFileNotFoundError,
@@ -175,21 +176,27 @@ export async function syncFile(
     };
   }
 
-  const localContentHash = generateContentHash(localContent);
+  const sameContent =
+    generateContentHash(localContent) === localVersion.contentHash;
+  const localLastModified = parseDate(localVersion.rev);
+  const serverLastModified = parseDate(serverVersion.rev);
+  const sameDate = isDateEqual(localLastModified, serverLastModified);
+  const localDateBeforeServerDate = isDateBefore(
+    localLastModified,
+    serverLastModified
+  );
+  const localDateAfterServerDate = isDateAfter(
+    localLastModified,
+    serverLastModified
+  );
 
   // no action needed
-  if (
-    localVersion.rev === serverVersion.rev &&
-    localContentHash === serverVersion.contentHash
-  ) {
+  if (sameDate && sameContent) {
     return;
   }
 
-  // update server file
-  if (
-    localVersion.rev === serverVersion.rev &&
-    localContentHash !== serverVersion.contentHash
-  ) {
+  // use local file and update server file
+  if ((sameDate && !sameContent) || localDateAfterServerDate) {
     const cloudFile = await uploadFile({
       filePath: localVersion.path,
       text: localContent,
@@ -202,7 +209,7 @@ export async function syncFile(
   }
 
   // use server file
-  if (localVersion.rev !== serverVersion.rev) {
+  if (localDateBeforeServerDate) {
     const content = await downloadFile({
       filePath: serverVersion.path,
       client,
@@ -223,4 +230,8 @@ async function handleError(error: any): Promise<never> {
     throw new CloudFileNotFoundError();
   }
   throw error;
+}
+
+function parseDate(str: string) {
+  return str ? new Date(str) : undefined;
 }

@@ -12,6 +12,7 @@ import { useBecomeActive } from "../utils/app-state";
 import { createContext } from "../utils/Context";
 import { parseDate, todayDate } from "../utils/date";
 import {
+  getDoneFilePath,
   getFilenameFromPath,
   getFileNameWithoutEnding,
   getFilesystem,
@@ -72,6 +73,7 @@ const [TaskProvider, useTask] = createContext(() => {
     syncAllFiles,
     syncFileThrottled,
     unlinkCloudFile,
+    unlinkCloudDoneFile,
     cloudStorageEnabled,
   } = useCloudStorage();
   const {
@@ -403,7 +405,13 @@ const [TaskProvider, useTask] = createContext(() => {
     async (filePath: string) => {
       await deleteFile({
         path: filePath,
-      }).catch(() => console.debug("File does not exist"));
+      }).catch(() => console.debug(`${filePath} does not exist`));
+      const doneFilePath = getDoneFilePath(filePath);
+      if (doneFilePath) {
+        await deleteFile({
+          path: doneFilePath,
+        }).catch(() => console.debug(`${doneFilePath} does not exist`));
+      }
     },
     [deleteFile]
   );
@@ -411,24 +419,21 @@ const [TaskProvider, useTask] = createContext(() => {
   const closeTodoFile = useCallback(
     async (filePath: string) => {
       const taskList = taskLists.find((list) => list.filePath === filePath);
-      if (!taskList) {
-        return;
-      }
+      taskList?.items.forEach((task) =>
+        cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] })
+      );
+
+      await removeTodoFilePath(filePath);
 
       if (platform === "web" || platform === "ios" || platform === "android") {
-        // Delete IndexedDB (web) / remove file from the app's document directory (ios, android)
-        await deleteTodoFile(taskList.filePath);
+        // delete IndexedDB (web) OR remove file from the app's document directory (ios, android)
+        await deleteTodoFile(filePath);
       }
 
       if (cloudStorageEnabled) {
         unlinkCloudFile(filePath).catch((e) => void e);
+        unlinkCloudDoneFile(filePath).catch((e) => void e);
       }
-
-      taskList.items.forEach((task) =>
-        cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] })
-      );
-
-      await removeTodoFilePath(taskList.filePath);
 
       if (filePath === activeTaskListPath) {
         if (taskLists.length === 2) {
@@ -448,15 +453,16 @@ const [TaskProvider, useTask] = createContext(() => {
       setTaskLists((state) => state.filter((l) => l !== taskList));
     },
     [
+      taskLists,
+      removeTodoFilePath,
+      platform,
+      cloudStorageEnabled,
       activeTaskListPath,
       cancelNotifications,
-      cloudStorageEnabled,
       deleteTodoFile,
-      platform,
       unlinkCloudFile,
-      removeTodoFilePath,
+      unlinkCloudDoneFile,
       setActiveTaskListPath,
-      taskLists,
     ]
   );
 
@@ -652,42 +658,40 @@ const [TaskProvider, useTask] = createContext(() => {
     });
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
-  const becomeActiveListener = useCallback(async () => {
-    const { files, errors } = await _loadTodoFiles();
-    setTaskLists(files.map((f) => f.taskList));
-    for (const error of errors) {
-      enqueueSnackbar(t("File not found", { filePath: error.filePath }), {
+  const handleFileNotFound = useCallback(
+    async (filePath: string) => {
+      enqueueSnackbar(t("File not found", { filePath }), {
         variant: "error",
       });
-      await removeTodoFilePath(error.filePath);
-    }
+      await closeTodoFile(filePath);
+    },
+    [enqueueSnackbar, closeTodoFile, t]
+  );
 
+  const becomeActiveListener = useCallback(async () => {
+    // load files from disk
+    const { files, errors } = await _loadTodoFiles();
+    // apply external file changes by updating the state
+    setTaskLists(files.map((f) => f.taskList));
+    // notify the user if a file cannot be found
+    for (const error of errors) {
+      await handleFileNotFound(error.filePath);
+    }
+    // sync files with cloud storage
     const refs = await getCloudFileRefs();
     const outdated = refs.every((r) => {
       const date = parseDate(r.lastSync);
       return date && differenceInMinutes(new Date(), date) >= 2;
     });
-    if (!outdated) {
-      return;
+    if (outdated) {
+      syncAllTodoFilesWithCloudStorage(files);
     }
-    syncAllTodoFilesWithCloudStorage(files);
-  }, [
-    getCloudFileRefs,
-    syncAllTodoFilesWithCloudStorage,
-    enqueueSnackbar,
-    removeTodoFilePath,
-    t,
-  ]);
+  }, [getCloudFileRefs, handleFileNotFound, syncAllTodoFilesWithCloudStorage]);
 
   useBecomeActive(becomeActiveListener);
 
   useEffect(() => {
-    data.todoFiles.errors.forEach((err) => {
-      enqueueSnackbar(t("File not found", { filePath: err.filePath }), {
-        variant: "error",
-      });
-      removeTodoFilePath(err.filePath);
-    });
+    data.todoFiles.errors.forEach((err) => handleFileNotFound(err.filePath));
     syncAllTodoFilesWithCloudStorage(data.todoFiles.files).catch((e) => void e);
     if (shouldNotificationsBeRescheduled()) {
       taskLists.forEach((taskList) =>
