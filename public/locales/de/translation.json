@@ -106,7 +106,6 @@
   "Completed tasks are archived in a second file called done.txt": "Erledigte Aufgaben werden in einer zweite Datei mit dem Namen <strong>done.txt</strong> archiviert.",
   "Task archived": "Aufgabe archiviert in {{fileName}}",
   "Archived tasks": "Archivierte Aufgaben",
-  "Undo": "Rückgängig machen",
   "Restore task": "Aufgabe wiederherstellen",
   "Task restored": "Aufgabe wiederherstellt",
   "No archiving": "Keine archivierung",

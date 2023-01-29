@@ -266,14 +266,13 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         })),
       };
 
-      const doneFileText = stringifyTaskList(completedTasks, lineEnding);
-
       if (completedTasks.length === 0) {
         await deleteFile({
           path: doneFilePath,
         });
         deleteCloudFile({ filePath, isDoneFile: true }).catch((e) => void e);
       } else {
+        const doneFileText = stringifyTaskList(completedTasks, lineEnding);
         await saveDoneFile(filePath, doneFileText);
       }
 
@@ -315,29 +314,18 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         {
           variant: "success",
           action: (
-            <>
-              <Button
-                color="inherit"
-                onClick={() => {
-                  setArchivedTasksDialog({
-                    open: true,
-                    filePath,
-                  });
-                  closeSnackbar(key);
-                }}
-              >
-                {t("Archived tasks")}
-              </Button>
-              <Button
-                color="inherit"
-                onClick={() => {
-                  restoreTask(opt);
-                  closeSnackbar(key);
-                }}
-              >
-                {t("Undo")}
-              </Button>
-            </>
+            <Button
+              color="inherit"
+              onClick={() => {
+                setArchivedTasksDialog({
+                  open: true,
+                  filePath,
+                });
+                closeSnackbar(key);
+              }}
+            >
+              {t("Archived tasks")}
+            </Button>
           ),
         }
       );
@@ -347,7 +335,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       enqueueSnackbar,
       getCloudFileRefByFilePath,
       loadDoneFile,
-      restoreTask,
       saveDoneFile,
       setArchivedTasksDialog,
       uploadFile,
