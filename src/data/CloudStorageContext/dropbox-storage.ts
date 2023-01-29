@@ -1,4 +1,10 @@
 import { Dropbox, DropboxAuth } from "dropbox";
+import {
+  isDateAfter,
+  isDateBefore,
+  isDateEqual,
+  parseDate,
+} from "../../utils/date";
 import { oauth } from "../../utils/oath";
 import { getPlatform } from "../../utils/platform";
 import {
@@ -102,7 +108,6 @@ export async function createClient(): Promise<Dropbox | unknown> {
 }
 
 export async function requestAccessToken(code: string): Promise<void> {
-  const { getSecureStorageItem, removeSecureStorageItem } = getSecureStorage();
   const codeVerifier = await getPreferencesItem("Dropbox-code-verifier");
   await removePreferencesItem("Dropbox-code-verifier");
 
@@ -181,7 +186,7 @@ export async function listFiles(
           return {
             name: e.name,
             path: e.path_lower as string,
-            rev: e.rev,
+            rev: e.server_modified,
             type: "file",
           };
         } else {
@@ -213,7 +218,7 @@ export async function getFileMetaData(
   return {
     name: item.name,
     path: item.path_lower,
-    rev: item.rev,
+    rev: item.server_modified,
     type: "file",
   };
 }
@@ -247,7 +252,7 @@ export async function uploadFile(
   const { filePath, text, client } = opt;
   const dropboxPath = filePath.startsWith("/") ? filePath : `/${filePath}`;
   const {
-    result: { name, path_lower, rev },
+    result: { name, path_lower, server_modified },
   } = await client
     .filesUpload({
       path: dropboxPath,
@@ -258,7 +263,7 @@ export async function uploadFile(
   return {
     name,
     path: path_lower!,
-    rev: rev,
+    rev: server_modified,
     type: "file",
   };
 }
@@ -295,20 +300,31 @@ export async function syncFile(
     };
   }
 
-  const localContentHash = generateContentHash(localContent);
+  const localLastModified = parseDate(localVersion.rev);
+  const serverLastModified = parseDate(serverVersion.rev);
+  const sameDate = isDateEqual(localLastModified, serverLastModified);
+  const localDateBeforeServerDate = isDateBefore(
+    localLastModified,
+    serverLastModified
+  );
+  const localDateAfterServerDate = isDateAfter(
+    localLastModified,
+    serverLastModified
+  );
+  const sameContent =
+    generateContentHash(localContent) === localVersion.contentHash;
 
   // no action needed
-  if (
-    localVersion.rev === serverVersion.rev &&
-    localContentHash === serverVersion.contentHash
-  ) {
+  if (localVersion.rev === serverVersion.rev && sameContent) {
     return;
   }
 
-  // update server file
+  // use local file and update server file
   if (
-    localVersion.rev === serverVersion.rev &&
-    localContentHash !== serverVersion.contentHash
+    (sameDate && !sameContent) ||
+    // 👇🏽in case there is no date in localVersion.rev prop, this condition will be removed after a while
+    (!localLastModified && !sameContent) ||
+    localDateAfterServerDate
   ) {
     const cloudFile = await uploadFile({
       filePath: localVersion.path,
@@ -322,7 +338,7 @@ export async function syncFile(
   }
 
   // use server file
-  if (localVersion.rev !== serverVersion.rev) {
+  if (localDateBeforeServerDate || !localLastModified) {
     const content = await downloadFile({
       filePath: serverVersion.path,
       client,

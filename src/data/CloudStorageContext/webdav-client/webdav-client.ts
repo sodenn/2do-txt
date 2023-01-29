@@ -1,11 +1,11 @@
 import { RequestContext } from "../../../utils/request";
 import { deleteFile } from "./delete-file";
 import { getDirectoryContents } from "./directory-contents";
-import { getFileContents } from "./get-file-contents";
+import { getFileContents } from "./file-contents";
 import { putFileContents } from "./put-file-contents";
-import { BufferLike } from "./types";
+import { BufferLike, WebDAVClient } from "./types";
 
-export function createWebDAVClient(opt: RequestContext) {
+export function createWebDAVClient(opt: RequestContext): WebDAVClient {
   return {
     getDirectoryContents: (path: string) => getDirectoryContents(opt, path),
     getFileContents: (filename: string, format: "binary" | "text") =>

@@ -6,16 +6,13 @@ import {
 } from "../../../utils/request";
 import { encodePath } from "./path";
 import { handleResponseCode } from "./response";
-import { BufferLike, ResponseDataDetailed } from "./types";
+import { BufferLike } from "./types";
 
 export async function getFileContents(
   context: RequestContext,
   filePath: string,
   format: "binary" | "text" = "binary"
-): Promise<BufferLike | string | ResponseDataDetailed<BufferLike | string>> {
-  if (format !== "binary" && format !== "text") {
-    throw new Error(`Invalid output format: ${format}`);
-  }
+): Promise<BufferLike | string> {
   return format === "text"
     ? getFileContentsString(context, filePath)
     : getFileContentsBuffer(context, filePath);
@@ -24,7 +21,7 @@ export async function getFileContents(
 async function getFileContentsBuffer(
   context: RequestContext,
   filePath: string
-): Promise<BufferLike | ResponseDataDetailed<BufferLike>> {
+): Promise<BufferLike> {
   const opt: RequestOptions = {
     responseType: "binary",
     path: joinURL(encodePath(filePath)),
@@ -39,7 +36,7 @@ async function getFileContentsBuffer(
 async function getFileContentsString(
   context: RequestContext,
   filePath: string
-): Promise<string | ResponseDataDetailed<string>> {
+): Promise<string> {
   const opt: RequestOptions = {
     responseType: "text",
     path: joinURL(encodePath(filePath)),

@@ -273,7 +273,7 @@ export async function downloadFile(opt: DownloadFileOptions) {
 
 export async function uploadFile(
   opt: UploadFileOptions
-): Promise<CloudFileRef> {
+): Promise<CloudFileRef | CloudDoneFileRef> {
   const { filePath, text, cloudStorage, isDoneFile, client } = opt;
   const contentHash = generateContentHash(text);
   if (isDoneFile) {
@@ -287,11 +287,10 @@ export async function uploadFile(
       text,
       client,
     });
-    const cloudDoneFileRef = {
+    const cloudDoneFileRef: CloudDoneFileRef = {
       ...doneFile,
       contentHash,
       localFilePath: filePath,
-      lastSync: new Date().toISOString(),
       cloudStorage,
     };
     await linkDoneFile(cloudDoneFileRef);
@@ -302,7 +301,7 @@ export async function uploadFile(
       text,
       client,
     });
-    const cloudFileRef = {
+    const cloudFileRef: CloudFileRef = {
       ...cloudFile,
       contentHash,
       localFilePath: filePath,

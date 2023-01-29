@@ -129,7 +129,7 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
           }
         }
 
-        onChange(uploadResult);
+        onChange(uploadResult as CloudFileRef);
       } else {
         await Promise.all([
           unlinkCloudFile(filePath),

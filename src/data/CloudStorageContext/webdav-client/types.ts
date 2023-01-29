@@ -64,23 +64,13 @@ export interface Headers {
   [key: string]: string;
 }
 
-export interface ResponseDataDetailed<T> {
-  data: T;
-  headers: Headers;
-  status: number;
-  statusText: string;
-}
-
 export interface WebDAVClient {
   deleteFile: (filename: string) => Promise<void>;
-  // exists: (path: string) => Promise<boolean>;
-  getDirectoryContents: (
-    path: string
-  ) => Promise<Array<FileStat> | ResponseDataDetailed<Array<FileStat>>>;
+  getDirectoryContents: (path: string) => Promise<Array<FileStat>>;
   getFileContents: (
     filename: string,
     format: "binary" | "text"
-  ) => Promise<BufferLike | string | ResponseDataDetailed<BufferLike | string>>;
+  ) => Promise<BufferLike | string>;
   putFileContents: (
     filename: string,
     data: string | BufferLike | any

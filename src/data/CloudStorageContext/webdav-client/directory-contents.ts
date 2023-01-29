@@ -7,13 +7,13 @@ import {
 import { parseXML, prepareFileFromProps } from "./dav";
 import { encodePath, normalisePath, relative } from "./path";
 import { handleResponseCode } from "./response";
-import { DAVResult, FileStat, ResponseDataDetailed } from "./types";
+import { DAVResult, FileStat } from "./types";
 import { extractURLPath, normaliseHREF } from "./url";
 
 export async function getDirectoryContents(
   context: RequestContext,
   path: string
-): Promise<Array<FileStat> | ResponseDataDetailed<Array<FileStat>>> {
+): Promise<Array<FileStat>> {
   const requestOptions: RequestOptions = {
     path: joinURL(encodePath(path), "/"),
     method: "PROPFIND",
