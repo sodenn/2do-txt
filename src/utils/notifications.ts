@@ -10,7 +10,7 @@ import { dateReviver } from "./date";
 import { getPlatform } from "./platform";
 import { getPreferencesItem, setPreferencesItem } from "./preferences";
 
-interface ReceivedNotifications {
+interface ScheduledNotifications {
   id: number;
   receivingDate: Date;
 }
@@ -23,46 +23,37 @@ export function useNotifications() {
     return platform === "web" || platform === "desktop";
   }, [platform]);
 
-  const getReceivedNotifications = useCallback(async () => {
+  const getScheduledNotifications = useCallback(async () => {
     const value = await getPreferencesItem("received-notifications");
-
-    const receivedNotifications: ReceivedNotifications[] = value
+    const scheduledNotifications: ScheduledNotifications[] = value
       ? JSON.parse(value, dateReviver)
       : [];
-
-    return receivedNotifications;
+    return scheduledNotifications;
   }, []);
 
   useEffect(() => {
     if (!shouldNotificationsBeRescheduled()) {
       return;
     }
-
-    // save identifiers of received messages
+    // save identifiers of scheduled messages
     LocalNotifications.addListener(
       "localNotificationReceived",
       async (notification: LocalNotificationSchema) => {
-        const receivedNotifications = await getReceivedNotifications();
-
-        const newValue: ReceivedNotifications[] = [
-          ...receivedNotifications,
+        const scheduledNotifications = await getScheduledNotifications();
+        const newValue: ScheduledNotifications[] = [
+          ...scheduledNotifications,
           { id: notification.id, receivingDate: new Date() },
         ];
-
         setPreferencesItem("received-notifications", JSON.stringify(newValue));
       }
     );
-
     // cleanup: delete received message identifiers that are older than 48 hours
     const interval = setInterval(async () => {
-      const receivedNotifications = await getReceivedNotifications();
-
+      const scheduledNotifications = await getScheduledNotifications();
       const twoDaysAgo = subDays(new Date(), 2);
-
-      const newValue = receivedNotifications.filter((item) =>
-        isAfter(item.receivingDate, twoDaysAgo)
+      const newValue = scheduledNotifications.filter((n) =>
+        isAfter(n.receivingDate, twoDaysAgo)
       );
-
       setPreferencesItem("received-notifications", JSON.stringify(newValue));
     }, 1000 * 60);
 
@@ -70,24 +61,28 @@ export function useNotifications() {
       clearInterval(interval);
       LocalNotifications.removeAllListeners();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getScheduledNotifications, shouldNotificationsBeRescheduled]);
 
   const scheduleNotifications = useCallback(
     async (options: ScheduleOptions) => {
       const permissionStatus = await LocalNotifications.checkPermissions();
-      const receivedNotifications = await getReceivedNotifications();
-      const notificationAlreadyReceived = receivedNotifications.some((r) =>
-        options.notifications.some((n) => n.id === r.id)
-      );
-      if (
-        permissionStatus.display === "granted" &&
-        (!shouldNotificationsBeRescheduled() || !notificationAlreadyReceived)
-      ) {
-        return LocalNotifications.schedule(options);
+      if (permissionStatus.display !== "granted") {
+        return;
       }
+
+      if (shouldNotificationsBeRescheduled()) {
+        const scheduledNotifications = await getScheduledNotifications();
+        const filteredNotifications = options.notifications.filter((n) =>
+          scheduledNotifications.every((sn) => sn.id !== n.id)
+        );
+        return LocalNotifications.schedule({
+          notifications: filteredNotifications,
+        });
+      }
+
+      return LocalNotifications.schedule(options);
     },
-    [getReceivedNotifications, shouldNotificationsBeRescheduled]
+    [getScheduledNotifications, shouldNotificationsBeRescheduled]
   );
 
   const checkNotificationPermissions = useCallback(
@@ -110,18 +105,18 @@ export function useNotifications() {
         return;
       }
 
-      const oldReceivedNotifications = await getReceivedNotifications();
+      const scheduledNotifications = await getScheduledNotifications();
 
-      const newReceivedNotifications = oldReceivedNotifications.filter((item) =>
+      const newScheduledNotifications = scheduledNotifications.filter((item) =>
         options.notifications.every((n) => n.id !== item.id)
       );
 
       setPreferencesItem(
         "received-notifications",
-        JSON.stringify(newReceivedNotifications)
+        JSON.stringify(newScheduledNotifications)
       );
     },
-    [getReceivedNotifications, shouldNotificationsBeRescheduled]
+    [getScheduledNotifications, shouldNotificationsBeRescheduled]
   );
 
   return {
