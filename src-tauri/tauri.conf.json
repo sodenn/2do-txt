@@ -44,7 +44,7 @@
     "bundle": {
       "active": true,
       "category": "Productivity",
-      "copyright": "© 2022 Dennis Soehnen",
+      "copyright": "© 2023 Dennis Soehnen",
       "deb": {
         "depends": []
       },

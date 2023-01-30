@@ -1748,6 +1748,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "minisign-verify"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "933dca44d65cdd53b355d0b73d380a2ff5da71f87f036053188bf1eab6a19881"
+
+[[package]]
 name = "miniz_oxide"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3152,6 +3158,7 @@ source = "git+https://github.com/tauri-apps/tauri?rev=6ed2b04#6ed2b04872a1140e97
 dependencies = [
  "anyhow",
  "attohttpc",
+ "base64 0.13.1",
  "cocoa",
  "dirs-next",
  "embed_plist",
@@ -3164,6 +3171,7 @@ dependencies = [
  "heck 0.4.0",
  "http",
  "ignore",
+ "minisign-verify",
  "notify-rust",
  "objc",
  "once_cell",
@@ -3184,12 +3192,14 @@ dependencies = [
  "tauri-utils 1.2.1 (git+https://github.com/tauri-apps/tauri?rev=6ed2b04)",
  "tempfile",
  "thiserror",
+ "time",
  "tokio",
  "url",
  "uuid 1.2.2",
  "webkit2gtk",
  "webview2-com",
  "windows 0.39.0",
+ "zip",
 ]
 
 [[package]]
@@ -4187,6 +4197,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "zip"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "537ce7411d25e54e8ae21a7ce0b15840e7bfcff15b51d697ec3266cc76bdf080"
+dependencies = [
+ "byteorder",
+ "crc32fast",
+ "crossbeam-utils",
 ]
 
 [[package]]
