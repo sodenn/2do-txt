@@ -68,6 +68,22 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const syncMessage = t("Sync with cloud storage", {
     cloudStorage: t("cloud storage"),
   });
+  const cloudStoragesConnectionStatus = useMemo(
+    () =>
+      Object.values(cloudStorageClients).reduce((prev, curr) => {
+        prev[curr.cloudStorage] = curr.status === "connected";
+        return prev;
+      }, {} as Record<CloudStorage, boolean>),
+    [cloudStorageClients]
+  );
+
+  const connectedCloudStorages = useMemo(
+    () =>
+      Object.entries(cloudStoragesConnectionStatus)
+        .filter(([_, connected]) => connected)
+        .map(([cloudStorage]) => cloudStorage as CloudStorage),
+    [cloudStoragesConnectionStatus]
+  );
 
   const openStorageConnectedAlert = useCallback(
     (cloudStorage: CloudStorage) => {
@@ -76,92 +92,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       });
     },
     [enqueueSnackbar, t]
-  );
-
-  const openSessionExpiredAlert = useCallback(
-    (cloudStorage: CloudStorage) => {
-      const handleLogin = async (key: SnackbarKey) => {
-        closeSnackbar(key);
-        await cloud.authenticate(cloudStorage);
-        setAuthError(false);
-      };
-      // Don't annoy the user, so only show the message once
-      if (!authError) {
-        enqueueSnackbar(
-          t("Session has expired. Please login again", { cloudStorage }),
-          {
-            variant: "warning",
-            action: (key) => (
-              <>
-                <Button color="inherit" onClick={() => closeSnackbar(key)}>
-                  {t("Close")}
-                </Button>
-                <Button color="inherit" onClick={() => handleLogin(key)}>
-                  {t("Login")}
-                </Button>
-              </>
-            ),
-          }
-        );
-        setAuthError(true);
-      }
-    },
-    [authError, closeSnackbar, enqueueSnackbar, t]
-  );
-
-  const openConnectionErrorAlert = useCallback(
-    (error: any) => {
-      // Don't annoy the user, so only show the message once
-      if (!connectionError) {
-        enqueueSnackbar(
-          <Trans
-            i18nKey="Error connecting with cloud storage"
-            values={{
-              cloudStorage: t("cloud storage"),
-              message: error.message,
-            }}
-            components={{ code: <code style={{ marginLeft: 5 }} /> }}
-          />,
-          { variant: "warning" }
-        );
-        setConnectionError(true);
-      }
-    },
-    [connectionError, enqueueSnackbar, t]
-  );
-
-  const handleError = useCallback(
-    (error: any) => {
-      if (error instanceof CloudFileUnauthorizedError) {
-        const cloudStorage = error.cloudStorage;
-        setCloudStorageClients((current) => ({
-          ...current,
-          [cloudStorage]: { cloudStorage, status: "disconnected" },
-        }));
-        openSessionExpiredAlert(cloudStorage);
-      } else {
-        openConnectionErrorAlert(error);
-      }
-      throw error;
-    },
-    [openConnectionErrorAlert, openSessionExpiredAlert]
-  );
-
-  const getClient = useCallback(
-    (cloudStorage: CloudStorage) => {
-      if (!connected) {
-        throw new Error("Network connection lost");
-      }
-      const client = cloudStorageClients[cloudStorage];
-      if (client.status === "disconnected") {
-        openSessionExpiredAlert(cloudStorage);
-      } else if (client.instance) {
-        return client.instance;
-      } else {
-        throw new Error("Client not initialized");
-      }
-    },
-    [cloudStorageClients, connected, openSessionExpiredAlert]
   );
 
   const createClient = useCallback(async (cloudStorage: CloudStorage) => {
@@ -211,6 +141,93 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       }
     },
     [oauth2Authenticate, webDAVAuthenticate]
+  );
+
+  const openSessionExpiredAlert = useCallback(
+    (cloudStorage: CloudStorage) => {
+      const handleLogin = async (key: SnackbarKey) => {
+        closeSnackbar(key);
+        await authenticate(cloudStorage);
+        setAuthError(false);
+      };
+      // Don't annoy the user, so only show the message once
+      if (!authError) {
+        enqueueSnackbar(
+          t("Session has expired. Please login again", { cloudStorage }),
+          {
+            variant: "warning",
+            action: (key) => (
+              <>
+                <Button color="inherit" onClick={() => closeSnackbar(key)}>
+                  {t("Close")}
+                </Button>
+                <Button color="inherit" onClick={() => handleLogin(key)}>
+                  {t("Login")}
+                </Button>
+              </>
+            ),
+          }
+        );
+        setAuthError(true);
+      }
+    },
+    [authError, authenticate, closeSnackbar, enqueueSnackbar, t]
+  );
+
+  const openConnectionErrorAlert = useCallback(
+    (error: any) => {
+      // Don't annoy the user, so only show the message once
+      if (!connectionError) {
+        enqueueSnackbar(
+          <Trans
+            i18nKey="Error connecting with cloud storage"
+            values={{
+              cloudStorage: t("cloud storage"),
+              message: error.message,
+            }}
+            components={{ code: <code style={{ marginLeft: 5 }} /> }}
+          />,
+          { variant: "warning" }
+        );
+        setConnectionError(true);
+      }
+    },
+    [connectionError, enqueueSnackbar, t]
+  );
+
+  const handleError = useCallback(
+    (error: any) => {
+      if (error instanceof CloudFileUnauthorizedError) {
+        const cloudStorage = error.cloudStorage;
+        setCloudStorageClients((current) => ({
+          ...current,
+          [cloudStorage]: { cloudStorage, status: "disconnected" },
+        }));
+        openSessionExpiredAlert(cloudStorage);
+      } else {
+        openConnectionErrorAlert(error);
+      }
+      throw error;
+    },
+    [openConnectionErrorAlert, openSessionExpiredAlert]
+  );
+
+  const getClient = useCallback(
+    (cloudStorage: CloudStorage) => {
+      if (!connected) {
+        throw new Error("Network connection lost");
+      }
+      const client = cloudStorageClients[cloudStorage];
+      if (client.status === "disconnected") {
+        openSessionExpiredAlert(cloudStorage);
+        throw new Error(`${cloudStorage} client is disconnected`);
+      } else if (client.instance) {
+        return client.instance;
+      } else {
+        throw new Error("Client not initialized");
+      }
+    },
+    [cloudStorageClients, connected, openSessionExpiredAlert]
   );
 
   const linkCloudFile = useCallback(
@@ -324,18 +341,15 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         throw new Error("No cloud file reference found");
       }
       const { cloudStorage } = ref;
-      const client = cloudStorageClients[cloudStorage];
-      if (client.status === "disconnected") {
-        throw new Error(`${cloudStorage} client is disconnected`);
-      }
+      const client = getClient(cloudStorage);
       return {
         ...opt,
-        client: client.instance,
+        client,
         cloudFileRef,
         cloudDoneFileRef,
       };
     },
-    [cloudStorageClients]
+    [getClient]
   );
 
   const deleteCloudFile = useCallback(
@@ -354,15 +368,13 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
           ? await getCloudDoneFileRefByFilePath(opt.filePath)
           : await getCloudFileRefByFilePath(opt.filePath);
         if (ref) {
-          const client = cloudStorageClients[ref.cloudStorage];
-          if (client.status === "connected") {
-            optFiltered.push({ ...opt, client: client.instance });
-          }
+          const client = getClient(ref.cloudStorage);
+          optFiltered.push({ ...opt, client });
         }
       }
       return optFiltered;
     },
-    [cloudStorageClients]
+    [getClient]
   );
 
   const syncFile = useCallback(
@@ -466,23 +478,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       return getDoneFileMetaData({ client, cloudFileRef });
     },
     [extendOptions]
-  );
-
-  const cloudStoragesConnectionStatus = useMemo(
-    () =>
-      Object.values(cloudStorageClients).reduce((prev, curr) => {
-        prev[curr.cloudStorage] = curr.status === "connected";
-        return prev;
-      }, {} as Record<CloudStorage, boolean>),
-    [cloudStorageClients]
-  );
-
-  const connectedCloudStorages = useMemo(
-    () =>
-      Object.entries(cloudStoragesConnectionStatus)
-        .filter(([_, connected]) => connected)
-        .map(([cloudStorage]) => cloudStorage as CloudStorage),
-    [cloudStoragesConnectionStatus]
   );
 
   useEffect(() => {

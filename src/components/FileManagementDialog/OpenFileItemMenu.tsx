@@ -1,4 +1,5 @@
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -176,7 +177,8 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
     <MenuItem onClick={enableCloudSync} disabled={loading}>
       <ListItemIcon>
         {loading && <CircularProgress size={24} />}
-        {!loading && cloudStorageIcons[cloudStorage]}
+        {!loading && !cloudFileRef && cloudStorageIcons[cloudStorage]}
+        {!loading && cloudFileRef && <CloudOffRoundedIcon />}
       </ListItemIcon>
       <Typography>{buttonText}</Typography>
     </MenuItem>
