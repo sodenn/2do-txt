@@ -39,7 +39,9 @@ jobs:
             return data.id
   attach-binaries:
     name: Attach binaries to GitHub Release
-    needs: release-info
+    needs:
+      - release
+      - release-info
     strategy:
       fail-fast: false
       matrix:
@@ -61,7 +63,7 @@ jobs:
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
       - name: Install dependencies
         run: yarn install
-      - uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ENABLE_CODE_SIGNING: ${{ secrets.APPLE_CERTIFICATE }}
@@ -70,5 +72,8 @@ jobs:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
         with:
           releaseId: ${{ needs.release-info.outputs.release_id }}
+          tagName: ${{ needs.release.outputs.gitTag }}

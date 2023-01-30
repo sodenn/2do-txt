@@ -78,7 +78,12 @@
       "csp": ""
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://github.com/sodenn/2do-txt/releases/latest/download/latest.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFENjM2Mzc1NzI3NjIzMEUKUldRT0kzWnlkV05qcmN4NTBtd1haV1BnaktQV1EzWGY1czR3YnZtMnFDb2xLR1ZXc2pzeVM3UE8K"
     },
     "windows": [
       {
