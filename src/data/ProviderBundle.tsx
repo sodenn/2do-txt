@@ -16,7 +16,7 @@ import { FileManagementDialogProvider } from "./FileManagementDialogContext";
 import { FilePickerProvider } from "./FilePickerContext";
 import { FilterProvider } from "./FilterContext";
 import { NetworkProvider } from "./NetworkContext";
-import { NotificationProvider } from "./NotificationsContext";
+import { NotificationProvider } from "./NotificationContext";
 import { SettingsProvider } from "./SettingsContext";
 import { ShortcutsDialogProvider } from "./ShortcutsDialogContext";
 import { SideSheetProvider } from "./SideSheetContext";

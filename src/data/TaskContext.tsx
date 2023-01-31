@@ -41,7 +41,7 @@ import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
 import { LoaderData, loadTodoFiles as _loadTodoFiles } from "./loader";
-import { useNotifications } from "./NotificationsContext";
+import { useNotifications } from "./NotificationContext";
 import { useSettings } from "./SettingsContext";
 
 interface SyncItem {

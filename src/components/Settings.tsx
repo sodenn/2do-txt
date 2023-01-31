@@ -1,7 +1,7 @@
 import { Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
-import { useNotifications } from "../data/NotificationsContext";
+import { useNotifications } from "../data/NotificationContext";
 import { useSettings } from "../data/SettingsContext";
 import { useSideSheet } from "../data/SideSheetContext";
 import ArchiveModeSelect from "./ArchiveModeSelect";
