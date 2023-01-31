@@ -1,9 +1,9 @@
 import { Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
+import { useNotifications } from "../data/NotificationsContext";
 import { useSettings } from "../data/SettingsContext";
 import { useSideSheet } from "../data/SideSheetContext";
-import { useNotifications } from "../utils/notifications";
 import ArchiveModeSelect from "./ArchiveModeSelect";
 import ArchiveNowButton from "./ArchiveNowButton";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
@@ -17,7 +17,7 @@ const Settings = () => {
   const { t } = useTranslation();
   const { cloudStorageEnabled } = useCloudStorage();
   const { setSideSheetOpen } = useSideSheet();
-  const { checkNotificationPermissions, requestNotificationPermissions } =
+  const { isNotificationPermissionGranted, requestNotificationPermissions } =
     useNotifications();
   const {
     showNotifications,
@@ -30,10 +30,10 @@ const Settings = () => {
   } = useSettings();
 
   const handleShowNotifications = async () => {
-    const currentState = await checkNotificationPermissions();
-    if (!showNotifications && currentState.display !== "granted") {
-      const response = await requestNotificationPermissions();
-      setShowNotifications(response.display === "granted");
+    let granted = await isNotificationPermissionGranted();
+    if (!showNotifications && !granted) {
+      granted = await requestNotificationPermissions();
+      setShowNotifications(granted);
     } else {
       setShowNotifications(!showNotifications);
     }

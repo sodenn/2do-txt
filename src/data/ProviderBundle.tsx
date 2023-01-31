@@ -16,6 +16,7 @@ import { FileManagementDialogProvider } from "./FileManagementDialogContext";
 import { FilePickerProvider } from "./FilePickerContext";
 import { FilterProvider } from "./FilterContext";
 import { NetworkProvider } from "./NetworkContext";
+import { NotificationProvider } from "./NotificationsContext";
 import { SettingsProvider } from "./SettingsContext";
 import { ShortcutsDialogProvider } from "./ShortcutsDialogContext";
 import { SideSheetProvider } from "./SideSheetContext";
@@ -45,19 +46,21 @@ const ProviderBundle = ({ children }: WithChildren) => {
                         <SideSheetProvider>
                           <ArchivedTasksDialogProvider>
                             <ArchivedTaskProvider>
-                              <TaskProvider>
-                                <FilePickerProvider>
-                                  <FileManagementDialogProvider>
-                                    <ShortcutsDialogProvider>
-                                      <FileCreateDialogProvider>
-                                        <TaskDialogProvider>
-                                          {children}
-                                        </TaskDialogProvider>
-                                      </FileCreateDialogProvider>
-                                    </ShortcutsDialogProvider>
-                                  </FileManagementDialogProvider>
-                                </FilePickerProvider>
-                              </TaskProvider>
+                              <NotificationProvider>
+                                <TaskProvider>
+                                  <FilePickerProvider>
+                                    <FileManagementDialogProvider>
+                                      <ShortcutsDialogProvider>
+                                        <FileCreateDialogProvider>
+                                          <TaskDialogProvider>
+                                            {children}
+                                          </TaskDialogProvider>
+                                        </FileCreateDialogProvider>
+                                      </ShortcutsDialogProvider>
+                                    </FileManagementDialogProvider>
+                                  </FilePickerProvider>
+                                </TaskProvider>
+                              </NotificationProvider>
                             </ArchivedTaskProvider>
                           </ArchivedTasksDialogProvider>
                         </SideSheetProvider>

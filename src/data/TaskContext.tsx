@@ -18,7 +18,6 @@ import {
   getFilesystem,
 } from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
-import { useNotifications } from "../utils/notifications";
 import { getPlatform } from "../utils/platform";
 import { setPreferencesItem } from "../utils/preferences";
 import {
@@ -42,6 +41,7 @@ import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
 import { LoaderData, loadTodoFiles as _loadTodoFiles } from "./loader";
+import { useNotifications } from "./NotificationsContext";
 import { useSettings } from "./SettingsContext";
 
 interface SyncItem {
