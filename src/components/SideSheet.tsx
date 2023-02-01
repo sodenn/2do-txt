@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useSideSheet } from "../data/SideSheetContext";
 import { useTask } from "../data/TaskContext";
 import { WithChildren } from "../types/common.types";
+import { getPlatform } from "../utils/platform";
 import Filter from "./Filter";
 import Settings from "./Settings";
 
@@ -89,6 +90,7 @@ export const MainContainer = forwardRef<HTMLDivElement, WithChildren>(
 const SideSheet = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const platform = getPlatform();
   const matches = useMediaQuery(theme.breakpoints.up("lg"));
   const { sideSheetOpen, setSideSheetOpen } = useSideSheet();
   const { taskLists, activeTaskList, ...rest } = useTask();
@@ -124,6 +126,7 @@ const SideSheet = () => {
 
   return (
     <SwipeableDrawer
+      disableSwipeToOpen={platform === "web"}
       data-shortcut="m"
       data-testid="Menu"
       aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}

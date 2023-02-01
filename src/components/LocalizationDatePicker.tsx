@@ -48,6 +48,17 @@ const LocalizationDatePicker = forwardRef<
         onChange={onChange}
         ref={ref}
         value={value}
+        PopperProps={{
+          modifiers: [
+            {
+              name: "flip",
+              options: {
+                altBoundary: false,
+                fallbackPlacements: ["right", "left"],
+              },
+            },
+          ],
+        }}
         componentsProps={
           desktop
             ? {
