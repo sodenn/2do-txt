@@ -338,7 +338,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(filePath);
       const ref = isDoneFile ? cloudDoneFileRef : cloudFileRef;
       if (!ref) {
-        throw new Error("No cloud file reference found");
+        return;
       }
       const { cloudStorage } = ref;
       const client = getClient(cloudStorage);
@@ -354,8 +354,10 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
 
   const deleteCloudFile = useCallback(
     async (opt: DeleteFileOptions) => {
-      const optExt = await extendOptions(opt);
-      return cloud.deleteFile(optExt);
+      const _opt = await extendOptions(opt);
+      if (_opt) {
+        return cloud.deleteFile(_opt);
+      }
     },
     [extendOptions]
   );
@@ -471,11 +473,14 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
 
   const getCloudDoneFileMetaData = useCallback(
     async (filePath: string) => {
-      const { client, cloudFileRef } = await extendOptions({
+      const _opt = await extendOptions({
         filePath: filePath,
         isDoneFile: false,
       });
-      return getDoneFileMetaData({ client, cloudFileRef });
+      if (_opt) {
+        const { client, cloudFileRef } = _opt;
+        return getDoneFileMetaData({ client, cloudFileRef });
+      }
     },
     [extendOptions]
   );
