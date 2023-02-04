@@ -1,7 +1,6 @@
 name: Tauri
 
 on:
-  push:
   workflow_dispatch:
 
 jobs:
