@@ -43,7 +43,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
   const { archiveMode, setArchiveMode } = useSettings();
   const {
     syncAllFiles,
-    syncFileThrottled,
+    syncFile,
     unlinkCloudDoneFile,
     linkCloudDoneFile,
     deleteCloudFile,
@@ -192,7 +192,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         encoding: Encoding.UTF8,
       });
 
-      syncFileThrottled({
+      syncFile({
         filePath,
         text,
         showSnackbar: false,
@@ -207,7 +207,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         }
       });
     },
-    [syncFileThrottled, writeFile]
+    [syncFile, writeFile]
   );
 
   const loadDoneFile = useCallback(
@@ -266,14 +266,13 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         })),
       };
 
-      const doneFileText = stringifyTaskList(completedTasks, lineEnding);
-
       if (completedTasks.length === 0) {
         await deleteFile({
           path: doneFilePath,
         });
         deleteCloudFile({ filePath, isDoneFile: true }).catch((e) => void e);
       } else {
+        const doneFileText = stringifyTaskList(completedTasks, lineEnding);
         await saveDoneFile(filePath, doneFileText);
       }
 
@@ -315,29 +314,18 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         {
           variant: "success",
           action: (
-            <>
-              <Button
-                color="inherit"
-                onClick={() => {
-                  setArchivedTasksDialog({
-                    open: true,
-                    filePath,
-                  });
-                  closeSnackbar(key);
-                }}
-              >
-                {t("Archived tasks")}
-              </Button>
-              <Button
-                color="inherit"
-                onClick={() => {
-                  restoreTask(opt);
-                  closeSnackbar(key);
-                }}
-              >
-                {t("Undo")}
-              </Button>
-            </>
+            <Button
+              color="inherit"
+              onClick={() => {
+                setArchivedTasksDialog({
+                  open: true,
+                  filePath,
+                });
+                closeSnackbar(key);
+              }}
+            >
+              {t("Archived tasks")}
+            </Button>
           ),
         }
       );
@@ -347,7 +335,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       enqueueSnackbar,
       getCloudFileRefByFilePath,
       loadDoneFile,
-      restoreTask,
       saveDoneFile,
       setArchivedTasksDialog,
       uploadFile,

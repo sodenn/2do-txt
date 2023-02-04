@@ -1,5 +1,6 @@
 import { CssBaseline } from "@mui/material";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Page from "./components/Page";
 import { loader } from "./data/loader";
 import ProviderBundle from "./data/ProviderBundle";
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
       </ProviderBundle>
     ),
     loader,
+    errorElement: <ErrorBoundary />,
     children: [
       {
         path: "/",

@@ -8,7 +8,6 @@
   "Appearance": "Appearance",
   "Import": "Import",
   "Delete": "Delete",
-  "Select folder": "Select folder",
   "due": "Due",
   "Created": "Created: {{creationDate, date}}",
   "Completed": "Completed: {{completionDate, date}}",
@@ -108,7 +107,6 @@
   "Completed tasks are archived in a second file called done.txt": "Completed tasks are archived in a second file called <strong>done.txt</strong>.",
   "Task archived": "Task archived in {{fileName}}",
   "Archived tasks": "Archived tasks",
-  "Undo": "Undo",
   "Restore task": "Restore task",
   "Task restored": "Task restored",
   "No archiving": "No archiving",
@@ -161,5 +159,8 @@
   "Choose action": "Choose action",
   "Files": "Files",
   "Files…": "Files…",
-  "Copy to clipboard failed": "Copy to clipboard failed"
+  "Copy to clipboard failed": "Copy to clipboard failed",
+  "Error": "Fehler",
+  "Error message": "Error message",
+  "An error has occurred": "An error has occurred 🫤"
 }

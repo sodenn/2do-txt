@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/tauri";
 import { getPlatform } from "./platform";
 
 interface OauthOptions {
@@ -10,10 +11,10 @@ export async function oauth(opt: OauthOptions) {
   if (platform === "ios" || platform === "android") {
     return mobileOauth(opt);
   }
-  if (platform === "electron") {
+  if (platform === "desktop") {
     return desktopOauth(opt);
   }
-  throw new Error(`oauth: platform "${platform}" not supportet`);
+  throw new Error(`oauth: platform "${platform}" not supported`);
 }
 
 function mobileOauth(opt: OauthOptions) {
@@ -52,7 +53,15 @@ function mobileOauth(opt: OauthOptions) {
 
 async function desktopOauth(opt: OauthOptions) {
   const { authUrl, redirectUrl } = opt;
-  // @ts-ignore
-  const params: string = await window.electron.oauth(authUrl, redirectUrl);
-  return JSON.parse(params) as { [p: string]: string };
+  const queryString: string = await invoke("oauth", {
+    authUrl,
+    redirectUrl,
+  });
+  return queryString.split("&").reduce((prev, curr) => {
+    const [key, value] = curr.split("=");
+    return {
+      [decodeURIComponent(key)]: decodeURIComponent(value || "true"),
+      ...prev,
+    };
+  }, {});
 }

@@ -1,8 +1,9 @@
 import { Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
+import { useNotification } from "../data/NotificationContext";
 import { useSettings } from "../data/SettingsContext";
-import { useNotifications } from "../utils/notifications";
+import { useSideSheet } from "../data/SideSheetContext";
 import ArchiveModeSelect from "./ArchiveModeSelect";
 import ArchiveNowButton from "./ArchiveNowButton";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
@@ -15,8 +16,9 @@ import ThemeModeSelect from "./ThemeModeSelect";
 const Settings = () => {
   const { t } = useTranslation();
   const { cloudStorageEnabled } = useCloudStorage();
-  const { checkNotificationPermissions, requestNotificationPermissions } =
-    useNotifications();
+  const { setSideSheetOpen } = useSideSheet();
+  const { isNotificationPermissionGranted, requestNotificationPermissions } =
+    useNotification();
   const {
     showNotifications,
     setShowNotifications,
@@ -28,10 +30,10 @@ const Settings = () => {
   } = useSettings();
 
   const handleShowNotifications = async () => {
-    const currentState = await checkNotificationPermissions();
-    if (!showNotifications && currentState.display !== "granted") {
-      const response = await requestNotificationPermissions();
-      setShowNotifications(response.display === "granted");
+    let granted = await isNotificationPermissionGranted();
+    if (!showNotifications && !granted) {
+      granted = await requestNotificationPermissions();
+      setShowNotifications(granted);
     } else {
       setShowNotifications(!showNotifications);
     }
@@ -106,7 +108,9 @@ const Settings = () => {
         <div>
           <Heading gutterBottom>{t("Cloud storage")}</Heading>
           <Stack sx={{ mt: 1 }} spacing={1}>
-            <CloudStorageConnectionButtons />
+            <CloudStorageConnectionButtons
+              onMenuItemClick={() => setSideSheetOpen(false)}
+            />
           </Stack>
         </div>
       )}

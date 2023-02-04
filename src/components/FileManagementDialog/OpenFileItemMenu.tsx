@@ -1,4 +1,5 @@
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -84,6 +85,7 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
   const { t } = useTranslation();
   const {
     unlinkCloudFile,
+    unlinkCloudDoneFile,
     cloudStoragesConnectionStatus,
     cloudStorageEnabled,
     uploadFile,
@@ -128,9 +130,12 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
           }
         }
 
-        onChange(uploadResult);
+        onChange(uploadResult as CloudFileRef);
       } else {
-        await unlinkCloudFile(filePath);
+        await Promise.all([
+          unlinkCloudFile(filePath),
+          unlinkCloudDoneFile(filePath),
+        ]).catch((e) => void e);
         onChange(undefined);
       }
     } catch (e: any) {
@@ -172,7 +177,8 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
     <MenuItem onClick={enableCloudSync} disabled={loading}>
       <ListItemIcon>
         {loading && <CircularProgress size={24} />}
-        {!loading && cloudStorageIcons[cloudStorage]}
+        {!loading && !cloudFileRef && cloudStorageIcons[cloudStorage]}
+        {!loading && cloudFileRef && <CloudOffRoundedIcon />}
       </ListItemIcon>
       <Typography>{buttonText}</Typography>
     </MenuItem>
@@ -265,7 +271,7 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
             }
           />
         ))}
-        {(platform === "electron" || platform === "web") && (
+        {(platform === "desktop" || platform === "web") && (
           <MenuItem onClick={handleCopyToClipboard}>
             <ListItemIcon>
               <ContentCopyIcon />

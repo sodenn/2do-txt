@@ -1,0 +1,109 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
+    "beforeBuildCommand": "yarn build",
+    "beforeDevCommand": "yarn start",
+    "devPath": "http://localhost:5173",
+    "distDir": "../build"
+  },
+  "package": {
+    "productName": "2do-txt",
+    "version": "../package.json"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "path": {
+        "all": true
+      },
+      "fs": {
+        "readFile": true,
+        "writeFile": true,
+        "createDir": true,
+        "removeFile": true,
+        "renameFile": true,
+        "scope": [
+          "**"
+        ]
+      },
+      "clipboard": {
+        "writeText": true
+      },
+      "dialog": {
+        "open": true,
+        "save": true
+      },
+      "notification": {
+        "all": true
+      },
+      "http": {
+        "request": true,
+        "scope": ["https://**"]
+      }
+    },
+    "bundle": {
+      "active": true,
+      "category": "Productivity",
+      "copyright": "© 2023 Dennis Soehnen",
+      "deb": {
+        "depends": []
+      },
+      "externalBin": [],
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "identifier": "dev.sodenn.todotxt",
+      "longDescription": "",
+      "macOS": {
+        "entitlements": null,
+        "exceptionDomain": "",
+        "frameworks": [],
+        "providerShortName": null,
+        "signingIdentity": null
+      },
+      "resources": [],
+      "shortDescription": "todo.txt-compatible task manager",
+      "targets": "all",
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "security": {
+      "csp": ""
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://github.com/sodenn/2do-txt/releases/latest/download/latest.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFENjM2Mzc1NzI3NjIzMEUKUldRT0kzWnlkV05qcmN4NTBtd1haV1BnaktQV1EzWGY1czR3YnZtMnFDb2xLR1ZXc2pzeVM3UE8K"
+    },
+    "windows": [
+      {
+        "height": 700,
+        "width": 950,
+        "minHeight": 600,
+        "minWidth": 500,
+        "title": "2do.txt",
+        "fullscreen": false,
+        "resizable": true,
+        "visible": false
+      },
+      {
+        "height": 600,
+        "width": 600,
+        "decorations": false,
+        "resizable": false,
+        "url": "splashscreen.html",
+        "label": "splashscreen"
+      }
+    ]
+  }
+}

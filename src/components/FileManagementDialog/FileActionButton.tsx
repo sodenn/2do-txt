@@ -12,13 +12,13 @@ import {
 } from "../../data/CloudStorageContext";
 import { useFileCreateDialog } from "../../data/FileCreateDialogContext";
 import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
-import { useTask } from "../../data/TaskContext";
+import { useFilePicker } from "../../data/FilePickerContext";
 import { getPlatform } from "../../utils/platform";
 
 const FileActionButton = () => {
   const { t } = useTranslation();
   const platform = getPlatform();
-  const { openTodoFilePicker } = useTask();
+  const { openFileDialog } = useFilePicker();
   const { setFileCreateDialog } = useFileCreateDialog();
   const { setFileManagementDialogOpen } = useFileManagementDialog();
   const { connectedCloudStorages } = useCloudStorage();
@@ -40,7 +40,7 @@ const FileActionButton = () => {
   };
 
   const handleOpenFile = () => {
-    openTodoFilePicker();
+    openFileDialog();
     setFileManagementDialogOpen(false);
   };
 
@@ -91,7 +91,7 @@ const FileActionButton = () => {
           <ListItemIcon>
             <FolderOpenOutlinedIcon />
           </ListItemIcon>
-          {platform === "electron" ? t("Open todo.txt") : t("Import todo.txt")}
+          {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
         </MenuItem>
         {connectedCloudStorages.map((cloudStorage) => (
           <MenuItem

@@ -1,10 +1,11 @@
 import { Fade, Paper, styled, Typography } from "@mui/material";
+import { listen } from "@tauri-apps/api/event";
 import { useSnackbar } from "notistack";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
+import { useFilePicker } from "../data/FilePickerContext";
 import { useFilter } from "../data/FilterContext";
-import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { WithChildren } from "../types/common.types";
 import { getPlatform } from "../utils/platform";
@@ -35,73 +36,67 @@ const StyledPaper = styled(Paper)({
   justifyContent: "center",
 });
 
-interface FileInputProps {
-  files: File[];
-  clearFiles: () => void;
-}
-
-const FileInput = (props: FileInputProps) => {
-  const {
-    fileInputRef,
-    loadTodoFile,
-    createNewTodoFile,
-    scheduleDueTaskNotifications,
-    taskLists,
-  } = useTask();
-  const { files, clearFiles } = props;
-  const { setActiveTaskListPath } = useFilter();
-  const { addTodoFilePath } = useSettings();
+const FilePicker = ({ children }: WithChildren) => {
   const platform = getPlatform();
-  const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
 
-  const openTodoFile = useCallback(
-    async (content: string, file: File) => {
-      if (platform === "electron") {
-        // Note: Electron adds a path property to the file object
-        const filePath = (file as any).path;
-        const taskList = await loadTodoFile(filePath, content);
-        await addTodoFilePath(filePath);
-        scheduleDueTaskNotifications(taskList.items);
-        return filePath;
-      } else {
-        // Other platforms does not allow to access the file storage.
-        // -> create a copy of the selected file in the app's document directory
-        return createNewTodoFile(file.name, content);
-      }
-    },
-    [
-      addTodoFilePath,
-      createNewTodoFile,
-      loadTodoFile,
-      platform,
-      scheduleDueTaskNotifications,
-    ]
-  );
+  if (platform === "desktop") {
+    return <DesktopFilePicker>{children}</DesktopFilePicker>;
+  }
+
+  return <WebFilePicker>{children}</WebFilePicker>;
+};
+
+const WebFilePicker = ({ children }: WithChildren) => {
+  const { t } = useTranslation();
+  const [files, setFiles] = useState<File[]>([]);
+  const { fileInputRef } = useFilePicker();
+  const { setActiveTaskListPath } = useFilter();
+  const { enqueueSnackbar } = useSnackbar();
+  const { createNewTodoFile, taskLists } = useTask();
+  const platform = getPlatform();
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length === 1 && acceptedFiles[0].type === "text/plain") {
+      setFiles(acceptedFiles);
+    }
+  }, []);
+
+  const clearFiles = useCallback(() => setFiles([]), []);
+
+  const { getRootProps, isDragActive } = useDropzone({
+    onDrop,
+    noClick: true,
+  });
+
+  const { onClick, onBlur, onKeyDown, onFocus, ...dropzoneProps } =
+    getRootProps();
+
+  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    processFiles(event.target?.files as any);
+  };
 
   const processFiles = useCallback(
-    (files: File[]) => {
+    (files?: File[]) => {
       if (!files || files.length === 0) {
         return;
       }
-
       const file = files[0];
       const fileReader = new FileReader();
-
       fileReader.onloadend = async () => {
         const content = fileReader.result;
-
         if (typeof content !== "string") {
           return;
         }
 
         const updateFilePath = taskLists.length > 0;
 
-        const filePath = await openTodoFile(content, file).catch(() => {
-          enqueueSnackbar(t("The file could not be opened"), {
-            variant: "error",
-          });
-        });
+        const filePath = await createNewTodoFile(file.name, content).catch(
+          () => {
+            enqueueSnackbar(t("The file could not be opened"), {
+              variant: "error",
+            });
+          }
+        );
 
         if (updateFilePath && filePath) {
           setActiveTaskListPath(filePath);
@@ -116,14 +111,14 @@ const FileInput = (props: FileInputProps) => {
 
       fileReader.readAsText(file);
     },
-    [enqueueSnackbar, openTodoFile, setActiveTaskListPath, t, taskLists.length]
+    [
+      createNewTodoFile,
+      enqueueSnackbar,
+      setActiveTaskListPath,
+      taskLists.length,
+      t,
+    ]
   );
-
-  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      processFiles(event.target.files as any);
-    }
-  };
 
   const handleClick = (event: any) => {
     event.target.value = null;
@@ -137,45 +132,61 @@ const FileInput = (props: FileInputProps) => {
   }, [clearFiles, files, processFiles]);
 
   return (
-    <input
-      data-testid="file-picker"
-      style={{ display: "none" }}
-      ref={fileInputRef}
-      accept={
-        ["ios", "android"].some((p) => p === platform)
-          ? "text/plain"
-          : undefined
-      }
-      type="file"
-      onChange={handleChange}
-      onClick={handleClick}
-    />
+    <>
+      <input
+        data-testid="file-picker"
+        style={{ display: "none" }}
+        ref={fileInputRef}
+        accept={
+          ["ios", "android"].some((p) => p === platform)
+            ? "text/plain"
+            : undefined
+        }
+        type="file"
+        onChange={handleChange}
+        onClick={handleClick}
+      />
+      <Root data-testid="dropzone" {...dropzoneProps} data-shortcut-ignore>
+        <Fade in={isDragActive}>
+          <Overlay>
+            <StyledPaper>
+              <Typography variant="h5" component="div">
+                {t("Drop todo.txt file here")}
+              </Typography>
+            </StyledPaper>
+          </Overlay>
+        </Fade>
+        {children}
+      </Root>
+    </>
   );
 };
 
-const FilePicker = ({ children }: WithChildren) => {
+const DesktopFilePicker = ({ children }: WithChildren) => {
   const { t } = useTranslation();
-  const [file, setFile] = useState<File[]>([]);
+  const [isDragActive, setIsDragActive] = useState(false);
+  const { openDesktopFile } = useFilePicker();
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 1 && acceptedFiles[0].type === "text/plain") {
-      setFile(acceptedFiles);
-    }
-  }, []);
-
-  const clearFiles = useCallback(() => setFile([]), []);
-
-  const { getRootProps, isDragActive } = useDropzone({
-    onDrop,
-    noClick: true,
-  });
-
-  const { onClick, onBlur, onKeyDown, onFocus, ...dropzoneProps } =
-    getRootProps();
+  useEffect(() => {
+    const promise = Promise.all([
+      listen("tauri://file-drop", (event) => {
+        openDesktopFile(event.payload as string[]);
+        setIsDragActive(false);
+      }),
+      listen("tauri://file-drop-hover", (event) => {
+        setIsDragActive(true);
+      }),
+      listen("tauri://file-drop-cancelled", (event) => {
+        setIsDragActive(false);
+      }),
+    ]);
+    return () => {
+      promise.then((listeners) => listeners.forEach((l) => l()));
+    };
+  }, [openDesktopFile]);
 
   return (
-    <Root data-testid="dropzone" {...dropzoneProps} data-shortcut-ignore>
-      <FileInput files={file} clearFiles={clearFiles} />
+    <Root data-testid="dropzone" data-shortcut-ignore>
       <Fade in={isDragActive}>
         <Overlay>
           <StyledPaper>

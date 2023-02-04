@@ -5,7 +5,7 @@ import { getPlatform } from "./platform";
 export function useBecomeActive(listener: () => unknown) {
   const platform = getPlatform();
   useEffect(() => {
-    if (platform === "web" || platform === "electron") {
+    if (platform === "web" || platform === "desktop") {
       window.addEventListener("focus", listener);
     }
     if (platform === "ios" || platform === "android") {
@@ -16,7 +16,7 @@ export function useBecomeActive(listener: () => unknown) {
       });
     }
     return () => {
-      if (platform === "web" || platform === "electron") {
+      if (platform === "web" || platform === "desktop") {
         window.removeEventListener("focus", listener);
       }
       if (platform === "ios" || platform === "android") {

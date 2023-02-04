@@ -1,6 +1,6 @@
-import { CapacitorElectronConfig } from "@capacitor-community/electron";
+import { CapacitorConfig } from "@capacitor/cli";
 
-const config: CapacitorElectronConfig = {
+const config: CapacitorConfig = {
   appId: "dev.sodenn.todotxt",
   appName: "2do.txt",
   webDir: "build",
@@ -17,10 +17,6 @@ const config: CapacitorElectronConfig = {
       resizeOnFullScreen: true,
       resize: "body",
     },
-  },
-  electron: {
-    splashScreenEnabled: true,
-    splashScreenImageName: "splash.png",
   },
 };
 

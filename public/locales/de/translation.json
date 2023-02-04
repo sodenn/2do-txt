@@ -8,7 +8,6 @@
   "Appearance": "Erscheinungsbild",
   "Import": "Importieren",
   "Delete": "Löschen",
-  "Select folder": "Ordner Auswählen",
   "due": "Fällig",
   "Created": "Erstellt: {{creationDate, date}}",
   "Completed": "Erledigt: {{completionDate, date}}",
@@ -107,7 +106,6 @@
   "Completed tasks are archived in a second file called done.txt": "Erledigte Aufgaben werden in einer zweite Datei mit dem Namen <strong>done.txt</strong> archiviert.",
   "Task archived": "Aufgabe archiviert in {{fileName}}",
   "Archived tasks": "Archivierte Aufgaben",
-  "Undo": "Rückgängig machen",
   "Restore task": "Aufgabe wiederherstellen",
   "Task restored": "Aufgabe wiederherstellt",
   "No archiving": "Keine archivierung",
@@ -160,5 +158,8 @@
   "Choose action": "Aktion wählen",
   "Files": "Dateien",
   "Files…": "Dateien…",
-  "Copy to clipboard failed": "Kopieren in die Zwischenablage fehlgeschlagen"
+  "Copy to clipboard failed": "Kopieren in die Zwischenablage fehlgeschlagen",
+  "Error": "Fehler",
+  "Error message": "Fehlermeldung",
+  "An error has occurred": "Leider ist ein Problem aufgetreten 🫤"
 }

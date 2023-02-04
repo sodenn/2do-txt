@@ -25,13 +25,11 @@
     "fmt:check": "prettier --check ./src",
     "fmt": "prettier --write ./src",
     "typecheck": "tsc --noEmit",
-    "resources": "cordova-res ios --skip-config --copy",
-    "cap:sync": "npx cap sync && yarn electron:sync",
+    "cap:sync": "npx cap sync",
     "ios:sync": "npx cap sync ios",
     "ios:start": "yarn build && yarn ios:sync && npx cap open ios",
     "ios:res": "cordova-res ios --skip-config --copy",
-    "electron:sync": "npx cap sync @capacitor-community/electron",
-    "electron:start": "yarn build && yarn electron:sync && npx cap open @capacitor-community/electron",
+    "tauri:start": "RUST_BACKTRACE=full yarn tauri dev",
     "semantic-release": "semantic-release"
   },
   "eslintConfig": {
@@ -48,6 +46,7 @@
       "@typescript-eslint"
     ],
     "rules": {
+      "no-debugger": "off",
       "react/display-name": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
@@ -74,7 +73,6 @@
     ]
   },
   "dependencies": {
-    "@capacitor-community/electron": "4.1.2",
     "@capacitor/app": "^4.1.1",
     "@capacitor/clipboard": "4.1.0",
     "@capacitor/core": "4.6.1",
@@ -100,12 +98,14 @@
     "@react-fluent-edit/core": "3.0.0",
     "@react-fluent-edit/mentions": "3.0.0",
     "@react-fluent-edit/mui": "3.0.0",
+    "@tauri-apps/api": "^1.2.0",
     "capacitor-rate-app": "3.0.0",
     "cordova-plugin-inappbrowser": "5.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566bc0acac5c2500496d5507a5eb74689980f",
     "crypto-js": "4.1.1",
     "date-fns": "2.29.3",
     "dropbox": "10.34.0",
+    "fast-xml-parser": "^4.0.13",
     "file-saver": "2.0.5",
     "i18next": "22.3.0",
     "i18next-browser-languagedetector": "7.0.1",
@@ -122,16 +122,19 @@
     "slate": "0.87.0",
     "slate-history": "0.86.0",
     "slate-react": "0.87.0",
-    "typeface-roboto": "1.1.13",
-    "webdav": "^4.11.0"
+    "typeface-roboto": "1.1.13"
   },
   "devDependencies": {
     "@capacitor/cli": "4.6.2",
     "@playwright/test": "1.30.0",
     "@semantic-release/changelog": "6.0.2",
+    "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
+    "@tauri-apps/cli": "^1.2.2",
+    "@testing-library/react": "^13.4.0",
     "@types/file-saver": "2.0.5",
     "@types/node": "18.11.18",
+    "@types/node-fetch": "2.6.2",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
@@ -143,6 +146,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
+    "happy-dom": "8.1.5",
     "import-sort-style-module": "6.0.0",
     "prettier": "2.8.3",
     "prettier-plugin-organize-imports": "3.2.2",

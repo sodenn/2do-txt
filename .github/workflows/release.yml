@@ -8,7 +8,7 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     outputs:
-      releaseVersion: ${{ steps.package-version.outputs.current-version }}
+      gitTag: ${{ steps.semantic.outputs.gitTag }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -16,52 +16,64 @@ jobs:
           node-version: 18
       - run: corepack enable
       - run: yarn install
-      - run: yarn build
-      - run: yarn electron:sync
-      - uses: actions/upload-artifact@v3
-        with:
-          name: electron
-          path: electron/
       - run: yarn semantic-release
+        id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
+  release-info:
+    runs-on: ubuntu-latest
+    needs: release
+    outputs:
+      release_id: ${{ steps.release_id.outputs.result }}
+    steps:
+      - run: echo ${{ needs.release.outputs.gitTag }}
+      - uses: actions/github-script@v6
+        id: release_id
+        with:
+          script: |
+            const { data } = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: "${{ needs.release.outputs.gitTag }}"
+            })
+            return data.id
   attach-binaries:
     name: Attach binaries to GitHub Release
-    needs: release
-    runs-on: ${{ matrix.os }}
+    needs:
+      - release
+      - release-info
     strategy:
-      matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
       fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-22.04, windows-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
         with:
           node-version: 18
-      - uses: actions/download-artifact@v3
-        with:
-          name: electron
-          path: electron
-      - name: Sets env vars for macOS code signing
-        if: matrix.os == 'macos-latest'
-        run: |
-          echo "CSC_LINK<<EOF" >> $GITHUB_ENV
-          echo "${{ secrets.CSC_LINK }}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          echo "CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}" >> $GITHUB_ENV
-          echo "APPLEID=${{ secrets.APPLEID }}" >> $GITHUB_ENV
-          echo "APPLEIDPASS=${{ secrets.APPLEIDPASS }}" >> $GITHUB_ENV
       - run: corepack enable
-      - run: yarn install
-        working-directory: electron
-      - run: npm --no-git-tag-version version ${{ needs.release.outputs.releaseVersion }}
-        working-directory: electron
-        continue-on-error: true
-      - run: yarn electron:make
-        working-directory: electron
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Install dependencies
+        run: yarn install
+      - uses: tauri-apps/tauri-action@dev
         env:
-          GH_TOKEN: '${{ secrets.github_token }}'
-          EP_GH_IGNORE_TIME: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENABLE_CODE_SIGNING: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+        with:
+          releaseId: ${{ needs.release-info.outputs.release_id }}
+          tagName: ${{ needs.release.outputs.gitTag }}

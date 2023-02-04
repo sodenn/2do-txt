@@ -17,6 +17,7 @@ export interface CloudStorageMethods {
     opt: Omit<UploadFileOptions, "cloudStorage" | "isDoneFile">
   ) => Promise<CloudFile>;
   syncFile: (opt: SyncFileOptionsInternal<any>) => Promise<SyncFileResult>;
+  deleteFile: (opt: DeleteFileOptionsInternal<any>) => Promise<void>;
 }
 
 export interface CloudFile {
@@ -43,9 +44,8 @@ export interface CloudFileRef extends CloudFile {
   cloudStorage: CloudStorage;
 }
 
-export interface UnlinkOptions<T = any> {
+export interface UnlinkOptions<T = any> extends WithClient<T> {
   cloudStorage: CloudStorage;
-  client?: T;
 }
 
 export interface CloudDoneFileRef extends CloudFile {
@@ -75,26 +75,22 @@ export type CloudStorageClient =
   | CloudStorageClientConnected
   | CloudStorageClientDisconnected;
 
-export interface ListCloudFilesOptions<T = any> {
+export interface ListCloudFilesOptions<T = any> extends WithClient<T> {
   path?: string;
   cursor?: string;
   cloudStorage: CloudStorage;
-  client: T;
 }
 
-export interface FileMetaDataOptions<T = any> {
+export interface FileMetaDataOptions<T = any> extends WithClient<T> {
   path: string;
   cloudStorage: CloudStorage;
+}
+
+export interface WithClient<T = any> {
   client: T;
 }
 
-export interface WithClients {
-  cloudStorageClients: CloudStorageClients;
-}
-
-export interface GetCloudDoneFileMetaDataOptions extends WithClients {
-  filePath: string;
-}
+export type GetCloudDoneFileMetaDataOptions<T = any> = WithClient<T> & WithRef;
 
 export interface ListCloudItemResult {
   items: CloudItem[];
@@ -102,42 +98,43 @@ export interface ListCloudItemResult {
   hasMore: boolean;
 }
 
-export interface DownloadFileOptions<T = any> {
+export interface DownloadFileOptions<T = any> extends WithClient<T> {
   filePath: string;
   cloudStorage: CloudStorage;
-  client: T;
 }
 
-interface UploadNonDoneFileOptions<T = any> {
+interface UploadNonDoneFileOptions<T = any> extends WithClient<T> {
   text: string;
   filePath: string;
   cloudStorage: CloudStorage;
   isDoneFile: false;
-  client: T;
 }
 
-interface UploadDoneFileOptions<T = any> {
+interface UploadDoneFileOptions<T = any> extends WithClient<T> {
   text: string;
   cloudFilePath: string;
   filePath: string;
   cloudStorage: CloudStorage;
   isDoneFile: true;
-  client: T;
 }
 
 export type UploadFileOptions<T = any> =
   | UploadNonDoneFileOptions<T>
   | UploadDoneFileOptions<T>;
 
-export interface DeleteFileOptions extends WithClients {
+export interface DeleteFileOptions<T = any> extends WithClient<T>, WithRef {
   filePath: string;
   isDoneFile: boolean;
 }
 
-export interface DeleteFileOptionsInternal<T> {
+export interface WithRef {
+  cloudFileRef?: CloudFileRef;
+  cloudDoneFileRef?: CloudDoneFileRef;
+}
+
+export interface DeleteFileOptionsInternal<T> extends WithClient<T> {
   filePath: string;
   cloudStorage: CloudStorage;
-  client: T;
 }
 
 export interface SyncFileOptions {
@@ -147,10 +144,9 @@ export interface SyncFileOptions {
   showSnackbar?: boolean;
 }
 
-export interface SyncFileOptionsInternal<T> {
+export interface SyncFileOptionsInternal<T> extends WithClient<T> {
   localVersion: CloudFile;
   localContent: string;
-  client: T;
 }
 
 interface SyncFileLocalResult {

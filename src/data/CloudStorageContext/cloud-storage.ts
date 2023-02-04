@@ -7,13 +7,11 @@ import {
   CloudDoneFileRef,
   CloudFileRef,
   CloudStorage,
-  CloudStorageClient,
   CloudStorageClientConnected,
   CloudStorageClientDisconnected,
   CloudStorageClients,
   CloudStorageMethods,
   DeleteFileOptions,
-  DeleteFileOptionsInternal,
   DownloadFileOptions,
   GetCloudDoneFileMetaDataOptions,
   ListCloudFilesOptions,
@@ -22,7 +20,7 @@ import {
   SyncFileOptions,
   UnlinkOptions,
   UploadFileOptions,
-  WithClients,
+  WithClient,
 } from "./cloud-storage.types";
 import generateContentHash from "./ContentHasher";
 import * as dropbox from "./dropbox-storage";
@@ -131,40 +129,21 @@ export async function unlinkCloudFile(filePath: string) {
 }
 
 export async function deleteFile(opt: DeleteFileOptions) {
-  const { filePath, isDoneFile, cloudStorageClients } = opt;
-  const cloudFileRef = await getCloudFileRefByFilePath(filePath);
-  const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(filePath);
+  const { filePath, isDoneFile, client, cloudFileRef, cloudDoneFileRef } = opt;
   const ref = isDoneFile ? cloudDoneFileRef : cloudFileRef;
   if (!ref) {
     return;
   }
-
   const { cloudStorage } = ref;
-  const client = cloudStorageClients[cloudStorage];
-  if (client.status === "disconnected") {
-    throw new Error(`${cloudStorage} client is disconnected`);
-  }
-  const deleteFileImpl:
-    | ((opt: DeleteFileOptionsInternal<any>) => Promise<void>)
-    | undefined =
-    cloudStorage === "Dropbox"
-      ? dropbox.deleteFile
-      : cloudStorage === "WebDAV"
-      ? webdav.deleteFile
-      : undefined;
 
-  if (!deleteFileImpl) {
-    throw new Error(`Unsupported cloud storage "${cloudStorage}"`);
-  }
-
-  await deleteFileImpl({
+  await $(cloudStorage).deleteFile({
     filePath: ref.path,
-    client: client.instance,
+    client,
     cloudStorage,
   });
 
   if (!isDoneFile && cloudDoneFileRef) {
-    await deleteFileImpl({
+    await $(cloudStorage).deleteFile({
       filePath: cloudDoneFileRef.path,
       client,
       cloudStorage,
@@ -175,6 +154,9 @@ export async function deleteFile(opt: DeleteFileOptions) {
     await unlinkCloudDoneFile(filePath);
   } else {
     await unlinkCloudFile(filePath);
+    if (cloudDoneFileRef) {
+      await unlinkCloudDoneFile(filePath);
+    }
   }
 }
 
@@ -196,21 +178,19 @@ export async function unlinkCloudDoneFile(filePath: string) {
 }
 
 export async function loadClients(): Promise<CloudStorageClients> {
-  const clients = await Promise.race([
-    Promise.all(
-      cloudStorages.map((cloudStorage) =>
+  const refs = await getCloudFileRefs();
+  const clients = await Promise.all([
+    ...cloudStorages
+      .filter((storage) => refs.some((ref) => ref.cloudStorage === storage))
+      .map((cloudStorage) =>
         createClient(cloudStorage)
-          .then((instance) =>
-            instance
-              ? ({
-                  instance,
-                  cloudStorage,
-                  status: "connected",
-                } as CloudStorageClientConnected)
-              : ({
-                  cloudStorage,
-                  status: "disconnected",
-                } as CloudStorageClientDisconnected)
+          .then(
+            (instance) =>
+              ({
+                instance,
+                cloudStorage,
+                status: "connected",
+              } as CloudStorageClientConnected)
           )
           .catch(
             (error) =>
@@ -220,20 +200,16 @@ export async function loadClients(): Promise<CloudStorageClients> {
                 status: "disconnected",
               } as CloudStorageClientDisconnected)
           )
-      )
-    ),
-    new Promise<CloudStorageClient[]>((resolve) =>
-      setTimeout(
-        () =>
-          resolve(
-            cloudStorages.map((cloudStorage) => ({
-              cloudStorage,
-              status: "disconnected",
-            }))
-          ),
-        5000
-      )
-    ),
+      ),
+    ...cloudStorages
+      .filter((storage) => refs.every((ref) => ref.cloudStorage !== storage))
+      .map(
+        (cloudStorage) =>
+          ({
+            cloudStorage,
+            status: "disconnected",
+          } as CloudStorageClientDisconnected)
+      ),
   ]);
   return clients.reduce((prev, curr) => {
     prev[curr.cloudStorage] = curr;
@@ -241,9 +217,7 @@ export async function loadClients(): Promise<CloudStorageClients> {
   }, {} as CloudStorageClients);
 }
 
-export async function createClient(
-  cloudStorage: CloudStorage
-): Promise<unknown> {
+export async function createClient(cloudStorage: CloudStorage): Promise<any> {
   return $(cloudStorage).createClient();
 }
 
@@ -268,28 +242,22 @@ export async function listFiles(
 export async function getDoneFileMetaData(
   opt: GetCloudDoneFileMetaDataOptions
 ) {
-  const { filePath, cloudStorageClients } = opt;
-  const cloudFile = await getCloudFileRefByFilePath(filePath);
-  if (!cloudFile) {
+  const { client, cloudFileRef } = opt;
+  if (!cloudFileRef) {
     return;
   }
 
-  const { cloudStorage } = cloudFile;
+  const { cloudStorage } = cloudFileRef;
 
-  const doneFilePath = await getDoneFilePath(cloudFile.path);
+  const doneFilePath = await getDoneFilePath(cloudFileRef.path);
   if (!doneFilePath) {
     return;
-  }
-
-  const client = cloudStorageClients[cloudStorage];
-  if (client.status === "disconnected") {
-    throw new Error(`${cloudStorage} client is disconnected`);
   }
 
   return await $(cloudStorage)
     .getFileMetaData({
       path: doneFilePath,
-      client: client.instance,
+      client,
     })
     .then((metaData) => ({ ...metaData, cloudStorage }))
     .catch((error) => {
@@ -305,7 +273,7 @@ export async function downloadFile(opt: DownloadFileOptions) {
 
 export async function uploadFile(
   opt: UploadFileOptions
-): Promise<CloudFileRef> {
+): Promise<CloudFileRef | CloudDoneFileRef> {
   const { filePath, text, cloudStorage, isDoneFile, client } = opt;
   const contentHash = generateContentHash(text);
   if (isDoneFile) {
@@ -319,11 +287,10 @@ export async function uploadFile(
       text,
       client,
     });
-    const cloudDoneFileRef = {
+    const cloudDoneFileRef: CloudDoneFileRef = {
       ...doneFile,
       contentHash,
       localFilePath: filePath,
-      lastSync: new Date().toISOString(),
       cloudStorage,
     };
     await linkDoneFile(cloudDoneFileRef);
@@ -334,7 +301,7 @@ export async function uploadFile(
       text,
       client,
     });
-    const cloudFileRef = {
+    const cloudFileRef: CloudFileRef = {
       ...cloudFile,
       contentHash,
       localFilePath: filePath,
@@ -347,9 +314,9 @@ export async function uploadFile(
 }
 
 export async function syncFile(
-  opt: SyncFileOptions & WithClients
+  opt: SyncFileOptions & WithClient
 ): Promise<string | undefined> {
-  const { filePath, text, isDoneFile, cloudStorageClients } = opt;
+  const { filePath, text, isDoneFile, client } = opt;
   const cloudFileRef = await getCloudFileRefByFilePath(filePath);
   const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(filePath);
 
@@ -360,18 +327,19 @@ export async function syncFile(
 
   const { localFilePath, cloudStorage, ...ref } = _ref;
 
-  const client = cloudStorageClients[cloudStorage];
-  if (client.status === "disconnected") {
-    throw new Error(`${cloudStorage} client is disconnected`);
-  }
-
   const syncResult = await $(cloudStorage).syncFile({
     localContent: text,
     localVersion: ref,
-    client: client.instance,
+    client,
   });
 
   if (!syncResult) {
+    if (cloudFileRef) {
+      await linkFile({
+        ...cloudFileRef,
+        lastSync: new Date().toISOString(),
+      });
+    }
     return;
   }
 
@@ -404,21 +372,8 @@ export async function syncFile(
   }
 }
 
-export async function getFilteredSyncOptions(opt: SyncFileOptions[]) {
-  const optFiltered: SyncFileOptions[] = [];
-  for (const i of opt) {
-    const ref = i.isDoneFile
-      ? await getCloudDoneFileRefByFilePath(i.filePath)
-      : await getCloudFileRefByFilePath(i.filePath);
-    if (ref) {
-      optFiltered.push(i);
-    }
-  }
-  return optFiltered;
-}
-
 export async function syncAllFiles(
-  syncOptions: (SyncFileOptions & WithClients)[]
+  syncOptions: (SyncFileOptions & WithClient)[]
 ): Promise<{ text: string; filePath: string }[]> {
   const results: { text: string; filePath: string }[] = [];
   await Promise.all(

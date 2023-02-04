@@ -15,9 +15,5 @@
 			"resizeOnFullScreen": true,
 			"resize": "body"
 		}
-	},
-	"electron": {
-		"splashScreenEnabled": true,
-		"splashScreenImageName": "splash.png"
 	}
 }

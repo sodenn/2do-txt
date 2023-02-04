@@ -4,7 +4,7 @@ import { differenceInMinutes, format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLoaderData } from "react-router-dom";
 import { promptForRating } from "../utils/app-rate";
@@ -12,12 +12,12 @@ import { useBecomeActive } from "../utils/app-state";
 import { createContext } from "../utils/Context";
 import { parseDate, todayDate } from "../utils/date";
 import {
+  getDoneFilePath,
   getFilenameFromPath,
   getFileNameWithoutEnding,
   getFilesystem,
 } from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
-import { useNotifications } from "../utils/notifications";
 import { getPlatform } from "../utils/platform";
 import { setPreferencesItem } from "../utils/preferences";
 import {
@@ -41,6 +41,7 @@ import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
 import { LoaderData, loadTodoFiles as _loadTodoFiles } from "./loader";
+import { useNotification } from "./NotificationContext";
 import { useSettings } from "./SettingsContext";
 
 interface SyncItem {
@@ -72,17 +73,17 @@ const [TaskProvider, useTask] = createContext(() => {
     syncAllFiles,
     syncFileThrottled,
     unlinkCloudFile,
+    unlinkCloudDoneFile,
     cloudStorageEnabled,
   } = useCloudStorage();
   const {
     scheduleNotifications,
     cancelNotifications,
     shouldNotificationsBeRescheduled,
-  } = useNotifications();
+  } = useNotification();
   const { t } = useTranslation();
   const platform = getPlatform();
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [taskLists, setTaskLists] = useState<TaskList[]>(
     data.todoFiles.files.map((f) => f.taskList)
   );
@@ -242,18 +243,15 @@ const [TaskProvider, useTask] = createContext(() => {
 
       const scheduleAt = subHours(task.dueDate, 12);
 
-      scheduleNotifications({
-        notifications: [
-          {
-            title: t("Reminder"),
-            body: task.body.replace(createDueDateRegex(), "").trim(),
-            id: hashCode(task.raw),
-            schedule: { at: scheduleAt },
-          },
-        ],
-      });
+      scheduleNotifications([
+        {
+          body: task.body.replace(createDueDateRegex(), "").trim(),
+          id: hashCode(task.raw),
+          scheduleAt: scheduleAt,
+        },
+      ]);
     },
-    [showNotifications, scheduleNotifications, t]
+    [showNotifications, scheduleNotifications]
   );
 
   const addTask = useCallback(
@@ -309,7 +307,7 @@ const [TaskProvider, useTask] = createContext(() => {
       }
       const items = taskList.items.map((t) => {
         if (t._id === _id) {
-          cancelNotifications({ notifications: [{ id: hashCode(t.raw) }] });
+          cancelNotifications([hashCode(t.raw)]);
           const updatedTask: Task = {
             ...parseTask(raw),
             _id,
@@ -337,7 +335,7 @@ const [TaskProvider, useTask] = createContext(() => {
       if (!taskList) {
         return;
       }
-      cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
+      cancelNotifications([hashCode(task.raw)]);
       const items = taskList.items.filter((t) => t._id !== task._id);
       items.filter((t) => t._order > task._order).forEach((t) => t._order--);
       return saveTodoFile({ ...taskList, items });
@@ -366,7 +364,7 @@ const [TaskProvider, useTask] = createContext(() => {
           const index = taskList.items.findIndex((i) => i._id === task._id);
           taskList.items.splice(index, 0, recurringTasks);
         }
-        cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
+        cancelNotifications([hashCode(task.raw)]);
       } else {
         delete updatedTask.completionDate;
       }
@@ -404,7 +402,13 @@ const [TaskProvider, useTask] = createContext(() => {
     async (filePath: string) => {
       await deleteFile({
         path: filePath,
-      }).catch(() => console.debug("File does not exist"));
+      }).catch(() => console.debug(`${filePath} does not exist`));
+      const doneFilePath = getDoneFilePath(filePath);
+      if (doneFilePath) {
+        await deleteFile({
+          path: doneFilePath,
+        }).catch(() => console.debug(`${doneFilePath} does not exist`));
+      }
     },
     [deleteFile]
   );
@@ -412,24 +416,21 @@ const [TaskProvider, useTask] = createContext(() => {
   const closeTodoFile = useCallback(
     async (filePath: string) => {
       const taskList = taskLists.find((list) => list.filePath === filePath);
-      if (!taskList) {
-        return;
-      }
+      taskList?.items.forEach((task) =>
+        cancelNotifications([hashCode(task.raw)])
+      );
+
+      await removeTodoFilePath(filePath);
 
       if (platform === "web" || platform === "ios" || platform === "android") {
-        // Delete IndexedDB (web) / remove file from the app's document directory (ios, android)
-        await deleteTodoFile(taskList.filePath);
+        // delete IndexedDB (web) OR remove file from the app's document directory (ios, android)
+        await deleteTodoFile(filePath);
       }
 
       if (cloudStorageEnabled) {
         unlinkCloudFile(filePath).catch((e) => void e);
+        unlinkCloudDoneFile(filePath).catch((e) => void e);
       }
-
-      taskList.items.forEach((task) =>
-        cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] })
-      );
-
-      await removeTodoFilePath(taskList.filePath);
 
       if (filePath === activeTaskListPath) {
         if (taskLists.length === 2) {
@@ -449,15 +450,16 @@ const [TaskProvider, useTask] = createContext(() => {
       setTaskLists((state) => state.filter((l) => l !== taskList));
     },
     [
+      taskLists,
+      removeTodoFilePath,
+      platform,
+      cloudStorageEnabled,
       activeTaskListPath,
       cancelNotifications,
-      cloudStorageEnabled,
       deleteTodoFile,
-      platform,
       unlinkCloudFile,
-      removeTodoFilePath,
+      unlinkCloudDoneFile,
       setActiveTaskListPath,
-      taskLists,
     ]
   );
 
@@ -610,10 +612,6 @@ const [TaskProvider, useTask] = createContext(() => {
     ]
   );
 
-  const openTodoFilePicker = useCallback(() => {
-    fileInputRef.current?.click();
-  }, [fileInputRef]);
-
   const restoreTask = useCallback(
     async (filePathOrTaskList: string | TaskList, task: Task) => {
       const taskList =
@@ -657,42 +655,40 @@ const [TaskProvider, useTask] = createContext(() => {
     });
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
-  const becomeActiveListener = useCallback(async () => {
-    const { files, errors } = await _loadTodoFiles();
-    setTaskLists(files.map((f) => f.taskList));
-    for (const error of errors) {
-      enqueueSnackbar(t("File not found", { filePath: error.filePath }), {
+  const handleFileNotFound = useCallback(
+    async (filePath: string) => {
+      enqueueSnackbar(t("File not found", { filePath }), {
         variant: "error",
       });
-      await removeTodoFilePath(error.filePath);
-    }
+      await closeTodoFile(filePath);
+    },
+    [enqueueSnackbar, closeTodoFile, t]
+  );
 
+  const becomeActiveListener = useCallback(async () => {
+    // load files from disk
+    const { files, errors } = await _loadTodoFiles();
+    // apply external file changes by updating the state
+    setTaskLists(files.map((f) => f.taskList));
+    // notify the user if a file cannot be found
+    for (const error of errors) {
+      await handleFileNotFound(error.filePath);
+    }
+    // sync files with cloud storage
     const refs = await getCloudFileRefs();
     const outdated = refs.every((r) => {
       const date = parseDate(r.lastSync);
       return date && differenceInMinutes(new Date(), date) >= 2;
     });
-    if (!outdated) {
-      return;
+    if (outdated) {
+      syncAllTodoFilesWithCloudStorage(files);
     }
-    syncAllTodoFilesWithCloudStorage(files);
-  }, [
-    getCloudFileRefs,
-    syncAllTodoFilesWithCloudStorage,
-    enqueueSnackbar,
-    removeTodoFilePath,
-    t,
-  ]);
+  }, [getCloudFileRefs, handleFileNotFound, syncAllTodoFilesWithCloudStorage]);
 
   useBecomeActive(becomeActiveListener);
 
   useEffect(() => {
-    data.todoFiles.errors.forEach((err) => {
-      enqueueSnackbar(t("File not found", { filePath: err.filePath }), {
-        variant: "error",
-      });
-      removeTodoFilePath(err.filePath);
-    });
+    data.todoFiles.errors.forEach((err) => handleFileNotFound(err.filePath));
     syncAllTodoFilesWithCloudStorage(data.todoFiles.files).catch((e) => void e);
     if (shouldNotificationsBeRescheduled()) {
       taskLists.forEach((taskList) =>
@@ -724,8 +720,6 @@ const [TaskProvider, useTask] = createContext(() => {
     findTaskListByTaskId,
     reorderTaskList,
     createNewTodoFile,
-    fileInputRef,
-    openTodoFilePicker,
     syncTodoFileWithCloudStorage,
   };
 });

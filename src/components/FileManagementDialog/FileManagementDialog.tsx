@@ -33,7 +33,7 @@ const FileManagementDialog = () => {
   const [closedFiles, setClosedFiles] = useState<string[]>([]);
 
   const listAllFiles = useCallback(async () => {
-    if (platform !== "electron") {
+    if (platform !== "desktop") {
       return readdir({
         path: "",
       }).then((result) => {
@@ -94,8 +94,6 @@ const FileManagementDialog = () => {
         handleCloseDialog();
       }
       closeTodoFile(filePath).then(listFiles);
-      unlinkCloudFile(filePath).catch((e) => void e);
-      unlinkCloudDoneFile(filePath).catch((e) => void e);
     };
 
     if (deleteFile) {

@@ -1,7 +1,27 @@
 import { Capacitor } from "@capacitor/core";
 
-export function getPlatform() {
-  return Capacitor.getPlatform();
+type Platform = "desktop" | "web" | "ios" | "android";
+
+export function getPlatform(): Platform {
+  if ((window as any).__TAURI__) {
+    return "desktop";
+  }
+
+  const platform = Capacitor.getPlatform();
+
+  if (platform === "ios") {
+    return "ios";
+  }
+
+  if (platform === "android") {
+    return "android";
+  }
+
+  if (platform === "web") {
+    return "web";
+  }
+
+  throw new Error();
 }
 
 export function hasTouchScreen() {

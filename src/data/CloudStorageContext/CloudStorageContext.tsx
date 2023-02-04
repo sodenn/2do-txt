@@ -22,7 +22,6 @@ import {
   getCloudFileRefByFilePath,
   getCloudFileRefs,
   getDoneFileMetaData,
-  getFilteredSyncOptions,
   unlinkCloudDoneFile,
   unlinkCloudFile,
 } from "./cloud-storage";
@@ -30,10 +29,12 @@ import {
   CloudDoneFileRef,
   CloudFileRef,
   CloudStorage,
+  WithClient,
 } from "./cloud-storage.types";
 import {
   DeleteFileOptions,
   DownloadFileOptions,
+  ExtendOptions,
   ListCloudFilesOptions,
   SyncFileOptions,
   UploadFileOptions,
@@ -62,11 +63,27 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     data.cloudStorageClients
   );
   const cloudStorageEnabled =
-    ["ios", "android", "electron"].includes(platform) ||
+    ["ios", "android", "desktop"].includes(platform) ||
     import.meta.env.VITE_ENABLE_WEB_CLOUD_STORAGE === "true";
   const syncMessage = t("Sync with cloud storage", {
     cloudStorage: t("cloud storage"),
   });
+  const cloudStoragesConnectionStatus = useMemo(
+    () =>
+      Object.values(cloudStorageClients).reduce((prev, curr) => {
+        prev[curr.cloudStorage] = curr.status === "connected";
+        return prev;
+      }, {} as Record<CloudStorage, boolean>),
+    [cloudStorageClients]
+  );
+
+  const connectedCloudStorages = useMemo(
+    () =>
+      Object.entries(cloudStoragesConnectionStatus)
+        .filter(([_, connected]) => connected)
+        .map(([cloudStorage]) => cloudStorage as CloudStorage),
+    [cloudStoragesConnectionStatus]
+  );
 
   const openStorageConnectedAlert = useCallback(
     (cloudStorage: CloudStorage) => {
@@ -77,11 +94,60 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     [enqueueSnackbar, t]
   );
 
+  const createClient = useCallback(async (cloudStorage: CloudStorage) => {
+    const client = await cloud.createClient(cloudStorage);
+    setCloudStorageClients((current) => ({
+      ...current,
+      [cloudStorage]: { instance: client, cloudStorage, status: "connected" },
+    }));
+  }, []);
+
+  const oauth2Authenticate = useCallback(
+    async (cloudStorage: CloudStorage) => {
+      await cloud.authenticate(cloudStorage).catch((error) => {
+        const message = error.message || "";
+        if (!message.includes("Browser closed by user")) {
+          console.error("Failed to authenticate with cloud storage:", message);
+          enqueueSnackbar(
+            t("Failed to authenticate with cloud storage", {
+              cloudStorage,
+            }),
+            {
+              variant: "error",
+            }
+          );
+        }
+        throw error;
+      });
+      // Note: web platform goes a different way because a redirect is used
+      if (["ios", "android", "desktop"].includes(platform)) {
+        await createClient(cloudStorage);
+      }
+    },
+    [createClient, enqueueSnackbar, t]
+  );
+
+  const webDAVAuthenticate = useCallback(() => {
+    setWebDAVDialogOpen(true);
+  }, [setWebDAVDialogOpen]);
+
+  const authenticate = useCallback(
+    async (cloudStorage: CloudStorage) => {
+      if (["Dropbox"].includes(cloudStorage)) {
+        return oauth2Authenticate(cloudStorage);
+      }
+      if (cloudStorage === "WebDAV") {
+        return webDAVAuthenticate();
+      }
+    },
+    [oauth2Authenticate, webDAVAuthenticate]
+  );
+
   const openSessionExpiredAlert = useCallback(
     (cloudStorage: CloudStorage) => {
       const handleLogin = async (key: SnackbarKey) => {
         closeSnackbar(key);
-        await cloud.authenticate(cloudStorage);
+        await authenticate(cloudStorage);
         setAuthError(false);
       };
       // Don't annoy the user, so only show the message once
@@ -105,7 +171,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         setAuthError(true);
       }
     },
-    [authError, closeSnackbar, enqueueSnackbar, t]
+    [authError, authenticate, closeSnackbar, enqueueSnackbar, t]
   );
 
   const openConnectionErrorAlert = useCallback(
@@ -154,6 +220,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       const client = cloudStorageClients[cloudStorage];
       if (client.status === "disconnected") {
         openSessionExpiredAlert(cloudStorage);
+        throw new Error(`${cloudStorage} client is disconnected`);
       } else if (client.instance) {
         return client.instance;
       } else {
@@ -161,55 +228,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       }
     },
     [cloudStorageClients, connected, openSessionExpiredAlert]
-  );
-
-  const createClient = useCallback(async (cloudStorage: CloudStorage) => {
-    const client = await cloud.createClient(cloudStorage);
-    setCloudStorageClients((current) => ({
-      ...current,
-      [cloudStorage]: { instance: client, cloudStorage, status: "connected" },
-    }));
-  }, []);
-
-  const oauth2Authenticate = useCallback(
-    async (cloudStorage: CloudStorage) => {
-      await cloud.authenticate(cloudStorage).catch((error) => {
-        const message = error.message || "";
-        if (!message.includes("Browser closed by user")) {
-          console.error("Failed to authenticate with cloud storage:", message);
-          enqueueSnackbar(
-            t("Failed to authenticate with cloud storage", {
-              cloudStorage,
-            }),
-            {
-              variant: "error",
-            }
-          );
-        }
-        throw error;
-      });
-      // Note: web platform goes a different way because a redirect is used
-      if (["ios", "android", "electron"].includes(platform)) {
-        await createClient(cloudStorage);
-      }
-    },
-    [createClient, enqueueSnackbar, t]
-  );
-
-  const webDAVAuthenticate = useCallback(() => {
-    setWebDAVDialogOpen(true);
-  }, [setWebDAVDialogOpen]);
-
-  const authenticate = useCallback(
-    async (cloudStorage: CloudStorage) => {
-      if (["Dropbox"].includes(cloudStorage)) {
-        return oauth2Authenticate(cloudStorage);
-      }
-      if (cloudStorage === "WebDAV") {
-        return webDAVAuthenticate();
-      }
-    },
-    [oauth2Authenticate, webDAVAuthenticate]
   );
 
   const linkCloudFile = useCallback(
@@ -292,8 +310,8 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     async ({ isDoneFile, ...opt }: UploadFileOptions) => {
       const client = getClient(opt.cloudStorage);
       if (isDoneFile) {
-        const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
-        if (!cloudFileRef) {
+        const ref = await getCloudFileRefByFilePath(opt.filePath);
+        if (!ref) {
           throw new Error("Missing cloud file");
         }
         return cloud
@@ -301,7 +319,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
             ...opt,
             isDoneFile,
             client,
-            cloudFilePath: cloudFileRef.path,
+            cloudFilePath: ref.path,
           })
           .catch(handleError);
       } else {
@@ -313,25 +331,63 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     [getClient, handleError]
   );
 
-  const deleteCloudFile = useCallback(
-    (opt: DeleteFileOptions) => {
-      return cloud.deleteFile({ ...opt, cloudStorageClients });
+  const extendOptions = useCallback(
+    async (opt: ExtendOptions) => {
+      const { filePath, isDoneFile } = opt;
+      const cloudFileRef = await getCloudFileRefByFilePath(filePath);
+      const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(filePath);
+      const ref = isDoneFile ? cloudDoneFileRef : cloudFileRef;
+      if (!ref) {
+        return;
+      }
+      const { cloudStorage } = ref;
+      const client = getClient(cloudStorage);
+      return {
+        ...opt,
+        client,
+        cloudFileRef,
+        cloudDoneFileRef,
+      };
     },
-    [cloudStorageClients]
+    [getClient]
+  );
+
+  const deleteCloudFile = useCallback(
+    async (opt: DeleteFileOptions) => {
+      const _opt = await extendOptions(opt);
+      if (_opt) {
+        return cloud.deleteFile(_opt);
+      }
+    },
+    [extendOptions]
+  );
+
+  const getFilteredSyncOptions = useCallback(
+    async (optList: SyncFileOptions[]) => {
+      const optFiltered: (SyncFileOptions & WithClient)[] = [];
+      for (const opt of optList) {
+        const ref = opt.isDoneFile
+          ? await getCloudDoneFileRefByFilePath(opt.filePath)
+          : await getCloudFileRefByFilePath(opt.filePath);
+        if (ref) {
+          const client = getClient(ref.cloudStorage);
+          optFiltered.push({ ...opt, client });
+        }
+      }
+      return optFiltered;
+    },
+    [getClient]
   );
 
   const syncFile = useCallback(
     async (opt: SyncFileOptions) => {
-      const cloudFileRef = await getCloudFileRefByFilePath(opt.filePath);
-      const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(
-        opt.filePath
-      );
-      if (!cloudFileRef && !cloudDoneFileRef) {
-        return;
-      }
-
       if (!connected) {
         throw new Error("Network connection lost");
+      }
+
+      const syncOptions = await getFilteredSyncOptions([opt]);
+      if (syncOptions.length !== 1) {
+        return;
       }
 
       let snackbar: SnackbarKey | undefined;
@@ -348,10 +404,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       }
 
       return cloud
-        .syncFile({
-          ...opt,
-          cloudStorageClients,
-        })
+        .syncFile(syncOptions[0])
         .catch((error) => {
           console.debug(error);
           handleError(error);
@@ -364,9 +417,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     },
     [
       closeSnackbar,
-      cloudStorageClients,
       connected,
       enqueueSnackbar,
+      getFilteredSyncOptions,
       handleError,
       syncMessage,
     ]
@@ -379,7 +432,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       }
 
       const syncOptions = await getFilteredSyncOptions(opt);
-
       if (syncOptions.length === 0) {
         return [];
       }
@@ -395,15 +447,15 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
       });
 
       return cloud
-        .syncAllFiles(syncOptions.map((o) => ({ ...o, cloudStorageClients })))
+        .syncAllFiles(syncOptions)
         .catch(handleError)
         .finally(() => closeSnackbar(snackbar));
     },
     [
       closeSnackbar,
-      cloudStorageClients,
       connected,
       enqueueSnackbar,
+      getFilteredSyncOptions,
       handleError,
       syncMessage,
     ]
@@ -412,35 +464,25 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const syncFileThrottled = useCallback(throttle(syncFile, 5000), [
     closeSnackbar,
-    cloudStorageClients,
     connected,
     enqueueSnackbar,
+    getFilteredSyncOptions,
     handleError,
-    t,
+    syncMessage,
   ]);
 
   const getCloudDoneFileMetaData = useCallback(
-    (filePath: string) => {
-      return getDoneFileMetaData({ filePath, cloudStorageClients });
+    async (filePath: string) => {
+      const _opt = await extendOptions({
+        filePath: filePath,
+        isDoneFile: false,
+      });
+      if (_opt) {
+        const { client, cloudFileRef } = _opt;
+        return getDoneFileMetaData({ client, cloudFileRef });
+      }
     },
-    [cloudStorageClients]
-  );
-
-  const cloudStoragesConnectionStatus = useMemo(
-    () =>
-      Object.values(cloudStorageClients).reduce((prev, curr) => {
-        prev[curr.cloudStorage] = curr.status === "connected";
-        return prev;
-      }, {} as Record<CloudStorage, boolean>),
-    [cloudStorageClients]
-  );
-
-  const connectedCloudStorages = useMemo(
-    () =>
-      Object.entries(cloudStoragesConnectionStatus)
-        .filter(([_, connected]) => connected)
-        .map(([cloudStorage]) => cloudStorage as CloudStorage),
-    [cloudStoragesConnectionStatus]
+    [extendOptions]
   );
 
   useEffect(() => {
