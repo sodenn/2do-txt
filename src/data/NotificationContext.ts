@@ -28,15 +28,7 @@ interface ScheduleOptionsWithTitle extends ScheduleOptions {
   title: string;
 }
 
-export interface NotificationMethods {
-  isNotificationPermissionGranted: () => Promise<boolean>;
-  requestNotificationPermissions: () => Promise<boolean>;
-  shouldNotificationsBeRescheduled: () => boolean;
-  scheduleNotifications: (options: ScheduleOptions[]) => Promise<number[]>;
-  cancelNotifications: (ids: number[]) => Promise<void>;
-}
-
-export const [NotificationProvider, useNotifications] = createContext(() => {
+export const [NotificationProvider, useNotification] = createContext(() => {
   const platform = getPlatform();
   const { t } = useTranslation();
   const { schedule: scheduleMobile, ...mobileNotifications } =
@@ -58,7 +50,7 @@ export const [NotificationProvider, useNotifications] = createContext(() => {
 
       const permissionStatus = await LocalNotifications.checkPermissions();
       if (permissionStatus.display !== "granted") {
-        return;
+        return [];
       }
 
       return isWeb ? scheduleWeb(opt) : scheduleMobile(opt);
@@ -70,7 +62,7 @@ export const [NotificationProvider, useNotifications] = createContext(() => {
     ...(isWeb ? webNotifications : mobileNotifications),
     shouldNotificationsBeRescheduled,
     scheduleNotifications,
-  } as NotificationMethods;
+  };
 });
 
 function useMobileNotifications() {

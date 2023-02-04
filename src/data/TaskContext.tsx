@@ -41,7 +41,7 @@ import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
 import { LoaderData, loadTodoFiles as _loadTodoFiles } from "./loader";
-import { useNotifications } from "./NotificationContext";
+import { useNotification } from "./NotificationContext";
 import { useSettings } from "./SettingsContext";
 
 interface SyncItem {
@@ -80,7 +80,7 @@ const [TaskProvider, useTask] = createContext(() => {
     scheduleNotifications,
     cancelNotifications,
     shouldNotificationsBeRescheduled,
-  } = useNotifications();
+  } = useNotification();
   const { t } = useTranslation();
   const platform = getPlatform();
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();

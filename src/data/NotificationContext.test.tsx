@@ -4,11 +4,9 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { WithChildren } from "../types/common.types";
-import {
-  NotificationMethods,
-  NotificationProvider,
-  useNotifications,
-} from "./NotificationContext";
+import { NotificationProvider, useNotification } from "./NotificationContext";
+
+type NotificationMethods = ReturnType<typeof useNotification>;
 
 i18n.use(initReactI18next).init({
   lng: "en",
@@ -43,10 +41,9 @@ function setupFakeTimers() {
 }
 
 function renderNotificationsHook() {
-  //vi.useFakeTimers();
   const {
     result: { current },
-  } = renderHook(() => useNotifications(), {
+  } = renderHook(() => useNotification(), {
     wrapper: Wrapper,
   });
   return current;
