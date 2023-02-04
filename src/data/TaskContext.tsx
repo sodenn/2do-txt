@@ -243,18 +243,15 @@ const [TaskProvider, useTask] = createContext(() => {
 
       const scheduleAt = subHours(task.dueDate, 12);
 
-      scheduleNotifications({
-        notifications: [
-          {
-            title: t("Reminder"),
-            body: task.body.replace(createDueDateRegex(), "").trim(),
-            id: hashCode(task.raw),
-            schedule: { at: scheduleAt },
-          },
-        ],
-      });
+      scheduleNotifications([
+        {
+          body: task.body.replace(createDueDateRegex(), "").trim(),
+          id: hashCode(task.raw),
+          scheduleAt: scheduleAt,
+        },
+      ]);
     },
-    [showNotifications, scheduleNotifications, t]
+    [showNotifications, scheduleNotifications]
   );
 
   const addTask = useCallback(
@@ -310,7 +307,7 @@ const [TaskProvider, useTask] = createContext(() => {
       }
       const items = taskList.items.map((t) => {
         if (t._id === _id) {
-          cancelNotifications({ notifications: [{ id: hashCode(t.raw) }] });
+          cancelNotifications([hashCode(t.raw)]);
           const updatedTask: Task = {
             ...parseTask(raw),
             _id,
@@ -338,7 +335,7 @@ const [TaskProvider, useTask] = createContext(() => {
       if (!taskList) {
         return;
       }
-      cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
+      cancelNotifications([hashCode(task.raw)]);
       const items = taskList.items.filter((t) => t._id !== task._id);
       items.filter((t) => t._order > task._order).forEach((t) => t._order--);
       return saveTodoFile({ ...taskList, items });
@@ -367,7 +364,7 @@ const [TaskProvider, useTask] = createContext(() => {
           const index = taskList.items.findIndex((i) => i._id === task._id);
           taskList.items.splice(index, 0, recurringTasks);
         }
-        cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] });
+        cancelNotifications([hashCode(task.raw)]);
       } else {
         delete updatedTask.completionDate;
       }
@@ -420,7 +417,7 @@ const [TaskProvider, useTask] = createContext(() => {
     async (filePath: string) => {
       const taskList = taskLists.find((list) => list.filePath === filePath);
       taskList?.items.forEach((task) =>
-        cancelNotifications({ notifications: [{ id: hashCode(task.raw) }] })
+        cancelNotifications([hashCode(task.raw)])
       );
 
       await removeTodoFilePath(filePath);

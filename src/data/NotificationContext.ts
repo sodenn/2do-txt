@@ -1,16 +1,5 @@
-import {
-  CancelOptions,
-  LocalNotifications,
-  LocalNotificationSchema,
-  ScheduleOptions,
-  ScheduleResult,
-} from "@capacitor/local-notifications";
-import {
-  isPermissionGranted,
-  requestPermission,
-  sendNotification,
-} from "@tauri-apps/api/notification";
-import { isAfter, subDays } from "date-fns";
+import { LocalNotifications } from "@capacitor/local-notifications";
+import { differenceInHours, isAfter, subDays } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "../images/logo.png?raw";
@@ -18,9 +7,6 @@ import { createContext } from "../utils/Context";
 import { dateReviver } from "../utils/date";
 import { getPlatform } from "../utils/platform";
 import { getPreferencesItem, setPreferencesItem } from "../utils/preferences";
-
-//const base64LogoString = window.btoa(unescape(encodeURIComponent(logo)));
-//const base64Logo = "data:image/png;base64," + base64LogoString;
 
 interface ReceivedNotification {
   notificationId: number;
@@ -30,6 +16,24 @@ interface ReceivedNotification {
 interface TimeoutId {
   value: any;
   notificationId: number;
+}
+
+export interface ScheduleOptions {
+  id: number;
+  body: string;
+  scheduleAt: Date;
+}
+
+interface ScheduleOptionsWithTitle extends ScheduleOptions {
+  title: string;
+}
+
+export interface NotificationMethods {
+  isNotificationPermissionGranted: () => Promise<boolean>;
+  requestNotificationPermissions: () => Promise<boolean>;
+  shouldNotificationsBeRescheduled: () => boolean;
+  scheduleNotifications: (options: ScheduleOptions[]) => Promise<number[]>;
+  cancelNotifications: (ids: number[]) => Promise<void>;
 }
 
 export const [NotificationProvider, useNotifications] = createContext(() => {
@@ -44,11 +48,12 @@ export const [NotificationProvider, useNotifications] = createContext(() => {
   const shouldNotificationsBeRescheduled = useCallback(() => isWeb, [isWeb]);
 
   const scheduleNotifications = useCallback(
-    async (options: ScheduleOptions) => {
-      options.notifications.forEach((n) => {
-        if (!n.title) {
-          n.title = t("Reminder");
-        }
+    async (options: ScheduleOptions[]) => {
+      const opt: ScheduleOptionsWithTitle[] = options.map((o) => {
+        return {
+          ...o,
+          title: t("Reminder"),
+        };
       });
 
       const permissionStatus = await LocalNotifications.checkPermissions();
@@ -56,9 +61,7 @@ export const [NotificationProvider, useNotifications] = createContext(() => {
         return;
       }
 
-      return isWeb
-        ? scheduleWeb(options.notifications)
-        : scheduleMobile(options.notifications);
+      return isWeb ? scheduleWeb(opt) : scheduleMobile(opt);
     },
     [isWeb, scheduleWeb, scheduleMobile, t]
   );
@@ -67,7 +70,7 @@ export const [NotificationProvider, useNotifications] = createContext(() => {
     ...(isWeb ? webNotifications : mobileNotifications),
     shouldNotificationsBeRescheduled,
     scheduleNotifications,
-  };
+  } as NotificationMethods;
 });
 
 function useMobileNotifications() {
@@ -87,19 +90,22 @@ function useMobileNotifications() {
     []
   );
 
-  const cancelNotifications = useCallback(async (options: CancelOptions) => {
-    await LocalNotifications.cancel(options).catch((error) =>
-      console.error(error)
-    );
+  const cancelNotifications = useCallback(async (ids: number[]) => {
+    await LocalNotifications.cancel({
+      notifications: ids.map((id) => ({ id })),
+    }).catch((error) => console.error(error));
   }, []);
 
   const schedule = useCallback(
-    async (
-      notifications: LocalNotificationSchema[]
-    ): Promise<ScheduleResult> => {
+    async (options: ScheduleOptionsWithTitle[]): Promise<number[]> => {
       return LocalNotifications.schedule({
-        notifications: notifications,
-      });
+        notifications: options.map((opt) => ({
+          id: opt.id,
+          title: opt.title,
+          body: opt.body,
+          schedule: { at: opt.scheduleAt },
+        })),
+      }).then((result) => result.notifications.map((n) => n.id));
     },
     []
   );
@@ -123,12 +129,12 @@ function useWebNotifications() {
     return receivedNotifications;
   }, []);
 
-  const addScheduledNotifications = useCallback(
-    async (notifications: ReceivedNotification[]) => {
+  const addReceivedNotification = useCallback(
+    async (notification: ReceivedNotification) => {
       const receivedNotifications = await getReceivedNotifications();
       const newReceivedNotifications: ReceivedNotification[] = [
         ...receivedNotifications,
-        ...notifications,
+        notification,
       ];
       await setPreferencesItem(
         "received-notifications",
@@ -138,7 +144,7 @@ function useWebNotifications() {
     [getReceivedNotifications]
   );
 
-  const removeReceivedNotifications = useCallback(
+  const removeReceivedNotification = useCallback(
     async (ids: number[]) => {
       const receivedNotifications = await getReceivedNotifications();
       const newReceivedNotifications = receivedNotifications.filter(
@@ -148,6 +154,64 @@ function useWebNotifications() {
         "received-notifications",
         JSON.stringify(newReceivedNotifications)
       );
+    },
+    [getReceivedNotifications]
+  );
+
+  const createNotification = useCallback(
+    (options: ScheduleOptionsWithTitle) => {
+      const { scheduleAt, title, body, id } = options;
+      const now = new Date();
+      const diffInHours = differenceInHours(scheduleAt, now);
+      const ms = scheduleAt.getTime() - new Date().getTime();
+      if (diffInHours > -24) {
+        const timeoutId = setTimeout(() => {
+          new Notification(title, {
+            body: body,
+            icon: logo,
+          });
+          addReceivedNotification({
+            notificationId: id,
+            receivingDate: scheduleAt,
+          });
+        }, Math.max(ms, 0));
+        setTimeoutIds((curr) => [
+          ...curr,
+          { notificationId: id, value: timeoutId },
+        ]);
+        return id;
+      }
+    },
+    [addReceivedNotification]
+  );
+
+  const schedule = useCallback(
+    async (options: ScheduleOptionsWithTitle[]): Promise<number[]> => {
+      const receivedNotifications = await getReceivedNotifications();
+      const filteredNotifications = options.filter((opt) =>
+        receivedNotifications.every((sn) => sn.notificationId !== opt.id)
+      );
+      return filteredNotifications
+        .map(createNotification)
+        .filter((id): id is number => !!id);
+    },
+    [getReceivedNotifications, createNotification]
+  );
+
+  const isNotificationPermissionGranted = useCallback(
+    async () => Notification.permission === "granted",
+    []
+  );
+
+  const requestNotificationPermissions = useCallback(
+    () =>
+      Notification.requestPermission().then((result) => result === "granted"),
+    []
+  );
+
+  const cancelNotifications = useCallback(
+    async (ids: number[]) => {
+      await removeReceivedNotification(ids);
       const newTimeoutIds = timeoutIds.filter(({ value, notificationId }) => {
         if (ids.includes(notificationId)) {
           clearTimeout(value);
@@ -158,67 +222,7 @@ function useWebNotifications() {
       });
       setTimeoutIds(newTimeoutIds);
     },
-    [getReceivedNotifications, timeoutIds]
-  );
-
-  const send = (notification: LocalNotificationSchema) => {
-    const { schedule, title, body, id } = notification;
-    const ms = schedule?.at ? schedule.at.getTime() - new Date().getTime() : 0;
-    if (ms > -86400000) {
-      const timeoutId = setTimeout(() => {
-        sendNotification({
-          title: title,
-          body: body,
-          icon: logo,
-        });
-      }, ms);
-      setTimeoutIds((curr) => [
-        ...curr,
-        { notificationId: id, value: timeoutId },
-      ]);
-    }
-    return notification;
-  };
-
-  const schedule = useCallback(
-    async (
-      notifications: LocalNotificationSchema[]
-    ): Promise<ScheduleResult> => {
-      const receivedNotifications = await getReceivedNotifications();
-      const filteredNotifications = notifications.filter((n) =>
-        receivedNotifications.every((sn) => sn.notificationId !== n.id)
-      );
-
-      const scheduledNotifications = filteredNotifications
-        .map(send)
-        .filter((n) => n.schedule?.at)
-        .map((n) => ({
-          notificationId: n.id,
-          receivingDate: n.schedule!.at!,
-        }));
-
-      await addScheduledNotifications(scheduledNotifications);
-      return { notifications: filteredNotifications };
-    },
-    [addScheduledNotifications, getReceivedNotifications]
-  );
-
-  const isNotificationPermissionGranted = useCallback(
-    () => isPermissionGranted(),
-    []
-  );
-
-  const requestNotificationPermissions = useCallback(
-    () => requestPermission().then((result) => result === "granted"),
-    []
-  );
-
-  const cancelNotifications = useCallback(
-    async (options: CancelOptions) => {
-      const ids = options.notifications.map((n) => n.id);
-      await removeReceivedNotifications(ids);
-    },
-    [removeReceivedNotifications]
+    [removeReceivedNotification, timeoutIds]
   );
 
   useEffect(() => {
@@ -230,7 +234,7 @@ function useWebNotifications() {
         isAfter(n.receivingDate, twoDaysAgo)
       );
       setPreferencesItem("received-notifications", JSON.stringify(newValue));
-    }, 1000 * 60);
+    }, 1000 * 60 * 60);
     return () => {
       clearInterval(cleanupInterval);
     };
