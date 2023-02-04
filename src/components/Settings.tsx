@@ -1,7 +1,7 @@
 import { Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../data/CloudStorageContext";
-import { useNotifications } from "../data/NotificationContext";
+import { useNotification } from "../data/NotificationContext";
 import { useSettings } from "../data/SettingsContext";
 import { useSideSheet } from "../data/SideSheetContext";
 import ArchiveModeSelect from "./ArchiveModeSelect";
@@ -18,7 +18,7 @@ const Settings = () => {
   const { cloudStorageEnabled } = useCloudStorage();
   const { setSideSheetOpen } = useSideSheet();
   const { isNotificationPermissionGranted, requestNotificationPermissions } =
-    useNotifications();
+    useNotification();
   const {
     showNotifications,
     setShowNotifications,
