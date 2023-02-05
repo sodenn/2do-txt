@@ -14,9 +14,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: corepack enable
-      - run: yarn install
-      - run: yarn test
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
   e2e:
     name: 'e2e Tests - ${{ matrix.project }}'
     runs-on: ubuntu-latest
@@ -29,8 +29,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: corepack enable
-      - run: yarn install
+          cache: 'npm'
+      - run: npm ci
       - run: npx playwright install --with-deps
       - run: npx playwright test --project="${{ matrix.project }}"
       - uses: actions/upload-artifact@v3
@@ -46,8 +46,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: corepack enable
-      - run: yarn install
-      - run: yarn typecheck
-      - run: yarn lint
-      - run: yarn fmt:check
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run fmt:check
