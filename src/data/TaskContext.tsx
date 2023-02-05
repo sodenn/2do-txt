@@ -40,7 +40,7 @@ import { useArchivedTask } from "./ArchivedTaskContext";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
 import { useConfirmationDialog } from "./ConfirmationDialogContext";
 import { useFilter } from "./FilterContext";
-import { LoaderData, loadTodoFiles as _loadTodoFiles } from "./loader";
+import { LoaderData, loadTodoFiles } from "./loader";
 import { useNotification } from "./NotificationContext";
 import { useSettings } from "./SettingsContext";
 
@@ -665,11 +665,16 @@ const [TaskProvider, useTask] = createContext(() => {
     [enqueueSnackbar, closeTodoFile, t]
   );
 
-  const becomeActiveListener = useCallback(async () => {
+  const loadTodoFilesFromDisk = useCallback(async () => {
     // load files from disk
-    const { files, errors } = await _loadTodoFiles();
+    const { files, errors } = await loadTodoFiles();
     // apply external file changes by updating the state
     setTaskLists(files.map((f) => f.taskList));
+    return { files, errors };
+  }, []);
+
+  const becomeActiveListener = useCallback(async () => {
+    const { files, errors } = await loadTodoFilesFromDisk();
     // notify the user if a file cannot be found
     for (const error of errors) {
       await handleFileNotFound(error.filePath);
@@ -683,7 +688,12 @@ const [TaskProvider, useTask] = createContext(() => {
     if (outdated) {
       syncAllTodoFilesWithCloudStorage(files);
     }
-  }, [getCloudFileRefs, handleFileNotFound, syncAllTodoFilesWithCloudStorage]);
+  }, [
+    loadTodoFilesFromDisk,
+    getCloudFileRefs,
+    handleFileNotFound,
+    syncAllTodoFilesWithCloudStorage,
+  ]);
 
   useBecomeActive(becomeActiveListener);
 
@@ -700,6 +710,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
   return {
     ...commonTaskListAttributes,
+    loadTodoFilesFromDisk,
     saveTodoFile,
     downloadTodoFile,
     shareTodoFile,

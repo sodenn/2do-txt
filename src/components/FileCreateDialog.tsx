@@ -100,28 +100,32 @@ const FileCreateDialog = () => {
 const DesktopFileCreateDialog = (props: FileCreateDialogProps) => {
   const { onCreateFile, onClose, open } = props;
   const { saveFile, getUniqueFilePath } = getFilesystem();
-  const [lock, setLock] = useState(open);
+  const { loadTodoFilesFromDisk } = useTask();
 
-  const openDesktopDialog = useCallback(async () => {
-    if (!open || lock) {
+  const openFileDialog = useCallback(async () => {
+    if (!open) {
       return;
     }
-    try {
-      setLock(true);
-      const { fileName } = await getUniqueFilePath(defaultFilePath);
-      const filePath = await saveFile(fileName);
-      onClose();
-      if (filePath) {
-        onCreateFile(filePath).catch((e) => console.debug(e));
-      }
-    } finally {
-      setLock(false);
+    onClose();
+    const { fileName } = await getUniqueFilePath(defaultFilePath);
+    const filePath = await saveFile(fileName);
+    if (filePath) {
+      onCreateFile(filePath)
+        .then(loadTodoFilesFromDisk)
+        .catch((e) => console.debug(e));
     }
-  }, [open, lock, saveFile, onClose, getUniqueFilePath, onCreateFile]);
+  }, [
+    open,
+    onClose,
+    getUniqueFilePath,
+    saveFile,
+    onCreateFile,
+    loadTodoFilesFromDisk,
+  ]);
 
   useEffect(() => {
-    openDesktopDialog();
-  }, [openDesktopDialog]);
+    openFileDialog();
+  }, [openFileDialog]);
 
   return null;
 };
