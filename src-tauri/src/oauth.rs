@@ -1,5 +1,9 @@
 #[tauri::command]
-pub async fn oauth(auth_url: String, redirect_url: String, app_handle: tauri::AppHandle) -> String {
+pub async fn oauth(
+    auth_url: String,
+    redirect_url: String,
+    app_handle: tauri::AppHandle,
+) -> Option<String> {
     let (tx, rx) = std::sync::mpsc::channel::<String>();
     let _window = tauri::WindowBuilder::new(
         &app_handle,
@@ -16,7 +20,10 @@ pub async fn oauth(auth_url: String, redirect_url: String, app_handle: tauri::Ap
     })
     .build()
     .unwrap();
-    let query_string = rx.recv().unwrap();
+    let query_string = match rx.recv() {
+        Ok(val) => Some(val),
+        Err(_) => None,
+    };
     _window.close().unwrap();
     query_string
 }

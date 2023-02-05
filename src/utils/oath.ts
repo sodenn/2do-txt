@@ -57,6 +57,9 @@ async function desktopOauth(opt: OauthOptions) {
     authUrl,
     redirectUrl,
   });
+  if (!queryString) {
+    throw new Error("Browser closed by user");
+  }
   return queryString.split("&").reduce((prev, curr) => {
     const [key, value] = curr.split("=");
     return {
