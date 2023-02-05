@@ -209,11 +209,13 @@ const desktopFilesystem = Object.freeze({
       ? filePath
       : undefined;
   },
-  async saveFile(defaultPath?: string): Promise<string | undefined> {
-    const filePath = await save({
-      defaultPath: defaultPath,
+  async saveFile(filePath: string): Promise<string | undefined> {
+    const docDir = await documentDir();
+    const defaultPath = await join(docDir, filePath);
+    const path = await save({
+      defaultPath,
     });
-    return filePath ?? undefined;
+    return path ?? undefined;
   },
   async join(...paths: string[]): Promise<string> {
     return await join(...paths);
