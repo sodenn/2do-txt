@@ -125,7 +125,7 @@
     "typeface-roboto": "1.1.13"
   },
   "devDependencies": {
-    "@capacitor/cli": "4.6.2",
+    "@capacitor/cli": "4.6.3",
     "@playwright/test": "1.30.0",
     "@semantic-release/changelog": "6.0.2",
     "@semantic-release/exec": "6.0.3",
@@ -133,27 +133,27 @@
     "@tauri-apps/cli": "^1.2.2",
     "@testing-library/react": "^13.4.0",
     "@types/file-saver": "2.0.5",
-    "@types/node": "18.11.18",
+    "@types/node": "18.11.19",
     "@types/node-fetch": "2.6.2",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
-    "@vitejs/plugin-react-swc": "3.0.1",
+    "@vitejs/plugin-react-swc": "3.1.0",
     "cordova-res": "0.15.4",
     "dotenv": "16.0.3",
     "eslint": "8.33.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
-    "happy-dom": "8.1.5",
+    "happy-dom": "8.2.6",
     "import-sort-style-module": "6.0.0",
     "prettier": "2.8.3",
     "prettier-plugin-organize-imports": "3.2.2",
     "semantic-release": "19.0.5",
     "typescript": "4.9.5",
-    "vite": "4.0.4",
+    "vite": "4.1.1",
     "vite-plugin-eslint": "1.8.1",
-    "vitest": "0.28.3"
+    "vitest": "0.28.4"
   }
 }
