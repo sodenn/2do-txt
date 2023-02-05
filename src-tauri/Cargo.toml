@@ -33,4 +33,4 @@ custom-protocol = [ "tauri/custom-protocol" ]
 
 # this revision is needed for the .on_navigation method in commands.rs
 [patch.crates-io]
-tauri = { git = "https://github.com/tauri-apps/tauri", rev = "6ed2b04" }
+tauri = { git = "https://github.com/tauri-apps/tauri", rev = "7e8e0e7" }
