@@ -4,10 +4,6 @@
   "description": "todo.txt-compatible task manager",
   "license": "GPL-3.0",
   "private": true,
-  "packageManager": "yarn@3.3.1",
-  "engines": {
-    "yarn": ">=3.2.2"
-  },
   "author": {
     "name": "sodenn",
     "email": "mail@sodenn.dev"
@@ -27,9 +23,10 @@
     "typecheck": "tsc --noEmit",
     "cap:sync": "npx cap sync",
     "ios:sync": "npx cap sync ios",
-    "ios:start": "yarn build && yarn ios:sync && npx cap open ios",
+    "ios:start": "npm run build && npm run ios:sync && npx cap open ios",
     "ios:res": "cordova-res ios --skip-config --copy",
-    "tauri:start": "RUST_BACKTRACE=full yarn tauri dev",
+    "tauri": "tauri",
+    "tauri:start": "RUST_BACKTRACE=full npm run tauri dev",
     "semantic-release": "semantic-release"
   },
   "eslintConfig": {
