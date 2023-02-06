@@ -1,3 +1,10 @@
+## [1.17.2](https://github.com/sodenn/2do-txt/compare/v1.17.1...v1.17.2) (2023-02-06)
+
+
+### Bug Fixes
+
+* **Release:** checkout release commit in tauri build job ([#748](https://github.com/sodenn/2do-txt/issues/748)) ([0c1751f](https://github.com/sodenn/2do-txt/commit/0c1751f2aa150d5d46fbc48c2523015d305990c9))
+
 ## [1.17.1](https://github.com/sodenn/2do-txt/compare/v1.17.0...v1.17.1) (2023-02-06)
 
 
