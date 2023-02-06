@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       gitTag: ${{ steps.semantic.outputs.gitTag }}
+      gitRev: ${{ steps.git_rev.outputs.gitRev }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -16,10 +17,12 @@ jobs:
           node-version: 18
           cache: 'npm'
       - run: npm ci
-      - run: npm run semantic-release
-        id: semantic
+      - id: semantic
+        run: npm run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - id: git_rev
+        run: echo "gitRev=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
   release-info:
     runs-on: ubuntu-latest
     needs: release
@@ -49,6 +52,8 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          rev: ${{ needs.release.outputs.gitRev }}
       - name: Setup node
         uses: actions/setup-node@v3
         with:
