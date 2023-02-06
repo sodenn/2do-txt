@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          rev: ${{ needs.release.outputs.gitRev }}
+          ref: ${{ needs.release.outputs.gitRev }}
       - name: Setup node
         uses: actions/setup-node@v3
         with:
