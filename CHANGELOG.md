@@ -1,3 +1,23 @@
+# [1.17.0](https://github.com/sodenn/2do-txt/compare/v1.16.1...v1.17.0) (2023-02-06)
+
+
+### Bug Fixes
+
+* **Clipboard:** allow todo.txt content to be copied to the clipboard in Safari ([#719](https://github.com/sodenn/2do-txt/issues/719)) ([1b486a5](https://github.com/sodenn/2do-txt/commit/1b486a50965c702bf1fe395dca23946b7c51739a))
+* **deps:** update dependencies (non-major) ([#697](https://github.com/sodenn/2do-txt/issues/697)) ([60ddf69](https://github.com/sodenn/2do-txt/commit/60ddf6995cdc04a18fb05118946923ada0581fb3))
+* **Desktop:** update task list after adding a new todo.txt file ([#744](https://github.com/sodenn/2do-txt/issues/744)) ([a2213f3](https://github.com/sodenn/2do-txt/commit/a2213f3592fe842bb7a6832088b0345d1ef64afe))
+
+
+### Features
+
+* improved synchronization with cloud storages ([#732](https://github.com/sodenn/2do-txt/issues/732)) ([3d60e02](https://github.com/sodenn/2do-txt/commit/3d60e027c150bbdfcd05a6a58f4bb1296bca2e53))
+* **Timeline:** scroll to today's date ([#716](https://github.com/sodenn/2do-txt/issues/716)) ([609a205](https://github.com/sodenn/2do-txt/commit/609a205ccc6911bd411fe54f509e0db94f26cc2c))
+
+
+### Performance Improvements
+
+* prevent unnecessary re-renders when interacting with dropzone ([#718](https://github.com/sodenn/2do-txt/issues/718)) ([f0f9470](https://github.com/sodenn/2do-txt/commit/f0f9470962acd8b880019c38f484286636203646))
+
 ## [1.16.1](https://github.com/sodenn/2do-txt/compare/v1.16.0...v1.16.1) (2022-12-07)
 
 
