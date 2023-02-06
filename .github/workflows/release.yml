@@ -29,7 +29,6 @@ jobs:
     outputs:
       release_id: ${{ steps.release_id.outputs.result }}
     steps:
-      - run: echo ${{ needs.release.outputs.gitTag }}
       - uses: actions/github-script@v6
         id: release_id
         with:
@@ -53,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          rev: ${{ needs.release.outputs.gitRev }}
+          ref: ${{ needs.release.outputs.gitRev }}
       - name: Setup node
         uses: actions/setup-node@v3
         with:
