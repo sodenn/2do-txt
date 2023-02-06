@@ -1,3 +1,10 @@
+## [1.17.1](https://github.com/sodenn/2do-txt/compare/v1.17.0...v1.17.1) (2023-02-06)
+
+
+### Bug Fixes
+
+* **Release:** use the latest version number when building the tauri app ([#747](https://github.com/sodenn/2do-txt/issues/747)) ([100f788](https://github.com/sodenn/2do-txt/commit/100f788295bccf115023c92000647ee4eb1e7299))
+
 # [1.17.0](https://github.com/sodenn/2do-txt/compare/v1.16.1...v1.17.0) (2023-02-06)
 
 
