@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="150" src="./public/logo192.png" alt="2do.txt logo">
+  <img width="150" src="public/logo.png" alt="2do.txt logo">
 </p>
 
 <h1 align="center">2do.txt</h1>
