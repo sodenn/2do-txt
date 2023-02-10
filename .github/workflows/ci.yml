@@ -20,8 +20,6 @@ jobs:
   e2e:
     name: 'e2e Tests - ${{ matrix.project }}'
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.30.0-focal
     strategy:
       fail-fast: false
       matrix:
@@ -33,6 +31,7 @@ jobs:
           node-version: 18
           cache: 'npm'
       - run: npm ci
+      - run: npx playwright install --with-deps
       - run: npx playwright test --project="${{ matrix.project }}"
       - uses: actions/upload-artifact@v3
         if: always()
