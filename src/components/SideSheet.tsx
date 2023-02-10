@@ -128,6 +128,7 @@ const SideSheet = () => {
     <SwipeableDrawer
       disableSwipeToOpen={platform === "web"}
       data-shortcut="m"
+      data-shortcut-ignore={!matches}
       data-testid="Menu"
       aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
       anchor="left"

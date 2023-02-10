@@ -23,12 +23,12 @@ test.describe("Search", () => {
     if (isMobile) {
       await page.getByRole("button", { name: "Expand search bar" }).click();
       await Promise.all([
-        page.waitForNavigation({ url: "http://localhost:5173/?term=invoice" }),
+        page.waitForURL("http://localhost:5173/?term=invoice"),
         page.getByRole("search", { name: "Search for tasks" }).fill("invoice"),
       ]);
     } else {
       await Promise.all([
-        page.waitForNavigation({ url: "http://localhost:5173/?term=invoice" }),
+        page.waitForURL("http://localhost:5173/?term=invoice"),
         page.getByRole("search", { name: "Search for tasks" }).fill("invoice"),
       ]);
     }
@@ -40,6 +40,7 @@ test.describe("Search", () => {
     isMobile,
   }) => {
     test.skip(!!isMobile, "desktop only");
+    await page.setViewportSize({ width: 600, height: 1080 });
     await expect(
       page.getByRole("search", { name: "Search for tasks" })
     ).not.toBeFocused();
