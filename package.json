@@ -17,7 +17,7 @@
     "build": "vite build",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "lint": "node_modules/.bin/eslint ./src --max-warnings=0 --ext .ts,.tsx",
+    "lint": "eslint . --max-warnings=0 --ext .ts,.tsx",
     "fmt:check": "prettier --check ./src",
     "fmt": "prettier --write ./src",
     "typecheck": "tsc --noEmit",
@@ -28,34 +28,6 @@
     "tauri": "tauri",
     "tauri:start": "RUST_BACKTRACE=full npm run tauri dev",
     "semantic-release": "semantic-release"
-  },
-  "eslintConfig": {
-    "extends": [
-      "prettier",
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:react/recommended",
-      "plugin:react-hooks/recommended",
-      "plugin:react/jsx-runtime"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "rules": {
-      "no-debugger": "off",
-      "react/display-name": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-non-null-assertion": "off",
-      "@typescript-eslint/no-unused-vars": "off",
-      "@typescript-eslint/ban-ts-comment": "off"
-    },
-    "settings": {
-      "react": {
-        "version": "detect"
-      }
-    },
-    "root": true
   },
   "browserslist": {
     "production": [
@@ -137,6 +109,7 @@
     "@typescript-eslint/eslint-plugin": "5.50.0",
     "@typescript-eslint/parser": "5.50.0",
     "@vitejs/plugin-react-swc": "3.1.0",
+    "cordova-res": "0.15.4",
     "dotenv": "16.0.3",
     "eslint": "8.33.0",
     "eslint-config-prettier": "8.6.0",
