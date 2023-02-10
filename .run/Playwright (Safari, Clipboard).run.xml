@@ -5,7 +5,7 @@
     <scripts>
       <script value="test:e2e" />
     </scripts>
-    <arguments value="-g $ClipboardContent$ -- --project=&quot;Mobile Safari&quot; --headed --reporter=line" />
+    <arguments value="-- -g $ClipboardContent$ --project=&quot;Mobile Safari&quot; --headed --reporter=line" />
     <node-interpreter value="project" />
     <envs />
     <method v="2" />

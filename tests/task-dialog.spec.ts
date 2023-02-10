@@ -365,8 +365,8 @@ test.describe("Task dialog", () => {
     );
 
     // delete mention + space
-    await page.press('[aria-label="Text editor"]', "Backspace");
-    await page.press('[aria-label="Text editor"]', "Backspace");
+    await page.press('[aria-label="Text editor"]', "Backspace", delay);
+    await page.press('[aria-label="Text editor"]', "Backspace", delay);
 
     await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
       1

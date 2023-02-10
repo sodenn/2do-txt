@@ -31,7 +31,10 @@ jobs:
           node-version: 18
           cache: 'npm'
       - run: npm ci
-      - run: npx playwright install --with-deps
+      - if: matrix.project == 'chromium'
+        run: npx playwright install chromium --with-deps
+      - if: matrix.project == 'Mobile Safari'
+        run: npx playwright install webkit --with-deps
       - run: npx playwright test --project="${{ matrix.project }}"
       - uses: actions/upload-artifact@v3
         if: always()
