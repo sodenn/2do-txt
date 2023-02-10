@@ -1,3 +1,10 @@
+## [1.17.3](https://github.com/sodenn/2do-txt/compare/v1.17.2...v1.17.3) (2023-02-10)
+
+
+### Bug Fixes
+
+* keyboard shortcuts don't work ([#751](https://github.com/sodenn/2do-txt/issues/751)) ([bb8f74b](https://github.com/sodenn/2do-txt/commit/bb8f74b7714fb78b077202b4553ac214b65525a0))
+
 ## [1.17.2](https://github.com/sodenn/2do-txt/compare/v1.17.1...v1.17.2) (2023-02-06)
 
 
