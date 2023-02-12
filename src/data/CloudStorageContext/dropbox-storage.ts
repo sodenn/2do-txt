@@ -12,7 +12,11 @@ import {
   removePreferencesItem,
   setPreferencesItem,
 } from "../../utils/preferences";
-import { getSecureStorage } from "../../utils/secure-storage";
+import {
+  getSecureStorageItem,
+  removeSecureStorageItem,
+  setSecureStorageItem,
+} from "../../utils/secure-storage";
 import {
   CloudFileNotFoundError,
   CloudFileUnauthorizedError,
@@ -31,20 +35,26 @@ import {
 } from "./cloud-storage.types";
 import generateContentHash from "./ContentHasher";
 
-const { getSecureStorageItem, setSecureStorageItem, removeSecureStorageItem } =
-  getSecureStorage();
 const dropboxClientId = import.meta.env.VITE_DROPBOX_CLIENT_ID;
-const platform = getPlatform();
-const useInAppBrowser = ["ios", "android", "desktop"].includes(platform);
-const redirectUrl = useInAppBrowser
-  ? "https://www.dropbox.com/1/oauth2/redirect_receiver"
-  : `${window.location.origin}/dropbox`;
+
+async function shouldUseInAppBrowser() {
+  const platform = getPlatform();
+  return ["ios", "android", "desktop"].includes(platform);
+}
+
+async function getRedirectUrl() {
+  const useInAppBrowser = await shouldUseInAppBrowser();
+  return useInAppBrowser
+    ? "https://www.dropbox.com/1/oauth2/redirect_receiver"
+    : `${window.location.origin}/dropbox`;
+}
 
 export async function authenticate(): Promise<void> {
   const dbxAuth = new DropboxAuth({
     clientId: dropboxClientId,
   });
-
+  const useInAppBrowser = await shouldUseInAppBrowser();
+  const redirectUrl = await getRedirectUrl();
   const authUrl = (await dbxAuth.getAuthenticationUrl(
     redirectUrl,
     undefined,
@@ -121,6 +131,7 @@ export async function requestAccessToken(code: string): Promise<void> {
 
   dbxAuth.setCodeVerifier(codeVerifier);
 
+  const redirectUrl = await getRedirectUrl();
   const response = await dbxAuth.getAccessTokenFromCode(redirectUrl, code);
 
   if (response.status !== 200) {

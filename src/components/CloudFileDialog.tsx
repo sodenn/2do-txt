@@ -37,7 +37,7 @@ import { useFileCreateDialog } from "../data/FileCreateDialogContext";
 import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
-import { getDoneFilePath, getFilesystem } from "../utils/filesystem";
+import { getDoneFilePath, join, selectFolder } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
@@ -77,7 +77,6 @@ const CloudFileDialog = () => {
     setCloudFileDialogOptions,
   } = useCloudFileDialog();
   const platform = getPlatform();
-  const { selectFolder, join } = getFilesystem();
   const { setFileCreateDialog } = useFileCreateDialog();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();

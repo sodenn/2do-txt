@@ -1,15 +1,16 @@
 import { useCallback, useRef } from "react";
+import { useLoaderData } from "react-router-dom";
 import { createContext } from "../utils/Context";
-import { getFilesystem } from "../utils/filesystem";
-import { getPlatform } from "../utils/platform";
+import { readFile, selectFile } from "../utils/filesystem";
+import { LoaderData } from "./loader";
 import { useSettings } from "./SettingsContext";
 import { useTask } from "./TaskContext";
 
 const [FilePickerProvider, useFilePicker] = createContext(() => {
+  const { platform } = useLoaderData() as LoaderData;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { addTodoFilePath } = useSettings();
   const { loadTodoFile, scheduleDueTaskNotifications } = useTask();
-  const { readFile, selectFile } = getFilesystem();
 
   const openDesktopFile = useCallback(
     async (paths?: string[]) => {
@@ -17,16 +18,15 @@ const [FilePickerProvider, useFilePicker] = createContext(() => {
         return;
       }
       const path = paths[0];
-      const content = await readFile({ path });
-      const taskList = await loadTodoFile(path, content.data);
+      const data = await readFile(path);
+      const taskList = await loadTodoFile(path, data);
       await addTodoFilePath(path);
       scheduleDueTaskNotifications(taskList.items);
     },
-    [addTodoFilePath, loadTodoFile, readFile, scheduleDueTaskNotifications]
+    [addTodoFilePath, loadTodoFile, scheduleDueTaskNotifications]
   );
 
   const openFileDialog = useCallback(async () => {
-    const platform = getPlatform();
     if (platform === "desktop") {
       const path = await selectFile();
       if (path) {
@@ -35,7 +35,7 @@ const [FilePickerProvider, useFilePicker] = createContext(() => {
     } else {
       fileInputRef.current?.click();
     }
-  }, [openDesktopFile, selectFile]);
+  }, [openDesktopFile, platform]);
 
   return {
     fileInputRef,

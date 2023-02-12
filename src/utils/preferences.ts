@@ -30,10 +30,15 @@ export async function getPreferencesItem<T extends string>(
   return null;
 }
 
-export async function setPreferencesItem(key: PreferencesKeys, value: string) {
+export async function setPreferencesItem(
+  key: PreferencesKeys,
+  value: string
+): Promise<void> {
   return Preferences.set({ key, value: value });
 }
 
-export async function removePreferencesItem(key: PreferencesKeys) {
+export async function removePreferencesItem(
+  key: PreferencesKeys
+): Promise<void> {
   return Preferences.remove({ key });
 }

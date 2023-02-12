@@ -10,7 +10,11 @@ import { useCloudStorage } from "../../data/CloudStorageContext";
 import { useConfirmationDialog } from "../../data/ConfirmationDialogContext";
 import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
 import { useTask } from "../../data/TaskContext";
-import { getFilenameFromPath, getFilesystem } from "../../utils/filesystem";
+import {
+  deleteFile,
+  getFilenameFromPath,
+  readdir,
+} from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
 import ClosedFileList from "./ClosedFileList";
 import FileActionButton from "./FileActionButton";
@@ -27,22 +31,19 @@ const FileManagementDialog = () => {
     useFileManagementDialog();
   const { unlinkCloudFile, unlinkCloudDoneFile } = useCloudStorage();
   const { setConfirmationDialog } = useConfirmationDialog();
-  const { readdir, deleteFile } = getFilesystem();
   const { t } = useTranslation();
   const { taskLists, closeTodoFile } = useTask();
   const [closedFiles, setClosedFiles] = useState<string[]>([]);
 
   const listAllFiles = useCallback(async () => {
     if (platform !== "desktop") {
-      return readdir({
-        path: "",
-      }).then((result) => {
-        return result.files.map((f) => f.name);
+      return readdir("").then((files) => {
+        return files.map((f) => f.name);
       });
     } else {
       return [];
     }
-  }, [platform, readdir]);
+  }, [readdir]);
 
   const listClosedFiles = useCallback(
     (files: string[]) => {
@@ -112,9 +113,7 @@ const FileManagementDialog = () => {
     if (!confirmed) {
       return;
     }
-    deleteFile({
-      path: filePath,
-    })
+    deleteFile(filePath)
       .catch((error) => {
         console.debug(error);
       })

@@ -1,13 +1,15 @@
-import { Encoding } from "@capacitor/filesystem";
 import { Button } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
 import {
+  deleteFile,
   getDoneFilePath,
   getFilenameFromPath,
-  getFilesystem,
+  isFile,
+  readFile,
+  writeFile,
 } from "../utils/filesystem";
 import { Task } from "../utils/task";
 import { parseTaskList, stringifyTaskList, TaskList } from "../utils/task-list";
@@ -37,7 +39,6 @@ interface ArchiveTaskOptions {
 }
 
 const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
-  const { readFile, writeFile, deleteFile, isFile } = getFilesystem();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { setArchivedTasksDialog } = useArchivedTasksDialog();
   const { archiveMode, setArchiveMode } = useSettings();
@@ -70,13 +71,11 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           }
 
           const addSyncOption = async () => {
-            const readResult = await readFile({
-              path: doneFilePath,
-            }).catch((e) => void e);
-            if (readResult) {
+            const data = await readFile(doneFilePath).catch((e) => void e);
+            if (data) {
               syncOptions.push({
                 filePath: doneFilePath,
-                text: readResult.data,
+                text: data,
                 isDoneFile: true,
               });
             }
@@ -86,9 +85,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             // done file was deleted in the cloud, so delete the file reference
             await Promise.all([
               unlinkCloudDoneFile(filePath),
-              deleteFile({
-                path: doneFilePath,
-              }),
+              deleteFile(doneFilePath),
             ]);
             return archiveMode !== "no-archiving" ? "disable" : "do-nothing";
           } else if (ref) {
@@ -110,7 +107,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             await writeFile({
               path: doneFilePath,
               data: text,
-              encoding: Encoding.UTF8,
             });
 
             await linkCloudDoneFile({
@@ -146,9 +142,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             return;
           }
 
-          const exists = await isFile({
-            path,
-          });
+          const exists = await isFile(path);
           if (!exists) {
             return;
           }
@@ -156,7 +150,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           await writeFile({
             path,
             data: i.text,
-            encoding: Encoding.UTF8,
           });
         })
       );
@@ -165,16 +158,12 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       syncAllFiles,
       getCloudDoneFileRefByFilePath,
       getCloudDoneFileMetaData,
-      readFile,
       archiveMode,
       unlinkCloudDoneFile,
-      deleteFile,
       downloadFile,
-      writeFile,
       linkCloudDoneFile,
       setArchiveMode,
       enqueueSnackbar,
-      isFile,
       t,
     ]
   );
@@ -189,7 +178,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       await writeFile({
         path: doneFilePath,
         data: text,
-        encoding: Encoding.UTF8,
       });
 
       syncFile({
@@ -202,39 +190,29 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
           writeFile({
             path: doneFilePath,
             data: result,
-            encoding: Encoding.UTF8,
           });
         }
       });
     },
-    [syncFile, writeFile]
+    [syncFile]
   );
 
-  const loadDoneFile = useCallback(
-    async (filePath: string) => {
-      const doneFilePath = getDoneFilePath(filePath);
-      if (!doneFilePath) {
-        return;
-      }
+  const loadDoneFile = useCallback(async (filePath: string) => {
+    const doneFilePath = getDoneFilePath(filePath);
+    if (!doneFilePath) {
+      return;
+    }
 
-      const result = await readFile({
-        path: doneFilePath,
-      }).catch((e) => void e);
+    const data = await readFile(doneFilePath).catch((e) => void e);
 
-      if (!result) {
-        return;
-      }
-
-      const parseResult = parseTaskList(result.data);
-      return {
-        items: parseResult.items,
-        lineEnding: parseResult.lineEnding,
-        doneFileName: getFilenameFromPath(doneFilePath),
-        doneFilePath,
-      };
-    },
-    [readFile]
-  );
+    const parseResult = parseTaskList(data);
+    return {
+      items: parseResult.items,
+      lineEnding: parseResult.lineEnding,
+      doneFileName: getFilenameFromPath(doneFilePath),
+      doneFilePath,
+    };
+  }, []);
 
   const restoreTask = useCallback(
     async ({ taskList, task }: RestoreTaskOptions) => {
@@ -267,9 +245,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       };
 
       if (completedTasks.length === 0) {
-        await deleteFile({
-          path: doneFilePath,
-        });
+        await deleteFile(doneFilePath);
         deleteCloudFile({ filePath, isDoneFile: true }).catch((e) => void e);
       } else {
         const doneFileText = stringifyTaskList(completedTasks, lineEnding);
@@ -278,7 +254,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
       return newTaskList;
     },
-    [archiveMode, deleteCloudFile, deleteFile, loadDoneFile, saveDoneFile]
+    [archiveMode, deleteCloudFile, loadDoneFile, saveDoneFile]
   );
 
   const archiveTask = useCallback(
@@ -435,9 +411,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
 
           await Promise.all([
             onSaveTodoFile(newTaskList),
-            deleteFile({
-              path: doneFilePath,
-            }),
+            deleteFile(doneFilePath),
           ]);
 
           enqueueSnackbar(
@@ -452,7 +426,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
         })
       );
     },
-    [deleteCloudFile, deleteFile, enqueueSnackbar, loadDoneFile, t]
+    [deleteCloudFile, enqueueSnackbar, loadDoneFile, t]
   );
 
   return {

@@ -1,9 +1,9 @@
-import { ReadFileResult } from "@capacitor/filesystem";
-import { getFilenameFromPath, getFilesystem } from "../utils/filesystem";
+import { getFilenameFromPath, readFile } from "../utils/filesystem";
 import { migrate1 } from "../utils/migrations";
+import { getPlatform, Platform } from "../utils/platform";
 import { getPreferencesItem } from "../utils/preferences";
 import { parseTaskList, TaskList } from "../utils/task-list";
-import { ThemeMode } from "./AppThemeContext";
+import { ThemeMode } from "../utils/theme";
 import { CloudStorage, CloudStorageClient } from "./CloudStorageContext";
 import * as cloudStorage from "./CloudStorageContext/cloud-storage";
 import { FilterType, SortKey } from "./FilterContext";
@@ -15,12 +15,10 @@ import {
   TaskView,
 } from "./SettingsContext";
 
-const { readFile } = getFilesystem();
-
 interface TodoFileSuccess {
   type: "success";
   filePath: string;
-  file: ReadFileResult;
+  data: string;
 }
 
 interface TodoFileError {
@@ -49,17 +47,16 @@ export interface LoaderData {
   themeMode: ThemeMode;
   todoFiles: TodoFiles;
   cloudStorageClients: Record<CloudStorage, CloudStorageClient>;
+  platform: Platform;
 }
 
 export async function loadTodoFiles(): Promise<TodoFiles> {
   const filePaths = await getTodoFilePaths();
   const result: TodoFile[] = await Promise.all(
     filePaths.map((filePath) =>
-      readFile({
-        path: filePath,
-      })
+      readFile(filePath)
         .then(
-          (file) => ({ type: "success", filePath, file } as TodoFileSuccess)
+          (data) => ({ type: "success", filePath, data } as TodoFileSuccess)
         )
         .catch(() => ({ type: "error", filePath } as TodoFileError))
     )
@@ -67,7 +64,7 @@ export async function loadTodoFiles(): Promise<TodoFiles> {
   const files = result
     .filter((i): i is TodoFileSuccess => i.type === "success")
     .map((i) => {
-      const text = i.file.data;
+      const text = i.data;
       const filePath = i.filePath;
       const parseResult = parseTaskList(text);
       const fileName = getFilenameFromPath(filePath);
@@ -101,6 +98,7 @@ export async function loader(): Promise<LoaderData> {
     getPreferencesItem<ThemeMode>("theme-mode"),
     loadTodoFiles(),
     cloudStorage.loadClients(),
+    Promise.resolve(getPlatform()),
   ]).then(
     ([
       sortBy,
@@ -116,6 +114,7 @@ export async function loader(): Promise<LoaderData> {
       themeMode,
       todoFiles,
       cloudStorageClients,
+      platform,
     ]) => ({
       sortBy: sortBy ?? "",
       filterType: filterType || "AND",
@@ -132,6 +131,7 @@ export async function loader(): Promise<LoaderData> {
       themeMode: themeMode || "system",
       todoFiles: todoFiles,
       cloudStorageClients,
+      platform,
     })
   );
 }

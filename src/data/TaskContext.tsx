@@ -1,5 +1,3 @@
-import { Encoding } from "@capacitor/filesystem";
-import { Share } from "@capacitor/share";
 import { differenceInMinutes, format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
@@ -12,14 +10,17 @@ import { useBecomeActive } from "../utils/app-state";
 import { createContext } from "../utils/Context";
 import { parseDate, todayDate } from "../utils/date";
 import {
+  deleteFile,
   getDoneFilePath,
   getFilenameFromPath,
   getFileNameWithoutEnding,
-  getFilesystem,
+  getUri,
+  isFile,
+  writeFile,
 } from "../utils/filesystem";
 import { hashCode } from "../utils/hashcode";
-import { getPlatform } from "../utils/platform";
 import { setPreferencesItem } from "../utils/preferences";
+import { share } from "../utils/share";
 import {
   createDueDateRegex,
   createNextRecurringTask,
@@ -56,7 +57,6 @@ type SaveTodoFile = {
 
 const [TaskProvider, useTask] = createContext(() => {
   const data = useLoaderData() as LoaderData;
-  const { getUri, writeFile, deleteFile, isFile } = getFilesystem();
   const { enqueueSnackbar } = useSnackbar();
   const { setConfirmationDialog } = useConfirmationDialog();
   const {
@@ -82,7 +82,7 @@ const [TaskProvider, useTask] = createContext(() => {
     shouldNotificationsBeRescheduled,
   } = useNotification();
   const { t } = useTranslation();
-  const platform = getPlatform();
+  const platform = data.platform;
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
   const [taskLists, setTaskLists] = useState<TaskList[]>(
     data.todoFiles.files.map((f) => f.taskList)
@@ -162,12 +162,11 @@ const [TaskProvider, useTask] = createContext(() => {
         await writeFile({
           path: opt.filePath,
           data: result,
-          encoding: Encoding.UTF8,
         });
         return loadTodoFile(opt.filePath, result);
       }
     },
-    [loadTodoFile, syncFileThrottled, taskLists, writeFile]
+    [loadTodoFile, syncFileThrottled, taskLists]
   );
 
   const syncAllTodoFilesWithCloudStorage = useCallback(
@@ -178,13 +177,12 @@ const [TaskProvider, useTask] = createContext(() => {
             writeFile({
               path: i.filePath,
               data: i.text,
-              encoding: Encoding.UTF8,
             }).then(() => loadTodoFile(i.filePath, i.text));
           })
       );
       syncDoneFiles(items);
     },
-    [syncDoneFiles, loadTodoFile, syncAllFiles, writeFile]
+    [syncDoneFiles, loadTodoFile, syncAllFiles]
   );
 
   const saveTodoFile = useCallback<SaveTodoFile>(
@@ -199,7 +197,6 @@ const [TaskProvider, useTask] = createContext(() => {
       await writeFile({
         path: filePath,
         data: text,
-        encoding: Encoding.UTF8,
       });
 
       syncTodoFileWithCloudStorage({
@@ -225,7 +222,7 @@ const [TaskProvider, useTask] = createContext(() => {
         return listOrPath;
       }
     },
-    [loadTodoFile, syncTodoFileWithCloudStorage, writeFile]
+    [loadTodoFile, syncTodoFileWithCloudStorage]
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -398,20 +395,17 @@ const [TaskProvider, useTask] = createContext(() => {
     ]
   );
 
-  const deleteTodoFile = useCallback(
-    async (filePath: string) => {
-      await deleteFile({
-        path: filePath,
-      }).catch(() => console.debug(`${filePath} does not exist`));
-      const doneFilePath = getDoneFilePath(filePath);
-      if (doneFilePath) {
-        await deleteFile({
-          path: doneFilePath,
-        }).catch(() => console.debug(`${doneFilePath} does not exist`));
-      }
-    },
-    [deleteFile]
-  );
+  const deleteTodoFile = useCallback(async (filePath: string) => {
+    await deleteFile(filePath).catch(() =>
+      console.debug(`${filePath} does not exist`)
+    );
+    const doneFilePath = getDoneFilePath(filePath);
+    if (doneFilePath) {
+      await deleteFile(doneFilePath).catch(() =>
+        console.debug(`${doneFilePath} does not exist`)
+      );
+    }
+  }, []);
 
   const closeTodoFile = useCallback(
     async (filePath: string) => {
@@ -516,24 +510,18 @@ const [TaskProvider, useTask] = createContext(() => {
       const zip = await generateZipFile(activeTaskList, "base64");
 
       if (zip) {
-        const result = await writeFile({
+        const uri = await writeFile({
           data: zip.zipContent as string,
           path: zip.zipFilename,
         });
-        const uri = result.uri;
-        await Share.share({ url: uri });
-        await deleteFile({
-          path: zip.zipFilename,
-        });
+        await share(uri);
+        await deleteFile(zip.zipFilename);
       } else {
-        const result = await getUri({
-          path: activeTaskList.filePath,
-        });
-        const uri = result.uri;
-        await Share.share({ url: uri });
+        const uri = await getUri(activeTaskList.filePath);
+        await share(uri);
       }
     }
-  }, [activeTaskList, deleteFile, generateZipFile, getUri, writeFile]);
+  }, [activeTaskList, generateZipFile]);
 
   const scheduleDueTaskNotifications = useCallback(
     async (taskList: Task[]) => {
@@ -555,9 +543,7 @@ const [TaskProvider, useTask] = createContext(() => {
 
   const createNewTodoFile = useCallback(
     async (filePath: string, text = "") => {
-      const exists = await isFile({
-        path: filePath,
-      });
+      const exists = await isFile(filePath);
 
       const saveFile = async (filePath: string, text: string) => {
         await addTodoFilePath(filePath);
@@ -604,7 +590,6 @@ const [TaskProvider, useTask] = createContext(() => {
     },
     [
       addTodoFilePath,
-      isFile,
       saveTodoFile,
       scheduleDueTaskNotifications,
       setConfirmationDialog,
@@ -700,11 +685,11 @@ const [TaskProvider, useTask] = createContext(() => {
   useEffect(() => {
     data.todoFiles.errors.forEach((err) => handleFileNotFound(err.filePath));
     syncAllTodoFilesWithCloudStorage(data.todoFiles.files).catch((e) => void e);
-    if (shouldNotificationsBeRescheduled()) {
+    shouldNotificationsBeRescheduled().then(() => {
       taskLists.forEach((taskList) =>
         scheduleDueTaskNotifications(taskList.items)
       );
-    }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

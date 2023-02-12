@@ -3,7 +3,7 @@ import {
   request,
   RequestContext,
   RequestOptions,
-} from "../../../utils/request";
+} from "../../../utils/network";
 import { parseXML, prepareFileFromProps } from "./dav";
 import { encodePath, normalisePath, relative } from "./path";
 import { handleResponseCode } from "./response";

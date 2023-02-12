@@ -22,7 +22,12 @@ import { useFilter } from "../data/FilterContext";
 import { useSettings } from "../data/SettingsContext";
 import { useTask } from "../data/TaskContext";
 import { useTaskDialog } from "../data/TaskDialogContext";
-import { defaultFilePath, getFilesystem } from "../utils/filesystem";
+import {
+  defaultFilePath,
+  getUniqueFilePath,
+  isFile,
+  saveFile,
+} from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
@@ -99,7 +104,6 @@ const FileCreateDialog = () => {
 
 const DesktopFileCreateDialog = (props: FileCreateDialogProps) => {
   const { onCreateFile, onClose, open } = props;
-  const { saveFile, getUniqueFilePath } = getFilesystem();
   const { loadTodoFilesFromDisk } = useTask();
 
   const openFileDialog = useCallback(async () => {
@@ -114,14 +118,7 @@ const DesktopFileCreateDialog = (props: FileCreateDialogProps) => {
         .then(loadTodoFilesFromDisk)
         .catch((e) => console.debug(e));
     }
-  }, [
-    open,
-    onClose,
-    getUniqueFilePath,
-    saveFile,
-    onCreateFile,
-    loadTodoFilesFromDisk,
-  ]);
+  }, [open, onClose, onCreateFile, loadTodoFilesFromDisk]);
 
   useEffect(() => {
     openFileDialog();
@@ -135,13 +132,12 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
-  const { isFile, getUniqueFilePath } = getFilesystem();
   const [fileName, setFileName] = useState("");
   const { setConfirmationDialog } = useConfirmationDialog();
   const { uploadFile, cloudStoragesConnectionStatus, connectedCloudStorages } =
     useCloudStorage();
   const {
-    fileCreateDialog: { createExampleFile, createFirstTask },
+    fileCreateDialog: { createExampleFile },
     setFileCreateDialog,
   } = useFileCreateDialog();
   const [selectedCloudStorage, setSelectedCloudStorage] = useState<
@@ -183,10 +179,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
       return;
     }
 
-    const exists = await isFile({
-      path: fileName,
-    });
-
+    const exists = await isFile(fileName);
     if (exists) {
       setConfirmationDialog({
         open: true,
@@ -236,7 +229,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         return;
       }
 
-      const exists = await isFile({ path: defaultFilePath });
+      const exists = await isFile(defaultFilePath);
       if (!exists) {
         await createTodoFileAndSync(_fileName);
         onClose();
@@ -245,14 +238,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         setSkip(false);
       }
     },
-    [
-      open,
-      isFile,
-      onClose,
-      getUniqueFilePath,
-      connectedCloudStorages.length,
-      createTodoFileAndSync,
-    ]
+    [open, onClose, connectedCloudStorages.length, createTodoFileAndSync]
   );
 
   useEffect(() => {

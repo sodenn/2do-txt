@@ -30,7 +30,7 @@ function setNextRatingRequestDate(
   );
 }
 
-export async function getNextRatingRequestDateFromStorage() {
+async function getNextRatingRequestDateFromStorage() {
   const dateStr = await getPreferencesItem("app-rate-date");
 
   if (!dateStr) {
@@ -56,7 +56,7 @@ async function isTimeForRatingRequest() {
   return isAfter(currentDate, nextRatingRequestDate);
 }
 
-export async function promptForRating() {
+async function promptForRating() {
   const platform = getPlatform();
   if (platform !== "ios" && platform !== "android") {
     return;
@@ -78,3 +78,5 @@ export async function promptForRating() {
     RateApp.requestReview(),
   ]);
 }
+
+export { promptForRating };

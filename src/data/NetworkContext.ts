@@ -1,10 +1,12 @@
-import { Network } from "@capacitor/network";
-import { ConnectionStatus } from "@capacitor/network/dist/esm/definitions";
 import { differenceInSeconds } from "date-fns";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createContext } from "../utils/Context";
+import {
+  addNetworkStatusChangeListener,
+  removeAllNetworkStatusChangeListeners,
+} from "../utils/network";
 
 const [NetworkProvider, useNetwork] = createContext(() => {
   const { t } = useTranslation();
@@ -13,7 +15,7 @@ const [NetworkProvider, useNetwork] = createContext(() => {
   const [displayDate, setDisplayDate] = useState<Date>();
 
   const handleNetworkStatusChange = useCallback(
-    ({ connected }: ConnectionStatus) => {
+    (connected: boolean) => {
       setConnected(connected);
       // Don't annoy the user, so only show the message once per minute
       const showAlert =
@@ -29,9 +31,9 @@ const [NetworkProvider, useNetwork] = createContext(() => {
   );
 
   useEffect(() => {
-    Network.addListener("networkStatusChange", handleNetworkStatusChange);
+    addNetworkStatusChangeListener(handleNetworkStatusChange);
     return () => {
-      Network.removeAllListeners().then((r) => void r);
+      removeAllNetworkStatusChangeListeners();
     };
   }, [handleNetworkStatusChange]);
 

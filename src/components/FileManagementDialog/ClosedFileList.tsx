@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useFilter } from "../../data/FilterContext";
 import { useSettings } from "../../data/SettingsContext";
 import { useTask } from "../../data/TaskContext";
-import { getFilesystem } from "../../utils/filesystem";
+import { readFile } from "../../utils/filesystem";
 import StartEllipsis from "../StartEllipsis";
 
 interface ClosedFileListProps {
@@ -35,15 +35,12 @@ interface ItemMenuProps {
 const ClosedFileList = (props: ClosedFileListProps) => {
   const { list, onOpen, onDelete } = props;
   const { t } = useTranslation();
-  const { readFile } = getFilesystem();
   const { loadTodoFile } = useTask();
   const { addTodoFilePath } = useSettings();
   const { setActiveTaskListPath } = useFilter();
 
   const handleOpen = async (filePath: string) => {
-    const { data } = await readFile({
-      path: filePath,
-    });
+    const data = await readFile(filePath);
     loadTodoFile(filePath, data).then(() => {
       setActiveTaskListPath(filePath);
       addTodoFilePath(filePath);

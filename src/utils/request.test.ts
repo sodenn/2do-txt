@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { joinURL } from "./request";
+import { joinURL } from "./network";
 
 describe("request", () => {
   it("it should add a slash between parts", async () => {

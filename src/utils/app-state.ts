@@ -1,10 +1,10 @@
 import { App } from "@capacitor/app";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { getPlatform } from "./platform";
 
 export function useBecomeActive(listener: () => unknown) {
-  const platform = getPlatform();
-  useEffect(() => {
+  const handleMount = useCallback(async () => {
+    const platform = getPlatform();
     if (platform === "web" || platform === "desktop") {
       window.addEventListener("focus", listener);
     }
@@ -15,13 +15,22 @@ export function useBecomeActive(listener: () => unknown) {
         }
       });
     }
+  }, [listener]);
+
+  const handleUnmount = useCallback(async () => {
+    const platform = getPlatform();
+    if (platform === "web" || platform === "desktop") {
+      window.removeEventListener("focus", listener);
+    }
+    if (platform === "ios" || platform === "android") {
+      App.removeAllListeners();
+    }
+  }, [listener]);
+
+  useEffect(() => {
+    handleMount();
     return () => {
-      if (platform === "web" || platform === "desktop") {
-        window.removeEventListener("focus", listener);
-      }
-      if (platform === "ios" || platform === "android") {
-        App.removeAllListeners();
-      }
+      handleUnmount();
     };
-  }, [listener, platform]);
+  }, [handleMount, handleUnmount]);
 }

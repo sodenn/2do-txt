@@ -1,6 +1,6 @@
 import { Capacitor } from "@capacitor/core";
 
-type Platform = "desktop" | "web" | "ios" | "android";
+export type Platform = "desktop" | "web" | "ios" | "android";
 
 export function getPlatform(): Platform {
   if ((window as any).__TAURI__) {

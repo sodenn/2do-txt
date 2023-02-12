@@ -6,17 +6,6 @@ interface OauthOptions {
   redirectUrl: string;
 }
 
-export async function oauth(opt: OauthOptions) {
-  const platform = getPlatform();
-  if (platform === "ios" || platform === "android") {
-    return mobileOauth(opt);
-  }
-  if (platform === "desktop") {
-    return desktopOauth(opt);
-  }
-  throw new Error(`oauth: platform "${platform}" not supported`);
-}
-
 function mobileOauth(opt: OauthOptions) {
   const { authUrl, redirectUrl } = opt;
   return new Promise<{ [p: string]: string }>((resolve, reject) => {
@@ -67,4 +56,15 @@ async function desktopOauth(opt: OauthOptions) {
       ...prev,
     };
   }, {});
+}
+
+export async function oauth(opt: OauthOptions) {
+  const platform = getPlatform();
+  if (platform === "ios" || platform === "android") {
+    return mobileOauth(opt);
+  }
+  if (platform === "desktop") {
+    return desktopOauth(opt);
+  }
+  throw new Error(`oauth: platform "${platform}" not supported`);
 }

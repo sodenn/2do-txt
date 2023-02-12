@@ -12,7 +12,6 @@ import {
 } from "react-router-dom";
 import DropboxIcon from "../../components/DropboxIcon";
 import { createContext } from "../../utils/Context";
-import { getPlatform } from "../../utils/platform";
 import { LoaderData } from "../loader";
 import { useNetwork } from "../NetworkContext";
 import * as cloud from "./cloud-storage";
@@ -41,8 +40,6 @@ import {
 } from "./CloudStorageContext.types";
 import { useWebDAVDialog } from "./WebDAVDialogContext";
 
-const platform = getPlatform();
-
 export const cloudStorageIcons: Record<CloudStorage, ReactNode> = {
   Dropbox: <DropboxIcon />,
   WebDAV: <StorageOutlinedIcon />,
@@ -50,6 +47,7 @@ export const cloudStorageIcons: Record<CloudStorage, ReactNode> = {
 
 export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const data = useLoaderData() as LoaderData;
+  const platform = data.platform;
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const location = useLocation();

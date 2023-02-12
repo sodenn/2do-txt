@@ -1,3 +1,4 @@
+import { Network } from "@capacitor/network";
 import {
   Body,
   getClient,
@@ -7,7 +8,7 @@ import {
 import { BufferLike } from "../data/CloudStorageContext/webdav-client";
 import { getPlatform } from "./platform";
 
-export interface RequestContext {
+interface RequestContext {
   baseUrl: string;
   basicAuth?: {
     username: string;
@@ -15,7 +16,7 @@ export interface RequestContext {
   };
 }
 
-export interface RequestOptions {
+interface RequestOptions {
   path: string;
   method: string;
   headers?: any;
@@ -24,14 +25,14 @@ export interface RequestOptions {
   context: RequestContext;
 }
 
-export interface Response {
+interface Response {
   status: number;
   json: () => Promise<any>;
   text: () => Promise<string>;
   arrayBuffer: () => Promise<ArrayBuffer>;
 }
 
-export async function request(opt: RequestOptions): Promise<Response> {
+async function request(opt: RequestOptions): Promise<Response> {
   const platform = getPlatform();
   opt.headers = opt.headers || {};
   if (platform === "desktop") {
@@ -41,7 +42,7 @@ export async function request(opt: RequestOptions): Promise<Response> {
   }
 }
 
-export function joinURL(...parts: string[]) {
+function joinURL(...parts: string[]) {
   return parts
     .map((part, i) => {
       if (i === 0) {
@@ -139,3 +140,23 @@ function responseType(opt: RequestOptions) {
       return _ResponseType.JSON;
   }
 }
+
+function addNetworkStatusChangeListener(
+  listener: (connected: boolean) => void
+) {
+  Network.addListener("networkStatusChange", ({ connected }) =>
+    listener(connected)
+  );
+}
+
+async function removeAllNetworkStatusChangeListeners() {
+  Network.removeAllListeners().then((r) => void r);
+}
+
+export type { RequestContext, RequestOptions, Response };
+export {
+  request,
+  joinURL,
+  addNetworkStatusChangeListener,
+  removeAllNetworkStatusChangeListeners,
+};

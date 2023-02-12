@@ -9,11 +9,11 @@ export type SecureStorageKeys =
 
 const prefix = "SecureStorage.";
 
-const iosSecureStorage = Object.freeze({
+const iosSecureStorage = {
   async getSecureStorageItem(key: SecureStorageKeys): Promise<string | null> {
     return new Promise((resolve) => {
       // @ts-ignore
-      return Keychain.get(
+      Keychain.get(
         (value: string) => resolve(value),
         () => resolve(null),
         key
@@ -23,51 +23,73 @@ const iosSecureStorage = Object.freeze({
   async setSecureStorageItem(key: SecureStorageKeys, value: string) {
     return new Promise((resolve, reject) => {
       // @ts-ignore
-      return Keychain.set(resolve, reject, key, value);
+      Keychain.set(resolve, reject, key, value);
     });
   },
   async removeSecureStorageItem(key: SecureStorageKeys) {
     return new Promise((resolve) => {
       // @ts-ignore
-      return Keychain.remove(resolve, () => resolve(null), key);
+      Keychain.remove(resolve, () => resolve(null), key);
     });
   },
-});
+};
 
-const webSecureStorage = Object.freeze({
+const webSecureStorage = {
   async getSecureStorageItem(key: SecureStorageKeys): Promise<string | null> {
     const encodedData = sessionStorage.getItem(prefix + key);
     if (encodedData) {
-      return atob(encodedData);
+      return window.atob(encodedData);
     } else {
       return null;
     }
   },
   async setSecureStorageItem(key: SecureStorageKeys, value: string) {
-    sessionStorage.setItem(prefix + key, btoa(value));
+    sessionStorage.setItem(prefix + key, window.btoa(value));
   },
   async removeSecureStorageItem(key: SecureStorageKeys) {
     await sessionStorage.removeItem(prefix + key);
   },
-});
+};
 
-const desktopSecureStorage = Object.freeze({
+const desktopSecureStorage = {
   async getSecureStorageItem(key: SecureStorageKeys): Promise<string | null> {
     return invoke("get_secure_storage_item", { key });
   },
   async setSecureStorageItem(key: SecureStorageKeys, value: string) {
-    return invoke("set_secure_storage_item", { key, value });
+    await invoke("set_secure_storage_item", { key, value });
   },
   async removeSecureStorageItem(key: SecureStorageKeys) {
-    return invoke("remove_secure_storage_item", { key });
+    await invoke("remove_secure_storage_item", { key });
   },
-});
+};
 
-export function getSecureStorage() {
+async function getSecureStorageItem(
+  key: SecureStorageKeys
+): Promise<string | null> {
   const platform = getPlatform();
   return platform === "ios"
-    ? iosSecureStorage
+    ? iosSecureStorage.getSecureStorageItem(key)
     : platform === "desktop"
-    ? desktopSecureStorage
-    : webSecureStorage;
+    ? desktopSecureStorage.getSecureStorageItem(key)
+    : webSecureStorage.getSecureStorageItem(key);
 }
+
+async function setSecureStorageItem(key: SecureStorageKeys, value: string) {
+  const platform = getPlatform();
+  return platform === "ios"
+    ? iosSecureStorage.setSecureStorageItem(key, value)
+    : platform === "desktop"
+    ? desktopSecureStorage.setSecureStorageItem(key, value)
+    : webSecureStorage.setSecureStorageItem(key, value);
+}
+
+async function removeSecureStorageItem(key: SecureStorageKeys) {
+  const platform = getPlatform();
+  return platform === "ios"
+    ? iosSecureStorage.removeSecureStorageItem(key)
+    : platform === "desktop"
+    ? desktopSecureStorage.removeSecureStorageItem(key)
+    : webSecureStorage.removeSecureStorageItem(key);
+}
+
+export { getSecureStorageItem, setSecureStorageItem, removeSecureStorageItem };

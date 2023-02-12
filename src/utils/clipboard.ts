@@ -1,12 +1,11 @@
-import { Clipboard } from "@capacitor/clipboard";
 import { writeText } from "@tauri-apps/api/clipboard";
 import { getPlatform } from "./platform";
 
 export async function writeToClipboard(promise: Promise<string>) {
   const platform = getPlatform();
 
-  const safariAgent = navigator.userAgent.includes("Safari");
-  if (platform === "web" && safariAgent) {
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (platform === "web" && isSafari) {
     return navigator.clipboard.write([
       new ClipboardItem({ "text/plain": promise }),
     ]);
@@ -18,7 +17,6 @@ export async function writeToClipboard(promise: Promise<string>) {
     return writeText(data);
   }
 
-  return Clipboard.write({
-    string: data,
-  });
+  const blob = new Blob([data], { type: "text/plain" });
+  return navigator.clipboard.write([new ClipboardItem({ "text/plain": blob })]);
 }

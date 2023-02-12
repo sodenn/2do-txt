@@ -1,5 +1,3 @@
-import { KeyboardStyle } from "@capacitor/keyboard";
-import { StatusBar, Style } from "@capacitor/status-bar";
 import {
   createTheme,
   CssBaseline,
@@ -18,14 +16,14 @@ import { createContext } from "../utils/Context";
 import { setKeyboardStyle } from "../utils/keyboard";
 import { setPreferencesItem } from "../utils/preferences";
 import { hideSplashScreen } from "../utils/splash-screen";
+import { setStatusBarStyling } from "../utils/status-bar";
+import { ThemeMode } from "../utils/theme";
 import { LoaderData } from "./loader";
 
 const translations: Record<string, Localization> = {
   en: enUS,
   de: deDE,
 };
-
-export type ThemeMode = PaletteMode | "system";
 
 const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
   components: {
@@ -87,24 +85,8 @@ function applyThemeMode(theme: Theme, mode: ThemeMode) {
     themeColorMetaTag.setAttribute("content", theme.palette.background.default);
   }
 
-  StatusBar.setStyle({
-    style:
-      mode === "light"
-        ? Style.Light
-        : mode === "dark"
-        ? Style.Dark
-        : Style.Default,
-  }).catch((error) => void error);
-
-  setKeyboardStyle({
-    style:
-      mode === "light"
-        ? KeyboardStyle.Light
-        : mode === "dark"
-        ? KeyboardStyle.Dark
-        : KeyboardStyle.Default,
-  });
-
+  setStatusBarStyling(mode);
+  setKeyboardStyle(mode);
   hideSplashScreen();
 }
 

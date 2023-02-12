@@ -1,5 +1,9 @@
 import { isDateAfter, isDateBefore, isDateEqual } from "../../utils/date";
-import { getSecureStorage } from "../../utils/secure-storage";
+import {
+  getSecureStorageItem,
+  removeSecureStorageItem,
+  setSecureStorageItem,
+} from "../../utils/secure-storage";
 import {
   CloudFileNotFoundError,
   CloudFileUnauthorizedError,
@@ -24,9 +28,6 @@ interface Credentials {
   password: string;
   url: string;
 }
-
-const { getSecureStorageItem, setSecureStorageItem, removeSecureStorageItem } =
-  getSecureStorage();
 
 export async function saveWebDAVCredentials(
   credentials: Credentials

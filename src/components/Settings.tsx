@@ -17,7 +17,7 @@ const Settings = () => {
   const { t } = useTranslation();
   const { cloudStorageEnabled } = useCloudStorage();
   const { setSideSheetOpen } = useSideSheet();
-  const { isNotificationPermissionGranted, requestNotificationPermissions } =
+  const { isNotificationPermissionGranted, requestNotificationPermission } =
     useNotification();
   const {
     showNotifications,
@@ -32,7 +32,7 @@ const Settings = () => {
   const handleShowNotifications = async () => {
     let granted = await isNotificationPermissionGranted();
     if (!showNotifications && !granted) {
-      granted = await requestNotificationPermissions();
+      granted = await requestNotificationPermission();
       setShowNotifications(granted);
     } else {
       setShowNotifications(!showNotifications);

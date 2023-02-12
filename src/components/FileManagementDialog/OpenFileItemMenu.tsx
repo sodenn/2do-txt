@@ -25,7 +25,7 @@ import {
 } from "../../data/CloudStorageContext";
 import { useTask } from "../../data/TaskContext";
 import { writeToClipboard } from "../../utils/clipboard";
-import { getDoneFilePath, getFilesystem } from "../../utils/filesystem";
+import { getDoneFilePath, isFile, readFile } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
 
 interface CloseOptions {
@@ -91,7 +91,6 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
     uploadFile,
   } = useCloudStorage();
   const { enqueueSnackbar } = useSnackbar();
-  const { readFile, isFile } = getFilesystem();
   const [loading, setLoading] = useState(false);
 
   const enableCloudSync = async () => {
@@ -101,29 +100,23 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
       onLoad(true);
 
       if (!cloudFileRef) {
-        const readFileResult = await readFile({
-          path: filePath,
-        });
+        const todoFileData = await readFile(filePath);
 
         const uploadResult = await uploadFile({
           filePath,
-          text: readFileResult.data,
+          text: todoFileData,
           cloudStorage,
           isDoneFile: false,
         });
 
         const doneFilePath = getDoneFilePath(filePath);
         if (doneFilePath) {
-          const doneFileExists = await isFile({
-            path: doneFilePath,
-          });
+          const doneFileExists = await isFile(doneFilePath);
           if (doneFileExists) {
-            const readDoneFileResult = await readFile({
-              path: filePath,
-            });
+            const doneFileData = await readFile(filePath);
             await uploadFile({
               filePath,
-              text: readDoneFileResult.data,
+              text: doneFileData,
               cloudStorage,
               isDoneFile: true,
             }).catch((e) => void e);
@@ -193,7 +186,6 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
-  const { readFile } = getFilesystem();
   const open = Boolean(anchorEl);
   const cloudStorages = useMemo(() => {
     const value = [...connectedCloudStorages];
@@ -220,9 +212,7 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   };
 
   const handleCopyToClipboard = () => {
-    const promise = readFile({
-      path: filePath,
-    }).then((result) => result.data);
+    const promise = readFile(filePath);
     writeToClipboard(promise)
       .then(() =>
         enqueueSnackbar(t("Copied to clipboard"), { variant: "info" })
