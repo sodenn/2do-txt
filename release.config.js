@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 const branch = process.env.GITHUB_REF_NAME ?? "";
 
 const branches = ["feat", "refactor", "fix"];
@@ -6,9 +7,6 @@ const config = {
   branches: [
     {
       name: "main",
-    },
-    {
-      name: "beta",
       prerelease: true,
     },
     ...branches.map((name) => ({
@@ -67,4 +65,5 @@ if (branches.some((name) => branch.startsWith(`${name}/`))) {
   ];
 }
 
+// eslint-disable-next-line no-undef
 module.exports = config;

@@ -7,8 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "2do-txt",
-    "version": "../package.json"
+    "productName": "2do-txt"
   },
   "tauri": {
     "allowlist": {
