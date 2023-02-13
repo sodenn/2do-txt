@@ -74,22 +74,3 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
         with:
           releaseId: ${{ needs.release.outputs.releaseId }}
-          tagName: ${{ needs.release.outputs.gitTag }}
-  publish-release:
-    name: Publish GitHub release
-    if: github.ref == 'refs/heads/main'
-    needs:
-      - release
-    runs-on: ubuntu-latest
-    steps:
-      - if: github.ref == 'refs/heads/main'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: "${{ needs.release.outputs.releaseId }}",
-              prerelease: false,
-              make_latest: true
-            })

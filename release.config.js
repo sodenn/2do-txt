@@ -7,7 +7,6 @@ const config = {
   branches: [
     {
       name: "main",
-      prerelease: true,
     },
     ...branches.map((name) => ({
       name: `${name}/*`,
