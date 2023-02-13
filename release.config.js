@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-undef
 const branch = process.env.GITHUB_REF_NAME ?? "";
 
-const branches = ["feat", "refactor", "fix"];
+const branches = ["feat", "refactor", "fix", "chore"];
 
 const config = {
   branches: [
