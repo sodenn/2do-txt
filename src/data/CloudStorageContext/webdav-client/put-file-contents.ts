@@ -19,6 +19,7 @@ export async function putFileContents(
   };
   const opt: RequestOptions = {
     path: encodePath(filePath),
+    responseType: "binary",
     method: "PUT",
     headers,
     context,
