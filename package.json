@@ -1,6 +1,6 @@
 {
   "name": "2do-txt",
-  "version": "1.17.3",
+  "version": "1.17.4",
   "description": "todo.txt-compatible task manager",
   "license": "GPL-3.0",
   "private": true,
