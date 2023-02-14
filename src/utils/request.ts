@@ -89,8 +89,6 @@ async function desktopRequest(opt: RequestOptions) {
 function headers(opt: RequestOptions) {
   const { context } = opt;
   const headers: Record<string, any> = {
-    Accept: opt.headers["Accept"] ?? "application/json",
-    "Content-Type": opt.headers["Content-Type"] ?? "application/json",
     ...opt.headers,
   };
   if (context.basicAuth) {
@@ -107,25 +105,22 @@ function url(opt: RequestOptions) {
 
 function webBody(opt: RequestOptions) {
   const contentType = opt.headers["Content-Type"];
-  if (
-    contentType === "application/octet-stream" ||
-    contentType === "text/plain"
-  ) {
-    return opt.data as string | BufferLike;
-  } else {
+  if (contentType === "application/json") {
     return JSON.stringify(opt.data as Record<any, any>);
+  } else {
+    return opt.data as string | BufferLike;
   }
 }
 
 function desktopBody(opt: RequestOptions) {
   const contentType = opt.headers["Content-Type"];
-  if (contentType === "application/octet-stream") {
+  if (contentType === "application/json") {
+    return Body.json(opt.data as Record<any, any>);
+  } else if (contentType === "application/octet-stream") {
     const enc = new TextEncoder();
     return Body.bytes(enc.encode(opt.data as string));
-  } else if (contentType === "text/plain") {
-    return Body.text(opt.data as string);
   } else {
-    return Body.json(opt.data as Record<any, any>);
+    return Body.text(opt.data as string);
   }
 }
 

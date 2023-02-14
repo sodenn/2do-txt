@@ -71,7 +71,7 @@ const [TaskProvider, useTask] = createContext(() => {
   const {
     getCloudFileRefs,
     syncAllFiles,
-    syncFileThrottled,
+    syncFile,
     unlinkCloudFile,
     unlinkCloudDoneFile,
     cloudStorageEnabled,
@@ -157,7 +157,7 @@ const [TaskProvider, useTask] = createContext(() => {
       } else {
         opt = optOrPath;
       }
-      const result = await syncFileThrottled(opt);
+      const result = await syncFile(opt);
       if (result) {
         await writeFile({
           path: opt.filePath,
@@ -167,7 +167,7 @@ const [TaskProvider, useTask] = createContext(() => {
         return loadTodoFile(opt.filePath, result);
       }
     },
-    [loadTodoFile, syncFileThrottled, taskLists, writeFile]
+    [loadTodoFile, syncFile, taskLists, writeFile]
   );
 
   const syncAllTodoFilesWithCloudStorage = useCallback(

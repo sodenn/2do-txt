@@ -1,6 +1,5 @@
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import { Alert, Button, CircularProgress } from "@mui/material";
-import { throttle } from "lodash";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -461,16 +460,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     ]
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const syncFileThrottled = useCallback(throttle(syncFile, 5000), [
-    closeSnackbar,
-    connected,
-    enqueueSnackbar,
-    getFilteredSyncOptions,
-    handleError,
-    syncMessage,
-  ]);
-
   const getCloudDoneFileMetaData = useCallback(
     async (filePath: string) => {
       const _opt = await extendOptions({
@@ -506,7 +495,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     deleteCloudFile,
     syncFile,
     syncAllFiles,
-    syncFileThrottled,
     unlinkCloudFile,
     unlinkCloudDoneFile,
     getCloudDoneFileMetaData,
