@@ -1,3 +1,10 @@
+## [1.17.5](https://github.com/sodenn/2do-txt/compare/v1.17.4...v1.17.5) (2023-02-14)
+
+
+### Bug Fixes
+
+* **Tauri:** failed to parse response body ([#756](https://github.com/sodenn/2do-txt/issues/756)) ([dc7c827](https://github.com/sodenn/2do-txt/commit/dc7c827815d8bc3b11688e7cf17fa1c658a6dc0a))
+
 ## [1.17.4](https://github.com/sodenn/2do-txt/compare/v1.17.3...v1.17.4) (2023-02-13)
 
 
