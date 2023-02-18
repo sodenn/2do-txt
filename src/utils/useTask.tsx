@@ -2,13 +2,20 @@ import { differenceInMinutes, format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useLoaderData } from "react-router-dom";
-import { promptForRating } from "../utils/app-rate";
-import { useBecomeActive } from "../utils/app-state";
-import { createContext } from "../utils/Context";
-import { parseDate, todayDate } from "../utils/date";
+import { shallow } from "zustand/shallow";
+import { SyncFileOptions, useCloudStorage } from "../data/CloudStorageContext";
+import useConfirmationDialog from "../data/confirmation-dialog-store";
+import useFilter from "../data/filter-store";
+import usePlatform from "../data/platform-store";
+import useSettings, {
+  addTodoFilePath,
+  removeTodoFilePath,
+} from "../data/settings-store";
+import useTasks, { loadTodoFiles } from "../data/task-state";
+import { promptForRating } from "./app-rate";
+import { parseDate, todayDate } from "./date";
 import {
   deleteFile,
   getDoneFilePath,
@@ -17,10 +24,11 @@ import {
   getUri,
   isFile,
   writeFile,
-} from "../utils/filesystem";
-import { hashCode } from "../utils/hashcode";
-import { setPreferencesItem } from "../utils/preferences";
-import { share } from "../utils/share";
+} from "./filesystem";
+import { hashCode } from "./hashcode";
+import { useNotification } from "./notification";
+import { setPreferencesItem } from "./preferences";
+import { share } from "./share";
 import {
   createDueDateRegex,
   createNextRecurringTask,
@@ -28,22 +36,17 @@ import {
   Task,
   TaskFormData,
   transformPriority,
-} from "../utils/task";
+} from "./task";
 import {
   getCommonTaskListAttributes,
   parseTaskList as _parseTaskList,
   stringifyTaskList,
   TaskList,
-  updateTaskList,
-} from "../utils/task-list";
-import { generateId } from "../utils/uuid";
-import { useArchivedTask } from "./ArchivedTaskContext";
-import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
-import { useConfirmationDialog } from "./ConfirmationDialogContext";
-import { useFilter } from "./FilterContext";
-import { LoaderData, loadTodoFiles } from "./loader";
-import { useNotification } from "./NotificationContext";
-import { useSettings } from "./SettingsContext";
+  updateTaskListAttributes,
+} from "./task-list";
+import useArchivedTask from "./useArchivedTask";
+import { useBecomeActive } from "./useBecomeActive";
+import { generateId } from "./uuid";
 
 interface SyncItem {
   filePath: string;
@@ -55,19 +58,27 @@ type SaveTodoFile = {
   (taskList: TaskList): Promise<TaskList>;
 };
 
-const [TaskProvider, useTask] = createContext(() => {
-  const data = useLoaderData() as LoaderData;
+function useTask() {
   const { enqueueSnackbar } = useSnackbar();
-  const { setConfirmationDialog } = useConfirmationDialog();
+  const openConfirmationDialog = useConfirmationDialog(
+    (state) => state.openConfirmationDialog
+  );
   const {
-    addTodoFilePath,
     showNotifications,
     createCreationDate,
     createCompletionDate,
     archiveMode,
     priorityTransformation,
-    removeTodoFilePath,
-  } = useSettings();
+  } = useSettings(
+    (state) => ({
+      showNotifications: state.showNotifications,
+      createCreationDate: state.createCreationDate,
+      createCompletionDate: state.createCompletionDate,
+      archiveMode: state.archiveMode,
+      priorityTransformation: state.priorityTransformation,
+    }),
+    shallow
+  );
   const {
     getCloudFileRefs,
     syncAllFiles,
@@ -82,11 +93,13 @@ const [TaskProvider, useTask] = createContext(() => {
     shouldNotificationsBeRescheduled,
   } = useNotification();
   const { t } = useTranslation();
-  const platform = data.platform;
+  const platform = usePlatform((state) => state.platform);
   const { activeTaskListPath, setActiveTaskListPath } = useFilter();
-  const [taskLists, setTaskLists] = useState<TaskList[]>(
-    data.todoFiles.files.map((f) => f.taskList)
-  );
+  const taskLists = useTasks((state) => state.taskLists);
+  const todoFiles = useTasks((state) => state.todoFiles);
+  const setTaskLists = useTasks((state) => state.setTaskLists);
+  const addTaskList = useTasks((state) => state.addTaskList);
+  const removeTaskList = useTasks((state) => state.removeTaskList);
   const {
     syncDoneFiles,
     saveDoneFile,
@@ -129,14 +142,10 @@ const [TaskProvider, useTask] = createContext(() => {
   const loadTodoFile = useCallback(
     async (filePath: string, text: string) => {
       const taskList = parseTaskList(filePath, text);
-      setTaskLists((value) => {
-        return value.some((t) => t.filePath === filePath)
-          ? value.map((t) => (t.filePath === filePath ? taskList : t))
-          : [...value, taskList];
-      });
+      addTaskList(taskList);
       return taskList;
     },
-    [parseTaskList]
+    [addTaskList, parseTaskList]
   );
 
   const syncTodoFileWithCloudStorage = useCallback(
@@ -211,18 +220,12 @@ const [TaskProvider, useTask] = createContext(() => {
       if (typeof listOrPath === "string") {
         return loadTodoFile(filePath, text);
       } else {
-        const updatedTaskList = updateTaskList(listOrPath);
-        setTaskLists((taskLists) => {
-          return taskLists.some((t) => t.filePath === filePath)
-            ? taskLists.map((t) =>
-                t.filePath === filePath ? updatedTaskList : t
-              )
-            : [...taskLists, updatedTaskList];
-        });
+        const updatedTaskList = updateTaskListAttributes(listOrPath);
+        addTaskList(updatedTaskList);
         return listOrPath;
       }
     },
-    [loadTodoFile, syncTodoFileWithCloudStorage]
+    [addTaskList, loadTodoFile, syncTodoFileWithCloudStorage]
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -441,14 +444,14 @@ const [TaskProvider, useTask] = createContext(() => {
         }
       }
 
-      setTaskLists((state) => state.filter((l) => l !== taskList));
+      removeTaskList(taskList);
     },
     [
       taskLists,
-      removeTodoFilePath,
       platform,
       cloudStorageEnabled,
       activeTaskListPath,
+      removeTaskList,
       cancelNotifications,
       deleteTodoFile,
       unlinkCloudFile,
@@ -538,7 +541,7 @@ const [TaskProvider, useTask] = createContext(() => {
       );
       setTaskLists(reorderedList);
     },
-    [taskLists]
+    [setTaskLists, taskLists]
   );
 
   const createNewTodoFile = useCallback(
@@ -555,8 +558,7 @@ const [TaskProvider, useTask] = createContext(() => {
       if (exists) {
         return new Promise<string | undefined>((resolve, reject) => {
           try {
-            setConfirmationDialog({
-              open: true,
+            openConfirmationDialog({
               onClose: () => resolve(undefined),
               content: (
                 <Trans
@@ -588,13 +590,7 @@ const [TaskProvider, useTask] = createContext(() => {
         return saveFile(filePath, text);
       }
     },
-    [
-      addTodoFilePath,
-      saveTodoFile,
-      scheduleDueTaskNotifications,
-      setConfirmationDialog,
-      t,
-    ]
+    [saveTodoFile, scheduleDueTaskNotifications, openConfirmationDialog, t]
   );
 
   const restoreTask = useCallback(
@@ -656,7 +652,7 @@ const [TaskProvider, useTask] = createContext(() => {
     // apply external file changes by updating the state
     setTaskLists(files.map((f) => f.taskList));
     return { files, errors };
-  }, []);
+  }, [setTaskLists]);
 
   const becomeActiveListener = useCallback(async () => {
     const { files, errors } = await loadTodoFilesFromDisk();
@@ -683,8 +679,8 @@ const [TaskProvider, useTask] = createContext(() => {
   useBecomeActive(becomeActiveListener);
 
   useEffect(() => {
-    data.todoFiles.errors.forEach((err) => handleFileNotFound(err.filePath));
-    syncAllTodoFilesWithCloudStorage(data.todoFiles.files).catch((e) => void e);
+    todoFiles.errors.forEach((err) => handleFileNotFound(err.filePath));
+    syncAllTodoFilesWithCloudStorage(todoFiles.files).catch((e) => void e);
     shouldNotificationsBeRescheduled().then(() => {
       taskLists.forEach((taskList) =>
         scheduleDueTaskNotifications(taskList.items)
@@ -718,6 +714,6 @@ const [TaskProvider, useTask] = createContext(() => {
     createNewTodoFile,
     syncTodoFileWithCloudStorage,
   };
-});
+}
 
-export { TaskProvider, useTask };
+export default useTask;

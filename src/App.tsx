@@ -15,6 +15,7 @@ const router = createBrowserRouter([
       </ProviderBundle>
     ),
     loader,
+    shouldRevalidate: () => false,
     errorElement: <ErrorBoundary />,
     children: [
       {

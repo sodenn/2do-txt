@@ -8,10 +8,10 @@ import {
 } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { FilterType, SortKey, useFilter } from "../data/FilterContext";
-import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
+import useFilter, { FilterType, SortKey } from "../data/filter-store";
+import useSettings from "../data/settings-store";
 import { useAddShortcutListener } from "../utils/shortcuts";
+import useTask from "../utils/useTask";
 import ChipList from "./ChipList";
 import Heading from "./Heading";
 
@@ -28,14 +28,18 @@ const Filter = () => {
     activeContexts,
     activeTags,
     hideCompletedTasks,
-    setActivePriorities,
-    setActiveProjects,
-    setActiveContexts,
-    setActiveTags,
+    togglePriority,
+    resetActivePriorities,
+    resetActiveProjects,
+    toggleProject,
+    resetActiveContexts,
+    toggleContext,
+    resetActiveTags,
+    toggleTag,
     setHideCompletedTasks,
     setSearchTerm,
   } = useFilter();
-  const { taskView } = useSettings();
+  const taskView = useSettings((state) => state.taskView);
 
   const attributes = activeTaskList ? activeTaskList : rest;
 
@@ -48,18 +52,18 @@ const Filter = () => {
   const shortcutListeners = useMemo(
     () => ({
       x: () => {
-        setActiveProjects([]);
-        setActiveContexts([]);
-        setActiveTags([]);
-        setActivePriorities([]);
+        resetActiveProjects();
+        resetActiveContexts();
+        resetActiveTags();
+        resetActivePriorities();
         setSearchTerm("");
       },
     }),
     [
-      setActiveContexts,
-      setActivePriorities,
-      setActiveProjects,
-      setActiveTags,
+      resetActiveContexts,
+      resetActivePriorities,
+      resetActiveProjects,
+      resetActiveTags,
       setSearchTerm,
     ]
   );
@@ -75,13 +79,7 @@ const Filter = () => {
             multiple={filterType === "OR"}
             items={priorities}
             activeItems={activePriorities}
-            onClick={(item) =>
-              setActivePriorities((items) =>
-                items.includes(item)
-                  ? items.filter((i) => i !== item)
-                  : [...items, item]
-              )
-            }
+            onClick={togglePriority}
             color="secondary"
           />
         </Box>
@@ -92,13 +90,7 @@ const Filter = () => {
           <ChipList
             items={projects}
             activeItems={activeProjects}
-            onClick={(item) =>
-              setActiveProjects((items) =>
-                items.includes(item)
-                  ? items.filter((i) => i !== item)
-                  : [...items, item]
-              )
-            }
+            onClick={toggleProject}
             color="info"
           />
         </Box>
@@ -109,13 +101,7 @@ const Filter = () => {
           <ChipList
             items={contexts}
             activeItems={activeContexts}
-            onClick={(item) =>
-              setActiveContexts((items) =>
-                items.includes(item)
-                  ? items.filter((i) => i !== item)
-                  : [...items, item]
-              )
-            }
+            onClick={toggleContext}
             color="success"
           />
         </Box>
@@ -132,13 +118,7 @@ const Filter = () => {
               {}
             )}
             activeItems={activeTags}
-            onClick={(item) =>
-              setActiveTags((items) =>
-                items.includes(item)
-                  ? items.filter((i) => i !== item)
-                  : [...items, item]
-              )
-            }
+            onClick={toggleTag}
             color="warning"
           />
         </Box>

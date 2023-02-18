@@ -23,10 +23,10 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "../../data/CloudStorageContext";
-import { useTask } from "../../data/TaskContext";
 import { writeToClipboard } from "../../utils/clipboard";
 import { getDoneFilePath, isFile, readFile } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
+import useTask from "../../utils/useTask";
 
 interface CloseOptions {
   filePath: string;

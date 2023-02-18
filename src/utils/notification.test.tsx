@@ -3,8 +3,7 @@ import { addHours, addMinutes } from "date-fns";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { WithChildren } from "../types/common.types";
-import { NotificationProvider, useNotification } from "./NotificationContext";
+import { useNotification } from "./notification";
 
 type NotificationMethods = ReturnType<typeof useNotification>;
 
@@ -16,10 +15,6 @@ i18n.use(initReactI18next).init({
   },
   resources: { en: { Reminder: "Reminder" } },
 });
-
-function Wrapper({ children }: WithChildren) {
-  return <NotificationProvider>{children}</NotificationProvider>;
-}
 
 function mockNotificationAPI(permission: NotificationPermission = "granted") {
   const NotificationMock = vi.fn();
@@ -43,9 +38,7 @@ function setupFakeTimers() {
 function renderNotificationsHook() {
   const {
     result: { current },
-  } = renderHook(() => useNotification(), {
-    wrapper: Wrapper,
-  });
+  } = renderHook(() => useNotification());
   return current;
 }
 

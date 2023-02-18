@@ -8,17 +8,14 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { deDE, enUS, Localization } from "@mui/material/locale";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useLoaderData } from "react-router-dom";
+import useTheme, { ThemeMode } from "../data/theme-store";
 import { WithChildren } from "../types/common.types";
-import { createContext } from "../utils/Context";
 import { setKeyboardStyle } from "../utils/keyboard";
 import { setPreferencesItem } from "../utils/preferences";
 import { hideSplashScreen } from "../utils/splash-screen";
 import { setStatusBarStyling } from "../utils/status-bar";
-import { ThemeMode } from "../utils/theme";
-import { LoaderData } from "./loader";
 
 const translations: Record<string, Localization> = {
   en: enUS,
@@ -90,13 +87,12 @@ function applyThemeMode(theme: Theme, mode: ThemeMode) {
   hideSplashScreen();
 }
 
-const [AppThemeProvider, useAppTheme] = createContext(() => {
+const AppThemeProvider = ({ children }: WithChildren) => {
   const {
     i18n: { language },
   } = useTranslation();
-  const data = useLoaderData() as LoaderData;
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const [themeMode, setThemeMode] = useState<ThemeMode>(data.themeMode);
+  const themeMode = useTheme((state) => state.mode);
   const paletteMode = getPaletteMode(themeMode, prefersDarkMode);
   const theme = useMemo(
     () => createTheme(getThemeOptions(paletteMode), translations[language]),
@@ -105,23 +101,6 @@ const [AppThemeProvider, useAppTheme] = createContext(() => {
 
   useEffect(() => applyThemeMode(theme, themeMode), [theme, themeMode]);
 
-  return {
-    setThemeMode,
-    themeMode,
-    theme,
-  };
-});
-
-const AppTheme = ({ children }: WithChildren) => {
-  return (
-    <AppThemeProvider>
-      <AppThemeInternal>{children}</AppThemeInternal>
-    </AppThemeProvider>
-  );
-};
-
-const AppThemeInternal = ({ children }: WithChildren) => {
-  const { theme } = useAppTheme();
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -130,4 +109,4 @@ const AppThemeInternal = ({ children }: WithChildren) => {
   );
 };
 
-export { AppTheme, useAppTheme };
+export default AppThemeProvider;

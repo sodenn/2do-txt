@@ -7,7 +7,7 @@ import {
   startOfDay,
 } from "date-fns";
 
-export function formatLocaleDate(date: Date, locale?: string) {
+function formatLocaleDate(date: Date, locale?: string) {
   return date.toLocaleDateString(locale, {
     day: "2-digit",
     month: "2-digit",
@@ -15,7 +15,7 @@ export function formatLocaleDate(date: Date, locale?: string) {
   });
 }
 
-export function formatLocalDateTime(date: Date, locale?: string) {
+function formatLocalDateTime(date: Date, locale?: string) {
   return date.toLocaleString(locale, {
     day: "numeric",
     month: "numeric",
@@ -26,22 +26,22 @@ export function formatLocalDateTime(date: Date, locale?: string) {
   });
 }
 
-export function formatDate(date: Date): string {
+function formatDate(date: Date): string {
   return format(date, "yyyy-MM-dd");
 }
 
-export function parseDate(str: string): Date | undefined {
+function parseDate(str: string): Date | undefined {
   const result = parseISO(str);
   if (result.toString() !== "Invalid Date") {
     return result;
   }
 }
 
-export function todayDate(): Date {
+function todayDate(): Date {
   return startOfDay(new Date());
 }
 
-export function dateReviver(key: string, value: any) {
+function dateReviver(key: string, value: any) {
   const date = parseDate(value);
   if (date) {
     return date;
@@ -50,7 +50,7 @@ export function dateReviver(key: string, value: any) {
   }
 }
 
-export function isDateEqual(date1?: Date | null, date2?: Date | null): boolean {
+function isDateEqual(date1?: Date | null, date2?: Date | null): boolean {
   if (!date1 && !date2) {
     return true;
   }
@@ -60,21 +60,33 @@ export function isDateEqual(date1?: Date | null, date2?: Date | null): boolean {
   return false;
 }
 
-export function isDateBefore(
-  date1?: Date | null,
-  date2?: Date | null
-): boolean {
+function isDateBefore(date1?: Date | null, date2?: Date | null): boolean {
   if (date1 && date2) {
     return isBefore(date1, date2);
   }
   return false;
 }
 
-export function isDateAfter(date1?: Date | null, date2?: Date | null): boolean {
+function isDateAfter(date1?: Date | null, date2?: Date | null): boolean {
   if (date1 && date2) {
     return isAfter(date1, date2);
   }
   return false;
 }
 
-export const isDate = (date: Date | undefined): date is Date => !!date;
+function isDate(date: Date | undefined): date is Date {
+  return !!date;
+}
+
+export {
+  formatLocaleDate,
+  formatLocalDateTime,
+  formatDate,
+  parseDate,
+  todayDate,
+  dateReviver,
+  isDateEqual,
+  isDateBefore,
+  isDateAfter,
+  isDate,
+};

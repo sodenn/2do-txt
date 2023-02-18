@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { ChangeEvent, useMemo, useRef } from "react";
-import { useFilter } from "../data/FilterContext";
+import useFilter from "../data/filter-store";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import ExpandableSearch from "./ExpandableSearch";
 
@@ -9,7 +9,8 @@ interface SearchBarProps {
 }
 
 const SearchBar = ({ onExpand }: SearchBarProps) => {
-  const { searchTerm, setSearchTerm } = useFilter();
+  const searchTerm = useFilter((state) => state.searchTerm);
+  const setSearchTerm = useFilter((state) => state.setSearchTerm);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (event: any) => {

@@ -4,11 +4,11 @@ import { useSnackbar } from "notistack";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
-import { useFilePicker } from "../data/FilePickerContext";
-import { useFilter } from "../data/FilterContext";
-import { useTask } from "../data/TaskContext";
+import useFilePicker from "../data/file-picker-store";
+import useFilter from "../data/filter-store";
 import { WithChildren } from "../types/common.types";
 import { getPlatform } from "../utils/platform";
+import useTask from "../utils/useTask";
 
 const Root = styled("div")({
   height: "100%",
@@ -49,8 +49,10 @@ const FilePicker = ({ children }: WithChildren) => {
 const WebFilePicker = ({ children }: WithChildren) => {
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
-  const { fileInputRef } = useFilePicker();
-  const { setActiveTaskListPath } = useFilter();
+  const { setFileInput } = useFilePicker();
+  const setActiveTaskListPath = useFilter(
+    (state) => state.setActiveTaskListPath
+  );
   const { enqueueSnackbar } = useSnackbar();
   const { createNewTodoFile, taskLists } = useTask();
   const platform = getPlatform();
@@ -136,7 +138,7 @@ const WebFilePicker = ({ children }: WithChildren) => {
       <input
         data-testid="file-picker"
         style={{ display: "none" }}
-        ref={fileInputRef}
+        ref={setFileInput}
         accept={
           ["ios", "android"].some((p) => p === platform)
             ? "text/plain"

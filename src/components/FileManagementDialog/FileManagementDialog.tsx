@@ -7,15 +7,15 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useCloudStorage } from "../../data/CloudStorageContext";
-import { useConfirmationDialog } from "../../data/ConfirmationDialogContext";
-import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
-import { useTask } from "../../data/TaskContext";
+import useConfirmationDialog from "../../data/confirmation-dialog-store";
+import useFileManagementDialog from "../../data/file-management-dialog-store";
 import {
   deleteFile,
   getFilenameFromPath,
   readdir,
 } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
+import useTask from "../../utils/useTask";
 import ClosedFileList from "./ClosedFileList";
 import FileActionButton from "./FileActionButton";
 import OpenFileList from "./OpenFileList";
@@ -27,10 +27,16 @@ interface CloseOptions {
 
 const FileManagementDialog = () => {
   const platform = getPlatform();
-  const { fileManagementDialogOpen, setFileManagementDialogOpen } =
-    useFileManagementDialog();
+  const fileManagementDialogOpen = useFileManagementDialog(
+    (state) => state.open
+  );
+  const closeFileManagementDialog = useFileManagementDialog(
+    (state) => state.closeFileManagementDialog
+  );
   const { unlinkCloudFile, unlinkCloudDoneFile } = useCloudStorage();
-  const { setConfirmationDialog } = useConfirmationDialog();
+  const openConfirmationDialog = useConfirmationDialog(
+    (state) => state.openConfirmationDialog
+  );
   const { t } = useTranslation();
   const { taskLists, closeTodoFile } = useTask();
   const [closedFiles, setClosedFiles] = useState<string[]>([]);
@@ -66,8 +72,7 @@ const FileManagementDialog = () => {
 
   const openDeleteConfirmationDialog = (filePath: string) => {
     return new Promise<boolean>((resolve) => {
-      setConfirmationDialog({
-        open: true,
+      openConfirmationDialog({
         title: t("Delete"),
         onClose: () => resolve(false),
         content: (
@@ -123,7 +128,7 @@ const FileManagementDialog = () => {
   };
 
   const handleCloseDialog = () => {
-    setFileManagementDialogOpen(false);
+    closeFileManagementDialog();
   };
 
   useEffect(() => {

@@ -11,18 +11,19 @@ import {
   TableRow,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useShortcutsDialog } from "../data/ShortcutsDialogContext";
+import useShortcutsDialog from "../data/shortcuts-dialog-store";
 import Kbd from "./Kbd";
 
 const ShortcutsDialog = () => {
   const { t } = useTranslation();
-  const { shortcutsDialogOpen, setShortcutsDialogOpen } = useShortcutsDialog();
+  const { open: shortcutsDialogOpen, closeShortcutsDialog } =
+    useShortcutsDialog();
   return (
     <Dialog
       maxWidth="sm"
       fullWidth
       open={shortcutsDialogOpen}
-      onClose={() => setShortcutsDialogOpen(false)}
+      onClose={closeShortcutsDialog}
     >
       <DialogTitle>{t("Keyboard Shortcuts")}</DialogTitle>
       <DialogContent>
@@ -74,9 +75,7 @@ const ShortcutsDialog = () => {
         </Table>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setShortcutsDialogOpen(false)}>
-          {t("Close")}
-        </Button>
+        <Button onClick={closeShortcutsDialog}>{t("Close")}</Button>
       </DialogActions>
     </Dialog>
   );

@@ -1,137 +1,28 @@
-import { getFilenameFromPath, readFile } from "../utils/filesystem";
 import { migrate1 } from "../utils/migrations";
-import { getPlatform, Platform } from "../utils/platform";
-import { getPreferencesItem } from "../utils/preferences";
-import { parseTaskList, TaskList } from "../utils/task-list";
-import { ThemeMode } from "../utils/theme";
+import { getPlatform } from "../utils/platform";
 import { CloudStorage, CloudStorageClient } from "./CloudStorageContext";
 import * as cloudStorage from "./CloudStorageContext/cloud-storage";
-import { FilterType, SortKey } from "./FilterContext";
-import {
-  ArchiveMode,
-  getTodoFilePaths,
-  Language,
-  PriorityTransformation,
-  TaskView,
-} from "./SettingsContext";
-
-interface TodoFileSuccess {
-  type: "success";
-  filePath: string;
-  data: string;
-}
-
-interface TodoFileError {
-  type: "error";
-  filePath: string;
-}
-
-type TodoFile = TodoFileSuccess | TodoFileError;
-
-export interface TodoFiles {
-  files: { taskList: TaskList; filePath: string; text: string }[];
-  errors: TodoFileError[];
-}
+import { filterStore } from "./filter-store";
+import { platformStore } from "./platform-store";
+import { settingsStore } from "./settings-store";
+import { taskStore } from "./task-state";
+import { themeStore } from "./theme-store";
 
 export interface LoaderData {
-  sortBy: SortKey;
-  filterType: FilterType;
-  hideCompletedTasks: boolean;
-  showNotifications: boolean;
-  createCreationDate: boolean;
-  createCompletionDate: boolean;
-  archiveMode: ArchiveMode;
-  taskView: TaskView;
-  priorityTransformation: PriorityTransformation;
-  language: Language;
-  themeMode: ThemeMode;
-  todoFiles: TodoFiles;
   cloudStorageClients: Record<CloudStorage, CloudStorageClient>;
-  platform: Platform;
-}
-
-export async function loadTodoFiles(): Promise<TodoFiles> {
-  const filePaths = await getTodoFilePaths();
-  const result: TodoFile[] = await Promise.all(
-    filePaths.map((filePath) =>
-      readFile(filePath)
-        .then(
-          (data) => ({ type: "success", filePath, data } as TodoFileSuccess)
-        )
-        .catch(() => ({ type: "error", filePath } as TodoFileError))
-    )
-  );
-  const files = result
-    .filter((i): i is TodoFileSuccess => i.type === "success")
-    .map((i) => {
-      const text = i.data;
-      const filePath = i.filePath;
-      const parseResult = parseTaskList(text);
-      const fileName = getFilenameFromPath(filePath);
-      const taskList: TaskList = {
-        ...parseResult,
-        filePath,
-        fileName,
-      };
-      return { taskList, filePath, text };
-    });
-  const errors = result.filter((i): i is TodoFileError => i.type === "error");
-  return {
-    files,
-    errors,
-  };
 }
 
 export async function loader(): Promise<LoaderData> {
   await migrate1();
   return Promise.all([
-    getPreferencesItem<SortKey>("sort-by"),
-    getPreferencesItem<FilterType>("filter-type"),
-    getPreferencesItem("hide-completed-tasks"),
-    getPreferencesItem("show-notifications"),
-    getPreferencesItem("create-creation-date"),
-    getPreferencesItem("create-completion-date"),
-    getPreferencesItem<ArchiveMode>("archive-mode"),
-    getPreferencesItem<TaskView>("task-view"),
-    getPreferencesItem<PriorityTransformation>("priority-transformation"),
-    getPreferencesItem<Language>("language"),
-    getPreferencesItem<ThemeMode>("theme-mode"),
-    loadTodoFiles(),
     cloudStorage.loadClients(),
     Promise.resolve(getPlatform()),
-  ]).then(
-    ([
-      sortBy,
-      filterType,
-      hideCompletedTasks,
-      showNotifications,
-      createCreationDate,
-      createCompletionDate,
-      archiveMode,
-      taskView,
-      completedTaskPriority,
-      language,
-      themeMode,
-      todoFiles,
-      cloudStorageClients,
-      platform,
-    ]) => ({
-      sortBy: sortBy ?? "",
-      filterType: filterType || "AND",
-      hideCompletedTasks: hideCompletedTasks === "true",
-      showNotifications: showNotifications === "true",
-      createCreationDate:
-        createCreationDate === null ? true : createCreationDate === "true",
-      createCompletionDate:
-        createCompletionDate === null ? true : createCompletionDate === "true",
-      archiveMode: archiveMode || "no-archiving",
-      taskView: taskView || "list",
-      priorityTransformation: completedTaskPriority || "keep",
-      language: language || "en",
-      themeMode: themeMode || "system",
-      todoFiles: todoFiles,
-      cloudStorageClients,
-      platform,
-    })
-  );
+    filterStore.getState().init(),
+    settingsStore.getState().init(),
+    platformStore.getState().init(),
+    themeStore.getState().init(),
+    taskStore.getState().init(),
+  ]).then(([cloudStorageClients]) => ({
+    cloudStorageClients,
+  }));
 }

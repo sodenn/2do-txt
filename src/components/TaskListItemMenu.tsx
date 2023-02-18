@@ -12,10 +12,10 @@ import {
 } from "@mui/material";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
-import { useTask } from "../data/TaskContext";
-import { useTaskDialog } from "../data/TaskDialogContext";
+import useConfirmationDialog from "../data/confirmation-dialog-store";
+import useTaskDialog from "../data/task-dialog-store";
 import { Task } from "../utils/task";
+import useTask from "../utils/useTask";
 import Kbd from "./Kbd";
 
 const ListIconButton = styled(IconButton)({
@@ -32,9 +32,11 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
   const { task, menuRef, menuButtonRef } = props;
   const { t } = useTranslation();
   const { deleteTask } = useTask();
-  const { setTaskDialogOptions } = useTaskDialog();
-  const { setConfirmationDialog } = useConfirmationDialog();
+  const openConfirmationDialog = useConfirmationDialog(
+    (state) => state.openConfirmationDialog
+  );
   const [open, setOpen] = useState(false);
+  const openTaskDialog = useTaskDialog((state) => state.openTaskDialog);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -42,13 +44,12 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
 
   const handleEdit = () => {
     handleClose();
-    setTaskDialogOptions({ open: true, task });
+    openTaskDialog(task);
   };
 
   const handleDelete = () => {
     handleClose();
-    setConfirmationDialog({
-      open: true,
+    openConfirmationDialog({
       title: t("Delete task"),
       content: t("Are you sure you want to delete this task?"),
       buttons: [

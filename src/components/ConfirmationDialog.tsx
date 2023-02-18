@@ -6,24 +6,31 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
+import useConfirmationDialog from "../data/confirmation-dialog-store";
 
 const ConfirmationDialog = () => {
-  const {
-    confirmationDialog: { open, title, content, buttons, onClose },
-    setConfirmationDialog,
-  } = useConfirmationDialog();
+  const open = useConfirmationDialog((state) => state.open);
+  const title = useConfirmationDialog((state) => state.title);
+  const content = useConfirmationDialog((state) => state.content);
+  const buttons = useConfirmationDialog((state) => state.buttons);
+  const onClose = useConfirmationDialog((state) => state.onClose);
+  const closeConfirmationDialog = useConfirmationDialog(
+    (state) => state.closeConfirmationDialog
+  );
+  const cleanupConfirmationDialog = useConfirmationDialog(
+    (state) => state.cleanupConfirmationDialog
+  );
 
   const handleClick = (handler?: () => void) => {
     handler?.();
-    setConfirmationDialog((currentValue) => ({ ...currentValue, open: false }));
+    closeConfirmationDialog();
   };
 
   const handleClose = () => {
     if (onClose) {
       onClose();
     }
-    setConfirmationDialog((currentValue) => ({ ...currentValue, open: false }));
+    closeConfirmationDialog();
   };
 
   return (
@@ -32,7 +39,7 @@ const ConfirmationDialog = () => {
       open={open}
       onClose={handleClose}
       TransitionProps={{
-        onExited: () => setConfirmationDialog({ open: false }),
+        onExited: () => cleanupConfirmationDialog(),
       }}
     >
       {title && <DialogTitle>{title}</DialogTitle>}

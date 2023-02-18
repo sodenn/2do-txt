@@ -1,10 +1,9 @@
 import { Stack } from "@mui/material";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
-import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
-import { useTaskDialog } from "../data/TaskDialogContext";
+import useConfirmationDialog from "../data/confirmation-dialog-store";
+import useSettings from "../data/settings-store";
+import useTaskDialog from "../data/task-dialog-store";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import { Task } from "../utils/task";
 import {
@@ -12,15 +11,18 @@ import {
   useTaskGroups,
   useTimelineTasks,
 } from "../utils/task-list";
+import useTask from "../utils/useTask";
 import TaskList from "./TaskList";
 import TaskTimeline from "./TaskTimeline";
 
 const TaskView = () => {
   const { t } = useTranslation();
-  const { taskView } = useSettings();
+  const taskView = useSettings((state) => state.taskView);
   const { taskLists, activeTaskList, deleteTask } = useTask();
-  const { setTaskDialogOptions } = useTaskDialog();
-  const { setConfirmationDialog } = useConfirmationDialog();
+  const _openTaskDialog = useTaskDialog((state) => state.openTaskDialog);
+  const openConfirmationDialog = useConfirmationDialog(
+    (state) => state.openConfirmationDialog
+  );
   const [focusedTaskId, setFocusedTaskId] = useState<string>();
   const listItemsRef = useRef<HTMLDivElement[]>([]);
   const taskGroups = useTaskGroups(taskLists, activeTaskList);
@@ -61,17 +63,16 @@ const TaskView = () => {
     if (focusedTaskId) {
       const task = tasks.find((t) => t._id === focusedTaskId);
       if (task) {
-        setTaskDialogOptions({ open: true, task });
+        _openTaskDialog(task);
       }
     }
-  }, [focusedTaskId, setTaskDialogOptions, tasks]);
+  }, [focusedTaskId, _openTaskDialog, tasks]);
 
   const openDeleteTaskDialog = useCallback(() => {
     if (focusedTaskId) {
       const task = tasks.find((t) => t._id === focusedTaskId);
       if (task) {
-        setConfirmationDialog({
-          open: true,
+        openConfirmationDialog({
           title: t("Delete task"),
           content: t("Are you sure you want to delete this task?"),
           buttons: [
@@ -88,7 +89,7 @@ const TaskView = () => {
         });
       }
     }
-  }, [deleteTask, focusedTaskId, setConfirmationDialog, t, tasks]);
+  }, [deleteTask, focusedTaskId, openConfirmationDialog, t, tasks]);
 
   const shortcutListeners = useMemo(
     () => ({
@@ -126,9 +127,7 @@ const TaskView = () => {
                 showHeader={!activeTaskList}
                 onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
                 onBlur={() => setFocusedTaskId(undefined)}
-                onListItemClick={(task) =>
-                  setTaskDialogOptions({ task, open: true })
-                }
+                onListItemClick={(task) => _openTaskDialog(task)}
               />
             ))}
         </Stack>
@@ -140,7 +139,7 @@ const TaskView = () => {
           listItemsRef={listItemsRef}
           onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
           onBlur={() => setFocusedTaskId(undefined)}
-          onListItemClick={(task) => setTaskDialogOptions({ task, open: true })}
+          onListItemClick={(task) => _openTaskDialog(task)}
         />
       )}
     </>

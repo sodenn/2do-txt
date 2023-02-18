@@ -14,10 +14,10 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useFilter } from "../../data/FilterContext";
-import { useSettings } from "../../data/SettingsContext";
-import { useTask } from "../../data/TaskContext";
+import useFilter from "../../data/filter-store";
+import { addTodoFilePath } from "../../data/settings-store";
 import { readFile } from "../../utils/filesystem";
+import useTask from "../../utils/useTask";
 import StartEllipsis from "../StartEllipsis";
 
 interface ClosedFileListProps {
@@ -36,8 +36,9 @@ const ClosedFileList = (props: ClosedFileListProps) => {
   const { list, onOpen, onDelete } = props;
   const { t } = useTranslation();
   const { loadTodoFile } = useTask();
-  const { addTodoFilePath } = useSettings();
-  const { setActiveTaskListPath } = useFilter();
+  const setActiveTaskListPath = useFilter(
+    (state) => state.setActiveTaskListPath
+  );
 
   const handleOpen = async (filePath: string) => {
     const data = await readFile(filePath);

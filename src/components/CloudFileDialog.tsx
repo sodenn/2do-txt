@@ -33,12 +33,12 @@ import {
   useCloudStorage,
 } from "../data/CloudStorageContext";
 import generateContentHash from "../data/CloudStorageContext/ContentHasher";
-import { useFileCreateDialog } from "../data/FileCreateDialogContext";
-import { useFilter } from "../data/FilterContext";
-import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
+import useFileCreateDialog from "../data/file-create-dialog-store";
+import useFilter from "../data/filter-store";
+import useSettings from "../data/settings-store";
 import { getDoneFilePath, join, selectFolder } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
+import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
@@ -70,18 +70,23 @@ const CloudFileDialog = () => {
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const { createNewTodoFile, saveDoneFile, taskLists } = useTask();
-  const { setActiveTaskListPath } = useFilter();
+  const setActiveTaskListPath = useFilter(
+    (state) => state.setActiveTaskListPath
+  );
+  const archiveMode = useSettings((state) => state.archiveMode);
+  const setArchiveMode = useSettings((state) => state.setArchiveMode);
   const { downloadFile, linkCloudFile, linkCloudDoneFile } = useCloudStorage();
   const {
     cloudFileDialogOptions: { open, cloudStorage },
     setCloudFileDialogOptions,
   } = useCloudFileDialog();
   const platform = getPlatform();
-  const { setFileCreateDialog } = useFileCreateDialog();
+  const openFileCreateDialog = useFileCreateDialog(
+    (state) => state.openFileCreateDialog
+  );
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListCloudItemResult | undefined>();
-  const { archiveMode, setArchiveMode } = useSettings();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClose = () => {
@@ -162,7 +167,7 @@ const CloudFileDialog = () => {
 
   const handleCreateFile = () => {
     handleClose();
-    setFileCreateDialog({ open: true });
+    openFileCreateDialog();
   };
 
   const TransitionProps = {

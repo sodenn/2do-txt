@@ -13,7 +13,8 @@ import {
 import DropboxIcon from "../../components/DropboxIcon";
 import { createContext } from "../../utils/Context";
 import { LoaderData } from "../loader";
-import { useNetwork } from "../NetworkContext";
+import useNetwork from "../network-store";
+import usePlatform from "../platform-store";
 import * as cloud from "./cloud-storage";
 import {
   CloudFileUnauthorizedError,
@@ -47,7 +48,7 @@ export const cloudStorageIcons: Record<CloudStorage, ReactNode> = {
 
 export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   const data = useLoaderData() as LoaderData;
-  const platform = data.platform;
+  const platform = usePlatform((state) => state.platform);
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -122,7 +123,7 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         await createClient(cloudStorage);
       }
     },
-    [createClient, enqueueSnackbar, t]
+    [createClient, enqueueSnackbar, platform, t]
   );
 
   const webDAVAuthenticate = useCallback(() => {

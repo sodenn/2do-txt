@@ -24,7 +24,7 @@ import {
 import { format } from "date-fns";
 import { forwardRef, KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useSettings } from "../data/SettingsContext";
+import useSettings from "../data/settings-store";
 import { formatLocaleDate } from "../utils/date";
 import { TimelineTask } from "../utils/task-list";
 import TaskBody from "./TaskBody";
@@ -52,7 +52,7 @@ const DateBox = styled(Box)(({ theme }) => ({
 }));
 
 function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
-  const { language } = useSettings();
+  const language = useSettings((state) => state.language);
   const { t } = useTranslation();
   return (
     <Box

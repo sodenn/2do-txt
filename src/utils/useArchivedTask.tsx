@@ -2,7 +2,10 @@ import { Button } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { createContext } from "../utils/Context";
+import useArchivedTasksDialog from "../data/archived-tasks-dialog-store";
+import { SyncFileOptions, useCloudStorage } from "../data/CloudStorageContext";
+import generateContentHash from "../data/CloudStorageContext/ContentHasher";
+import useSettings from "../data/settings-store";
 import {
   deleteFile,
   getDoneFilePath,
@@ -10,13 +13,9 @@ import {
   isFile,
   readFile,
   writeFile,
-} from "../utils/filesystem";
-import { Task } from "../utils/task";
-import { parseTaskList, stringifyTaskList, TaskList } from "../utils/task-list";
-import { useArchivedTasksDialog } from "./ArchivedTasksDialogContext";
-import { SyncFileOptions, useCloudStorage } from "./CloudStorageContext";
-import generateContentHash from "./CloudStorageContext/ContentHasher";
-import { useSettings } from "./SettingsContext";
+} from "./filesystem";
+import { Task } from "./task";
+import { parseTaskList, stringifyTaskList, TaskList } from "./task-list";
 
 interface SyncItem {
   filePath: string;
@@ -38,10 +37,13 @@ interface ArchiveTaskOptions {
   task: Task;
 }
 
-const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
+function useArchivedTask() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const { setArchivedTasksDialog } = useArchivedTasksDialog();
-  const { archiveMode, setArchiveMode } = useSettings();
+  const openArchivedTasksDialog = useArchivedTasksDialog(
+    (state) => state.openArchivedTasksDialog
+  );
+  const archiveMode = useSettings((state) => state.archiveMode);
+  const setArchiveMode = useSettings((state) => state.setArchiveMode);
   const {
     syncAllFiles,
     syncFile,
@@ -293,8 +295,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
             <Button
               color="inherit"
               onClick={() => {
-                setArchivedTasksDialog({
-                  open: true,
+                openArchivedTasksDialog({
                   filePath,
                 });
                 closeSnackbar(key);
@@ -312,7 +313,7 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
       getCloudFileRefByFilePath,
       loadDoneFile,
       saveDoneFile,
-      setArchivedTasksDialog,
+      openArchivedTasksDialog,
       uploadFile,
       t,
     ]
@@ -438,6 +439,6 @@ const [ArchivedTaskProvider, useArchivedTask] = createContext(() => {
     archiveTasks,
     restoreArchivedTasks,
   };
-});
+}
 
-export { ArchivedTaskProvider, useArchivedTask };
+export default useArchivedTask;

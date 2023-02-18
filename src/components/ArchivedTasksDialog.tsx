@@ -13,25 +13,25 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useArchivedTasksDialog } from "../data/ArchivedTasksDialogContext";
-import { useTask } from "../data/TaskContext";
+import useArchivedTasksDialog from "../data/archived-tasks-dialog-store";
 import { Task } from "../utils/task";
+import useTask from "../utils/useTask";
 import TaskBody from "./TaskBody";
 
 const ArchivedTasksDialog = () => {
-  const {
-    archivedTasksDialog: { open, filePath },
-    setArchivedTasksDialog,
-  } = useArchivedTasksDialog();
+  const open = useArchivedTasksDialog((state) => state.open);
+  const filePath = useArchivedTasksDialog((state) => state.filePath);
+  const closeArchivedTasksDialog = useArchivedTasksDialog(
+    (state) => state.closeArchivedTasksDialog
+  );
+  const cleanupArchivedTasksDialog = useArchivedTasksDialog(
+    (state) => state.cleanupArchivedTasksDialog
+  );
   const { t } = useTranslation();
   const { loadDoneFile, restoreTask } = useTask();
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleClose = () =>
-    setArchivedTasksDialog((currentValue) => ({
-      ...currentValue,
-      open: false,
-    }));
+  const handleClose = () => closeArchivedTasksDialog();
 
   const handleRestore = async (task: Task) => {
     if (filePath) {
@@ -64,7 +64,7 @@ const ArchivedTasksDialog = () => {
       open={open}
       onClose={handleClose}
       TransitionProps={{
-        onExited: () => setArchivedTasksDialog({ open: false }),
+        onExited: cleanupArchivedTasksDialog,
       }}
     >
       <DialogTitle>{t("Archived tasks")}</DialogTitle>

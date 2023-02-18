@@ -4,11 +4,11 @@ import { Box, Typography } from "@mui/material";
 import { isEqual } from "lodash";
 import { memo, MutableRefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useConfirmationDialog } from "../data/ConfirmationDialogContext";
-import { useFilter } from "../data/FilterContext";
-import { useTask } from "../data/TaskContext";
+import useConfirmationDialog from "../data/confirmation-dialog-store";
+import useFilter from "../data/filter-store";
 import { Task } from "../utils/task";
 import { TimelineTask } from "../utils/task-list";
+import useTask from "../utils/useTask";
 import ScrollTo from "./ScrollTo";
 import TaskTimelineItem from "./TaskTimelineItem";
 import TimelineAddButton from "./TimelineAddButton";
@@ -36,15 +36,16 @@ const TaskTimeline = memo((props: TaskTimelineProps) => {
     onListItemClick,
   } = props;
   const { t } = useTranslation();
-  const { setConfirmationDialog } = useConfirmationDialog();
+  const openConfirmationDialog = useConfirmationDialog(
+    (state) => state.openConfirmationDialog
+  );
   const { deleteTask, completeTask } = useTask();
-  const { searchTerm } = useFilter();
+  const searchTerm = useFilter((state) => state.searchTerm);
   const [parent] = useAutoAnimate<HTMLUListElement>();
   const [addButtonElem, setAddButtonElem] = useState<HTMLElement | null>(null);
 
   const handleDelete = (task: Task) => {
-    setConfirmationDialog({
-      open: true,
+    openConfirmationDialog({
       title: t("Delete task"),
       content: t("Are you sure you want to delete this task?"),
       buttons: [

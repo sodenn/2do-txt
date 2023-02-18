@@ -1,32 +1,18 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { Suspense } from "react";
+import AppThemeProvider from "../components/AppThemeProvider";
 import { WithChildren } from "../types/common.types";
-import { AppTheme } from "./AppThemeContext";
-import { ArchivedTaskProvider } from "./ArchivedTaskContext";
-import { ArchivedTasksDialogProvider } from "./ArchivedTasksDialogContext";
 import {
   CloudFileDialogProvider,
   CloudStorageProvider,
   WebDAVDialogProvider,
 } from "./CloudStorageContext";
-import { ConfirmationDialogProvider } from "./ConfirmationDialogContext";
-import { FileCreateDialogProvider } from "./FileCreateDialogContext";
-import { FileManagementDialogProvider } from "./FileManagementDialogContext";
-import { FilePickerProvider } from "./FilePickerContext";
-import { FilterProvider } from "./FilterContext";
-import { NetworkProvider } from "./NetworkContext";
-import { NotificationProvider } from "./NotificationContext";
-import { SettingsProvider } from "./SettingsContext";
-import { ShortcutsDialogProvider } from "./ShortcutsDialogContext";
-import { SideSheetProvider } from "./SideSheetContext";
-import { TaskProvider } from "./TaskContext";
-import { TaskDialogProvider } from "./TaskDialogContext";
 
 const ProviderBundle = ({ children }: WithChildren) => {
   return (
     <Suspense fallback={null}>
-      <AppTheme>
+      <AppThemeProvider>
         <SnackbarProvider
           maxSnack={3}
           preventDuplicate={true}
@@ -36,43 +22,13 @@ const ProviderBundle = ({ children }: WithChildren) => {
           }}
           TransitionComponent={Grow}
         >
-          <ConfirmationDialogProvider>
-            <NetworkProvider>
-              <CloudFileDialogProvider>
-                <WebDAVDialogProvider>
-                  <CloudStorageProvider>
-                    <SettingsProvider>
-                      <FilterProvider>
-                        <SideSheetProvider>
-                          <ArchivedTasksDialogProvider>
-                            <ArchivedTaskProvider>
-                              <NotificationProvider>
-                                <TaskProvider>
-                                  <FilePickerProvider>
-                                    <FileManagementDialogProvider>
-                                      <ShortcutsDialogProvider>
-                                        <FileCreateDialogProvider>
-                                          <TaskDialogProvider>
-                                            {children}
-                                          </TaskDialogProvider>
-                                        </FileCreateDialogProvider>
-                                      </ShortcutsDialogProvider>
-                                    </FileManagementDialogProvider>
-                                  </FilePickerProvider>
-                                </TaskProvider>
-                              </NotificationProvider>
-                            </ArchivedTaskProvider>
-                          </ArchivedTasksDialogProvider>
-                        </SideSheetProvider>
-                      </FilterProvider>
-                    </SettingsProvider>
-                  </CloudStorageProvider>
-                </WebDAVDialogProvider>
-              </CloudFileDialogProvider>
-            </NetworkProvider>
-          </ConfirmationDialogProvider>
+          <CloudFileDialogProvider>
+            <WebDAVDialogProvider>
+              <CloudStorageProvider>{children}</CloudStorageProvider>
+            </WebDAVDialogProvider>
+          </CloudFileDialogProvider>
         </SnackbarProvider>
-      </AppTheme>
+      </AppThemeProvider>
     </Suspense>
   );
 };

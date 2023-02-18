@@ -11,12 +11,12 @@ import { FluentEditProvider } from "@react-fluent-edit/core";
 import { MentionsProvider } from "@react-fluent-edit/mentions";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
-import { useTaskDialog } from "../data/TaskDialogContext";
+import useSettings from "../data/settings-store";
+import useTaskDialog from "../data/task-dialog-store";
 import { formatDate, todayDate } from "../utils/date";
 import { Task } from "../utils/task";
 import { TaskList } from "../utils/task-list";
+import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
@@ -38,13 +38,13 @@ const TaskDialog = () => {
     projects: commonProjects,
     tags: commonTags,
   } = useTask();
-  const {
-    taskDialogOptions: { open, task },
-    setTaskDialogOptions,
-  } = useTaskDialog();
+  const closeTaskDialog = useTaskDialog((state) => state.closeTaskDialog);
+  const cleanupTaskDialog = useTaskDialog((state) => state.cleanupTaskDialog);
+  const open = useTaskDialog((state) => state.open);
+  const task = useTaskDialog((state) => state.task);
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
-  const { createCreationDate } = useSettings();
+  const createCreationDate = useSettings((state) => state.createCreationDate);
   const [key, setKey] = useState(0);
   const [raw, setRaw] = useState(rawText(createCreationDate, task));
   const [selectedTaskList, setSelectedTaskList] = useState<
@@ -55,8 +55,7 @@ const TaskDialog = () => {
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
 
-  const closeDialog = () =>
-    setTaskDialogOptions((value) => ({ ...value, open: false }));
+  const closeDialog = () => closeTaskDialog();
 
   const handleSave = () => {
     if (formDisabled) {
@@ -89,7 +88,7 @@ const TaskDialog = () => {
   };
 
   const handleExit = () => {
-    setTaskDialogOptions({ open: false });
+    cleanupTaskDialog();
     setRaw(rawText(createCreationDate));
     setSelectedTaskList(undefined);
   };

@@ -1,6 +1,6 @@
 import { alpha, Chip, ListSubheader, styled } from "@mui/material";
 import { useMemo } from "react";
-import { useFilter } from "../data/FilterContext";
+import useFilter from "../data/filter-store";
 
 const StyledListSubheader = styled(ListSubheader)(({ theme }) => ({
   background: `linear-gradient(
@@ -15,7 +15,7 @@ interface TaskListSubheaderProps {
 }
 
 const TaskListSubheader = ({ title }: TaskListSubheaderProps) => {
-  const { sortBy } = useFilter();
+  const sortBy = useFilter((state) => state.sortBy);
   return useMemo(
     () => (
       <StyledListSubheader

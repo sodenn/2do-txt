@@ -1,8 +1,8 @@
 import IosShareIcon from "@mui/icons-material/IosShare";
 import ShareIcon from "@mui/icons-material/Share";
 import { IconButton, IconButtonProps } from "@mui/material";
-import { useTask } from "../data/TaskContext";
 import { getPlatform } from "../utils/platform";
+import useTask from "../utils/useTask";
 
 const ShareButton = (props: IconButtonProps) => {
   const platform = getPlatform();
