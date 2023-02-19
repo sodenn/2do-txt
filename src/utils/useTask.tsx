@@ -5,15 +5,18 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { shallow } from "zustand/shallow";
-import { SyncFileOptions, useCloudStorage } from "../data/CloudStorageContext";
-import useConfirmationDialog from "../data/confirmation-dialog-store";
-import useFilter from "../data/filter-store";
-import usePlatform from "../data/platform-store";
+import {
+  SyncFileOptions,
+  useCloudStorage,
+} from "../stores/CloudStorageContext";
+import useConfirmationDialog from "../stores/confirmation-dialog-store";
+import useFilter from "../stores/filter-store";
+import usePlatform from "../stores/platform-store";
 import useSettings, {
   addTodoFilePath,
   removeTodoFilePath,
-} from "../data/settings-store";
-import useTasks, { loadTodoFiles } from "../data/task-state";
+} from "../stores/settings-store";
+import useTasks, { loadTodoFiles } from "../stores/task-state";
 import { promptForRating } from "./app-rate";
 import { parseDate, todayDate } from "./date";
 import {

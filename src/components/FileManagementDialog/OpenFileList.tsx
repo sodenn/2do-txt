@@ -13,8 +13,11 @@ import { forwardRef, memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { arrayMove, List as MovableList } from "react-movable";
 import { OnChangeMeta } from "react-movable/lib/types";
-import { CloudFileRef, useCloudStorage } from "../../data/CloudStorageContext";
-import useSettings from "../../data/settings-store";
+import {
+  CloudFileRef,
+  useCloudStorage,
+} from "../../stores/CloudStorageContext";
+import useSettings from "../../stores/settings-store";
 import { formatLocalDateTime, parseDate } from "../../utils/date";
 import { TaskList } from "../../utils/task-list";
 import useTask from "../../utils/useTask";

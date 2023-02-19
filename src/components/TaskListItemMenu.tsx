@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useConfirmationDialog from "../data/confirmation-dialog-store";
-import useTaskDialog from "../data/task-dialog-store";
+import useConfirmationDialog from "../stores/confirmation-dialog-store";
+import useTaskDialog from "../stores/task-dialog-store";
 import { Task } from "../utils/task";
 import useTask from "../utils/useTask";
 import Kbd from "./Kbd";

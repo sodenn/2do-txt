@@ -8,7 +8,7 @@ import {
   CloudStorage,
   cloudStorageIcons,
   useCloudStorage,
-} from "../data/CloudStorageContext";
+} from "../stores/CloudStorageContext";
 
 interface CloudStorageConnectionButtonsProps {
   status?: "connect" | "disconnect";

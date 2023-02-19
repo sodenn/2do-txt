@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { getI18n } from "react-i18next";
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { createStore } from "zustand/vanilla";
@@ -98,6 +97,7 @@ const settingsStore = createStore(
       }),
     changeLanguage: (language: Language) => {
       setPreferencesItem("language", language);
+      getI18n().changeLanguage(language);
       set((state) => ({ ...state, language }));
     },
     setShowNotifications: (showNotifications: boolean) => {
@@ -121,28 +121,8 @@ const settingsStore = createStore(
   }))
 );
 
-const useSettingsStore = ((selector: any) =>
+const useSettings = ((selector: any) =>
   useStore(settingsStore, selector)) as UseBoundStore<StoreApi<SettingsState>>;
-
-function useUpdateLanguage() {
-  const {
-    i18n: { resolvedLanguage, changeLanguage },
-  } = useTranslation();
-
-  useEffect(() => {
-    const unsubscribe = settingsStore.subscribe(
-      (state) => state.language,
-      (language) => {
-        if (language && resolvedLanguage !== language) {
-          changeLanguage(language);
-        }
-      }
-    );
-    return () => {
-      unsubscribe();
-    };
-  }, [changeLanguage, resolvedLanguage]);
-}
 
 async function getTodoFilePaths() {
   const pathStr = await getPreferencesItem("todo-txt-paths");
@@ -197,11 +177,5 @@ async function removeTodoFilePath(filePath: string) {
 }
 
 export type { Language, ArchiveMode, TaskView, PriorityTransformation };
-export {
-  settingsStore,
-  useUpdateLanguage,
-  getTodoFilePaths,
-  addTodoFilePath,
-  removeTodoFilePath,
-};
-export default useSettingsStore;
+export { settingsStore, getTodoFilePaths, addTodoFilePath, removeTodoFilePath };
+export default useSettings;

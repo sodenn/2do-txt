@@ -8,8 +8,8 @@ import {
 } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import useFilter, { FilterType, SortKey } from "../data/filter-store";
-import useSettings from "../data/settings-store";
+import useFilter, { FilterType, SortKey } from "../stores/filter-store";
+import useSettings from "../stores/settings-store";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import useTask from "../utils/useTask";
 import ChipList from "./ChipList";

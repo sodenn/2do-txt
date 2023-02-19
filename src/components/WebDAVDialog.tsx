@@ -13,8 +13,11 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCloudStorage, useWebDAVDialog } from "../data/CloudStorageContext";
-import { saveWebDAVCredentials } from "../data/CloudStorageContext/webdav-storage";
+import {
+  useCloudStorage,
+  useWebDAVDialog,
+} from "../stores/CloudStorageContext";
+import { saveWebDAVCredentials } from "../stores/CloudStorageContext/webdav-storage";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";

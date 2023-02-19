@@ -144,7 +144,7 @@ const filterStore = createStore<FilterState>((set) => ({
 const useFilter = ((selector: any) =>
   useStore(filterStore, selector)) as UseBoundStore<StoreApi<FilterState>>;
 
-function useUpdateFilterSearchParams() {
+function useUpdateSearchParams() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const updateSearchParams = useCallback(
@@ -193,4 +193,4 @@ function useUpdateFilterSearchParams() {
 }
 
 export default useFilter;
-export { filterStore, useUpdateFilterSearchParams };
+export { filterStore, useUpdateSearchParams };

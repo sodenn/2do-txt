@@ -6,9 +6,9 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useCloudStorage } from "../../data/CloudStorageContext";
-import useConfirmationDialog from "../../data/confirmation-dialog-store";
-import useFileManagementDialog from "../../data/file-management-dialog-store";
+import { useCloudStorage } from "../../stores/CloudStorageContext";
+import useConfirmationDialog from "../../stores/confirmation-dialog-store";
+import useFileManagementDialog from "../../stores/file-management-dialog-store";
 import {
   deleteFile,
   getFilenameFromPath,

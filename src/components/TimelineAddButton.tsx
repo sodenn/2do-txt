@@ -10,7 +10,7 @@ import { Box, Chip, IconButton } from "@mui/material";
 import { format } from "date-fns";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import useTaskDialog from "../data/task-dialog-store";
+import useTaskDialog from "../stores/task-dialog-store";
 import { todayDate } from "../utils/date";
 import { TimelineTask } from "../utils/task-list";
 

@@ -6,7 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import useConfirmationDialog from "../data/confirmation-dialog-store";
+import useConfirmationDialog from "../stores/confirmation-dialog-store";
 
 const ConfirmationDialog = () => {
   const open = useConfirmationDialog((state) => state.open);

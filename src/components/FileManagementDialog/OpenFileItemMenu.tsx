@@ -22,7 +22,7 @@ import {
   CloudStorage,
   cloudStorageIcons,
   useCloudStorage,
-} from "../../data/CloudStorageContext";
+} from "../../stores/CloudStorageContext";
 import { writeToClipboard } from "../../utils/clipboard";
 import { getDoneFilePath, isFile, readFile } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";

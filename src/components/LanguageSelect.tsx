@@ -1,6 +1,6 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useSettings, { Language } from "../data/settings-store";
+import useSettings, { Language } from "../stores/settings-store";
 
 const LanguageSelect = () => {
   const { t } = useTranslation();

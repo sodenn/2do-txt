@@ -10,8 +10,8 @@ import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import PriorityBox from "../components/PriorityBox";
 import TagBox from "../components/TagBox";
-import useFilter from "../data/filter-store";
-import useSettings, { PriorityTransformation } from "../data/settings-store";
+import useFilter from "../stores/filter-store";
+import useSettings, { PriorityTransformation } from "../stores/settings-store";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { generateId } from "./uuid";
 

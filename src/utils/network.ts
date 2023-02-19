@@ -5,7 +5,7 @@ import {
   HttpOptions,
   ResponseType as _ResponseType,
 } from "@tauri-apps/api/http";
-import { BufferLike } from "../data/CloudStorageContext/webdav-client";
+import { BufferLike } from "../stores/CloudStorageContext/webdav-client";
 import { getPlatform } from "./platform";
 
 interface RequestContext {

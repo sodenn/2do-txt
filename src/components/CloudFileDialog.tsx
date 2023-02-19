@@ -31,11 +31,11 @@ import {
   ListCloudItemResult,
   useCloudFileDialog,
   useCloudStorage,
-} from "../data/CloudStorageContext";
-import generateContentHash from "../data/CloudStorageContext/ContentHasher";
-import useFileCreateDialog from "../data/file-create-dialog-store";
-import useFilter from "../data/filter-store";
-import useSettings from "../data/settings-store";
+} from "../stores/CloudStorageContext";
+import generateContentHash from "../stores/CloudStorageContext/ContentHasher";
+import useFileCreateDialog from "../stores/file-create-dialog-store";
+import useFilter from "../stores/filter-store";
+import useSettings from "../stores/settings-store";
 import { getDoneFilePath, join, selectFolder } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
 import useTask from "../utils/useTask";

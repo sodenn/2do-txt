@@ -1,6 +1,6 @@
 import { AppBar, Box, Fade, styled, Toolbar } from "@mui/material";
 import { useState } from "react";
-import useSideSheet from "../data/side-sheet-store";
+import useSideSheet from "../stores/side-sheet-store";
 import { getPlatform } from "../utils/platform";
 import useTask from "../utils/useTask";
 import AddTaskButton from "./AddTaskButton";

@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useArchivedTasksDialog from "../data/archived-tasks-dialog-store";
+import useArchivedTasksDialog from "../stores/archived-tasks-dialog-store";
 import { Task } from "../utils/task";
 import useTask from "../utils/useTask";
 import TaskBody from "./TaskBody";

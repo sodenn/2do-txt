@@ -1,6 +1,6 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useSettings, { ArchiveMode } from "../data/settings-store";
+import useSettings, { ArchiveMode } from "../stores/settings-store";
 import useTask from "../utils/useTask";
 
 const ArchiveModeSelect = () => {

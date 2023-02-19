@@ -24,7 +24,7 @@ import {
 import { format } from "date-fns";
 import { forwardRef, KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
-import useSettings from "../data/settings-store";
+import useSettings from "../stores/settings-store";
 import { formatLocaleDate } from "../utils/date";
 import { TimelineTask } from "../utils/task-list";
 import TaskBody from "./TaskBody";

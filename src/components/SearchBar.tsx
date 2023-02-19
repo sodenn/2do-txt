@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { ChangeEvent, useMemo, useRef } from "react";
-import useFilter from "../data/filter-store";
+import useFilter from "../stores/filter-store";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import ExpandableSearch from "./ExpandableSearch";
 

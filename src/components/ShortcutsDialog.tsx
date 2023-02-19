@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useShortcutsDialog from "../data/shortcuts-dialog-store";
+import useShortcutsDialog from "../stores/shortcuts-dialog-store";
 import Kbd from "./Kbd";
 
 const ShortcutsDialog = () => {

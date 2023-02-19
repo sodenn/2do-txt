@@ -8,7 +8,7 @@ import {
 } from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import useFilter, { FilterType, SortKey } from "../data/filter-store";
+import useFilter, { FilterType, SortKey } from "../stores/filter-store";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";

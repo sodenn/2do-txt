@@ -9,10 +9,10 @@ import {
   cloudStorageIcons,
   useCloudFileDialog,
   useCloudStorage,
-} from "../../data/CloudStorageContext";
-import useFileCreateDialog from "../../data/file-create-dialog-store";
-import useFileManagementDialog from "../../data/file-management-dialog-store";
-import useFilePicker from "../../data/file-picker-store";
+} from "../../stores/CloudStorageContext";
+import useFileCreateDialog from "../../stores/file-create-dialog-store";
+import useFileManagementDialog from "../../stores/file-management-dialog-store";
+import useFilePicker from "../../stores/file-picker-store";
 import { getPlatform } from "../../utils/platform";
 
 const FileActionButton = () => {

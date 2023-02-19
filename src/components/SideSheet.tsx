@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { forwardRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useSideSheet from "../data/side-sheet-store";
+import useSideSheet from "../stores/side-sheet-store";
 import { WithChildren } from "../types/common.types";
 import { getPlatform } from "../utils/platform";
 import useTask from "../utils/useTask";

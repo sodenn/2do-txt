@@ -1,7 +1,7 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useFilter from "../data/filter-store";
-import useSettings, { TaskView } from "../data/settings-store";
+import useFilter from "../stores/filter-store";
+import useSettings, { TaskView } from "../stores/settings-store";
 import NewBadge from "./NewBadge";
 
 const TaskViewSelect = () => {

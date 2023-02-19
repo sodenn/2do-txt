@@ -13,10 +13,10 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import useFileManagementDialog from "../data/file-management-dialog-store";
-import useFilter from "../data/filter-store";
-import useShortcutsDialog from "../data/shortcuts-dialog-store";
 import logo from "../images/logo.png";
+import useFileManagementDialog from "../stores/file-management-dialog-store";
+import useFilter from "../stores/filter-store";
+import useShortcutsDialog from "../stores/shortcuts-dialog-store";
 import { hasTouchScreen } from "../utils/platform";
 import useTask from "../utils/useTask";
 import StartEllipsis from "./StartEllipsis";

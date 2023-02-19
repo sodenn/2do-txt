@@ -1,5 +1,4 @@
-import { useEffect, useMemo } from "react";
-import useSideSheet from "../data/side-sheet-store";
+import { useEffect } from "react";
 
 interface ListenerMap {
   [key: string]: (ev: KeyboardEvent) => unknown;
@@ -38,14 +37,3 @@ export const useAddShortcutListener = (listeners: ListenerMap) => {
     };
   }, [listeners]);
 };
-
-export function useShortcuts() {
-  const toggleSideSheet = useSideSheet((state) => state.toggleSideSheet);
-
-  const shortcutListeners = useMemo(
-    () => ({ m: toggleSideSheet }),
-    [toggleSideSheet]
-  );
-
-  useAddShortcutListener(shortcutListeners);
-}

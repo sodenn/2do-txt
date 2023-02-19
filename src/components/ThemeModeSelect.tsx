@@ -1,6 +1,6 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useTheme, { ThemeMode } from "../data/theme-store";
+import useTheme, { ThemeMode } from "../stores/theme-store";
 
 const ThemeModeSelect = () => {
   const { t } = useTranslation();

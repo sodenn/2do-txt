@@ -1,6 +1,6 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useSettings, { PriorityTransformation } from "../data/settings-store";
+import useSettings, { PriorityTransformation } from "../stores/settings-store";
 
 const PriorityTransformationSelect = () => {
   const { t } = useTranslation();

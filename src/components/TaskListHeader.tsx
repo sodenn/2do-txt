@@ -1,6 +1,6 @@
 import LaunchIcon from "@mui/icons-material/Launch";
 import { Box, ListItemButton, styled } from "@mui/material";
-import useFilter from "../data/filter-store";
+import useFilter from "../stores/filter-store";
 import StartEllipsis from "./StartEllipsis";
 
 interface TaskListHeaderProps {

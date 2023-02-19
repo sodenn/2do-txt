@@ -2,7 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import useTaskDialog from "../data/task-dialog-store";
+import useTaskDialog from "../stores/task-dialog-store";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import Kbd from "./Kbd";
 

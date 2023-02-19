@@ -14,8 +14,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import useFilter from "../../data/filter-store";
-import { addTodoFilePath } from "../../data/settings-store";
+import useFilter from "../../stores/filter-store";
+import { addTodoFilePath } from "../../stores/settings-store";
 import { readFile } from "../../utils/filesystem";
 import useTask from "../../utils/useTask";
 import StartEllipsis from "../StartEllipsis";

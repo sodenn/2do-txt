@@ -15,12 +15,12 @@ import {
 } from "@mui/material";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { CloudStorage, useCloudStorage } from "../data/CloudStorageContext";
-import useConfirmationDialog from "../data/confirmation-dialog-store";
-import useFileCreateDialog from "../data/file-create-dialog-store";
-import useFilter from "../data/filter-store";
-import { addTodoFilePath } from "../data/settings-store";
-import useTaskDialog from "../data/task-dialog-store";
+import { CloudStorage, useCloudStorage } from "../stores/CloudStorageContext";
+import useConfirmationDialog from "../stores/confirmation-dialog-store";
+import useFileCreateDialog from "../stores/file-create-dialog-store";
+import useFilter from "../stores/filter-store";
+import { addTodoFilePath } from "../stores/settings-store";
+import useTaskDialog from "../stores/task-dialog-store";
 import {
   defaultFilePath,
   getUniqueFilePath,

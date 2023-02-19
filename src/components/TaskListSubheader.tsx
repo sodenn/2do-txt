@@ -1,6 +1,6 @@
 import { alpha, Chip, ListSubheader, styled } from "@mui/material";
 import { useMemo } from "react";
-import useFilter from "../data/filter-store";
+import useFilter from "../stores/filter-store";
 
 const StyledListSubheader = styled(ListSubheader)(({ theme }) => ({
   background: `linear-gradient(
