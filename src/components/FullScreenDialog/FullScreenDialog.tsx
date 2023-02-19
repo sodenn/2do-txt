@@ -7,7 +7,7 @@ import {
   SlideProps,
 } from "@mui/material";
 import { forwardRef } from "react";
-import { FullScreenDialogProvider } from "./FullScreenDialogContext";
+import { FullScreenDialogProvider } from "./FullScreenDialogProvider";
 
 const Transition = forwardRef<HTMLCollection, SlideProps>(
   ({ children, ...rest }, ref) => {

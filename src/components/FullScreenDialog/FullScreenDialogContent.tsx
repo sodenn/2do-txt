@@ -6,7 +6,7 @@ import {
   addKeyboardDidShowListener,
   removeAllKeyboardListeners,
 } from "../../utils/keyboard";
-import { useFullScreenDialog } from "./FullScreenDialogContext";
+import { useFullScreenDialog } from "./FullScreenDialogProvider";
 
 const SafeArea = styled("div")({
   paddingRight: "env(safe-area-inset-right)",
