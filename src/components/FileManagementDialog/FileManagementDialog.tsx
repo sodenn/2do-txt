@@ -49,7 +49,7 @@ const FileManagementDialog = () => {
     } else {
       return [];
     }
-  }, [readdir]);
+  }, [platform]);
 
   const listClosedFiles = useCallback(
     (files: string[]) => {
