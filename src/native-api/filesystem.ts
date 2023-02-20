@@ -36,9 +36,6 @@ interface Dir {
   name: string;
 }
 
-const defaultFilePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
-const defaultArchiveFilePath = import.meta.env.VITE_ARCHIVE_FILE_NAME!;
-
 function getFilenameFromPath(filePath: string) {
   return filePath.replace(/^.*[\\/]/, "");
 }
@@ -55,20 +52,6 @@ function getFileNameWithoutEnding(fileName: string) {
   }
 
   return fileNameWithoutEnding[1];
-}
-
-function getDoneFilePath(filePath: string) {
-  const fileName = getFilenameFromPath(filePath);
-  const fileNameWithoutEnding = getFileNameWithoutEnding(fileName);
-  if (!fileNameWithoutEnding) {
-    return;
-  }
-  return fileName === defaultFilePath
-    ? filePath.replace(new RegExp(`${fileName}$`), defaultArchiveFilePath!)
-    : filePath.replace(
-        new RegExp(`${fileName}$`),
-        `${fileNameWithoutEnding}_${defaultArchiveFilePath}`
-      );
 }
 
 async function _getUniqueFilePath(
@@ -300,9 +283,6 @@ export {
   selectFile,
   saveFile,
   join,
-  defaultFilePath,
-  defaultArchiveFilePath,
   getFilenameFromPath,
   getFileNameWithoutEnding,
-  getDoneFilePath,
 };

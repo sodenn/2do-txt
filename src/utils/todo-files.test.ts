@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { getDoneFilePath } from "./filesystem";
+import { getDoneFilePath } from "./todo-files";
 
-describe("filesystem", () => {
+describe("todo-files", () => {
   it("should get done file path from long source path", async () => {
     const filePath = `/Documents/${import.meta.env.VITE_DEFAULT_FILE_NAME}`;
     const doneFilePath = getDoneFilePath(filePath);

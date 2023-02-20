@@ -8,7 +8,6 @@ import { shallow } from "zustand/shallow";
 import { promptForRating } from "../native-api/app-rate";
 import {
   deleteFile,
-  getDoneFilePath,
   getFilenameFromPath,
   getFileNameWithoutEnding,
   getUri,
@@ -42,6 +41,7 @@ import {
   TaskList,
   updateTaskListAttributes,
 } from "./task-list";
+import { getDoneFilePath } from "./todo-files";
 import useArchivedTask from "./useArchivedTask";
 import { useBecomeActive } from "./useBecomeActive";
 import { generateId } from "./uuid";

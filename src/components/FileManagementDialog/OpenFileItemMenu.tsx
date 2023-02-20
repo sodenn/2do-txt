@@ -17,7 +17,7 @@ import { useSnackbar } from "notistack";
 import { useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { writeToClipboard } from "../../native-api/clipboard";
-import { getDoneFilePath, isFile, readFile } from "../../native-api/filesystem";
+import { isFile, readFile } from "../../native-api/filesystem";
 import usePlatformStore from "../../stores/platform-store";
 import {
   CloudFileRef,
@@ -26,6 +26,7 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "../../utils/CloudStorage";
+import { getDoneFilePath } from "../../utils/todo-files";
 import useTask from "../../utils/useTask";
 
 interface CloseOptions {

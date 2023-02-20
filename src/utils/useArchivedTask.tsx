@@ -4,7 +4,6 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   deleteFile,
-  getDoneFilePath,
   getFilenameFromPath,
   isFile,
   readFile,
@@ -16,6 +15,7 @@ import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
 import generateContentHash from "./CloudStorage/ContentHasher";
 import { Task } from "./task";
 import { parseTaskList, stringifyTaskList, TaskList } from "./task-list";
+import { getDoneFilePath } from "./todo-files";
 
 interface SyncItem {
   filePath: string;
