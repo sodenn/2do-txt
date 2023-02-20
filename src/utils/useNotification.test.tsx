@@ -3,7 +3,7 @@ import { addHours, addMinutes } from "date-fns";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { useNotification } from "./notification";
+import useNotification from "../utils/useNotification";
 
 type NotificationMethods = ReturnType<typeof useNotification>;
 
@@ -42,7 +42,7 @@ function renderNotificationsHook() {
   return current;
 }
 
-describe("Notifications", () => {
+describe("useNotifications", () => {
   let systemTime: Date;
   let hook: NotificationMethods;
 

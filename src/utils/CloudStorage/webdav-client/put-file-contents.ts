@@ -1,4 +1,8 @@
-import { request, RequestContext, RequestOptions } from "../../network";
+import {
+  request,
+  RequestContext,
+  RequestOptions,
+} from "../../../native-api/network";
 import { encodePath } from "./path";
 import { handleResponseCode } from "./response";
 import { calculateDataLength } from "./size";

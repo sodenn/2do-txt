@@ -10,7 +10,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import useFilterStore, { FilterType, SortKey } from "../stores/filter-store";
 import useSettingsStore from "../stores/settings-store";
-import { useAddShortcutListener } from "../utils/shortcuts";
+import { useHotkeys } from "../utils/useHotkeys";
 import useTask from "../utils/useTask";
 import ChipList from "./ChipList";
 import Heading from "./Heading";
@@ -68,7 +68,7 @@ const Filter = () => {
     ]
   );
 
-  useAddShortcutListener(shortcutListeners);
+  useHotkeys(shortcutListeners);
 
   return (
     <Stack spacing={2}>

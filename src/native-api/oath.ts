@@ -58,7 +58,7 @@ async function desktopOauth(opt: OauthOptions) {
   }, {});
 }
 
-export async function oauth(opt: OauthOptions) {
+async function oauth(opt: OauthOptions) {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {
     return mobileOauth(opt);
@@ -68,3 +68,5 @@ export async function oauth(opt: OauthOptions) {
   }
   throw new Error(`oauth: platform "${platform}" not supported`);
 }
+
+export { oauth };

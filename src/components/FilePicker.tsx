@@ -5,8 +5,8 @@ import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import useFilterStore from "../stores/filter-store";
+import usePlatformStore from "../stores/platform-store";
 import { WithChildren } from "../types/common.types";
-import { getPlatform } from "../utils/platform";
 import useFilePicker from "../utils/useFilePicker";
 import useTask from "../utils/useTask";
 
@@ -37,7 +37,7 @@ const StyledPaper = styled(Paper)({
 });
 
 const FilePicker = ({ children }: WithChildren) => {
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
 
   if (platform === "desktop") {
     return <DesktopFilePicker>{children}</DesktopFilePicker>;
@@ -55,7 +55,7 @@ const WebFilePicker = ({ children }: WithChildren) => {
   );
   const { enqueueSnackbar } = useSnackbar();
   const { createNewTodoFile, taskLists } = useTask();
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length === 1 && acceptedFiles[0].type === "text/plain") {

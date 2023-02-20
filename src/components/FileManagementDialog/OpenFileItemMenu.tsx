@@ -16,7 +16,9 @@ import {
 import { useSnackbar } from "notistack";
 import { useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { writeToClipboard } from "../../utils/clipboard";
+import { writeToClipboard } from "../../native-api/clipboard";
+import { getDoneFilePath, isFile, readFile } from "../../native-api/filesystem";
+import usePlatformStore from "../../stores/platform-store";
 import {
   CloudFileRef,
   CloudFileUnauthorizedError,
@@ -24,8 +26,6 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "../../utils/CloudStorage";
-import { getDoneFilePath, isFile, readFile } from "../../utils/filesystem";
-import { getPlatform } from "../../utils/platform";
 import useTask from "../../utils/useTask";
 
 interface CloseOptions {
@@ -182,7 +182,7 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   const { filePath, cloudFileRef, onChange, onClose, onDownloadClick } = props;
   const { connectedCloudStorages } = useCloudStorage();
   const { t } = useTranslation();
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);

@@ -1,4 +1,4 @@
-import { Response } from "../../network";
+import { Response } from "../../../native-api/network";
 import { WebDAVClientError } from "./types";
 
 export function handleResponseCode(response: Response): Response {

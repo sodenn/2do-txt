@@ -2,7 +2,10 @@ import { getI18n } from "react-i18next";
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { createStore } from "zustand/vanilla";
-import { getPreferencesItem, setPreferencesItem } from "../utils/preferences";
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "../native-api/preferences";
 
 type Language = "de" | "en";
 

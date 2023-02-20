@@ -1,6 +1,7 @@
 import { styled } from "@mui/material";
+import { hasTouchScreen } from "../native-api/platform";
+import usePlatformStore from "../stores/platform-store";
 import { WithChildren } from "../types/common.types";
-import { getPlatform, hasTouchScreen } from "../utils/platform";
 
 const StyledKbd = styled("kbd")(({ theme }) => ({
   padding: "0 0.4em",
@@ -14,7 +15,7 @@ const StyledKbd = styled("kbd")(({ theme }) => ({
 
 const Kbd = ({ children }: WithChildren) => {
   const touchScreen = hasTouchScreen();
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
 
   if (touchScreen || platform === "ios" || platform === "android") {
     return null;

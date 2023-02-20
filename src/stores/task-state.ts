@@ -1,6 +1,6 @@
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { getFilenameFromPath, readFile } from "../utils/filesystem";
+import { getFilenameFromPath, readFile } from "../native-api/filesystem";
 import { getTodoFilePaths } from "../utils/settings";
 import { parseTaskList, TaskList } from "../utils/task-list";
 

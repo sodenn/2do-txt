@@ -11,9 +11,9 @@ import {
 } from "@mui/material";
 import { forwardRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import usePlatformStore from "../stores/platform-store";
 import useSideSheetStore from "../stores/side-sheet-store";
 import { WithChildren } from "../types/common.types";
-import { getPlatform } from "../utils/platform";
 import useTask from "../utils/useTask";
 import Filter from "./Filter";
 import Settings from "./Settings";
@@ -90,8 +90,8 @@ export const MainContainer = forwardRef<HTMLDivElement, WithChildren>(
 const SideSheet = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const platform = getPlatform();
   const matches = useMediaQuery(theme.breakpoints.up("lg"));
+  const platform = usePlatformStore((state) => state.platform);
   const {
     open: sideSheetOpen,
     openSideSheet,

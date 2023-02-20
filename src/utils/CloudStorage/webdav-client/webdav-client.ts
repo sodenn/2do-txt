@@ -1,4 +1,4 @@
-import { RequestContext } from "../../network";
+import { RequestContext } from "../../../native-api/network";
 import { deleteFile } from "./delete-file";
 import { getDirectoryContents } from "./directory-contents";
 import { getFileContents } from "./file-contents";

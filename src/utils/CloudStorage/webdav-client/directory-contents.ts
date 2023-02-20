@@ -3,7 +3,7 @@ import {
   request,
   RequestContext,
   RequestOptions,
-} from "../../network";
+} from "../../../native-api/network";
 import { parseXML, prepareFileFromProps } from "./dav";
 import { encodePath, normalisePath, relative } from "./path";
 import { handleResponseCode } from "./response";

@@ -15,18 +15,18 @@ import {
 } from "@mui/material";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
-import useFileCreateDialogStore from "../stores/file-create-dialog-store";
-import useFilterStore from "../stores/filter-store";
-import useTaskDialogStore from "../stores/task-dialog-store";
-import { CloudStorage, useCloudStorage } from "../utils/CloudStorage";
 import {
   defaultFilePath,
   getUniqueFilePath,
   isFile,
   saveFile,
-} from "../utils/filesystem";
-import { getPlatform } from "../utils/platform";
+} from "../native-api/filesystem";
+import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
+import useFileCreateDialogStore from "../stores/file-create-dialog-store";
+import useFilterStore from "../stores/filter-store";
+import usePlatformStore from "../stores/platform-store";
+import useTaskDialogStore from "../stores/task-dialog-store";
+import { CloudStorage, useCloudStorage } from "../utils/CloudStorage";
 import { addTodoFilePath } from "../utils/settings";
 import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
@@ -40,7 +40,7 @@ interface FileCreateDialogProps {
 }
 
 const FileCreateDialog = () => {
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
   const fileCreateDialogOpen = useFileCreateDialogStore((state) => state.open);
   const createExampleFile = useFileCreateDialogStore(
     (state) => state.createExampleFile

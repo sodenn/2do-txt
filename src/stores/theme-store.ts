@@ -1,6 +1,6 @@
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { getPreferencesItem } from "../utils/preferences";
+import { getPreferencesItem } from "../native-api/preferences";
 
 type ThemeMode = "dark" | "light" | "system";
 

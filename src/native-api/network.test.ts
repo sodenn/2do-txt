@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { joinURL } from "./network";
 
-describe("request", () => {
+describe("network", () => {
   it("it should add a slash between parts", async () => {
     const baseUrl = "https://demo.owncloud.org/remote.php/webdav";
     const path = "Documents/todo";

@@ -1,4 +1,4 @@
-import { request, RequestContext } from "../../network";
+import { request, RequestContext } from "../../../native-api/network";
 import { encodePath } from "./path";
 import { handleResponseCode } from "./response";
 

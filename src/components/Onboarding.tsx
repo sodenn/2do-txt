@@ -4,7 +4,7 @@ import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import logo from "../images/logo.png";
 import useFileCreateDialogStore from "../stores/file-create-dialog-store";
-import { getPlatform } from "../utils/platform";
+import usePlatformStore from "../stores/platform-store";
 import useFilePicker from "../utils/useFilePicker";
 import useTask from "../utils/useTask";
 import CloudStorageOnboarding from "./CloudStorageOnboarding";
@@ -23,7 +23,7 @@ const StyledBox = styled("div")(({ theme }) => ({
 
 const Onboarding = () => {
   const { t } = useTranslation();
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
   const openFileCreateDialog = useFileCreateDialogStore(
     (state) => state.openFileCreateDialog
   );

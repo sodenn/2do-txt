@@ -1,6 +1,6 @@
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { getPlatform, Platform } from "../utils/platform";
+import { getPlatform, Platform } from "../native-api/platform";
 
 interface PlatformState {
   platform: Platform;

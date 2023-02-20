@@ -1,17 +1,17 @@
 import { Dropbox, DropboxAuth } from "dropbox";
-import { isDateAfter, isDateBefore, isDateEqual, parseDate } from "../date";
-import { oauth } from "../oath";
-import { getPlatform } from "../platform";
+import { oauth } from "../../native-api/oath";
+import { getPlatform } from "../../native-api/platform";
 import {
   getPreferencesItem,
   removePreferencesItem,
   setPreferencesItem,
-} from "../preferences";
+} from "../../native-api/preferences";
 import {
   getSecureStorageItem,
   removeSecureStorageItem,
   setSecureStorageItem,
-} from "../secure-storage";
+} from "../../native-api/secure-storage";
+import { isDateAfter, isDateBefore, isDateEqual, parseDate } from "../date";
 import {
   CloudFileNotFoundError,
   CloudFileUnauthorizedError,

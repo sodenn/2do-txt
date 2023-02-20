@@ -5,9 +5,9 @@ interface KeyboardInfo {
   keyboardHeight: number;
 }
 
-export type KeyboardStyle = "dark" | "light" | "system";
+type KeyboardStyle = "dark" | "light" | "system";
 
-export async function addKeyboardDidShowListener(
+async function addKeyboardDidShowListener(
   listener: (info: KeyboardInfo) => void
 ) {
   const platform = getPlatform();
@@ -16,21 +16,21 @@ export async function addKeyboardDidShowListener(
   }
 }
 
-export async function addKeyboardDidHideListener(listener: () => void) {
+async function addKeyboardDidHideListener(listener: () => void) {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {
     Keyboard.addListener("keyboardDidHide", listener);
   }
 }
 
-export async function removeAllKeyboardListeners() {
+async function removeAllKeyboardListeners() {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {
     Keyboard.removeAllListeners().catch((e) => void e);
   }
 }
 
-export async function setKeyboardStyle(style: KeyboardStyle) {
+async function setKeyboardStyle(style: KeyboardStyle) {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {
     Keyboard.setStyle({ style: getStyle(style) }).catch((e) => void e);
@@ -47,3 +47,11 @@ function getStyle(style: KeyboardStyle) {
       return _KeyboardStyle.Default;
   }
 }
+
+export type { KeyboardStyle };
+export {
+  addKeyboardDidShowListener,
+  addKeyboardDidHideListener,
+  removeAllKeyboardListeners,
+  setKeyboardStyle,
+};

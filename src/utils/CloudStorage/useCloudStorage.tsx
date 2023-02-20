@@ -9,7 +9,7 @@ import DropboxIcon from "../../components/DropboxIcon";
 import useCloudStorageStore from "../../stores/cloud-storage-store";
 import usePlatformStore from "../../stores/platform-store";
 import useWebDAVDialogStore from "../../stores/webdav-dialog-store";
-import { useNetwork } from "../network";
+import useNetwork from "../../utils/useNetwork";
 import * as cloud from "./cloud-storage";
 import {
   CloudFileUnauthorizedError,

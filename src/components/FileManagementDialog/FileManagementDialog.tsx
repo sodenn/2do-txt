@@ -6,15 +6,15 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import useConfirmationDialogStore from "../../stores/confirmation-dialog-store";
-import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
-import { useCloudStorage } from "../../utils/CloudStorage";
 import {
   deleteFile,
   getFilenameFromPath,
   readdir,
-} from "../../utils/filesystem";
-import { getPlatform } from "../../utils/platform";
+} from "../../native-api/filesystem";
+import useConfirmationDialogStore from "../../stores/confirmation-dialog-store";
+import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
+import usePlatformStore from "../../stores/platform-store";
+import { useCloudStorage } from "../../utils/CloudStorage";
 import useTask from "../../utils/useTask";
 import ClosedFileList from "./ClosedFileList";
 import FileActionButton from "./FileActionButton";
@@ -26,7 +26,7 @@ interface CloseOptions {
 }
 
 const FileManagementDialog = () => {
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
   const fileManagementDialogOpen = useFileManagementDialogStore(
     (state) => state.open
   );

@@ -14,10 +14,10 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "../images/logo.png";
+import { hasTouchScreen } from "../native-api/platform";
 import useFileManagementDialogStore from "../stores/file-management-dialog-store";
 import useFilterStore from "../stores/filter-store";
 import useShortcutsDialogStore from "../stores/shortcuts-dialog-store";
-import { hasTouchScreen } from "../utils/platform";
 import useTask from "../utils/useTask";
 import StartEllipsis from "./StartEllipsis";
 

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
+import { readFile, selectFile } from "../native-api/filesystem";
 import useFilePickerStore from "../stores/file-picker-store";
 import usePlatformStore from "../stores/platform-store";
-import { readFile, selectFile } from "./filesystem";
 import { addTodoFilePath } from "./settings";
 import useTask from "./useTask";
 

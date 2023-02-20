@@ -5,14 +5,7 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { shallow } from "zustand/shallow";
-import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
-import useFilterStore from "../stores/filter-store";
-import usePlatformStore from "../stores/platform-store";
-import useSettingsStore from "../stores/settings-store";
-import useTasksStore, { loadTodoFiles } from "../stores/task-state";
-import { promptForRating } from "./app-rate";
-import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
-import { parseDate, todayDate } from "./date";
+import { promptForRating } from "../native-api/app-rate";
 import {
   deleteFile,
   getDoneFilePath,
@@ -21,12 +14,19 @@ import {
   getUri,
   isFile,
   writeFile,
-} from "./filesystem";
+} from "../native-api/filesystem";
+import { setPreferencesItem } from "../native-api/preferences";
+import { share } from "../native-api/share";
+import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
+import useFilterStore from "../stores/filter-store";
+import usePlatformStore from "../stores/platform-store";
+import useSettingsStore from "../stores/settings-store";
+import useTasksStore, { loadTodoFiles } from "../stores/task-state";
+import useNotification from "../utils/useNotification";
+import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
+import { parseDate, todayDate } from "./date";
 import { hashCode } from "./hashcode";
-import { useNotification } from "./notification";
-import { setPreferencesItem } from "./preferences";
 import { addTodoFilePath, removeTodoFilePath } from "./settings";
-import { share } from "./share";
 import {
   createDueDateRegex,
   createNextRecurringTask,

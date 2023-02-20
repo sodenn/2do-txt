@@ -23,9 +23,11 @@ import {
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { getDoneFilePath, join, selectFolder } from "../native-api/filesystem";
 import useCloudFileDialogStore from "../stores/cloud-file-dialog-store";
 import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 import useFilterStore from "../stores/filter-store";
+import usePlatformStore from "../stores/platform-store";
 import useSettingsStore from "../stores/settings-store";
 import {
   CloudFile,
@@ -36,8 +38,6 @@ import {
   useCloudStorage,
 } from "../utils/CloudStorage";
 import generateContentHash from "../utils/CloudStorage/ContentHasher";
-import { getDoneFilePath, join, selectFolder } from "../utils/filesystem";
-import { getPlatform } from "../utils/platform";
 import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
@@ -84,7 +84,7 @@ const CloudFileDialog = () => {
   const cleanupCloudFileDialog = useCloudFileDialogStore(
     (state) => state.cleanupCloudFileDialog
   );
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
   const openFileCreateDialog = useFileCreateDialogStore(
     (state) => state.openFileCreateDialog
   );

@@ -1,36 +1,14 @@
-import { App } from "@capacitor/app";
-import { useCallback, useEffect } from "react";
-import { getPlatform } from "./platform";
+import { useEffect } from "react";
+import {
+  addBecomeActiveListener,
+  removeAllBecomeActiveListeners,
+} from "../native-api/platform";
 
 export function useBecomeActive(listener: () => unknown) {
-  const handleMount = useCallback(async () => {
-    const platform = getPlatform();
-    if (platform === "web" || platform === "desktop") {
-      window.addEventListener("focus", listener);
-    }
-    if (platform === "ios" || platform === "android") {
-      App.addListener("appStateChange", ({ isActive }) => {
-        if (isActive) {
-          listener();
-        }
-      });
-    }
-  }, [listener]);
-
-  const handleUnmount = useCallback(async () => {
-    const platform = getPlatform();
-    if (platform === "web" || platform === "desktop") {
-      window.removeEventListener("focus", listener);
-    }
-    if (platform === "ios" || platform === "android") {
-      App.removeAllListeners();
-    }
-  }, [listener]);
-
   useEffect(() => {
-    handleMount();
+    addBecomeActiveListener(listener);
     return () => {
-      handleUnmount();
+      removeAllBecomeActiveListeners([listener]);
     };
-  }, [handleMount, handleUnmount]);
+  }, [listener]);
 }

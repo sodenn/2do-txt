@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { hasTouchScreen } from "../utils/platform";
+import { hasTouchScreen } from "../native-api/platform";
 
 const options = [
   "A",

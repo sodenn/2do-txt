@@ -3,7 +3,7 @@ import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import useTaskDialogStore from "../stores/task-dialog-store";
-import { useAddShortcutListener } from "../utils/shortcuts";
+import { useHotkeys } from "../utils/useHotkeys";
 import Kbd from "./Kbd";
 
 const AddTaskButton = (props: IconButtonProps) => {
@@ -20,7 +20,7 @@ const AddTaskButton = (props: IconButtonProps) => {
     [openTaskDialog]
   );
 
-  useAddShortcutListener(shortcutListeners);
+  useHotkeys(shortcutListeners);
 
   return (
     <Tooltip

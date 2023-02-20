@@ -3,7 +3,7 @@ import { Trans, useTranslation } from "react-i18next";
 import useSettingsStore from "../stores/settings-store";
 import useSideSheetStore from "../stores/side-sheet-store";
 import { useCloudStorage } from "../utils/CloudStorage";
-import { useNotification } from "../utils/notification";
+import useNotification from "../utils/useNotification";
 import ArchiveModeSelect from "./ArchiveModeSelect";
 import ArchiveNowButton from "./ArchiveNowButton";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";

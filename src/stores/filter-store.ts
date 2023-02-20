@@ -1,6 +1,9 @@
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { getPreferencesItem, setPreferencesItem } from "../utils/preferences";
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "../native-api/preferences";
 
 export type SortKey =
   | "priority"

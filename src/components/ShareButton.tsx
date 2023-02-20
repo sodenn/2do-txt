@@ -1,12 +1,12 @@
 import IosShareIcon from "@mui/icons-material/IosShare";
 import ShareIcon from "@mui/icons-material/Share";
 import { IconButton, IconButtonProps } from "@mui/material";
-import { getPlatform } from "../utils/platform";
+import usePlatformStore from "../stores/platform-store";
 import useTask from "../utils/useTask";
 
 const ShareButton = (props: IconButtonProps) => {
-  const platform = getPlatform();
   const { downloadTodoFile, shareTodoFile } = useTask();
+  const platform = usePlatformStore((state) => state.platform);
 
   const handleClick = () => {
     shareTodoFile().catch((error) => {

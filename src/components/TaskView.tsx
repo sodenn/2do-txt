@@ -4,13 +4,13 @@ import { useTranslation } from "react-i18next";
 import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
 import useSettingsStore from "../stores/settings-store";
 import useTaskDialogStore from "../stores/task-dialog-store";
-import { useAddShortcutListener } from "../utils/shortcuts";
 import { Task } from "../utils/task";
 import {
   TimelineTask,
   useTaskGroups,
   useTimelineTasks,
 } from "../utils/task-list";
+import { useHotkeys } from "../utils/useHotkeys";
 import useTask from "../utils/useTask";
 import TaskList from "./TaskList";
 import TaskTimeline from "./TaskTimeline";
@@ -101,7 +101,7 @@ const TaskView = () => {
     [focusNextListItem, openDeleteTaskDialog, openTaskDialog]
   );
 
-  useAddShortcutListener(shortcutListeners);
+  useHotkeys(shortcutListeners);
 
   if (taskLists.length === 0) {
     return null;

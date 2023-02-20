@@ -1,6 +1,6 @@
 import { Preferences } from "@capacitor/preferences";
 
-export type PreferencesKeys =
+type PreferencesKeys =
   | "app-rate-counter"
   | "app-rate-date"
   | "language"
@@ -20,9 +20,7 @@ export type PreferencesKeys =
   | "task-view"
   | "Dropbox-code-verifier";
 
-export async function getPreferencesItem<T extends string>(
-  key: PreferencesKeys
-) {
+async function getPreferencesItem<T extends string>(key: PreferencesKeys) {
   const result = await Preferences.get({ key });
   if (result) {
     return result.value as T;
@@ -30,15 +28,16 @@ export async function getPreferencesItem<T extends string>(
   return null;
 }
 
-export async function setPreferencesItem(
+async function setPreferencesItem(
   key: PreferencesKeys,
   value: string
 ): Promise<void> {
   return Preferences.set({ key, value: value });
 }
 
-export async function removePreferencesItem(
-  key: PreferencesKeys
-): Promise<void> {
+async function removePreferencesItem(key: PreferencesKeys): Promise<void> {
   return Preferences.remove({ key });
 }
+
+export type { PreferencesKeys };
+export { getPreferencesItem, setPreferencesItem, removePreferencesItem };

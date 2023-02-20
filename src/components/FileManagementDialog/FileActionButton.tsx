@@ -7,17 +7,17 @@ import { useTranslation } from "react-i18next";
 import useCloudFileDialogStore from "../../stores/cloud-file-dialog-store";
 import useFileCreateDialogStore from "../../stores/file-create-dialog-store";
 import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
+import usePlatformStore from "../../stores/platform-store";
 import {
   CloudStorage,
   cloudStorageIcons,
   useCloudStorage,
 } from "../../utils/CloudStorage";
-import { getPlatform } from "../../utils/platform";
 import useFilePicker from "../../utils/useFilePicker";
 
 const FileActionButton = () => {
   const { t } = useTranslation();
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
   const { openFileDialog } = useFilePicker();
   const openFileCreateDialog = useFileCreateDialogStore(
     (state) => state.openFileCreateDialog

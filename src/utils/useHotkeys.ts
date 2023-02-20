@@ -4,7 +4,7 @@ interface ListenerMap {
   [key: string]: (ev: KeyboardEvent) => unknown;
 }
 
-export const useAddShortcutListener = (listeners: ListenerMap) => {
+export const useHotkeys = (listeners: ListenerMap) => {
   useEffect(() => {
     const handler = (ev: KeyboardEvent) => {
       const listener = listeners[ev.key];

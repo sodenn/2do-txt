@@ -1,5 +1,11 @@
-import { getDoneFilePath, getFilenameFromPath } from "../filesystem";
-import { getPreferencesItem, setPreferencesItem } from "../preferences";
+import {
+  getDoneFilePath,
+  getFilenameFromPath,
+} from "../../native-api/filesystem";
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "../../native-api/preferences";
 import {
   CloudDoneFileRef,
   CloudFileRef,

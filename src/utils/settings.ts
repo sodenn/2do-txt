@@ -1,4 +1,7 @@
-import { getPreferencesItem, setPreferencesItem } from "./preferences";
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "../native-api/preferences";
 
 async function getTodoFilePaths() {
   const pathStr = await getPreferencesItem("todo-txt-paths");

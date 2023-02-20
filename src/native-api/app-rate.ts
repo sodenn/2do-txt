@@ -1,6 +1,6 @@
 import { RateApp } from "capacitor-rate-app";
 import { addWeeks, isAfter } from "date-fns";
-import { parseDate } from "./date";
+import { parseDate } from "../utils/date";
 import { getPlatform } from "./platform";
 import { getPreferencesItem, setPreferencesItem } from "./preferences";
 

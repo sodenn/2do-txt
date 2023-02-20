@@ -1,8 +1,9 @@
+import { App } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 
-export type Platform = "desktop" | "web" | "ios" | "android";
+type Platform = "desktop" | "web" | "ios" | "android";
 
-export function getPlatform(): Platform {
+function getPlatform(): Platform {
   if ((window as any).__TAURI__) {
     return "desktop";
   }
@@ -24,7 +25,7 @@ export function getPlatform(): Platform {
   throw new Error();
 }
 
-export function hasTouchScreen() {
+function hasTouchScreen() {
   if ("maxTouchPoints" in navigator) {
     return navigator.maxTouchPoints > 0;
   } else if ("msMaxTouchPoints" in navigator) {
@@ -46,3 +47,37 @@ export function hasTouchScreen() {
     }
   }
 }
+
+async function addBecomeActiveListener(listener: () => unknown) {
+  const platform = getPlatform();
+  if (platform === "web" || platform === "desktop") {
+    window.addEventListener("focus", listener);
+  }
+  if (platform === "ios" || platform === "android") {
+    App.addListener("appStateChange", ({ isActive }) => {
+      if (isActive) {
+        listener();
+      }
+    });
+  }
+}
+
+async function removeAllBecomeActiveListeners(listeners: (() => unknown)[]) {
+  const platform = getPlatform();
+  if (platform === "web" || platform === "desktop") {
+    listeners?.forEach((listener) =>
+      window.removeEventListener("focus", listener)
+    );
+  }
+  if (platform === "ios" || platform === "android") {
+    App.removeAllListeners();
+  }
+}
+
+export type { Platform };
+export {
+  getPlatform,
+  hasTouchScreen,
+  addBecomeActiveListener,
+  removeAllBecomeActiveListeners,
+};

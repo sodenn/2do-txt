@@ -2,10 +2,6 @@ import { Button } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import useArchivedTasksDialogStore from "../stores/archived-tasks-dialog-store";
-import useSettingsStore from "../stores/settings-store";
-import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
-import generateContentHash from "./CloudStorage/ContentHasher";
 import {
   deleteFile,
   getDoneFilePath,
@@ -13,7 +9,11 @@ import {
   isFile,
   readFile,
   writeFile,
-} from "./filesystem";
+} from "../native-api/filesystem";
+import useArchivedTasksDialogStore from "../stores/archived-tasks-dialog-store";
+import useSettingsStore from "../stores/settings-store";
+import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
+import generateContentHash from "./CloudStorage/ContentHasher";
 import { Task } from "./task";
 import { parseTaskList, stringifyTaskList, TaskList } from "./task-list";
 

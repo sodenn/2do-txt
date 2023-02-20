@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { ChangeEvent, useMemo, useRef } from "react";
 import useFilterStore from "../stores/filter-store";
-import { useAddShortcutListener } from "../utils/shortcuts";
+import { useHotkeys } from "../utils/useHotkeys";
 import ExpandableSearch from "./ExpandableSearch";
 
 interface SearchBarProps {
@@ -28,7 +28,7 @@ const SearchBar = ({ onExpand }: SearchBarProps) => {
     []
   );
 
-  useAddShortcutListener(shortcutListeners);
+  useHotkeys(shortcutListeners);
 
   return (
     <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>

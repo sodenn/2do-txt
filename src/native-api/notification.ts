@@ -1,13 +1,11 @@
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { differenceInHours, isAfter, subDays } from "date-fns";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import logo from "../images/logo.png";
-import { dateReviver } from "./date";
+import { dateReviver } from "../utils/date";
 import { getPlatform } from "./platform";
 import { getPreferencesItem, setPreferencesItem } from "./preferences";
 
-export interface Notification {
+interface Notification {
   id: number;
   title: string;
   body: string;
@@ -183,28 +181,30 @@ async function init(): Promise<void> {
     : webNotification.init();
 }
 
-async function cancel(ids: number[]): Promise<void> {
+async function cancelNotifications(ids: number[]): Promise<void> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.cancel(ids)
     : webNotification.cancel(ids);
 }
 
-async function isPermissionGranted(): Promise<boolean> {
+async function isNotificationPermissionGranted(): Promise<boolean> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.isPermissionGranted()
     : webNotification.isPermissionGranted();
 }
 
-async function requestPermission(): Promise<boolean> {
+async function requestNotificationPermission(): Promise<boolean> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.requestPermission()
     : webNotification.requestPermission();
 }
 
-async function schedule(notifications: Notification[]): Promise<number[]> {
+async function scheduleNotifications(
+  notifications: Notification[]
+): Promise<number[]> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.schedule(notifications)
@@ -220,35 +220,11 @@ async function shouldNotificationsBeRescheduled() {
 
 init();
 
-function useNotification() {
-  const { t } = useTranslation();
-
-  const scheduleNotifications = useCallback(
-    async (options: Omit<Notification, "title">[]) => {
-      const opt = options.map((o) => {
-        return {
-          ...o,
-          title: t("Reminder"),
-        };
-      });
-
-      const granted = await isPermissionGranted();
-      if (!granted) {
-        return [];
-      }
-
-      return schedule(opt);
-    },
-    [t]
-  );
-
-  return {
-    isNotificationPermissionGranted: isPermissionGranted,
-    requestNotificationPermission: requestPermission,
-    cancelNotifications: cancel,
-    shouldNotificationsBeRescheduled: shouldNotificationsBeRescheduled,
-    scheduleNotifications,
-  };
-}
-
-export { useNotification };
+export type { Notification };
+export {
+  cancelNotifications,
+  isNotificationPermissionGranted,
+  requestNotificationPermission,
+  scheduleNotifications,
+  shouldNotificationsBeRescheduled,
+};
