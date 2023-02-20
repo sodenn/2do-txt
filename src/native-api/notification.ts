@@ -120,7 +120,7 @@ const webNotification: WebNotification = {
           body: body,
           icon: logo,
         });
-        this.addReceivedNotification({
+        webNotification.addReceivedNotification({
           notificationId: id,
           receivingDate: scheduleAt,
         });
@@ -164,7 +164,8 @@ const webNotification: WebNotification = {
   },
   init() {
     setInterval(async () => {
-      const scheduledNotifications = await this.getReceivedNotifications();
+      const scheduledNotifications =
+        await webNotification.getReceivedNotifications();
       const twoDaysAgo = subDays(new Date(), 2);
       const newValue = scheduledNotifications.filter((n) =>
         isAfter(n.receivingDate, twoDaysAgo)
@@ -174,7 +175,7 @@ const webNotification: WebNotification = {
   },
 };
 
-async function init(): Promise<void> {
+async function initNotifications(): Promise<void> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.init()
@@ -218,10 +219,9 @@ async function shouldNotificationsBeRescheduled() {
     : webNotification.shouldNotificationsBeRescheduled();
 }
 
-init();
-
 export type { Notification };
 export {
+  initNotifications,
   cancelNotifications,
   isNotificationPermissionGranted,
   requestNotificationPermission,

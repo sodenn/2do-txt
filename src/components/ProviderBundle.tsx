@@ -1,8 +1,8 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { Suspense } from "react";
-import AppThemeProvider from "../components/AppThemeProvider";
 import { WithChildren } from "../types/common.types";
+import AppThemeProvider from "./AppThemeProvider";
 
 const ProviderBundle = ({ children }: WithChildren) => {
   return (

@@ -2,8 +2,8 @@ import { CssBaseline } from "@mui/material";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Page from "./components/Page";
+import ProviderBundle from "./components/ProviderBundle";
 import { loader } from "./stores/loader";
-import ProviderBundle from "./stores/ProviderBundle";
 
 const router = createBrowserRouter([
   {

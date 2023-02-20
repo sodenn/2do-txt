@@ -19,7 +19,7 @@ i18n.use(initReactI18next).init({
 function mockNotificationAPI(permission: NotificationPermission = "granted") {
   const NotificationMock = vi.fn();
   const staticMembers = {
-    requestPermission: vi.fn().mockImplementation(() => {
+    requestPermission: vi.fn().mockImplementation(async () => {
       return permission;
     }),
     permission,
