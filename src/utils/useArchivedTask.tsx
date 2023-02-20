@@ -206,6 +206,9 @@ function useArchivedTask() {
     }
 
     const data = await readFile(doneFilePath).catch((e) => void e);
+    if (!data) {
+      return;
+    }
 
     const parseResult = parseTaskList(data);
     return {
