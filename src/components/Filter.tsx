@@ -8,8 +8,8 @@ import {
 } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import useFilter, { FilterType, SortKey } from "../stores/filter-store";
-import useSettings from "../stores/settings-store";
+import useFilterStore, { FilterType, SortKey } from "../stores/filter-store";
+import useSettingsStore from "../stores/settings-store";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import useTask from "../utils/useTask";
 import ChipList from "./ChipList";
@@ -38,8 +38,8 @@ const Filter = () => {
     toggleTag,
     setHideCompletedTasks,
     setSearchTerm,
-  } = useFilter();
-  const taskView = useSettings((state) => state.taskView);
+  } = useFilterStore();
+  const taskView = useSettingsStore((state) => state.taskView);
 
   const attributes = activeTaskList ? activeTaskList : rest;
 

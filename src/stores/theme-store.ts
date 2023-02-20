@@ -7,7 +7,7 @@ type ThemeMode = "dark" | "light" | "system";
 interface ThemeState {
   mode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
-  init: () => Promise<void>;
+  load: () => Promise<void>;
 }
 
 const themeStore = createStore<ThemeState>((set) => ({
@@ -15,15 +15,15 @@ const themeStore = createStore<ThemeState>((set) => ({
   setThemeMode: (mode: ThemeMode) => {
     set({ mode });
   },
-  init: async () => {
+  load: async () => {
     const mode = await getPreferencesItem<ThemeMode>("theme-mode");
     set({ mode: mode || "system" });
   },
 }));
 
-const useTheme = ((selector: any) =>
+const useThemeStore = ((selector: any) =>
   useStore(themeStore, selector)) as UseBoundStore<StoreApi<ThemeState>>;
 
 export type { ThemeMode };
 export { themeStore };
-export default useTheme;
+export default useThemeStore;

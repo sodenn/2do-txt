@@ -2,19 +2,14 @@ import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import { Alert, Button, CircularProgress } from "@mui/material";
 import { throttle } from "lodash";
 import { SnackbarKey, useSnackbar } from "notistack";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import {
-  useLoaderData,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import DropboxIcon from "../../components/DropboxIcon";
-import { createContext } from "../../utils/Context";
-import { LoaderData } from "../loader";
-import useNetwork from "../network-store";
-import usePlatform from "../platform-store";
+import useCloudStorageStore from "../../stores/cloud-storage-store";
+import usePlatformStore from "../../stores/platform-store";
+import useWebDAVDialogStore from "../../stores/webdav-dialog-store";
+import { useNetwork } from "../network";
 import * as cloud from "./cloud-storage";
 import {
   CloudFileUnauthorizedError,
@@ -39,27 +34,36 @@ import {
   SyncFileOptions,
   UploadFileOptions,
 } from "./CloudStorageContext.types";
-import { useWebDAVDialog } from "./WebDAVDialogContext";
 
 export const cloudStorageIcons: Record<CloudStorage, ReactNode> = {
   Dropbox: <DropboxIcon />,
   WebDAV: <StorageOutlinedIcon />,
 };
 
-export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
-  const data = useLoaderData() as LoaderData;
-  const platform = usePlatform((state) => state.platform);
+function useCloudStorage() {
+  const platform = usePlatformStore((state) => state.platform);
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const [authError, setAuthError] = useState(false);
-  const [connectionError, setConnectionError] = useState(false);
+  const authError = useCloudStorageStore((state) => state.authError);
+  const setAuthError = useCloudStorageStore((state) => state.setAuthError);
+  const connectionError = useCloudStorageStore(
+    (state) => state.connectionError
+  );
+  const setConnectionError = useCloudStorageStore(
+    (state) => state.setConnectionError
+  );
+  const cloudStorageClients = useCloudStorageStore(
+    (state) => state.cloudStorageClients
+  );
+  const setCloudStorageClient = useCloudStorageStore(
+    (state) => state.setCloudStorageClient
+  );
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { connected } = useNetwork();
-  const { setWebDAVDialogOpen } = useWebDAVDialog();
-  const [cloudStorageClients, setCloudStorageClients] = useState(
-    data.cloudStorageClients
+  const openCloudFileDialog = useWebDAVDialogStore(
+    (state) => state.openCloudFileDialog
   );
   const cloudStorageEnabled =
     ["ios", "android", "desktop"].includes(platform) ||
@@ -93,13 +97,17 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     [enqueueSnackbar, t]
   );
 
-  const createClient = useCallback(async (cloudStorage: CloudStorage) => {
-    const client = await cloud.createClient(cloudStorage);
-    setCloudStorageClients((current) => ({
-      ...current,
-      [cloudStorage]: { instance: client, cloudStorage, status: "connected" },
-    }));
-  }, []);
+  const createClient = useCallback(
+    async (cloudStorage: CloudStorage) => {
+      const client = await cloud.createClient(cloudStorage);
+      setCloudStorageClient({
+        instance: client,
+        cloudStorage,
+        status: "connected",
+      });
+    },
+    [setCloudStorageClient]
+  );
 
   const oauth2Authenticate = useCallback(
     async (cloudStorage: CloudStorage) => {
@@ -127,8 +135,8 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
   );
 
   const webDAVAuthenticate = useCallback(() => {
-    setWebDAVDialogOpen(true);
-  }, [setWebDAVDialogOpen]);
+    openCloudFileDialog();
+  }, [openCloudFileDialog]);
 
   const authenticate = useCallback(
     async (cloudStorage: CloudStorage) => {
@@ -198,17 +206,14 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     (error: any) => {
       if (error instanceof CloudFileUnauthorizedError) {
         const cloudStorage = error.cloudStorage;
-        setCloudStorageClients((current) => ({
-          ...current,
-          [cloudStorage]: { cloudStorage, status: "disconnected" },
-        }));
+        setCloudStorageClient({ cloudStorage, status: "disconnected" });
         openSessionExpiredAlert(cloudStorage);
       } else {
         openConnectionErrorAlert(error);
       }
       throw error;
     },
-    [openConnectionErrorAlert, openSessionExpiredAlert]
+    [openConnectionErrorAlert, openSessionExpiredAlert, setCloudStorageClient]
   );
 
   const getClient = useCallback(
@@ -250,12 +255,9 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
         cloudStorage,
         client,
       });
-      setCloudStorageClients((current) => ({
-        ...current,
-        [cloudStorage]: { cloudStorage, status: "disconnected" },
-      }));
+      setCloudStorageClient({ cloudStorage, status: "disconnected" });
     },
-    [getClient]
+    [getClient, setCloudStorageClient]
   );
 
   const requestTokens = useCallback(async () => {
@@ -513,4 +515,6 @@ export const [CloudStorageProvider, useCloudStorage] = createContext(() => {
     getCloudFileRefByFilePath,
     getCloudDoneFileRefByFilePath,
   };
-});
+}
+
+export { useCloudStorage };

@@ -1,6 +1,3 @@
-import { isEqual } from "lodash";
-import { useCallback, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import { getPreferencesItem, setPreferencesItem } from "../utils/preferences";
@@ -47,7 +44,32 @@ interface FilterState {
   resetActiveTags: () => void;
   setHideCompletedTasks: (hideCompletedTasks: boolean) => void;
   setActiveTaskListPath: (activeTaskListPath?: string) => void;
-  init: () => Promise<void>;
+  load: () => Promise<void>;
+}
+
+async function load() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const sortBy = await getPreferencesItem<SortKey>("sort-by");
+  const filterType = await getPreferencesItem<FilterType>("filter-type");
+  const hideCompletedTasks = await getPreferencesItem<string>(
+    "hide-completed-tasks"
+  );
+  const active = searchParams.get("active");
+  const priorities = searchParams.get("priorities");
+  const projects = searchParams.get("projects");
+  const contexts = searchParams.get("contexts");
+  const tags = searchParams.get("tags");
+  return {
+    searchTerm: searchParams.get("term") || "",
+    activeTaskListPath: active ? decodeURIComponent(active) : undefined,
+    activePriorities: priorities ? priorities.split(",") : [],
+    activeProjects: projects ? projects.split(",") : [],
+    activeContexts: contexts ? contexts.split(",") : [],
+    activeTags: tags ? tags.split(",") : [],
+    sortBy: sortBy ?? "",
+    filterType: filterType || "AND",
+    hideCompletedTasks: hideCompletedTasks === "true",
+  };
 }
 
 const filterStore = createStore<FilterState>((set) => ({
@@ -60,15 +82,13 @@ const filterStore = createStore<FilterState>((set) => ({
   activeTags: [],
   hideCompletedTasks: false,
   activeTaskListPath: undefined,
-  setSearchTerm: (searchTerm: string) =>
-    set((state) => ({ ...state, searchTerm })),
+  setSearchTerm: (searchTerm: string) => set({ searchTerm }),
   setSortBy: (sortBy: SortKey) => {
-    set((state) => ({ ...state, sortBy }));
+    set({ sortBy });
     setPreferencesItem("sort-by", sortBy);
   },
   setFilterType: (filterType: FilterType) => {
     set((state) => ({
-      ...state,
       filterType,
       ...(state.activePriorities.length > 1 &&
         filterType === "AND" && { activePriorities: [] }),
@@ -76,121 +96,48 @@ const filterStore = createStore<FilterState>((set) => ({
     setPreferencesItem("filter-type", filterType);
   },
   togglePriority: (priority: string) =>
-    set(({ activePriorities, ...state }) => ({
-      ...state,
-      activePriorities: activePriorities.includes(priority)
-        ? activePriorities.filter((i) => i !== priority)
-        : [...activePriorities, priority],
+    set((state) => ({
+      activePriorities: state.activePriorities.includes(priority)
+        ? state.activePriorities.filter((i) => i !== priority)
+        : [...state.activePriorities, priority],
     })),
-  resetActivePriorities: () =>
-    set((state) => ({ ...state, activePriorities: [] })),
+  resetActivePriorities: () => set({ activePriorities: [] }),
   toggleProject: (project: string) =>
-    set(({ activeProjects, ...state }) => ({
-      ...state,
-      activeProjects: activeProjects.includes(project)
-        ? activeProjects.filter((i) => i !== project)
-        : [...activeProjects, project],
+    set((state) => ({
+      activeProjects: state.activeProjects.includes(project)
+        ? state.activeProjects.filter((i) => i !== project)
+        : [...state.activeProjects, project],
     })),
-  resetActiveProjects: () => set((state) => ({ ...state, activeProjects: [] })),
+  resetActiveProjects: () => set({ activeProjects: [] }),
   toggleContext: (context: string) =>
-    set(({ activeContexts, ...state }) => ({
-      ...state,
-      activeContexts: activeContexts.includes(context)
-        ? activeContexts.filter((i) => i !== context)
-        : [...activeContexts, context],
+    set((state) => ({
+      activeContexts: state.activeContexts.includes(context)
+        ? state.activeContexts.filter((i) => i !== context)
+        : [...state.activeContexts, context],
     })),
-  resetActiveContexts: () => set((state) => ({ ...state, activeContexts: [] })),
+  resetActiveContexts: () => set({ activeContexts: [] }),
   toggleTag: (tag: string) =>
-    set(({ activeTags, ...state }) => ({
-      ...state,
-      activeTags: activeTags.includes(tag)
-        ? activeTags.filter((i) => i !== tag)
-        : [...activeTags, tag],
+    set((state) => ({
+      activeTags: state.activeTags.includes(tag)
+        ? state.activeTags.filter((i) => i !== tag)
+        : [...state.activeTags, tag],
     })),
-  resetActiveTags: () => set((state) => ({ ...state, activeTags: [] })),
+  resetActiveTags: () => set({ activeTags: [] }),
   setHideCompletedTasks: (hideCompletedTasks: boolean) => {
-    set((state) => ({ ...state, hideCompletedTasks }));
+    set({ hideCompletedTasks });
     setPreferencesItem("hide-completed-tasks", hideCompletedTasks.toString());
   },
   setActiveTaskListPath: (activeTaskListPath?: string) =>
-    set((state) => ({ ...state, activeTaskListPath })),
-  init: async () => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const sortBy = await getPreferencesItem<SortKey>("sort-by");
-    const filterType = await getPreferencesItem<FilterType>("filter-type");
-    const hideCompletedTasks = await getPreferencesItem<string>(
-      "hide-completed-tasks"
-    );
-    const active = searchParams.get("active");
-    const priorities = searchParams.get("priorities");
-    const projects = searchParams.get("projects");
-    const contexts = searchParams.get("contexts");
-    const tags = searchParams.get("tags");
-    set((state) => ({
-      ...state,
-      searchTerm: searchParams.get("term") || "",
-      activeTaskListPath: active ? decodeURIComponent(active) : undefined,
-      activePriorities: priorities ? priorities.split(",") : [],
-      activeProjects: projects ? projects.split(",") : [],
-      activeContexts: contexts ? contexts.split(",") : [],
-      activeTags: tags ? tags.split(",") : [],
-      sortBy: sortBy ?? "",
-      filterType: filterType || "AND",
-      hideCompletedTasks: hideCompletedTasks === "true",
-    }));
+    set({ activeTaskListPath }),
+  load: async () => {
+    const state = await load();
+    set(state);
   },
 }));
 
-const useFilter = ((selector: any) =>
+const useFilterStore = ((selector: any) =>
   useStore(filterStore, selector)) as UseBoundStore<StoreApi<FilterState>>;
 
-function useUpdateSearchParams() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const updateSearchParams = useCallback(
-    (state: FilterState) => {
-      const {
-        searchTerm,
-        activeTaskListPath,
-        activePriorities,
-        activeProjects,
-        activeContexts,
-        activeTags,
-      } = state;
-      const params: Partial<SearchParams> = {};
-      if (searchTerm) {
-        params.term = searchTerm;
-      }
-      if (activeTaskListPath) {
-        params.active = encodeURIComponent(activeTaskListPath);
-      }
-      if (activePriorities.length > 0) {
-        params.priorities = activePriorities.join(",");
-      }
-      if (activeProjects.length > 0) {
-        params.projects = activeProjects.join(",");
-      }
-      if (activeContexts.length > 0) {
-        params.contexts = activeContexts.join(",");
-      }
-      if (activeTags.length > 0) {
-        params.tags = activeTags.join(",");
-      }
-      const currentParams = Object.fromEntries(searchParams);
-      if (!isEqual(params, currentParams)) {
-        setSearchParams(params);
-      }
-    },
-    [searchParams, setSearchParams]
-  );
-
-  useEffect(() => {
-    const unsubscribe = filterStore.subscribe(updateSearchParams);
-    return () => {
-      unsubscribe();
-    };
-  }, [updateSearchParams]);
-}
-
-export default useFilter;
-export { filterStore, useUpdateSearchParams };
+export type { SearchParams, FilterState };
+export { filterStore };
+export default useFilterStore;

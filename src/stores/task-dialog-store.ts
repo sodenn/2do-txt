@@ -9,11 +9,12 @@ interface TaskDialogState {
   cleanupTaskDialog: () => void;
 }
 
-const useTaskDialog = create<TaskDialogState>((set) => ({
+const useTaskDialogStore = create<TaskDialogState>((set) => ({
   open: false,
+  task: undefined,
   openTaskDialog: (task?: Task) => set({ open: true, task }),
   closeTaskDialog: () => set((state) => ({ open: false, task: state.task })),
-  cleanupTaskDialog: () => set({ open: false }),
+  cleanupTaskDialog: () => set({ open: false, task: undefined }),
 }));
 
-export default useTaskDialog;
+export default useTaskDialogStore;

@@ -1,11 +1,11 @@
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useFileCreateDialog from "../stores/file-create-dialog-store";
+import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 
 const CreateExampleFileButton = () => {
   const { t } = useTranslation();
-  const openFileCreateDialog = useFileCreateDialog(
+  const openFileCreateDialog = useFileCreateDialogStore(
     (state) => state.openFileCreateDialog
   );
 

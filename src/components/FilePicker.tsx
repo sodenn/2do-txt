@@ -4,10 +4,10 @@ import { useSnackbar } from "notistack";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
-import useFilePicker from "../stores/file-picker-store";
-import useFilter from "../stores/filter-store";
+import useFilterStore from "../stores/filter-store";
 import { WithChildren } from "../types/common.types";
 import { getPlatform } from "../utils/platform";
+import useFilePicker from "../utils/useFilePicker";
 import useTask from "../utils/useTask";
 
 const Root = styled("div")({
@@ -50,7 +50,7 @@ const WebFilePicker = ({ children }: WithChildren) => {
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
   const { setFileInput } = useFilePicker();
-  const setActiveTaskListPath = useFilter(
+  const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath
   );
   const { enqueueSnackbar } = useSnackbar();

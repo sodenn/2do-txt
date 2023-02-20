@@ -2,13 +2,13 @@ import AddIcon from "@mui/icons-material/Add";
 import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import useTaskDialog from "../stores/task-dialog-store";
+import useTaskDialogStore from "../stores/task-dialog-store";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import Kbd from "./Kbd";
 
 const AddTaskButton = (props: IconButtonProps) => {
   const { t } = useTranslation();
-  const openTaskDialog = useTaskDialog((state) => state.openTaskDialog);
+  const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 
   const handleClick: IconButtonProps["onClick"] = (event) => {
     event.currentTarget.blur();

@@ -20,7 +20,7 @@ export interface ConfirmationDialogState extends ConfirmationDialogOptions {
   cleanupConfirmationDialog: () => void;
 }
 
-const useConfirmationDialog = create<ConfirmationDialogState>((set) => ({
+const useConfirmationDialogStore = create<ConfirmationDialogState>((set) => ({
   open: false,
   title: undefined,
   content: undefined,
@@ -28,8 +28,15 @@ const useConfirmationDialog = create<ConfirmationDialogState>((set) => ({
   onClose: undefined,
   openConfirmationDialog: (opt: ConfirmationDialogOptions) =>
     set({ ...opt, open: true }),
-  closeConfirmationDialog: () => set((state) => ({ ...state, open: false })),
-  cleanupConfirmationDialog: () => set({ open: false }),
+  closeConfirmationDialog: () => set({ open: false }),
+  cleanupConfirmationDialog: () =>
+    set({
+      open: false,
+      title: undefined,
+      content: undefined,
+      buttons: undefined,
+      onClose: undefined,
+    }),
 }));
 
-export default useConfirmationDialog;
+export default useConfirmationDialogStore;

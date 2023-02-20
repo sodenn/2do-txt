@@ -3,11 +3,6 @@ import { SnackbarProvider } from "notistack";
 import { Suspense } from "react";
 import AppThemeProvider from "../components/AppThemeProvider";
 import { WithChildren } from "../types/common.types";
-import {
-  CloudFileDialogProvider,
-  CloudStorageProvider,
-  WebDAVDialogProvider,
-} from "./CloudStorageContext";
 
 const ProviderBundle = ({ children }: WithChildren) => {
   return (
@@ -22,11 +17,7 @@ const ProviderBundle = ({ children }: WithChildren) => {
           }}
           TransitionComponent={Grow}
         >
-          <CloudFileDialogProvider>
-            <WebDAVDialogProvider>
-              <CloudStorageProvider>{children}</CloudStorageProvider>
-            </WebDAVDialogProvider>
-          </CloudFileDialogProvider>
+          {children}
         </SnackbarProvider>
       </AppThemeProvider>
     </Suspense>

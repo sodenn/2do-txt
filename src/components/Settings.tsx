@@ -1,8 +1,8 @@
 import { Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
-import { useCloudStorage } from "../stores/CloudStorageContext";
-import useSettings from "../stores/settings-store";
-import useSideSheet from "../stores/side-sheet-store";
+import useSettingsStore from "../stores/settings-store";
+import useSideSheetStore from "../stores/side-sheet-store";
+import { useCloudStorage } from "../utils/CloudStorage";
 import { useNotification } from "../utils/notification";
 import ArchiveModeSelect from "./ArchiveModeSelect";
 import ArchiveNowButton from "./ArchiveNowButton";
@@ -16,22 +16,26 @@ import ThemeModeSelect from "./ThemeModeSelect";
 const Settings = () => {
   const { t } = useTranslation();
   const { cloudStorageEnabled } = useCloudStorage();
-  const closeSideSheet = useSideSheet((state) => state.closeSideSheet);
+  const closeSideSheet = useSideSheetStore((state) => state.closeSideSheet);
   const { isNotificationPermissionGranted, requestNotificationPermission } =
     useNotification();
-  const showNotifications = useSettings((state) => state.showNotifications);
-  const setShowNotifications = useSettings(
+  const showNotifications = useSettingsStore(
+    (state) => state.showNotifications
+  );
+  const setShowNotifications = useSettingsStore(
     (state) => state.setShowNotifications
   );
-  const createCompletionDate = useSettings(
+  const createCompletionDate = useSettingsStore(
     (state) => state.createCompletionDate
   );
-  const createCreationDate = useSettings((state) => state.createCreationDate);
-  const archiveMode = useSettings((state) => state.archiveMode);
-  const toggleCreateCompletionDate = useSettings(
+  const createCreationDate = useSettingsStore(
+    (state) => state.createCreationDate
+  );
+  const archiveMode = useSettingsStore((state) => state.archiveMode);
+  const toggleCreateCompletionDate = useSettingsStore(
     (state) => state.toggleCreateCompletionDate
   );
-  const toggleCreateCreationDate = useSettings(
+  const toggleCreateCreationDate = useSettingsStore(
     (state) => state.toggleCreateCreationDate
   );
 

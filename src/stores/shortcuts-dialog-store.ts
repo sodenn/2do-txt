@@ -6,10 +6,10 @@ interface ShortcutsDialogState {
   closeShortcutsDialog: () => void;
 }
 
-const useShortcutsDialog = create<ShortcutsDialogState>((set) => ({
+const useShortcutsDialogStore = create<ShortcutsDialogState>((set) => ({
   open: false,
   openShortcutsDialog: () => set({ open: true }),
   closeShortcutsDialog: () => set({ open: false }),
 }));
 
-export default useShortcutsDialog;
+export default useShortcutsDialogStore;

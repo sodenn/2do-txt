@@ -6,9 +6,9 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useCloudStorage } from "../../stores/CloudStorageContext";
-import useConfirmationDialog from "../../stores/confirmation-dialog-store";
-import useFileManagementDialog from "../../stores/file-management-dialog-store";
+import useConfirmationDialogStore from "../../stores/confirmation-dialog-store";
+import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
+import { useCloudStorage } from "../../utils/CloudStorage";
 import {
   deleteFile,
   getFilenameFromPath,
@@ -27,14 +27,14 @@ interface CloseOptions {
 
 const FileManagementDialog = () => {
   const platform = getPlatform();
-  const fileManagementDialogOpen = useFileManagementDialog(
+  const fileManagementDialogOpen = useFileManagementDialogStore(
     (state) => state.open
   );
-  const closeFileManagementDialog = useFileManagementDialog(
+  const closeFileManagementDialog = useFileManagementDialogStore(
     (state) => state.closeFileManagementDialog
   );
   const { unlinkCloudFile, unlinkCloudDoneFile } = useCloudStorage();
-  const openConfirmationDialog = useConfirmationDialog(
+  const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
   const { t } = useTranslation();

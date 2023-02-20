@@ -1,8 +1,5 @@
-import { getDoneFilePath, getFilenameFromPath } from "../../utils/filesystem";
-import {
-  getPreferencesItem,
-  setPreferencesItem,
-} from "../../utils/preferences";
+import { getDoneFilePath, getFilenameFromPath } from "../filesystem";
+import { getPreferencesItem, setPreferencesItem } from "../preferences";
 import {
   CloudDoneFileRef,
   CloudFileRef,

@@ -4,8 +4,8 @@ import { Box, Typography } from "@mui/material";
 import { isEqual } from "lodash";
 import { memo, MutableRefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useConfirmationDialog from "../stores/confirmation-dialog-store";
-import useFilter from "../stores/filter-store";
+import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
+import useFilterStore from "../stores/filter-store";
 import { Task } from "../utils/task";
 import { TimelineTask } from "../utils/task-list";
 import useTask from "../utils/useTask";
@@ -36,11 +36,11 @@ const TaskTimeline = memo((props: TaskTimelineProps) => {
     onListItemClick,
   } = props;
   const { t } = useTranslation();
-  const openConfirmationDialog = useConfirmationDialog(
+  const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
   const { deleteTask, completeTask } = useTask();
-  const searchTerm = useFilter((state) => state.searchTerm);
+  const searchTerm = useFilterStore((state) => state.searchTerm);
   const [parent] = useAutoAnimate<HTMLUListElement>();
   const [addButtonElem, setAddButtonElem] = useState<HTMLElement | null>(null);
 

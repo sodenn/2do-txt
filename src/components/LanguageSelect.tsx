@@ -1,11 +1,11 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useSettings, { Language } from "../stores/settings-store";
+import useSettingsStore, { Language } from "../stores/settings-store";
 
 const LanguageSelect = () => {
   const { t } = useTranslation();
-  const language = useSettings((state) => state.language);
-  const changeLanguage = useSettings((state) => state.changeLanguage);
+  const language = useSettingsStore((state) => state.language);
+  const changeLanguage = useSettingsStore((state) => state.changeLanguage);
   return (
     <Select
       fullWidth

@@ -13,18 +13,18 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useArchivedTasksDialog from "../stores/archived-tasks-dialog-store";
+import useArchivedTasksDialogStore from "../stores/archived-tasks-dialog-store";
 import { Task } from "../utils/task";
 import useTask from "../utils/useTask";
 import TaskBody from "./TaskBody";
 
 const ArchivedTasksDialog = () => {
-  const open = useArchivedTasksDialog((state) => state.open);
-  const filePath = useArchivedTasksDialog((state) => state.filePath);
-  const closeArchivedTasksDialog = useArchivedTasksDialog(
+  const open = useArchivedTasksDialogStore((state) => state.open);
+  const filePath = useArchivedTasksDialogStore((state) => state.filePath);
+  const closeArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.closeArchivedTasksDialog
   );
-  const cleanupArchivedTasksDialog = useArchivedTasksDialog(
+  const cleanupArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.cleanupArchivedTasksDialog
   );
   const { t } = useTranslation();

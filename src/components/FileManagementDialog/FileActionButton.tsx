@@ -4,29 +4,31 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, IconProps, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import React, { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
+import useCloudFileDialogStore from "../../stores/cloud-file-dialog-store";
+import useFileCreateDialogStore from "../../stores/file-create-dialog-store";
+import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
 import {
   CloudStorage,
   cloudStorageIcons,
-  useCloudFileDialog,
   useCloudStorage,
-} from "../../stores/CloudStorageContext";
-import useFileCreateDialog from "../../stores/file-create-dialog-store";
-import useFileManagementDialog from "../../stores/file-management-dialog-store";
-import useFilePicker from "../../stores/file-picker-store";
+} from "../../utils/CloudStorage";
 import { getPlatform } from "../../utils/platform";
+import useFilePicker from "../../utils/useFilePicker";
 
 const FileActionButton = () => {
   const { t } = useTranslation();
   const platform = getPlatform();
   const { openFileDialog } = useFilePicker();
-  const openFileCreateDialog = useFileCreateDialog(
+  const openFileCreateDialog = useFileCreateDialogStore(
     (state) => state.openFileCreateDialog
   );
-  const closeFileManagementDialog = useFileManagementDialog(
+  const closeFileManagementDialog = useFileManagementDialogStore(
     (state) => state.closeFileManagementDialog
   );
   const { connectedCloudStorages } = useCloudStorage();
-  const { setCloudFileDialogOptions } = useCloudFileDialog();
+  const openCloudFileDialog = useCloudFileDialogStore(
+    (state) => state.openCloudFileDialog
+  );
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -49,7 +51,7 @@ const FileActionButton = () => {
   };
 
   const handleImportFromStorage = (cloudStorage: CloudStorage) => {
-    setCloudFileDialogOptions({ open: true, cloudStorage });
+    openCloudFileDialog(cloudStorage);
     closeFileManagementDialog();
   };
 

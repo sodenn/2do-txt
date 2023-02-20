@@ -1,22 +1,17 @@
 import { Dropbox, DropboxAuth } from "dropbox";
-import {
-  isDateAfter,
-  isDateBefore,
-  isDateEqual,
-  parseDate,
-} from "../../utils/date";
-import { oauth } from "../../utils/oath";
-import { getPlatform } from "../../utils/platform";
+import { isDateAfter, isDateBefore, isDateEqual, parseDate } from "../date";
+import { oauth } from "../oath";
+import { getPlatform } from "../platform";
 import {
   getPreferencesItem,
   removePreferencesItem,
   setPreferencesItem,
-} from "../../utils/preferences";
+} from "../preferences";
 import {
   getSecureStorageItem,
   removeSecureStorageItem,
   setSecureStorageItem,
-} from "../../utils/secure-storage";
+} from "../secure-storage";
 import {
   CloudFileNotFoundError,
   CloudFileUnauthorizedError,

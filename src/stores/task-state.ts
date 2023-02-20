@@ -1,8 +1,8 @@
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import { getFilenameFromPath, readFile } from "../utils/filesystem";
+import { getTodoFilePaths } from "../utils/settings";
 import { parseTaskList, TaskList } from "../utils/task-list";
-import { getTodoFilePaths } from "./settings-store";
 
 interface TodoFileSuccess {
   type: "success";
@@ -28,7 +28,7 @@ interface TaskState {
   setTaskLists: (taskLists: TaskList[]) => void;
   addTaskList: (taskList: TaskList) => void;
   removeTaskList: (taskList?: TaskList) => void;
-  init: () => Promise<void>;
+  load: () => Promise<void>;
 }
 
 async function loadTodoFiles(): Promise<TodoFiles> {
@@ -69,7 +69,6 @@ const taskStore = createStore<TaskState>((set) => ({
   setTaskLists: (taskLists: TaskList[]) => set({ taskLists }),
   addTaskList: (taskList: TaskList) => {
     set((state) => ({
-      ...state,
       taskLists: state.taskLists.some((t) => t.filePath === taskList.filePath)
         ? state.taskLists.map((t) =>
             t.filePath === taskList.filePath ? taskList : t
@@ -82,21 +81,20 @@ const taskStore = createStore<TaskState>((set) => ({
       return;
     }
     set((state) => ({
-      ...state,
       taskLists: state.taskLists.filter(
         (list) => list.filePath !== taskList.filePath
       ),
     }));
   },
-  init: async () => {
+  load: async () => {
     const todoFiles = await loadTodoFiles();
     const taskLists = todoFiles.files.map((f) => f.taskList);
     set({ todoFiles, taskLists });
   },
 }));
 
-const useTasks = ((selector: any) =>
+const useTasksStore = ((selector: any) =>
   useStore(taskStore, selector)) as UseBoundStore<StoreApi<TaskState>>;
 
 export { taskStore, loadTodoFiles };
-export default useTasks;
+export default useTasksStore;

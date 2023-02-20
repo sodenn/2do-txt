@@ -1,14 +1,14 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useFilter from "../stores/filter-store";
-import useSettings, { TaskView } from "../stores/settings-store";
+import useFilterStore from "../stores/filter-store";
+import useSettingsStore, { TaskView } from "../stores/settings-store";
 import NewBadge from "./NewBadge";
 
 const TaskViewSelect = () => {
   const { t } = useTranslation();
-  const taskView = useSettings((state) => state.taskView);
-  const setTaskView = useSettings((state) => state.setTaskView);
-  const setSortBy = useFilter((state) => state.setSortBy);
+  const taskView = useSettingsStore((state) => state.taskView);
+  const setTaskView = useSettingsStore((state) => state.setTaskView);
+  const setSortBy = useFilterStore((state) => state.setSortBy);
 
   const handleChange = (value: TaskView) => {
     if (value === "timeline") {

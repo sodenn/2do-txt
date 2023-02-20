@@ -5,19 +5,13 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { shallow } from "zustand/shallow";
-import {
-  SyncFileOptions,
-  useCloudStorage,
-} from "../stores/CloudStorageContext";
-import useConfirmationDialog from "../stores/confirmation-dialog-store";
-import useFilter from "../stores/filter-store";
-import usePlatform from "../stores/platform-store";
-import useSettings, {
-  addTodoFilePath,
-  removeTodoFilePath,
-} from "../stores/settings-store";
-import useTasks, { loadTodoFiles } from "../stores/task-state";
+import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
+import useFilterStore from "../stores/filter-store";
+import usePlatformStore from "../stores/platform-store";
+import useSettingsStore from "../stores/settings-store";
+import useTasksStore, { loadTodoFiles } from "../stores/task-state";
 import { promptForRating } from "./app-rate";
+import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
 import { parseDate, todayDate } from "./date";
 import {
   deleteFile,
@@ -31,6 +25,7 @@ import {
 import { hashCode } from "./hashcode";
 import { useNotification } from "./notification";
 import { setPreferencesItem } from "./preferences";
+import { addTodoFilePath, removeTodoFilePath } from "./settings";
 import { share } from "./share";
 import {
   createDueDateRegex,
@@ -63,7 +58,7 @@ type SaveTodoFile = {
 
 function useTask() {
   const { enqueueSnackbar } = useSnackbar();
-  const openConfirmationDialog = useConfirmationDialog(
+  const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
   const {
@@ -72,7 +67,7 @@ function useTask() {
     createCompletionDate,
     archiveMode,
     priorityTransformation,
-  } = useSettings(
+  } = useSettingsStore(
     (state) => ({
       showNotifications: state.showNotifications,
       createCreationDate: state.createCreationDate,
@@ -96,13 +91,13 @@ function useTask() {
     shouldNotificationsBeRescheduled,
   } = useNotification();
   const { t } = useTranslation();
-  const platform = usePlatform((state) => state.platform);
-  const { activeTaskListPath, setActiveTaskListPath } = useFilter();
-  const taskLists = useTasks((state) => state.taskLists);
-  const todoFiles = useTasks((state) => state.todoFiles);
-  const setTaskLists = useTasks((state) => state.setTaskLists);
-  const addTaskList = useTasks((state) => state.addTaskList);
-  const removeTaskList = useTasks((state) => state.removeTaskList);
+  const platform = usePlatformStore((state) => state.platform);
+  const { activeTaskListPath, setActiveTaskListPath } = useFilterStore();
+  const taskLists = useTasksStore((state) => state.taskLists);
+  const todoFiles = useTasksStore((state) => state.todoFiles);
+  const setTaskLists = useTasksStore((state) => state.setTaskLists);
+  const addTaskList = useTasksStore((state) => state.addTaskList);
+  const removeTaskList = useTasksStore((state) => state.removeTaskList);
   const {
     syncDoneFiles,
     saveDoneFile,

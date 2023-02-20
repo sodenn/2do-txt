@@ -11,13 +11,13 @@ import {
   TableRow,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useShortcutsDialog from "../stores/shortcuts-dialog-store";
+import useShortcutsDialogStore from "../stores/shortcuts-dialog-store";
 import Kbd from "./Kbd";
 
 const ShortcutsDialog = () => {
   const { t } = useTranslation();
   const { open: shortcutsDialogOpen, closeShortcutsDialog } =
-    useShortcutsDialog();
+    useShortcutsDialogStore();
   return (
     <Dialog
       maxWidth="sm"

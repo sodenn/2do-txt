@@ -1,9 +1,9 @@
-import { isDateAfter, isDateBefore, isDateEqual } from "../../utils/date";
+import { isDateAfter, isDateBefore, isDateEqual } from "../date";
 import {
   getSecureStorageItem,
   removeSecureStorageItem,
   setSecureStorageItem,
-} from "../../utils/secure-storage";
+} from "../secure-storage";
 import {
   CloudFileNotFoundError,
   CloudFileUnauthorizedError,

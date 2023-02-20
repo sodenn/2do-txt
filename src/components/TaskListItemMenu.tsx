@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useConfirmationDialog from "../stores/confirmation-dialog-store";
-import useTaskDialog from "../stores/task-dialog-store";
+import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
+import useTaskDialogStore from "../stores/task-dialog-store";
 import { Task } from "../utils/task";
 import useTask from "../utils/useTask";
 import Kbd from "./Kbd";
@@ -32,11 +32,11 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
   const { task, menuRef, menuButtonRef } = props;
   const { t } = useTranslation();
   const { deleteTask } = useTask();
-  const openConfirmationDialog = useConfirmationDialog(
+  const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
   const [open, setOpen] = useState(false);
-  const openTaskDialog = useTaskDialog((state) => state.openTaskDialog);
+  const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);

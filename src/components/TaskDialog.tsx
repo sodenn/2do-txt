@@ -11,8 +11,8 @@ import { FluentEditProvider } from "@react-fluent-edit/core";
 import { MentionsProvider } from "@react-fluent-edit/mentions";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import useSettings from "../stores/settings-store";
-import useTaskDialog from "../stores/task-dialog-store";
+import useSettingsStore from "../stores/settings-store";
+import useTaskDialogStore from "../stores/task-dialog-store";
 import { formatDate, todayDate } from "../utils/date";
 import { Task } from "../utils/task";
 import { TaskList } from "../utils/task-list";
@@ -38,13 +38,17 @@ const TaskDialog = () => {
     projects: commonProjects,
     tags: commonTags,
   } = useTask();
-  const closeTaskDialog = useTaskDialog((state) => state.closeTaskDialog);
-  const cleanupTaskDialog = useTaskDialog((state) => state.cleanupTaskDialog);
-  const open = useTaskDialog((state) => state.open);
-  const task = useTaskDialog((state) => state.task);
+  const closeTaskDialog = useTaskDialogStore((state) => state.closeTaskDialog);
+  const cleanupTaskDialog = useTaskDialogStore(
+    (state) => state.cleanupTaskDialog
+  );
+  const open = useTaskDialogStore((state) => state.open);
+  const task = useTaskDialogStore((state) => state.task);
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
-  const createCreationDate = useSettings((state) => state.createCreationDate);
+  const createCreationDate = useSettingsStore(
+    (state) => state.createCreationDate
+  );
   const [key, setKey] = useState(0);
   const [raw, setRaw] = useState(rawText(createCreationDate, task));
   const [selectedTaskList, setSelectedTaskList] = useState<

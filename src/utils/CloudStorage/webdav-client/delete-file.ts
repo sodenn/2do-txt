@@ -1,4 +1,4 @@
-import { request, RequestContext } from "../../../utils/network";
+import { request, RequestContext } from "../../network";
 import { encodePath } from "./path";
 import { handleResponseCode } from "./response";
 

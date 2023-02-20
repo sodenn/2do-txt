@@ -3,7 +3,7 @@ import {
   request,
   RequestContext,
   RequestOptions,
-} from "../../../utils/network";
+} from "../../network";
 import { encodePath } from "./path";
 import { handleResponseCode } from "./response";
 import { BufferLike } from "./types";

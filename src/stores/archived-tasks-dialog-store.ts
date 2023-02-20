@@ -11,12 +11,13 @@ interface ArchivedTasksDialogState extends ArchivedTasksDialogOptions {
   cleanupArchivedTasksDialog: () => void;
 }
 
-const useArchivedTasksDialog = create<ArchivedTasksDialogState>((set) => ({
+const useArchivedTasksDialogStore = create<ArchivedTasksDialogState>((set) => ({
   open: false,
+  filePath: undefined,
   openArchivedTasksDialog: (opt: ArchivedTasksDialogOptions = {}) =>
     set({ ...opt, open: true }),
-  closeArchivedTasksDialog: () => set((state) => ({ ...state, open: false })),
-  cleanupArchivedTasksDialog: () => set({ open: false }),
+  closeArchivedTasksDialog: () => set({ open: false }),
+  cleanupArchivedTasksDialog: () => set({ open: false, filePath: undefined }),
 }));
 
-export default useArchivedTasksDialog;
+export default useArchivedTasksDialogStore;

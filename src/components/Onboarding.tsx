@@ -3,9 +3,9 @@ import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import logo from "../images/logo.png";
-import useFileCreateDialog from "../stores/file-create-dialog-store";
-import useFilePicker from "../stores/file-picker-store";
+import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 import { getPlatform } from "../utils/platform";
+import useFilePicker from "../utils/useFilePicker";
 import useTask from "../utils/useTask";
 import CloudStorageOnboarding from "./CloudStorageOnboarding";
 import CreateExampleFileButton from "./CreateExampleFileButton";
@@ -24,7 +24,7 @@ const StyledBox = styled("div")(({ theme }) => ({
 const Onboarding = () => {
   const { t } = useTranslation();
   const platform = getPlatform();
-  const openFileCreateDialog = useFileCreateDialog(
+  const openFileCreateDialog = useFileCreateDialogStore(
     (state) => state.openFileCreateDialog
   );
   const { taskLists } = useTask();

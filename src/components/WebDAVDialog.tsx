@@ -13,11 +13,9 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  useCloudStorage,
-  useWebDAVDialog,
-} from "../stores/CloudStorageContext";
-import { saveWebDAVCredentials } from "../stores/CloudStorageContext/webdav-storage";
+import useWebDAVDialogStore from "../stores/webdav-dialog-store";
+import { useCloudStorage } from "../utils/CloudStorage";
+import { saveWebDAVCredentials } from "../utils/CloudStorage/webdav-storage";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
@@ -25,7 +23,10 @@ import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 const WebDavDialog = () => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { webDAVDialogOpen, setWebDAVDialogOpen } = useWebDAVDialog();
+  const webDAVDialogOpen = useWebDAVDialogStore((state) => state.open);
+  const closeCloudFileDialog = useWebDAVDialogStore(
+    (state) => state.closeCloudFileDialog
+  );
   const [url, setUrl] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +38,7 @@ const WebDavDialog = () => {
     setError(undefined);
     try {
       await saveWebDAVCredentials({ username, password, url });
-      setWebDAVDialogOpen(false);
+      closeCloudFileDialog();
       await createClient("WebDAV");
       await openStorageConnectedAlert("WebDAV");
     } catch (error) {
@@ -59,7 +60,7 @@ const WebDavDialog = () => {
   };
 
   const handleClose = () => {
-    setWebDAVDialogOpen(false);
+    closeCloudFileDialog();
   };
 
   const disabled = !username || !password || !url;

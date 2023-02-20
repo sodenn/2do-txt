@@ -14,9 +14,9 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import useFilter from "../../stores/filter-store";
-import { addTodoFilePath } from "../../stores/settings-store";
+import useFilterStore from "../../stores/filter-store";
 import { readFile } from "../../utils/filesystem";
+import { addTodoFilePath } from "../../utils/settings";
 import useTask from "../../utils/useTask";
 import StartEllipsis from "../StartEllipsis";
 
@@ -36,7 +36,7 @@ const ClosedFileList = (props: ClosedFileListProps) => {
   const { list, onOpen, onDelete } = props;
   const { t } = useTranslation();
   const { loadTodoFile } = useTask();
-  const setActiveTaskListPath = useFilter(
+  const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath
   );
 

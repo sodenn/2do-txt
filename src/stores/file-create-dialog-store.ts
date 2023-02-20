@@ -12,18 +12,16 @@ interface FileCreateDialogState extends FileCreateDialogOptions {
   cleanupFileCreateDialog: () => void;
 }
 
-const useFileCreateDialog = create<FileCreateDialogState>((set) => ({
+const useFileCreateDialogStore = create<FileCreateDialogState>((set) => ({
   open: false,
   createFirstTask: false,
   createExampleFile: false,
   openFileCreateDialog: (opt: FileCreateDialogOptions = {}) =>
     set({ ...opt, open: true }),
   closeFileCreateDialog: () =>
-    set((state) => ({
-      fileCreateDialogOpen: false,
-      createFirstTask: state.createFirstTask,
-      createExampleFile: state.createExampleFile,
-    })),
+    set({
+      open: false,
+    }),
   cleanupFileCreateDialog: () =>
     set({
       open: false,
@@ -32,4 +30,4 @@ const useFileCreateDialog = create<FileCreateDialogState>((set) => ({
     }),
 }));
 
-export default useFileCreateDialog;
+export default useFileCreateDialogStore;

@@ -15,12 +15,11 @@ import {
 } from "@mui/material";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { CloudStorage, useCloudStorage } from "../stores/CloudStorageContext";
-import useConfirmationDialog from "../stores/confirmation-dialog-store";
-import useFileCreateDialog from "../stores/file-create-dialog-store";
-import useFilter from "../stores/filter-store";
-import { addTodoFilePath } from "../stores/settings-store";
-import useTaskDialog from "../stores/task-dialog-store";
+import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
+import useFileCreateDialogStore from "../stores/file-create-dialog-store";
+import useFilterStore from "../stores/filter-store";
+import useTaskDialogStore from "../stores/task-dialog-store";
+import { CloudStorage, useCloudStorage } from "../utils/CloudStorage";
 import {
   defaultFilePath,
   getUniqueFilePath,
@@ -28,6 +27,7 @@ import {
   saveFile,
 } from "../utils/filesystem";
 import { getPlatform } from "../utils/platform";
+import { addTodoFilePath } from "../utils/settings";
 import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
@@ -41,19 +41,21 @@ interface FileCreateDialogProps {
 
 const FileCreateDialog = () => {
   const platform = getPlatform();
-  const fileCreateDialogOpen = useFileCreateDialog((state) => state.open);
-  const createExampleFile = useFileCreateDialog(
+  const fileCreateDialogOpen = useFileCreateDialogStore((state) => state.open);
+  const createExampleFile = useFileCreateDialogStore(
     (state) => state.createExampleFile
   );
-  const createFirstTask = useFileCreateDialog((state) => state.createFirstTask);
-  const closeFileCreateDialog = useFileCreateDialog(
+  const createFirstTask = useFileCreateDialogStore(
+    (state) => state.createFirstTask
+  );
+  const closeFileCreateDialog = useFileCreateDialogStore(
     (state) => state.closeFileCreateDialog
   );
   const { saveTodoFile } = useTask();
-  const setActiveTaskListPath = useFilter(
+  const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath
   );
-  const openTaskDialog = useTaskDialog((state) => state.openTaskDialog);
+  const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 
   const handleClose = useCallback(
     () => closeFileCreateDialog(),
@@ -137,15 +139,15 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const [fileName, setFileName] = useState("");
-  const openConfirmationDialog = useConfirmationDialog(
+  const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
   const { uploadFile, cloudStoragesConnectionStatus, connectedCloudStorages } =
     useCloudStorage();
-  const createExampleFile = useFileCreateDialog(
+  const createExampleFile = useFileCreateDialogStore(
     (state) => state.createExampleFile
   );
-  const cleanupFileCreateDialog = useFileCreateDialog(
+  const cleanupFileCreateDialog = useFileCreateDialogStore(
     (state) => state.cleanupFileCreateDialog
   );
   const [selectedCloudStorage, setSelectedCloudStorage] = useState<

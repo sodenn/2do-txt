@@ -10,7 +10,7 @@ import { Box, Chip, IconButton } from "@mui/material";
 import { format } from "date-fns";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import useTaskDialog from "../stores/task-dialog-store";
+import useTaskDialogStore from "../stores/task-dialog-store";
 import { todayDate } from "../utils/date";
 import { TimelineTask } from "../utils/task-list";
 
@@ -48,7 +48,7 @@ const YearChip = ({ date, flags }: TimelineAddButtonProps) => {
 const TimelineAddButton = forwardRef<HTMLElement, TimelineAddButtonProps>(
   ({ flags }, ref) => {
     const { t } = useTranslation();
-    const openTaskDialog = useTaskDialog((state) => state.openTaskDialog);
+    const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 
     const handleClick = () => openTaskDialog();
 

@@ -1,13 +1,15 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useSettings, { PriorityTransformation } from "../stores/settings-store";
+import useSettingsStore, {
+  PriorityTransformation,
+} from "../stores/settings-store";
 
 const PriorityTransformationSelect = () => {
   const { t } = useTranslation();
-  const priorityTransformation = useSettings(
+  const priorityTransformation = useSettingsStore(
     (state) => state.priorityTransformation
   );
-  const setCompletedTaskPriority = useSettings(
+  const setCompletedTaskPriority = useSettingsStore(
     (state) => state.setCompletedTaskPriority
   );
 

@@ -10,7 +10,7 @@ import {
 import { deDE, enUS, Localization } from "@mui/material/locale";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import useTheme, { ThemeMode } from "../stores/theme-store";
+import useThemeStore, { ThemeMode } from "../stores/theme-store";
 import { WithChildren } from "../types/common.types";
 import { setKeyboardStyle } from "../utils/keyboard";
 import { setPreferencesItem } from "../utils/preferences";
@@ -92,7 +92,7 @@ const AppThemeProvider = ({ children }: WithChildren) => {
     i18n: { language },
   } = useTranslation();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const themeMode = useTheme((state) => state.mode);
+  const themeMode = useThemeStore((state) => state.mode);
   const paletteMode = getPaletteMode(themeMode, prefersDarkMode);
   const theme = useMemo(
     () => createTheme(getThemeOptions(paletteMode), translations[language]),

@@ -5,7 +5,12 @@ import {
   HttpOptions,
   ResponseType as _ResponseType,
 } from "@tauri-apps/api/http";
-import { BufferLike } from "../stores/CloudStorageContext/webdav-client";
+import { differenceInSeconds } from "date-fns";
+import { useSnackbar } from "notistack";
+import { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import useNetworkStore from "../stores/network-store";
+import { BufferLike } from "./CloudStorage/webdav-client";
 import { getPlatform } from "./platform";
 
 interface RequestContext {
@@ -153,10 +158,43 @@ async function removeAllNetworkStatusChangeListeners() {
   Network.removeAllListeners().then((r) => void r);
 }
 
+function useNetwork() {
+  const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+  const { connected, displayDate, setConnected, setDisplayDate } =
+    useNetworkStore();
+
+  const handleNetworkStatusChange = useCallback(
+    (connected: boolean) => {
+      setConnected(connected);
+      // Don't annoy the user, so only show the message once per minute
+      const showAlert =
+        !displayDate || differenceInSeconds(displayDate, new Date()) > 60;
+      if (!connected && showAlert) {
+        enqueueSnackbar(t("Unable to connect. Check network connection"), {
+          variant: "warning",
+        });
+        setDisplayDate(new Date());
+      }
+    },
+    [displayDate, enqueueSnackbar, setConnected, setDisplayDate, t]
+  );
+
+  useEffect(() => {
+    addNetworkStatusChangeListener(handleNetworkStatusChange);
+    return () => {
+      removeAllNetworkStatusChangeListeners();
+    };
+  }, [handleNetworkStatusChange]);
+
+  return { connected };
+}
+
 export type { RequestContext, RequestOptions, Response };
 export {
   request,
   joinURL,
+  useNetwork,
   addNetworkStatusChangeListener,
   removeAllNetworkStatusChangeListeners,
 };

@@ -4,19 +4,19 @@ import { getPlatform, Platform } from "../utils/platform";
 
 interface PlatformState {
   platform: Platform;
-  init: () => Promise<void>;
+  load: () => Promise<void>;
 }
 
 const platformStore = createStore<PlatformState>((set) => ({
   platform: "web",
-  init: async () => {
+  load: async () => {
     const platform = getPlatform();
     set({ platform });
   },
 }));
 
-const usePlatform = ((selector: any) =>
+const usePlatformStore = ((selector: any) =>
   useStore(platformStore, selector)) as UseBoundStore<StoreApi<PlatformState>>;
 
 export { platformStore };
-export default usePlatform;
+export default usePlatformStore;

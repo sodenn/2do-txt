@@ -2,13 +2,10 @@ import { Button } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import useArchivedTasksDialog from "../stores/archived-tasks-dialog-store";
-import {
-  SyncFileOptions,
-  useCloudStorage,
-} from "../stores/CloudStorageContext";
-import generateContentHash from "../stores/CloudStorageContext/ContentHasher";
-import useSettings from "../stores/settings-store";
+import useArchivedTasksDialogStore from "../stores/archived-tasks-dialog-store";
+import useSettingsStore from "../stores/settings-store";
+import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
+import generateContentHash from "./CloudStorage/ContentHasher";
 import {
   deleteFile,
   getDoneFilePath,
@@ -42,11 +39,11 @@ interface ArchiveTaskOptions {
 
 function useArchivedTask() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const openArchivedTasksDialog = useArchivedTasksDialog(
+  const openArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.openArchivedTasksDialog
   );
-  const archiveMode = useSettings((state) => state.archiveMode);
-  const setArchiveMode = useSettings((state) => state.setArchiveMode);
+  const archiveMode = useSettingsStore((state) => state.archiveMode);
+  const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
   const {
     syncAllFiles,
     syncFile,

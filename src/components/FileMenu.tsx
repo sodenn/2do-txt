@@ -14,9 +14,9 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "../images/logo.png";
-import useFileManagementDialog from "../stores/file-management-dialog-store";
-import useFilter from "../stores/filter-store";
-import useShortcutsDialog from "../stores/shortcuts-dialog-store";
+import useFileManagementDialogStore from "../stores/file-management-dialog-store";
+import useFilterStore from "../stores/filter-store";
+import useShortcutsDialogStore from "../stores/shortcuts-dialog-store";
 import { hasTouchScreen } from "../utils/platform";
 import useTask from "../utils/useTask";
 import StartEllipsis from "./StartEllipsis";
@@ -28,14 +28,14 @@ const menuMaxWidth = 350;
 const FileMenu = () => {
   const { t } = useTranslation();
   const touchScreen = hasTouchScreen();
-  const openFileManagementDialog = useFileManagementDialog(
+  const openFileManagementDialog = useFileManagementDialogStore(
     (state) => state.openFileManagementDialog
   );
-  const openShortcutsDialog = useShortcutsDialog(
+  const openShortcutsDialog = useShortcutsDialogStore(
     (state) => state.openShortcutsDialog
   );
   const { taskLists, activeTaskList } = useTask();
-  const setActiveTaskListPath = useFilter(
+  const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath
   );
   const [anchorEl, setAnchorEl] = useState(null);

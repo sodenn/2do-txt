@@ -16,14 +16,14 @@ import {
 import { useSnackbar } from "notistack";
 import { useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { writeToClipboard } from "../../utils/clipboard";
 import {
   CloudFileRef,
   CloudFileUnauthorizedError,
   CloudStorage,
   cloudStorageIcons,
   useCloudStorage,
-} from "../../stores/CloudStorageContext";
-import { writeToClipboard } from "../../utils/clipboard";
+} from "../../utils/CloudStorage";
 import { getDoneFilePath, isFile, readFile } from "../../utils/filesystem";
 import { getPlatform } from "../../utils/platform";
 import useTask from "../../utils/useTask";

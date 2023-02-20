@@ -1,9 +1,9 @@
 import { Stack } from "@mui/material";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useConfirmationDialog from "../stores/confirmation-dialog-store";
-import useSettings from "../stores/settings-store";
-import useTaskDialog from "../stores/task-dialog-store";
+import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
+import useSettingsStore from "../stores/settings-store";
+import useTaskDialogStore from "../stores/task-dialog-store";
 import { useAddShortcutListener } from "../utils/shortcuts";
 import { Task } from "../utils/task";
 import {
@@ -17,10 +17,10 @@ import TaskTimeline from "./TaskTimeline";
 
 const TaskView = () => {
   const { t } = useTranslation();
-  const taskView = useSettings((state) => state.taskView);
+  const taskView = useSettingsStore((state) => state.taskView);
   const { taskLists, activeTaskList, deleteTask } = useTask();
-  const _openTaskDialog = useTaskDialog((state) => state.openTaskDialog);
-  const openConfirmationDialog = useConfirmationDialog(
+  const _openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
+  const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
   const [focusedTaskId, setFocusedTaskId] = useState<string>();

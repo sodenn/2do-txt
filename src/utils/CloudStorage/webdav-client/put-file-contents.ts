@@ -1,8 +1,4 @@
-import {
-  request,
-  RequestContext,
-  RequestOptions,
-} from "../../../utils/network";
+import { request, RequestContext, RequestOptions } from "../../network";
 import { encodePath } from "./path";
 import { handleResponseCode } from "./response";
 import { calculateDataLength } from "./size";

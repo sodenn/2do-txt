@@ -1,6 +1,6 @@
 import LaunchIcon from "@mui/icons-material/Launch";
 import { Box, ListItemButton, styled } from "@mui/material";
-import useFilter from "../stores/filter-store";
+import useFilterStore from "../stores/filter-store";
 import StartEllipsis from "./StartEllipsis";
 
 interface TaskListHeaderProps {
@@ -23,7 +23,7 @@ const Container = styled(Box)(({ theme }) => ({
 
 const TaskListHeader = (props: TaskListHeaderProps) => {
   const { fileName, filePath } = props;
-  const setActiveTaskListPath = useFilter(
+  const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath
   );
   return (

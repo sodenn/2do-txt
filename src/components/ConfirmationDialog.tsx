@@ -6,18 +6,18 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import useConfirmationDialog from "../stores/confirmation-dialog-store";
+import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
 
 const ConfirmationDialog = () => {
-  const open = useConfirmationDialog((state) => state.open);
-  const title = useConfirmationDialog((state) => state.title);
-  const content = useConfirmationDialog((state) => state.content);
-  const buttons = useConfirmationDialog((state) => state.buttons);
-  const onClose = useConfirmationDialog((state) => state.onClose);
-  const closeConfirmationDialog = useConfirmationDialog(
+  const open = useConfirmationDialogStore((state) => state.open);
+  const title = useConfirmationDialogStore((state) => state.title);
+  const content = useConfirmationDialogStore((state) => state.content);
+  const buttons = useConfirmationDialogStore((state) => state.buttons);
+  const onClose = useConfirmationDialogStore((state) => state.onClose);
+  const closeConfirmationDialog = useConfirmationDialogStore(
     (state) => state.closeConfirmationDialog
   );
-  const cleanupConfirmationDialog = useConfirmationDialog(
+  const cleanupConfirmationDialog = useConfirmationDialogStore(
     (state) => state.cleanupConfirmationDialog
   );
 

@@ -8,7 +8,7 @@ import {
 } from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import useFilter, { FilterType, SortKey } from "../stores/filter-store";
+import useFilterStore, { FilterType, SortKey } from "../stores/filter-store";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
@@ -129,7 +129,7 @@ function useTimelineTasks(
     activeContexts,
     activeTags,
     hideCompletedTasks,
-  } = useFilter();
+  } = useFilterStore();
 
   const filteredTasks = filterTasks(items, {
     type: filterType,
@@ -265,7 +265,7 @@ function useTaskGroups(taskLists: TaskList[], activeTaskList?: TaskList) {
     activeContexts,
     activeTags,
     hideCompletedTasks,
-  } = useFilter();
+  } = useFilterStore();
 
   const filteredTaskLists = taskLists.map((taskList) => ({
     ...taskList,
