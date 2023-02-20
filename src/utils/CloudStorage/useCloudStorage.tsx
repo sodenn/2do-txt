@@ -177,7 +177,7 @@ function useCloudStorage() {
         setAuthError(true);
       }
     },
-    [authError, authenticate, closeSnackbar, enqueueSnackbar, t]
+    [authError, authenticate, closeSnackbar, enqueueSnackbar, setAuthError, t]
   );
 
   const openConnectionErrorAlert = useCallback(
@@ -198,7 +198,7 @@ function useCloudStorage() {
         setConnectionError(true);
       }
     },
-    [connectionError, enqueueSnackbar, t]
+    [connectionError, enqueueSnackbar, setConnectionError, t]
   );
 
   const handleError = useCallback(

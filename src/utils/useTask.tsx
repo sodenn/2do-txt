@@ -80,7 +80,7 @@ function useTask() {
   const {
     getCloudFileRefs,
     syncAllFiles,
-    syncFileThrottled,
+    syncFile,
     unlinkCloudFile,
     unlinkCloudDoneFile,
     cloudStorageEnabled,
@@ -164,7 +164,7 @@ function useTask() {
       } else {
         opt = optOrPath;
       }
-      const result = await syncFileThrottled(opt);
+      const result = await syncFile(opt);
       if (result) {
         await writeFile({
           path: opt.filePath,
@@ -173,7 +173,7 @@ function useTask() {
         return loadTodoFile(opt.filePath, result);
       }
     },
-    [loadTodoFile, syncFileThrottled, taskLists]
+    [loadTodoFile, syncFile, taskLists]
   );
 
   const syncAllTodoFilesWithCloudStorage = useCallback(
