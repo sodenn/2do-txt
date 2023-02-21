@@ -2,7 +2,7 @@ import { differenceInMinutes, format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { shallow } from "zustand/shallow";
 import { promptForRating } from "../native-api/app-rate";
@@ -43,7 +43,6 @@ import {
 } from "./task-list";
 import { getDoneFilePath } from "./todo-files";
 import useArchivedTask from "./useArchivedTask";
-import { useBecomeActive } from "./useBecomeActive";
 import { generateId } from "./uuid";
 
 interface SyncItem {
@@ -652,7 +651,7 @@ function useTask() {
     return { files, errors };
   }, [setTaskLists]);
 
-  const becomeActiveListener = useCallback(async () => {
+  const handleActive = useCallback(async () => {
     const { files, errors } = await loadTodoFilesFromDisk();
     // notify the user if a file cannot be found
     for (const error of errors) {
@@ -674,9 +673,7 @@ function useTask() {
     syncAllTodoFilesWithCloudStorage,
   ]);
 
-  useBecomeActive(becomeActiveListener);
-
-  useEffect(() => {
+  const handleInit = useCallback(async () => {
     todoFiles.errors.forEach((err) => handleFileNotFound(err.filePath));
     syncAllTodoFilesWithCloudStorage(todoFiles.files).catch((e) => void e);
     shouldNotificationsBeRescheduled().then(() => {
@@ -711,6 +708,9 @@ function useTask() {
     reorderTaskList,
     createNewTodoFile,
     syncTodoFileWithCloudStorage,
+    syncAllTodoFilesWithCloudStorage,
+    handleActive,
+    handleInit,
   };
 }
 

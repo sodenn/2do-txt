@@ -1,11 +1,7 @@
 import { differenceInSeconds } from "date-fns";
 import { useSnackbar } from "notistack";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  addNetworkStatusChangeListener,
-  removeAllNetworkStatusChangeListeners,
-} from "../native-api/network";
 import useNetworkStore from "../stores/network-store";
 
 function useNetwork() {
@@ -30,14 +26,7 @@ function useNetwork() {
     [displayDate, enqueueSnackbar, setConnected, setDisplayDate, t]
   );
 
-  useEffect(() => {
-    addNetworkStatusChangeListener(handleNetworkStatusChange);
-    return () => {
-      removeAllNetworkStatusChangeListeners();
-    };
-  }, [handleNetworkStatusChange]);
-
-  return { connected };
+  return { connected, handleNetworkStatusChange };
 }
 
 export default useNetwork;

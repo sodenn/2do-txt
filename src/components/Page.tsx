@@ -1,6 +1,5 @@
 import { Box, Container, styled } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import useUpdateSearchParams from "../utils/useUpdateSearchParams";
 import ArchivedTasksDialog from "./ArchivedTasksDialog";
 import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -9,6 +8,7 @@ import FileManagementDialog from "./FileManagementDialog";
 import FilePicker from "./FilePicker";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
+import PageEffect from "./PageEffect";
 import ShortcutsDialog from "./ShortcutsDialog";
 import SideSheet, { MainContainer } from "./SideSheet";
 import TaskDialog from "./TaskDialog";
@@ -20,11 +20,6 @@ const SafeAreaContainer = styled(Container)({
   paddingLeft: "env(safe-area-inset-left)",
   paddingBottom: "env(safe-area-inset-bottom)",
 });
-
-const UpdateSearchParams = () => {
-  useUpdateSearchParams();
-  return null;
-};
 
 const Page = () => {
   const scrollContainer = useRef<HTMLDivElement | null>(null);
@@ -64,7 +59,7 @@ const Page = () => {
       <ArchivedTasksDialog />
       <ShortcutsDialog />
       <WebDAVDialog />
-      <UpdateSearchParams />
+      <PageEffect />
     </FilePicker>
   );
 };

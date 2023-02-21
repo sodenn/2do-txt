@@ -1,8 +1,7 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   cancelNotifications,
-  initNotifications,
   isNotificationPermissionGranted,
   Notification,
   requestNotificationPermission,
@@ -31,10 +30,6 @@ function useNotification() {
     },
     [t]
   );
-
-  useEffect(() => {
-    initNotifications();
-  }, []);
 
   return {
     isNotificationPermissionGranted: isNotificationPermissionGranted,

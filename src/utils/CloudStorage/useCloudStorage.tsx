@@ -1,7 +1,7 @@
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import { Alert, Button, CircularProgress } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
-import { ReactNode, useCallback, useEffect, useMemo } from "react";
+import { ReactNode, useCallback, useMemo } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import DropboxIcon from "../../components/DropboxIcon";
@@ -475,12 +475,8 @@ function useCloudStorage() {
     [extendOptions]
   );
 
-  useEffect(() => {
-    requestTokens();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return {
+    requestTokens,
     openStorageConnectedAlert,
     createClient,
     cloudStorageEnabled,
