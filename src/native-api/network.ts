@@ -136,6 +136,10 @@ function responseType(opt: RequestOptions) {
   }
 }
 
+async function isConnected() {
+  return Network.getStatus().then(({ connected }) => connected);
+}
+
 function addNetworkStatusChangeListener(
   listener: (connected: boolean) => void
 ) {
@@ -152,6 +156,7 @@ export type { RequestContext, RequestOptions, Response };
 export {
   request,
   joinURL,
+  isConnected,
   addNetworkStatusChangeListener,
   removeAllNetworkStatusChangeListeners,
 };

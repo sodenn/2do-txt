@@ -15,8 +15,8 @@ import useUpdateSearchParams from "../utils/useUpdateSearchParams";
 
 const PageEffect = () => {
   const { handleInit, handleActive } = useTask();
-  const { handleNetworkStatusChange } = useNetwork();
-  const { requestTokens } = useCloudStorage();
+  const { connected, handleDisconnected } = useNetwork();
+  const { requestTokens, connectedCloudStorages } = useCloudStorage();
 
   useUpdateSearchParams();
 
@@ -35,11 +35,15 @@ const PageEffect = () => {
   }, [handleActive]);
 
   useEffect(() => {
-    addNetworkStatusChangeListener(handleNetworkStatusChange);
+    if (connectedCloudStorages.length === 0) {
+      return;
+    }
+    handleDisconnected(connected);
+    addNetworkStatusChangeListener(handleDisconnected);
     return () => {
       removeAllNetworkStatusChangeListeners();
     };
-  }, [handleNetworkStatusChange]);
+  }, [connected, handleDisconnected, connectedCloudStorages]);
 
   return null;
 };

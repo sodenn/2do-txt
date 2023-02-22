@@ -10,12 +10,12 @@ function useNetwork() {
   const { connected, displayDate, setConnected, setDisplayDate } =
     useNetworkStore();
 
-  const handleNetworkStatusChange = useCallback(
+  const handleDisconnected = useCallback(
     (connected: boolean) => {
       setConnected(connected);
       // Don't annoy the user, so only show the message once per minute
       const showAlert =
-        !displayDate || differenceInSeconds(displayDate, new Date()) > 60;
+        !displayDate || differenceInSeconds(new Date(), displayDate) > 60;
       if (!connected && showAlert) {
         enqueueSnackbar(t("Unable to connect. Check network connection"), {
           variant: "warning",
@@ -26,7 +26,7 @@ function useNetwork() {
     [displayDate, enqueueSnackbar, setConnected, setDisplayDate, t]
   );
 
-  return { connected, handleNetworkStatusChange };
+  return { connected, handleDisconnected };
 }
 
 export default useNetwork;
