@@ -1,10 +1,10 @@
 import { differenceInMinutes, format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
+import { isEqual, omit } from "lodash";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { shallow } from "zustand/shallow";
 import { promptForRating } from "../native-api/app-rate";
 import {
   deleteFile,
@@ -55,27 +55,48 @@ type SaveTodoFile = {
   (taskList: TaskList): Promise<TaskList>;
 };
 
+function taskListsWithoutId(taskLists: TaskList[]) {
+  return taskLists.map((list) => ({
+    ...list,
+    items: list.items.map((item) => omit(item, "_id")),
+  }));
+}
+
+function areTaskListsEqual(a: TaskList[], b: TaskList[]) {
+  return isEqual(taskListsWithoutId(a), taskListsWithoutId(b));
+}
+
 function useTask() {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const platform = usePlatformStore((state) => state.platform);
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
-  const {
-    showNotifications,
-    createCreationDate,
-    createCompletionDate,
-    archiveMode,
-    priorityTransformation,
-  } = useSettingsStore(
-    (state) => ({
-      showNotifications: state.showNotifications,
-      createCreationDate: state.createCreationDate,
-      createCompletionDate: state.createCompletionDate,
-      archiveMode: state.archiveMode,
-      priorityTransformation: state.priorityTransformation,
-    }),
-    shallow
+  const showNotifications = useSettingsStore(
+    (state) => state.showNotifications
   );
+  const createCreationDate = useSettingsStore(
+    (state) => state.createCreationDate
+  );
+  const createCompletionDate = useSettingsStore(
+    (state) => state.createCompletionDate
+  );
+  const archiveMode = useSettingsStore((state) => state.archiveMode);
+  const priorityTransformation = useSettingsStore(
+    (state) => state.priorityTransformation
+  );
+  const activeTaskListPath = useFilterStore(
+    (state) => state.activeTaskListPath
+  );
+  const setActiveTaskListPath = useFilterStore(
+    (state) => state.setActiveTaskListPath
+  );
+  const taskLists = useTasksStore((state) => state.taskLists);
+  const todoFiles = useTasksStore((state) => state.todoFiles);
+  const setTaskLists = useTasksStore((state) => state.setTaskLists);
+  const addTaskList = useTasksStore((state) => state.addTaskList);
+  const removeTaskList = useTasksStore((state) => state.removeTaskList);
   const {
     getCloudFileRefs,
     syncAllFiles,
@@ -89,14 +110,6 @@ function useTask() {
     cancelNotifications,
     shouldNotificationsBeRescheduled,
   } = useNotification();
-  const { t } = useTranslation();
-  const platform = usePlatformStore((state) => state.platform);
-  const { activeTaskListPath, setActiveTaskListPath } = useFilterStore();
-  const taskLists = useTasksStore((state) => state.taskLists);
-  const todoFiles = useTasksStore((state) => state.todoFiles);
-  const setTaskLists = useTasksStore((state) => state.setTaskLists);
-  const addTaskList = useTasksStore((state) => state.addTaskList);
-  const removeTaskList = useTasksStore((state) => state.removeTaskList);
   const {
     syncDoneFiles,
     saveDoneFile,
@@ -647,9 +660,12 @@ function useTask() {
     // load files from disk
     const { files, errors } = await loadTodoFiles();
     // apply external file changes by updating the state
-    setTaskLists(files.map((f) => f.taskList));
+    const newTaskList = files.map((f) => f.taskList);
+    if (!areTaskListsEqual(taskLists, newTaskList)) {
+      setTaskLists(newTaskList);
+    }
     return { files, errors };
-  }, [setTaskLists]);
+  }, [setTaskLists, taskLists]);
 
   const handleActive = useCallback(async () => {
     const { files, errors } = await loadTodoFilesFromDisk();
@@ -708,7 +724,6 @@ function useTask() {
     reorderTaskList,
     createNewTodoFile,
     syncTodoFileWithCloudStorage,
-    syncAllTodoFilesWithCloudStorage,
     handleActive,
     handleInit,
   };

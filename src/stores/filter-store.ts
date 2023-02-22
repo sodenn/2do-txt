@@ -5,15 +5,9 @@ import {
   setPreferencesItem,
 } from "../native-api/preferences";
 
-export type SortKey =
-  | "priority"
-  | "dueDate"
-  | "context"
-  | "project"
-  | "tag"
-  | "";
+type SortKey = "priority" | "dueDate" | "context" | "project" | "tag" | "";
 
-export type FilterType = "AND" | "OR";
+type FilterType = "AND" | "OR";
 
 interface SearchParams {
   term: string;
@@ -141,6 +135,6 @@ const filterStore = createStore<FilterState>((set) => ({
 const useFilterStore = ((selector: any) =>
   useStore(filterStore, selector)) as UseBoundStore<StoreApi<FilterState>>;
 
-export type { SearchParams, FilterState };
+export type { SearchParams, FilterState, SortKey, FilterType };
 export { filterStore };
 export default useFilterStore;
