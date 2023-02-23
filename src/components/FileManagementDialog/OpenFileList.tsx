@@ -13,11 +13,11 @@ import { forwardRef, memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { arrayMove, List as MovableList } from "react-movable";
 import { OnChangeMeta } from "react-movable/lib/types";
-import { CloudFileRef, useCloudStorage } from "../../data/CloudStorageContext";
-import { useSettings } from "../../data/SettingsContext";
-import { useTask } from "../../data/TaskContext";
+import useSettingsStore from "../../stores/settings-store";
+import { CloudFileRef, useCloudStorage } from "../../utils/CloudStorage";
 import { formatLocalDateTime, parseDate } from "../../utils/date";
 import { TaskList } from "../../utils/task-list";
+import useTask from "../../utils/useTask";
 import StartEllipsis from "../StartEllipsis";
 import OpenFileItemMenu from "./OpenFileItemMenu";
 
@@ -106,7 +106,7 @@ const OpenFileList = memo((props: OpenFileListProps) => {
 const FileListItem = forwardRef<HTMLLIElement, FileListItemProps>(
   (props, ref) => {
     const { filePath, taskList, onClose, onDownload, ...rest } = props;
-    const { language } = useSettings();
+    const language = useSettingsStore((state) => state.language);
     const { getCloudFileRefByFilePath } = useCloudStorage();
     const [cloudFileRef, setCloudFileRef] = useState<CloudFileRef>();
     const cloudFileLastModified = cloudFileRef

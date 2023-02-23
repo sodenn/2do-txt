@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import { forwardRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSideSheet } from "../data/SideSheetContext";
-import { useTask } from "../data/TaskContext";
+import usePlatformStore from "../stores/platform-store";
+import useSideSheetStore from "../stores/side-sheet-store";
 import { WithChildren } from "../types/common.types";
-import { getPlatform } from "../utils/platform";
+import useTask from "../utils/useTask";
 import Filter from "./Filter";
 import Settings from "./Settings";
 
@@ -78,7 +78,7 @@ const SaveAreaContent = styled("div")({
 
 export const MainContainer = forwardRef<HTMLDivElement, WithChildren>(
   ({ children }, ref) => {
-    const { sideSheetOpen } = useSideSheet();
+    const sideSheetOpen = useSideSheetStore((state) => state.open);
     return (
       <Main ref={ref} open={sideSheetOpen}>
         {children}
@@ -90,9 +90,13 @@ export const MainContainer = forwardRef<HTMLDivElement, WithChildren>(
 const SideSheet = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const platform = getPlatform();
   const matches = useMediaQuery(theme.breakpoints.up("lg"));
-  const { sideSheetOpen, setSideSheetOpen } = useSideSheet();
+  const platform = usePlatformStore((state) => state.platform);
+  const {
+    open: sideSheetOpen,
+    openSideSheet,
+    closeSideSheet,
+  } = useSideSheetStore();
   const { taskLists, activeTaskList, ...rest } = useTask();
 
   const { priorities, projects, contexts, tags } = activeTaskList
@@ -150,8 +154,8 @@ const SideSheet = () => {
           },
         }),
       }}
-      onOpen={() => setSideSheetOpen(true)}
-      onClose={() => setSideSheetOpen(false)}
+      onOpen={openSideSheet}
+      onClose={closeSideSheet}
     >
       <TabContext value={tab}>
         <Box sx={{ flex: "none", borderBottom: 1, borderColor: "divider" }}>

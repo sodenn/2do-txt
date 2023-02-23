@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouteError } from "react-router-dom";
 import logo from "../images/logo.png";
-import { hideSplashScreen } from "../utils/splash-screen";
+import { hideSplashScreen } from "../native-api/splash-screen";
 
 function ErrorBoundary() {
   const { t } = useTranslation();

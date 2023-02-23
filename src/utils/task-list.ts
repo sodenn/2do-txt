@@ -8,35 +8,35 @@ import {
 } from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { FilterType, SortKey, useFilter } from "../data/FilterContext";
+import useFilterStore, { FilterType, SortKey } from "../stores/filter-store";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { parseTask, stringifyTask, Task } from "./task";
 
-export interface TaskListParseResult extends TaskListAttributes {
+interface TaskListParseResult extends TaskListAttributes {
   items: Task[];
   lineEnding: string;
   incomplete: TaskListAttributes;
 }
 
-export interface TaskList extends TaskListParseResult {
+interface TaskList extends TaskListParseResult {
   filePath: string;
   fileName: string;
 }
 
-export interface TaskListAttributes {
+interface TaskListAttributes {
   priorities: Record<string, number>;
   projects: Record<string, number>;
   contexts: Record<string, number>;
   tags: Record<string, string[]>;
 }
 
-export interface TaskGroup {
+interface TaskGroup {
   label: string;
   items: Task[];
 }
 
-export interface TaskListFilter {
+interface TaskListFilter {
   type: FilterType;
   searchTerm: string;
   activePriorities: string[];
@@ -46,7 +46,7 @@ export interface TaskListFilter {
   hideCompletedTasks: boolean;
 }
 
-export interface TimelineTask extends Task {
+interface TimelineTask extends Task {
   _timelineFlags: {
     today: boolean;
     firstOfToday: boolean;
@@ -60,7 +60,7 @@ export interface TimelineTask extends Task {
   _timelineDate?: Date;
 }
 
-export function updateTaskList(taskList: TaskList): TaskList {
+function updateTaskListAttributes(taskList: TaskList): TaskList {
   const attributes = getTaskListAttributes(taskList.items, false);
   const incomplete = getTaskListAttributes(taskList.items, true);
   return {
@@ -70,7 +70,7 @@ export function updateTaskList(taskList: TaskList): TaskList {
   };
 }
 
-export function parseTaskList(text?: string): TaskListParseResult {
+function parseTaskList(text?: string): TaskListParseResult {
   if (text) {
     const lineEnding = /\r\n/.test(text) ? "\r\n" : "\n";
 
@@ -108,14 +108,14 @@ export function parseTaskList(text?: string): TaskListParseResult {
   }
 }
 
-export function stringifyTaskList(taskList: Task[], lineEnding: string) {
+function stringifyTaskList(taskList: Task[], lineEnding: string) {
   return [...taskList]
     .sort((t1, t2) => t1._order - t2._order)
     .map((t) => stringifyTask(t))
     .join(lineEnding);
 }
 
-export function useTimelineTasks(
+function useTimelineTasks(
   taskLists: TaskList[],
   activeTaskList?: TaskList
 ): TimelineTask[] {
@@ -129,7 +129,7 @@ export function useTimelineTasks(
     activeContexts,
     activeTags,
     hideCompletedTasks,
-  } = useFilter();
+  } = useFilterStore();
 
   const filteredTasks = filterTasks(items, {
     type: filterType,
@@ -253,10 +253,7 @@ export function useTimelineTasks(
     }));
 }
 
-export function useTaskGroups(
-  taskLists: TaskList[],
-  activeTaskList?: TaskList
-) {
+function useTaskGroups(taskLists: TaskList[], activeTaskList?: TaskList) {
   taskLists = activeTaskList ? [activeTaskList] : taskLists;
 
   const {
@@ -268,7 +265,7 @@ export function useTaskGroups(
     activeContexts,
     activeTags,
     hideCompletedTasks,
-  } = useFilter();
+  } = useFilterStore();
 
   const filteredTaskLists = taskLists.map((taskList) => ({
     ...taskList,
@@ -398,10 +395,7 @@ function orTypePredicate(
   };
 }
 
-export function filterTasks<T extends Task>(
-  tasks: T[],
-  filter: TaskListFilter
-) {
+function filterTasks<T extends Task>(tasks: T[], filter: TaskListFilter) {
   const {
     type,
     searchTerm,
@@ -432,7 +426,7 @@ export function filterTasks<T extends Task>(
   );
 }
 
-export function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
+function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
   const groups = groupBy(taskList.sort(sortByOriginalOrder), (task) =>
     getGroupKey(task, sortBy)
   );
@@ -491,7 +485,7 @@ function getTaskListAttributes(
   };
 }
 
-export function getCommonTaskListAttributes(taskLists: TaskList[]) {
+function getCommonTaskListAttributes(taskLists: TaskList[]) {
   const projects = reduceDictionaries(taskLists.map((l) => l.projects));
   const tags = reduceDictionaries(taskLists.map((l) => l.tags));
   const contexts = reduceDictionaries(taskLists.map((l) => l.contexts));
@@ -524,7 +518,7 @@ export function getCommonTaskListAttributes(taskLists: TaskList[]) {
   };
 }
 
-export function sortByOriginalOrder(a: Task, b: Task) {
+function sortByOriginalOrder(a: Task, b: Task) {
   if (a._order < b._order) {
     return -1;
   } else if (a._order > b._order) {
@@ -711,3 +705,23 @@ function containsStringArrayDictionaries(
     )
   );
 }
+
+export type {
+  TaskListParseResult,
+  TaskList,
+  TaskListAttributes,
+  TaskGroup,
+  TaskListFilter,
+  TimelineTask,
+};
+export {
+  updateTaskListAttributes,
+  parseTaskList,
+  stringifyTaskList,
+  useTimelineTasks,
+  useTaskGroups,
+  filterTasks,
+  convertToTaskGroups,
+  getCommonTaskListAttributes,
+  sortByOriginalOrder,
+};

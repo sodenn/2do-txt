@@ -4,6 +4,39 @@ test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:5173");
 });
 
+test("should not show an offline warning when not connected to WebDAV", async ({
+  page,
+  context,
+}) => {
+  await expect(page.getByText("Get Started")).toBeVisible();
+  await context.setOffline(true);
+  // wait, because detecting the offline status takes a while
+  await page.waitForTimeout(1000);
+  await expect(
+    page.getByText(
+      "Unable to connect to cloud storage. Check network connection."
+    )
+  ).not.toBeVisible({ timeout: 1000 });
+});
+
+test("should show an offline warning when connected to WebDAV", async ({
+  page,
+  context,
+}) => {
+  await replayFromHar(page);
+  await connectToWebDAV(page);
+  // wait for network listener to register
+  await page.waitForTimeout(200);
+  await context.setOffline(true);
+  // wait, because detecting the offline status takes a while
+  await page.waitForTimeout(1000);
+  await expect(
+    page.getByText(
+      "Unable to connect to cloud storage. Check network connection."
+    )
+  ).toBeVisible();
+});
+
 test("should connect with WebDAV", async ({ page }) => {
   await replayFromHar(page);
   await connectToWebDAV(page);

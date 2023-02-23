@@ -91,7 +91,8 @@
     "slate": "0.90.0",
     "slate-history": "0.86.0",
     "slate-react": "0.90.0",
-    "typeface-roboto": "1.1.13"
+    "typeface-roboto": "1.1.13",
+    "zustand": "^4.3.3"
   },
   "devDependencies": {
     "@capacitor/cli": "4.6.3",

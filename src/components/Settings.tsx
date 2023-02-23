@@ -1,9 +1,9 @@
 import { Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
-import { useCloudStorage } from "../data/CloudStorageContext";
-import { useNotification } from "../data/NotificationContext";
-import { useSettings } from "../data/SettingsContext";
-import { useSideSheet } from "../data/SideSheetContext";
+import useSettingsStore from "../stores/settings-store";
+import useSideSheetStore from "../stores/side-sheet-store";
+import { useCloudStorage } from "../utils/CloudStorage";
+import useNotification from "../utils/useNotification";
 import ArchiveModeSelect from "./ArchiveModeSelect";
 import ArchiveNowButton from "./ArchiveNowButton";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
@@ -16,23 +16,33 @@ import ThemeModeSelect from "./ThemeModeSelect";
 const Settings = () => {
   const { t } = useTranslation();
   const { cloudStorageEnabled } = useCloudStorage();
-  const { setSideSheetOpen } = useSideSheet();
-  const { isNotificationPermissionGranted, requestNotificationPermissions } =
+  const closeSideSheet = useSideSheetStore((state) => state.closeSideSheet);
+  const { isNotificationPermissionGranted, requestNotificationPermission } =
     useNotification();
-  const {
-    showNotifications,
-    setShowNotifications,
-    createCompletionDate,
-    createCreationDate,
-    archiveMode,
-    toggleCreateCompletionDate,
-    toggleCreateCreationDate,
-  } = useSettings();
+  const showNotifications = useSettingsStore(
+    (state) => state.showNotifications
+  );
+  const setShowNotifications = useSettingsStore(
+    (state) => state.setShowNotifications
+  );
+  const createCompletionDate = useSettingsStore(
+    (state) => state.createCompletionDate
+  );
+  const createCreationDate = useSettingsStore(
+    (state) => state.createCreationDate
+  );
+  const archiveMode = useSettingsStore((state) => state.archiveMode);
+  const toggleCreateCompletionDate = useSettingsStore(
+    (state) => state.toggleCreateCompletionDate
+  );
+  const toggleCreateCreationDate = useSettingsStore(
+    (state) => state.toggleCreateCreationDate
+  );
 
   const handleShowNotifications = async () => {
     let granted = await isNotificationPermissionGranted();
     if (!showNotifications && !granted) {
-      granted = await requestNotificationPermissions();
+      granted = await requestNotificationPermission();
       setShowNotifications(granted);
     } else {
       setShowNotifications(!showNotifications);
@@ -109,7 +119,7 @@ const Settings = () => {
           <Heading gutterBottom>{t("Cloud storage")}</Heading>
           <Stack sx={{ mt: 1 }} spacing={1}>
             <CloudStorageConnectionButtons
-              onMenuItemClick={() => setSideSheetOpen(false)}
+              onMenuItemClick={() => closeSideSheet()}
             />
           </Stack>
         </div>

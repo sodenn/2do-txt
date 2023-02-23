@@ -8,6 +8,7 @@ import FileManagementDialog from "./FileManagementDialog";
 import FilePicker from "./FilePicker";
 import Header from "./Header";
 import Onboarding from "./Onboarding";
+import PageEffect from "./PageEffect";
 import ShortcutsDialog from "./ShortcutsDialog";
 import SideSheet, { MainContainer } from "./SideSheet";
 import TaskDialog from "./TaskDialog";
@@ -58,6 +59,7 @@ const Page = () => {
       <ArchivedTasksDialog />
       <ShortcutsDialog />
       <WebDAVDialog />
+      <PageEffect />
     </FilePicker>
   );
 };

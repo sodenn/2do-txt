@@ -1,11 +1,12 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { ArchiveMode, useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
+import useSettingsStore, { ArchiveMode } from "../stores/settings-store";
+import useTask from "../utils/useTask";
 
 const ArchiveModeSelect = () => {
   const { t } = useTranslation();
-  const { archiveMode, setArchiveMode } = useSettings();
+  const archiveMode = useSettingsStore((state) => state.archiveMode);
+  const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
   const { archiveTasks, restoreArchivedTasks } = useTask();
 
   const handleChange = (value: ArchiveMode) => {

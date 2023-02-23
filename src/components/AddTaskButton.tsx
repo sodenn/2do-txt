@@ -2,25 +2,25 @@ import AddIcon from "@mui/icons-material/Add";
 import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useTaskDialog } from "../data/TaskDialogContext";
-import { useAddShortcutListener } from "../utils/shortcuts";
+import useTaskDialogStore from "../stores/task-dialog-store";
+import { useHotkeys } from "../utils/useHotkeys";
 import Kbd from "./Kbd";
 
 const AddTaskButton = (props: IconButtonProps) => {
   const { t } = useTranslation();
-  const { setTaskDialogOptions } = useTaskDialog();
+  const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 
   const handleClick: IconButtonProps["onClick"] = (event) => {
     event.currentTarget.blur();
-    setTaskDialogOptions({ open: true });
+    openTaskDialog();
   };
 
   const shortcutListeners = useMemo(
-    () => ({ n: () => setTaskDialogOptions({ open: true }) }),
-    [setTaskDialogOptions]
+    () => ({ n: () => openTaskDialog() }),
+    [openTaskDialog]
   );
 
-  useAddShortcutListener(shortcutListeners);
+  useHotkeys(shortcutListeners);
 
   return (
     <Tooltip

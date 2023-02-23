@@ -1,12 +1,12 @@
 import { Box, styled } from "@mui/material";
 import { useEffect, useState } from "react";
-import { WithChildren } from "../../types/common.types";
 import {
   addKeyboardDidHideListener,
   addKeyboardDidShowListener,
   removeAllKeyboardListeners,
-} from "../../utils/keyboard";
-import { useFullScreenDialog } from "./FullScreenDialogContext";
+} from "../../native-api/keyboard";
+import { WithChildren } from "../../types/common.types";
+import { useFullScreenDialog } from "./FullScreenDialogProvider";
 
 const SafeArea = styled("div")({
   paddingRight: "env(safe-area-inset-right)",

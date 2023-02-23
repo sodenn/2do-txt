@@ -13,12 +13,12 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useFileManagementDialog } from "../data/FileManagementDialogContext";
-import { useFilter } from "../data/FilterContext";
-import { useShortcutsDialog } from "../data/ShortcutsDialogContext";
-import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
-import { hasTouchScreen } from "../utils/platform";
+import { hasTouchScreen } from "../native-api/platform";
+import useFileManagementDialogStore from "../stores/file-management-dialog-store";
+import useFilterStore from "../stores/filter-store";
+import useShortcutsDialogStore from "../stores/shortcuts-dialog-store";
+import useTask from "../utils/useTask";
 import StartEllipsis from "./StartEllipsis";
 
 const buttonMaxWidthXs = 170;
@@ -28,10 +28,16 @@ const menuMaxWidth = 350;
 const FileMenu = () => {
   const { t } = useTranslation();
   const touchScreen = hasTouchScreen();
-  const { setFileManagementDialogOpen } = useFileManagementDialog();
-  const { setShortcutsDialogOpen } = useShortcutsDialog();
+  const openFileManagementDialog = useFileManagementDialogStore(
+    (state) => state.openFileManagementDialog
+  );
+  const openShortcutsDialog = useShortcutsDialogStore(
+    (state) => state.openShortcutsDialog
+  );
   const { taskLists, activeTaskList } = useTask();
-  const { setActiveTaskListPath } = useFilter();
+  const setActiveTaskListPath = useFilterStore(
+    (state) => state.setActiveTaskListPath
+  );
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -51,12 +57,12 @@ const FileMenu = () => {
 
   const handleManageFile = () => {
     handleClose();
-    setFileManagementDialogOpen(true);
+    openFileManagementDialog();
   };
 
   const handleKeyboardShortcutsClick = () => {
     handleClose();
-    setShortcutsDialogOpen(true);
+    openShortcutsDialog();
   };
 
   return (

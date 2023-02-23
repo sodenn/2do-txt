@@ -2,8 +2,8 @@ import { CssBaseline } from "@mui/material";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Page from "./components/Page";
-import { loader } from "./data/loader";
-import ProviderBundle from "./data/ProviderBundle";
+import ProviderBundle from "./components/ProviderBundle";
+import { loader } from "./stores/loader";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +15,7 @@ const router = createBrowserRouter([
       </ProviderBundle>
     ),
     loader,
+    shouldRevalidate: () => false,
     errorElement: <ErrorBoundary />,
     children: [
       {

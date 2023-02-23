@@ -2,11 +2,11 @@ import AddTaskIcon from "@mui/icons-material/AddTask";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useFileCreateDialog } from "../data/FileCreateDialogContext";
-import { useFilePicker } from "../data/FilePickerContext";
-import { useTask } from "../data/TaskContext";
 import logo from "../images/logo.png";
-import { getPlatform } from "../utils/platform";
+import useFileCreateDialogStore from "../stores/file-create-dialog-store";
+import usePlatformStore from "../stores/platform-store";
+import useFilePicker from "../utils/useFilePicker";
+import useTask from "../utils/useTask";
 import CloudStorageOnboarding from "./CloudStorageOnboarding";
 import CreateExampleFileButton from "./CreateExampleFileButton";
 
@@ -23,8 +23,10 @@ const StyledBox = styled("div")(({ theme }) => ({
 
 const Onboarding = () => {
   const { t } = useTranslation();
-  const platform = getPlatform();
-  const { setFileCreateDialog } = useFileCreateDialog();
+  const platform = usePlatformStore((state) => state.platform);
+  const openFileCreateDialog = useFileCreateDialogStore(
+    (state) => state.openFileCreateDialog
+  );
   const { taskLists } = useTask();
   const { openFileDialog } = useFilePicker();
 
@@ -46,9 +48,7 @@ const Onboarding = () => {
         </Typography>
         <Button
           aria-label="Create task"
-          onClick={() =>
-            setFileCreateDialog({ open: true, createFirstTask: true })
-          }
+          onClick={() => openFileCreateDialog({ createFirstTask: true })}
           startIcon={<AddTaskIcon />}
           variant="contained"
         >

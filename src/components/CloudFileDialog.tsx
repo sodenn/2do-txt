@@ -23,22 +23,23 @@ import {
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { join, selectFolder } from "../native-api/filesystem";
+import useCloudFileDialogStore from "../stores/cloud-file-dialog-store";
+import useFileCreateDialogStore from "../stores/file-create-dialog-store";
+import useFilterStore from "../stores/filter-store";
+import usePlatformStore from "../stores/platform-store";
+import useSettingsStore from "../stores/settings-store";
 import {
   CloudFile,
   CloudFileRef,
   CloudFolder,
   CloudStorage,
   ListCloudItemResult,
-  useCloudFileDialog,
   useCloudStorage,
-} from "../data/CloudStorageContext";
-import generateContentHash from "../data/CloudStorageContext/ContentHasher";
-import { useFileCreateDialog } from "../data/FileCreateDialogContext";
-import { useFilter } from "../data/FilterContext";
-import { useSettings } from "../data/SettingsContext";
-import { useTask } from "../data/TaskContext";
-import { getDoneFilePath, getFilesystem } from "../utils/filesystem";
-import { getPlatform } from "../utils/platform";
+} from "../utils/CloudStorage";
+import generateContentHash from "../utils/CloudStorage/ContentHasher";
+import { getDoneFilePath } from "../utils/todo-files";
+import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
@@ -70,32 +71,37 @@ const CloudFileDialog = () => {
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const { createNewTodoFile, saveDoneFile, taskLists } = useTask();
-  const { setActiveTaskListPath } = useFilter();
+  const setActiveTaskListPath = useFilterStore(
+    (state) => state.setActiveTaskListPath
+  );
+  const archiveMode = useSettingsStore((state) => state.archiveMode);
+  const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
   const { downloadFile, linkCloudFile, linkCloudDoneFile } = useCloudStorage();
-  const {
-    cloudFileDialogOptions: { open, cloudStorage },
-    setCloudFileDialogOptions,
-  } = useCloudFileDialog();
-  const platform = getPlatform();
-  const { selectFolder, join } = getFilesystem();
-  const { setFileCreateDialog } = useFileCreateDialog();
+  const open = useCloudFileDialogStore((state) => state.open);
+  const cloudStorage = useCloudFileDialogStore((state) => state.cloudStorage);
+  const closeCloudFileDialog = useCloudFileDialogStore(
+    (state) => state.closeCloudFileDialog
+  );
+  const cleanupCloudFileDialog = useCloudFileDialogStore(
+    (state) => state.cleanupCloudFileDialog
+  );
+  const platform = usePlatformStore((state) => state.platform);
+  const openFileCreateDialog = useFileCreateDialogStore(
+    (state) => state.openFileCreateDialog
+  );
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListCloudItemResult | undefined>();
-  const { archiveMode, setArchiveMode } = useSettings();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClose = () => {
     setLoading(false);
     setSelectedFile(undefined);
-    setCloudFileDialogOptions((currentValue) => ({
-      ...currentValue,
-      open: false,
-    }));
+    closeCloudFileDialog();
   };
 
   const handleExited = () => {
-    setCloudFileDialogOptions({ open: false });
+    cleanupCloudFileDialog();
     setFiles(undefined);
   };
 
@@ -163,7 +169,7 @@ const CloudFileDialog = () => {
 
   const handleCreateFile = () => {
     handleClose();
-    setFileCreateDialog({ open: true });
+    openFileCreateDialog();
   };
 
   const TransitionProps = {

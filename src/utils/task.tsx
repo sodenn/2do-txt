@@ -10,8 +10,10 @@ import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import PriorityBox from "../components/PriorityBox";
 import TagBox from "../components/TagBox";
-import { useFilter } from "../data/FilterContext";
-import { PriorityTransformation, useSettings } from "../data/SettingsContext";
+import useFilterStore from "../stores/filter-store";
+import useSettingsStore, {
+  PriorityTransformation,
+} from "../stores/settings-store";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { generateId } from "./uuid";
 
@@ -174,14 +176,14 @@ export function parseTaskBody(
 }
 
 export function useFormatBody() {
-  const { taskView } = useSettings();
+  const taskView = useSettingsStore((state) => state.taskView);
   const chips = taskView === "list";
   const dueDate = taskView === "list";
   const {
     t,
     i18n: { language },
   } = useTranslation();
-  const { sortBy } = useFilter();
+  const sortBy = useFilterStore((state) => state.sortBy);
   return (task: Task) => {
     const subStrings = task.body
       .trim()

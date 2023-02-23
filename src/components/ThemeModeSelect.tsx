@@ -1,10 +1,11 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { ThemeMode, useAppTheme } from "../data/AppThemeContext";
+import useThemeStore, { ThemeMode } from "../stores/theme-store";
 
 const ThemeModeSelect = () => {
   const { t } = useTranslation();
-  const { themeMode, setThemeMode } = useAppTheme();
+  const themeMode = useThemeStore((state) => state.mode);
+  const setThemeMode = useThemeStore((state) => state.setThemeMode);
   return (
     <Select
       fullWidth

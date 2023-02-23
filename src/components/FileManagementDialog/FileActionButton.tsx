@@ -4,25 +4,31 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, IconProps, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import React, { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
+import useCloudFileDialogStore from "../../stores/cloud-file-dialog-store";
+import useFileCreateDialogStore from "../../stores/file-create-dialog-store";
+import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
+import usePlatformStore from "../../stores/platform-store";
 import {
   CloudStorage,
   cloudStorageIcons,
-  useCloudFileDialog,
   useCloudStorage,
-} from "../../data/CloudStorageContext";
-import { useFileCreateDialog } from "../../data/FileCreateDialogContext";
-import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
-import { useFilePicker } from "../../data/FilePickerContext";
-import { getPlatform } from "../../utils/platform";
+} from "../../utils/CloudStorage";
+import useFilePicker from "../../utils/useFilePicker";
 
 const FileActionButton = () => {
   const { t } = useTranslation();
-  const platform = getPlatform();
+  const platform = usePlatformStore((state) => state.platform);
   const { openFileDialog } = useFilePicker();
-  const { setFileCreateDialog } = useFileCreateDialog();
-  const { setFileManagementDialogOpen } = useFileManagementDialog();
+  const openFileCreateDialog = useFileCreateDialogStore(
+    (state) => state.openFileCreateDialog
+  );
+  const closeFileManagementDialog = useFileManagementDialogStore(
+    (state) => state.closeFileManagementDialog
+  );
   const { connectedCloudStorages } = useCloudStorage();
-  const { setCloudFileDialogOptions } = useCloudFileDialog();
+  const openCloudFileDialog = useCloudFileDialogStore(
+    (state) => state.openCloudFileDialog
+  );
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -35,18 +41,18 @@ const FileActionButton = () => {
   };
 
   const handleCreateFile = () => {
-    setFileCreateDialog({ open: true });
-    setFileManagementDialogOpen(false);
+    openFileCreateDialog();
+    closeFileManagementDialog();
   };
 
   const handleOpenFile = () => {
     openFileDialog();
-    setFileManagementDialogOpen(false);
+    closeFileManagementDialog();
   };
 
   const handleImportFromStorage = (cloudStorage: CloudStorage) => {
-    setCloudFileDialogOptions({ open: true, cloudStorage });
-    setFileManagementDialogOpen(false);
+    openCloudFileDialog(cloudStorage);
+    closeFileManagementDialog();
   };
 
   const renderCloudStorageIcon = (cloudStorage: CloudStorage) => {

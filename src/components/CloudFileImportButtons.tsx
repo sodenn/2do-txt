@@ -3,17 +3,19 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
+import useCloudFileDialogStore from "../stores/cloud-file-dialog-store";
 import {
   CloudStorage,
   cloudStorageIcons,
-  useCloudFileDialog,
   useCloudStorage,
-} from "../data/CloudStorageContext";
+} from "../utils/CloudStorage";
 
 const CloudFileImportButtons = () => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { setCloudFileDialogOptions } = useCloudFileDialog();
+  const openCloudFileDialog = useCloudFileDialogStore(
+    (state) => state.openCloudFileDialog
+  );
   const { cloudStorageEnabled, connectedCloudStorages } = useCloudStorage();
   const open = Boolean(anchorEl);
 
@@ -23,7 +25,7 @@ const CloudFileImportButtons = () => {
 
   const handleMenuItemClick = (cloudStorage: CloudStorage) => {
     handleClose();
-    setCloudFileDialogOptions({ open: true, cloudStorage });
+    openCloudFileDialog(cloudStorage);
   };
 
   const handleClose = () => {
@@ -39,7 +41,7 @@ const CloudFileImportButtons = () => {
     return (
       <Button
         aria-label={`Import todo.txt from ${cloudStorage}`}
-        onClick={() => setCloudFileDialogOptions({ open: true, cloudStorage })}
+        onClick={() => openCloudFileDialog(cloudStorage)}
         startIcon={cloudStorageIcons[cloudStorage]}
         variant="outlined"
       >

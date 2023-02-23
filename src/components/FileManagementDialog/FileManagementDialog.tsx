@@ -6,12 +6,16 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useCloudStorage } from "../../data/CloudStorageContext";
-import { useConfirmationDialog } from "../../data/ConfirmationDialogContext";
-import { useFileManagementDialog } from "../../data/FileManagementDialogContext";
-import { useTask } from "../../data/TaskContext";
-import { getFilenameFromPath, getFilesystem } from "../../utils/filesystem";
-import { getPlatform } from "../../utils/platform";
+import {
+  deleteFile,
+  getFilenameFromPath,
+  readdir,
+} from "../../native-api/filesystem";
+import useConfirmationDialogStore from "../../stores/confirmation-dialog-store";
+import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
+import usePlatformStore from "../../stores/platform-store";
+import { useCloudStorage } from "../../utils/CloudStorage";
+import useTask from "../../utils/useTask";
 import ClosedFileList from "./ClosedFileList";
 import FileActionButton from "./FileActionButton";
 import OpenFileList from "./OpenFileList";
@@ -22,27 +26,30 @@ interface CloseOptions {
 }
 
 const FileManagementDialog = () => {
-  const platform = getPlatform();
-  const { fileManagementDialogOpen, setFileManagementDialogOpen } =
-    useFileManagementDialog();
+  const platform = usePlatformStore((state) => state.platform);
+  const fileManagementDialogOpen = useFileManagementDialogStore(
+    (state) => state.open
+  );
+  const closeFileManagementDialog = useFileManagementDialogStore(
+    (state) => state.closeFileManagementDialog
+  );
   const { unlinkCloudFile, unlinkCloudDoneFile } = useCloudStorage();
-  const { setConfirmationDialog } = useConfirmationDialog();
-  const { readdir, deleteFile } = getFilesystem();
+  const openConfirmationDialog = useConfirmationDialogStore(
+    (state) => state.openConfirmationDialog
+  );
   const { t } = useTranslation();
   const { taskLists, closeTodoFile } = useTask();
   const [closedFiles, setClosedFiles] = useState<string[]>([]);
 
   const listAllFiles = useCallback(async () => {
     if (platform !== "desktop") {
-      return readdir({
-        path: "",
-      }).then((result) => {
-        return result.files.map((f) => f.name);
+      return readdir("").then((files) => {
+        return files.map((f) => f.name);
       });
     } else {
       return [];
     }
-  }, [platform, readdir]);
+  }, [platform]);
 
   const listClosedFiles = useCallback(
     (files: string[]) => {
@@ -65,8 +72,7 @@ const FileManagementDialog = () => {
 
   const openDeleteConfirmationDialog = (filePath: string) => {
     return new Promise<boolean>((resolve) => {
-      setConfirmationDialog({
-        open: true,
+      openConfirmationDialog({
         title: t("Delete"),
         onClose: () => resolve(false),
         content: (
@@ -112,9 +118,7 @@ const FileManagementDialog = () => {
     if (!confirmed) {
       return;
     }
-    deleteFile({
-      path: filePath,
-    })
+    deleteFile(filePath)
       .catch((error) => {
         console.debug(error);
       })
@@ -124,7 +128,7 @@ const FileManagementDialog = () => {
   };
 
   const handleCloseDialog = () => {
-    setFileManagementDialogOpen(false);
+    closeFileManagementDialog();
   };
 
   useEffect(() => {

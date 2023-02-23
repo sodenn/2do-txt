@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { ReactNode } from "react";
 import { WithChildren } from "../../types/common.types";
-import { useFullScreenDialog } from "./FullScreenDialogContext";
+import { useFullScreenDialog } from "./FullScreenDialogProvider";
 
 interface FullScreenDialogTitleProps extends WithChildren {
   onClose: () => void;

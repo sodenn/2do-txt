@@ -8,8 +8,9 @@ import { MuiFluentEdit } from "@react-fluent-edit/mui";
 import { isValid } from "date-fns";
 import { CSSProperties, KeyboardEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { hasTouchScreen } from "../native-api/platform";
+import usePlatformStore from "../stores/platform-store";
 import { formatDate, isDateEqual } from "../utils/date";
-import { getPlatform, hasTouchScreen } from "../utils/platform";
 import {
   getDueDateValue,
   getRecValue,
@@ -62,9 +63,9 @@ export function getTagStyle(key: string, theme: Theme): CSSProperties {
 }
 
 const TaskForm = (props: TaskFormProps) => {
-  const platform = getPlatform();
   const theme = useTheme();
   const touchScreen = hasTouchScreen();
+  const platform = usePlatformStore((state) => state.platform);
   const {
     raw,
     newTask: isNewTask,

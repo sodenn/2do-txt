@@ -1,4 +1,4 @@
-export function groupBy<T>(arr: T[], getKey: (item: T) => string | string[]) {
+function groupBy<T>(arr: T[], getKey: (item: T) => string | string[]) {
   return arr.reduce<{ [key: string]: T[] }>((map, item) => {
     const key = getKey(item);
     let formattedKey: string;
@@ -12,8 +12,10 @@ export function groupBy<T>(arr: T[], getKey: (item: T) => string | string[]) {
   }, {});
 }
 
-export function arrayMove<T>(arr: T[], fromIndex: number, toIndex: number) {
+function arrayMove<T>(arr: T[], fromIndex: number, toIndex: number) {
   const element = arr[fromIndex];
   arr.splice(fromIndex, 1);
   arr.splice(toIndex, 0, element);
 }
+
+export { groupBy, arrayMove };

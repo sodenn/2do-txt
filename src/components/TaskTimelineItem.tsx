@@ -24,7 +24,7 @@ import {
 import { format } from "date-fns";
 import { forwardRef, KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useSettings } from "../data/SettingsContext";
+import useSettingsStore from "../stores/settings-store";
 import { formatLocaleDate } from "../utils/date";
 import { TimelineTask } from "../utils/task-list";
 import TaskBody from "./TaskBody";
@@ -52,7 +52,7 @@ const DateBox = styled(Box)(({ theme }) => ({
 }));
 
 function TaskOppositeContent({ task }: Pick<TimelineItemProps, "task">) {
-  const { language } = useSettings();
+  const language = useSettingsStore((state) => state.language);
   const { t } = useTranslation();
   return (
     <Box
@@ -151,7 +151,7 @@ const TaskListItem = forwardRef<
   >
 >((props, ref) => {
   const { task, focused, onClick, onDelete, onCheckboxClick } = props;
-  const { language } = useSettings();
+  const { language } = useSettingsStore();
 
   const handleDeleteClick: IconButtonProps["onClick"] = (e) => {
     e.stopPropagation();
