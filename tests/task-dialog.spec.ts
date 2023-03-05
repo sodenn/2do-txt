@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, Page, test } from "@playwright/test";
 import { format } from "date-fns";
 import { formatDate } from "../src/utils/date";
 
@@ -8,6 +8,14 @@ test.beforeEach(async ({ page }) => {
 });
 
 const delay = { delay: 40 };
+
+async function expectDateValue(page: Page, label: string, expected: string) {
+  const inputValue = await page
+    .locator(`input[data-testid="${label}"]`)
+    .inputValue();
+  const date = inputValue.replace(/[\u2069\u2066\s⁨]/g, "");
+  expect(date).toBe(expected);
+}
 
 test.describe("Task dialog", () => {
   test("should allow me to open and close the task dialog via shortcut", async ({
@@ -69,7 +77,7 @@ test.describe("Task dialog", () => {
 
     // open the date picker
     const datePickerButton = isMobile
-      ? '[aria-label="Due date"]'
+      ? '[data-testid="Due date"]'
       : '[aria-label*="Choose date"]';
     await page.locator(datePickerButton).click();
 
@@ -84,9 +92,7 @@ test.describe("Task dialog", () => {
     }
 
     // make sure the date picker contain a value
-    await expect(page.locator('[aria-label="Due date"]')).toHaveValue(
-      format(today, "MM/dd/yyyy")
-    );
+    await expectDateValue(page, "Due date", format(today, "MM/dd/yyyy"));
 
     // make sure the text field contains the due date
     await expect(page.locator('[aria-label="Text editor"]')).toHaveText(
@@ -99,7 +105,7 @@ test.describe("Task dialog", () => {
     await page.press('[aria-label="Text editor"]', "Backspace");
 
     // make sure the date picker doesn't contain a value
-    await expect(page.locator('[aria-label="Due date"]')).toHaveValue("");
+    await expectDateValue(page, "Due date", "");
 
     // make sure the text field doesn't contain the due date
     await expect(page.locator('[aria-label="Text editor"]')).not.toHaveText(
@@ -116,9 +122,7 @@ test.describe("Task dialog", () => {
     }
 
     // make sure the date picker contain a value
-    await expect(page.locator('[aria-label="Due date"]')).toHaveValue(
-      format(today, "MM/dd/yyyy")
-    );
+    await expectDateValue(page, "Due date", format(today, "MM/dd/yyyy"));
 
     // make sure the text field contains the due date
     await expect(page.locator('[aria-label="Text editor"]')).toHaveText(
@@ -147,14 +151,10 @@ test.describe("Task dialog", () => {
     );
 
     // make sure the creation date is set
-    await expect(page.locator('input[aria-label="Creation date"]')).toHaveValue(
-      "11/26/2021"
-    );
+    await expectDateValue(page, "Creation date", "11/26/2021");
 
     // make sure the due date is set
-    await expect(page.locator('input[aria-label="Due date"]')).toHaveValue(
-      "12/15/2021"
-    );
+    await expectDateValue(page, "Due date", "12/15/2021");
 
     // make sure priority is set
     await expect(
@@ -318,9 +318,7 @@ test.describe("Task dialog", () => {
     await page.keyboard.press("Enter");
 
     // make sure due date was selected
-    await expect(page.locator('[aria-label="Due date"]')).toHaveValue(
-      format(new Date(), "MM/dd/yyyy")
-    );
+    await expectDateValue(page, "Due date", format(new Date(), "MM/dd/yyyy"));
 
     // navigate to save button
     await page.keyboard.press("Tab");

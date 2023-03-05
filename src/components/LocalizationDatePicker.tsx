@@ -1,4 +1,4 @@
-import { TextField, useMediaQuery } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import {
   DatePicker,
   DatePickerProps,
@@ -17,10 +17,9 @@ const localeMap: Record<string, Locale> = {
   de: deLocale,
 };
 
-type LocalizationDatePickerProps = Omit<
-  DatePickerProps<Date | undefined, Date>,
-  "renderInput" | "date" | "openPicker" | "rawValue"
-> & { ariaLabel?: string };
+type LocalizationDatePickerProps = DatePickerProps<Date> & {
+  ariaLabel?: string;
+};
 
 const LocalizationDatePicker = forwardRef<
   HTMLInputElement,
@@ -48,33 +47,30 @@ const LocalizationDatePicker = forwardRef<
         onChange={onChange}
         ref={ref}
         value={value}
-        PopperProps={{
-          modifiers: [
-            {
-              name: "flip",
-              options: {
-                altBoundary: false,
-                fallbackPlacements: ["right", "left"],
-              },
+        slotProps={{
+          textField: (props) => ({
+            fullWidth: true,
+            inputProps: {
+              "aria-label": ariaLabel,
+              "data-testid": ariaLabel,
+              ...props.inputProps,
             },
-          ],
+          }),
+          actionBar: {
+            actions: desktop ? ["clear"] : ["accept", "cancel", "clear"],
+          },
+          popper: {
+            modifiers: [
+              {
+                name: "flip",
+                options: {
+                  altBoundary: false,
+                  fallbackPlacements: ["right", "left"],
+                },
+              },
+            ],
+          },
         }}
-        componentsProps={
-          desktop
-            ? {
-                actionBar: { actions: ["clear"] },
-              }
-            : {
-                actionBar: { actions: ["accept", "cancel", "clear"] },
-              }
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            fullWidth
-            inputProps={{ ...params.inputProps, "aria-label": ariaLabel }}
-          />
-        )}
       />
     </LocalizationProvider>
   );
