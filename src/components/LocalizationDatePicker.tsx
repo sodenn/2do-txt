@@ -51,9 +51,8 @@ const LocalizationDatePicker = forwardRef<
           textField: (props) => ({
             fullWidth: true,
             inputProps: {
-              "aria-label": ariaLabel,
-              "data-testid": ariaLabel,
               ...props.inputProps,
+              "aria-label": ariaLabel,
             },
           }),
           actionBar: {

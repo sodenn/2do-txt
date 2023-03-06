@@ -11,7 +11,7 @@ const delay = { delay: 40 };
 
 async function expectDateValue(page: Page, label: string, expected: string) {
   const inputValue = await page
-    .locator(`input[data-testid="${label}"]`)
+    .locator(`input[aria-label="${label}"]`)
     .inputValue();
   const date = inputValue.replace(/[\u2069\u2066\s⁨]/g, "");
   expect(date).toBe(expected);
@@ -77,7 +77,7 @@ test.describe("Task dialog", () => {
 
     // open the date picker
     const datePickerButton = isMobile
-      ? '[data-testid="Due date"]'
+      ? '[aria-label="Due date"]'
       : '[aria-label*="Choose date"]';
     await page.locator(datePickerButton).click();
 
