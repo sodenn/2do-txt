@@ -97,6 +97,17 @@ describe("recurring tasks", () => {
     );
   });
 
+  it("should create next recurring task with context", async () => {
+    const task = parseTask(
+      "2022-05-01 This is a test rec:1w due:2022-05-20 @Test"
+    );
+    const recurringTask = createNextRecurringTask(task, false);
+    expect(recurringTask).toBeDefined();
+    expect(recurringTask!.raw).toBe(
+      "This is a test rec:1w due:2022-06-08 @Test"
+    );
+  });
+
   it("should create next recurring task without creation date (1)", async () => {
     const task = parseTask("2022-05-01 This is a test rec:1w due:2022-05-20");
     const recurringTask = createNextRecurringTask(task, false);

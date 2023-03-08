@@ -313,7 +313,10 @@ export function createNextRecurringTask(
 
   const newDueDateString = formatDate(newDueDate);
   recurringTask.body = dueDateMatch
-    ? recurringTask.body.replace(dueDateMatch[0], `due:${newDueDateString}`)
+    ? recurringTask.body.replace(
+        dueDateMatch[0].trim(),
+        `due:${newDueDateString}`
+      )
     : `${recurringTask.body} due:${newDueDateString}`;
 
   return parseTask(stringifyTask(recurringTask), task._order);
