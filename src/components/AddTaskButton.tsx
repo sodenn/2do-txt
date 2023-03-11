@@ -15,12 +15,12 @@ const AddTaskButton = (props: IconButtonProps) => {
     openTaskDialog();
   };
 
-  const shortcutListeners = useMemo(
+  const hotkeys = useMemo(
     () => ({ n: () => openTaskDialog() }),
     [openTaskDialog]
   );
 
-  useHotkeys(shortcutListeners);
+  useHotkeys(hotkeys);
 
   return (
     <Tooltip

@@ -13,12 +13,9 @@ const SideSheetButton = () => {
   const sideSheetOpen = useSideSheetStore((state) => state.open);
   const toggleSideSheet = useSideSheetStore((state) => state.toggleSideSheet);
 
-  const shortcutListeners = useMemo(
-    () => ({ m: toggleSideSheet }),
-    [toggleSideSheet]
-  );
+  const hotkeys = useMemo(() => ({ m: toggleSideSheet }), [toggleSideSheet]);
 
-  useHotkeys(shortcutListeners);
+  useHotkeys(hotkeys);
 
   return (
     <IconButton

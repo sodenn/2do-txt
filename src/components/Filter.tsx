@@ -20,14 +20,14 @@ const Filter = () => {
   const { taskLists, activeTaskList, ...rest } = useTask();
   const {
     sortBy,
-    setSortBy,
     filterType,
-    setFilterType,
     activePriorities,
     activeProjects,
     activeContexts,
     activeTags,
     hideCompletedTasks,
+    setSortBy,
+    setFilterType,
     togglePriority,
     resetActivePriorities,
     resetActiveProjects,
@@ -49,7 +49,7 @@ const Filter = () => {
 
   const showSortBy = taskLists.some((list) => list.items.length > 0);
 
-  const shortcutListeners = useMemo(
+  const hotkeys = useMemo(
     () => ({
       x: () => {
         resetActiveProjects();
@@ -68,7 +68,7 @@ const Filter = () => {
     ]
   );
 
-  useHotkeys(shortcutListeners);
+  useHotkeys(hotkeys);
 
   return (
     <Stack spacing={2}>

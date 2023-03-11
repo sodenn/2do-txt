@@ -23,12 +23,12 @@ const SearchBar = ({ onExpand }: SearchBarProps) => {
     setSearchTerm(event.target.value);
   };
 
-  const shortcutListeners = useMemo(
+  const hotkeys = useMemo(
     () => ({ f: () => searchInputRef.current?.focus() }),
     []
   );
 
-  useHotkeys(shortcutListeners);
+  useHotkeys(hotkeys);
 
   return (
     <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
