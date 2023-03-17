@@ -120,7 +120,7 @@ export async function getFileMetaData(
   const results = (await client
     .getDirectoryContents(dirname)
     .catch(handleError)) as FileStat[];
-  const metaData = results.find((i) => i.filename === path);
+  const metaData = results.find((i) => i.basename === filename);
   if (!metaData) {
     throw new CloudFileNotFoundError();
   }
