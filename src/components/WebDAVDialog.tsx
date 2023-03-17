@@ -68,7 +68,7 @@ const WebDavDialog = () => {
     closeCloudFileDialog();
   };
 
-  const disabled = !username || !password || !url || loading;
+  const disabled = !username || !password || !url;
 
   const dialogContent = (
     <Stack sx={{ mt: 2 }} spacing={2}>
@@ -91,7 +91,7 @@ const WebDavDialog = () => {
         label={t("Username")}
         fullWidth
         variant="outlined"
-        type="url"
+        type="text"
         inputProps={{
           "aria-label": "Username",
         }}
@@ -161,7 +161,7 @@ const WebDavDialog = () => {
           aria-label="Connect"
           onClick={handleSubmit}
           disabled={disabled}
-          loading={disabled}
+          loading={loading}
         >
           {t("Connect")}
         </LoadingButton>
