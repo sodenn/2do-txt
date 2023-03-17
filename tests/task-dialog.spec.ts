@@ -13,7 +13,7 @@ async function expectDateValue(page: Page, label: string, expected: string) {
   const inputValue = await page
     .locator(`input[aria-label="${label}"]`)
     .inputValue();
-  const date = inputValue.replace(/[\u2069\u2066\s⁨]/g, "");
+  const date = inputValue.replace(/[\u2069\u2066\u2068\s]/g, "");
   expect(date).toBe(expected);
 }
 
