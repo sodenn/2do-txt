@@ -238,9 +238,7 @@ const TaskForm = (props: TaskFormProps) => {
               label={t("Creation Date")}
               value={formData.creationDate}
               onChange={(value) => {
-                if (!value || isValid(value)) {
-                  handleChange({ creationDate: value ?? undefined });
-                }
+                handleChange({ creationDate: value ?? undefined });
               }}
             />
           </Grid>
@@ -252,9 +250,7 @@ const TaskForm = (props: TaskFormProps) => {
               label={t("Completion Date")}
               value={formData.completionDate}
               onChange={(value) => {
-                if (!value || isValid(value)) {
-                  handleChange({ completionDate: value ?? undefined });
-                }
+                handleChange({ completionDate: value ?? undefined });
               }}
             />
           </Grid>

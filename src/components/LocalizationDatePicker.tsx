@@ -6,7 +6,7 @@ import {
   LocalizationProvider,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { Locale } from "date-fns";
+import { isAfter, isBefore, isValid, Locale } from "date-fns";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
 import { forwardRef } from "react";
@@ -21,6 +21,13 @@ type LocalizationDatePickerProps = DatePickerProps<Date> & {
   ariaLabel?: string;
 };
 
+const minDate = new Date("1900-01-01T00:00:00.000");
+const maxDate = new Date("2099-12-31T00:00:00.000");
+
+function isValidDate(date: Date) {
+  return isValid(date) && isAfter(date, minDate) && isBefore(date, maxDate);
+}
+
 const LocalizationDatePicker = forwardRef<
   HTMLInputElement,
   LocalizationDatePickerProps
@@ -31,6 +38,12 @@ const LocalizationDatePicker = forwardRef<
   const {
     i18n: { resolvedLanguage },
   } = useTranslation();
+
+  const handleChange: DatePickerProps<Date>["onChange"] = (value, context) => {
+    if (!value || isValidDate(value)) {
+      onChange?.(value, context);
+    }
+  };
 
   return (
     <LocalizationProvider
@@ -44,7 +57,9 @@ const LocalizationDatePicker = forwardRef<
     >
       <DatePicker
         {...rest}
-        onChange={onChange}
+        minDate={minDate}
+        maxDate={maxDate}
+        onChange={handleChange}
         ref={ref}
         value={value}
         slotProps={{
