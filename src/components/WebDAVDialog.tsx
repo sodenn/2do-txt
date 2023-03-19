@@ -134,6 +134,7 @@ const WebDavDialog = () => {
           accept={{
             text: t("Connect"),
             disabled,
+            loading,
             onClick: handleSubmit,
             "aria-label": "Connect",
           }}

@@ -189,6 +189,7 @@ const CloudFileDialog = () => {
           accept={{
             text: t("Import"),
             disabled: !selectedFile,
+            loading,
             onClick: handleSelect,
             "aria-label": "Import",
           }}

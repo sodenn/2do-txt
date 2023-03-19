@@ -1,8 +1,8 @@
 import CloseIcon from "@mui/icons-material/Close";
+import { LoadingButton } from "@mui/lab";
 import {
   AppBar,
   Box,
-  Button,
   Divider,
   IconButton,
   styled,
@@ -15,10 +15,11 @@ import { useFullScreenDialog } from "./FullScreenDialogProvider";
 
 interface FullScreenDialogTitleProps extends WithChildren {
   onClose: () => void;
-  accept: {
+  accept?: {
     text?: ReactNode;
     onClick?: () => void;
     disabled?: boolean;
+    loading?: boolean;
     "aria-label"?: string;
   };
 }
@@ -48,15 +49,16 @@ const FullScreenDialogTitle = (props: FullScreenDialogTitleProps) => {
             {children}
           </Typography>
           {accept && (
-            <Button
+            <LoadingButton
               sx={{ mr: -1.5 }}
               color="inherit"
               onClick={accept.onClick}
+              loading={accept.loading}
               disabled={accept.disabled}
               aria-label={accept["aria-label"]}
             >
               {accept.text}
-            </Button>
+            </LoadingButton>
           )}
         </Toolbar>
       </StyledAppBar>
