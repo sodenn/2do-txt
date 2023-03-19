@@ -217,7 +217,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     cleanupFileCreateDialog();
     setFileName("");
     setSkip(undefined);
-    setSelectedCloudStorage("Dropbox");
+    setSelectedCloudStorage("no-sync");
   };
 
   const init = useCallback(

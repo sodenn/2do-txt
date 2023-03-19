@@ -1,3 +1,11 @@
+## [1.17.7](https://github.com/sodenn/2do-txt/compare/v1.17.6...v1.17.7) (2023-03-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency notistack to v3 ([#768](https://github.com/sodenn/2do-txt/issues/768)) ([6dc4356](https://github.com/sodenn/2do-txt/commit/6dc435634d9fff74f96981cdf149116b34f4d1f9))
+* **WebDAV:** fetching file metadata from WebDAV server ([#773](https://github.com/sodenn/2do-txt/issues/773)) ([8229131](https://github.com/sodenn/2do-txt/commit/82291314e9aae9481a42f09a9f259fc02e023843))
+
 ## [1.17.6](https://github.com/sodenn/2do-txt/compare/v1.17.5...v1.17.6) (2023-03-08)
 
 

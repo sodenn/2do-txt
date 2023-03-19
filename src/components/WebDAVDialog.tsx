@@ -1,3 +1,4 @@
+import { LoadingButton } from "@mui/lab";
 import {
   Alert,
   AlertTitle,
@@ -31,11 +32,13 @@ const WebDavDialog = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<any>();
+  const [loading, setLoading] = useState(false);
   const { createClient, openStorageConnectedAlert } = useCloudStorage();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSubmit = async () => {
     setError(undefined);
+    setLoading(true);
     try {
       await saveWebDAVCredentials({ username, password, url });
       closeCloudFileDialog();
@@ -43,6 +46,7 @@ const WebDavDialog = () => {
       await openStorageConnectedAlert("WebDAV");
     } catch (error) {
       setError(error);
+      setLoading(false);
     }
   };
 
@@ -51,6 +55,7 @@ const WebDavDialog = () => {
     setUsername("");
     setPassword("");
     setError(undefined);
+    setLoading(false);
   };
 
   const handleEnter = () => {
@@ -86,7 +91,7 @@ const WebDavDialog = () => {
         label={t("Username")}
         fullWidth
         variant="outlined"
-        type="url"
+        type="text"
         inputProps={{
           "aria-label": "Username",
         }}
@@ -152,9 +157,14 @@ const WebDavDialog = () => {
       <DialogContent>{dialogContent}</DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t("Close")}</Button>
-        <Button aria-label="Connect" onClick={handleSubmit} disabled={disabled}>
+        <LoadingButton
+          aria-label="Connect"
+          onClick={handleSubmit}
+          disabled={disabled}
+          loading={loading}
+        >
           {t("Connect")}
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
