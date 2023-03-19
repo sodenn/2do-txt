@@ -49,6 +49,11 @@ const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
         },
       },
     },
+    MuiTextField: {
+      defaultProps: {
+        spellCheck: false,
+      },
+    },
   },
   palette: {
     mode,

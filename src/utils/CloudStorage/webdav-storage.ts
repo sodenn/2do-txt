@@ -1,3 +1,4 @@
+import { getFilenameFromPath } from "../../native-api/filesystem";
 import {
   getSecureStorageItem,
   removeSecureStorageItem,
@@ -114,13 +115,16 @@ export async function getFileMetaData(
   opt: Omit<FileMetaDataOptions<WebDAVClient>, "cloudStorage">
 ): Promise<CloudFile> {
   const { path, client } = opt;
+  const filename = getFilenameFromPath(path);
+  const dirname = path.substring(0, path.length - filename.length);
   const results = (await client
-    .getDirectoryContents(path)
+    .getDirectoryContents(dirname)
     .catch(handleError)) as FileStat[];
-  if (results.length !== 1) {
+  const metaData = results.find((i) => i.basename === filename);
+  if (!metaData) {
     throw new CloudFileNotFoundError();
   }
-  return mapToCloudFile(results[0]);
+  return mapToCloudFile(metaData);
 }
 
 export async function downloadFile(
