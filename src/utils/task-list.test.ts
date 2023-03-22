@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { arrayMove } from "./array";
 import {
+  TaskList,
+  TaskListFilter,
   convertToTaskGroups,
   filterTasks,
   getCommonTaskListAttributes,
   parseTaskList,
   sortByOriginalOrder,
-  TaskList,
-  TaskListFilter,
 } from "./task-list";
 
 describe("task-list", () => {

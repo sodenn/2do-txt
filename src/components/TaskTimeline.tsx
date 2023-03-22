@@ -2,7 +2,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Timeline } from "@mui/lab";
 import { Box, Typography } from "@mui/material";
 import { isEqual } from "lodash";
-import { memo, MutableRefObject, useEffect, useState } from "react";
+import { MutableRefObject, memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
 import useFilterStore from "../stores/filter-store";

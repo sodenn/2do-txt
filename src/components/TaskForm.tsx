@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Stack, Theme, useTheme } from "@mui/material";
 import {
-  createMentionsPlugin,
   MentionCombobox,
+  createMentionsPlugin,
   useMentions,
 } from "@react-fluent-edit/mentions";
 import { MuiFluentEdit } from "@react-fluent-edit/mui";
@@ -12,11 +12,11 @@ import { hasTouchScreen } from "../native-api/platform";
 import usePlatformStore from "../stores/platform-store";
 import { formatDate, isDateEqual } from "../utils/date";
 import {
+  Task,
   getDueDateValue,
   getRecValue,
   parseTask,
   stringifyTask,
-  Task,
 } from "../utils/task";
 import { TaskList } from "../utils/task-list";
 import FileSelect from "./FileSelect";

@@ -22,7 +22,7 @@ import {
   styled,
 } from "@mui/material";
 import { format } from "date-fns";
-import { forwardRef, KeyboardEvent } from "react";
+import { KeyboardEvent, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import useSettingsStore from "../stores/settings-store";
 import { formatLocaleDate } from "../utils/date";

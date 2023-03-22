@@ -14,7 +14,7 @@ import useSettingsStore from "../stores/settings-store";
 import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
 import generateContentHash from "./CloudStorage/ContentHasher";
 import { Task } from "./task";
-import { parseTaskList, stringifyTaskList, TaskList } from "./task-list";
+import { TaskList, parseTaskList, stringifyTaskList } from "./task-list";
 import { getDoneFilePath } from "./todo-files";
 
 interface SyncItem {
