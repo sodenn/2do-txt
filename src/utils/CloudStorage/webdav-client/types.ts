@@ -1,10 +1,3 @@
-export enum AuthType {
-  Digest = "digest",
-  None = "none",
-  Password = "password",
-  Token = "token",
-}
-
 export type BufferLike = Buffer | ArrayBuffer;
 
 export interface DAVResultResponse {
@@ -40,13 +33,6 @@ export interface DAVResultRawMultistatus {
 
 export interface DAVResultRaw {
   multistatus: "" | DAVResultRawMultistatus | [DAVResultRawMultistatus];
-}
-
-export enum ErrorCode {
-  DataTypeNoLength = "data-type-no-length",
-  InvalidAuthType = "invalid-auth-type",
-  InvalidOutputFormat = "invalid-output-format",
-  LinkUnsupportedAuthType = "link-unsupported-auth",
 }
 
 export interface FileStat {
