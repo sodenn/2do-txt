@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Notification,
+  scheduleNotifications as _scheduleNotifications,
   cancelNotifications,
   isNotificationPermissionGranted,
-  Notification,
   requestNotificationPermission,
-  scheduleNotifications as _scheduleNotifications,
   shouldNotificationsBeRescheduled,
 } from "../native-api/notification";
 

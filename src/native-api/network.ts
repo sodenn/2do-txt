@@ -1,9 +1,9 @@
 import { Network } from "@capacitor/network";
 import {
   Body,
-  getClient,
   HttpOptions,
   ResponseType as _ResponseType,
+  getClient,
 } from "@tauri-apps/api/http";
 import { BufferLike } from "../utils/CloudStorage/webdav-client";
 import { getPlatform } from "./platform";

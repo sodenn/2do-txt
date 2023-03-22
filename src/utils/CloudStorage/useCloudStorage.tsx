@@ -9,6 +9,14 @@ import useCloudStorageStore from "../../stores/cloud-storage-store";
 import usePlatformStore from "../../stores/platform-store";
 import useWebDAVDialogStore from "../../stores/webdav-dialog-store";
 import useNetwork from "../../utils/useNetwork";
+import {
+  DeleteFileOptions,
+  DownloadFileOptions,
+  ExtendOptions,
+  ListCloudFilesOptions,
+  SyncFileOptions,
+  UploadFileOptions,
+} from "./CloudStorageContext.types";
 import * as cloud from "./cloud-storage";
 import {
   CloudFileUnauthorizedError,
@@ -25,14 +33,6 @@ import {
   CloudStorage,
   WithClient,
 } from "./cloud-storage.types";
-import {
-  DeleteFileOptions,
-  DownloadFileOptions,
-  ExtendOptions,
-  ListCloudFilesOptions,
-  SyncFileOptions,
-  UploadFileOptions,
-} from "./CloudStorageContext.types";
 
 export const cloudStorageIcons: Record<CloudStorage, ReactNode> = {
   Dropbox: <DropboxIcon />,

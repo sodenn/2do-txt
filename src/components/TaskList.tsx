@@ -1,6 +1,6 @@
 import { Box, List, Typography } from "@mui/material";
 import { isEqual } from "lodash";
-import { memo, MutableRefObject } from "react";
+import { MutableRefObject, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Task } from "../utils/task";
 import { TaskGroup } from "../utils/task-list";

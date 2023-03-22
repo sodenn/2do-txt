@@ -1,7 +1,7 @@
 import { isEqual } from "lodash";
 import { useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { FilterState, filterStore, SearchParams } from "../stores/filter-store";
+import { FilterState, SearchParams, filterStore } from "../stores/filter-store";
 
 function useUpdateSearchParams() {
   const [searchParams, setSearchParams] = useSearchParams();
