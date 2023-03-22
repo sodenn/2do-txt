@@ -8,7 +8,7 @@ interface OauthOptions {
 
 function mobileOauth(opt: OauthOptions) {
   const { authUrl, redirectUrl } = opt;
-  return new Promise<{ [p: string]: string }>((resolve, reject) => {
+  return new Promise<Record<string, any>>((resolve, reject) => {
     // @ts-ignore
     const browser = cordova.InAppBrowser.open(
       authUrl,
