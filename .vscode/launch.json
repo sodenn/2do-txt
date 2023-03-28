@@ -9,6 +9,9 @@
       "request": "launch",
       "name": "Debug",
       "url": "http://localhost:5173/",
+      "runtimeArgs": [
+        "--disable-web-security"
+      ],
       "webRoot": "${workspaceFolder}"
     },
     {

@@ -1,9 +1,9 @@
 import { Network } from "@capacitor/network";
 import {
   Body,
-  getClient,
   HttpOptions,
   ResponseType as _ResponseType,
+  getClient,
 } from "@tauri-apps/api/http";
 import { BufferLike } from "../utils/CloudStorage/webdav-client";
 import { getPlatform } from "./platform";
@@ -77,7 +77,12 @@ async function desktopRequest(opt: RequestOptions) {
     ...(opt.responseType && { responseType: responseType(opt) }),
     ...(opt.data && { body: desktopBody(opt) }),
   };
-  const response = await client.request(reqOptions);
+  const response = await client.request(reqOptions).catch((error) => {
+    if (typeof error === "string") {
+      throw new Error(error);
+    }
+    throw error;
+  });
   const data = response.data;
   return {
     status: response.status,

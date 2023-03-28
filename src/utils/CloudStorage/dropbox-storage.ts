@@ -12,6 +12,7 @@ import {
   setSecureStorageItem,
 } from "../../native-api/secure-storage";
 import { isDateAfter, isDateBefore, isDateEqual, parseDate } from "../date";
+import generateContentHash from "./ContentHasher";
 import {
   CloudFileNotFoundError,
   CloudFileUnauthorizedError,
@@ -28,7 +29,6 @@ import {
   SyncFileResult,
   UploadFileOptions,
 } from "./cloud-storage.types";
-import generateContentHash from "./ContentHasher";
 
 const dropboxClientId = import.meta.env.VITE_DROPBOX_CLIENT_ID;
 

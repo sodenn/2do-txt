@@ -1,7 +1,7 @@
 import {
-  Directory,
   Encoding as CapEncoding,
   Filesystem as CapFilesystem,
+  Directory,
 } from "@capacitor/filesystem";
 import { open, save } from "@tauri-apps/api/dialog";
 import { readTextFile, removeFile, writeTextFile } from "@tauri-apps/api/fs";

@@ -14,7 +14,10 @@ static SERVICE: &'static str = "2do.txt Encryption Key";
 static USERNAME: &'static str = "2do.txt";
 
 fn retrieve_key() -> Result<String, keyring::Error> {
-    let entry = Entry::new(SERVICE, USERNAME);
+    let entry = match Entry::new(SERVICE, USERNAME) {
+        Ok(entry) => entry,
+        Err(err) => return Err(err),
+    };
     match entry.get_password() {
         Ok(val) => Ok(val),
         Err(error) => match error {

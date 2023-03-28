@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { forwardRef, memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { arrayMove, List as MovableList } from "react-movable";
+import { List as MovableList, arrayMove } from "react-movable";
 import { OnChangeMeta } from "react-movable/lib/types";
 import useSettingsStore from "../../stores/settings-store";
 import { CloudFileRef, useCloudStorage } from "../../utils/CloudStorage";

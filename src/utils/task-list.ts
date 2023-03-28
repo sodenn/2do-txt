@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import useFilterStore, { FilterType, SortKey } from "../stores/filter-store";
 import { groupBy } from "./array";
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
-import { parseTask, stringifyTask, Task } from "./task";
+import { Task, parseTask, stringifyTask } from "./task";
 
 interface TaskListParseResult extends TaskListAttributes {
   items: Task[];

@@ -91,7 +91,7 @@ const TaskView = () => {
     }
   }, [deleteTask, focusedTaskId, openConfirmationDialog, t, tasks]);
 
-  const shortcutListeners = useMemo(
+  const hotkeys = useMemo(
     () => ({
       ArrowUp: () => focusNextListItem("up"),
       ArrowDown: () => focusNextListItem("down"),
@@ -101,7 +101,7 @@ const TaskView = () => {
     [focusNextListItem, openDeleteTaskDialog, openTaskDialog]
   );
 
-  useHotkeys(shortcutListeners);
+  useHotkeys(hotkeys);
 
   if (taskLists.length === 0) {
     return null;

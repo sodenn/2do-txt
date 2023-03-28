@@ -8,8 +8,8 @@ import { Trans, useTranslation } from "react-i18next";
 import { promptForRating } from "../native-api/app-rate";
 import {
   deleteFile,
-  getFilenameFromPath,
   getFileNameWithoutEnding,
+  getFilenameFromPath,
   getUri,
   isFile,
   writeFile,
@@ -27,18 +27,18 @@ import { parseDate, todayDate } from "./date";
 import { hashCode } from "./hashcode";
 import { addTodoFilePath, removeTodoFilePath } from "./settings";
 import {
+  Task,
+  TaskFormData,
   createDueDateRegex,
   createNextRecurringTask,
   parseTask,
-  Task,
-  TaskFormData,
   transformPriority,
 } from "./task";
 import {
-  getCommonTaskListAttributes,
-  parseTaskList as _parseTaskList,
-  stringifyTaskList,
   TaskList,
+  parseTaskList as _parseTaskList,
+  getCommonTaskListAttributes,
+  stringifyTaskList,
   updateTaskListAttributes,
 } from "./task-list";
 import { getDoneFilePath } from "./todo-files";

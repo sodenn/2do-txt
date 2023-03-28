@@ -3,14 +3,14 @@ import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 
-const CreateExampleFileButton = () => {
+const ExampleFileButton = () => {
   const { t } = useTranslation();
   const openFileCreateDialog = useFileCreateDialogStore(
     (state) => state.openFileCreateDialog
   );
 
   const handleClick = () => {
-    openFileCreateDialog({ createExampleFile: true });
+    openFileCreateDialog({ createExampleFile: true, createFirstTask: false });
   };
 
   return (
@@ -25,4 +25,4 @@ const CreateExampleFileButton = () => {
   );
 };
 
-export default CreateExampleFileButton;
+export default ExampleFileButton;

@@ -1,3 +1,21 @@
+## [1.17.7](https://github.com/sodenn/2do-txt/compare/v1.17.6...v1.17.7) (2023-03-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency notistack to v3 ([#768](https://github.com/sodenn/2do-txt/issues/768)) ([6dc4356](https://github.com/sodenn/2do-txt/commit/6dc435634d9fff74f96981cdf149116b34f4d1f9))
+* **WebDAV:** fetching file metadata from WebDAV server ([#773](https://github.com/sodenn/2do-txt/issues/773)) ([8229131](https://github.com/sodenn/2do-txt/commit/82291314e9aae9481a42f09a9f259fc02e023843))
+
+## [1.17.6](https://github.com/sodenn/2do-txt/compare/v1.17.5...v1.17.6) (2023-03-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies (non-major) ([#745](https://github.com/sodenn/2do-txt/issues/745)) ([dce32d5](https://github.com/sodenn/2do-txt/commit/dce32d5f212f748a91cfc41655bc075303463b67))
+* **deps:** update rust crate keyring to v2 ([#759](https://github.com/sodenn/2do-txt/issues/759)) ([ad69f40](https://github.com/sodenn/2do-txt/commit/ad69f405351bf652b49ac1a275003643dfd1054b))
+* **deps:** update rust crate tauri to 1.2.4 ([#740](https://github.com/sodenn/2do-txt/issues/740)) ([3acedb3](https://github.com/sodenn/2do-txt/commit/3acedb3305e9c0de19cb49b24cef1222c5015f8d))
+* **recurring task:** avoid accidentally removing spaces when creating recurring tasks ([#769](https://github.com/sodenn/2do-txt/issues/769)) ([3337df7](https://github.com/sodenn/2do-txt/commit/3337df77b4b51859c9cb4d84b442c880945ed8e7))
+
 ## [1.17.5](https://github.com/sodenn/2do-txt/compare/v1.17.4...v1.17.5) (2023-02-14)
 
 
