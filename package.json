@@ -63,7 +63,7 @@
     "@mui/lab": "5.0.0-alpha.124",
     "@mui/material": "5.11.15",
     "@mui/system": "5.11.15",
-    "@mui/x-date-pickers": "5.0.20",
+    "@mui/x-date-pickers": "6.0.3",
     "@react-fluent-edit/core": "3.2.0",
     "@react-fluent-edit/mentions": "3.2.0",
     "@react-fluent-edit/mui": "3.2.0",
