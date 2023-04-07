@@ -1,4 +1,5 @@
 import { CloudError, CloudStorageError, Provider } from "@cloudstorage/core";
+import { WebDAVClientOptions } from "@cloudstorage/webdav";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import { Alert, Button, CircularProgress } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
@@ -14,11 +15,9 @@ import {
 import { setSecureStorageItem } from "../../native-api/secure-storage";
 import useCloudStorageStore from "../../stores/cloud-storage-store";
 import usePlatformStore from "../../stores/platform-store";
-import { DeepRequired } from "../../types/common.types";
 import { getDoneFilePath } from "../todo-files";
 import useTask from "../useTask";
 import { cloudStoragePreferences } from "./cloud-storage-preferences";
-import { WebDAVConfig } from "./cloud-storages";
 
 export const cloudStorageIcons: Record<Provider, ReactNode> = {
   Dropbox: <DropboxIcon />,
@@ -303,7 +302,7 @@ export function useCloudStorage() {
   );
 
   const createWebDAVStorage = useCallback(
-    async (config: DeepRequired<WebDAVConfig>) => {
+    async (config: WebDAVClientOptions) => {
       await addWebDAVStorage(config);
       // test connection
       await list("WebDAV");

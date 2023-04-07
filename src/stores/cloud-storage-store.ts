@@ -1,13 +1,58 @@
-import { CloudStorage, Provider } from "@cloudstorage/core";
+import {
+  CloudStorage,
+  CloudStorageError,
+  createCloudStorage,
+  Provider,
+} from "@cloudstorage/core";
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
+import { createDropboxClient } from "../../../cloudstorage/packages/dropbox";
+import { createWebDAVClient } from "../../../cloudstorage/packages/webdav";
 import { getSecureStorageItem } from "../native-api/secure-storage";
 import { cloudStoragePreferences } from "../utils/CloudStorage";
-import {
-  WebDAVConfig,
-  createDropboxStorage,
-  createWebDAVStorage,
-} from "../utils/CloudStorage/cloud-storages";
+
+export interface WebDAVConfig {
+  baseUrl: string | null;
+  basicAuth: {
+    username: string | null;
+    password: string | null;
+  };
+}
+
+export async function createWebDAVStorage({
+  baseUrl,
+  basicAuth: { username, password },
+}: WebDAVConfig) {
+  if (!username || !password || !baseUrl) {
+    throw new CloudStorageError({
+      type: "Unauthorized",
+      provider: "WebDAV",
+    });
+  }
+  return createCloudStorage({
+    client: createWebDAVClient({
+      baseUrl,
+      basicAuth: {
+        username,
+        password,
+      },
+    }),
+  });
+}
+
+export async function createDropboxStorage(refreshToken: string | null) {
+  if (!refreshToken) {
+    throw new CloudStorageError({
+      type: "Unauthorized",
+      provider: "Dropbox",
+    });
+  }
+  return createCloudStorage({
+    client: createDropboxClient({
+      refreshToken,
+    }),
+  });
+}
 
 interface CloudStorageState {
   authError: boolean;
