@@ -1,3 +1,4 @@
+import { CloudFileRef } from "@cloudstorage/core";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import {
@@ -14,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { List as MovableList, arrayMove } from "react-movable";
 import { OnChangeMeta } from "react-movable/lib/types";
 import useSettingsStore from "../../stores/settings-store";
-import { CloudFileRef, useCloudStorage } from "../../utils/CloudStorage";
+import { useCloudStorage } from "../../utils/CloudStorage";
 import { formatLocalDateTime, parseDate } from "../../utils/date";
 import { TaskList } from "../../utils/task-list";
 import useTask from "../../utils/useTask";
@@ -107,15 +108,15 @@ const FileListItem = forwardRef<HTMLLIElement, FileListItemProps>(
   (props, ref) => {
     const { filePath, taskList, onClose, onDownload, ...rest } = props;
     const language = useSettingsStore((state) => state.language);
-    const { getCloudFileRefByFilePath } = useCloudStorage();
+    const { getCloudFileRef } = useCloudStorage();
     const [cloudFileRef, setCloudFileRef] = useState<CloudFileRef>();
     const cloudFileLastModified = cloudFileRef
       ? parseDate(cloudFileRef.lastSync)
       : undefined;
 
     useEffect(() => {
-      getCloudFileRefByFilePath(filePath).then(setCloudFileRef);
-    }, [filePath, getCloudFileRefByFilePath]);
+      getCloudFileRef(filePath).then(setCloudFileRef);
+    }, [filePath, getCloudFileRef]);
 
     return (
       <ListItem

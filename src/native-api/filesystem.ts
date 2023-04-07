@@ -6,6 +6,7 @@ import {
 import { open, save } from "@tauri-apps/api/dialog";
 import { readTextFile, removeFile, writeTextFile } from "@tauri-apps/api/fs";
 import { documentDir, join as tauriJoin } from "@tauri-apps/api/path";
+import { createEventEmitter } from "../utils/event-emitter";
 import { getPlatform } from "./platform";
 
 interface Filesystem {
@@ -194,81 +195,97 @@ const desktopFilesystem: Filesystem = {
   },
 };
 
-async function getUri(path: string) {
+export interface CreateFileData {
+  path: string;
+  content: string;
+}
+
+export interface UpdateFileData {
+  path: string;
+  content: string;
+}
+
+export interface DeleteFileData {
+  path: string;
+}
+
+interface FilesystemEventMap {
+  create: CreateFileData;
+  update: UpdateFileData;
+  delete: DeleteFileData;
+}
+
+export const filesystemEmitter = createEventEmitter<FilesystemEventMap>();
+
+async function getFilesystem() {
   const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.getUri(path)
-    : capFilesystem.getUri(path);
+  return platform === "desktop" ? desktopFilesystem : capFilesystem;
+}
+
+async function getUri(path: string) {
+  const filesystem = await getFilesystem();
+  return filesystem.getUri(path);
 }
 
 async function readFile(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.readFile(path)
-    : capFilesystem.readFile(path);
+  const filesystem = await getFilesystem();
+  return filesystem.readFile(path);
 }
 
 async function writeFile(options: WriteFileOptions) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.writeFile(options)
-    : capFilesystem.writeFile(options);
+  const filesystem = await getFilesystem();
+  const exist = await filesystem.isFile(options.path);
+  const content = await filesystem.writeFile(options);
+  filesystemEmitter.emit(exist ? "update" : "create", {
+    path: options.path,
+    content,
+  });
+  return content;
 }
 
 async function deleteFile(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.deleteFile(path)
-    : capFilesystem.deleteFile(path);
+  const filesystem = await getFilesystem();
+  await filesystem.deleteFile(path);
+  filesystemEmitter.emit("delete", { path });
 }
 
 async function readdir(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.readdir(path)
-    : capFilesystem.readdir(path);
+  const filesystem = await getFilesystem();
+  return filesystem.readdir(path);
 }
 
 async function isFile(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.isFile(path)
-    : capFilesystem.isFile(path);
+  const filesystem = await getFilesystem();
+  return filesystem.isFile(path);
 }
 
 async function getUniqueFilePath(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.getUniqueFilePath(path)
-    : capFilesystem.getUniqueFilePath(path);
+  const filesystem = await getFilesystem();
+  return filesystem.getUniqueFilePath(path);
 }
 
 async function selectFolder() {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.selectFolder()
-    : capFilesystem.selectFolder();
+  const filesystem = await getFilesystem();
+  return filesystem.selectFolder();
 }
 
 async function selectFile() {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.selectFile()
-    : capFilesystem.selectFile();
+  const filesystem = await getFilesystem();
+  return filesystem.selectFile();
 }
 
 async function saveFile(defaultPath?: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.saveFile(defaultPath)
-    : capFilesystem.saveFile(defaultPath);
+  const filesystem = await getFilesystem();
+  const path = await filesystem.saveFile(defaultPath);
+  if (path) {
+    filesystemEmitter.emit("create", { path: path, content: "" });
+  }
+  return path;
 }
 
 async function join(...paths: string[]) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.join(...paths)
-    : capFilesystem.join(...paths);
+  const filesystem = await getFilesystem();
+  return filesystem.join(...paths);
 }
 
 export {

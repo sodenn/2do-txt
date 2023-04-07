@@ -14,7 +14,7 @@ function getDoneFilePath(filePath: string) {
     return;
   }
   return fileName === defaultFilePath
-    ? filePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath!)
+    ? filePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath)
     : filePath.replace(
         new RegExp(`${fileName}$`),
         `${fileNameWithoutEnding}_${defaultDoneFilePath}`

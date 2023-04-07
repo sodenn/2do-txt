@@ -1,21 +1,21 @@
+import { Provider } from "@cloudstorage/core";
 import { create } from "zustand";
-import { CloudStorage } from "../utils/CloudStorage";
 
 interface CloudFileDialogState {
   open: boolean;
-  cloudStorage?: CloudStorage;
-  openCloudFileDialog: (cloudStorage?: CloudStorage) => void;
+  provider?: Provider;
+  openCloudFileDialog: (provider?: Provider) => void;
   closeCloudFileDialog: () => void;
   cleanupCloudFileDialog: () => void;
 }
 
 const useCloudFileDialogStore = create<CloudFileDialogState>((set) => ({
   open: false,
-  cloudStorage: undefined,
-  openCloudFileDialog: (cloudStorage?: CloudStorage) =>
-    set((state) => ({ open: true, cloudStorage })),
+  provider: undefined,
+  openCloudFileDialog: (provider?: Provider) =>
+    set((state) => ({ open: true, provider })),
   closeCloudFileDialog: () => set({ open: false }),
-  cleanupCloudFileDialog: () => set({ open: false, cloudStorage: undefined }),
+  cleanupCloudFileDialog: () => set({ open: false, provider: undefined }),
 }));
 
 export default useCloudFileDialogStore;

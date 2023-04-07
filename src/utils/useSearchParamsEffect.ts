@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FilterState, SearchParams, filterStore } from "../stores/filter-store";
 
-function useUpdateSearchParams() {
+function useSearchParamsEffect() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const updateSearchParams = useCallback(
@@ -51,4 +51,4 @@ function useUpdateSearchParams() {
   }, [updateSearchParams]);
 }
 
-export default useUpdateSearchParams;
+export default useSearchParamsEffect;

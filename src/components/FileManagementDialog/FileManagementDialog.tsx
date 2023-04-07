@@ -33,7 +33,7 @@ const FileManagementDialog = () => {
   const closeFileManagementDialog = useFileManagementDialogStore(
     (state) => state.closeFileManagementDialog
   );
-  const { unlinkCloudFile, unlinkCloudDoneFile } = useCloudStorage();
+  const { unlinkCloudFile } = useCloudStorage();
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
@@ -123,8 +123,7 @@ const FileManagementDialog = () => {
         console.debug(error);
       })
       .then(listFiles);
-    unlinkCloudFile(filePath).catch((e) => void e);
-    unlinkCloudDoneFile(filePath).catch((e) => void e);
+    await unlinkCloudFile(filePath);
   };
 
   const handleCloseDialog = () => {

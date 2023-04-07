@@ -1,3 +1,4 @@
+import { CloudFileRef, CloudStorageError, Provider } from "@cloudstorage/core";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -19,15 +20,8 @@ import { Trans, useTranslation } from "react-i18next";
 import { writeToClipboard } from "../../native-api/clipboard";
 import { isFile, readFile } from "../../native-api/filesystem";
 import usePlatformStore from "../../stores/platform-store";
-import {
-  CloudFileRef,
-  CloudFileUnauthorizedError,
-  CloudStorage,
-  cloudStorageIcons,
-  useCloudStorage,
-} from "../../utils/CloudStorage";
+import { cloudStorageIcons, useCloudStorage } from "../../utils/CloudStorage";
 import { getDoneFilePath } from "../../utils/todo-files";
-import useTask from "../../utils/useTask";
 
 interface CloseOptions {
   filePath: string;
@@ -43,7 +37,7 @@ interface OpenFileItemMenuProps {
 }
 
 interface EnableCloudStorageItemProps {
-  cloudStorage: CloudStorage;
+  provider: Provider;
   filePath: string;
   onClick: () => void;
   onChange: (cloudFileRef?: CloudFileRef) => void;
@@ -52,28 +46,27 @@ interface EnableCloudStorageItemProps {
 }
 
 interface SyncWithCloudStorageItemProps {
-  cloudFileRef: CloudFileRef;
+  path: string;
+  provider: Provider;
   onClick: () => void;
 }
 
 const SyncWithCloudStorageItem = (opt: SyncWithCloudStorageItemProps) => {
-  const { onClick, cloudFileRef } = opt;
+  const { onClick, path, provider } = opt;
   const { t } = useTranslation();
-  const { syncTodoFileWithCloudStorage } = useTask();
+  const { syncTodoFile } = useCloudStorage();
 
   const handleClick = () => {
-    syncTodoFileWithCloudStorage(cloudFileRef.localFilePath);
+    syncTodoFile(path);
     onClick();
   };
 
   return (
     <MenuItem onClick={handleClick}>
-      <ListItemIcon>
-        {cloudStorageIcons[cloudFileRef.cloudStorage]}
-      </ListItemIcon>
+      <ListItemIcon>{cloudStorageIcons[provider]}</ListItemIcon>
       <Typography>
         {t("Sync with cloud storage", {
-          cloudStorage: cloudFileRef.cloudStorage,
+          provider: provider,
         })}
       </Typography>
     </MenuItem>
@@ -81,16 +74,10 @@ const SyncWithCloudStorageItem = (opt: SyncWithCloudStorageItemProps) => {
 };
 
 const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
-  const { cloudStorage, filePath, cloudFileRef, onClick, onChange, onLoad } =
-    props;
+  const { provider, filePath, cloudFileRef, onClick, onChange, onLoad } = props;
   const { t } = useTranslation();
-  const {
-    unlinkCloudFile,
-    unlinkCloudDoneFile,
-    cloudStoragesConnectionStatus,
-    cloudStorageEnabled,
-    uploadFile,
-  } = useCloudStorage();
+  const { cloudStorages, cloudStorageEnabled, uploadFile, unlinkCloudFile } =
+    useCloudStorage();
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
 
@@ -102,43 +89,29 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
 
       if (!cloudFileRef) {
         const todoFileData = await readFile(filePath);
-
-        const uploadResult = await uploadFile({
-          filePath,
-          text: todoFileData,
-          cloudStorage,
-          isDoneFile: false,
-        });
-
+        const ref = await uploadFile(filePath, todoFileData, provider);
         const doneFilePath = getDoneFilePath(filePath);
         if (doneFilePath) {
           const doneFileExists = await isFile(doneFilePath);
           if (doneFileExists) {
-            const doneFileData = await readFile(filePath);
-            await uploadFile({
-              filePath,
-              text: doneFileData,
-              cloudStorage,
-              isDoneFile: true,
-            }).catch((e) => void e);
+            const doneFileData = await readFile(doneFilePath);
+            await uploadFile(doneFilePath, doneFileData, provider).catch(
+              (e) => void e
+            );
           }
         }
-
-        onChange(uploadResult as CloudFileRef);
+        onChange(ref);
       } else {
-        await Promise.all([
-          unlinkCloudFile(filePath),
-          unlinkCloudDoneFile(filePath),
-        ]).catch((e) => void e);
+        await unlinkCloudFile(filePath);
         onChange(undefined);
       }
     } catch (e: any) {
-      if (!(e instanceof CloudFileUnauthorizedError)) {
+      if (!(e instanceof CloudStorageError && e.type === "Unauthorized")) {
         console.debug(e);
         enqueueSnackbar(
           <Trans
             i18nKey="Error syncing file to cloud storage"
-            values={{ cloudStorage, message: e.message }}
+            values={{ provider, message: e.message }}
             components={{ code: <code style={{ marginLeft: 5 }} /> }}
           />,
           {
@@ -154,24 +127,24 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
 
   if (
     !cloudStorageEnabled ||
-    (!cloudStoragesConnectionStatus[cloudStorage] && !cloudFileRef)
+    (!cloudStorages.every((s) => s.provider !== provider) && !cloudFileRef)
   ) {
     return null;
   }
 
   const buttonText = cloudFileRef
     ? t("Disable cloud storage sync", {
-        cloudStorage,
+        provider,
       })
     : t("Enable cloud storage sync", {
-        cloudStorage,
+        provider,
       });
 
   return (
     <MenuItem onClick={enableCloudSync} disabled={loading}>
       <ListItemIcon>
         {loading && <CircularProgress size={24} />}
-        {!loading && !cloudFileRef && cloudStorageIcons[cloudStorage]}
+        {!loading && !cloudFileRef && cloudStorageIcons[provider]}
         {!loading && cloudFileRef && <CloudOffRoundedIcon />}
       </ListItemIcon>
       <Typography>{buttonText}</Typography>
@@ -181,20 +154,20 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
 
 const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   const { filePath, cloudFileRef, onChange, onClose, onDownloadClick } = props;
-  const { connectedCloudStorages } = useCloudStorage();
+  const { cloudStorages } = useCloudStorage();
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
   const open = Boolean(anchorEl);
-  const cloudStorages = useMemo(() => {
-    const value = [...connectedCloudStorages];
-    if (cloudFileRef && !value.includes(cloudFileRef.cloudStorage)) {
-      value.push(cloudFileRef.cloudStorage);
+  const providers = useMemo(() => {
+    const value = [...cloudStorages.map((s) => s.provider)];
+    if (cloudFileRef && !value.includes(cloudFileRef.provider)) {
+      value.push(cloudFileRef.provider);
     }
     return value;
-  }, [cloudFileRef, connectedCloudStorages]);
+  }, [cloudFileRef, cloudStorages]);
 
   const deleteFile =
     platform === "web" || platform === "ios" || platform === "android";
@@ -243,22 +216,21 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
       >
         {cloudFileRef && (
           <SyncWithCloudStorageItem
-            cloudFileRef={cloudFileRef}
+            path={cloudFileRef.path}
+            provider={cloudFileRef.provider}
             onClick={handleClose}
           />
         )}
-        {cloudStorages.map((cloudStorage) => (
+        {providers.map((provider) => (
           <EnableCloudStorageItem
-            key={cloudStorage}
-            cloudStorage={cloudStorage}
+            key={provider}
+            provider={provider}
             onClick={handleClose}
             onChange={onChange}
             filePath={filePath}
             onLoad={setCloudSyncLoading}
             cloudFileRef={
-              cloudFileRef?.cloudStorage === cloudStorage
-                ? cloudFileRef
-                : undefined
+              cloudFileRef?.provider === provider ? cloudFileRef : undefined
             }
           />
         ))}

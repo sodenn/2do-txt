@@ -28,7 +28,7 @@ interface NotificationMethods {
   cancel(ids: number[]): Promise<void>;
   schedule(notifications: Notification[]): Promise<number[]>;
   shouldNotificationsBeRescheduled(): Promise<boolean>;
-  init: () => void;
+  subscribe: () => () => void;
 }
 
 interface WebNotification extends NotificationMethods {
@@ -68,8 +68,9 @@ const mobileNotification: NotificationMethods = {
   async shouldNotificationsBeRescheduled() {
     return false;
   },
-  init() {
+  subscribe() {
     // do nothing
+    return () => {};
   },
 };
 
@@ -162,8 +163,8 @@ const webNotification: WebNotification = {
       JSON.stringify(newReceivedNotifications)
     );
   },
-  init() {
-    setInterval(async () => {
+  subscribe() {
+    const timer = window.setInterval(async () => {
       const scheduledNotifications =
         await webNotification.getReceivedNotifications();
       const twoDaysAgo = subDays(new Date(), 2);
@@ -172,14 +173,17 @@ const webNotification: WebNotification = {
       );
       setPreferencesItem("received-notifications", JSON.stringify(newValue));
     }, 1000 * 60 * 60);
+    return () => {
+      clearInterval(timer);
+    };
   },
 };
 
-async function initNotifications(): Promise<void> {
+async function subscribeNotifications(): Promise<() => void> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
-    ? mobileNotification.init()
-    : webNotification.init();
+    ? mobileNotification.subscribe()
+    : webNotification.subscribe();
 }
 
 async function cancelNotifications(ids: number[]): Promise<void> {
@@ -221,7 +225,7 @@ async function shouldNotificationsBeRescheduled() {
 
 export type { Notification };
 export {
-  initNotifications,
+  subscribeNotifications,
   cancelNotifications,
   isNotificationPermissionGranted,
   requestNotificationPermission,

@@ -1,3 +1,4 @@
+import { CloudFileRef } from "@cloudstorage/core";
 import { Button } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
@@ -5,14 +6,12 @@ import { useTranslation } from "react-i18next";
 import {
   deleteFile,
   getFilenameFromPath,
-  isFile,
   readFile,
   writeFile,
 } from "../native-api/filesystem";
 import useArchivedTasksDialogStore from "../stores/archived-tasks-dialog-store";
 import useSettingsStore from "../stores/settings-store";
-import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
-import generateContentHash from "./CloudStorage/ContentHasher";
+import { useCloudStorage } from "./CloudStorage";
 import { Task } from "./task";
 import { TaskList, parseTaskList, stringifyTaskList } from "./task-list";
 import { getDoneFilePath } from "./todo-files";
@@ -45,81 +44,74 @@ function useArchivedTask() {
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
   const {
-    syncAllFiles,
     syncFile,
-    unlinkCloudDoneFile,
-    linkCloudDoneFile,
-    deleteCloudFile,
-    getCloudFileRefByFilePath,
-    getCloudDoneFileRefByFilePath,
-    getCloudDoneFileMetaData,
+    deleteFile: deleteCloudFile,
     downloadFile,
     uploadFile,
+    getMetaData,
+    getCloudFileRef,
   } = useCloudStorage();
   const { t } = useTranslation();
 
   const syncDoneFiles = useCallback(
-    async (items: SyncItem[]) => {
-      const syncOptions: SyncFileOptions[] = [];
+    async (filePaths: string[]) => {
+      const syncOptions: { localPath: string; content: string }[] = [];
 
       const updateArchiveMode = await Promise.all(
-        items.map(async ({ filePath }) => {
+        filePaths.map(async (filePath) => {
           const doneFilePath = getDoneFilePath(filePath);
-          const ref = await getCloudDoneFileRefByFilePath(filePath);
-          const metaData = await getCloudDoneFileMetaData(filePath);
-
           if (!doneFilePath) {
             return "do-nothing";
           }
 
-          const addSyncOption = async () => {
-            const data = await readFile(doneFilePath).catch((e) => void e);
-            if (data) {
+          const ref = await getCloudFileRef(doneFilePath).catch((e) => void e);
+          const cloudFile = await getMetaData(doneFilePath).catch(
+            (e) => void e
+          );
+
+          const addSyncOption = async (ref: CloudFileRef) => {
+            const content = await readFile(doneFilePath).catch((e) => void e);
+            if (content) {
               syncOptions.push({
-                filePath: doneFilePath,
-                text: data,
-                isDoneFile: true,
+                localPath: doneFilePath,
+                content,
               });
             }
           };
 
-          if (ref && !metaData) {
-            // done file was deleted in the cloud, so delete the file reference
-            await Promise.all([
-              unlinkCloudDoneFile(filePath),
-              deleteFile(doneFilePath),
-            ]);
+          if (ref && !cloudFile) {
+            // done file was deleted in the cloud, so delete the local done file as well
+            await deleteFile(doneFilePath);
             return archiveMode !== "no-archiving" ? "disable" : "do-nothing";
           } else if (ref) {
-            // local done file and cloud done file available, add sync options
-            await addSyncOption();
+            // local done file and cloud done file exist, sync needed
+            await addSyncOption(ref);
             return archiveMode === "no-archiving" ? "enable" : "do-nothing";
-          } else if (!metaData) {
-            // local done file and cloud done file do not exist, no sync needed
+          } else if (!cloudFile) {
+            // local done file and cloud done file don't exist, do nothing
             return "do-nothing";
           }
 
           // download cloud done file
           if (archiveMode === "no-archiving") {
-            const text = await downloadFile({
-              cloudFilePath: metaData.path,
-              cloudStorage: metaData.cloudStorage,
-            });
-
+            const todoFileRef = await getCloudFileRef(filePath).catch(
+              (e) => void e
+            );
+            if (!todoFileRef) {
+              return "do-nothing";
+            }
+            const content = await downloadFile(
+              doneFilePath,
+              cloudFile.path,
+              todoFileRef.provider
+            );
             await writeFile({
               path: doneFilePath,
-              data: text,
+              data: content,
             });
-
-            await linkCloudDoneFile({
-              localFilePath: filePath,
-              contentHash: generateContentHash(text),
-              ...metaData,
-            });
-
             return "enable";
-          } else {
-            await addSyncOption();
+          } else if (ref) {
+            await addSyncOption(ref);
             return "do-nothing";
           }
         })
@@ -137,67 +129,34 @@ function useArchivedTask() {
         setArchiveMode("no-archiving");
       }
 
-      syncAllFiles(syncOptions).then((syncResult) =>
-        syncResult.map(async (i) => {
-          const path = getDoneFilePath(i.filePath);
-          if (!path) {
-            return;
-          }
-
-          const exists = await isFile(path);
-          if (!exists) {
-            return;
-          }
-
-          await writeFile({
-            path,
-            data: i.text,
-          });
-        })
+      await Promise.all(
+        syncOptions.map((options) =>
+          syncFile(options.localPath, options.content, false)
+        )
       );
     },
     [
-      syncAllFiles,
-      getCloudDoneFileRefByFilePath,
-      getCloudDoneFileMetaData,
+      getCloudFileRef,
+      getMetaData,
       archiveMode,
-      unlinkCloudDoneFile,
       downloadFile,
-      linkCloudDoneFile,
       setArchiveMode,
       enqueueSnackbar,
+      syncFile,
       t,
     ]
   );
 
-  const saveDoneFile = useCallback(
-    async (filePath: string, text: string) => {
-      const doneFilePath = getDoneFilePath(filePath);
-      if (!doneFilePath) {
-        return;
-      }
-
-      await writeFile({
-        path: doneFilePath,
-        data: text,
-      });
-
-      syncFile({
-        filePath,
-        text,
-        showSnackbar: false,
-        isDoneFile: true,
-      })?.then((result) => {
-        if (result) {
-          writeFile({
-            path: doneFilePath,
-            data: result,
-          });
-        }
-      });
-    },
-    [syncFile]
-  );
+  const saveDoneFile = useCallback(async (filePath: string, text: string) => {
+    const doneFilePath = getDoneFilePath(filePath);
+    if (!doneFilePath) {
+      return;
+    }
+    await writeFile({
+      path: doneFilePath,
+      data: text,
+    });
+  }, []);
 
   const loadDoneFile = useCallback(async (filePath: string) => {
     const doneFilePath = getDoneFilePath(filePath);
@@ -251,7 +210,7 @@ function useArchivedTask() {
 
       if (completedTasks.length === 0) {
         await deleteFile(doneFilePath);
-        deleteCloudFile({ filePath, isDoneFile: true }).catch((e) => void e);
+        deleteCloudFile(doneFilePath).catch((e) => void e);
       } else {
         const doneFileText = stringifyTaskList(completedTasks, lineEnding);
         await saveDoneFile(filePath, doneFileText);
@@ -274,19 +233,7 @@ function useArchivedTask() {
         result ? result.lineEnding : taskList.lineEnding
       );
 
-      const fileRef = await getCloudFileRefByFilePath(filePath);
-
-      if (fileRef) {
-        await uploadFile({
-          filePath: filePath,
-          text: text,
-          cloudStorage: fileRef.cloudStorage,
-          isDoneFile: true,
-        });
-        await saveDoneFile(filePath, text);
-      } else {
-        await saveDoneFile(filePath, text);
-      }
+      await saveDoneFile(filePath, text);
 
       const key = enqueueSnackbar(
         t("Task archived", {
@@ -313,11 +260,9 @@ function useArchivedTask() {
     [
       closeSnackbar,
       enqueueSnackbar,
-      getCloudFileRefByFilePath,
       loadDoneFile,
       saveDoneFile,
       openArchivedTasksDialog,
-      uploadFile,
       t,
     ]
   );
@@ -354,16 +299,6 @@ function useArchivedTask() {
             return;
           }
 
-          const fileRef = await getCloudFileRefByFilePath(filePath);
-          if (fileRef) {
-            await uploadFile({
-              filePath,
-              text: doneFileText,
-              cloudStorage: fileRef.cloudStorage,
-              isDoneFile: true,
-            });
-          }
-
           await Promise.all([
             onSaveTodoFile(newTaskList),
             saveDoneFile(filePath, doneFileText),
@@ -379,14 +314,7 @@ function useArchivedTask() {
         })
       );
     },
-    [
-      enqueueSnackbar,
-      getCloudFileRefByFilePath,
-      loadDoneFile,
-      saveDoneFile,
-      uploadFile,
-      t,
-    ]
+    [enqueueSnackbar, loadDoneFile, saveDoneFile, t]
   );
 
   const restoreArchivedTasks = useCallback(
@@ -423,10 +351,7 @@ function useArchivedTask() {
             { variant: "success" }
           );
 
-          deleteCloudFile({
-            filePath: taskList.filePath,
-            isDoneFile: true,
-          }).catch((e) => void e);
+          deleteCloudFile(doneFilePath).catch((e) => void e);
         })
       );
     },
