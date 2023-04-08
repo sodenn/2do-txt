@@ -1,3 +1,4 @@
+import { Provider } from "@cloudstorage/core";
 import {
   Button,
   Dialog,
@@ -21,7 +22,7 @@ import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 import useFilterStore from "../stores/filter-store";
 import usePlatformStore from "../stores/platform-store";
 import useTaskDialogStore from "../stores/task-dialog-store";
-import { CloudStorage, useCloudStorage } from "../utils/CloudStorage";
+import { useCloudStorage } from "../utils/CloudStorage";
 import { addTodoFilePath } from "../utils/settings";
 import { defaultFilePath } from "../utils/todo-files";
 import useTask from "../utils/useTask";
@@ -138,16 +139,15 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
-  const { uploadFile, cloudStoragesConnectionStatus, connectedCloudStorages } =
-    useCloudStorage();
+  const { uploadFile, cloudStorages } = useCloudStorage();
   const createExampleFile = useFileCreateDialogStore(
     (state) => state.createExampleFile
   );
   const cleanupFileCreateDialog = useFileCreateDialogStore(
     (state) => state.cleanupFileCreateDialog
   );
-  const [selectedCloudStorage, setSelectedCloudStorage] = useState<
-    CloudStorage | "no-sync"
+  const [selectedProvider, setSelectedProvider] = useState<
+    Provider | "no-sync"
   >("no-sync");
   const [skip, setSkip] = useState<boolean>();
   const title = createExampleFile
@@ -159,25 +159,14 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
       onClose();
       await onCreateFile(fileName);
       if (
-        selectedCloudStorage &&
-        selectedCloudStorage !== "no-sync" &&
-        cloudStoragesConnectionStatus[selectedCloudStorage]
+        selectedProvider &&
+        selectedProvider !== "no-sync" &&
+        cloudStorages.some((c) => c.provider === selectedProvider)
       ) {
-        await uploadFile({
-          filePath: fileName,
-          text: "",
-          cloudStorage: selectedCloudStorage,
-          isDoneFile: false,
-        });
+        await uploadFile(fileName, "", selectedProvider);
       }
     },
-    [
-      cloudStoragesConnectionStatus,
-      onCreateFile,
-      onClose,
-      selectedCloudStorage,
-      uploadFile,
-    ]
+    [onClose, onCreateFile, selectedProvider, cloudStorages, uploadFile]
   );
 
   const handleSave = async () => {
@@ -210,14 +199,14 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   };
 
   const handleCloudStorageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSelectedCloudStorage(event.target.value as CloudStorage);
+    setSelectedProvider(event.target.value as Provider);
   };
 
   const handleExited = () => {
     cleanupFileCreateDialog();
     setFileName("");
     setSkip(undefined);
-    setSelectedCloudStorage("no-sync");
+    setSelectedProvider("no-sync");
   };
 
   const init = useCallback(
@@ -229,7 +218,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
       const { fileName: _fileName } = await getUniqueFilePath(defaultFilePath);
       setFileName(_fileName);
 
-      if (connectedCloudStorages.length > 0) {
+      if (cloudStorages.length > 0) {
         setSkip(false);
         return;
       }
@@ -243,7 +232,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         setSkip(false);
       }
     },
-    [open, onClose, connectedCloudStorages.length, createTodoFileAndSync]
+    [open, onClose, cloudStorages.length, createTodoFileAndSync]
   );
 
   useEffect(() => {
@@ -267,15 +256,15 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
           "aria-label": "File name",
         }}
       />
-      {connectedCloudStorages.length > 0 && (
+      {cloudStorages.length > 0 && (
         <FormControl sx={{ mt: 1 }}>
           <FormLabel id="cloud-sync">
-            {t("Sync with cloud storage", { cloudStorage: t("cloud storage") })}
+            {t("Sync with cloud storage", { provider: t("cloud storage") })}
           </FormLabel>
           <RadioGroup
             aria-labelledby="cloud-sync"
             aria-label="Sync with cloud storage"
-            value={selectedCloudStorage}
+            value={selectedProvider}
             onChange={handleCloudStorageChange}
           >
             <FormControlLabel
@@ -283,14 +272,16 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
               control={<Radio />}
               label={t("Not sync")}
             />
-            {connectedCloudStorages.map((cloudStorage) => (
-              <FormControlLabel
-                key={cloudStorage}
-                value={cloudStorage}
-                control={<Radio />}
-                label={cloudStorage}
-              />
-            ))}
+            {cloudStorages
+              .map((c) => c.provider)
+              .map((provider) => (
+                <FormControlLabel
+                  key={provider}
+                  value={provider}
+                  control={<Radio />}
+                  label={provider}
+                />
+              ))}
           </RadioGroup>
         </FormControl>
       )}

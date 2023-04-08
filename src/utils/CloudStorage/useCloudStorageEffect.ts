@@ -14,18 +14,29 @@ import { loadTodoFiles } from "../../stores/task-state";
 import { parseDate } from "../date";
 import { getDoneFilePath } from "../todo-files";
 import useArchivedTask from "../useArchivedTask";
+import useTask from "../useTask";
 import { cloudStoragePreferences } from "./cloud-storage-preferences";
 import { useCloudStorage } from "./useCloudStorage";
 
 export function useCloudStorageEffect() {
   const {
-    syncTodoFile,
+    syncFile,
     showProgressSnackbar,
     requestTokens,
     getCloudFileRef,
     uploadFile,
   } = useCloudStorage();
   const { syncDoneFiles } = useArchivedTask();
+  const { loadTodoFile } = useTask();
+
+  const reloadTodoFile = useCallback(
+    async (path: string, content?: string) => {
+      if (content) {
+        return loadTodoFile(path, content);
+      }
+    },
+    [loadTodoFile]
+  );
 
   const handleCreateFile = useCallback(
     async (data: CreateFileData) => {
@@ -44,9 +55,11 @@ export function useCloudStorageEffect() {
   const handleUpdateFile = useCallback(
     async (data: UpdateFileData) => {
       const showProgress = !data.path.endsWith("done.txt");
-      syncTodoFile(data.path, data.content, showProgress);
+      syncFile(data.path, data.content, showProgress).then((content) =>
+        reloadTodoFile(data.path, content)
+      );
     },
-    [syncTodoFile]
+    [reloadTodoFile, syncFile]
   );
 
   const handleDeleteFile = useCallback(async (data: DeleteFileData) => {
@@ -60,24 +73,32 @@ export function useCloudStorageEffect() {
   const syncAllTodoFiles = useCallback(
     async (onlyWhenOutdated = false) => {
       const refs = await cloudStoragePreferences.getRefs();
-
-      const outdated = refs.every((r) => {
-        const date = parseDate(r.lastSync);
-        return date && differenceInMinutes(new Date(), date) >= 2;
-      });
-
-      if (onlyWhenOutdated && !outdated) {
+      if (refs.length === 0) {
         return;
+      }
+
+      if (onlyWhenOutdated) {
+        const outdated = refs.every((r) => {
+          const date = parseDate(r.lastSync);
+          return date && differenceInMinutes(new Date(), date) >= 2;
+        });
+        if (!outdated) {
+          return;
+        }
       }
 
       const { files } = await loadTodoFiles();
       const hideProgress = showProgressSnackbar();
       await Promise.all(
-        files.map(async ({ filePath, text }) => syncTodoFile(filePath, text))
+        files.map(async ({ filePath, text }) =>
+          syncFile(filePath, text).then((content) =>
+            reloadTodoFile(filePath, content)
+          )
+        )
       ).finally(() => hideProgress?.());
       await syncDoneFiles(files.map((f) => f.filePath));
     },
-    [showProgressSnackbar, syncDoneFiles, syncTodoFile]
+    [reloadTodoFile, showProgressSnackbar, syncDoneFiles, syncFile]
   );
 
   const handleActive = useCallback(() => {
@@ -105,5 +126,6 @@ export function useCloudStorageEffect() {
 
   useEffect(() => {
     requestTokens();
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 }

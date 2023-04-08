@@ -16,11 +16,6 @@ import { Task } from "./task";
 import { TaskList, parseTaskList, stringifyTaskList } from "./task-list";
 import { getDoneFilePath } from "./todo-files";
 
-interface SyncItem {
-  filePath: string;
-  text: string;
-}
-
 interface ArchiveTasksOptions {
   taskLists: TaskList[];
   onSaveTodoFile: (taskLists: TaskList) => Promise<void>;

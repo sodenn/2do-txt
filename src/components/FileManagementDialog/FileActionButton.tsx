@@ -1,3 +1,4 @@
+import { Provider } from "@cloudstorage/core";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -8,11 +9,7 @@ import useCloudFileDialogStore from "../../stores/cloud-file-dialog-store";
 import useFileCreateDialogStore from "../../stores/file-create-dialog-store";
 import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
 import usePlatformStore from "../../stores/platform-store";
-import {
-  CloudStorage,
-  cloudStorageIcons,
-  useCloudStorage,
-} from "../../utils/CloudStorage";
+import { cloudStorageIcons, useCloudStorage } from "../../utils/CloudStorage";
 import useFilePicker from "../../utils/useFilePicker";
 
 const FileActionButton = () => {
@@ -25,7 +22,7 @@ const FileActionButton = () => {
   const closeFileManagementDialog = useFileManagementDialogStore(
     (state) => state.closeFileManagementDialog
   );
-  const { connectedCloudStorages } = useCloudStorage();
+  const { cloudStorages } = useCloudStorage();
   const openCloudFileDialog = useCloudFileDialogStore(
     (state) => state.openCloudFileDialog
   );
@@ -50,13 +47,13 @@ const FileActionButton = () => {
     closeFileManagementDialog();
   };
 
-  const handleImportFromStorage = (cloudStorage: CloudStorage) => {
-    openCloudFileDialog(cloudStorage);
+  const handleImportFromStorage = (provider: Provider) => {
+    openCloudFileDialog(provider);
     closeFileManagementDialog();
   };
 
-  const renderCloudStorageIcon = (cloudStorage: CloudStorage) => {
-    const icon = cloudStorageIcons[cloudStorage];
+  const renderCloudStorageIcon = (provider: Provider) => {
+    const icon = cloudStorageIcons[provider];
     return React.isValidElement<IconProps>(icon)
       ? React.cloneElement(icon, {
           fontSize: "small",
@@ -99,15 +96,17 @@ const FileActionButton = () => {
           </ListItemIcon>
           {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
         </MenuItem>
-        {connectedCloudStorages.map((cloudStorage) => (
-          <MenuItem
-            key={cloudStorage}
-            onClick={() => handleImportFromStorage(cloudStorage)}
-          >
-            <ListItemIcon>{renderCloudStorageIcon(cloudStorage)}</ListItemIcon>
-            {t("Import from cloud storage", { cloudStorage })}
-          </MenuItem>
-        ))}
+        {cloudStorages
+          .map((s) => s.provider)
+          .map((provider) => (
+            <MenuItem
+              key={provider}
+              onClick={() => handleImportFromStorage(provider)}
+            >
+              <ListItemIcon>{renderCloudStorageIcon(provider)}</ListItemIcon>
+              {t("Import from cloud storage", { provider })}
+            </MenuItem>
+          ))}
       </Menu>
     </>
   );

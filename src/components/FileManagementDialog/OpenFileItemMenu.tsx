@@ -22,6 +22,7 @@ import { isFile, readFile } from "../../native-api/filesystem";
 import usePlatformStore from "../../stores/platform-store";
 import { cloudStorageIcons, useCloudStorage } from "../../utils/CloudStorage";
 import { getDoneFilePath } from "../../utils/todo-files";
+import useTask from "../../utils/useTask";
 
 interface CloseOptions {
   filePath: string;
@@ -54,10 +55,15 @@ interface SyncWithCloudStorageItemProps {
 const SyncWithCloudStorageItem = (opt: SyncWithCloudStorageItemProps) => {
   const { onClick, path, provider } = opt;
   const { t } = useTranslation();
-  const { syncTodoFile } = useCloudStorage();
+  const { syncFile } = useCloudStorage();
+  const { loadTodoFile } = useTask();
 
   const handleClick = () => {
-    syncTodoFile(path);
+    syncFile(path).then((content) => {
+      if (content) {
+        loadTodoFile(path, content);
+      }
+    });
     onClick();
   };
 
@@ -127,7 +133,7 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
 
   if (
     !cloudStorageEnabled ||
-    (!cloudStorages.every((s) => s.provider !== provider) && !cloudFileRef)
+    (cloudStorages.every((s) => s.provider !== provider) && !cloudFileRef)
   ) {
     return null;
   }

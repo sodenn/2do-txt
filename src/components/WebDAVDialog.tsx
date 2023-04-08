@@ -24,8 +24,8 @@ const WebDavDialog = () => {
   const theme = useTheme();
   const { t } = useTranslation();
   const webDAVDialogOpen = useWebDAVDialogStore((state) => state.open);
-  const closeCloudFileDialog = useWebDAVDialogStore(
-    (state) => state.closeCloudFileDialog
+  const closeWebDAVDialog = useWebDAVDialogStore(
+    (state) => state.closeWebDAVDialog
   );
   const [url, setUrl] = useState("");
   const [username, setUsername] = useState("");
@@ -39,7 +39,7 @@ const WebDavDialog = () => {
     setError(undefined);
     setLoading(true);
     try {
-      closeCloudFileDialog();
+      closeWebDAVDialog();
       await createWebDAVStorage({
         baseUrl: url,
         basicAuth: { username, password },
@@ -65,7 +65,7 @@ const WebDavDialog = () => {
   };
 
   const handleClose = () => {
-    closeCloudFileDialog();
+    closeWebDAVDialog();
   };
 
   const disabled = !username || !password || !url;

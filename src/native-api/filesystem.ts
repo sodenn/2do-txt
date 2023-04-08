@@ -235,12 +235,12 @@ async function readFile(path: string) {
 async function writeFile(options: WriteFileOptions) {
   const filesystem = await getFilesystem();
   const exist = await filesystem.isFile(options.path);
-  const content = await filesystem.writeFile(options);
+  const path = await filesystem.writeFile(options);
   filesystemEmitter.emit(exist ? "update" : "create", {
     path: options.path,
-    content,
+    content: options.data,
   });
-  return content;
+  return path;
 }
 
 async function deleteFile(path: string) {

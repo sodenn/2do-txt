@@ -1,34 +1,14 @@
-import {
-  CloudStorage,
-  CloudStorageError,
-  createCloudStorage,
-  Provider,
-} from "@cloudstorage/core";
+import { CloudStorage, createCloudStorage, Provider } from "@cloudstorage/core";
+import { createWebDAVClient, WebDAVClientOptions } from "@cloudstorage/webdav";
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { createDropboxClient } from "../../../cloudstorage/packages/dropbox";
-import { createWebDAVClient } from "../../../cloudstorage/packages/webdav";
 import { getSecureStorageItem } from "../native-api/secure-storage";
-import { cloudStoragePreferences } from "../utils/CloudStorage";
+import { createDropboxStorage } from "../utils/CloudStorage";
 
-export interface WebDAVConfig {
-  baseUrl: string | null;
-  basicAuth: {
-    username: string | null;
-    password: string | null;
-  };
-}
-
-export async function createWebDAVStorage({
+export function createWebDAVStorage({
   baseUrl,
   basicAuth: { username, password },
-}: WebDAVConfig) {
-  if (!username || !password || !baseUrl) {
-    throw new CloudStorageError({
-      type: "Unauthorized",
-      provider: "WebDAV",
-    });
-  }
+}: WebDAVClientOptions) {
   return createCloudStorage({
     client: createWebDAVClient({
       baseUrl,
@@ -40,26 +20,12 @@ export async function createWebDAVStorage({
   });
 }
 
-export async function createDropboxStorage(refreshToken: string | null) {
-  if (!refreshToken) {
-    throw new CloudStorageError({
-      type: "Unauthorized",
-      provider: "Dropbox",
-    });
-  }
-  return createCloudStorage({
-    client: createDropboxClient({
-      refreshToken,
-    }),
-  });
-}
-
 interface CloudStorageState {
   authError: boolean;
   connectionError: boolean;
   cloudStorages: CloudStorage[];
-  addWebDAVStorage: (config: WebDAVConfig) => Promise<void>;
-  addDropboxStorage: (refreshToken: string) => Promise<void>;
+  addWebDAVStorage: (config: WebDAVClientOptions) => Promise<CloudStorage>;
+  addDropboxStorage: (refreshToken: string) => Promise<CloudStorage>;
   removeStorage: (provider: Provider) => Promise<void>;
   setAuthError: (authError: boolean) => void;
   setConnectionError: (connectionError: boolean) => void;
@@ -70,23 +36,27 @@ const cloudStorageStore = createStore<CloudStorageState>((set, get) => ({
   cloudStorages: [],
   authError: false,
   connectionError: false,
-  addWebDAVStorage: async (config: WebDAVConfig) => {
-    if (get().cloudStorages.some((s) => s.provider === "Dropbox")) {
-      return;
-    }
-    const cloudStorage = await createWebDAVStorage(config);
+  addWebDAVStorage: async (config: WebDAVClientOptions) => {
+    const cloudStorage = createWebDAVStorage(config);
     set((state) => ({
-      cloudStorages: [...state.cloudStorages, cloudStorage],
+      cloudStorages: state.cloudStorages.some((s) => s.provider === "WebDAV")
+        ? state.cloudStorages.map((s) =>
+            s.provider === "WebDAV" ? cloudStorage : s
+          )
+        : [...state.cloudStorages, cloudStorage],
     }));
+    return cloudStorage;
   },
   addDropboxStorage: async (refreshToken: string) => {
-    if (get().cloudStorages.some((s) => s.provider === "Dropbox")) {
-      return;
-    }
-    const cloudStorage = await createDropboxStorage(refreshToken);
+    const cloudStorage = createDropboxStorage(refreshToken);
     set((state) => ({
-      cloudStorages: [...state.cloudStorages, cloudStorage],
+      cloudStorages: state.cloudStorages.some((s) => s.provider === "Dropbox")
+        ? state.cloudStorages.map((s) =>
+            s.provider === "Dropbox" ? cloudStorage : s
+          )
+        : [...state.cloudStorages, cloudStorage],
     }));
+    return cloudStorage;
   },
   removeStorage: async (provider: Provider) => {
     set((state) => ({
@@ -102,22 +72,22 @@ const cloudStorageStore = createStore<CloudStorageState>((set, get) => ({
       getSecureStorageItem("WebDAV-url"),
       getSecureStorageItem("Dropbox-refresh-token"),
     ]);
-    const providers = await cloudStoragePreferences.getProviders();
-    const cloudStorages = await Promise.all(
-      providers.map((provider) => {
-        switch (provider) {
-          case "WebDAV":
-            return createWebDAVStorage({
-              baseUrl,
-              basicAuth: { username, password },
-            });
-          case "Dropbox":
-            return createDropboxStorage(refreshToken);
-          default:
-            throw new Error(`Unknown provider: ${provider}`);
-        }
-      })
-    );
+
+    const cloudStorages: CloudStorage[] = [];
+
+    if (username && password && baseUrl) {
+      cloudStorages.push(
+        createWebDAVStorage({
+          baseUrl,
+          basicAuth: { username, password },
+        })
+      );
+    }
+
+    if (refreshToken) {
+      cloudStorages.push(createDropboxStorage(refreshToken));
+    }
+
     set({ cloudStorages });
   },
 }));

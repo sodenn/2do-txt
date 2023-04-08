@@ -90,7 +90,7 @@ export const CloudStorageConnectionButtons = ({
         endIcon={<KeyboardArrowDownIcon />}
       >
         {status === "connect"
-          ? t("Connect to cloud storage", { cloudStorage: t("cloud storage") })
+          ? t("Connect to cloud storage", { provider: t("cloud storage") })
           : t("Connection")}
       </Button>
       <Menu
