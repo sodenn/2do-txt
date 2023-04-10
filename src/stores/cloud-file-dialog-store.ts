@@ -1,5 +1,5 @@
-import { Provider } from "@cloudstorage/core";
 import { create } from "zustand";
+import { Provider } from "../utils/CloudStorage";
 
 interface CloudFileDialogState {
   open: boolean;

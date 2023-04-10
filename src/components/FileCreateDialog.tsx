@@ -1,4 +1,3 @@
-import { Provider } from "@cloudstorage/core";
 import {
   Button,
   Dialog,
@@ -22,7 +21,7 @@ import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 import useFilterStore from "../stores/filter-store";
 import usePlatformStore from "../stores/platform-store";
 import useTaskDialogStore from "../stores/task-dialog-store";
-import { useCloudStorage } from "../utils/CloudStorage";
+import { Provider, useCloudStorage } from "../utils/CloudStorage";
 import { addTodoFilePath } from "../utils/settings";
 import { defaultFilePath } from "../utils/todo-files";
 import useTask from "../utils/useTask";

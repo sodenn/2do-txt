@@ -1,4 +1,3 @@
-import { CloudFileRef } from "@cloudstorage/core";
 import { Button } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
@@ -11,7 +10,7 @@ import {
 } from "../native-api/filesystem";
 import useArchivedTasksDialogStore from "../stores/archived-tasks-dialog-store";
 import useSettingsStore from "../stores/settings-store";
-import { useCloudStorage } from "./CloudStorage";
+import { CloudFileRef, useCloudStorage } from "./CloudStorage";
 import { Task } from "./task";
 import { TaskList, parseTaskList, stringifyTaskList } from "./task-list";
 import { getDoneFilePath } from "./todo-files";

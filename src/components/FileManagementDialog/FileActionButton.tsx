@@ -1,4 +1,3 @@
-import { Provider } from "@cloudstorage/core";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -9,7 +8,11 @@ import useCloudFileDialogStore from "../../stores/cloud-file-dialog-store";
 import useFileCreateDialogStore from "../../stores/file-create-dialog-store";
 import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
 import usePlatformStore from "../../stores/platform-store";
-import { cloudStorageIcons, useCloudStorage } from "../../utils/CloudStorage";
+import {
+  Provider,
+  cloudStorageIcons,
+  useCloudStorage,
+} from "../../utils/CloudStorage";
 import useFilePicker from "../../utils/useFilePicker";
 
 const FileActionButton = () => {

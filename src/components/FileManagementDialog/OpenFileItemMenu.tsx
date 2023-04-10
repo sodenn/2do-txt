@@ -1,4 +1,3 @@
-import { CloudFileRef, CloudStorageError, Provider } from "@cloudstorage/core";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -20,7 +19,13 @@ import { Trans, useTranslation } from "react-i18next";
 import { writeToClipboard } from "../../native-api/clipboard";
 import { isFile, readFile } from "../../native-api/filesystem";
 import usePlatformStore from "../../stores/platform-store";
-import { cloudStorageIcons, useCloudStorage } from "../../utils/CloudStorage";
+import {
+  CloudFileRef,
+  CloudStorageError,
+  Provider,
+  cloudStorageIcons,
+  useCloudStorage,
+} from "../../utils/CloudStorage";
 import { getDoneFilePath } from "../../utils/todo-files";
 import useTask from "../../utils/useTask";
 

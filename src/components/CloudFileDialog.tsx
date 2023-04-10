@@ -1,13 +1,3 @@
-import {
-  CloudDirectory,
-  CloudFile,
-  CloudFileRef,
-  getDirname,
-  ListResult,
-  Provider,
-  WithDirectoryType,
-  WithFileType,
-} from "@cloudstorage/core";
 import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -39,7 +29,17 @@ import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 import useFilterStore from "../stores/filter-store";
 import usePlatformStore from "../stores/platform-store";
 import useSettingsStore from "../stores/settings-store";
-import { useCloudStorage } from "../utils/CloudStorage";
+import {
+  CloudDirectory,
+  CloudFile,
+  CloudFileRef,
+  getDirname,
+  ListResult,
+  Provider,
+  useCloudStorage,
+  WithDirectoryType,
+  WithFileType,
+} from "../utils/CloudStorage";
 import { getDoneFilePath } from "../utils/todo-files";
 import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";

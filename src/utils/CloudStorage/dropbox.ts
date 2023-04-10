@@ -1,7 +1,10 @@
-import { CloudStorageError, createCloudStorage } from "@cloudstorage/core";
-import { createDropboxClient } from "@cloudstorage/dropbox";
 import { DropboxAuth } from "dropbox";
 import { shouldUseInAppBrowser } from "./auth";
+import {
+  CloudStorageError,
+  createCloudStorage,
+  createDropboxClient,
+} from "./lib";
 
 function getRedirectUrl() {
   const useInAppBrowser = shouldUseInAppBrowser();

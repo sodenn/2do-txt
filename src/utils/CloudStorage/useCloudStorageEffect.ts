@@ -15,7 +15,7 @@ import { parseDate } from "../date";
 import { getDoneFilePath } from "../todo-files";
 import useArchivedTask from "../useArchivedTask";
 import useTask from "../useTask";
-import { cloudStoragePreferences } from "./cloud-storage-preferences";
+import { cloudStoragePreferences } from "./preferences";
 import { useCloudStorage } from "./useCloudStorage";
 
 export function useCloudStorageEffect() {

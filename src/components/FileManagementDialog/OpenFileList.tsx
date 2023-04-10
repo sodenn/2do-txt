@@ -1,4 +1,3 @@
-import { CloudFileRef } from "@cloudstorage/core";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import {
@@ -15,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { List as MovableList, arrayMove } from "react-movable";
 import { OnChangeMeta } from "react-movable/lib/types";
 import useSettingsStore from "../../stores/settings-store";
-import { useCloudStorage } from "../../utils/CloudStorage";
+import { CloudFileRef, useCloudStorage } from "../../utils/CloudStorage";
 import { formatLocalDateTime, parseDate } from "../../utils/date";
 import { TaskList } from "../../utils/task-list";
 import useTask from "../../utils/useTask";

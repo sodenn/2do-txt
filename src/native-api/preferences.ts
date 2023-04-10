@@ -15,8 +15,6 @@ type PreferencesKeys =
   | "sort-by"
   | "filter-type"
   | "hide-completed-tasks"
-  | "cloud-files"
-  | "cloud-archive-files"
   | "cloud-file-refs"
   | "task-view"
   | "Dropbox-code-verifier";

@@ -1,11 +1,3 @@
-import {
-  Client,
-  CloudError,
-  CloudStorage,
-  CloudStorageError,
-  Provider,
-} from "@cloudstorage/core";
-import { WebDAVClientOptions } from "@cloudstorage/webdav";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import { Alert, Button, CircularProgress } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
@@ -33,8 +25,16 @@ import usePlatformStore from "../../stores/platform-store";
 import useWebDAVDialogStore from "../../stores/webdav-dialog-store";
 import { getDoneFilePath } from "../todo-files";
 import { shouldUseInAppBrowser } from "./auth";
-import { cloudStoragePreferences } from "./cloud-storage-preferences";
 import { getDropboxOathOptions, requestDropboxRefreshToken } from "./dropbox";
+import {
+  Client,
+  CloudError,
+  CloudStorage,
+  CloudStorageError,
+  Provider,
+  WebDAVClientOptions,
+} from "./lib";
+import { cloudStoragePreferences } from "./preferences";
 
 export const cloudStorageIcons: Record<Provider, ReactNode> = {
   Dropbox: <DropboxIcon />,

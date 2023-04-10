@@ -1,6 +1,9 @@
-import { createCloudStorage } from "@cloudstorage/core";
-import { createWebDAVClient, WebDAVClientOptions } from "@cloudstorage/webdav";
 import { request } from "../../native-api/network";
+import {
+  createCloudStorage,
+  createWebDAVClient,
+  WebDAVClientOptions,
+} from "./lib";
 
 export function createWebDAVStorage({
   baseUrl,

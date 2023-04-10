@@ -1,9 +1,10 @@
-import { CloudStorage, Provider } from "@cloudstorage/core";
-import { WebDAVClientOptions } from "@cloudstorage/webdav";
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import { getSecureStorageItem } from "../native-api/secure-storage";
 import {
+  CloudStorage,
+  Provider,
+  WebDAVClientOptions,
   createDropboxStorage,
   createWebDAVStorage,
 } from "../utils/CloudStorage";

@@ -1,13 +1,10 @@
 import {
-  CloudPreferencesStorage,
-  createCloudPreferences,
-} from "@cloudstorage/core";
-import {
   PreferencesKeys,
   getPreferencesItem,
   removePreferencesItem,
   setPreferencesItem,
 } from "../../native-api/preferences";
+import { CloudPreferencesStorage, createCloudPreferences } from "./lib";
 
 export const preferencesStorage: CloudPreferencesStorage = {
   async getItem(key: string) {

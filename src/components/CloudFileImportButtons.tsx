@@ -1,11 +1,14 @@
-import { Provider } from "@cloudstorage/core";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useCloudFileDialogStore from "../stores/cloud-file-dialog-store";
-import { cloudStorageIcons, useCloudStorage } from "../utils/CloudStorage";
+import {
+  Provider,
+  cloudStorageIcons,
+  useCloudStorage,
+} from "../utils/CloudStorage";
 
 const CloudFileImportButtons = () => {
   const { t } = useTranslation();
