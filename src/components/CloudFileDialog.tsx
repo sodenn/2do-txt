@@ -33,12 +33,12 @@ import {
   CloudDirectory,
   CloudFile,
   CloudFileRef,
-  getDirname,
   ListResult,
   Provider,
-  useCloudStorage,
   WithDirectoryType,
   WithFileType,
+  getDirname,
+  useCloudStorage,
 } from "../utils/CloudStorage";
 import { getDoneFilePath } from "../utils/todo-files";
 import useTask from "../utils/useTask";
@@ -114,32 +114,36 @@ const CloudFileDialog = () => {
 
     setLoading(true);
 
-    let filePath: string;
+    const remoteFilePath = selectedFile.path;
+    let localFilePath: string;
     if (platform === "desktop") {
       const folder = await selectFolder();
       if (!folder) {
         setLoading(false);
         return;
       }
-      filePath = await join(folder, selectedFile.name);
+      localFilePath = await join(folder, selectedFile.name);
     } else {
-      filePath = selectedFile.name;
+      localFilePath = selectedFile.name;
     }
 
-    const content = await downloadFile(filePath, selectedFile.path, provider);
+    const content = await downloadFile(provider, localFilePath, remoteFilePath);
 
-    await createNewTodoFile(filePath, content);
+    await createNewTodoFile(localFilePath, content);
 
-    const remoteDoneFilePath = getDoneFilePath(selectedFile.path);
+    const remoteDoneFilePath = getDoneFilePath(remoteFilePath);
     const doneFile = files?.items.find((i) => i.path === remoteDoneFilePath) as
       | CloudFile
       | undefined;
     if (doneFile && remoteDoneFilePath) {
-      const localDoneFilePath = await join(getDirname(filePath), doneFile.name);
+      const localDoneFilePath = await join(
+        getDirname(localFilePath),
+        doneFile.name
+      );
       const doneFileContent = await downloadFile(
+        provider,
         localDoneFilePath,
-        remoteDoneFilePath,
-        provider
+        remoteDoneFilePath
       );
       await saveDoneFile(localDoneFilePath, doneFileContent);
       if (archiveMode === "no-archiving") {
@@ -151,7 +155,7 @@ const CloudFileDialog = () => {
       }
     }
 
-    setActiveTaskListPath(filePath);
+    setActiveTaskListPath(localFilePath);
     handleClose();
   };
 
@@ -293,11 +297,13 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
           .catch((e: any) => {
             onClose();
             enqueueSnackbar(
-              <Trans
-                i18nKey="Error connecting with cloud storage"
-                values={{ provider, message: e.message }}
-                components={{ code: <code style={{ marginLeft: 5 }} /> }}
-              />,
+              <span>
+                <Trans
+                  i18nKey="Error connecting with cloud storage"
+                  values={{ provider, message: e.message }}
+                  components={{ code: <code style={{ marginLeft: 5 }} /> }}
+                />
+              </span>,
               { variant: "warning" }
             );
           })

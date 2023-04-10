@@ -94,9 +94,9 @@ function useArchivedTask() {
               return "do-nothing";
             }
             const content = await downloadFile(
+              todoFileRef.provider,
               doneFilePath,
-              cloudFile.path,
-              todoFileRef.provider
+              cloudFile.path
             );
             await writeFile({
               path: doneFilePath,

@@ -47,7 +47,7 @@ export function useCloudStorageEffect() {
       const todoPath = data.path.replace(/done.txt$/, ".txt");
       const todoFileRef = await getCloudFileRef(todoPath);
       const provider = todoFileRef?.provider;
-      uploadFile(data.path, data.content, provider);
+      uploadFile(provider, data.path, data.content);
     },
     [getCloudFileRef, uploadFile]
   );

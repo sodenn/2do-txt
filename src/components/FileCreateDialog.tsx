@@ -15,7 +15,11 @@ import {
 } from "@mui/material";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { getUniqueFilePath, isFile, saveFile } from "../native-api/filesystem";
+import {
+  fileExists,
+  getUniqueFilePath,
+  saveFile,
+} from "../native-api/filesystem";
 import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
 import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 import useFilterStore from "../stores/filter-store";
@@ -162,7 +166,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         selectedProvider !== "no-sync" &&
         cloudStorages.some((c) => c.provider === selectedProvider)
       ) {
-        await uploadFile(fileName, "", selectedProvider);
+        await uploadFile(selectedProvider, fileName, "");
       }
     },
     [onClose, onCreateFile, selectedProvider, cloudStorages, uploadFile]
@@ -173,7 +177,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
       return;
     }
 
-    const exists = await isFile(fileName);
+    const exists = await fileExists(fileName);
     if (exists) {
       openConfirmationDialog({
         content: (
@@ -222,7 +226,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         return;
       }
 
-      const exists = await isFile(defaultFilePath);
+      const exists = await fileExists(defaultFilePath);
       if (!exists) {
         await createTodoFileAndSync(_fileName);
         onClose();

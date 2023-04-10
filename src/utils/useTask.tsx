@@ -8,10 +8,10 @@ import { Trans, useTranslation } from "react-i18next";
 import { promptForRating } from "../native-api/app-rate";
 import {
   deleteFile,
+  fileExists,
   getFileNameWithoutEnding,
   getFilenameFromPath,
   getUri,
-  isFile,
   writeFile,
 } from "../native-api/filesystem";
 import { setPreferencesItem } from "../native-api/preferences";
@@ -480,7 +480,7 @@ function useTask() {
 
   const createNewTodoFile = useCallback(
     async (filePath: string, text = "") => {
-      const exists = await isFile(filePath);
+      const exists = await fileExists(filePath);
 
       const saveFile = async (filePath: string, text: string) => {
         await addTodoFilePath(filePath);

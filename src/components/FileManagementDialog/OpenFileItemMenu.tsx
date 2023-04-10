@@ -17,7 +17,7 @@ import { useSnackbar } from "notistack";
 import { useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { writeToClipboard } from "../../native-api/clipboard";
-import { isFile, readFile } from "../../native-api/filesystem";
+import { fileExists, readFile } from "../../native-api/filesystem";
 import usePlatformStore from "../../stores/platform-store";
 import {
   CloudFileRef,
@@ -100,13 +100,13 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
 
       if (!cloudFileRef) {
         const todoFileData = await readFile(filePath);
-        const ref = await uploadFile(filePath, todoFileData, provider);
+        const ref = await uploadFile(provider, filePath, todoFileData);
         const doneFilePath = getDoneFilePath(filePath);
         if (doneFilePath) {
-          const doneFileExists = await isFile(doneFilePath);
+          const doneFileExists = await fileExists(doneFilePath);
           if (doneFileExists) {
             const doneFileData = await readFile(doneFilePath);
-            await uploadFile(doneFilePath, doneFileData, provider).catch(
+            await uploadFile(provider, doneFilePath, doneFileData).catch(
               (e) => void e
             );
           }
@@ -120,11 +120,13 @@ const EnableCloudStorageItem = (props: EnableCloudStorageItemProps) => {
       if (!(e instanceof CloudStorageError && e.type === "Unauthorized")) {
         console.debug(e);
         enqueueSnackbar(
-          <Trans
-            i18nKey="Error syncing file to cloud storage"
-            values={{ provider, message: e.message }}
-            components={{ code: <code style={{ marginLeft: 5 }} /> }}
-          />,
+          <span>
+            <Trans
+              i18nKey="Error syncing file to cloud storage"
+              values={{ provider, message: e.message }}
+              components={{ code: <code style={{ marginLeft: 5 }} /> }}
+            />
+          </span>,
           {
             variant: "warning",
           }

@@ -6,8 +6,8 @@ import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import DropboxIcon from "../../components/DropboxIcon";
 import {
+  fileExists,
   getFilenameFromPath,
-  isFile,
   writeFile,
 } from "../../native-api/filesystem";
 import { oauth } from "../../native-api/oath";
@@ -281,7 +281,7 @@ export function useCloudStorage() {
   }, [closeSnackbar, enqueueSnackbar, t]);
 
   const downloadFile = useCallback(
-    async (localPath: string, remotePath: string, provider: Provider) => {
+    async (provider: Provider, localPath: string, remotePath: string) => {
       const storage = getStorageByProvider(provider);
       const { response, ref } = await storage
         .downloadFile({
@@ -303,7 +303,7 @@ export function useCloudStorage() {
   );
 
   const uploadFile = useCallback(
-    async (localPath: string, content: string, provider: Provider) => {
+    async (provider: Provider, localPath: string, content: string) => {
       const storage = getStorageByProvider(provider);
       const remotePath = getFilenameFromPath(localPath);
       const ref = await storage
@@ -357,7 +357,7 @@ export function useCloudStorage() {
     ];
     const doneFilePath = getDoneFilePath(localPath);
     if (doneFilePath) {
-      const doneFileExists = await isFile(doneFilePath);
+      const doneFileExists = await fileExists(doneFilePath);
       if (doneFileExists) {
         promises.push(cloudStoragePreferences.removeRef(doneFilePath));
       }

@@ -15,7 +15,7 @@ interface Filesystem {
   writeFile(options: WriteFileOptions): Promise<string>;
   deleteFile(path: string): Promise<void>;
   readdir(path: string): Promise<Dir[]>;
-  isFile(path: string): Promise<boolean>;
+  fileExists(path: string): Promise<boolean>;
   getUniqueFilePath(filePath: string): Promise<UniqueFilePath>;
   selectFolder(): Promise<string | undefined>;
   selectFile(): Promise<string | undefined>;
@@ -57,7 +57,7 @@ function getFileNameWithoutEnding(fileName: string) {
 
 async function _getUniqueFilePath(
   filePath: string,
-  isFile: (path: string) => Promise<boolean>
+  fileExists: (path: string) => Promise<boolean>
 ): Promise<{ filePath: string; fileName: string }> {
   let exists = true;
   let p = filePath;
@@ -66,7 +66,7 @@ async function _getUniqueFilePath(
 
   while (exists) {
     newFilePath = p;
-    exists = await isFile(p);
+    exists = await fileExists(p);
     num++;
     p = p.replace(/\.[0-9a-z]+$/i, ` ${num}$&`);
   }
@@ -103,7 +103,7 @@ const capFilesystem: Filesystem = {
       (result) => result.files.map((file) => ({ name: file.name }))
     );
   },
-  async isFile(path: string) {
+  async fileExists(path: string) {
     return capFilesystem
       .readFile(path)
       .then(() => {
@@ -114,7 +114,7 @@ const capFilesystem: Filesystem = {
       });
   },
   async getUniqueFilePath(path: string) {
-    return _getUniqueFilePath(path, capFilesystem.isFile);
+    return _getUniqueFilePath(path, capFilesystem.fileExists);
   },
   async selectFolder() {
     throw new Error("Not implemented");
@@ -147,7 +147,7 @@ const desktopFilesystem: Filesystem = {
   async readdir(_: string) {
     throw new Error("Not implemented");
   },
-  async isFile(path: string) {
+  async fileExists(path: string) {
     return desktopFilesystem
       .readFile(path)
       .then(() => {
@@ -160,7 +160,7 @@ const desktopFilesystem: Filesystem = {
   async getUniqueFilePath(path: string) {
     const docDir = await documentDir();
     const filePath = await tauriJoin(docDir, path);
-    return _getUniqueFilePath(filePath, desktopFilesystem.isFile);
+    return _getUniqueFilePath(filePath, desktopFilesystem.fileExists);
   },
   async selectFolder() {
     const path: any = await open({
@@ -234,7 +234,7 @@ async function readFile(path: string) {
 
 async function writeFile(options: WriteFileOptions) {
   const filesystem = await getFilesystem();
-  const exist = await filesystem.isFile(options.path);
+  const exist = await filesystem.fileExists(options.path);
   const path = await filesystem.writeFile(options);
   filesystemEmitter.emit(exist ? "update" : "create", {
     path: options.path,
@@ -254,9 +254,9 @@ async function readdir(path: string) {
   return filesystem.readdir(path);
 }
 
-async function isFile(path: string) {
+async function fileExists(path: string) {
   const filesystem = await getFilesystem();
-  return filesystem.isFile(path);
+  return filesystem.fileExists(path);
 }
 
 async function getUniqueFilePath(path: string) {
@@ -294,7 +294,7 @@ export {
   writeFile,
   deleteFile,
   readdir,
-  isFile,
+  fileExists,
   getUniqueFilePath,
   selectFolder,
   selectFile,
