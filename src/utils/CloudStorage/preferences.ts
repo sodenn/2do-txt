@@ -19,6 +19,6 @@ export const preferencesStorage: CloudPreferencesStorage = {
 };
 
 export const cloudStoragePreferences = createCloudPreferences({
-  refsKey: "cloud-storage-refs",
+  refsKey: "cloud-file-refs",
   storage: preferencesStorage,
 });

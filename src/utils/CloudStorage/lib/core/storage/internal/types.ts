@@ -14,7 +14,11 @@ interface SyncFileDownloadResult extends WithRef, WithResponse {
   operation: "download";
 }
 
+interface SyncFileNoneResult extends WithRef {
+  operation: "none";
+}
+
 export type SyncFileResult =
   | SyncFileUploadResult
   | SyncFileDownloadResult
-  | { operation: "none" };
+  | SyncFileNoneResult;

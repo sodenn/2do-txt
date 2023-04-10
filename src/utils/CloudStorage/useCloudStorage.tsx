@@ -320,11 +320,12 @@ export function useCloudStorage() {
 
   const deleteFile = useCallback(
     async (localPath: string) => {
-      const storage = await getStorageByLocalPath(localPath);
-      await storage.deleteFile({ path: localPath }).catch(handleError);
+      const ref = await cloudStoragePreferences.getRef(localPath);
+      const storage = getStorageByProvider(ref.provider);
+      await storage.deleteFile({ path: ref.path }).catch(handleError);
       await cloudStoragePreferences.removeRef(localPath);
     },
-    [getStorageByLocalPath, handleError]
+    [getStorageByProvider, handleError]
   );
 
   const syncFile = useCallback(
@@ -336,9 +337,7 @@ export function useCloudStorage() {
         .syncFile({ ref, content })
         .catch(handleError)
         .finally(() => hideProgress?.());
-      if (result.operation !== "none") {
-        await cloudStoragePreferences.setRef(localPath, result.ref);
-      }
+      await cloudStoragePreferences.setRef(localPath, result.ref);
       if (result.operation === "download") {
         const content = await result.response.text();
         await writeFile({

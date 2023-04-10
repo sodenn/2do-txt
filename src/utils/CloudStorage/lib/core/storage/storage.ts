@@ -84,7 +84,8 @@ export function createCloudStorage({
     const result = await client.syncFile(options);
 
     if (result.operation === "none") {
-      return result;
+      const lastSync = new Date().toISOString();
+      return { operation: "none", ref: { ...options.ref, lastSync } };
     }
 
     const checksum =

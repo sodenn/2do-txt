@@ -12,7 +12,7 @@ import {
 } from "../../native-api/platform";
 import { loadTodoFiles } from "../../stores/task-state";
 import { parseDate } from "../date";
-import { getDoneFilePath } from "../todo-files";
+import { getTodoFilePathFromDoneFilePath, isDoneFilePath } from "../todo-files";
 import useArchivedTask from "../useArchivedTask";
 import useTask from "../useTask";
 import { cloudStoragePreferences } from "./preferences";
@@ -40,13 +40,13 @@ export function useCloudStorageEffect() {
 
   const handleCreateFile = useCallback(
     async (data: CreateFileData) => {
-      const isDoneFile = data.path.endsWith("done.txt");
+      const isDoneFile = isDoneFilePath(data.path);
       if (!isDoneFile) {
         return;
       }
-      const todoPath = data.path.replace(/done.txt$/, ".txt");
-      const todoFileRef = await getCloudFileRef(todoPath);
-      const provider = todoFileRef?.provider;
+      const todoFilePath = getTodoFilePathFromDoneFilePath(data.path);
+      const todoFileRef = await getCloudFileRef(todoFilePath);
+      const provider = todoFileRef.provider;
       uploadFile(provider, data.path, data.content);
     },
     [getCloudFileRef, uploadFile]
@@ -63,10 +63,9 @@ export function useCloudStorageEffect() {
   );
 
   const handleDeleteFile = useCallback(async (data: DeleteFileData) => {
-    await cloudStoragePreferences.removeRef(data.path);
-    const donePath = getDoneFilePath(data.path);
-    if (donePath) {
-      await cloudStoragePreferences.removeRef(donePath);
+    const isDoneFile = isDoneFilePath(data.path);
+    if (!isDoneFile) {
+      await cloudStoragePreferences.removeRef(data.path);
     }
   }, []);
 
@@ -106,12 +105,11 @@ export function useCloudStorageEffect() {
   }, [syncAllTodoFiles]);
 
   useEffect(() => {
-    syncAllTodoFiles();
     addBecomeActiveListener(handleActive);
     return () => {
       removeAllBecomeActiveListeners([handleActive]);
     };
-  }, [handleActive, syncAllTodoFiles]);
+  }, [handleActive]);
 
   useEffect(() => {
     filesystemEmitter.on("create", handleCreateFile);
@@ -125,6 +123,7 @@ export function useCloudStorageEffect() {
   }, [handleUpdateFile, handleDeleteFile, handleCreateFile]);
 
   useEffect(() => {
+    syncAllTodoFiles();
     requestTokens();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

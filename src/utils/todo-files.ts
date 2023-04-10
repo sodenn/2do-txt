@@ -7,18 +7,34 @@ const defaultFilePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
 
 const defaultDoneFilePath = import.meta.env.VITE_ARCHIVE_FILE_NAME!;
 
-function getDoneFilePath(filePath: string) {
-  const fileName = getFilenameFromPath(filePath);
+function getDoneFilePath(todoFilePath: string) {
+  const fileName = getFilenameFromPath(todoFilePath);
   const fileNameWithoutEnding = getFileNameWithoutEnding(fileName);
   if (!fileNameWithoutEnding) {
     return;
   }
   return fileName === defaultFilePath
-    ? filePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath)
-    : filePath.replace(
+    ? todoFilePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath)
+    : todoFilePath.replace(
         new RegExp(`${fileName}$`),
         `${fileNameWithoutEnding}_${defaultDoneFilePath}`
       );
 }
 
-export { defaultFilePath, getDoneFilePath };
+function getTodoFilePathFromDoneFilePath(doneFilePath: string) {
+  const fileName = getFilenameFromPath(doneFilePath);
+  return fileName === defaultDoneFilePath
+    ? doneFilePath.replace(new RegExp(`${fileName}$`), defaultFilePath)
+    : doneFilePath.replace(new RegExp(`_${defaultDoneFilePath}$`), ".txt");
+}
+
+function isDoneFilePath(filePath: string) {
+  return filePath.endsWith(defaultDoneFilePath);
+}
+
+export {
+  defaultFilePath,
+  getDoneFilePath,
+  getTodoFilePathFromDoneFilePath,
+  isDoneFilePath,
+};

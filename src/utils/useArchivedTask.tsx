@@ -344,7 +344,7 @@ function useArchivedTask() {
             { variant: "success" }
           );
 
-          deleteCloudFile(doneFilePath).catch((e) => void e);
+          deleteCloudFile(doneFilePath);
         })
       );
     },
