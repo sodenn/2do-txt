@@ -1,4 +1,4 @@
-import { migrate1, migrate2 } from "../utils/migrations";
+import { migrate } from "../utils/migrations";
 import { cloudStorageStore } from "./cloud-storage-store";
 import { filterStore } from "./filter-store";
 import { networkStore } from "./network-store";
@@ -8,8 +8,7 @@ import { taskStore } from "./task-state";
 import { themeStore } from "./theme-store";
 
 export async function loader(): Promise<void> {
-  await migrate1();
-  await migrate2();
+  await migrate();
   return Promise.all([
     filterStore.getState().load(),
     settingsStore.getState().load(),
