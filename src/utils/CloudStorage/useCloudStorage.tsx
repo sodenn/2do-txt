@@ -1,5 +1,6 @@
 import {
   Client,
+  CloudError,
   CloudStorage,
   CloudStorageError,
   Provider,
@@ -108,14 +109,18 @@ export function useCloudStorage() {
       if (!connectionError) {
         setConnectionError(true);
         return enqueueSnackbar(
-          <Trans
-            i18nKey="Error connecting with cloud storage"
-            values={{
-              provider: t("cloud storage"),
-              message: error.message,
-            }}
-            components={{ code: <code style={{ marginLeft: 5 }} /> }}
-          />,
+          <span>
+            <Trans
+              i18nKey="Error connecting with cloud storage"
+              values={{
+                provider: t("cloud storage"),
+                message: error.message,
+              }}
+              components={{
+                code: <code style={{ marginLeft: 5 }} />,
+              }}
+            />
+          </span>,
           { variant: "warning" }
         );
       }
@@ -169,10 +174,10 @@ export function useCloudStorage() {
       if (error instanceof CloudStorageError && error.type === "Unauthorized") {
         const provider = error.provider;
         showSessionExpiredSnackbar(provider);
-      } else {
+      } else if (error instanceof CloudError) {
         showConnectionErrorSnackbar(error);
       }
-      throw error;
+      throw new Error(error.message);
     },
     [showConnectionErrorSnackbar, showSessionExpiredSnackbar]
   );
@@ -189,9 +194,7 @@ export function useCloudStorage() {
 
   const createWebDAVStorage = useCallback(
     async (config: WebDAVClientOptions) => {
-      const storage = await addWebDAVStorage(config);
-      // test connection
-      await storage.list({ path: "" }).catch(handleError);
+      await addWebDAVStorage(config).catch(handleError);
       const {
         baseUrl,
         basicAuth: { username, password },
@@ -208,9 +211,7 @@ export function useCloudStorage() {
 
   const createDropboxStorage = useCallback(
     async (refreshToken: string) => {
-      const storage = await addDropboxStorage(refreshToken);
-      // test connection
-      await storage.list({ path: "" }).catch(handleError);
+      await addDropboxStorage(refreshToken).catch(handleError);
       await setSecureStorageItem("Dropbox-refresh-token", refreshToken);
       showConnectedSnackbar("Dropbox");
     },
@@ -236,12 +237,15 @@ export function useCloudStorage() {
           );
           await createDropboxStorage(refreshToken);
         }
+      } else {
+        if (provider === "Dropbox") {
+          await setPreferencesItem(
+            "Dropbox-code-verifier",
+            options.codeVerifier
+          );
+        }
+        window.location.href = options.authUrl;
       }
-
-      if (provider === "Dropbox") {
-        await setPreferencesItem("Dropbox-code-verifier", options.codeVerifier);
-      }
-      window.location.href = options.authUrl;
     },
     [createDropboxStorage]
   );
@@ -279,14 +283,13 @@ export function useCloudStorage() {
   const downloadFile = useCallback(
     async (localPath: string, remotePath: string, provider: Provider) => {
       const storage = getStorageByProvider(provider);
-      const { content, ref } = await storage
+      const { response, ref } = await storage
         .downloadFile({
           path: remotePath,
-          format: "text",
         })
         .catch(handleError);
       await cloudStoragePreferences.setRef(localPath, ref);
-      return content;
+      return response.text();
     },
     [getStorageByProvider, handleError]
   );
@@ -318,10 +321,10 @@ export function useCloudStorage() {
   const deleteFile = useCallback(
     async (localPath: string) => {
       const storage = await getStorageByLocalPath(localPath);
-      await storage.deleteFile({ path: localPath });
+      await storage.deleteFile({ path: localPath }).catch(handleError);
       await cloudStoragePreferences.removeRef(localPath);
     },
-    [getStorageByLocalPath]
+    [getStorageByLocalPath, handleError]
   );
 
   const syncFile = useCallback(
@@ -330,14 +333,14 @@ export function useCloudStorage() {
       const storage = await getStorageByLocalPath(localPath);
       const hideProgress = showProgress ? showProgressSnackbar() : undefined;
       const result = await storage
-        .syncFile({ ref, content, format: "text" })
+        .syncFile({ ref, content })
         .catch(handleError)
         .finally(() => hideProgress?.());
-      if (result?.ref) {
+      if (result.operation !== "none") {
         await cloudStoragePreferences.setRef(localPath, result.ref);
       }
-      if (result?.direction === "download") {
-        const content = result.content;
+      if (result.operation === "download") {
+        const content = await result.response.text();
         await writeFile({
           path: localPath,
           data: content,

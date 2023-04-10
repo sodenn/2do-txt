@@ -1,24 +1,12 @@
-import { CloudStorage, createCloudStorage, Provider } from "@cloudstorage/core";
-import { createWebDAVClient, WebDAVClientOptions } from "@cloudstorage/webdav";
+import { CloudStorage, Provider } from "@cloudstorage/core";
+import { WebDAVClientOptions } from "@cloudstorage/webdav";
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import { getSecureStorageItem } from "../native-api/secure-storage";
-import { createDropboxStorage } from "../utils/CloudStorage";
-
-export function createWebDAVStorage({
-  baseUrl,
-  basicAuth: { username, password },
-}: WebDAVClientOptions) {
-  return createCloudStorage({
-    client: createWebDAVClient({
-      baseUrl,
-      basicAuth: {
-        username,
-        password,
-      },
-    }),
-  });
-}
+import {
+  createDropboxStorage,
+  createWebDAVStorage,
+} from "../utils/CloudStorage";
 
 interface CloudStorageState {
   authError: boolean;
@@ -38,6 +26,7 @@ const cloudStorageStore = createStore<CloudStorageState>((set, get) => ({
   connectionError: false,
   addWebDAVStorage: async (config: WebDAVClientOptions) => {
     const cloudStorage = createWebDAVStorage(config);
+    await cloudStorage.list({ path: "" });
     set((state) => ({
       cloudStorages: state.cloudStorages.some((s) => s.provider === "WebDAV")
         ? state.cloudStorages.map((s) =>
@@ -49,6 +38,7 @@ const cloudStorageStore = createStore<CloudStorageState>((set, get) => ({
   },
   addDropboxStorage: async (refreshToken: string) => {
     const cloudStorage = createDropboxStorage(refreshToken);
+    await cloudStorage.list({ path: "" });
     set((state) => ({
       cloudStorages: state.cloudStorages.some((s) => s.provider === "Dropbox")
         ? state.cloudStorages.map((s) =>

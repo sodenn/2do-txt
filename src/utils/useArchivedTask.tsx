@@ -42,7 +42,6 @@ function useArchivedTask() {
     syncFile,
     deleteFile: deleteCloudFile,
     downloadFile,
-    uploadFile,
     getMetaData,
     getCloudFileRef,
   } = useCloudStorage();

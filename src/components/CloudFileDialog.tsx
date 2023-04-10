@@ -143,7 +143,7 @@ const CloudFileDialog = () => {
       );
       await saveDoneFile(localDoneFilePath, doneFileContent);
       if (archiveMode === "no-archiving") {
-        await setArchiveMode("manual");
+        setArchiveMode("manual");
         enqueueSnackbar(
           t("Task archiving was turned on because a done.txt file was found"),
           { variant: "info" }

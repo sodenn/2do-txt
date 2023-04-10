@@ -47,7 +47,7 @@ const webSecureStorage = {
     sessionStorage.setItem(prefix + key, window.btoa(value));
   },
   async removeSecureStorageItem(key: SecureStorageKeys) {
-    await sessionStorage.removeItem(prefix + key);
+    sessionStorage.removeItem(prefix + key);
   },
 };
 
