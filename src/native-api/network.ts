@@ -35,8 +35,11 @@ async function desktopFetch(
     ...(body && { body: buildDesktopRequestBody(options) }),
     responseType: ResponseType.Binary,
   });
-  // @ts-ignore
-  const data = String.fromCharCode.apply(null, new Uint16Array(response.data));
+  const responseBody = response.data as any[];
+  const data =
+    responseBody && responseBody.length
+      ? String.fromCharCode.apply(null, new Uint16Array(responseBody) as any)
+      : null;
   return new Response(data, {
     headers: response.headers,
     status: response.status,

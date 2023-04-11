@@ -111,6 +111,7 @@ const FileManagementDialog = () => {
     } else {
       closeFile();
     }
+    await unlinkCloudFile(filePath);
   };
 
   const handleDeleteFile = async (filePath: string) => {

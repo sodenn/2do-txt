@@ -39,11 +39,11 @@ const WebDavDialog = () => {
     setError(undefined);
     setLoading(true);
     try {
-      closeWebDAVDialog();
       await createWebDAVStorage({
         baseUrl: url,
         basicAuth: { username, password },
       });
+      closeWebDAVDialog();
     } catch (error) {
       setError(error);
       setLoading(false);
