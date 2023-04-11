@@ -40,5 +40,6 @@ module.exports = {
     "playwright.config.ts",
     "vite.config.ts",
     "vitest.config.ts",
+    ".eslintrc.js",
   ],
 };
