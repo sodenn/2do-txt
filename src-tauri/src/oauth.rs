@@ -2,6 +2,7 @@
 pub async fn oauth(
     auth_url: String,
     redirect_url: String,
+    title: Option<String>,
     app_handle: tauri::AppHandle,
 ) -> Option<String> {
     let (tx, rx) = std::sync::mpsc::channel::<String>();
@@ -20,6 +21,10 @@ pub async fn oauth(
     })
     .build()
     .unwrap();
+    match title {
+        Some(title) => _window.set_title(&title).unwrap(),
+        None => {}
+    }
     let query_string = match rx.recv() {
         Ok(val) => Some(val),
         Err(_) => None,

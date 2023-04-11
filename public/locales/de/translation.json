@@ -89,6 +89,7 @@
   "Import from cloud storage": "Aus {{provider}} importieren",
   "cloud storage": "Cloud-Speicher",
   "Connection": "Verbindung",
+  "Login to cloud storage": "Anmelden bei {{provider}}",
   "Session has expired. Please login again": "{{provider}} Sitzung abgelaufen. Bitte erneut anmelden.",
   "Unable to connect. Check network connection": "Es kann keine Verbindung zu Cloud-Speicher aufgebaut werden. Überprüfe die Netzwerkverbindung.",
   "The file could not be downloaded": "Die Datei konnte nicht von {{provider}} heruntergeladen werden.",

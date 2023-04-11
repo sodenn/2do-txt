@@ -229,7 +229,8 @@ export function useCloudStorage() {
       }
 
       if (useInAppBrowser) {
-        const params = await oauth(options);
+        const title = t("Login to cloud storage", { provider });
+        const params = await oauth({ ...options, title });
         if (provider === "Dropbox") {
           const refreshToken = await requestDropboxRefreshToken(
             options.codeVerifier,

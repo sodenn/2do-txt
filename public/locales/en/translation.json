@@ -90,6 +90,7 @@
   "Cloud storage": "Cloud storage",
   "cloud storage": "cloud storage",
   "Connection": "Connection",
+  "Login to cloud storage": "Login to {{provider}}",
   "Session has expired. Please login again": "{{provider}} session has expired. Please login again.",
   "Unable to connect. Check network connection": "Unable to connect to cloud storage. Check network connection.",
   "The file could not be downloaded": "The file could not be downloaded from {{provider}}.",
