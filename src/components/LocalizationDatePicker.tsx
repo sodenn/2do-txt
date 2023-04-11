@@ -2,14 +2,15 @@ import { useMediaQuery } from "@mui/material";
 import {
   DatePicker,
   DatePickerProps,
+  FieldSelectedSections,
   LocalizationProvider,
   deDE,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { isAfter, isBefore, isValid, Locale } from "date-fns";
+import { Locale, isAfter, isBefore, isValid } from "date-fns";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
-import { forwardRef } from "react";
+import { KeyboardEvent, MouseEvent, forwardRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const localeMap: Record<string, Locale> = {
@@ -34,6 +35,28 @@ const LocalizationDatePicker = forwardRef<
 >((props, ref) => {
   const { value = null, ariaLabel, onChange, ...rest } = props;
   const desktop = useMediaQuery("@media (pointer: fine)");
+  const [selectedSections, setSelectedSections] =
+    useState<FieldSelectedSections>(null);
+
+  const handleDoubleClick = (event: MouseEvent) => {
+    if (!desktop) {
+      return;
+    }
+    (event.target as any)?.focus();
+    setSelectedSections("all");
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (!desktop) {
+      return;
+    }
+    if (event.key === "Backspace" && selectedSections === "all") {
+      setSelectedSections(0);
+    }
+    if (event.key === "Backspace" && typeof selectedSections === "number") {
+      setSelectedSections(Math.max(selectedSections - 1, 0));
+    }
+  };
 
   const {
     i18n: { resolvedLanguage },
@@ -62,6 +85,8 @@ const LocalizationDatePicker = forwardRef<
         onChange={handleChange}
         ref={ref}
         value={value}
+        selectedSections={selectedSections}
+        onSelectedSectionsChange={setSelectedSections}
         slotProps={{
           textField: (props) => ({
             fullWidth: true,
@@ -69,6 +94,8 @@ const LocalizationDatePicker = forwardRef<
               ...props.inputProps,
               "aria-label": ariaLabel,
             },
+            onDoubleClick: handleDoubleClick,
+            onKeyDown: handleKeyDown,
           }),
           actionBar: {
             actions: desktop ? ["clear"] : ["accept", "cancel", "clear"],
