@@ -121,7 +121,7 @@ export function useCloudStorage() {
               }}
             />
           </span>,
-          { variant: "warning" }
+          { variant: "warning", preventDuplicate: true }
         );
       }
     },
@@ -142,6 +142,7 @@ export function useCloudStorage() {
           t("Session has expired. Please login again", { provider }),
           {
             variant: "warning",
+            preventDuplicate: true,
             action: (key) => (
               <>
                 <Button color="inherit" onClick={() => closeSnackbar(key)}>
@@ -164,6 +165,7 @@ export function useCloudStorage() {
     (provider: Provider) => {
       return enqueueSnackbar(t("Connected to cloud storage", { provider }), {
         variant: "success",
+        preventDuplicate: true,
       });
     },
     [enqueueSnackbar, t]
