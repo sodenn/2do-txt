@@ -9,6 +9,7 @@ import {
   parseTaskList,
   sortByOriginalOrder,
 } from "./task-list";
+import { defaultTodoFilePath } from "./todo-files";
 
 describe("task-list", () => {
   it("should group by context", async () => {
@@ -144,8 +145,8 @@ x 2. task +ProjB
     const taskLists: TaskList[] = [
       {
         ...parseResult,
-        filePath: import.meta.env.VITE_DEFAULT_FILE_NAME!,
-        fileName: import.meta.env.VITE_DEFAULT_FILE_NAME!,
+        filePath: defaultTodoFilePath,
+        fileName: defaultTodoFilePath,
       },
     ];
 

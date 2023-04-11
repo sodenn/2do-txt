@@ -9,8 +9,8 @@ import { promptForRating } from "../native-api/app-rate";
 import {
   deleteFile,
   fileExists,
-  getFileNameWithoutEnding,
-  getFilenameFromPath,
+  getFileNameWithoutExt,
+  getFilename,
   getUri,
   writeFile,
 } from "../native-api/filesystem";
@@ -125,7 +125,7 @@ function useTask() {
 
   const parseTaskList = useCallback((filePath: string, text: string) => {
     const parseResult = _parseTaskList(text);
-    const fileName = getFilenameFromPath(filePath);
+    const fileName = getFilename(filePath);
     const taskList: TaskList = {
       ...parseResult,
       filePath,
@@ -402,7 +402,7 @@ function useTask() {
       if (!doneFile) {
         return;
       }
-      const fileNameWithoutEnding = getFileNameWithoutEnding(fileName);
+      const fileNameWithoutEnding = getFileNameWithoutExt(fileName);
       const todoFileText = stringifyTaskList(items, lineEnding);
 
       if (doneFile) {

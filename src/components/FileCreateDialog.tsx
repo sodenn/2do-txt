@@ -27,7 +27,7 @@ import usePlatformStore from "../stores/platform-store";
 import useTaskDialogStore from "../stores/task-dialog-store";
 import { Provider, useCloudStorage } from "../utils/CloudStorage";
 import { addTodoFilePath } from "../utils/settings";
-import { defaultFilePath } from "../utils/todo-files";
+import { defaultTodoFilePath } from "../utils/todo-files";
 import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
@@ -117,7 +117,7 @@ const DesktopFileCreateDialog = (props: FileCreateDialogProps) => {
       return;
     }
     onClose();
-    const { fileName } = await getUniqueFilePath(defaultFilePath);
+    const { fileName } = await getUniqueFilePath(defaultTodoFilePath);
     const filePath = await saveFile(fileName);
     if (filePath) {
       onCreateFile(filePath)
@@ -218,7 +218,9 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         return;
       }
 
-      const { fileName: _fileName } = await getUniqueFilePath(defaultFilePath);
+      const { fileName: _fileName } = await getUniqueFilePath(
+        defaultTodoFilePath
+      );
       setFileName(_fileName);
 
       if (cloudStorages.length > 0) {
@@ -226,7 +228,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         return;
       }
 
-      const exists = await fileExists(defaultFilePath);
+      const exists = await fileExists(defaultTodoFilePath);
       if (!exists) {
         await createTodoFileAndSync(_fileName);
         onClose();

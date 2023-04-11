@@ -6,15 +6,12 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import {
-  deleteFile,
-  getFilenameFromPath,
-  readdir,
-} from "../../native-api/filesystem";
+import { deleteFile, getFilename, readdir } from "../../native-api/filesystem";
 import useConfirmationDialogStore from "../../stores/confirmation-dialog-store";
 import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
 import usePlatformStore from "../../stores/platform-store";
 import { useCloudStorage } from "../../utils/CloudStorage";
+import { defaultDoneFilePath } from "../../utils/todo-files";
 import useTask from "../../utils/useTask";
 import ClosedFileList from "./ClosedFileList";
 import FileActionButton from "./FileActionButton";
@@ -57,8 +54,8 @@ const FileManagementDialog = () => {
         .filter((f) => taskLists.every((t) => t.filePath !== f))
         .filter(
           (filePath) =>
-            filePath !== import.meta.env.VITE_ARCHIVE_FILE_NAME &&
-            !filePath.endsWith(`_${import.meta.env.VITE_ARCHIVE_FILE_NAME}`)
+            filePath !== defaultDoneFilePath &&
+            !filePath.endsWith(`_${defaultDoneFilePath}`)
         );
       setClosedFiles(closedFiles);
       return closedFiles;
@@ -78,7 +75,7 @@ const FileManagementDialog = () => {
         content: (
           <Trans
             i18nKey="Delete file"
-            values={{ fileName: getFilenameFromPath(filePath) }}
+            values={{ fileName: getFilename(filePath) }}
           />
         ),
         buttons: [

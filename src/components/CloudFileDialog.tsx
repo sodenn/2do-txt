@@ -23,7 +23,7 @@ import {
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { join, selectFolder } from "../native-api/filesystem";
+import { getDirname, join, selectFolder } from "../native-api/filesystem";
 import useCloudFileDialogStore from "../stores/cloud-file-dialog-store";
 import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 import useFilterStore from "../stores/filter-store";
@@ -37,7 +37,6 @@ import {
   Provider,
   WithDirectoryType,
   WithFileType,
-  getDirname,
   useCloudStorage,
 } from "../utils/CloudStorage";
 import { getDoneFilePath } from "../utils/todo-files";

@@ -37,22 +37,31 @@ interface Dir {
   name: string;
 }
 
-function getFilenameFromPath(filePath: string) {
-  return filePath.replace(/^.*[\\/]/, "");
+function getDirname(path: string) {
+  // Replace any backslashes with forward slashes (for Windows compatibility)
+  path = path.replace(/\\/g, "/");
+  // Remove any trailing slashes
+  path = path.replace(/\/+$/, "");
+  // Split the path into an array of directories
+  const parts = path.split("/");
+  // Remove the last part (i.e. the file or directory name)
+  parts.pop();
+  // Join the remaining parts back together to form the directory name
+  const dirname = parts.length > 0 ? parts.join("/") : "/";
+  // If the parent directory is empty, set it to the root directory
+  if (dirname === "") {
+    return "/";
+  }
+  return dirname;
 }
 
-function getFileNameWithoutEnding(fileName: string) {
-  const fileNameWithoutEnding = fileName.match(/(.+?)(\.[^.]*$|$)/);
+function getFilename(path: string) {
+  return path.replace(/^.*[\\/]/, "");
+}
 
-  if (
-    !fileNameWithoutEnding ||
-    fileNameWithoutEnding.length < 2 ||
-    fileNameWithoutEnding[1].startsWith(".")
-  ) {
-    return;
-  }
-
-  return fileNameWithoutEnding[1];
+function getFileNameWithoutExt(path: string) {
+  const filename = getFilename(path);
+  return filename.split(".").slice(0, -1).join(".");
 }
 
 async function _getUniqueFilePath(
@@ -71,7 +80,7 @@ async function _getUniqueFilePath(
     p = p.replace(/\.[0-9a-z]+$/i, ` ${num}$&`);
   }
 
-  const fileName = getFilenameFromPath(newFilePath);
+  const fileName = getFilename(newFilePath);
   return { fileName, filePath: newFilePath };
 }
 
@@ -125,8 +134,21 @@ const capFilesystem: Filesystem = {
   async saveFile(_?: string) {
     throw new Error("Not implemented");
   },
-  async join(..._: string[]) {
-    throw new Error("Not implemented");
+  async join(...parts: string[]) {
+    return parts
+      .map((part, i) => {
+        if (i === 0) {
+          // remove trailing slashes (keep the leading slash on the first part)
+          return part.trim().replace(/\/*$/g, "");
+        } else if (i === parts.length - 1) {
+          // remove leading slash (keep the trailing slash on the last part)
+          return part.trim().replace(/^\/*/g, "");
+        } else {
+          // remove leading + trailing slashes
+          return part.trim().replace(/(^\/*|\/*$)/g, "");
+        }
+      })
+      .join("/");
   },
 };
 
@@ -300,6 +322,7 @@ export {
   selectFile,
   saveFile,
   join,
-  getFilenameFromPath,
-  getFileNameWithoutEnding,
+  getDirname,
+  getFilename,
+  getFileNameWithoutExt,
 };

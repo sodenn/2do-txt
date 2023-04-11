@@ -1,6 +1,6 @@
 import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { getFilenameFromPath, readFile } from "../native-api/filesystem";
+import { getFilename, readFile } from "../native-api/filesystem";
 import { getTodoFilePaths } from "../utils/settings";
 import { TaskList, parseTaskList } from "../utils/task-list";
 
@@ -48,7 +48,7 @@ async function loadTodoFiles(): Promise<TodoFiles> {
       const text = i.data;
       const filePath = i.filePath;
       const parseResult = parseTaskList(text);
-      const fileName = getFilenameFromPath(filePath);
+      const fileName = getFilename(filePath);
       const taskList: TaskList = {
         ...parseResult,
         filePath,

@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   deleteFile,
-  getFilenameFromPath,
+  getFilename,
   readFile,
   writeFile,
 } from "../native-api/filesystem";
@@ -161,7 +161,7 @@ function useArchivedTask() {
     return {
       items: parseResult.items,
       lineEnding: parseResult.lineEnding,
-      doneFileName: getFilenameFromPath(doneFilePath),
+      doneFileName: getFilename(doneFilePath),
       doneFilePath,
     };
   }, []);
@@ -225,7 +225,7 @@ function useArchivedTask() {
 
       const key = enqueueSnackbar(
         t("Task archived", {
-          fileName: getFilenameFromPath(filePath),
+          fileName: getFilename(filePath),
         }),
         {
           variant: "success",

@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import DropboxIcon from "../../components/DropboxIcon";
 import {
   fileExists,
-  getFilenameFromPath,
+  getFilename,
   writeFile,
 } from "../../native-api/filesystem";
 import { oauth } from "../../native-api/oath";
@@ -68,7 +68,7 @@ export function useCloudStorage() {
   );
   const cloudStorageEnabled =
     ["ios", "android", "desktop"].includes(platform) ||
-    import.meta.env.VITE_ENABLE_WEB_CLOUD_STORAGE === "true";
+    import.meta.env.VITE_ENABLE_CLOUD_STORAGE === "true";
 
   const getStorageByLocalPath = useCallback(
     async (path: string) => {
@@ -308,7 +308,7 @@ export function useCloudStorage() {
   const uploadFile = useCallback(
     async (provider: Provider, localPath: string, content: string) => {
       const storage = getStorageByProvider(provider);
-      const remotePath = getFilenameFromPath(localPath);
+      const remotePath = getFilename(localPath);
       const ref = await storage
         .uploadFile({
           path: remotePath,
