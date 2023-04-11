@@ -154,7 +154,7 @@ const FileManagementDialog = () => {
           onDelete={handleDeleteFile}
         />
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
+      <DialogActions sx={{ px: 2, pt: 1, pb: 2 }}>
         <FileActionButton />
       </DialogActions>
     </Dialog>

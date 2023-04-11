@@ -213,6 +213,7 @@ const OpenFileItemMenu = (props: OpenFileItemMenuProps) => {
   return (
     <>
       <IconButton
+        edge="end"
         aria-label="File actions"
         aria-haspopup="true"
         onClick={handleClick}

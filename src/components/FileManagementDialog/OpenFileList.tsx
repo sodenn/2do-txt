@@ -134,14 +134,12 @@ const FileListItem = forwardRef<HTMLLIElement, FileListItemProps>(
         data-testid="draggable-file"
         aria-label={`Draggable file ${filePath}`}
       >
-        <ListItemButton sx={{ pl: 3, overflow: "hidden" }} role={undefined}>
+        <ListItemButton sx={{ pl: 2, overflow: "hidden" }} role={undefined}>
           <ListItemIcon sx={{ minWidth: 36 }}>
             <DragIndicatorIcon />
           </ListItemIcon>
           <Box sx={{ overflow: "hidden" }}>
-            <StartEllipsis sx={{ pr: 2 }} variant="inherit">
-              {filePath}
-            </StartEllipsis>
+            <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
             {cloudFileRef && (
               <Box
                 sx={{
