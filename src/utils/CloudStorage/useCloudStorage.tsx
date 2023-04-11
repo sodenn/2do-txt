@@ -230,11 +230,11 @@ export function useCloudStorage() {
 
       if (useInAppBrowser) {
         const title = t("Login to cloud storage", { provider });
-        const params = await oauth({ ...options, title });
+        const result = await oauth({ ...options, title });
         if (provider === "Dropbox") {
           const refreshToken = await requestDropboxRefreshToken(
-            options.codeVerifier,
-            params.code
+            result.codeVerifier,
+            result.code
           );
           await createDropboxStorage(refreshToken);
         }
@@ -248,7 +248,7 @@ export function useCloudStorage() {
         window.location.href = options.authUrl;
       }
     },
-    [createDropboxStorage]
+    [createDropboxStorage, t]
   );
 
   const authenticate = useCallback(
