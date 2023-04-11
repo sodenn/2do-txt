@@ -1,3 +1,12 @@
+## [1.17.8](https://github.com/sodenn/2do-txt/compare/v1.17.7...v1.17.8) (2023-04-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies (non-major) ([#767](https://github.com/sodenn/2do-txt/issues/767)) ([05d6be0](https://github.com/sodenn/2do-txt/commit/05d6be073b3b4a505724cf25f4eaec2af7664625))
+* **deps:** update dependencies (non-major) ([#779](https://github.com/sodenn/2do-txt/issues/779)) ([c756fa6](https://github.com/sodenn/2do-txt/commit/c756fa6a0287a318486463ad2458ea621872974b))
+* **Editor:** fix misplaced input placeholder on Safari ([#783](https://github.com/sodenn/2do-txt/issues/783)) ([6360fab](https://github.com/sodenn/2do-txt/commit/6360fabd4043f995332c6c13bce77d015b577205))
+
 ## [1.17.7](https://github.com/sodenn/2do-txt/compare/v1.17.6...v1.17.7) (2023-03-19)
 
 
