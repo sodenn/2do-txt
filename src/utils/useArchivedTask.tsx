@@ -15,11 +15,6 @@ import { Task } from "./task";
 import { TaskList, parseTaskList, stringifyTaskList } from "./task-list";
 import { getDoneFilePath } from "./todo-files";
 
-interface ArchiveTasksOptions {
-  taskLists: TaskList[];
-  onSaveTodoFile: (taskLists: TaskList) => Promise<void>;
-}
-
 interface RestoreTaskOptions {
   taskList: TaskList;
   task: Task;
@@ -261,7 +256,7 @@ function useArchivedTask() {
   );
 
   const archiveTasks = useCallback(
-    async ({ onSaveTodoFile, taskLists }: ArchiveTasksOptions) => {
+    async (taskLists: TaskList[]) => {
       return Promise.all(
         taskLists.map(async (taskList) => {
           const { filePath, items, lineEnding } = taskList;
@@ -292,10 +287,7 @@ function useArchivedTask() {
             return;
           }
 
-          await Promise.all([
-            onSaveTodoFile(newTaskList),
-            saveDoneFile(filePath, doneFileText),
-          ]);
+          await saveDoneFile(filePath, doneFileText);
 
           const doneFilePath = getDoneFilePath(filePath);
           if (doneFilePath && newCompletedTasks.length > 0) {
@@ -304,6 +296,8 @@ function useArchivedTask() {
               { variant: "success" }
             );
           }
+
+          return newTaskList;
         })
       );
     },
@@ -311,7 +305,7 @@ function useArchivedTask() {
   );
 
   const restoreArchivedTasks = useCallback(
-    ({ onSaveTodoFile, taskLists }: ArchiveTasksOptions) => {
+    (taskLists: TaskList[]) => {
       return Promise.all(
         taskLists.map(async (taskList) => {
           const completedTaskList = await loadDoneFile(taskList.filePath);
@@ -334,10 +328,7 @@ function useArchivedTask() {
             ),
           };
 
-          await Promise.all([
-            onSaveTodoFile(newTaskList),
-            deleteFile(doneFilePath),
-          ]);
+          await deleteFile(doneFilePath);
 
           enqueueSnackbar(
             t("All completed tasks have been restored", { doneFilePath }),
@@ -345,6 +336,7 @@ function useArchivedTask() {
           );
 
           deleteCloudFile(doneFilePath);
+          return newTaskList;
         })
       );
     },

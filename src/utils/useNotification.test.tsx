@@ -147,7 +147,7 @@ describe("useNotifications", () => {
     expect(ids.length).toBe(1);
 
     // +25h
-    await vi.advanceTimersByTime(1000 * 60 * 60 * 25);
+    vi.advanceTimersByTime(1000 * 60 * 60 * 25);
     expect(Notification).toBeCalledTimes(1);
 
     ids = await hook.scheduleNotifications([

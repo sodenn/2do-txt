@@ -552,22 +552,26 @@ function useTask() {
     [_restoreTask, saveTodoFile, taskLists]
   );
 
-  const archiveTasks = useCallback(() => {
-    return _archiveTasks({
-      taskLists,
-      onSaveTodoFile: async (taskList) => {
-        await saveTodoFile(taskList);
-      },
-    });
+  const archiveTasks = useCallback(async () => {
+    const newTaskLists = await _archiveTasks(taskLists);
+    return Promise.all(
+      newTaskLists.map((taskList) => {
+        if (taskList) {
+          return saveTodoFile(taskList);
+        }
+      })
+    );
   }, [_archiveTasks, saveTodoFile, taskLists]);
 
-  const restoreArchivedTasks = useCallback(() => {
-    return _restoreArchivedTasks({
-      taskLists,
-      onSaveTodoFile: async (taskList) => {
-        await saveTodoFile(taskList);
-      },
-    });
+  const restoreArchivedTasks = useCallback(async () => {
+    const newTaskLists = await _restoreArchivedTasks(taskLists);
+    return Promise.all(
+      newTaskLists.map((taskList) => {
+        if (taskList) {
+          return saveTodoFile(taskList);
+        }
+      })
+    );
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
   const handleFileNotFound = useCallback(

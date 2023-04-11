@@ -36,10 +36,10 @@ export const createWebDAVClient = (config: WebDAVClientOptions): Client => {
       return fetchFunction(input, {
         ...init,
         headers,
-      }).catch(handleResponseErrors);
+      }).then(handleResponseErrors);
     } else {
       input.headers.append("Authorization", Authorization);
-      return fetchFunction(input, init).catch(handleResponseErrors);
+      return fetchFunction(input, init).then(handleResponseErrors);
     }
   };
 
