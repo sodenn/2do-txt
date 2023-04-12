@@ -1,12 +1,12 @@
 import { create } from "zustand";
 
-interface WebDAVDialogState {
+interface WebDAVDialogStoreInterface {
   open: boolean;
   openWebDAVDialog: () => void;
   closeWebDAVDialog: () => void;
 }
 
-const useWebDAVDialogStore = create<WebDAVDialogState>((set) => ({
+const useWebDAVDialogStore = create<WebDAVDialogStoreInterface>((set) => ({
   open: false,
   openWebDAVDialog: () => set({ open: true }),
   closeWebDAVDialog: () => set({ open: false }),

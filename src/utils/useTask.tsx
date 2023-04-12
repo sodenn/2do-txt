@@ -586,7 +586,9 @@ function useTask() {
 
   const loadTodoFilesFromDisk = useCallback(async () => {
     // load files from disk
-    const { files, errors } = await taskLoader();
+    const {
+      todoFiles: { files, errors },
+    } = await taskLoader();
     // apply external file changes by updating the state
     const newTaskList = files.map((f) => f.taskList);
     if (!areTaskListsEqual(taskLists, newTaskList)) {

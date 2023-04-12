@@ -86,7 +86,9 @@ export function useCloudStorageEffect() {
         }
       }
 
-      const { files } = await taskLoader();
+      const {
+        todoFiles: { files },
+      } = await taskLoader();
       const hideProgress = showProgressSnackbar();
       await Promise.all(
         files.map(async ({ filePath, text }) =>

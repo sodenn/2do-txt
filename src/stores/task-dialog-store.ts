@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { Task } from "../utils/task";
 
-interface TaskDialogState {
+interface TaskDialogStoreInterface {
   open: boolean;
   task?: Task;
   openTaskDialog: (task?: Task) => void;
@@ -9,7 +9,7 @@ interface TaskDialogState {
   cleanupTaskDialog: () => void;
 }
 
-const useTaskDialogStore = create<TaskDialogState>((set) => ({
+const useTaskDialogStore = create<TaskDialogStoreInterface>((set) => ({
   open: false,
   task: undefined,
   openTaskDialog: (task?: Task) => set({ open: true, task }),

@@ -1,26 +1,47 @@
-import { StoreApi, UseBoundStore, useStore } from "zustand";
+import { createContext, useContext } from "react";
+import { useStore as useZustandStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import { Platform, getPlatform } from "../native-api/platform";
 
-interface PlatformLoaderData {
+export interface PlatformStoreData {
   platform: Platform;
 }
 
-interface PlatformState extends PlatformLoaderData {
-  init: (data: PlatformLoaderData) => void;
-}
+type PlatformStoreInterface = PlatformStoreData;
 
-export async function platformLoader(): Promise<PlatformLoaderData> {
+const getDefaultInitialState = (): PlatformStoreData => ({
+  platform: "web",
+});
+
+export type PlatformStoreType = ReturnType<typeof initializePlatformStore>;
+
+const zustandContext = createContext<PlatformStoreType | null>(null);
+
+export const PlatformStoreProvider = zustandContext.Provider;
+
+export async function platformLoader(): Promise<PlatformStoreData> {
   const platform = getPlatform();
   return { platform };
 }
 
-export const platformStore = createStore<PlatformState>((set) => ({
+export function initializePlatformStore(
+  preloadedState: Partial<PlatformStoreInterface> = {}
+) {
+  return createStore<PlatformStoreInterface>((set, get) => ({
+    ...getDefaultInitialState(),
+    ...preloadedState,
+  }));
+}
+
+export const platformStore = createStore<PlatformStoreInterface>((set) => ({
   platform: "web",
-  init: (data: PlatformLoaderData) => set(data),
+  init: (data: PlatformStoreData) => set(data),
 }));
 
-const usePlatformStore = ((selector: any) =>
-  useStore(platformStore, selector)) as UseBoundStore<StoreApi<PlatformState>>;
-
-export default usePlatformStore;
+export default function usePlatformStore<T>(
+  selector: (state: PlatformStoreInterface) => T
+) {
+  const store = useContext(zustandContext);
+  if (!store) throw new Error("Store is missing the provider");
+  return useZustandStore(store, selector);
+}

@@ -1,13 +1,17 @@
 import { isEqual } from "lodash";
 import { useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { FilterState, SearchParams, filterStore } from "../stores/filter-store";
+import useFilterStore, {
+  FilterStoreData,
+  SearchParams,
+} from "../stores/filter-store";
 
 function useSearchParamsEffect() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const filterStore = useFilterStore((state) => state);
 
   const updateSearchParams = useCallback(
-    (state: FilterState) => {
+    (state: FilterStoreData) => {
       const {
         searchTerm,
         activeTaskListPath,
@@ -44,11 +48,8 @@ function useSearchParamsEffect() {
   );
 
   useEffect(() => {
-    const unsubscribe = filterStore.subscribe(updateSearchParams);
-    return () => {
-      unsubscribe();
-    };
-  }, [updateSearchParams]);
+    updateSearchParams(filterStore);
+  }, [updateSearchParams, filterStore]);
 }
 
 export default useSearchParamsEffect;

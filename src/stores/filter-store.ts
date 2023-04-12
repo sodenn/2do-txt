@@ -1,4 +1,5 @@
-import { StoreApi, UseBoundStore, useStore } from "zustand";
+import { createContext, useContext } from "react";
+import { useStore as useZustandStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import {
   getPreferencesItem,
@@ -24,7 +25,7 @@ export interface SearchParams {
   active: string;
 }
 
-interface FilterLoaderData {
+export interface FilterStoreData {
   searchTerm: string;
   activePriorities: string[];
   activeProjects: string[];
@@ -36,7 +37,7 @@ interface FilterLoaderData {
   activeTaskListPath?: string;
 }
 
-export interface FilterState extends FilterLoaderData {
+export interface FilterStoreInterface extends FilterStoreData {
   setSearchTerm: (searchTerm: string) => void;
   setSortBy: (sortBy: SortKey) => void;
   setFilterType: (filterType: FilterType) => void;
@@ -50,10 +51,27 @@ export interface FilterState extends FilterLoaderData {
   resetActiveTags: () => void;
   setHideCompletedTasks: (hideCompletedTasks: boolean) => void;
   setActiveTaskListPath: (activeTaskListPath?: string) => void;
-  init: (data: FilterLoaderData) => void;
 }
 
-export async function filterLoader(): Promise<FilterLoaderData> {
+const getDefaultInitialState = (): FilterStoreData => ({
+  searchTerm: "",
+  sortBy: "",
+  filterType: "AND",
+  activePriorities: [],
+  activeProjects: [],
+  activeContexts: [],
+  activeTags: [],
+  hideCompletedTasks: false,
+  activeTaskListPath: undefined,
+});
+
+export type FilterStoreType = ReturnType<typeof initializeFilterStore>;
+
+const zustandContext = createContext<FilterStoreType | null>(null);
+
+export const FilterStoreProvider = zustandContext.Provider;
+
+export async function filterLoader(): Promise<FilterStoreData> {
   const searchParams = new URLSearchParams(window.location.search);
   const [sortBy, filterType, hideCompletedTasks] = await Promise.all([
     getPreferencesItem<SortKey>("sort-by"),
@@ -78,67 +96,66 @@ export async function filterLoader(): Promise<FilterLoaderData> {
   };
 }
 
-export const filterStore = createStore<FilterState>((set) => ({
-  searchTerm: "",
-  sortBy: "",
-  filterType: "AND",
-  activePriorities: [],
-  activeProjects: [],
-  activeContexts: [],
-  activeTags: [],
-  hideCompletedTasks: false,
-  activeTaskListPath: undefined,
-  setSearchTerm: (searchTerm: string) => set({ searchTerm }),
-  setSortBy: (sortBy: SortKey) => {
-    set({ sortBy });
-    setPreferencesItem("sort-by", sortBy);
-  },
-  setFilterType: (filterType: FilterType) => {
-    set((state) => ({
-      filterType,
-      ...(state.activePriorities.length > 1 &&
-        filterType === "AND" && { activePriorities: [] }),
-    }));
-    setPreferencesItem("filter-type", filterType);
-  },
-  togglePriority: (priority: string) =>
-    set((state) => ({
-      activePriorities: state.activePriorities.includes(priority)
-        ? state.activePriorities.filter((i) => i !== priority)
-        : [...state.activePriorities, priority],
-    })),
-  resetActivePriorities: () => set({ activePriorities: [] }),
-  toggleProject: (project: string) =>
-    set((state) => ({
-      activeProjects: state.activeProjects.includes(project)
-        ? state.activeProjects.filter((i) => i !== project)
-        : [...state.activeProjects, project],
-    })),
-  resetActiveProjects: () => set({ activeProjects: [] }),
-  toggleContext: (context: string) =>
-    set((state) => ({
-      activeContexts: state.activeContexts.includes(context)
-        ? state.activeContexts.filter((i) => i !== context)
-        : [...state.activeContexts, context],
-    })),
-  resetActiveContexts: () => set({ activeContexts: [] }),
-  toggleTag: (tag: string) =>
-    set((state) => ({
-      activeTags: state.activeTags.includes(tag)
-        ? state.activeTags.filter((i) => i !== tag)
-        : [...state.activeTags, tag],
-    })),
-  resetActiveTags: () => set({ activeTags: [] }),
-  setHideCompletedTasks: (hideCompletedTasks: boolean) => {
-    set({ hideCompletedTasks });
-    setPreferencesItem("hide-completed-tasks", hideCompletedTasks.toString());
-  },
-  setActiveTaskListPath: (activeTaskListPath?: string) =>
-    set({ activeTaskListPath }),
-  init: (data: FilterLoaderData) => set(data),
-}));
+export function initializeFilterStore(
+  preloadedState: Partial<FilterStoreInterface> = {}
+) {
+  return createStore<FilterStoreInterface>((set, get) => ({
+    ...getDefaultInitialState(),
+    ...preloadedState,
+    setSearchTerm: (searchTerm: string) => set({ searchTerm }),
+    setSortBy: (sortBy: SortKey) => {
+      set({ sortBy });
+      setPreferencesItem("sort-by", sortBy);
+    },
+    setFilterType: (filterType: FilterType) => {
+      set((state) => ({
+        filterType,
+        ...(state.activePriorities.length > 1 &&
+          filterType === "AND" && { activePriorities: [] }),
+      }));
+      setPreferencesItem("filter-type", filterType);
+    },
+    togglePriority: (priority: string) =>
+      set((state) => ({
+        activePriorities: state.activePriorities.includes(priority)
+          ? state.activePriorities.filter((i) => i !== priority)
+          : [...state.activePriorities, priority],
+      })),
+    resetActivePriorities: () => set({ activePriorities: [] }),
+    toggleProject: (project: string) =>
+      set((state) => ({
+        activeProjects: state.activeProjects.includes(project)
+          ? state.activeProjects.filter((i) => i !== project)
+          : [...state.activeProjects, project],
+      })),
+    resetActiveProjects: () => set({ activeProjects: [] }),
+    toggleContext: (context: string) =>
+      set((state) => ({
+        activeContexts: state.activeContexts.includes(context)
+          ? state.activeContexts.filter((i) => i !== context)
+          : [...state.activeContexts, context],
+      })),
+    resetActiveContexts: () => set({ activeContexts: [] }),
+    toggleTag: (tag: string) =>
+      set((state) => ({
+        activeTags: state.activeTags.includes(tag)
+          ? state.activeTags.filter((i) => i !== tag)
+          : [...state.activeTags, tag],
+      })),
+    resetActiveTags: () => set({ activeTags: [] }),
+    setHideCompletedTasks: (hideCompletedTasks: boolean) => {
+      set({ hideCompletedTasks });
+      setPreferencesItem("hide-completed-tasks", hideCompletedTasks.toString());
+    },
+    setActiveTaskListPath: (activeTaskListPath?: string) =>
+      set({ activeTaskListPath }),
+  }));
+}
 
-const useFilterStore = ((selector: any) =>
-  useStore(filterStore, selector)) as UseBoundStore<StoreApi<FilterState>>;
-
-export default useFilterStore;
+export default function useFilterStore<T = FilterStoreInterface>(
+  selector: (state: FilterStoreInterface) => T = (state) => state as T
+) {
+  const store = useContext(zustandContext);
+  if (!store) throw new Error("Store is missing the provider");
+  return useZustandStore(store, selector);
+}

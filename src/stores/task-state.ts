@@ -1,5 +1,5 @@
-import { StoreApi, UseBoundStore, useStore } from "zustand";
-import { createStore } from "zustand/vanilla";
+import { createContext, useContext } from "react";
+import { createStore, useStore as useZustandStore } from "zustand";
 import { getFilename, readFile } from "../native-api/filesystem";
 import { getTodoFilePaths } from "../utils/settings";
 import { TaskList, parseTaskList } from "../utils/task-list";
@@ -17,21 +17,34 @@ interface TodoFileError {
 
 type TodoFile = TodoFileSuccess | TodoFileError;
 
-interface TaskLoaderData {
+interface TodoFiles {
   files: { taskList: TaskList; filePath: string; text: string }[];
   errors: TodoFileError[];
 }
 
-interface TaskState {
+export interface TaskStoreData {
   taskLists: TaskList[];
-  todoFiles: TaskLoaderData;
+  todoFiles: TodoFiles;
+}
+
+interface TaskStoreInterface extends TaskStoreData {
   setTaskLists: (taskLists: TaskList[]) => void;
   addTaskList: (taskList: TaskList) => void;
   removeTaskList: (taskList?: TaskList) => void;
-  init: (data: TaskLoaderData) => void;
 }
 
-export async function taskLoader(): Promise<TaskLoaderData> {
+const getDefaultInitialState = (): TaskStoreData => ({
+  taskLists: [],
+  todoFiles: { files: [], errors: [] },
+});
+
+export type TaskStoreType = ReturnType<typeof initializeTaskStore>;
+
+const zustandContext = createContext<TaskStoreType | null>(null);
+
+export const TaskStoreProvider = zustandContext.Provider;
+
+export async function taskLoader(): Promise<TaskStoreData> {
   const filePaths = await getTodoFilePaths();
   const result: TodoFile[] = await Promise.all(
     filePaths.map((filePath) =>
@@ -57,42 +70,46 @@ export async function taskLoader(): Promise<TaskLoaderData> {
       return { taskList, filePath, text };
     });
   const errors = result.filter((i): i is TodoFileError => i.type === "error");
+  const taskLists = files.map((f) => f.taskList);
   return {
-    files,
-    errors,
+    taskLists,
+    todoFiles: { files, errors },
   };
 }
 
-export const taskStore = createStore<TaskState>((set) => ({
-  taskLists: [],
-  todoFiles: { files: [], errors: [] },
-  setTaskLists: (taskLists: TaskList[]) => set({ taskLists }),
-  addTaskList: (taskList: TaskList) => {
-    set((state) => ({
-      taskLists: state.taskLists.some((t) => t.filePath === taskList.filePath)
-        ? state.taskLists.map((t) =>
-            t.filePath === taskList.filePath ? taskList : t
-          )
-        : [...state.taskLists, taskList],
-    }));
-  },
-  removeTaskList: (taskList?: TaskList) => {
-    if (!taskList) {
-      return;
-    }
-    set((state) => ({
-      taskLists: state.taskLists.filter(
-        (list) => list.filePath !== taskList.filePath
-      ),
-    }));
-  },
-  init: (data: TaskLoaderData) => {
-    const taskLists = data.files.map((f) => f.taskList);
-    set({ todoFiles: data, taskLists });
-  },
-}));
+export function initializeTaskStore(
+  preloadedState: Partial<TaskStoreInterface> = {}
+) {
+  return createStore<TaskStoreInterface>((set, get) => ({
+    ...getDefaultInitialState(),
+    ...preloadedState,
+    setTaskLists: (taskLists: TaskList[]) => set({ taskLists }),
+    addTaskList: (taskList: TaskList) => {
+      set((state) => ({
+        taskLists: state.taskLists.some((t) => t.filePath === taskList.filePath)
+          ? state.taskLists.map((t) =>
+              t.filePath === taskList.filePath ? taskList : t
+            )
+          : [...state.taskLists, taskList],
+      }));
+    },
+    removeTaskList: (taskList?: TaskList) => {
+      if (!taskList) {
+        return;
+      }
+      set((state) => ({
+        taskLists: state.taskLists.filter(
+          (list) => list.filePath !== taskList.filePath
+        ),
+      }));
+    },
+  }));
+}
 
-const useTasksStore = ((selector: any) =>
-  useStore(taskStore, selector)) as UseBoundStore<StoreApi<TaskState>>;
-
-export default useTasksStore;
+export default function useTaskStore<T>(
+  selector: (state: TaskStoreInterface) => T
+) {
+  const store = useContext(zustandContext);
+  if (!store) throw new Error("Store is missing the provider");
+  return useZustandStore(store, selector);
+}

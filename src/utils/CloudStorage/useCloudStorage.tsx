@@ -20,7 +20,7 @@ import {
   removeSecureStorageItem,
   setSecureStorageItem,
 } from "../../native-api/secure-storage";
-import useCloudStorageStore from "../../stores/cloud-storage-store";
+import useCloudStorageStore from "../../stores/cloud-store";
 import usePlatformStore from "../../stores/platform-store";
 import useWebDAVDialogStore from "../../stores/webdav-dialog-store";
 import { getDoneFilePath } from "../todo-files";

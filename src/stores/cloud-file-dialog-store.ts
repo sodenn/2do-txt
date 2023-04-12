@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { Provider } from "../utils/CloudStorage";
 
-interface CloudFileDialogState {
+interface CloudFileDialogStoreInterface {
   open: boolean;
   provider?: Provider;
   openCloudFileDialog: (provider?: Provider) => void;
@@ -9,13 +9,15 @@ interface CloudFileDialogState {
   cleanupCloudFileDialog: () => void;
 }
 
-const useCloudFileDialogStore = create<CloudFileDialogState>((set) => ({
-  open: false,
-  provider: undefined,
-  openCloudFileDialog: (provider?: Provider) =>
-    set((state) => ({ open: true, provider })),
-  closeCloudFileDialog: () => set({ open: false }),
-  cleanupCloudFileDialog: () => set({ open: false, provider: undefined }),
-}));
+const useCloudFileDialogStore = create<CloudFileDialogStoreInterface>(
+  (set) => ({
+    open: false,
+    provider: undefined,
+    openCloudFileDialog: (provider?: Provider) =>
+      set((state) => ({ open: true, provider })),
+    closeCloudFileDialog: () => set({ open: false }),
+    cleanupCloudFileDialog: () => set({ open: false, provider: undefined }),
+  })
+);
 
 export default useCloudFileDialogStore;
