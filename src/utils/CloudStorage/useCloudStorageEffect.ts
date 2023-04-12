@@ -10,7 +10,7 @@ import {
   addBecomeActiveListener,
   removeAllBecomeActiveListeners,
 } from "../../native-api/platform";
-import { loadTodoFiles } from "../../stores/task-state";
+import { taskLoader } from "../../stores/task-state";
 import { parseDate } from "../date";
 import { getTodoFilePathFromDoneFilePath, isDoneFilePath } from "../todo-files";
 import useArchivedTask from "../useArchivedTask";
@@ -86,7 +86,7 @@ export function useCloudStorageEffect() {
         }
       }
 
-      const { files } = await loadTodoFiles();
+      const { files } = await taskLoader();
       const hideProgress = showProgressSnackbar();
       await Promise.all(
         files.map(async ({ filePath, text }) =>

@@ -20,7 +20,7 @@ import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
 import useFilterStore from "../stores/filter-store";
 import usePlatformStore from "../stores/platform-store";
 import useSettingsStore from "../stores/settings-store";
-import useTasksStore, { loadTodoFiles } from "../stores/task-state";
+import useTasksStore, { taskLoader } from "../stores/task-state";
 import useNotification from "../utils/useNotification";
 import { todayDate } from "./date";
 import { hashCode } from "./hashcode";
@@ -586,7 +586,7 @@ function useTask() {
 
   const loadTodoFilesFromDisk = useCallback(async () => {
     // load files from disk
-    const { files, errors } = await loadTodoFiles();
+    const { files, errors } = await taskLoader();
     // apply external file changes by updating the state
     const newTaskList = files.map((f) => f.taskList);
     if (!areTaskListsEqual(taskLists, newTaskList)) {

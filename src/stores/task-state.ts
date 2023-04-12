@@ -17,21 +17,21 @@ interface TodoFileError {
 
 type TodoFile = TodoFileSuccess | TodoFileError;
 
-interface TodoFiles {
+interface TaskLoaderData {
   files: { taskList: TaskList; filePath: string; text: string }[];
   errors: TodoFileError[];
 }
 
 interface TaskState {
   taskLists: TaskList[];
-  todoFiles: TodoFiles;
+  todoFiles: TaskLoaderData;
   setTaskLists: (taskLists: TaskList[]) => void;
   addTaskList: (taskList: TaskList) => void;
   removeTaskList: (taskList?: TaskList) => void;
-  load: () => Promise<void>;
+  init: (data: TaskLoaderData) => void;
 }
 
-async function loadTodoFiles(): Promise<TodoFiles> {
+export async function taskLoader(): Promise<TaskLoaderData> {
   const filePaths = await getTodoFilePaths();
   const result: TodoFile[] = await Promise.all(
     filePaths.map((filePath) =>
@@ -63,7 +63,7 @@ async function loadTodoFiles(): Promise<TodoFiles> {
   };
 }
 
-const taskStore = createStore<TaskState>((set) => ({
+export const taskStore = createStore<TaskState>((set) => ({
   taskLists: [],
   todoFiles: { files: [], errors: [] },
   setTaskLists: (taskLists: TaskList[]) => set({ taskLists }),
@@ -86,15 +86,13 @@ const taskStore = createStore<TaskState>((set) => ({
       ),
     }));
   },
-  load: async () => {
-    const todoFiles = await loadTodoFiles();
-    const taskLists = todoFiles.files.map((f) => f.taskList);
-    set({ todoFiles, taskLists });
+  init: (data: TaskLoaderData) => {
+    const taskLists = data.files.map((f) => f.taskList);
+    set({ todoFiles: data, taskLists });
   },
 }));
 
 const useTasksStore = ((selector: any) =>
   useStore(taskStore, selector)) as UseBoundStore<StoreApi<TaskState>>;
 
-export { taskStore, loadTodoFiles };
 export default useTasksStore;

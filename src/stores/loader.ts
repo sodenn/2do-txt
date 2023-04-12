@@ -1,21 +1,30 @@
 import { migrate } from "../utils/migrations";
-import { cloudStorageStore } from "./cloud-storage-store";
-import { filterStore } from "./filter-store";
-import { networkStore } from "./network-store";
-import { platformStore } from "./platform-store";
-import { settingsStore } from "./settings-store";
-import { taskStore } from "./task-state";
-import { themeStore } from "./theme-store";
+import { cloudStorageLoader, cloudStorageStore } from "./cloud-storage-store";
+import { filterLoader, filterStore } from "./filter-store";
+import { networkLoader, networkStore } from "./network-store";
+import { platformLoader, platformStore } from "./platform-store";
+import { settingsLoader, settingsStore } from "./settings-store";
+import { taskLoader, taskStore } from "./task-state";
+import { themeLoader, themeStore } from "./theme-store";
 
-export async function loader(): Promise<void> {
+export async function loader(): Promise<null> {
   await migrate();
-  return Promise.all([
-    filterStore.getState().load(),
-    settingsStore.getState().load(),
-    platformStore.getState().load(),
-    themeStore.getState().load(),
-    taskStore.getState().load(),
-    cloudStorageStore.getState().load(),
-    networkStore.getState().load(),
-  ]).then();
+  const [filter, settings, platform, theme, task, cloudStorage, network] =
+    await Promise.all([
+      filterLoader(),
+      settingsLoader(),
+      platformLoader(),
+      themeLoader(),
+      taskLoader(),
+      cloudStorageLoader(),
+      networkLoader(),
+    ]);
+  filterStore.getState().init(filter);
+  settingsStore.getState().init(settings);
+  platformStore.getState().init(platform);
+  themeStore.getState().init(theme);
+  taskStore.getState().init(task);
+  cloudStorageStore.getState().init(cloudStorage);
+  networkStore.getState().init(network);
+  return null;
 }

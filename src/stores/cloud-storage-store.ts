@@ -18,10 +18,40 @@ interface CloudStorageState {
   removeStorage: (provider: Provider) => Promise<void>;
   setAuthError: (authError: boolean) => void;
   setConnectionError: (connectionError: boolean) => void;
-  load: () => Promise<void>;
+  init: (data: CloudStorageLoaderData) => void;
 }
 
-const cloudStorageStore = createStore<CloudStorageState>((set, get) => ({
+interface CloudStorageLoaderData {
+  webDAV: {
+    baseUrl: string | null;
+    username: string | null;
+    password: string | null;
+  };
+  dropbox: {
+    refreshToken: string | null;
+  };
+}
+
+export async function cloudStorageLoader(): Promise<CloudStorageLoaderData> {
+  const [username, password, baseUrl, refreshToken] = await Promise.all([
+    getSecureStorageItem("WebDAV-username"),
+    getSecureStorageItem("WebDAV-password"),
+    getSecureStorageItem("WebDAV-url"),
+    getSecureStorageItem("Dropbox-refresh-token"),
+  ]);
+  return {
+    webDAV: {
+      baseUrl,
+      username,
+      password,
+    },
+    dropbox: {
+      refreshToken,
+    },
+  };
+}
+
+export const cloudStorageStore = createStore<CloudStorageState>((set, get) => ({
   cloudStorages: [],
   authError: false,
   connectionError: false,
@@ -56,16 +86,10 @@ const cloudStorageStore = createStore<CloudStorageState>((set, get) => ({
   },
   setAuthError: (authError: boolean) => set({ authError }),
   setConnectionError: (connectionError: boolean) => set({ connectionError }),
-  load: async () => {
-    const [username, password, baseUrl, refreshToken] = await Promise.all([
-      getSecureStorageItem("WebDAV-username"),
-      getSecureStorageItem("WebDAV-password"),
-      getSecureStorageItem("WebDAV-url"),
-      getSecureStorageItem("Dropbox-refresh-token"),
-    ]);
-
+  init: (data: CloudStorageLoaderData) => {
     const cloudStorages: CloudStorage[] = [];
 
+    const { username, password, baseUrl } = data.webDAV;
     if (username && password && baseUrl) {
       cloudStorages.push(
         createWebDAVStorage({
@@ -75,6 +99,7 @@ const cloudStorageStore = createStore<CloudStorageState>((set, get) => ({
       );
     }
 
+    const { refreshToken } = data.dropbox;
     if (refreshToken) {
       cloudStorages.push(createDropboxStorage(refreshToken));
     }
@@ -88,5 +113,4 @@ const useCloudStorageStore = ((selector: any) =>
   StoreApi<CloudStorageState>
 >;
 
-export { cloudStorageStore };
 export default useCloudStorageStore;

@@ -2,28 +2,31 @@ import { StoreApi, UseBoundStore, useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import { getPreferencesItem } from "../native-api/preferences";
 
-type ThemeMode = "dark" | "light" | "system";
+export type ThemeMode = "dark" | "light" | "system";
 
-interface ThemeState {
+interface ThemeLoaderData {
   mode: ThemeMode;
-  setThemeMode: (mode: ThemeMode) => void;
-  load: () => Promise<void>;
 }
 
-const themeStore = createStore<ThemeState>((set) => ({
+interface ThemeState extends ThemeLoaderData {
+  setThemeMode: (mode: ThemeMode) => void;
+  init: (data: ThemeLoaderData) => void;
+}
+
+export async function themeLoader(): Promise<ThemeLoaderData> {
+  const mode = await getPreferencesItem<ThemeMode>("theme-mode");
+  return { mode: mode || "system" };
+}
+
+export const themeStore = createStore<ThemeState>((set) => ({
   mode: "system",
   setThemeMode: (mode: ThemeMode) => {
     set({ mode });
   },
-  load: async () => {
-    const mode = await getPreferencesItem<ThemeMode>("theme-mode");
-    set({ mode: mode || "system" });
-  },
+  init: (data: ThemeLoaderData) => set(data),
 }));
 
 const useThemeStore = ((selector: any) =>
   useStore(themeStore, selector)) as UseBoundStore<StoreApi<ThemeState>>;
 
-export type { ThemeMode };
-export { themeStore };
 export default useThemeStore;

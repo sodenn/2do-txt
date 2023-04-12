@@ -7,16 +7,15 @@ import {
   setPreferencesItem,
 } from "../native-api/preferences";
 
-type Language = "de" | "en";
+export type Language = "de" | "en";
 
-type ArchiveMode = "no-archiving" | "automatic" | "manual";
+export type ArchiveMode = "no-archiving" | "automatic" | "manual";
 
-type TaskView = "list" | "timeline";
+export type TaskView = "list" | "timeline";
 
-type PriorityTransformation = "keep" | "remove" | "archive";
+export type PriorityTransformation = "keep" | "remove" | "archive";
 
-interface SettingsState {
-  load: () => Promise<void>;
+interface SettingsLoaderData {
   createCreationDate: boolean;
   createCompletionDate: boolean;
   showNotifications: boolean;
@@ -24,6 +23,10 @@ interface SettingsState {
   taskView: TaskView;
   priorityTransformation: PriorityTransformation;
   language: Language;
+}
+
+interface SettingsState extends SettingsLoaderData {
+  init: (data: SettingsLoaderData) => void;
   toggleCreateCreationDate: () => void;
   toggleCreateCompletionDate: () => void;
   changeLanguage: (language: Language) => void;
@@ -35,17 +38,24 @@ interface SettingsState {
   ) => void;
 }
 
-async function load() {
-  const createCreationDate = await getPreferencesItem("create-creation-date");
-  const createCompletionDate = await getPreferencesItem(
-    "create-completion-date"
-  );
-  const showNotifications = await getPreferencesItem("show-notifications");
-  const archiveMode = await getPreferencesItem<ArchiveMode>("archive-mode");
-  const taskView = await getPreferencesItem<TaskView>("task-view");
-  const completedTaskPriority =
-    await getPreferencesItem<PriorityTransformation>("priority-transformation");
-  const language = await getPreferencesItem<Language>("language");
+export async function settingsLoader(): Promise<SettingsLoaderData> {
+  const [
+    createCreationDate,
+    createCompletionDate,
+    showNotifications,
+    archiveMode,
+    taskView,
+    completedTaskPriority,
+    language,
+  ] = await Promise.all([
+    getPreferencesItem("create-creation-date"),
+    getPreferencesItem("create-completion-date"),
+    getPreferencesItem("show-notifications"),
+    getPreferencesItem<ArchiveMode>("archive-mode"),
+    getPreferencesItem<TaskView>("task-view"),
+    getPreferencesItem<PriorityTransformation>("priority-transformation"),
+    getPreferencesItem<Language>("language"),
+  ]);
   return {
     showNotifications: showNotifications === "true",
     createCreationDate:
@@ -59,7 +69,7 @@ async function load() {
   };
 }
 
-const settingsStore = createStore(
+export const settingsStore = createStore(
   subscribeWithSelector<SettingsState>((set) => ({
     createCreationDate: true,
     createCompletionDate: true,
@@ -68,10 +78,7 @@ const settingsStore = createStore(
     taskView: "list",
     priorityTransformation: "keep",
     language: "en",
-    load: async () => {
-      const state = await load();
-      set(state);
-    },
+    init: (data: SettingsLoaderData) => set(data),
     toggleCreateCreationDate: () =>
       set((state) => {
         const createCreationDate = !state.createCreationDate;
@@ -123,6 +130,4 @@ const settingsStore = createStore(
 const useSettingsStore = ((selector: any) =>
   useStore(settingsStore, selector)) as UseBoundStore<StoreApi<SettingsState>>;
 
-export type { Language, ArchiveMode, TaskView, PriorityTransformation };
-export { settingsStore };
 export default useSettingsStore;

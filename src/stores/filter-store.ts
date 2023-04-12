@@ -5,11 +5,17 @@ import {
   setPreferencesItem,
 } from "../native-api/preferences";
 
-type SortKey = "priority" | "dueDate" | "context" | "project" | "tag" | "";
+export type SortKey =
+  | "priority"
+  | "dueDate"
+  | "context"
+  | "project"
+  | "tag"
+  | "";
 
-type FilterType = "AND" | "OR";
+export type FilterType = "AND" | "OR";
 
-interface SearchParams {
+export interface SearchParams {
   term: string;
   projects: string;
   contexts: string;
@@ -18,16 +24,19 @@ interface SearchParams {
   active: string;
 }
 
-interface FilterState {
+interface FilterLoaderData {
   searchTerm: string;
-  sortBy: SortKey;
-  filterType: FilterType;
   activePriorities: string[];
   activeProjects: string[];
   activeContexts: string[];
   activeTags: string[];
+  sortBy: SortKey;
+  filterType: FilterType;
   hideCompletedTasks: boolean;
   activeTaskListPath?: string;
+}
+
+export interface FilterState extends FilterLoaderData {
   setSearchTerm: (searchTerm: string) => void;
   setSortBy: (sortBy: SortKey) => void;
   setFilterType: (filterType: FilterType) => void;
@@ -41,16 +50,16 @@ interface FilterState {
   resetActiveTags: () => void;
   setHideCompletedTasks: (hideCompletedTasks: boolean) => void;
   setActiveTaskListPath: (activeTaskListPath?: string) => void;
-  load: () => Promise<void>;
+  init: (data: FilterLoaderData) => void;
 }
 
-async function load() {
+export async function filterLoader(): Promise<FilterLoaderData> {
   const searchParams = new URLSearchParams(window.location.search);
-  const sortBy = await getPreferencesItem<SortKey>("sort-by");
-  const filterType = await getPreferencesItem<FilterType>("filter-type");
-  const hideCompletedTasks = await getPreferencesItem<string>(
-    "hide-completed-tasks"
-  );
+  const [sortBy, filterType, hideCompletedTasks] = await Promise.all([
+    getPreferencesItem<SortKey>("sort-by"),
+    getPreferencesItem<FilterType>("filter-type"),
+    getPreferencesItem<string>("hide-completed-tasks"),
+  ]);
   const active = searchParams.get("active");
   const priorities = searchParams.get("priorities");
   const projects = searchParams.get("projects");
@@ -69,7 +78,7 @@ async function load() {
   };
 }
 
-const filterStore = createStore<FilterState>((set) => ({
+export const filterStore = createStore<FilterState>((set) => ({
   searchTerm: "",
   sortBy: "",
   filterType: "AND",
@@ -126,15 +135,10 @@ const filterStore = createStore<FilterState>((set) => ({
   },
   setActiveTaskListPath: (activeTaskListPath?: string) =>
     set({ activeTaskListPath }),
-  load: async () => {
-    const state = await load();
-    set(state);
-  },
+  init: (data: FilterLoaderData) => set(data),
 }));
 
 const useFilterStore = ((selector: any) =>
   useStore(filterStore, selector)) as UseBoundStore<StoreApi<FilterState>>;
 
-export type { SearchParams, FilterState, SortKey, FilterType };
-export { filterStore };
 export default useFilterStore;
