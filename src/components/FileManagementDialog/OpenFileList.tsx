@@ -33,6 +33,7 @@ import {
   CloudFileRef,
   CloudStorageError,
   Provider,
+  WithIdentifier,
   cloudStorageIcons,
   useCloudStorage,
 } from "../../utils/CloudStorage";
@@ -41,6 +42,8 @@ import { TaskList } from "../../utils/task-list";
 import { getDoneFilePath } from "../../utils/todo-files";
 import useTask from "../../utils/useTask";
 import StartEllipsis from "../StartEllipsis";
+
+type CloudFileRefWithIdentifier = CloudFileRef & WithIdentifier;
 
 interface CloseOptions {
   filePath: string;
@@ -61,25 +64,26 @@ interface FileListItemProps {
 
 interface FileMenuProps {
   filePath: string;
-  cloudFileRef?: CloudFileRef;
-  onChange: (cloudFileRef?: CloudFileRef) => void;
+  cloudFileRef?: CloudFileRefWithIdentifier;
+  onChange: (cloudFileRef?: CloudFileRefWithIdentifier) => void;
   onClose: (options: CloseOptions) => void;
   onDownloadClick: () => void;
 }
 
 interface CloudSyncMenuItemProps {
-  path: string;
+  identifier: string;
   provider: Provider;
   onClick: () => void;
+  onChange: (cloudFileRef: CloudFileRefWithIdentifier) => void;
 }
 
 interface EnableCloudSyncMenuItemProps {
   provider: Provider;
   filePath: string;
   onClick: () => void;
-  onChange: (cloudFileRef?: CloudFileRef) => void;
+  onChange: (cloudFileRef?: CloudFileRefWithIdentifier) => void;
   onLoad: (loading: boolean) => void;
-  cloudFileRef?: CloudFileRef;
+  cloudFileRef?: CloudFileRefWithIdentifier;
 }
 
 const OpenFileList = memo((props: OpenFileListProps) => {
@@ -152,7 +156,8 @@ const FileListItem = forwardRef<HTMLLIElement, FileListItemProps>(
     const { filePath, taskList, onClose, onDownload, ...rest } = props;
     const language = useSettingsStore((state) => state.language);
     const { getCloudFileRef } = useCloudStorage();
-    const [cloudFileRef, setCloudFileRef] = useState<CloudFileRef>();
+    const [cloudFileRef, setCloudFileRef] =
+      useState<CloudFileRefWithIdentifier>();
     const cloudFileLastModified = cloudFileRef
       ? parseDate(cloudFileRef.lastSync)
       : undefined;
@@ -209,17 +214,17 @@ const FileListItem = forwardRef<HTMLLIElement, FileListItemProps>(
 );
 
 const CloudSyncMenuItem = (opt: CloudSyncMenuItemProps) => {
-  const { onClick, path, provider } = opt;
+  const { onClick, onChange, identifier, provider } = opt;
   const { t } = useTranslation();
-  const { syncFile } = useCloudStorage();
+  const { syncFile, getCloudFileRef } = useCloudStorage();
   const { loadTodoFile } = useTask();
 
-  const handleClick = () => {
-    syncFile(path).then((content) => {
-      if (content) {
-        loadTodoFile(path, content);
-      }
-    });
+  const handleClick = async () => {
+    const content = await syncFile(identifier);
+    if (content) {
+      loadTodoFile(identifier, content);
+    }
+    getCloudFileRef(identifier).then(onChange);
     onClick();
   };
 
@@ -381,9 +386,10 @@ const FileMenu = (props: FileMenuProps) => {
       >
         {cloudFileRef && (
           <CloudSyncMenuItem
-            path={cloudFileRef.path}
+            identifier={cloudFileRef.identifier}
             provider={cloudFileRef.provider}
             onClick={handleCloseMenu}
+            onChange={onChange}
           />
         )}
         {providers.map((provider) => (

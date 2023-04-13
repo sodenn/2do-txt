@@ -47,6 +47,7 @@ export const createCloudPreferences = ({
           );
       const value = JSON.stringify(newRefs);
       await storage.setItem(refsKey, value);
+      return refWithIdentifier;
     },
     async removeRef(identifier) {
       const refs = await preferences.getRefs();

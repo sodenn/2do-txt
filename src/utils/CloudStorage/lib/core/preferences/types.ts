@@ -17,7 +17,10 @@ export type GetRef = (
 
 export type GetRefs = () => Promise<(CloudFileRef & WithIdentifier)[]>;
 
-export type SetRef = (identifier: string, ref: CloudFileRef) => Promise<void>;
+export type SetRef = (
+  identifier: string,
+  ref: CloudFileRef
+) => Promise<CloudFileRef & WithIdentifier>;
 
 export type RemoveRef = (identifier: string) => Promise<void>;
 

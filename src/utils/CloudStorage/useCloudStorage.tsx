@@ -235,7 +235,7 @@ export function useCloudStorage() {
         const result = await oauth({ ...options, title });
         if (provider === "Dropbox") {
           const refreshToken = await requestDropboxRefreshToken(
-            result.codeVerifier,
+            options.codeVerifier,
             result.code
           );
           await createDropboxStorage(refreshToken);
@@ -256,13 +256,13 @@ export function useCloudStorage() {
   const authenticate = useCallback(
     async (provider: Provider) => {
       if (["Dropbox"].includes(provider)) {
-        authenticateWithOauth(provider);
+        authenticateWithOauth(provider).catch(handleError);
       }
       if (provider === "WebDAV") {
         openWebDAVDialog();
       }
     },
-    [authenticateWithOauth, openWebDAVDialog]
+    [authenticateWithOauth, handleError, openWebDAVDialog]
   );
 
   const showProgressSnackbar = useCallback(() => {
@@ -315,8 +315,7 @@ export function useCloudStorage() {
           content,
         })
         .catch(handleError);
-      await cloudStoragePreferences.setRef(localPath, ref);
-      return ref;
+      return cloudStoragePreferences.setRef(localPath, ref);
     },
     [getStorageByProvider, handleError]
   );

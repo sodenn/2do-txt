@@ -11,6 +11,7 @@ const eslintOptions: any = {
 export default defineConfig({
   build: {
     outDir: "./build",
+    sourcemap: true,
   },
   plugins: [eslintPlugin(eslintOptions), react()],
 });
