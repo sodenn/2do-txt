@@ -3,7 +3,7 @@ import { addHours, addMinutes } from "date-fns";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { initNotifications } from "../native-api/notification";
+import { subscribeNotifications } from "../native-api/notification";
 import useNotification from "../utils/useNotification";
 
 type NotificationMethods = ReturnType<typeof useNotification>;
@@ -52,7 +52,7 @@ describe("useNotifications", () => {
     mockNotificationAPI();
     localStorage.clear();
     hook = renderNotificationsHook();
-    initNotifications();
+    subscribeNotifications();
   });
 
   afterEach(() => {
@@ -147,7 +147,7 @@ describe("useNotifications", () => {
     expect(ids.length).toBe(1);
 
     // +25h
-    await vi.advanceTimersByTime(1000 * 60 * 60 * 25);
+    vi.advanceTimersByTime(1000 * 60 * 60 * 25);
     expect(Notification).toBeCalledTimes(1);
 
     ids = await hook.scheduleNotifications([

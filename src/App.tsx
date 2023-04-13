@@ -1,9 +1,9 @@
 import { CssBaseline } from "@mui/material";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { appLoader } from "./components/AppStoreProvider";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Page from "./components/Page";
 import ProviderBundle from "./components/ProviderBundle";
-import { loader } from "./stores/loader";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +14,7 @@ const router = createBrowserRouter([
         <Outlet />
       </ProviderBundle>
     ),
-    loader,
+    loader: appLoader,
     shouldRevalidate: () => false,
     errorElement: <ErrorBoundary />,
     children: [

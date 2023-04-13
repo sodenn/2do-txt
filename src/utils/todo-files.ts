@@ -1,24 +1,29 @@
-import {
-  getFilenameFromPath,
-  getFileNameWithoutEnding,
-} from "../native-api/filesystem";
+import { getFilename, getFileNameWithoutExt } from "../native-api/filesystem";
 
-const defaultFilePath = import.meta.env.VITE_DEFAULT_FILE_NAME!;
+export const defaultTodoFilePath = "todo.txt";
+export const defaultDoneFilePath = "done.txt";
 
-const defaultDoneFilePath = import.meta.env.VITE_ARCHIVE_FILE_NAME!;
-
-function getDoneFilePath(filePath: string) {
-  const fileName = getFilenameFromPath(filePath);
-  const fileNameWithoutEnding = getFileNameWithoutEnding(fileName);
+export function getDoneFilePath(todoFilePath: string) {
+  const fileName = getFilename(todoFilePath);
+  const fileNameWithoutEnding = getFileNameWithoutExt(fileName);
   if (!fileNameWithoutEnding) {
     return;
   }
-  return fileName === defaultFilePath
-    ? filePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath!)
-    : filePath.replace(
+  return fileName === defaultTodoFilePath
+    ? todoFilePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath)
+    : todoFilePath.replace(
         new RegExp(`${fileName}$`),
         `${fileNameWithoutEnding}_${defaultDoneFilePath}`
       );
 }
 
-export { defaultFilePath, getDoneFilePath };
+export function getTodoFilePathFromDoneFilePath(doneFilePath: string) {
+  const fileName = getFilename(doneFilePath);
+  return fileName === defaultDoneFilePath
+    ? doneFilePath.replace(new RegExp(`${fileName}$`), defaultTodoFilePath)
+    : doneFilePath.replace(new RegExp(`_${defaultDoneFilePath}$`), ".txt");
+}
+
+export function isDoneFilePath(filePath: string) {
+  return filePath.endsWith(defaultDoneFilePath);
+}

@@ -23,21 +23,22 @@ import {
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { join, selectFolder } from "../native-api/filesystem";
+import { getDirname, join, selectFolder } from "../native-api/filesystem";
 import useCloudFileDialogStore from "../stores/cloud-file-dialog-store";
 import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 import useFilterStore from "../stores/filter-store";
 import usePlatformStore from "../stores/platform-store";
 import useSettingsStore from "../stores/settings-store";
 import {
+  CloudDirectory,
   CloudFile,
   CloudFileRef,
-  CloudFolder,
-  CloudStorage,
-  ListCloudItemResult,
+  ListResult,
+  Provider,
+  WithDirectoryType,
+  WithFileType,
   useCloudStorage,
 } from "../utils/CloudStorage";
-import generateContentHash from "../utils/CloudStorage/ContentHasher";
 import { getDoneFilePath } from "../utils/todo-files";
 import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
@@ -45,9 +46,9 @@ import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent"
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 
 interface CloudFileDialogContentProps {
-  cloudStorage?: CloudStorage;
+  provider?: Provider;
   onSelect: (cloudFile?: CloudFile) => void;
-  onFilesChange: (files?: ListCloudItemResult) => void;
+  onFilesChange: (files?: ListResult) => void;
   onClose: () => void;
 }
 
@@ -61,7 +62,7 @@ interface CloudFileButtonProps {
 
 interface CloudFolderButtonProps {
   disabled: boolean;
-  cloudFolder: CloudFolder;
+  cloudDirectory: CloudDirectory;
   loading: boolean;
   onClick: () => void;
 }
@@ -76,9 +77,9 @@ const CloudFileDialog = () => {
   );
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
-  const { downloadFile, linkCloudFile, linkCloudDoneFile } = useCloudStorage();
+  const { downloadFile } = useCloudStorage();
   const open = useCloudFileDialogStore((state) => state.open);
-  const cloudStorage = useCloudFileDialogStore((state) => state.cloudStorage);
+  const provider = useCloudFileDialogStore((state) => state.provider);
   const closeCloudFileDialog = useCloudFileDialogStore(
     (state) => state.closeCloudFileDialog
   );
@@ -91,7 +92,7 @@ const CloudFileDialog = () => {
   );
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
-  const [files, setFiles] = useState<ListCloudItemResult | undefined>();
+  const [files, setFiles] = useState<ListResult | undefined>();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClose = () => {
@@ -106,49 +107,46 @@ const CloudFileDialog = () => {
   };
 
   const handleSelect = async () => {
-    if (!selectedFile || !open || !cloudStorage) {
+    if (!selectedFile || !open || !provider) {
       return;
     }
 
     setLoading(true);
 
-    const text = await downloadFile({
-      cloudFilePath: selectedFile.path,
-      cloudStorage,
-    });
-
-    let filePath: string;
+    const remoteFilePath = selectedFile.path;
+    let localFilePath: string;
     if (platform === "desktop") {
       const folder = await selectFolder();
       if (!folder) {
         setLoading(false);
         return;
       }
-      filePath = await join(folder, selectedFile.name);
+      localFilePath = await join(folder, selectedFile.name);
     } else {
-      filePath = selectedFile.name;
+      localFilePath = selectedFile.name;
     }
 
-    await createNewTodoFile(filePath, text);
+    const content = await downloadFile(provider, localFilePath, remoteFilePath);
 
-    const doneFilePath = getDoneFilePath(selectedFile.path);
-    const doneFile = files?.items.find((i) => i.path === doneFilePath) as
+    await createNewTodoFile(localFilePath, content);
+
+    const remoteDoneFilePath = getDoneFilePath(remoteFilePath);
+    const doneFile = files?.items.find((i) => i.path === remoteDoneFilePath) as
       | CloudFile
       | undefined;
-    if (doneFile && doneFilePath) {
-      const archiveText = await downloadFile({
-        cloudFilePath: doneFile.path,
-        cloudStorage,
-      });
-      await saveDoneFile(filePath, archiveText);
-      await linkCloudDoneFile({
-        ...doneFile,
-        contentHash: generateContentHash(archiveText),
-        localFilePath: filePath,
-        cloudStorage,
-      });
+    if (doneFile && remoteDoneFilePath) {
+      const localDoneFilePath = await join(
+        getDirname(localFilePath),
+        doneFile.name
+      );
+      const doneFileContent = await downloadFile(
+        provider,
+        localDoneFilePath,
+        remoteDoneFilePath
+      );
+      await saveDoneFile(localDoneFilePath, doneFileContent);
       if (archiveMode === "no-archiving") {
-        await setArchiveMode("manual");
+        setArchiveMode("manual");
         enqueueSnackbar(
           t("Task archiving was turned on because a done.txt file was found"),
           { variant: "info" }
@@ -156,14 +154,7 @@ const CloudFileDialog = () => {
       }
     }
 
-    await linkCloudFile({
-      ...selectedFile,
-      contentHash: generateContentHash(text),
-      localFilePath: filePath,
-      lastSync: new Date().toISOString(),
-      cloudStorage,
-    });
-    setActiveTaskListPath(filePath);
+    setActiveTaskListPath(localFilePath);
     handleClose();
   };
 
@@ -194,11 +185,11 @@ const CloudFileDialog = () => {
             "aria-label": "Import",
           }}
         >
-          {cloudStorage}
+          {provider}
         </FullScreenDialogTitle>
         <FullScreenDialogContent disableGutters>
           <CloudFileDialogContent
-            cloudStorage={cloudStorage}
+            provider={provider}
             onSelect={setSelectedFile}
             onFilesChange={setFiles}
             onClose={handleClose}
@@ -219,12 +210,12 @@ const CloudFileDialog = () => {
     >
       <DialogTitle sx={{ px: 2 }}>
         {t(`Import from cloud storage`, {
-          cloudStorage,
+          provider,
         })}
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <CloudFileDialogContent
-          cloudStorage={cloudStorage}
+          provider={provider}
           onSelect={setSelectedFile}
           onFilesChange={setFiles}
           onClose={handleClose}
@@ -250,13 +241,13 @@ const CloudFileDialog = () => {
 };
 
 const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
-  const { cloudStorage, onSelect, onFilesChange, onClose } = props;
+  const { provider, onSelect, onFilesChange, onClose } = props;
   const { t } = useTranslation();
   const { taskLists } = useTask();
   const { enqueueSnackbar } = useSnackbar();
-  const { listCloudFiles, getCloudFileRefs } = useCloudStorage();
+  const { list, getCloudFileRefs } = useCloudStorage();
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
-  const [files, setFiles] = useState<ListCloudItemResult | undefined>();
+  const [files, setFiles] = useState<ListResult | undefined>();
   const [cloudFileRefs, setCloudFileRefs] = useState<CloudFileRef[]>([]);
   const [currentPath, setCurrentPath] = useState("");
   const [previousPaths, setPreviousPaths] = useState<string[]>([]);
@@ -269,11 +260,14 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
     onSelect(cloudFile);
   };
 
-  const handleNavForward = async (cloudFolder: CloudFolder, index: number) => {
+  const handleNavForward = async (
+    cloudDirectory: CloudDirectory,
+    index: number
+  ) => {
     setLoading(index);
-    await loadItems(cloudFolder.path);
+    await loadItems(cloudDirectory.path);
     setPreviousPaths((curr) => [...curr, currentPath]);
-    setCurrentPath(cloudFolder.path);
+    setCurrentPath(cloudDirectory.path);
     setSelectedFile(undefined);
     onSelect(undefined);
   };
@@ -291,8 +285,8 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
 
   const loadItems = useCallback(
     async (path = currentPath) => {
-      if (cloudStorage) {
-        return listCloudFiles({ path, cloudStorage })
+      if (provider) {
+        return list(provider, path)
           .then((result) => {
             if (result) {
               setFiles(result);
@@ -302,31 +296,26 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
           .catch((e: any) => {
             onClose();
             enqueueSnackbar(
-              <Trans
-                i18nKey="Error connecting with cloud storage"
-                values={{ cloudStorage, message: e.message }}
-                components={{ code: <code style={{ marginLeft: 5 }} /> }}
-              />,
+              <span>
+                <Trans
+                  i18nKey="Error connecting with cloud storage"
+                  values={{ provider, message: e.message }}
+                  components={{ code: <code style={{ marginLeft: 5 }} /> }}
+                />
+              </span>,
               { variant: "warning" }
             );
           })
           .finally(() => setLoading(false));
       }
     },
-    [
-      cloudStorage,
-      currentPath,
-      enqueueSnackbar,
-      listCloudFiles,
-      onClose,
-      onFilesChange,
-    ]
+    [provider, currentPath, enqueueSnackbar, list, onClose, onFilesChange]
   );
 
   const handleLoadMoreItems = (path = currentPath) => {
-    if (cloudStorage && files && files.hasMore && files.cursor) {
+    if (provider && files && files.hasMore && files.cursor) {
       setLoading(true);
-      listCloudFiles({ path, cursor: files.cursor, cloudStorage })
+      list(provider, path, files.cursor)
         .then((result) => {
           if (result) {
             result.items = [...files.items, ...result.items];
@@ -341,10 +330,10 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
   useEffect(() => {
     loadItems(currentPath);
     getCloudFileRefs()
-      .then((refs) => refs.filter((ref) => ref.cloudStorage === cloudStorage))
+      .then((refs) => refs.filter((ref) => ref.provider === provider))
       .then((refs) =>
         refs.filter((ref) =>
-          taskLists.some((t) => t.filePath === ref.localFilePath)
+          taskLists.some((t) => t.filePath === ref.identifier)
         )
       )
       .then(setCloudFileRefs);
@@ -360,7 +349,7 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
       )}
       {files && files.items.length === 0 && (
         <Typography sx={{ px: 2, mb: 1 }}>
-          {t("There are no todo.txt files", { cloudStorage })}
+          {t("There are no todo.txt files", { provider })}
         </Typography>
       )}
       {files && files.items.length === 0 && taskLists.length > 0 && (
@@ -383,7 +372,7 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
             </ListItemButton>
           )}
           {files.items
-            .filter((c): c is CloudFile => c.type === "file")
+            .filter((c): c is CloudFile & WithFileType => c.type === "file")
             .map((cloudFile, idx) => (
               <CloudFileButton
                 key={idx}
@@ -395,12 +384,15 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
               />
             ))}
           {files.items
-            .filter((c): c is CloudFolder => c.type === "folder")
-            .map((cloudFolder, idx) => (
+            .filter(
+              (c): c is CloudDirectory & WithDirectoryType =>
+                c.type === "directory"
+            )
+            .map((cloudDirectory, idx) => (
               <CloudFolderButton
                 key={idx}
-                cloudFolder={cloudFolder}
-                onClick={() => handleNavForward(cloudFolder, idx)}
+                cloudDirectory={cloudDirectory}
+                onClick={() => handleNavForward(cloudDirectory, idx)}
                 loading={loading === idx}
                 disabled={disabled}
               />
@@ -439,14 +431,17 @@ const CloudFileButton = (props: CloudFileButtonProps) => {
 };
 
 const CloudFolderButton = (props: CloudFolderButtonProps) => {
-  const { cloudFolder, loading, disabled, onClick } = props;
+  const { cloudDirectory, loading, disabled, onClick } = props;
 
   return (
     <ListItemButton onClick={onClick} disabled={disabled}>
       <ListItemIcon sx={{ minWidth: 40 }}>
         <FolderOutlinedIcon />
       </ListItemIcon>
-      <ListItemText primary={cloudFolder.name} secondary={cloudFolder.path} />
+      <ListItemText
+        primary={cloudDirectory.name}
+        secondary={cloudDirectory.path}
+      />
       {loading ? (
         <CircularProgress color="inherit" size={24} />
       ) : (

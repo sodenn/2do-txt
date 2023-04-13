@@ -6,6 +6,7 @@ import {
 import { open, save } from "@tauri-apps/api/dialog";
 import { readTextFile, removeFile, writeTextFile } from "@tauri-apps/api/fs";
 import { documentDir, join as tauriJoin } from "@tauri-apps/api/path";
+import { createEventEmitter } from "../utils/event-emitter";
 import { getPlatform } from "./platform";
 
 interface Filesystem {
@@ -14,7 +15,7 @@ interface Filesystem {
   writeFile(options: WriteFileOptions): Promise<string>;
   deleteFile(path: string): Promise<void>;
   readdir(path: string): Promise<Dir[]>;
-  isFile(path: string): Promise<boolean>;
+  fileExists(path: string): Promise<boolean>;
   getUniqueFilePath(filePath: string): Promise<UniqueFilePath>;
   selectFolder(): Promise<string | undefined>;
   selectFile(): Promise<string | undefined>;
@@ -36,27 +37,36 @@ interface Dir {
   name: string;
 }
 
-function getFilenameFromPath(filePath: string) {
-  return filePath.replace(/^.*[\\/]/, "");
+function getDirname(path: string) {
+  // Replace any backslashes with forward slashes (for Windows compatibility)
+  path = path.replace(/\\/g, "/");
+  // Remove any trailing slashes
+  path = path.replace(/\/+$/, "");
+  // Split the path into an array of directories
+  const parts = path.split("/");
+  // Remove the last part (i.e. the file or directory name)
+  parts.pop();
+  // Join the remaining parts back together to form the directory name
+  const dirname = parts.length > 0 ? parts.join("/") : "/";
+  // If the parent directory is empty, set it to the root directory
+  if (dirname === "") {
+    return "/";
+  }
+  return dirname;
 }
 
-function getFileNameWithoutEnding(fileName: string) {
-  const fileNameWithoutEnding = fileName.match(/(.+?)(\.[^.]*$|$)/);
+function getFilename(path: string) {
+  return path.replace(/^.*[\\/]/, "");
+}
 
-  if (
-    !fileNameWithoutEnding ||
-    fileNameWithoutEnding.length < 2 ||
-    fileNameWithoutEnding[1].startsWith(".")
-  ) {
-    return;
-  }
-
-  return fileNameWithoutEnding[1];
+function getFileNameWithoutExt(path: string) {
+  const filename = getFilename(path);
+  return filename.split(".").slice(0, -1).join(".");
 }
 
 async function _getUniqueFilePath(
   filePath: string,
-  isFile: (path: string) => Promise<boolean>
+  fileExists: (path: string) => Promise<boolean>
 ): Promise<{ filePath: string; fileName: string }> {
   let exists = true;
   let p = filePath;
@@ -65,12 +75,12 @@ async function _getUniqueFilePath(
 
   while (exists) {
     newFilePath = p;
-    exists = await isFile(p);
+    exists = await fileExists(p);
     num++;
     p = p.replace(/\.[0-9a-z]+$/i, ` ${num}$&`);
   }
 
-  const fileName = getFilenameFromPath(newFilePath);
+  const fileName = getFilename(newFilePath);
   return { fileName, filePath: newFilePath };
 }
 
@@ -102,7 +112,7 @@ const capFilesystem: Filesystem = {
       (result) => result.files.map((file) => ({ name: file.name }))
     );
   },
-  async isFile(path: string) {
+  async fileExists(path: string) {
     return capFilesystem
       .readFile(path)
       .then(() => {
@@ -113,7 +123,7 @@ const capFilesystem: Filesystem = {
       });
   },
   async getUniqueFilePath(path: string) {
-    return _getUniqueFilePath(path, capFilesystem.isFile);
+    return _getUniqueFilePath(path, capFilesystem.fileExists);
   },
   async selectFolder() {
     throw new Error("Not implemented");
@@ -124,8 +134,21 @@ const capFilesystem: Filesystem = {
   async saveFile(_?: string) {
     throw new Error("Not implemented");
   },
-  async join(..._: string[]) {
-    throw new Error("Not implemented");
+  async join(...parts: string[]) {
+    return parts
+      .map((part, i) => {
+        if (i === 0) {
+          // remove trailing slashes (keep the leading slash on the first part)
+          return part.trim().replace(/\/*$/g, "");
+        } else if (i === parts.length - 1) {
+          // remove leading slash (keep the trailing slash on the last part)
+          return part.trim().replace(/^\/*/g, "");
+        } else {
+          // remove leading + trailing slashes
+          return part.trim().replace(/(^\/*|\/*$)/g, "");
+        }
+      })
+      .join("/");
   },
 };
 
@@ -146,7 +169,7 @@ const desktopFilesystem: Filesystem = {
   async readdir(_: string) {
     throw new Error("Not implemented");
   },
-  async isFile(path: string) {
+  async fileExists(path: string) {
     return desktopFilesystem
       .readFile(path)
       .then(() => {
@@ -159,7 +182,7 @@ const desktopFilesystem: Filesystem = {
   async getUniqueFilePath(path: string) {
     const docDir = await documentDir();
     const filePath = await tauriJoin(docDir, path);
-    return _getUniqueFilePath(filePath, desktopFilesystem.isFile);
+    return _getUniqueFilePath(filePath, desktopFilesystem.fileExists);
   },
   async selectFolder() {
     const path: any = await open({
@@ -194,81 +217,97 @@ const desktopFilesystem: Filesystem = {
   },
 };
 
-async function getUri(path: string) {
+export interface CreateFileData {
+  path: string;
+  content: string;
+}
+
+export interface UpdateFileData {
+  path: string;
+  content: string;
+}
+
+export interface DeleteFileData {
+  path: string;
+}
+
+interface FilesystemEventMap {
+  create: CreateFileData;
+  update: UpdateFileData;
+  delete: DeleteFileData;
+}
+
+export const filesystemEmitter = createEventEmitter<FilesystemEventMap>();
+
+async function getFilesystem() {
   const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.getUri(path)
-    : capFilesystem.getUri(path);
+  return platform === "desktop" ? desktopFilesystem : capFilesystem;
+}
+
+async function getUri(path: string) {
+  const filesystem = await getFilesystem();
+  return filesystem.getUri(path);
 }
 
 async function readFile(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.readFile(path)
-    : capFilesystem.readFile(path);
+  const filesystem = await getFilesystem();
+  return filesystem.readFile(path);
 }
 
 async function writeFile(options: WriteFileOptions) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.writeFile(options)
-    : capFilesystem.writeFile(options);
+  const filesystem = await getFilesystem();
+  const exist = await filesystem.fileExists(options.path);
+  const path = await filesystem.writeFile(options);
+  filesystemEmitter.emit(exist ? "update" : "create", {
+    path: options.path,
+    content: options.data,
+  });
+  return path;
 }
 
 async function deleteFile(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.deleteFile(path)
-    : capFilesystem.deleteFile(path);
+  const filesystem = await getFilesystem();
+  await filesystem.deleteFile(path);
+  filesystemEmitter.emit("delete", { path });
 }
 
 async function readdir(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.readdir(path)
-    : capFilesystem.readdir(path);
+  const filesystem = await getFilesystem();
+  return filesystem.readdir(path);
 }
 
-async function isFile(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.isFile(path)
-    : capFilesystem.isFile(path);
+async function fileExists(path: string) {
+  const filesystem = await getFilesystem();
+  return filesystem.fileExists(path);
 }
 
 async function getUniqueFilePath(path: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.getUniqueFilePath(path)
-    : capFilesystem.getUniqueFilePath(path);
+  const filesystem = await getFilesystem();
+  return filesystem.getUniqueFilePath(path);
 }
 
 async function selectFolder() {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.selectFolder()
-    : capFilesystem.selectFolder();
+  const filesystem = await getFilesystem();
+  return filesystem.selectFolder();
 }
 
 async function selectFile() {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.selectFile()
-    : capFilesystem.selectFile();
+  const filesystem = await getFilesystem();
+  return filesystem.selectFile();
 }
 
 async function saveFile(defaultPath?: string) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.saveFile(defaultPath)
-    : capFilesystem.saveFile(defaultPath);
+  const filesystem = await getFilesystem();
+  const path = await filesystem.saveFile(defaultPath);
+  if (path) {
+    filesystemEmitter.emit("create", { path: path, content: "" });
+  }
+  return path;
 }
 
 async function join(...paths: string[]) {
-  const platform = getPlatform();
-  return platform === "desktop"
-    ? desktopFilesystem.join(...paths)
-    : capFilesystem.join(...paths);
+  const filesystem = await getFilesystem();
+  return filesystem.join(...paths);
 }
 
 export {
@@ -277,12 +316,13 @@ export {
   writeFile,
   deleteFile,
   readdir,
-  isFile,
+  fileExists,
   getUniqueFilePath,
   selectFolder,
   selectFile,
   saveFile,
   join,
-  getFilenameFromPath,
-  getFileNameWithoutEnding,
+  getDirname,
+  getFilename,
+  getFileNameWithoutExt,
 };

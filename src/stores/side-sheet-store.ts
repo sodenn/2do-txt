@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
-interface SideSheetState {
+interface SideSheetStoreInterface {
   open: boolean;
   toggleSideSheet: () => void;
   openSideSheet: () => void;
   closeSideSheet: () => void;
 }
 
-const useSideSheetStore = create<SideSheetState>((set) => ({
+const useSideSheetStore = create<SideSheetStoreInterface>((set) => ({
   open: false,
   toggleSideSheet: () => set((state) => ({ open: !state.open })),
   openSideSheet: () => set({ open: true }),

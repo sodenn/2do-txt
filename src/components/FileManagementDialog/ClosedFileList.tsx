@@ -26,7 +26,7 @@ interface ClosedFileListProps {
   onDelete: (filePath: string) => void;
 }
 
-interface ItemMenuProps {
+interface FileMenuProps {
   filePath: string;
   onOpen: (filePath: string) => void;
   onDelete: (filePath: string) => void;
@@ -67,7 +67,7 @@ const ClosedFileList = (props: ClosedFileListProps) => {
           key={idx}
           disablePadding
           secondaryAction={
-            <ItemMenu
+            <FileMenu
               filePath={filePath}
               onOpen={handleOpen}
               onDelete={onDelete}
@@ -83,7 +83,7 @@ const ClosedFileList = (props: ClosedFileListProps) => {
   );
 };
 
-const ItemMenu = (props: ItemMenuProps) => {
+const FileMenu = (props: FileMenuProps) => {
   const { filePath, onOpen, onDelete } = props;
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);

@@ -4,20 +4,26 @@ interface ArchivedTasksDialogOptions {
   filePath?: string;
 }
 
-interface ArchivedTasksDialogState extends ArchivedTasksDialogOptions {
+interface ArchivedTasksDialogStoreData extends ArchivedTasksDialogOptions {
   open: boolean;
+}
+
+interface ArchivedTasksDialogStoreInterface
+  extends ArchivedTasksDialogStoreData {
   openArchivedTasksDialog: (opt?: ArchivedTasksDialogOptions) => void;
   closeArchivedTasksDialog: () => void;
   cleanupArchivedTasksDialog: () => void;
 }
 
-const useArchivedTasksDialogStore = create<ArchivedTasksDialogState>((set) => ({
-  open: false,
-  filePath: undefined,
-  openArchivedTasksDialog: (opt: ArchivedTasksDialogOptions = {}) =>
-    set({ ...opt, open: true }),
-  closeArchivedTasksDialog: () => set({ open: false }),
-  cleanupArchivedTasksDialog: () => set({ open: false, filePath: undefined }),
-}));
+const useArchivedTasksDialogStore = create<ArchivedTasksDialogStoreInterface>(
+  (set) => ({
+    open: false,
+    filePath: undefined,
+    openArchivedTasksDialog: (opt: ArchivedTasksDialogOptions = {}) =>
+      set({ ...opt, open: true }),
+    closeArchivedTasksDialog: () => set({ open: false }),
+    cleanupArchivedTasksDialog: () => set({ open: false, filePath: undefined }),
+  })
+);
 
 export default useArchivedTasksDialogStore;

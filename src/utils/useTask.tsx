@@ -1,4 +1,4 @@
-import { differenceInMinutes, format, isBefore, subHours } from "date-fns";
+import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { isEqual, omit } from "lodash";
@@ -8,10 +8,10 @@ import { Trans, useTranslation } from "react-i18next";
 import { promptForRating } from "../native-api/app-rate";
 import {
   deleteFile,
-  getFileNameWithoutEnding,
-  getFilenameFromPath,
+  fileExists,
+  getFileNameWithoutExt,
+  getFilename,
   getUri,
-  isFile,
   writeFile,
 } from "../native-api/filesystem";
 import { setPreferencesItem } from "../native-api/preferences";
@@ -20,10 +20,9 @@ import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
 import useFilterStore from "../stores/filter-store";
 import usePlatformStore from "../stores/platform-store";
 import useSettingsStore from "../stores/settings-store";
-import useTasksStore, { loadTodoFiles } from "../stores/task-state";
+import useTasksStore, { taskLoader } from "../stores/task-state";
 import useNotification from "../utils/useNotification";
-import { SyncFileOptions, useCloudStorage } from "./CloudStorage";
-import { parseDate, todayDate } from "./date";
+import { todayDate } from "./date";
 import { hashCode } from "./hashcode";
 import { addTodoFilePath, removeTodoFilePath } from "./settings";
 import {
@@ -44,11 +43,6 @@ import {
 import { getDoneFilePath } from "./todo-files";
 import useArchivedTask from "./useArchivedTask";
 import { generateId } from "./uuid";
-
-interface SyncItem {
-  filePath: string;
-  text: string;
-}
 
 type SaveTodoFile = {
   (filePath: string, text: string): Promise<TaskList>;
@@ -98,20 +92,11 @@ function useTask() {
   const addTaskList = useTasksStore((state) => state.addTaskList);
   const removeTaskList = useTasksStore((state) => state.removeTaskList);
   const {
-    getCloudFileRefs,
-    syncAllFiles,
-    syncFile,
-    unlinkCloudFile,
-    unlinkCloudDoneFile,
-    cloudStorageEnabled,
-  } = useCloudStorage();
-  const {
     scheduleNotifications,
     cancelNotifications,
     shouldNotificationsBeRescheduled,
   } = useNotification();
   const {
-    syncDoneFiles,
     saveDoneFile,
     loadDoneFile,
     archiveTask,
@@ -140,7 +125,7 @@ function useTask() {
 
   const parseTaskList = useCallback((filePath: string, text: string) => {
     const parseResult = _parseTaskList(text);
-    const fileName = getFilenameFromPath(filePath);
+    const fileName = getFilename(filePath);
     const taskList: TaskList = {
       ...parseResult,
       filePath,
@@ -158,52 +143,6 @@ function useTask() {
     [addTaskList, parseTaskList]
   );
 
-  const syncTodoFileWithCloudStorage = useCallback(
-    async (optOrPath: SyncFileOptions | string) => {
-      let opt: SyncFileOptions;
-      if (typeof optOrPath === "string") {
-        const taskList = taskLists.find((l) => l.filePath === optOrPath);
-        if (!taskList) {
-          return;
-        }
-        const text = stringifyTaskList(taskList.items, taskList.lineEnding);
-        opt = {
-          filePath: optOrPath,
-          text,
-          isDoneFile: false,
-          showSnackbar: true,
-        };
-      } else {
-        opt = optOrPath;
-      }
-      const result = await syncFile(opt);
-      if (result) {
-        await writeFile({
-          path: opt.filePath,
-          data: result,
-        });
-        return loadTodoFile(opt.filePath, result);
-      }
-    },
-    [loadTodoFile, syncFile, taskLists]
-  );
-
-  const syncAllTodoFilesWithCloudStorage = useCallback(
-    async (items: SyncItem[]) => {
-      syncAllFiles(items.map((i) => ({ ...i, isDoneFile: false }))).then(
-        (syncResult) =>
-          syncResult.forEach((i) => {
-            writeFile({
-              path: i.filePath,
-              data: i.text,
-            }).then(() => loadTodoFile(i.filePath, i.text));
-          })
-      );
-      syncDoneFiles(items);
-    },
-    [syncDoneFiles, loadTodoFile, syncAllFiles]
-  );
-
   const saveTodoFile = useCallback<SaveTodoFile>(
     async (listOrPath: string | TaskList, text?: string) => {
       text =
@@ -218,13 +157,6 @@ function useTask() {
         data: text,
       });
 
-      syncTodoFileWithCloudStorage({
-        filePath,
-        text,
-        showSnackbar: true,
-        isDoneFile: false,
-      }).catch((e) => void e);
-
       promptForRating().catch((e) => void e);
 
       if (typeof listOrPath === "string") {
@@ -235,7 +167,7 @@ function useTask() {
         return listOrPath;
       }
     },
-    [addTaskList, loadTodoFile, syncTodoFileWithCloudStorage]
+    [addTaskList, loadTodoFile]
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -434,11 +366,6 @@ function useTask() {
         await deleteTodoFile(filePath);
       }
 
-      if (cloudStorageEnabled) {
-        unlinkCloudFile(filePath).catch((e) => void e);
-        unlinkCloudDoneFile(filePath).catch((e) => void e);
-      }
-
       if (filePath === activeTaskListPath) {
         if (taskLists.length === 2) {
           const fallbackList = taskLists.find(
@@ -459,13 +386,10 @@ function useTask() {
     [
       taskLists,
       platform,
-      cloudStorageEnabled,
       activeTaskListPath,
       removeTaskList,
       cancelNotifications,
       deleteTodoFile,
-      unlinkCloudFile,
-      unlinkCloudDoneFile,
       setActiveTaskListPath,
     ]
   );
@@ -478,7 +402,7 @@ function useTask() {
       if (!doneFile) {
         return;
       }
-      const fileNameWithoutEnding = getFileNameWithoutEnding(fileName);
+      const fileNameWithoutEnding = getFileNameWithoutExt(fileName);
       const todoFileText = stringifyTaskList(items, lineEnding);
 
       if (doneFile) {
@@ -556,7 +480,7 @@ function useTask() {
 
   const createNewTodoFile = useCallback(
     async (filePath: string, text = "") => {
-      const exists = await isFile(filePath);
+      const exists = await fileExists(filePath);
 
       const saveFile = async (filePath: string, text: string) => {
         await addTodoFilePath(filePath);
@@ -628,22 +552,26 @@ function useTask() {
     [_restoreTask, saveTodoFile, taskLists]
   );
 
-  const archiveTasks = useCallback(() => {
-    return _archiveTasks({
-      taskLists,
-      onSaveTodoFile: async (taskList) => {
-        await saveTodoFile(taskList);
-      },
-    });
+  const archiveTasks = useCallback(async () => {
+    const newTaskLists = await _archiveTasks(taskLists);
+    return Promise.all(
+      newTaskLists.map((taskList) => {
+        if (taskList) {
+          return saveTodoFile(taskList);
+        }
+      })
+    );
   }, [_archiveTasks, saveTodoFile, taskLists]);
 
-  const restoreArchivedTasks = useCallback(() => {
-    return _restoreArchivedTasks({
-      taskLists,
-      onSaveTodoFile: async (taskList) => {
-        await saveTodoFile(taskList);
-      },
-    });
+  const restoreArchivedTasks = useCallback(async () => {
+    const newTaskLists = await _restoreArchivedTasks(taskLists);
+    return Promise.all(
+      newTaskLists.map((taskList) => {
+        if (taskList) {
+          return saveTodoFile(taskList);
+        }
+      })
+    );
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
   const handleFileNotFound = useCallback(
@@ -658,7 +586,9 @@ function useTask() {
 
   const loadTodoFilesFromDisk = useCallback(async () => {
     // load files from disk
-    const { files, errors } = await loadTodoFiles();
+    const {
+      todoFiles: { files, errors },
+    } = await taskLoader();
     // apply external file changes by updating the state
     const newTaskList = files.map((f) => f.taskList);
     if (!areTaskListsEqual(taskLists, newTaskList)) {
@@ -668,30 +598,15 @@ function useTask() {
   }, [setTaskLists, taskLists]);
 
   const handleActive = useCallback(async () => {
-    const { files, errors } = await loadTodoFilesFromDisk();
+    const { errors } = await loadTodoFilesFromDisk();
     // notify the user if a file cannot be found
     for (const error of errors) {
       await handleFileNotFound(error.filePath);
     }
-    // sync files with cloud storage
-    const refs = await getCloudFileRefs();
-    const outdated = refs.every((r) => {
-      const date = parseDate(r.lastSync);
-      return date && differenceInMinutes(new Date(), date) >= 2;
-    });
-    if (outdated) {
-      syncAllTodoFilesWithCloudStorage(files);
-    }
-  }, [
-    loadTodoFilesFromDisk,
-    getCloudFileRefs,
-    handleFileNotFound,
-    syncAllTodoFilesWithCloudStorage,
-  ]);
+  }, [loadTodoFilesFromDisk, handleFileNotFound]);
 
   const handleInit = useCallback(async () => {
     todoFiles.errors.forEach((err) => handleFileNotFound(err.filePath));
-    syncAllTodoFilesWithCloudStorage(todoFiles.files).catch((e) => void e);
     shouldNotificationsBeRescheduled().then(() => {
       taskLists.forEach((taskList) =>
         scheduleDueTaskNotifications(taskList.items)
@@ -723,7 +638,6 @@ function useTask() {
     findTaskListByTaskId,
     reorderTaskList,
     createNewTodoFile,
-    syncTodoFileWithCloudStorage,
     handleActive,
     handleInit,
   };
