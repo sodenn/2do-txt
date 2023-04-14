@@ -41,7 +41,7 @@ export function createSyncFileFunction({
         // no action needed
         return { operation: "none" };
       }
-      const { response, cloudFile: _cloudFile } = await downloadFile({
+      const { response } = await downloadFile({
         path: ref.path,
       });
       return {

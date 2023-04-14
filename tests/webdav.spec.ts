@@ -62,7 +62,7 @@ test("should import todo.txt from WebDAV", async ({ page }) => {
   await expect(page.getByTestId("task")).toHaveCount(8);
 });
 
-test("should sync todo.txt with WebDAV", async ({ page, context }) => {
+test("should sync todo.txt with WebDAV", async ({ page }) => {
   await replayFromHar(page);
   await connectToWebDAV(page);
   await openWebDAVImportDialog(page);

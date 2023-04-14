@@ -23,7 +23,7 @@ function handleError(error: any): Promise<never> {
 export const createDropboxClient = (
   config: DropboxClientConfiguration = {}
 ): DropboxClient => {
-  const { redirectUrl, dropboxOptions = {} } = config;
+  const { dropboxOptions = {} } = config;
   const dbx = new Dropbox(dropboxOptions);
 
   const list: List = async (options = {}) => {

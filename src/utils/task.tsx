@@ -17,7 +17,7 @@ import useSettingsStore, {
 import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
 import { generateId } from "./uuid";
 
-export type Priority = "A" | "B" | "C" | "D" | string;
+type Priority = "A" | "B" | "C" | "D" | string;
 
 export interface Task {
   completed: boolean;
@@ -136,7 +136,7 @@ export function parseTask(text: string, order = -1) {
   return task;
 }
 
-export function parseTaskBody(
+function parseTaskBody(
   body: string
 ): Pick<Task, "contexts" | "projects" | "tags" | "dueDate"> {
   const tokens = body

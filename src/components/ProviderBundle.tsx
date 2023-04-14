@@ -1,12 +1,11 @@
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
-import { Suspense } from "react";
+import { PropsWithChildren, Suspense } from "react";
 import { useLoaderData } from "react-router-dom";
-import { WithChildren } from "../types/common.types";
 import AppStoreProvider, { AppLoaderData } from "./AppStoreProvider";
 import AppThemeProvider from "./AppThemeProvider";
 
-const ProviderBundle = ({ children }: WithChildren) => {
+const ProviderBundle = ({ children }: PropsWithChildren) => {
   const loaderData = useLoaderData() as AppLoaderData;
   return (
     <Suspense fallback={null}>

@@ -30,7 +30,7 @@ export async function themeLoader(): Promise<ThemeStoreData> {
 export function initializeThemeStore(
   preloadedState: Partial<ThemeStoreInterface> = {}
 ) {
-  return createStore<ThemeStoreInterface>((set, get) => ({
+  return createStore<ThemeStoreInterface>((set) => ({
     ...getDefaultInitialState(),
     ...preloadedState,
     setThemeMode: (mode: ThemeMode) => {

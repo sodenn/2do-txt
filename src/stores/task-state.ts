@@ -80,7 +80,7 @@ export async function taskLoader(): Promise<TaskStoreData> {
 export function initializeTaskStore(
   preloadedState: Partial<TaskStoreInterface> = {}
 ) {
-  return createStore<TaskStoreInterface>((set, get) => ({
+  return createStore<TaskStoreInterface>((set) => ({
     ...getDefaultInitialState(),
     ...preloadedState,
     setTaskLists: (taskLists: TaskList[]) => set({ taskLists }),

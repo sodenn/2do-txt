@@ -82,7 +82,7 @@ export function initializeCloudStore({
   if (dropbox?.refreshToken) {
     cloudStorages.push(createDropboxStorage(dropbox.refreshToken));
   }
-  return createStore<CloudStoreInterface>((set, get) => ({
+  return createStore<CloudStoreInterface>((set) => ({
     ...getDefaultInitialState(),
     cloudStorages,
     addWebDAVStorage: async (config: WebDAVClientOptions) => {

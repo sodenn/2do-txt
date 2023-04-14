@@ -17,7 +17,7 @@ interface CloudStorageConnectionButtonsProps {
 
 const providers: Provider[] = ["Dropbox", "WebDAV"];
 
-export const CloudStorageConnectionButtons = ({
+const CloudStorageConnectionButtons = ({
   status,
   onMenuItemClick,
 }: CloudStorageConnectionButtonsProps) => {
