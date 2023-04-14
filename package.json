@@ -44,7 +44,6 @@
   },
   "dependencies": {
     "@capacitor/app": "4.1.1",
-    "@capacitor/clipboard": "4.1.0",
     "@capacitor/core": "4.7.3",
     "@capacitor/filesystem": "4.1.4",
     "@capacitor/ios": "4.7.3",
@@ -103,7 +102,6 @@
     "@testing-library/react": "14.0.0",
     "@types/file-saver": "2.0.5",
     "@types/node": "18.15.10",
-    "@types/node-fetch": "2.6.2",
     "@types/react": "18.0.30",
     "@types/react-dom": "18.0.11",
     "@typescript-eslint/eslint-plugin": "5.57.0",
