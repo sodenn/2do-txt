@@ -7,7 +7,7 @@ import {
 import { CloudFileRef, createChecksum } from "../CloudStorage";
 import { getDoneFilePath } from "../todo-files";
 
-export interface Ref {
+interface Ref {
   name: string;
   path: string;
   rev: string;
@@ -17,7 +17,7 @@ export interface Ref {
   cloudStorage: string;
 }
 
-export interface ReadResult {
+interface ReadResult {
   fileType: string;
   content: string;
   checksum: string;

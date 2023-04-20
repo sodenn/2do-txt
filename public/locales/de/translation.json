@@ -162,5 +162,8 @@
   "Copy to clipboard failed": "Kopieren in die Zwischenablage fehlgeschlagen",
   "Error": "Fehler",
   "Error message": "Fehlermeldung",
-  "An error has occurred": "Leider ist ein Problem aufgetreten 🫤"
+  "An error has occurred": "Leider ist ein Problem aufgetreten 🫤",
+  "Pull to refresh": "Ziehen zum Aktualisieren",
+  "Release to refresh": "Loslassen zum Aktualisieren",
+  "Refreshing": "Aktualisiere"
 }

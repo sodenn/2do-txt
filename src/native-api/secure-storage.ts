@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { getPlatform } from "./platform";
 
-export type SecureStorageKeys =
+type SecureStorageKeys =
   | "Dropbox-refresh-token"
   | "WebDAV-username"
   | "WebDAV-password"

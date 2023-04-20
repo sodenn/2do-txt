@@ -14,6 +14,7 @@ import { taskLoader } from "../../stores/task-state";
 import { parseDate } from "../date";
 import { getTodoFilePathFromDoneFilePath, isDoneFilePath } from "../todo-files";
 import useArchivedTask from "../useArchivedTask";
+import usePullToRefresh from "../usePullToRefresh";
 import useTask from "../useTask";
 import { cloudStoragePreferences } from "./preferences";
 import { useCloudStorage } from "./useCloudStorage";
@@ -25,6 +26,7 @@ export function useCloudStorageEffect() {
     requestTokens,
     getCloudFileRef,
     uploadFile,
+    cloudStorages,
   } = useCloudStorage();
   const { syncDoneFiles } = useArchivedTask();
   const { loadTodoFile } = useTask();
@@ -106,6 +108,7 @@ export function useCloudStorageEffect() {
     syncAllTodoFiles(true);
   }, [syncAllTodoFiles]);
 
+  // Sync files with cloud storage when the app becomes active
   useEffect(() => {
     addBecomeActiveListener(handleActive);
     return () => {
@@ -113,6 +116,7 @@ export function useCloudStorageEffect() {
     };
   }, [handleActive]);
 
+  // Automatically sync files with cloud storage after file changes
   useEffect(() => {
     filesystemEmitter.on("create", handleCreateFile);
     filesystemEmitter.on("update", handleUpdateFile);
@@ -124,9 +128,16 @@ export function useCloudStorageEffect() {
     };
   }, [handleUpdateFile, handleDeleteFile, handleCreateFile]);
 
+  // Sync files with cloud storage on app start
   useEffect(() => {
     syncAllTodoFiles();
     requestTokens();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  usePullToRefresh(
+    syncAllTodoFiles,
+    "#scroll-container",
+    cloudStorages.length === 0
+  );
 }

@@ -9,11 +9,10 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { ReactNode } from "react";
-import { WithChildren } from "../../types/common.types";
+import { PropsWithChildren, ReactNode } from "react";
 import { useFullScreenDialog } from "./FullScreenDialogProvider";
 
-interface FullScreenDialogTitleProps extends WithChildren {
+interface FullScreenDialogTitleProps extends PropsWithChildren {
   onClose: () => void;
   accept?: {
     text?: ReactNode;
@@ -24,7 +23,7 @@ interface FullScreenDialogTitleProps extends WithChildren {
   };
 }
 
-export const StyledAppBar = styled(AppBar)({
+const StyledAppBar = styled(AppBar)({
   paddingTop: "env(safe-area-inset-top)",
   paddingLeft: "env(safe-area-inset-left)",
   paddingRight: "env(safe-area-inset-right)",

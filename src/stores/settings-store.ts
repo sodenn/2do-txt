@@ -87,7 +87,7 @@ export async function settingsLoader(): Promise<SettingsStoreData> {
 export function initializeSettingsStore(
   preloadedState: Partial<SettingsStoreInterface> = {}
 ) {
-  return createStore<SettingsStoreInterface>((set, get) => ({
+  return createStore<SettingsStoreInterface>((set) => ({
     ...getDefaultInitialState(),
     ...preloadedState,
     toggleCreateCreationDate: () =>

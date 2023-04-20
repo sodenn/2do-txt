@@ -1,11 +1,11 @@
 import {
   createContext,
   Dispatch,
+  PropsWithChildren,
   SetStateAction,
   useContext,
   useState,
 } from "react";
-import { WithChildren } from "../../types/common.types";
 
 interface FullScreenDialogState {
   divider: boolean;
@@ -15,7 +15,7 @@ interface FullScreenDialogState {
 // @ts-ignore
 const FullScreenDialogCtx = createContext<FullScreenDialogState>(undefined);
 
-const FullScreenDialogProvider = ({ children }: WithChildren) => {
+const FullScreenDialogProvider = ({ children }: PropsWithChildren) => {
   const [divider, setDivider] = useState<boolean>(false);
   return (
     <FullScreenDialogCtx.Provider value={{ divider, setDivider }}>

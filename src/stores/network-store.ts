@@ -33,7 +33,7 @@ export async function networkLoader(): Promise<NetworkStoreData> {
 export function initializeNetworkStore(
   preloadedState: Partial<NetworkStoreInterface> = {}
 ) {
-  return createStore<NetworkStoreInterface>((set, get) => ({
+  return createStore<NetworkStoreInterface>((set) => ({
     ...getDefaultInitialState(),
     ...preloadedState,
     setConnected: (connected: boolean) => set({ connected }),

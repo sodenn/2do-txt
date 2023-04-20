@@ -163,5 +163,8 @@
   "Copy to clipboard failed": "Copy to clipboard failed",
   "Error": "Fehler",
   "Error message": "Error message",
-  "An error has occurred": "An error has occurred 🫤"
+  "An error has occurred": "An error has occurred 🫤",
+  "Pull to refresh": "Pull to refresh",
+  "Release to refresh": "Release to refresh",
+  "Refreshing": "Refreshing"
 }

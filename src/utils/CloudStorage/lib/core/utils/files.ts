@@ -52,14 +52,3 @@ async function getSubtle(): Promise<SubtleCrypto> {
     ? import("crypto").then((c: any) => c.webcrypto.subtle)
     : window.crypto.subtle;
 }
-
-export function readBlob(blob: Blob) {
-  return new Promise<ArrayBuffer>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      resolve(reader.result as ArrayBuffer);
-    };
-    reader.onerror = reject;
-    reader.readAsArrayBuffer(blob);
-  });
-}

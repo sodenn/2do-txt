@@ -10,7 +10,7 @@ import {
 } from "../native-api/filesystem";
 import useArchivedTasksDialogStore from "../stores/archived-tasks-dialog-store";
 import useSettingsStore from "../stores/settings-store";
-import { CloudFileRef, useCloudStorage } from "./CloudStorage";
+import { useCloudStorage } from "./CloudStorage";
 import { Task } from "./task";
 import { TaskList, parseTaskList, stringifyTaskList } from "./task-list";
 import { getDoneFilePath } from "./todo-files";
@@ -57,7 +57,7 @@ function useArchivedTask() {
             (e) => void e
           );
 
-          const addSyncOption = async (ref: CloudFileRef) => {
+          const addSyncOption = async () => {
             const content = await readFile(doneFilePath).catch((e) => void e);
             if (content) {
               syncOptions.push({
@@ -73,7 +73,7 @@ function useArchivedTask() {
             return archiveMode !== "no-archiving" ? "disable" : "do-nothing";
           } else if (ref) {
             // local done file and cloud done file exist, sync needed
-            await addSyncOption(ref);
+            await addSyncOption();
             return archiveMode === "no-archiving" ? "enable" : "do-nothing";
           } else if (!cloudFile) {
             // local done file and cloud done file don't exist, do nothing
@@ -99,7 +99,7 @@ function useArchivedTask() {
             });
             return "enable";
           } else if (ref) {
-            await addSyncOption(ref);
+            await addSyncOption();
             return "do-nothing";
           }
         })

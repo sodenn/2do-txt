@@ -27,6 +27,7 @@ import { List as MovableList, arrayMove } from "react-movable";
 import { OnChangeMeta } from "react-movable/lib/types";
 import { writeToClipboard } from "../../native-api/clipboard";
 import { fileExists, readFile } from "../../native-api/filesystem";
+import { hasTouchScreen } from "../../native-api/platform";
 import usePlatformStore from "../../stores/platform-store";
 import useSettingsStore from "../../stores/settings-store";
 import {
@@ -324,6 +325,7 @@ const EnableCloudSyncMenuItem = (props: EnableCloudSyncMenuItemProps) => {
 const FileMenu = (props: FileMenuProps) => {
   const { filePath, cloudFileRef, onChange, onClose, onDownloadClick } = props;
   const { cloudStorages } = useCloudStorage();
+  const touchScreen = hasTouchScreen();
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
   const { enqueueSnackbar } = useSnackbar();
@@ -384,7 +386,7 @@ const FileMenu = (props: FileMenuProps) => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
       >
-        {cloudFileRef && (
+        {cloudFileRef && !touchScreen && (
           <CloudSyncMenuItem
             identifier={cloudFileRef.identifier}
             provider={cloudFileRef.provider}

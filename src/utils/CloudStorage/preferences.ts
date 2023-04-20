@@ -6,7 +6,7 @@ import {
 } from "../../native-api/preferences";
 import { CloudPreferencesStorage, createCloudPreferences } from "./lib";
 
-export const preferencesStorage: CloudPreferencesStorage = {
+const preferencesStorage: CloudPreferencesStorage = {
   async getItem(key: string) {
     return getPreferencesItem(key as PreferencesKeys);
   },

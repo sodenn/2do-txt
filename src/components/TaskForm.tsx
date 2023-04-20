@@ -36,7 +36,7 @@ interface TaskFormProps {
   onEnterPress: () => void;
 }
 
-export function getTagStyle(key: string, theme: Theme): CSSProperties {
+function getTagStyle(key: string, theme: Theme): CSSProperties {
   return key === "due"
     ? {
         color: theme.palette.warning.contrastText,

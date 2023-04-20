@@ -37,7 +37,7 @@ export interface FilterStoreData {
   activeTaskListPath?: string;
 }
 
-export interface FilterStoreInterface extends FilterStoreData {
+interface FilterStoreInterface extends FilterStoreData {
   setSearchTerm: (searchTerm: string) => void;
   setSortBy: (sortBy: SortKey) => void;
   setFilterType: (filterType: FilterType) => void;
@@ -99,7 +99,7 @@ export async function filterLoader(): Promise<FilterStoreData> {
 export function initializeFilterStore(
   preloadedState: Partial<FilterStoreInterface> = {}
 ) {
-  return createStore<FilterStoreInterface>((set, get) => ({
+  return createStore<FilterStoreInterface>((set) => ({
     ...getDefaultInitialState(),
     ...preloadedState,
     setSearchTerm: (searchTerm: string) => set({ searchTerm }),

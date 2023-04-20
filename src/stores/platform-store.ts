@@ -27,16 +27,11 @@ export async function platformLoader(): Promise<PlatformStoreData> {
 export function initializePlatformStore(
   preloadedState: Partial<PlatformStoreInterface> = {}
 ) {
-  return createStore<PlatformStoreInterface>((set, get) => ({
+  return createStore<PlatformStoreInterface>(() => ({
     ...getDefaultInitialState(),
     ...preloadedState,
   }));
 }
-
-export const platformStore = createStore<PlatformStoreInterface>((set) => ({
-  platform: "web",
-  init: (data: PlatformStoreData) => set(data),
-}));
 
 export default function usePlatformStore<T>(
   selector: (state: PlatformStoreInterface) => T

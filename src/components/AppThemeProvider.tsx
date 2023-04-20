@@ -8,14 +8,13 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { deDE, enUS, Localization } from "@mui/material/locale";
-import { useEffect, useMemo } from "react";
+import { PropsWithChildren, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { setKeyboardStyle } from "../native-api/keyboard";
 import { setPreferencesItem } from "../native-api/preferences";
 import { hideSplashScreen } from "../native-api/splash-screen";
 import { setStatusBarStyling } from "../native-api/status-bar";
 import useThemeStore, { ThemeMode } from "../stores/theme-store";
-import { WithChildren } from "../types/common.types";
 
 const translations: Record<string, Localization> = {
   en: enUS,
@@ -92,7 +91,7 @@ function applyThemeMode(theme: Theme, mode: ThemeMode) {
   hideSplashScreen();
 }
 
-const AppThemeProvider = ({ children }: WithChildren) => {
+const AppThemeProvider = ({ children }: PropsWithChildren) => {
   const {
     i18n: { language },
   } = useTranslation();

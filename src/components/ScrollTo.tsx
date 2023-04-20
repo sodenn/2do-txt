@@ -7,7 +7,7 @@ interface ScrollTopProps {
   target: HTMLElement;
 }
 
-export const StyledBox = styled(Box)({
+const StyledBox = styled(Box)({
   position: "fixed",
   paddingRight: "env(safe-area-inset-right)",
   paddingBottom: "env(safe-area-inset-bottom)",

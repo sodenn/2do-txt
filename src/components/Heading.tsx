@@ -1,9 +1,8 @@
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Stack, Tooltip, Typography } from "@mui/material";
-import { ReactNode } from "react";
-import { WithChildren } from "../types/common.types";
+import { PropsWithChildren, ReactNode } from "react";
 
-interface HeadingProps extends WithChildren {
+interface HeadingProps extends PropsWithChildren {
   disabled?: boolean;
   helperText?: ReactNode;
   gutterBottom?: boolean;
