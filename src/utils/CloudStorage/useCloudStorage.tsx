@@ -57,12 +57,6 @@ export function useCloudStorage() {
   const cloudStorages = useCloudStorageStore((state) => state.cloudStorages);
   const authError = useCloudStorageStore((state) => state.authError);
   const setAuthError = useCloudStorageStore((state) => state.setAuthError);
-  const connectionError = useCloudStorageStore(
-    (state) => state.connectionError
-  );
-  const setConnectionError = useCloudStorageStore(
-    (state) => state.setConnectionError
-  );
   const openWebDAVDialog = useWebDAVDialogStore(
     (state) => state.openWebDAVDialog
   );
@@ -105,27 +99,23 @@ export function useCloudStorage() {
 
   const showConnectionErrorSnackbar = useCallback(
     (error: any) => {
-      // Don't annoy the user, so only show the message once
-      if (!connectionError) {
-        setConnectionError(true);
-        return enqueueSnackbar(
-          <span>
-            <Trans
-              i18nKey="Error connecting with cloud storage"
-              values={{
-                provider: t("cloud storage"),
-                message: error.message,
-              }}
-              components={{
-                code: <code style={{ marginLeft: 5 }} />,
-              }}
-            />
-          </span>,
-          { variant: "warning", preventDuplicate: true }
-        );
-      }
+      return enqueueSnackbar(
+        <span>
+          <Trans
+            i18nKey="Error connecting with cloud storage"
+            values={{
+              provider: t("cloud storage"),
+              message: error.message,
+            }}
+            components={{
+              code: <code style={{ marginLeft: 5 }} />,
+            }}
+          />
+        </span>,
+        { variant: "warning", preventDuplicate: true }
+      );
     },
-    [connectionError, enqueueSnackbar, setConnectionError, t]
+    [enqueueSnackbar, t]
   );
 
   const showSessionExpiredSnackbar = useCallback(
