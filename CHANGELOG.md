@@ -1,3 +1,17 @@
+# [1.18.0](https://github.com/sodenn/2do-txt/compare/v1.17.8...v1.18.0) (2023-04-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies (non-major) ([#781](https://github.com/sodenn/2do-txt/issues/781)) ([8193be2](https://github.com/sodenn/2do-txt/commit/8193be2da2b83c0859b3f22a6097753901da7d5c))
+* **deps:** update dependencies (non-major) ([#786](https://github.com/sodenn/2do-txt/issues/786)) ([ed054fe](https://github.com/sodenn/2do-txt/commit/ed054fed5d3e87b6a5074da4392b2816451fd54b))
+* **WebDAV:** fix WebDAV sync error on iOS ([#789](https://github.com/sodenn/2do-txt/issues/789)) ([922f54b](https://github.com/sodenn/2do-txt/commit/922f54b2f58d9a1c35e36cf0ff078d74ae100ea5))
+
+
+### Features
+
+* synchronize files with cloud storage via pull-to-refresh gesture ([#785](https://github.com/sodenn/2do-txt/issues/785)) ([9c34abe](https://github.com/sodenn/2do-txt/commit/9c34abe150a1941efd764b6b3a539f7e2ce5f820))
+
 ## [1.17.8](https://github.com/sodenn/2do-txt/compare/v1.17.7...v1.17.8) (2023-04-11)
 
 
