@@ -24,6 +24,23 @@ import {
 } from "./path";
 import { Headers, WebDAVClientOptions } from "./types";
 
+function handleFetchError(error: any) {
+  console.error(error.message);
+
+  // Some WebDAV servers return a 204 response with a body, which is not
+  // allowed. We can work around this by returning a 204 response instead.
+  const errorMessages = [
+    "Response cannot have a body with the given status.", // WebKit
+  ];
+  if (errorMessages.some((message) => error.message.includes(message))) {
+    return new Response(null, {
+      status: 204,
+    });
+  }
+
+  throw error;
+}
+
 export const createWebDAVClient = (config: WebDAVClientOptions): Client => {
   const { fetch: fetchFunction = fetch, basicAuth, baseUrl } = config;
 
@@ -36,10 +53,14 @@ export const createWebDAVClient = (config: WebDAVClientOptions): Client => {
       return fetchFunction(input, {
         ...init,
         headers,
-      }).then(handleResponseErrors);
+      })
+        .then(handleResponseErrors)
+        .catch(handleFetchError);
     } else {
       input.headers.append("Authorization", Authorization);
-      return fetchFunction(input, init).then(handleResponseErrors);
+      return fetchFunction(input, init)
+        .then(handleResponseErrors)
+        .catch(handleFetchError);
     }
   };
 

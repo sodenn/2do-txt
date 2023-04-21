@@ -12,7 +12,6 @@ import {
 
 interface CloudStoreData {
   authError: boolean;
-  connectionError: boolean;
   cloudStorages: CloudStorage[];
 }
 
@@ -21,7 +20,6 @@ interface CloudStoreInterface extends CloudStoreData {
   addDropboxStorage: (refreshToken: string) => Promise<CloudStorage>;
   removeStorage: (provider: Provider) => Promise<void>;
   setAuthError: (authError: boolean) => void;
-  setConnectionError: (connectionError: boolean) => void;
 }
 
 export interface CloudLoaderData {
@@ -38,7 +36,6 @@ export interface CloudLoaderData {
 const getDefaultInitialState = (): CloudStoreData => ({
   cloudStorages: [],
   authError: false,
-  connectionError: false,
 });
 
 export type CloudStoreType = ReturnType<typeof initializeCloudStore>;
@@ -117,7 +114,6 @@ export function initializeCloudStore({
       }));
     },
     setAuthError: (authError: boolean) => set({ authError }),
-    setConnectionError: (connectionError: boolean) => set({ connectionError }),
   }));
 }
 

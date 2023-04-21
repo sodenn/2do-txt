@@ -19,6 +19,7 @@ export function createCloudStorage({
       try {
         return await fn(...args);
       } catch (error) {
+        console.error("CloudStorage", error);
         const opt = args?.length > 0 ? (args[0] as any) : {};
         const path = opt.path ? opt.path : opt.ref ? opt.ref.path : "";
         if (error instanceof CloudStorageError) {
