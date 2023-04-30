@@ -26,7 +26,6 @@ export function useCloudStorageEffect() {
     requestTokens,
     getCloudFileRef,
     uploadFile,
-    cloudStorages,
   } = useCloudStorage();
   const { syncDoneFiles } = useArchivedTask();
   const { loadTodoFile } = useTask();
@@ -135,9 +134,5 @@ export function useCloudStorageEffect() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  usePullToRefresh(
-    syncAllTodoFiles,
-    "#scroll-container",
-    cloudStorages.length === 0
-  );
+  usePullToRefresh(syncAllTodoFiles, "#scroll-container", true);
 }
