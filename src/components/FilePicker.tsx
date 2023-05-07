@@ -1,12 +1,17 @@
 import { Fade, Paper, styled, Typography } from "@mui/material";
 import { listen } from "@tauri-apps/api/event";
 import { useSnackbar } from "notistack";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import useFilterStore from "../stores/filter-store";
 import usePlatformStore from "../stores/platform-store";
-import { WithChildren } from "../types/common.types";
 import useFilePicker from "../utils/useFilePicker";
 import useTask from "../utils/useTask";
 
@@ -36,7 +41,7 @@ const StyledPaper = styled(Paper)({
   justifyContent: "center",
 });
 
-const FilePicker = ({ children }: WithChildren) => {
+const FilePicker = ({ children }: PropsWithChildren) => {
   const platform = usePlatformStore((state) => state.platform);
 
   if (platform === "desktop") {
@@ -46,7 +51,7 @@ const FilePicker = ({ children }: WithChildren) => {
   return <WebFilePicker>{children}</WebFilePicker>;
 };
 
-const WebFilePicker = ({ children }: WithChildren) => {
+const WebFilePicker = ({ children }: PropsWithChildren) => {
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
   const { setFileInput } = useFilePicker();
@@ -164,7 +169,7 @@ const WebFilePicker = ({ children }: WithChildren) => {
   );
 };
 
-const DesktopFilePicker = ({ children }: WithChildren) => {
+const DesktopFilePicker = ({ children }: PropsWithChildren) => {
   const { t } = useTranslation();
   const [isDragActive, setIsDragActive] = useState(false);
   const { openDesktopFile } = useFilePicker();
@@ -175,10 +180,10 @@ const DesktopFilePicker = ({ children }: WithChildren) => {
         openDesktopFile(event.payload as string[]);
         setIsDragActive(false);
       }),
-      listen("tauri://file-drop-hover", (event) => {
+      listen("tauri://file-drop-hover", () => {
         setIsDragActive(true);
       }),
-      listen("tauri://file-drop-cancelled", (event) => {
+      listen("tauri://file-drop-cancelled", () => {
         setIsDragActive(false);
       }),
     ]);

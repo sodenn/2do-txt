@@ -6,15 +6,12 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import {
-  deleteFile,
-  getFilenameFromPath,
-  readdir,
-} from "../../native-api/filesystem";
+import { deleteFile, getFilename, readdir } from "../../native-api/filesystem";
 import useConfirmationDialogStore from "../../stores/confirmation-dialog-store";
 import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
 import usePlatformStore from "../../stores/platform-store";
 import { useCloudStorage } from "../../utils/CloudStorage";
+import { defaultDoneFilePath } from "../../utils/todo-files";
 import useTask from "../../utils/useTask";
 import ClosedFileList from "./ClosedFileList";
 import FileActionButton from "./FileActionButton";
@@ -33,7 +30,7 @@ const FileManagementDialog = () => {
   const closeFileManagementDialog = useFileManagementDialogStore(
     (state) => state.closeFileManagementDialog
   );
-  const { unlinkCloudFile, unlinkCloudDoneFile } = useCloudStorage();
+  const { unlinkCloudFile } = useCloudStorage();
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog
   );
@@ -57,8 +54,8 @@ const FileManagementDialog = () => {
         .filter((f) => taskLists.every((t) => t.filePath !== f))
         .filter(
           (filePath) =>
-            filePath !== import.meta.env.VITE_ARCHIVE_FILE_NAME &&
-            !filePath.endsWith(`_${import.meta.env.VITE_ARCHIVE_FILE_NAME}`)
+            filePath !== defaultDoneFilePath &&
+            !filePath.endsWith(`_${defaultDoneFilePath}`)
         );
       setClosedFiles(closedFiles);
       return closedFiles;
@@ -78,7 +75,7 @@ const FileManagementDialog = () => {
         content: (
           <Trans
             i18nKey="Delete file"
-            values={{ fileName: getFilenameFromPath(filePath) }}
+            values={{ fileName: getFilename(filePath) }}
           />
         ),
         buttons: [
@@ -111,6 +108,7 @@ const FileManagementDialog = () => {
     } else {
       closeFile();
     }
+    await unlinkCloudFile(filePath);
   };
 
   const handleDeleteFile = async (filePath: string) => {
@@ -123,8 +121,7 @@ const FileManagementDialog = () => {
         console.debug(error);
       })
       .then(listFiles);
-    unlinkCloudFile(filePath).catch((e) => void e);
-    unlinkCloudDoneFile(filePath).catch((e) => void e);
+    await unlinkCloudFile(filePath);
   };
 
   const handleCloseDialog = () => {
@@ -157,7 +154,7 @@ const FileManagementDialog = () => {
           onDelete={handleDeleteFile}
         />
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
+      <DialogActions sx={{ px: 2, pt: 1, pb: 2 }}>
         <FileActionButton />
       </DialogActions>
     </Dialog>

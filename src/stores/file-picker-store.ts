@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
-interface FilePickerState {
+interface FilePickerStoreInterface {
   fileInput: HTMLInputElement | null;
   setFileInput: (fileInput: HTMLInputElement | null) => void;
 }
 
-const useFilePickerStore = create<FilePickerState>((set) => ({
+const useFilePickerStore = create<FilePickerStoreInterface>((set) => ({
   fileInput: null,
   setFileInput: (fileInput: HTMLInputElement | null) => set({ fileInput }),
 }));

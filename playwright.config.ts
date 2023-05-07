@@ -102,7 +102,7 @@ const config: PlaywrightTestConfig = {
     reuseExistingServer: !process.env.CI,
     timeout: 2 * 60 * 1000,
     env: {
-      VITE_ENABLE_WEB_CLOUD_STORAGE: "true",
+      VITE_ENABLE_CLOUD_STORAGE: "true",
     },
   },
 };

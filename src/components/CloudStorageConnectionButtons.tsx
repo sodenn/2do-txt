@@ -5,38 +5,39 @@ import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  CloudStorage,
+  Provider,
   cloudStorageIcons,
   useCloudStorage,
 } from "../utils/CloudStorage";
 
 interface CloudStorageConnectionButtonsProps {
   status?: "connect" | "disconnect";
-  onMenuItemClick?: (cloudStorage: CloudStorage) => void;
+  onMenuItemClick?: (provider: Provider) => void;
 }
 
-export const CloudStorageConnectionButtons = ({
+const providers: Provider[] = ["Dropbox", "WebDAV"];
+
+const CloudStorageConnectionButtons = ({
   status,
   onMenuItemClick,
 }: CloudStorageConnectionButtonsProps) => {
   const {
     cloudStorageEnabled,
-    cloudStoragesConnectionStatus,
+    cloudStorages,
     authenticate,
-    unlinkCloudStorage,
+    removeCloudStorage,
   } = useCloudStorage();
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [loading, setLoading] = useState(false);
-  const filteredCloudStorages = Object.entries(cloudStoragesConnectionStatus)
-    .filter(([, connected]) => {
-      return typeof status === "undefined"
-        ? true
-        : status === "connect"
-        ? !connected
-        : connected;
-    })
-    .map(([cloudStorages]) => cloudStorages as CloudStorage);
+  const filteredProviders = providers.filter((provider) => {
+    const connected = cloudStorages.some((s) => s.provider === provider);
+    return typeof status === "undefined"
+      ? true
+      : status === "connect"
+      ? !connected
+      : connected;
+  });
   const open = Boolean(anchorEl);
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
@@ -47,36 +48,36 @@ export const CloudStorageConnectionButtons = ({
     setAnchorEl(null);
   };
 
-  const handleItemClick = async (cloudStorage: CloudStorage) => {
+  const handleItemClick = async (provider: Provider) => {
     handleClose();
-    const connected = cloudStoragesConnectionStatus[cloudStorage];
+    const connected = cloudStorages.some((s) => s.provider === provider);
     if (!connected) {
       setLoading(true);
-      authenticate(cloudStorage).finally(() => setLoading(false));
+      authenticate(provider).finally(() => setLoading(false));
     } else {
-      unlinkCloudStorage(cloudStorage);
+      removeCloudStorage(provider);
     }
-    onMenuItemClick?.(cloudStorage);
+    onMenuItemClick?.(provider);
   };
 
-  if (!cloudStorageEnabled || filteredCloudStorages.length === 0) {
+  if (!cloudStorageEnabled || filteredProviders.length === 0) {
     return null;
   }
 
-  if (filteredCloudStorages.length === 1) {
-    const cloudStorage = filteredCloudStorages[0];
+  if (filteredProviders.length === 1) {
+    const provider = filteredProviders[0];
     return (
       <LoadingButton
         aria-label="Connect to cloud storage"
         loading={loading}
         variant="outlined"
-        startIcon={cloudStorageIcons[cloudStorage]}
+        startIcon={cloudStorageIcons[provider]}
         fullWidth
-        onClick={() => handleItemClick(cloudStorage)}
+        onClick={() => handleItemClick(provider)}
       >
-        {cloudStoragesConnectionStatus[cloudStorage]
-          ? t("Disconnect from cloud storage", { cloudStorage })
-          : t("Connect to cloud storage", { cloudStorage })}
+        {cloudStorages.some((s) => s.provider === provider)
+          ? t("Disconnect from cloud storage", { provider })
+          : t("Connect to cloud storage", { provider })}
       </LoadingButton>
     );
   }
@@ -92,7 +93,7 @@ export const CloudStorageConnectionButtons = ({
         endIcon={<KeyboardArrowDownIcon />}
       >
         {status === "connect"
-          ? t("Connect to cloud storage", { cloudStorage: t("cloud storage") })
+          ? t("Connect to cloud storage", { provider: t("cloud storage") })
           : t("Connection")}
       </Button>
       <Menu
@@ -109,15 +110,12 @@ export const CloudStorageConnectionButtons = ({
         open={open}
         onClose={handleClose}
       >
-        {filteredCloudStorages.map((cloudStorage) => (
-          <MenuItem
-            key={cloudStorage}
-            onClick={() => handleItemClick(cloudStorage)}
-          >
-            <ListItemIcon>{cloudStorageIcons[cloudStorage]}</ListItemIcon>
-            {cloudStoragesConnectionStatus[cloudStorage]
-              ? t("Disconnect from cloud storage", { cloudStorage })
-              : t("Connect to cloud storage", { cloudStorage })}
+        {filteredProviders.map((provider) => (
+          <MenuItem key={provider} onClick={() => handleItemClick(provider)}>
+            <ListItemIcon>{cloudStorageIcons[provider]}</ListItemIcon>
+            {cloudStorages.some((s) => s.provider === provider)
+              ? t("Disconnect from cloud storage", { provider })
+              : t("Connect to cloud storage", { provider })}
           </MenuItem>
         ))}
       </Menu>

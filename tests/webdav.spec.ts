@@ -62,7 +62,7 @@ test("should import todo.txt from WebDAV", async ({ page }) => {
   await expect(page.getByTestId("task")).toHaveCount(8);
 });
 
-test("should sync todo.txt with WebDAV", async ({ page, context }) => {
+test("should sync todo.txt with WebDAV", async ({ page }) => {
   await replayFromHar(page);
   await connectToWebDAV(page);
   await openWebDAVImportDialog(page);
@@ -73,17 +73,16 @@ test("should sync todo.txt with WebDAV", async ({ page, context }) => {
   await page.getByRole("button", { name: "Import" }).click();
   await page.waitForSelector("text=Connected to WebDAV");
   const firstSyncDate = await getLastSyncDate(page);
+  expect(firstSyncDate).toBeDefined();
 
-  // trigger second sync
+  // trigger sync
   const taskCheckbox = page
     .getByTestId("task")
     .nth(0)
     .locator('input[type="checkbox"]');
   await taskCheckbox.click();
-  // remote calls are throttled (5s)
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 200));
   const secondSyncDate = await getLastSyncDate(page);
-
   expect(firstSyncDate).not.toBe(secondSyncDate);
 });
 
@@ -129,7 +128,7 @@ async function replayFromHar(page: Page) {
 async function getLastSyncDate(page: Page) {
   await new Promise((resolve) => setTimeout(resolve, 300));
   const firstSyncDateHandle = await page.evaluateHandle(() => {
-    const arr = JSON.parse(localStorage["CapacitorStorage.cloud-files"]);
+    const arr = JSON.parse(localStorage["CapacitorStorage.cloud-file-refs"]);
     return arr[0];
   });
   const firstSync = await firstSyncDateHandle.jsonValue();

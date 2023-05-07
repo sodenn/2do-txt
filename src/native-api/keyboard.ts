@@ -48,7 +48,6 @@ function getStyle(style: KeyboardStyle) {
   }
 }
 
-export type { KeyboardStyle };
 export {
   addKeyboardDidShowListener,
   addKeyboardDidHideListener,

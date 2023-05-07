@@ -4,6 +4,7 @@ import { getPlatform } from "./platform";
 interface OauthOptions {
   authUrl: string;
   redirectUrl: string;
+  title?: string;
 }
 
 function mobileOauth(opt: OauthOptions) {
@@ -41,10 +42,11 @@ function mobileOauth(opt: OauthOptions) {
 }
 
 async function desktopOauth(opt: OauthOptions) {
-  const { authUrl, redirectUrl } = opt;
+  const { authUrl, redirectUrl, title } = opt;
   const queryString: string = await invoke("oauth", {
     authUrl,
     redirectUrl,
+    title,
   });
   if (!queryString) {
     throw new Error("Browser closed by user");

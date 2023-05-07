@@ -40,6 +40,7 @@ const Page = () => {
     <FilePicker>
       <Header divider={divider} />
       <Box
+        id="scroll-container"
         data-testid="page"
         sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
       >

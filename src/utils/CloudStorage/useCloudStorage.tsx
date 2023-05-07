@@ -1,167 +1,138 @@
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import { Alert, Button, CircularProgress } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
-import { ReactNode, useCallback, useMemo } from "react";
+import { ReactNode, useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import DropboxIcon from "../../components/DropboxIcon";
-import useCloudStorageStore from "../../stores/cloud-storage-store";
+import {
+  fileExists,
+  getFilename,
+  writeFile,
+} from "../../native-api/filesystem";
+import { oauth } from "../../native-api/oath";
+import {
+  getPreferencesItem,
+  removePreferencesItem,
+  setPreferencesItem,
+} from "../../native-api/preferences";
+import {
+  removeSecureStorageItem,
+  setSecureStorageItem,
+} from "../../native-api/secure-storage";
+import useCloudStorageStore from "../../stores/cloud-store";
 import usePlatformStore from "../../stores/platform-store";
 import useWebDAVDialogStore from "../../stores/webdav-dialog-store";
-import useNetwork from "../../utils/useNetwork";
+import { getDoneFilePath } from "../todo-files";
+import { shouldUseInAppBrowser } from "./auth";
+import { getDropboxOathOptions, requestDropboxRefreshToken } from "./dropbox";
 import {
-  DeleteFileOptions,
-  DownloadFileOptions,
-  ExtendOptions,
-  ListCloudFilesOptions,
-  SyncFileOptions,
-  UploadFileOptions,
-} from "./CloudStorageContext.types";
-import * as cloud from "./cloud-storage";
-import {
-  CloudFileUnauthorizedError,
-  getCloudDoneFileRefByFilePath,
-  getCloudFileRefByFilePath,
-  getCloudFileRefs,
-  getDoneFileMetaData,
-  unlinkCloudDoneFile,
-  unlinkCloudFile,
-} from "./cloud-storage";
-import {
-  CloudDoneFileRef,
-  CloudFileRef,
+  Client,
+  CloudError,
   CloudStorage,
-  WithClient,
-} from "./cloud-storage.types";
+  CloudStorageError,
+  Provider,
+  WebDAVClientOptions,
+} from "./lib";
+import { cloudStoragePreferences } from "./preferences";
 
-export const cloudStorageIcons: Record<CloudStorage, ReactNode> = {
+export const cloudStorageIcons: Record<Provider, ReactNode> = {
   Dropbox: <DropboxIcon />,
   WebDAV: <StorageOutlinedIcon />,
 };
 
-function useCloudStorage() {
-  const platform = usePlatformStore((state) => state.platform);
-  const { t } = useTranslation();
+export function useCloudStorage() {
   const [searchParams] = useSearchParams();
-  const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const platform = usePlatformStore((state) => state.platform);
+  const addWebDAVStorage = useCloudStorageStore(
+    (state) => state.addWebDAVStorage
+  );
+  const addDropboxStorage = useCloudStorageStore(
+    (state) => state.addDropboxStorage
+  );
+  const removeStorage = useCloudStorageStore((state) => state.removeStorage);
+  const cloudStorages = useCloudStorageStore((state) => state.cloudStorages);
   const authError = useCloudStorageStore((state) => state.authError);
   const setAuthError = useCloudStorageStore((state) => state.setAuthError);
-  const connectionError = useCloudStorageStore(
-    (state) => state.connectionError
-  );
-  const setConnectionError = useCloudStorageStore(
-    (state) => state.setConnectionError
-  );
-  const cloudStorageClients = useCloudStorageStore(
-    (state) => state.cloudStorageClients
-  );
-  const setCloudStorageClient = useCloudStorageStore(
-    (state) => state.setCloudStorageClient
-  );
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const { connected } = useNetwork();
-  const openCloudFileDialog = useWebDAVDialogStore(
-    (state) => state.openCloudFileDialog
+  const openWebDAVDialog = useWebDAVDialogStore(
+    (state) => state.openWebDAVDialog
   );
   const cloudStorageEnabled =
     ["ios", "android", "desktop"].includes(platform) ||
-    import.meta.env.VITE_ENABLE_WEB_CLOUD_STORAGE === "true";
-  const syncMessage = t("Sync with cloud storage", {
-    cloudStorage: t("cloud storage"),
-  });
-  const cloudStoragesConnectionStatus = useMemo(
-    () =>
-      Object.values(cloudStorageClients).reduce((prev, curr) => {
-        prev[curr.cloudStorage] = curr.status === "connected";
-        return prev;
-      }, {} as Record<CloudStorage, boolean>),
-    [cloudStorageClients]
+    import.meta.env.VITE_ENABLE_CLOUD_STORAGE === "true";
+
+  const getStorageByLocalPath = useCallback(
+    async (path: string) => {
+      const ref = await cloudStoragePreferences.getRef(path);
+      const storage = cloudStorages.find(
+        (storage) => storage.provider === ref.provider
+      );
+      if (!storage) {
+        throw new CloudStorageError({
+          provider: ref.provider,
+          cause: `No storage found for provider: ${ref.provider}`,
+        });
+      }
+      return storage;
+    },
+    [cloudStorages]
   );
 
-  const connectedCloudStorages = useMemo(
-    () =>
-      Object.entries(cloudStoragesConnectionStatus)
-        .filter(([_, connected]) => connected)
-        .map(([cloudStorage]) => cloudStorage as CloudStorage),
-    [cloudStoragesConnectionStatus]
+  const getStorageByProvider = useCallback(
+    function <T extends Client = Client>(provider: Provider) {
+      const storage = cloudStorages.find(
+        (storage) => storage.provider === provider
+      );
+      if (!storage) {
+        throw new CloudStorageError({
+          provider,
+          cause: `No storage found for provider: ${provider}`,
+        });
+      }
+      return storage as CloudStorage<T>;
+    },
+    [cloudStorages]
   );
 
-  const openStorageConnectedAlert = useCallback(
-    (cloudStorage: CloudStorage) => {
-      enqueueSnackbar(t("Connected to cloud storage", { cloudStorage }), {
-        variant: "success",
-      });
+  const showConnectionErrorSnackbar = useCallback(
+    (error: any) => {
+      return enqueueSnackbar(
+        <span>
+          <Trans
+            i18nKey="Error connecting with cloud storage"
+            values={{
+              provider: t("cloud storage"),
+              message: error.message,
+            }}
+            components={{
+              code: <code style={{ marginLeft: 5 }} />,
+            }}
+          />
+        </span>,
+        { variant: "warning", preventDuplicate: true }
+      );
     },
     [enqueueSnackbar, t]
   );
 
-  const createClient = useCallback(
-    async (cloudStorage: CloudStorage) => {
-      const client = await cloud.createClient(cloudStorage);
-      setCloudStorageClient({
-        instance: client,
-        cloudStorage,
-        status: "connected",
-      });
-    },
-    [setCloudStorageClient]
-  );
-
-  const oauth2Authenticate = useCallback(
-    async (cloudStorage: CloudStorage) => {
-      await cloud.authenticate(cloudStorage).catch((error) => {
-        const message = error.message || "";
-        if (!message.includes("Browser closed by user")) {
-          console.error("Failed to authenticate with cloud storage:", message);
-          enqueueSnackbar(
-            t("Failed to authenticate with cloud storage", {
-              cloudStorage,
-            }),
-            {
-              variant: "error",
-            }
-          );
-        }
-        throw error;
-      });
-      // Note: web platform goes a different way because a redirect is used
-      if (["ios", "android", "desktop"].includes(platform)) {
-        await createClient(cloudStorage);
-      }
-    },
-    [createClient, enqueueSnackbar, platform, t]
-  );
-
-  const webDAVAuthenticate = useCallback(() => {
-    openCloudFileDialog();
-  }, [openCloudFileDialog]);
-
-  const authenticate = useCallback(
-    async (cloudStorage: CloudStorage) => {
-      if (["Dropbox"].includes(cloudStorage)) {
-        return oauth2Authenticate(cloudStorage);
-      }
-      if (cloudStorage === "WebDAV") {
-        return webDAVAuthenticate();
-      }
-    },
-    [oauth2Authenticate, webDAVAuthenticate]
-  );
-
-  const openSessionExpiredAlert = useCallback(
-    (cloudStorage: CloudStorage) => {
+  const showSessionExpiredSnackbar = useCallback(
+    (provider: Provider) => {
       const handleLogin = async (key: SnackbarKey) => {
         closeSnackbar(key);
-        await authenticate(cloudStorage);
+        await authenticate(provider);
         setAuthError(false);
       };
       // Don't annoy the user, so only show the message once
       if (!authError) {
-        enqueueSnackbar(
-          t("Session has expired. Please login again", { cloudStorage }),
+        setAuthError(true);
+        return enqueueSnackbar(
+          t("Session has expired. Please login again", { provider }),
           {
             variant: "warning",
+            preventDuplicate: true,
             action: (key) => (
               <>
                 <Button color="inherit" onClick={() => closeSnackbar(key)}>
@@ -174,331 +145,277 @@ function useCloudStorage() {
             ),
           }
         );
-        setAuthError(true);
       }
     },
-    [authError, authenticate, closeSnackbar, enqueueSnackbar, setAuthError, t]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [authError, closeSnackbar, enqueueSnackbar, setAuthError, t]
   );
 
-  const openConnectionErrorAlert = useCallback(
-    (error: any) => {
-      // Don't annoy the user, so only show the message once
-      if (!connectionError) {
-        enqueueSnackbar(
-          <Trans
-            i18nKey="Error connecting with cloud storage"
-            values={{
-              cloudStorage: t("cloud storage"),
-              message: error.message,
-            }}
-            components={{ code: <code style={{ marginLeft: 5 }} /> }}
-          />,
-          { variant: "warning" }
-        );
-        setConnectionError(true);
-      }
+  const showConnectedSnackbar = useCallback(
+    (provider: Provider) => {
+      return enqueueSnackbar(t("Connected to cloud storage", { provider }), {
+        variant: "success",
+        preventDuplicate: true,
+      });
     },
-    [connectionError, enqueueSnackbar, setConnectionError, t]
+    [enqueueSnackbar, t]
   );
 
   const handleError = useCallback(
     (error: any) => {
-      if (error instanceof CloudFileUnauthorizedError) {
-        const cloudStorage = error.cloudStorage;
-        setCloudStorageClient({ cloudStorage, status: "disconnected" });
-        openSessionExpiredAlert(cloudStorage);
+      if (error instanceof CloudStorageError && error.type === "Unauthorized") {
+        const provider = error.provider;
+        showSessionExpiredSnackbar(provider);
+      } else if (error instanceof CloudError) {
+        showConnectionErrorSnackbar(error);
+      }
+      throw new Error(error.message);
+    },
+    [showConnectionErrorSnackbar, showSessionExpiredSnackbar]
+  );
+
+  const list = useCallback(
+    async (provider: Provider, remotePath = "", cursor?: string) => {
+      const storage = getStorageByProvider(provider);
+      return await storage
+        .list({ path: remotePath, cursor })
+        .catch(handleError);
+    },
+    [getStorageByProvider, handleError]
+  );
+
+  const createWebDAVStorage = useCallback(
+    async (config: WebDAVClientOptions) => {
+      await addWebDAVStorage(config).catch(handleError);
+      const {
+        baseUrl,
+        basicAuth: { username, password },
+      } = config;
+      await Promise.all([
+        setSecureStorageItem("WebDAV-url", baseUrl!),
+        setSecureStorageItem("WebDAV-username", username!),
+        setSecureStorageItem("WebDAV-password", password!),
+      ]);
+      showConnectedSnackbar("WebDAV");
+    },
+    [addWebDAVStorage, handleError, showConnectedSnackbar]
+  );
+
+  const createDropboxStorage = useCallback(
+    async (refreshToken: string) => {
+      await addDropboxStorage(refreshToken).catch(handleError);
+      await setSecureStorageItem("Dropbox-refresh-token", refreshToken);
+      showConnectedSnackbar("Dropbox");
+    },
+    [addDropboxStorage, handleError, showConnectedSnackbar]
+  );
+
+  const authenticateWithOauth = useCallback(
+    async (provider: Provider) => {
+      const useInAppBrowser = shouldUseInAppBrowser();
+      const options =
+        provider === "Dropbox" ? await getDropboxOathOptions() : undefined;
+
+      if (!options) {
+        return;
+      }
+
+      if (useInAppBrowser) {
+        const title = t("Login to cloud storage", { provider });
+        const result = await oauth({ ...options, title });
+        if (provider === "Dropbox") {
+          const refreshToken = await requestDropboxRefreshToken(
+            options.codeVerifier,
+            result.code
+          );
+          await createDropboxStorage(refreshToken);
+        }
       } else {
-        openConnectionErrorAlert(error);
-      }
-      throw error;
-    },
-    [openConnectionErrorAlert, openSessionExpiredAlert, setCloudStorageClient]
-  );
-
-  const getClient = useCallback(
-    (cloudStorage: CloudStorage) => {
-      if (!connected) {
-        throw new Error("Network connection lost");
-      }
-      const client = cloudStorageClients[cloudStorage];
-      if (client.status === "disconnected") {
-        openSessionExpiredAlert(cloudStorage);
-        throw new Error(`${cloudStorage} client is disconnected`);
-      } else if (client.instance) {
-        return client.instance;
-      } else {
-        throw new Error("Client not initialized");
+        if (provider === "Dropbox") {
+          await setPreferencesItem(
+            "Dropbox-code-verifier",
+            options.codeVerifier
+          );
+        }
+        window.location.href = options.authUrl;
       }
     },
-    [cloudStorageClients, connected, openSessionExpiredAlert]
+    [createDropboxStorage, t]
   );
 
-  const linkCloudFile = useCallback(
-    async (cloudFile: Required<CloudFileRef>) => {
-      return cloud.linkFile(cloudFile);
+  const authenticate = useCallback(
+    async (provider: Provider) => {
+      if (["Dropbox"].includes(provider)) {
+        authenticateWithOauth(provider).catch(handleError);
+      }
+      if (provider === "WebDAV") {
+        openWebDAVDialog();
+      }
     },
-    []
+    [authenticateWithOauth, handleError, openWebDAVDialog]
   );
 
-  const linkCloudDoneFile = useCallback(
-    async (cloudFile: Required<CloudDoneFileRef>) => {
-      return cloud.linkDoneFile(cloudFile);
+  const showProgressSnackbar = useCallback(() => {
+    const syncMessage = t("Sync with cloud storage", {
+      provider: t("cloud storage"),
+    });
+    const snackbar = enqueueSnackbar("", {
+      variant: "info",
+      persist: true,
+      content: (
+        <Alert severity="info" icon={<CircularProgress size="1em" />}>
+          {syncMessage}
+        </Alert>
+      ),
+    });
+    return () => {
+      closeSnackbar(snackbar);
+    };
+  }, [closeSnackbar, enqueueSnackbar, t]);
+
+  const downloadFile = useCallback(
+    async (provider: Provider, localPath: string, remotePath: string) => {
+      const storage = getStorageByProvider(provider);
+      const { response, ref } = await storage
+        .downloadFile({
+          path: remotePath,
+        })
+        .catch(handleError);
+      await cloudStoragePreferences.setRef(localPath, ref);
+      return response.text();
     },
-    []
+    [getStorageByProvider, handleError]
   );
 
-  const unlinkCloudStorage = useCallback(
-    async (cloudStorage: CloudStorage) => {
-      const client = getClient(cloudStorage);
-      await cloud.unlink({
-        cloudStorage,
-        client,
-      });
-      setCloudStorageClient({ cloudStorage, status: "disconnected" });
+  const getMetaData = useCallback(
+    async (localPath: string) => {
+      const storage = await getStorageByLocalPath(localPath);
+      return storage.getMetaData({ path: localPath }).catch(handleError);
     },
-    [getClient, setCloudStorageClient]
+    [getStorageByLocalPath, handleError]
+  );
+
+  const uploadFile = useCallback(
+    async (provider: Provider, localPath: string, content: string) => {
+      const storage = getStorageByProvider(provider);
+      const remotePath = getFilename(localPath);
+      const ref = await storage
+        .uploadFile({
+          path: remotePath,
+          content,
+        })
+        .catch(handleError);
+      return cloudStoragePreferences.setRef(localPath, ref);
+    },
+    [getStorageByProvider, handleError]
+  );
+
+  const deleteFile = useCallback(
+    async (localPath: string) => {
+      const ref = await cloudStoragePreferences.getRef(localPath);
+      const storage = getStorageByProvider(ref.provider);
+      await storage.deleteFile({ path: ref.path }).catch(handleError);
+      await cloudStoragePreferences.removeRef(localPath);
+    },
+    [getStorageByProvider, handleError]
+  );
+
+  const syncFile = useCallback(
+    async (localPath: string, content = "", showProgress = true) => {
+      const ref = await cloudStoragePreferences.getRef(localPath);
+      const storage = await getStorageByLocalPath(localPath);
+      const hideProgress = showProgress ? showProgressSnackbar() : undefined;
+      const result = await storage
+        .syncFile({ ref, content })
+        .catch(handleError)
+        .finally(() => hideProgress?.());
+      await cloudStoragePreferences.setRef(localPath, result.ref);
+      if (result.operation === "download") {
+        const content = await result.response.text();
+        await writeFile({
+          path: localPath,
+          data: content,
+        });
+        return content;
+      }
+    },
+    [getStorageByLocalPath, handleError, showProgressSnackbar]
+  );
+
+  const unlinkCloudFile = useCallback(async (localPath: string) => {
+    const promises: Promise<void>[] = [
+      cloudStoragePreferences.removeRef(localPath),
+    ];
+    const doneFilePath = getDoneFilePath(localPath);
+    if (doneFilePath) {
+      const doneFileExists = await fileExists(doneFilePath);
+      if (doneFileExists) {
+        promises.push(cloudStoragePreferences.removeRef(doneFilePath));
+      }
+    }
+    await Promise.all(promises).catch((e) => void e);
+  }, []);
+
+  const removeCloudStorage = useCallback(
+    async (provider: Provider) => {
+      await removeStorage(provider);
+      if (provider === "Dropbox") {
+        await removeSecureStorageItem("Dropbox-refresh-token");
+      }
+      if (provider === "WebDAV") {
+        await Promise.all([
+          removeSecureStorageItem("WebDAV-username"),
+          removeSecureStorageItem("WebDAV-password"),
+          removeSecureStorageItem("WebDAV-url"),
+        ]);
+      }
+      await cloudStoragePreferences.removeRefs(provider);
+    },
+    [removeStorage]
   );
 
   const requestTokens = useCallback(async () => {
     const code = searchParams.get("code");
-    const cloudStorage: CloudStorage | undefined =
+    const provider: Provider | undefined =
       location.pathname === "/dropbox" ? "Dropbox" : undefined;
-    if (code && cloudStorage) {
-      navigate("/", { replace: true });
-      return cloud
-        .requestAccessToken({ cloudStorage, code })
-        .then(() => createClient(cloudStorage))
-        .then(() => openStorageConnectedAlert(cloudStorage))
-        .then(() => cloudStorage)
-        .catch((error) => {
-          if (error instanceof CloudFileUnauthorizedError) {
-            openSessionExpiredAlert(cloudStorage);
-          } else {
-            throw error;
-          }
-        });
+
+    if (!code || !provider) {
+      return;
     }
-  }, [
-    searchParams,
-    location,
-    navigate,
-    createClient,
-    openStorageConnectedAlert,
-    openSessionExpiredAlert,
-  ]);
 
-  const listCloudFiles = useCallback(
-    (opt: ListCloudFilesOptions) => {
-      const client = getClient(opt.cloudStorage);
-      return cloud.listFiles({ ...opt, client });
-    },
-    [getClient]
-  );
+    navigate("/", { replace: true });
 
-  const downloadFile = useCallback(
-    (opt: DownloadFileOptions) => {
-      const { cloudStorage, cloudFilePath } = opt;
-      const client = getClient(opt.cloudStorage);
-      return cloud
-        .downloadFile({ filePath: cloudFilePath, cloudStorage, client })
-        .catch(handleError);
-    },
-    [getClient, handleError]
-  );
-
-  const uploadFile = useCallback(
-    async ({ isDoneFile, ...opt }: UploadFileOptions) => {
-      const client = getClient(opt.cloudStorage);
-      if (isDoneFile) {
-        const ref = await getCloudFileRefByFilePath(opt.filePath);
-        if (!ref) {
-          throw new Error("Missing cloud file");
-        }
-        return cloud
-          .uploadFile({
-            ...opt,
-            isDoneFile,
-            client,
-            cloudFilePath: ref.path,
-          })
-          .catch(handleError);
-      } else {
-        return cloud
-          .uploadFile({ ...opt, isDoneFile, client })
-          .catch(handleError);
-      }
-    },
-    [getClient, handleError]
-  );
-
-  const extendOptions = useCallback(
-    async (opt: ExtendOptions) => {
-      const { filePath, isDoneFile } = opt;
-      const cloudFileRef = await getCloudFileRefByFilePath(filePath);
-      const cloudDoneFileRef = await getCloudDoneFileRefByFilePath(filePath);
-      const ref = isDoneFile ? cloudDoneFileRef : cloudFileRef;
-      if (!ref) {
-        return;
-      }
-      const { cloudStorage } = ref;
-      const client = getClient(cloudStorage);
-      return {
-        ...opt,
-        client,
-        cloudFileRef,
-        cloudDoneFileRef,
-      };
-    },
-    [getClient]
-  );
-
-  const deleteCloudFile = useCallback(
-    async (opt: DeleteFileOptions) => {
-      const _opt = await extendOptions(opt);
-      if (_opt) {
-        return cloud.deleteFile(_opt);
-      }
-    },
-    [extendOptions]
-  );
-
-  const getFilteredSyncOptions = useCallback(
-    async (optList: SyncFileOptions[]) => {
-      const optFiltered: (SyncFileOptions & WithClient)[] = [];
-      for (const opt of optList) {
-        const ref = opt.isDoneFile
-          ? await getCloudDoneFileRefByFilePath(opt.filePath)
-          : await getCloudFileRefByFilePath(opt.filePath);
-        if (ref) {
-          const client = getClient(ref.cloudStorage);
-          optFiltered.push({ ...opt, client });
-        }
-      }
-      return optFiltered;
-    },
-    [getClient]
-  );
-
-  const syncFile = useCallback(
-    async (opt: SyncFileOptions) => {
-      if (!connected) {
-        throw new Error("Network connection lost");
-      }
-
-      const syncOptions = await getFilteredSyncOptions([opt]);
-      if (syncOptions.length !== 1) {
-        return;
-      }
-
-      let snackbar: SnackbarKey | undefined;
-      if (opt.showSnackbar) {
-        snackbar = enqueueSnackbar("", {
-          variant: "info",
-          persist: true,
-          content: (
-            <Alert severity="info" icon={<CircularProgress size="1em" />}>
-              {syncMessage}
-            </Alert>
-          ),
+    if (provider === "Dropbox") {
+      const codeVerifier = await getPreferencesItem("Dropbox-code-verifier");
+      if (!codeVerifier) {
+        throw new CloudStorageError({
+          provider: "Dropbox",
+          cause: "Missing code verifier",
         });
       }
-
-      return cloud
-        .syncFile(syncOptions[0])
-        .catch((error) => {
-          console.debug(error);
-          handleError(error);
-        })
-        .finally(() => {
-          if (snackbar) {
-            closeSnackbar(snackbar);
-          }
-        });
-    },
-    [
-      closeSnackbar,
-      connected,
-      enqueueSnackbar,
-      getFilteredSyncOptions,
-      handleError,
-      syncMessage,
-    ]
-  );
-
-  const syncAllFiles = useCallback(
-    async (opt: SyncFileOptions[]) => {
-      if (!connected) {
-        throw new Error("Network connection lost");
-      }
-
-      const syncOptions = await getFilteredSyncOptions(opt);
-      if (syncOptions.length === 0) {
-        return [];
-      }
-
-      const snackbar = enqueueSnackbar("", {
-        variant: "info",
-        persist: true,
-        content: (
-          <Alert severity="info" icon={<CircularProgress size="1em" />}>
-            {syncMessage}
-          </Alert>
-        ),
-      });
-
-      return cloud
-        .syncAllFiles(syncOptions)
-        .catch(handleError)
-        .finally(() => closeSnackbar(snackbar));
-    },
-    [
-      closeSnackbar,
-      connected,
-      enqueueSnackbar,
-      getFilteredSyncOptions,
-      handleError,
-      syncMessage,
-    ]
-  );
-
-  const getCloudDoneFileMetaData = useCallback(
-    async (filePath: string) => {
-      const _opt = await extendOptions({
-        filePath: filePath,
-        isDoneFile: false,
-      });
-      if (_opt) {
-        const { client, cloudFileRef } = _opt;
-        return getDoneFileMetaData({ client, cloudFileRef });
-      }
-    },
-    [extendOptions]
-  );
+      await removePreferencesItem("Dropbox-code-verifier");
+      const refreshToken = await requestDropboxRefreshToken(codeVerifier, code);
+      await createDropboxStorage(refreshToken);
+    }
+  }, [searchParams, navigate, createDropboxStorage]);
 
   return {
-    requestTokens,
-    openStorageConnectedAlert,
-    createClient,
-    cloudStorageEnabled,
-    cloudStoragesConnectionStatus,
-    connectedCloudStorages,
     authenticate,
-    linkCloudFile,
-    linkCloudDoneFile,
-    unlinkCloudStorage,
-    listCloudFiles,
+    cloudStorageEnabled,
+    cloudStorages,
     downloadFile,
     uploadFile,
-    deleteCloudFile,
+    deleteFile,
     syncFile,
-    syncAllFiles,
+    createWebDAVStorage,
+    createDropboxStorage,
     unlinkCloudFile,
-    unlinkCloudDoneFile,
-    getCloudDoneFileMetaData,
-    getCloudFileRefs,
-    getCloudFileRefByFilePath,
-    getCloudDoneFileRefByFilePath,
+    removeCloudStorage,
+    getMetaData,
+    list,
+    requestTokens,
+    showProgressSnackbar,
+    getCloudFileRef: cloudStoragePreferences.getRef,
+    getCloudFileRefs: cloudStoragePreferences.getRefs,
   };
 }
-
-export { useCloudStorage };

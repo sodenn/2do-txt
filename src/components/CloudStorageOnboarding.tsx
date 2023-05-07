@@ -3,14 +3,13 @@ import CloudFileImportButtons from "./CloudFileImportButtons";
 import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
 
 const CloudStorageOnboarding = () => {
-  const { cloudStoragesConnectionStatus } = useCloudStorage();
-  const notConnected = Object.values(cloudStoragesConnectionStatus).every(
-    (connected) => !connected
-  );
+  const { cloudStorages } = useCloudStorage();
   return (
     <>
       <CloudFileImportButtons />
-      {notConnected && <CloudStorageConnectionButtons status="connect" />}
+      {cloudStorages.length === 0 && (
+        <CloudStorageConnectionButtons status="connect" />
+      )}
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { getPlatform } from "./platform";
 
-export type SecureStorageKeys =
+type SecureStorageKeys =
   | "Dropbox-refresh-token"
   | "WebDAV-username"
   | "WebDAV-password"
@@ -47,7 +47,7 @@ const webSecureStorage = {
     sessionStorage.setItem(prefix + key, window.btoa(value));
   },
   async removeSecureStorageItem(key: SecureStorageKeys) {
-    await sessionStorage.removeItem(prefix + key);
+    sessionStorage.removeItem(prefix + key);
   },
 };
 

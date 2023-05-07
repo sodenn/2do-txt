@@ -706,14 +706,7 @@ function containsStringArrayDictionaries(
   );
 }
 
-export type {
-  TaskListParseResult,
-  TaskList,
-  TaskListAttributes,
-  TaskGroup,
-  TaskListFilter,
-  TimelineTask,
-};
+export type { TaskList, TaskGroup, TaskListFilter, TimelineTask };
 export {
   updateTaskListAttributes,
   parseTaskList,

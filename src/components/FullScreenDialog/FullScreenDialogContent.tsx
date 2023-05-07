@@ -1,11 +1,10 @@
 import { Box, styled } from "@mui/material";
-import { useEffect, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import {
   addKeyboardDidHideListener,
   addKeyboardDidShowListener,
   removeAllKeyboardListeners,
 } from "../../native-api/keyboard";
-import { WithChildren } from "../../types/common.types";
 import { useFullScreenDialog } from "./FullScreenDialogProvider";
 
 const SafeArea = styled("div")({
@@ -14,7 +13,7 @@ const SafeArea = styled("div")({
   paddingBottom: "env(safe-area-inset-bottom)",
 });
 
-interface FullScreenDialogContentProps extends WithChildren {
+interface FullScreenDialogContentProps extends PropsWithChildren {
   disableGutters?: boolean;
 }
 

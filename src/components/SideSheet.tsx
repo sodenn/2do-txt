@@ -9,11 +9,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { forwardRef, useEffect, useState } from "react";
+import { PropsWithChildren, forwardRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import usePlatformStore from "../stores/platform-store";
 import useSideSheetStore from "../stores/side-sheet-store";
-import { WithChildren } from "../types/common.types";
 import useTask from "../utils/useTask";
 import Filter from "./Filter";
 import Settings from "./Settings";
@@ -76,7 +75,7 @@ const SaveAreaContent = styled("div")({
   paddingLeft: "env(safe-area-inset-left)",
 });
 
-export const MainContainer = forwardRef<HTMLDivElement, WithChildren>(
+export const MainContainer = forwardRef<HTMLDivElement, PropsWithChildren>(
   ({ children }, ref) => {
     const sideSheetOpen = useSideSheetStore((state) => state.open);
     return (
