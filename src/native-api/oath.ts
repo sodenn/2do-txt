@@ -51,7 +51,7 @@ async function desktopOauth(opt: OauthOptions) {
   if (!queryString) {
     throw new Error("Browser closed by user");
   }
-  return queryString.split("&").reduce((prev, curr) => {
+  return queryString.split("&").reduce<Record<string, any>>((prev, curr) => {
     const [key, value] = curr.split("=");
     return {
       [decodeURIComponent(key)]: decodeURIComponent(value || "true"),
