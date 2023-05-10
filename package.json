@@ -44,9 +44,9 @@
   },
   "dependencies": {
     "@capacitor/app": "4.1.1",
-    "@capacitor/core": "4.8.0",
+    "@capacitor/core": "5.0.3",
     "@capacitor/filesystem": "4.1.5",
-    "@capacitor/ios": "4.8.0",
+    "@capacitor/ios": "5.0.3",
     "@capacitor/keyboard": "4.1.1",
     "@capacitor/local-notifications": "4.1.5",
     "@capacitor/network": "4.1.0",
@@ -93,7 +93,7 @@
     "zustand": "4.3.8"
   },
   "devDependencies": {
-    "@capacitor/cli": "4.7.3",
+    "@capacitor/cli": "5.0.3",
     "@playwright/test": "1.33.0",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
