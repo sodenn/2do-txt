@@ -1,5 +1,5 @@
 import { Box, Container, styled } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import useScrollingStore from "../stores/scrolling-store";
 import ArchivedTasksDialog from "./ArchivedTasksDialog";
 import CloudFileDialog from "./CloudFileDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -22,30 +22,17 @@ const SafeAreaContainer = styled(Container)({
 });
 
 const Page = () => {
-  const scrollContainer = useRef<HTMLDivElement | null>(null);
-  const [divider, setDivider] = useState(false);
-
-  useEffect(() => {
-    const element = scrollContainer.current;
-    if (element) {
-      const listener = () => setDivider(element.scrollTop > 12);
-      element.addEventListener("scroll", listener);
-      return () => {
-        element.removeEventListener("scroll", listener);
-      };
-    }
-  }, [scrollContainer]);
-
+  const top = useScrollingStore((state) => state.top);
   return (
     <FilePicker>
-      <Header divider={divider} />
+      <Header divider={!top} />
       <Box
         id="scroll-container"
         data-testid="page"
         sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
       >
         <SideSheet />
-        <MainContainer ref={scrollContainer}>
+        <MainContainer>
           <SafeAreaContainer disableGutters>
             <TaskView />
             <Onboarding />

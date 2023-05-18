@@ -10,6 +10,7 @@ import {
   addBecomeActiveListener,
   removeAllBecomeActiveListeners,
 } from "../../native-api/platform";
+import useScrollingStore from "../../stores/scrolling-store";
 import { taskLoader } from "../../stores/task-state";
 import { parseDate } from "../date";
 import { getTodoFilePathFromDoneFilePath, isDoneFilePath } from "../todo-files";
@@ -26,9 +27,11 @@ export function useCloudStorageEffect() {
     requestTokens,
     getCloudFileRef,
     uploadFile,
+    cloudStorages,
   } = useCloudStorage();
   const { syncDoneFiles } = useArchivedTask();
   const { loadTodoFile } = useTask();
+  const top = useScrollingStore((state) => state.top);
 
   const reloadTodoFile = useCallback(
     async (path: string, content?: string) => {
@@ -134,5 +137,9 @@ export function useCloudStorageEffect() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  usePullToRefresh(syncAllTodoFiles, "#scroll-container", true);
+  usePullToRefresh(
+    syncAllTodoFiles,
+    "#scroll-container",
+    cloudStorages.length === 0 || !top
+  );
 }
