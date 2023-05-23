@@ -9,9 +9,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { PropsWithChildren, forwardRef, useEffect, useState } from "react";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import usePlatformStore from "../stores/platform-store";
+import useScrollingStore from "../stores/scrolling-store";
 import useSideSheetStore from "../stores/side-sheet-store";
 import useTask from "../utils/useTask";
 import Filter from "./Filter";
@@ -75,16 +76,30 @@ const SaveAreaContent = styled("div")({
   paddingLeft: "env(safe-area-inset-left)",
 });
 
-export const MainContainer = forwardRef<HTMLDivElement, PropsWithChildren>(
-  ({ children }, ref) => {
-    const sideSheetOpen = useSideSheetStore((state) => state.open);
-    return (
-      <Main ref={ref} open={sideSheetOpen}>
-        {children}
-      </Main>
-    );
-  }
-);
+export function MainContainer({ children }: PropsWithChildren) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const sideSheetOpen = useSideSheetStore((state) => state.open);
+  const setTop = useScrollingStore((state) => state.setTop);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (element) {
+      const listener = () => {
+        setTop(element.scrollTop === 0);
+      };
+      element.addEventListener("scroll", listener);
+      return () => {
+        element.removeEventListener("scroll", listener);
+      };
+    }
+  }, [setTop]);
+
+  return (
+    <Main ref={ref} open={sideSheetOpen}>
+      {children}
+    </Main>
+  );
+}
 
 const SideSheet = () => {
   const { t } = useTranslation();
