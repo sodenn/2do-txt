@@ -17,6 +17,11 @@ const localeMap: Record<string, Locale> = {
   de: deLocale,
 };
 
+const getLocalText = (language: string) =>
+  language === "de"
+    ? deDE.components.MuiLocalizationProvider.defaultProps.localeText
+    : undefined;
+
 type LocalizationDatePickerProps = Omit<
   DatePickerProps<Date | undefined, Date>,
   "renderInput" | "date" | "openPicker" | "rawValue"
@@ -30,16 +35,12 @@ const LocalizationDatePicker = forwardRef<
   const desktop = useMediaQuery("@media (pointer: fine)");
 
   const {
-    i18n: { resolvedLanguage },
+    i18n: { resolvedLanguage = "en" },
   } = useTranslation();
 
   return (
     <LocalizationProvider
-      localeText={
-        resolvedLanguage === "de"
-          ? deDE.components.MuiLocalizationProvider.defaultProps.localeText
-          : undefined
-      }
+      localeText={getLocalText(resolvedLanguage)}
       dateAdapter={AdapterDateFns}
       adapterLocale={localeMap[resolvedLanguage]}
     >
