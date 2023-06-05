@@ -14,9 +14,10 @@ import { useTranslation } from "react-i18next";
 import useSettingsStore from "../stores/settings-store";
 import useTaskDialogStore from "../stores/task-dialog-store";
 import { formatDate, todayDate } from "../utils/date";
-import { Task } from "../utils/task";
+import { Task, parseTask } from "../utils/task";
 import { TaskList } from "../utils/task-list";
 import useTask from "../utils/useTask";
+import { EditorContext } from "./Editor";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
@@ -109,22 +110,26 @@ const TaskDialog = () => {
     onExited: handleExit,
   };
 
+  const { body: initialValue } = { ...parseTask(raw) };
+
   const taskForm = (
     // eslint-disable-next-line react/jsx-key
-    <FluentEditProvider providers={[<MentionsProvider />]}>
-      <TaskForm
-        key={key}
-        raw={raw}
-        newTask={!!task?._id}
-        contexts={Object.keys(contexts)}
-        projects={Object.keys(projects)}
-        tags={tags}
-        taskLists={activeTaskList || task ? [] : taskLists}
-        onChange={handleChange}
-        onFileSelect={handleFileSelect}
-        onEnterPress={handleSave}
-      />
-    </FluentEditProvider>
+    <EditorContext initialValue={initialValue} triggers={["@", "+", "due:"]}>
+      <FluentEditProvider providers={[<MentionsProvider key="test" />]}>
+        <TaskForm
+          key={key}
+          raw={raw}
+          newTask={!!task?._id}
+          contexts={Object.keys(contexts)}
+          projects={Object.keys(projects)}
+          tags={tags}
+          taskLists={activeTaskList || task ? [] : taskLists}
+          onChange={handleChange}
+          onFileSelect={handleFileSelect}
+          onEnterPress={handleSave}
+        />
+      </FluentEditProvider>
+    </EditorContext>
   );
 
   if (fullScreenDialog) {

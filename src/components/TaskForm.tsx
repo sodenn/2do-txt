@@ -19,6 +19,7 @@ import {
   stringifyTask,
 } from "../utils/task";
 import { TaskList } from "../utils/task-list";
+import { Editor } from "./Editor";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
@@ -77,6 +78,14 @@ const TaskForm = (props: TaskFormProps) => {
     onFileSelect,
     onEnterPress,
   } = props;
+  const items = useMemo(
+    () => ({
+      "@": contexts,
+      "+": projects,
+      ..._tags,
+    }),
+    [contexts, projects, _tags]
+  );
   const formData = { ...parseTask(raw) };
   const { t } = useTranslation();
   const tags = useMemo(() => {
@@ -163,6 +172,11 @@ const TaskForm = (props: TaskFormProps) => {
   return (
     <Stack>
       <Box sx={{ mb: 2 }}>
+        <Editor
+          label={t("Description")}
+          onChange={(value) => console.log(value)}
+          items={items}
+        />
         <MuiFluentEdit
           label={t("Description")}
           placeholder={t<string>("Enter text and tags")}

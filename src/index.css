@@ -35,3 +35,7 @@ body {
 div[role="textbox"] {
   outline: none;
 }
+
+p {
+  margin: 0;
+}
