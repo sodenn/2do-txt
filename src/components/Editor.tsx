@@ -1,8 +1,6 @@
+import { css } from "@emotion/css";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import {
-  InitialConfigType,
-  LexicalComposer,
-} from "@lexical/react/LexicalComposer";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
@@ -23,9 +21,12 @@ import {
   $createParagraphNode,
   $getRoot,
   BLUR_COMMAND,
+  COMMAND_PRIORITY_LOW,
   COMMAND_PRIORITY_NORMAL,
   EditorState,
   FOCUS_COMMAND,
+  KEY_ENTER_COMMAND,
+  LineBreakNode,
 } from "lexical";
 import {
   BeautifulMentionNode,
@@ -36,15 +37,19 @@ import {
   ZeroWidthNode,
   ZeroWidthPlugin,
   convertToMentionNodes,
+  useBeautifulMentions,
 } from "lexical-beautiful-mentions";
 import React, {
+  ComponentProps,
   ReactNode,
   forwardRef,
   useCallback,
+  useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
+import useThemeStore from "../stores/theme-store";
 
 interface EditorContextProps {
   initialValue: string;
@@ -52,26 +57,119 @@ interface EditorContextProps {
   children: React.JSX.Element | string | (React.JSX.Element | string)[];
 }
 
-interface EditorProps extends Pick<BeautifulMentionsItemsProps, "items"> {
+interface EditorProps
+  extends Pick<BeautifulMentionsItemsProps, "items">,
+    Omit<ComponentProps<typeof ContentEditable>, "onChange" | "label"> {
   onChange: (value: string) => void;
+  onEnter: () => void;
   label?: ReactNode;
+  placeholder?: string;
 }
 
-const mentionsStyle =
-  "px-1 mx-px align-baseline inline-block rounded break-words cursor-pointer select-none leading-5";
-const mentionsStyleFocused = "outline-none shadow-md shadow-gray-900";
+export const mentionStyle = css`
+  padding: 0 4px;
+  margin: 0 2px;
+  vertical-align: baseline;
+  display: inline-block;
+  border-radius: 4px;
+  word-break: break-word;
+  user-select: none;
+  outline: none;
+  line-height: 22px;
+  cursor: pointer;
+`;
 
-const theme = {
-  ltr: "text-left",
-  rtl: "text-right",
-  beautifulMentions: {
-    "@": `${mentionsStyle} bg-green-500 text-gray-950`,
-    "@Focused": mentionsStyleFocused,
-    "#": `${mentionsStyle} bg-blue-400 text-gray-950`,
-    "#Focused": mentionsStyleFocused,
-    "due:": `${mentionsStyle} bg-yellow-400 text-gray-950`,
-    "due:Focused": mentionsStyleFocused,
-  },
+export const mentionStyleFocused = css`
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  --shadow-color: #111827;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow: var(--shadow, 0 0 #0000), var(--shadow, 0 0 #0000), var(--shadow);
+`;
+
+export const taskContextStyle = css`
+  color: #fff;
+  background-color: #4caf50;
+`;
+export const taskContextDarkStyle = css`
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgb(129, 199, 132);
+`;
+
+export const taskProjectStyle = css`
+  color: #fff;
+  background-color: #03a9f4;
+`;
+export const taskProjectDarkStyle = css`
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgb(79, 195, 247);
+`;
+
+export const taskDudDateStyle = css`
+  color: #fff;
+  background-color: #ff9800;
+  white-space: nowrap;
+`;
+export const taskDudDateDarkStyle = css`
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgb(255, 183, 77);
+  white-space: nowrap;
+`;
+
+export const taskTagStyle = css`
+  color: #fff;
+  background-color: #858585;
+  white-space: nowrap;
+`;
+export const taskTagDarkStyle = css`
+  color: rgba(0, 0, 0, 0.87);
+  background-color: #909090;
+  white-space: nowrap;
+`;
+
+export const menuAnchorStyle = css`
+  z-index: 1300;
+`;
+
+const useEditorConfig = (triggers: string[], initialValue: string) => {
+  const mode = useThemeStore((state) => state.mode);
+  return useMemo(
+    () => ({
+      onError(error: any) {
+        console.log(error);
+        // throw error;
+      },
+      editorState: setEditorState(initialValue, triggers),
+      // @ts-ignore
+      nodes: [BeautifulMentionNode, ZeroWidthNode],
+      namespace: "",
+      theme: {
+        beautifulMentions: {
+          "@":
+            (mode === "dark" ? taskContextDarkStyle : taskContextStyle) +
+            " " +
+            mentionStyle,
+          "@Focused": mentionStyleFocused,
+          "\\+":
+            (mode === "dark" ? taskProjectDarkStyle : taskProjectStyle) +
+            " " +
+            mentionStyle,
+          "\\+Focused": mentionStyleFocused,
+          "due:":
+            (mode === "dark" ? taskDudDateDarkStyle : taskDudDateStyle) +
+            " " +
+            mentionStyle,
+          "due:Focused": mentionStyleFocused,
+          "\\w+:":
+            (mode === "dark" ? taskTagDarkStyle : taskTagStyle) +
+            " " +
+            mentionStyle,
+          "\\w+:Focused": mentionStyleFocused,
+        },
+      },
+    }),
+    [initialValue, mode, triggers]
+  );
 };
 
 export const useIsFocused = () => {
@@ -104,6 +202,40 @@ export const useIsFocused = () => {
   return hasFocus;
 };
 
+function SingleLinePlugin({ onEnter }: { onEnter?: () => void }) {
+  const [editor] = useLexicalComposerContext();
+  const { isMentionsMenuOpen } = useBeautifulMentions();
+  useEffect(
+    () =>
+      mergeRegister(
+        editor.registerNodeTransform(LineBreakNode, (node) => {
+          node.remove();
+        }),
+        editor.registerCommand(
+          KEY_ENTER_COMMAND,
+          (event) => {
+            const isOpen = isMentionsMenuOpen();
+            if (
+              event &&
+              onEnter &&
+              !isOpen &&
+              !event.shiftKey &&
+              !event.ctrlKey &&
+              !event.metaKey
+            ) {
+              onEnter();
+              return true;
+            }
+            return false;
+          },
+          COMMAND_PRIORITY_LOW
+        )
+      ),
+    [editor, isMentionsMenuOpen, onEnter]
+  );
+  return null;
+}
+
 function setEditorState(initialValue: string, triggers: string[]) {
   return () => {
     const root = $getRoot();
@@ -114,20 +246,6 @@ function setEditorState(initialValue: string, triggers: string[]) {
     }
   };
 }
-
-const editorConfig = (
-  triggers: string[],
-  initialValue: string
-): InitialConfigType => ({
-  namespace: "",
-  theme,
-  onError(error: any) {
-    throw error;
-  },
-  editorState: setEditorState(initialValue, triggers),
-  // @ts-ignore
-  nodes: [BeautifulMentionNode, ZeroWidthNode],
-});
 
 const MenuComponent = forwardRef<HTMLUListElement, BeautifulMentionsMenuProps>(
   (props, ref) => {
@@ -164,10 +282,13 @@ const Fieldset = styled("fieldset")(({ theme }) => {
       ? "rgba(0, 0, 0, 0.23)"
       : "rgba(255, 255, 255, 0.23)";
   return {
+    position: "relative",
     userSelect: "auto",
-    margin: 0,
     borderRadius: theme.shape.borderRadius,
     borderWidth: 1,
+    minHeight: 65,
+    margin: "-2px -1px",
+    padding: "7px 14px 14px 15px",
     borderColor: borderColor,
     borderStyle: "solid",
     cursor: "text",
@@ -179,41 +300,38 @@ const Fieldset = styled("fieldset")(({ theme }) => {
   };
 });
 
-const Placeholder = forwardRef<HTMLSpanElement>((_, ref) => {
-  const { t } = useTranslation();
-  return (
-    <Typography
-      sx={{
-        color: "action.disabled",
-        position: "absolute",
-        pointerEvents: "none",
-        left: 15,
-        top: 7,
-        display: "inline-block",
-        userSelect: "none",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      }}
-      ref={ref}
-    >
-      {t("Enter text and tags")}
-    </Typography>
-  );
-});
+const Placeholder = styled(Typography)(({ theme }) => ({
+  color: theme.palette.action.disabled,
+  position: "absolute",
+  pointerEvents: "none",
+  left: 15,
+  top: 7,
+  display: "inline-block",
+  userSelect: "none",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+}));
 
 export function EditorContext({
   initialValue,
   triggers,
   children,
 }: EditorContextProps) {
-  const initialConfig = editorConfig(triggers, initialValue);
+  const initialConfig = useEditorConfig(triggers, initialValue);
   return (
     <LexicalComposer initialConfig={initialConfig}>{children}</LexicalComposer>
   );
 }
 
 export function Editor(props: EditorProps) {
-  const { label, items, onChange } = props;
+  const {
+    label,
+    placeholder,
+    items,
+    onChange,
+    onEnter,
+    ...contentEditableProps
+  } = props;
   const theme = useTheme();
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
@@ -233,54 +351,55 @@ export function Editor(props: EditorProps) {
   }, [editor]);
 
   return (
-    <Fieldset
-      onClick={handleClick}
-      style={
-        focused
-          ? {
-              position: "relative",
-              borderColor: theme.palette.primary.main,
-              borderWidth: 2,
-              padding: "7px 13px 13px 14px",
-            }
-          : { position: "relative", padding: "7px 14px 14px 15px" }
-      }
-    >
-      {label && (
-        <Legend
-          sx={{
-            color: focused ? "primary.main" : "text.secondary",
-          }}
-        >
-          {label}
-        </Legend>
-      )}
-      <PlainTextPlugin
-        contentEditable={
-          <ContentEditable
-            style={{
-              tabSize: 1,
-              position: "relative",
-              resize: "none",
-              //padding: `${theme.spacing(4)} ${theme.spacing(3)}`,
-              outline: "none",
+    <div style={{ margin: "0 1px" }}>
+      <Fieldset
+        onClick={handleClick}
+        style={{
+          ...(focused && {
+            borderColor: theme.palette.primary.main,
+            borderWidth: 2,
+            margin: "-2px",
+          }),
+        }}
+      >
+        {label && (
+          <Legend
+            sx={{
+              color: focused ? "primary.main" : "text.secondary",
             }}
-          />
-        }
-        placeholder={<Placeholder />}
-        ErrorBoundary={LexicalErrorBoundary}
-      />
-      <OnChangePlugin onChange={handleChange} />
-      <HistoryPlugin />
-      <AutoFocusPlugin defaultSelection="rootEnd" />
-      <ZeroWidthPlugin />
-      <BeautifulMentionsPlugin
-        items={items}
-        menuComponent={MenuComponent}
-        menuItemComponent={MenuItemComponent}
-        creatable
-        insertOnBlur
-      />
-    </Fieldset>
+          >
+            {label}
+          </Legend>
+        )}
+        <PlainTextPlugin
+          contentEditable={
+            <ContentEditable
+              style={{
+                tabSize: 1,
+                position: "relative",
+                resize: "none",
+                outline: "none",
+              }}
+              {...contentEditableProps}
+            />
+          }
+          placeholder={<Placeholder>{placeholder}</Placeholder>}
+          ErrorBoundary={LexicalErrorBoundary}
+        />
+        <OnChangePlugin onChange={handleChange} />
+        <HistoryPlugin />
+        <AutoFocusPlugin defaultSelection="rootEnd" />
+        <ZeroWidthPlugin />
+        <SingleLinePlugin onEnter={onEnter} />
+        <BeautifulMentionsPlugin
+          items={items}
+          menuComponent={MenuComponent}
+          menuItemComponent={MenuItemComponent}
+          creatable
+          insertOnBlur
+          menuAnchorClassName={menuAnchorStyle}
+        />
+      </Fieldset>
+    </div>
   );
 }

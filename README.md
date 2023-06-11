@@ -47,7 +47,3 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 - [Webbrowser](https://2do-txt-sodenn.vercel.app/)
 - iOS
 - Desktop: macOS, Windows, Linux
-
-## Known Issues
-
-**2do.txt** uses [Slate](https://github.com/ianstormtaylor/slate) to provide autocomplete for projects, contexts and tags. The library does not officially support the [Android browser](https://docs.slatejs.org/general/faq#what-browsers-and-devices-does-slate-support).

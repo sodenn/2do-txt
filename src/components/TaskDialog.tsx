@@ -7,9 +7,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FluentEditProvider } from "@react-fluent-edit/core";
-import { MentionsProvider } from "@react-fluent-edit/mentions";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useSettingsStore from "../stores/settings-store";
 import useTaskDialogStore from "../stores/task-dialog-store";
@@ -17,7 +15,6 @@ import { formatDate, todayDate } from "../utils/date";
 import { Task, parseTask } from "../utils/task";
 import { TaskList } from "../utils/task-list";
 import useTask from "../utils/useTask";
-import { EditorContext } from "./Editor";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
 import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
 import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
@@ -50,8 +47,7 @@ const TaskDialog = () => {
   const createCreationDate = useSettingsStore(
     (state) => state.createCreationDate
   );
-  const [key, setKey] = useState(0);
-  const [raw, setRaw] = useState(rawText(createCreationDate, task));
+  const [raw, setRaw] = useState<string>();
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
@@ -59,14 +55,13 @@ const TaskDialog = () => {
   const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
   const projects = activeTaskList ? activeTaskList.projects : commonProjects;
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
-
-  const closeDialog = () => closeTaskDialog();
+  const formModel = useMemo(() => (raw ? parseTask(raw) : undefined), [raw]);
 
   const handleSave = () => {
     if (formDisabled) {
       return;
     }
-    closeDialog();
+    closeTaskDialog();
     if (task) {
       editTask({ raw, _id: task._id });
     } else if (selectedTaskList) {
@@ -89,12 +84,11 @@ const TaskDialog = () => {
         return activeTaskList;
       }
     });
-    setKey(key + 1);
   };
 
   const handleExit = () => {
     cleanupTaskDialog();
-    setRaw(rawText(createCreationDate));
+    setRaw(undefined);
     setSelectedTaskList(undefined);
   };
 
@@ -102,7 +96,7 @@ const TaskDialog = () => {
     event: any,
     reason: "backdropClick" | "escapeKeyDown"
   ) => {
-    return reason !== "backdropClick" ? closeDialog() : undefined;
+    return reason !== "backdropClick" ? closeTaskDialog() : undefined;
   };
 
   const TransitionProps = {
@@ -110,38 +104,30 @@ const TaskDialog = () => {
     onExited: handleExit,
   };
 
-  const { body: initialValue } = { ...parseTask(raw) };
-
-  const taskForm = (
-    // eslint-disable-next-line react/jsx-key
-    <EditorContext initialValue={initialValue} triggers={["@", "+", "due:"]}>
-      <FluentEditProvider providers={[<MentionsProvider key="test" />]}>
-        <TaskForm
-          key={key}
-          raw={raw}
-          newTask={!!task?._id}
-          contexts={Object.keys(contexts)}
-          projects={Object.keys(projects)}
-          tags={tags}
-          taskLists={activeTaskList || task ? [] : taskLists}
-          onChange={handleChange}
-          onFileSelect={handleFileSelect}
-          onEnterPress={handleSave}
-        />
-      </FluentEditProvider>
-    </EditorContext>
-  );
+  const taskForm = formModel ? (
+    <TaskForm
+      formModel={formModel}
+      newTask={!!task?._id}
+      contexts={Object.keys(contexts)}
+      projects={Object.keys(projects)}
+      tags={tags}
+      taskLists={activeTaskList || task ? [] : taskLists}
+      onChange={handleChange}
+      onFileSelect={handleFileSelect}
+      onEnterPress={handleSave}
+    />
+  ) : null;
 
   if (fullScreenDialog) {
     return (
       <FullScreenDialog
         data-testid="task-dialog"
         open={open}
-        onClose={closeDialog}
+        onClose={closeTaskDialog}
         TransitionProps={TransitionProps}
       >
         <FullScreenDialogTitle
-          onClose={closeDialog}
+          onClose={closeTaskDialog}
           accept={{
             text: t("Save"),
             disabled: formDisabled,
@@ -168,7 +154,7 @@ const TaskDialog = () => {
       <DialogTitle>{task?._id ? t("Edit Task") : t("Create Task")}</DialogTitle>
       <DialogContent>{taskForm}</DialogContent>
       <DialogActions>
-        <Button tabIndex={-1} onClick={closeDialog}>
+        <Button tabIndex={-1} onClick={closeTaskDialog}>
           {t("Cancel")}
         </Button>
         <Button
