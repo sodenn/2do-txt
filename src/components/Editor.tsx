@@ -231,7 +231,8 @@ function SingleLinePlugin({ onEnter }: { onEnter?: () => void }) {
           COMMAND_PRIORITY_LOW
         )
       ),
-    [editor, isMentionsMenuOpen, onEnter]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [editor, isMentionsMenuOpen]
   );
   return null;
 }

@@ -21,7 +21,6 @@ import PrioritySelect from "./PrioritySelect";
 import RecurrenceSelect from "./RecurrenceSelect";
 
 interface TaskFormProps {
-  //formModel: Task;
   value: string;
   newTask: boolean;
   taskLists: TaskList[];

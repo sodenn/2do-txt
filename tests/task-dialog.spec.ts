@@ -285,7 +285,7 @@ test.describe("Task dialog", () => {
     ).toHaveCount(1);
   });
 
-  test.only("should allow me to create a new task by using the keyboard only", async ({
+  test("should allow me to create a new task by using the keyboard only", async ({
     page,
     isMobile,
   }) => {
@@ -375,7 +375,7 @@ test.describe("Task dialog", () => {
     ).toHaveCount(1);
   });
 
-  test.only("should insert spaces when adding mentions via mouse click", async ({
+  test("should insert spaces when adding mentions via mouse click", async ({
     page,
   }) => {
     await page.locator('button[aria-label="Add task"]').click();
@@ -389,7 +389,7 @@ test.describe("Task dialog", () => {
     await page.locator('[role="menuitem"] >> text="Private"').click(delay);
 
     await expect(
-      page.locator('[data-beautiful-mention="mention-Private"]')
+      page.locator('[data-beautiful-mention="@Private"]')
     ).toHaveCount(2);
 
     // delete mention + space
@@ -413,7 +413,7 @@ test.describe("Task dialog", () => {
     );
   });
 
-  test.only("should add add and remove recurrence", async ({ page }) => {
+  test("should add add and remove recurrence", async ({ page }) => {
     await page.locator('button[aria-label="Add task"]').click();
 
     await page.locator('[aria-label="Select unit"]').click();
