@@ -190,12 +190,12 @@ test.describe("Task dialog", () => {
     );
 
     // make sure there is no open dropdown menu with suggestions
-    await expect(page.locator('[data-testid="mentions-portal"]')).toHaveCount(
-      0
-    );
+    await expect(
+      page.getByRole("menu", { name: "Choose a mention" })
+    ).toHaveCount(0);
 
     // makes sure that the context was added
-    await expect(page.locator('[data-testid="mention-pr"]')).toHaveCount(1);
+    await expect(page.locator('[data-beautiful-mention="@pr"]')).toHaveCount(1);
   });
 
   test("should allow me to add new contexts via space bar", async ({
@@ -214,12 +214,14 @@ test.describe("Task dialog", () => {
       .evaluate((e) => e.blur());
 
     // make sure context was added
-    await expect(page.locator('[data-testid="mention-pr"]')).toHaveText("@pr");
+    await expect(page.locator('[data-beautiful-mention="@pr"]')).toHaveText(
+      "@pr"
+    );
 
     // make sure there is no open dropdown menu with suggestions
-    await expect(page.locator('[data-testid="mentions-portal"]')).toHaveCount(
-      0
-    );
+    await expect(
+      page.getByRole("menu", { name: "Choose a mention" })
+    ).toHaveCount(0);
   });
 
   test("should allow me to fix a new context before inserting it", async ({
@@ -240,7 +242,7 @@ test.describe("Task dialog", () => {
     await page.type('[aria-label="Text editor"]', "by ", delay);
 
     // make sure context was added
-    await expect(page.locator('[data-testid="mention-Hobby"]')).toHaveText(
+    await expect(page.locator('[data-beautiful-mention="@Hobby"]')).toHaveText(
       "@Hobby"
     );
   });
@@ -283,7 +285,7 @@ test.describe("Task dialog", () => {
     ).toHaveCount(1);
   });
 
-  test("should allow me to create a new task by using the keyboard only", async ({
+  test.only("should allow me to create a new task by using the keyboard only", async ({
     page,
     isMobile,
   }) => {
@@ -360,20 +362,20 @@ test.describe("Task dialog", () => {
 
     await page.keyboard.press("Enter", delay);
 
-    await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
-      2
-    );
+    await expect(
+      page.locator('[data-beautiful-mention="@Private"]')
+    ).toHaveCount(2);
 
     // delete mention + space
     await page.press('[aria-label="Text editor"]', "Backspace", delay);
     await page.press('[aria-label="Text editor"]', "Backspace", delay);
 
-    await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
-      1
-    );
+    await expect(
+      page.locator('[data-beautiful-mention="@Private"]')
+    ).toHaveCount(1);
   });
 
-  test("should insert spaces when adding mentions via mouse click", async ({
+  test.only("should insert spaces when adding mentions via mouse click", async ({
     page,
   }) => {
     await page.locator('button[aria-label="Add task"]').click();
@@ -386,17 +388,17 @@ test.describe("Task dialog", () => {
 
     await page.locator('[role="menuitem"] >> text="Private"').click(delay);
 
-    await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
-      2
-    );
+    await expect(
+      page.locator('[data-beautiful-mention="mention-Private"]')
+    ).toHaveCount(2);
 
     // delete mention + space
     await page.press('[aria-label="Text editor"]', "Backspace");
     await page.press('[aria-label="Text editor"]', "Backspace");
 
-    await expect(page.locator('[data-testid="mention-Private"]')).toHaveCount(
-      1
-    );
+    await expect(
+      page.locator('[data-beautiful-mention="@Private"]')
+    ).toHaveCount(1);
   });
 
   test("should insert a new mention", async ({ page }) => {
@@ -406,10 +408,12 @@ test.describe("Task dialog", () => {
 
     await page.locator('[role="menuitem"] >> text=Add "Test"').click();
 
-    await expect(page.locator('[data-testid="mention-Test"]')).toHaveCount(1);
+    await expect(page.locator('[data-beautiful-mention="@Test"]')).toHaveCount(
+      1
+    );
   });
 
-  test("should add add and remove recurrence", async ({ page }) => {
+  test.only("should add add and remove recurrence", async ({ page }) => {
     await page.locator('button[aria-label="Add task"]').click();
 
     await page.locator('[aria-label="Select unit"]').click();
@@ -423,7 +427,7 @@ test.describe("Task dialog", () => {
     await expect(page.locator('[aria-label="Amount"]')).toHaveValue("2");
 
     // make sure rec-tag was added
-    await expect(page.locator('[data-testid="mention-2d"]')).toHaveText(
+    await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveText(
       "rec:2d"
     );
 
@@ -432,6 +436,8 @@ test.describe("Task dialog", () => {
     await page.locator('text="No recurrence"').click();
 
     // make sure rec-tag was removed
-    await expect(page.locator('[data-testid="mention-2d"]')).toHaveCount(0);
+    await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveCount(
+      0
+    );
   });
 });

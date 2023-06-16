@@ -68,7 +68,7 @@ interface EditorProps
 
 export const mentionStyle = css`
   padding: 0 4px;
-  margin: 0 2px;
+  margin: 0 1px;
   vertical-align: baseline;
   display: inline-block;
   border-radius: 4px;
@@ -397,6 +397,7 @@ export function Editor(props: EditorProps) {
           menuItemComponent={MenuItemComponent}
           creatable
           insertOnBlur
+          allowSpaces={false}
           menuAnchorClassName={menuAnchorStyle}
         />
       </Fieldset>

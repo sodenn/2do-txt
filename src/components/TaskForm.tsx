@@ -10,6 +10,7 @@ import {
   Task,
   getDueDateValue,
   getRecValue,
+  parseTask,
   stringifyTask,
 } from "../utils/task";
 import { TaskList } from "../utils/task-list";
@@ -20,7 +21,8 @@ import PrioritySelect from "./PrioritySelect";
 import RecurrenceSelect from "./RecurrenceSelect";
 
 interface TaskFormProps {
-  formModel: Task;
+  //formModel: Task;
+  value: string;
   newTask: boolean;
   taskLists: TaskList[];
   projects: string[];
@@ -32,12 +34,13 @@ interface TaskFormProps {
 }
 
 interface TaskGridProps
-  extends Omit<TaskFormProps, "projects" | "contexts" | "tags"> {
+  extends Omit<TaskFormProps, "value" | "projects" | "contexts" | "tags"> {
   items: Record<string, string[]>;
+  formModel: Task;
 }
 
 const TaskForm = (props: TaskFormProps) => {
-  const { projects, contexts, tags, ...other } = props;
+  const { value, projects, contexts, tags, ...other } = props;
 
   const _tags = useMemo(() => {
     const tags = Object.keys(props.tags).reduce((acc, key) => {
@@ -62,9 +65,11 @@ const TaskForm = (props: TaskFormProps) => {
 
   const triggers = useMemo(() => Object.keys(items), [items]);
 
+  const formModel = useMemo(() => parseTask(value), [value]);
+
   return (
-    <EditorContext initialValue={props.formModel.body} triggers={triggers}>
-      <TaskGrid {...other} items={items} />
+    <EditorContext initialValue={formModel.body} triggers={triggers}>
+      <TaskGrid {...other} items={items} formModel={formModel} />
     </EditorContext>
   );
 };
@@ -110,26 +115,37 @@ const TaskGrid = (props: TaskGridProps) => {
         renameMentions({
           newValue: dateStr,
           trigger,
+          focus: false,
         });
       } else {
         insertMention({
           value: dateStr,
           trigger,
+          focus: false,
         });
       }
     } else {
-      removeMentions({ trigger: "due:" });
+      removeMentions({ trigger: "due:", focus: false });
     }
   };
 
   const handleRecChange = (value: string | null) => {
     if (value) {
-      renameMentions({
-        newValue: value,
-        trigger: "rec:",
-      });
+      if (hasMentions({ trigger: "rec:" })) {
+        renameMentions({
+          newValue: value,
+          trigger: "rec:",
+          focus: false,
+        });
+      } else {
+        insertMention({
+          value: value,
+          trigger: "rec:",
+          focus: false,
+        });
+      }
     } else {
-      removeMentions({ trigger: "rec:" });
+      removeMentions({ trigger: "rec:", focus: false });
     }
   };
 
@@ -143,7 +159,7 @@ const TaskGrid = (props: TaskGridProps) => {
         <Editor
           label={t("Description")}
           placeholder={t<string>("Enter text and tags")}
-          aria-label="Text editor"
+          ariaLabel="Text editor"
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck={false}

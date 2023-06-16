@@ -7,12 +7,12 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useSettingsStore from "../stores/settings-store";
 import useTaskDialogStore from "../stores/task-dialog-store";
 import { formatDate, todayDate } from "../utils/date";
-import { Task, parseTask } from "../utils/task";
+import { Task } from "../utils/task";
 import { TaskList } from "../utils/task-list";
 import useTask from "../utils/useTask";
 import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
@@ -28,7 +28,7 @@ const TaskDialog = () => {
   const { t } = useTranslation();
   const {
     findTaskListByTaskId,
-    taskLists,
+    taskLists: _taskLists,
     activeTaskList,
     addTask,
     editTask,
@@ -47,36 +47,56 @@ const TaskDialog = () => {
   const createCreationDate = useSettingsStore(
     (state) => state.createCreationDate
   );
-  const [raw, setRaw] = useState<string>();
+  const [value, setValue] = useState<string>();
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
-  const formDisabled = !raw || (!activeTaskList && !selectedTaskList);
-  const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
-  const projects = activeTaskList ? activeTaskList.projects : commonProjects;
+  const formDisabled = !value || (!activeTaskList && !selectedTaskList);
+  const contexts = useMemo(
+    () =>
+      Object.keys(activeTaskList ? activeTaskList.contexts : commonContexts),
+    [activeTaskList, commonContexts]
+  );
+  const projects = useMemo(
+    () =>
+      Object.keys(activeTaskList ? activeTaskList.projects : commonProjects),
+    [activeTaskList, commonProjects]
+  );
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
-  const formModel = useMemo(() => (raw ? parseTask(raw) : undefined), [raw]);
+  const taskLists = useMemo(
+    () => (activeTaskList || task ? [] : _taskLists),
+    [_taskLists, activeTaskList, task]
+  );
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (formDisabled) {
       return;
     }
     closeTaskDialog();
     if (task) {
-      editTask({ raw, _id: task._id });
+      editTask({ raw: value, _id: task._id });
     } else if (selectedTaskList) {
-      addTask({ raw }, selectedTaskList);
+      addTask({ raw: value }, selectedTaskList);
     }
-  };
+  }, [
+    addTask,
+    closeTaskDialog,
+    editTask,
+    formDisabled,
+    value,
+    selectedTaskList,
+    task,
+  ]);
 
-  const handleChange = (raw: string) => setRaw(raw);
-
-  const handleFileSelect = (taskList?: TaskList) => {
-    setSelectedTaskList(taskList);
-  };
+  const handleClose = useCallback(
+    (event: any, reason: "backdropClick" | "escapeKeyDown") => {
+      return reason !== "backdropClick" ? closeTaskDialog() : undefined;
+    },
+    [closeTaskDialog]
+  );
 
   const handleEnter = () => {
-    setRaw(rawText(createCreationDate, task));
+    setValue(rawText(createCreationDate, task));
     setSelectedTaskList(() => {
       if (task) {
         return findTaskListByTaskId(task._id);
@@ -88,15 +108,8 @@ const TaskDialog = () => {
 
   const handleExit = () => {
     cleanupTaskDialog();
-    setRaw(undefined);
+    setValue(undefined);
     setSelectedTaskList(undefined);
-  };
-
-  const handleClose = (
-    event: any,
-    reason: "backdropClick" | "escapeKeyDown"
-  ) => {
-    return reason !== "backdropClick" ? closeTaskDialog() : undefined;
   };
 
   const TransitionProps = {
@@ -104,16 +117,16 @@ const TaskDialog = () => {
     onExited: handleExit,
   };
 
-  const taskForm = formModel ? (
+  const taskForm = value ? (
     <TaskForm
-      formModel={formModel}
+      value={value}
       newTask={!!task?._id}
-      contexts={Object.keys(contexts)}
-      projects={Object.keys(projects)}
+      contexts={contexts}
+      projects={projects}
       tags={tags}
-      taskLists={activeTaskList || task ? [] : taskLists}
-      onChange={handleChange}
-      onFileSelect={handleFileSelect}
+      taskLists={taskLists}
+      onChange={setValue}
+      onFileSelect={setSelectedTaskList}
       onEnterPress={handleSave}
     />
   ) : null;
