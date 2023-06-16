@@ -41,6 +41,7 @@ test.describe("Task dialog", () => {
     // open the mention popover
     await page.type('[aria-label="Text editor"]', "@", delay);
     // select "Holiday" from the mention list
+    await page.waitForTimeout(150);
     await page.keyboard.press("ArrowDown", delay);
     await page.keyboard.press("Enter", delay);
 
