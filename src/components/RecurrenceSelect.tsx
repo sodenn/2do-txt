@@ -78,7 +78,7 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
           labelId="recurrence-select"
           aria-label="Select unit"
           displayEmpty
-          input={<OutlinedInput label={t("Recurrence")} />}
+          input={<OutlinedInput label={t("Recurrence")} role="combobox" />}
           value={unit}
           onChange={(event) => handleChangeUnit(event.target.value)}
         >
@@ -94,6 +94,7 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
         <OutlinedInput
           type="number"
           inputProps={{
+            role: "spinbutton",
             min: "1",
             step: "1",
             pattern: "[1-9]*",
