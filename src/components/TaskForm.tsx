@@ -157,7 +157,7 @@ const TaskGrid = (props: TaskGridProps) => {
       <Box sx={{ mb: 2 }}>
         <Editor
           label={t("Description")}
-          placeholder={t<string>("Enter text and tags")}
+          placeholder={t("Enter text and tags")}
           ariaLabel="Text editor"
           autoCorrect="off"
           autoCapitalize="off"
