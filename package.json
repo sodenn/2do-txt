@@ -57,7 +57,7 @@
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@emotion/css": "11.11.2",
-    "@formkit/auto-animate": "1.0.0-pre-alpha.3",
+    "@formkit/auto-animate": "0.7.0",
     "@lexical/react": "^0.11.1",
     "@mui/icons-material": "5.11.16",
     "@mui/lab": "5.0.0-alpha.134",
