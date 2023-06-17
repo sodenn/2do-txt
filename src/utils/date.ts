@@ -54,11 +54,11 @@ function isDateEqual(date1?: Date | null, date2?: Date | null): boolean {
 }
 
 export {
-  formatLocaleDate,
-  formatLocalDateTime,
+  dateReviver,
   formatDate,
+  formatLocalDateTime,
+  formatLocaleDate,
+  isDateEqual,
   parseDate,
   todayDate,
-  dateReviver,
-  isDateEqual,
 };

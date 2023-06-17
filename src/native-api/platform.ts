@@ -74,10 +74,10 @@ async function removeAllBecomeActiveListeners(listeners: (() => unknown)[]) {
   }
 }
 
-export type { Platform };
 export {
+  addBecomeActiveListener,
   getPlatform,
   hasTouchScreen,
-  addBecomeActiveListener,
   removeAllBecomeActiveListeners,
 };
+export type { Platform };

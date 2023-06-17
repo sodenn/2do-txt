@@ -38,5 +38,5 @@ async function removePreferencesItem(key: PreferencesKeys): Promise<void> {
   return Preferences.remove({ key });
 }
 
+export { getPreferencesItem, removePreferencesItem, setPreferencesItem };
 export type { PreferencesKeys };
-export { getPreferencesItem, setPreferencesItem, removePreferencesItem };

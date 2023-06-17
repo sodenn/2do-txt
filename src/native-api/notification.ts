@@ -223,12 +223,12 @@ async function shouldNotificationsBeRescheduled() {
     : webNotification.shouldNotificationsBeRescheduled();
 }
 
-export type { Notification };
 export {
-  subscribeNotifications,
   cancelNotifications,
   isNotificationPermissionGranted,
   requestNotificationPermission,
   scheduleNotifications,
   shouldNotificationsBeRescheduled,
+  subscribeNotifications,
 };
+export type { Notification };

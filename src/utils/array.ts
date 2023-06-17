@@ -18,4 +18,4 @@ function arrayMove<T>(arr: T[], fromIndex: number, toIndex: number) {
   arr.splice(toIndex, 0, element);
 }
 
-export { groupBy, arrayMove };
+export { arrayMove, groupBy };

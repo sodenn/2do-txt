@@ -311,18 +311,18 @@ async function join(...paths: string[]) {
 }
 
 export {
-  getUri,
-  readFile,
-  writeFile,
   deleteFile,
-  readdir,
   fileExists,
-  getUniqueFilePath,
-  selectFolder,
-  selectFile,
-  saveFile,
-  join,
   getDirname,
-  getFilename,
   getFileNameWithoutExt,
+  getFilename,
+  getUniqueFilePath,
+  getUri,
+  join,
+  readFile,
+  readdir,
+  saveFile,
+  selectFile,
+  selectFolder,
+  writeFile,
 };
