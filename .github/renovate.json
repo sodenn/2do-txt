@@ -8,6 +8,7 @@
       "matchPaths": ["+(package.json)"],
       "matchDepTypes": ["dependencies"],
       "matchUpdateTypes": ["patch", "minor"],
+      "excludePackagePatterns": ["^i18next$", "^react-i18next$"],
       "groupName": "dependencies (non-major)"
     },
     {
@@ -15,6 +16,13 @@
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "devDependencies (non-major)"
+    },
+    {
+      "matchPackagePatterns": [
+        "^i18next$",
+        "^react-i18next$"
+      ],
+      "groupName": "i18next dependencies"
     }
   ]
 }
