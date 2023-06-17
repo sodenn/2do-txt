@@ -49,8 +49,8 @@ function getStyle(style: KeyboardStyle) {
 }
 
 export {
-  addKeyboardDidShowListener,
   addKeyboardDidHideListener,
+  addKeyboardDidShowListener,
   removeAllKeyboardListeners,
   setKeyboardStyle,
 };

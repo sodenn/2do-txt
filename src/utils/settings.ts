@@ -55,4 +55,4 @@ async function removeTodoFilePath(filePath: string) {
   await setPreferencesItem("todo-txt-paths", updatedFilePathsStr);
 }
 
-export { getTodoFilePaths, addTodoFilePath, removeTodoFilePath };
+export { addTodoFilePath, getTodoFilePaths, removeTodoFilePath };

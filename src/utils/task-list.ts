@@ -706,15 +706,15 @@ function containsStringArrayDictionaries(
   );
 }
 
-export type { TaskList, TaskGroup, TaskListFilter, TimelineTask };
 export {
-  updateTaskListAttributes,
-  parseTaskList,
-  stringifyTaskList,
-  useTimelineTasks,
-  useTaskGroups,
-  filterTasks,
   convertToTaskGroups,
+  filterTasks,
   getCommonTaskListAttributes,
+  parseTaskList,
   sortByOriginalOrder,
+  stringifyTaskList,
+  updateTaskListAttributes,
+  useTaskGroups,
+  useTimelineTasks,
 };
+export type { TaskGroup, TaskList, TaskListFilter, TimelineTask };

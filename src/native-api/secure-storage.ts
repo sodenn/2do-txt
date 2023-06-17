@@ -92,4 +92,4 @@ async function removeSecureStorageItem(key: SecureStorageKeys) {
     : webSecureStorage.removeSecureStorageItem(key);
 }
 
-export { getSecureStorageItem, setSecureStorageItem, removeSecureStorageItem };
+export { getSecureStorageItem, removeSecureStorageItem, setSecureStorageItem };

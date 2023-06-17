@@ -94,9 +94,9 @@ async function removeAllNetworkStatusChangeListeners() {
 }
 
 export {
-  request,
-  joinURL,
-  isConnected,
   addNetworkStatusChangeListener,
+  isConnected,
+  joinURL,
   removeAllNetworkStatusChangeListeners,
+  request,
 };
