@@ -100,7 +100,7 @@ const SearchInput = (props: SearchInputProps) => {
         value={value}
         onKeyDown={handleKeyDown}
         onChange={onChange}
-        placeholder={t<string>("Search…")}
+        placeholder={t("Search…")}
         inputProps={{
           "aria-label": "Search for tasks",
           autoCorrect: "off",

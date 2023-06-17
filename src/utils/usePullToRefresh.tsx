@@ -35,9 +35,9 @@ export default function usePullToRefresh(
           </div>
         );
       },
-      instructionsPullToRefresh: t<string>("Pull to refresh"),
-      instructionsReleaseToRefresh: t<string>("Release to refresh"),
-      instructionsRefreshing: t<string>("Refreshing"),
+      instructionsPullToRefresh: t("Pull to refresh"),
+      instructionsReleaseToRefresh: t("Release to refresh"),
+      instructionsRefreshing: t("Refreshing"),
       onRefresh() {
         return onRefresh();
       },
