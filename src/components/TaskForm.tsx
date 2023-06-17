@@ -1,12 +1,7 @@
-import { Box, Button, Grid, Stack, Theme, useTheme } from "@mui/material";
-import {
-  MentionCombobox,
-  createMentionsPlugin,
-  useMentions,
-} from "@react-fluent-edit/mentions";
-import { MuiFluentEdit } from "@react-fluent-edit/mui";
+import { Box, Button, Grid, Stack } from "@mui/material";
 import { isValid } from "date-fns";
-import { CSSProperties, KeyboardEvent, useMemo } from "react";
+import { useBeautifulMentions } from "lexical-beautiful-mentions";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { hasTouchScreen } from "../native-api/platform";
 import usePlatformStore from "../stores/platform-store";
@@ -19,175 +14,158 @@ import {
   stringifyTask,
 } from "../utils/task";
 import { TaskList } from "../utils/task-list";
+import { Editor, EditorContext } from "./Editor";
 import FileSelect from "./FileSelect";
 import LocalizationDatePicker from "./LocalizationDatePicker";
 import PrioritySelect from "./PrioritySelect";
 import RecurrenceSelect from "./RecurrenceSelect";
 
 interface TaskFormProps {
-  raw: string;
+  value: string;
   newTask: boolean;
   taskLists: TaskList[];
   projects: string[];
   contexts: string[];
   tags: Record<string, string[]>;
-  onChange: (raw: string) => void;
+  onChange: (value: string) => void;
   onFileSelect: (value?: TaskList) => void;
   onEnterPress: () => void;
 }
 
-function getTagStyle(key: string, theme: Theme): CSSProperties {
-  return key === "due"
-    ? {
-        color: theme.palette.warning.contrastText,
-        backgroundColor: theme.palette.warning.light,
-        whiteSpace: "nowrap",
-      }
-    : key === "pri"
-    ? {
-        color: theme.palette.secondary.contrastText,
-        backgroundColor: theme.palette.secondary.light,
-        whiteSpace: "nowrap",
-      }
-    : {
-        color:
-          theme.palette.mode === "dark"
-            ? theme.palette.grey["900"]
-            : theme.palette.grey["100"],
-        backgroundColor:
-          theme.palette.mode === "dark"
-            ? theme.palette.grey["400"]
-            : theme.palette.grey["600"],
-        whiteSpace: "nowrap",
-      };
+interface TaskGridProps
+  extends Omit<TaskFormProps, "value" | "projects" | "contexts" | "tags"> {
+  items: Record<string, string[]>;
+  formModel: Task;
 }
 
 const TaskForm = (props: TaskFormProps) => {
-  const theme = useTheme();
+  const { value, projects, contexts, tags, ...other } = props;
+
+  const _tags = useMemo(() => {
+    const tags = Object.keys(props.tags).reduce((acc, key) => {
+      acc[key + ":"] = props.tags[key];
+      return acc;
+    }, {} as Record<string, string[]>);
+    if (Object.keys(tags).every((k) => k !== "due:")) {
+      tags["due:"] = [];
+    }
+    return tags;
+  }, [props.tags]);
+
+  const items = useMemo(
+    () => ({
+      "@": contexts,
+      "\\+": projects,
+      "\\w+:": [],
+      ..._tags,
+    }),
+    [contexts, projects, _tags]
+  );
+
+  const triggers = useMemo(() => Object.keys(items), [items]);
+
+  const formModel = useMemo(() => parseTask(value), [value]);
+
+  return (
+    <EditorContext initialValue={formModel.body} triggers={triggers}>
+      <TaskGrid {...other} items={items} formModel={formModel} />
+    </EditorContext>
+  );
+};
+
+const TaskGrid = (props: TaskGridProps) => {
   const touchScreen = hasTouchScreen();
   const platform = usePlatformStore((state) => state.platform);
   const {
-    raw,
+    formModel,
     newTask: isNewTask,
-    projects,
-    tags: _tags,
-    contexts,
+    items,
     taskLists,
     onChange,
     onFileSelect,
     onEnterPress,
   } = props;
-  const formData = { ...parseTask(raw) };
   const { t } = useTranslation();
-  const tags = useMemo(() => {
-    const tags = { ..._tags };
-    if (Object.keys(tags).every((k) => k !== "due")) {
-      tags.due = [];
-    }
-    return tags;
-  }, [_tags]);
-  const rec = getRecValue(formData.body);
-  const dueDate = getDueDateValue(formData.body);
+  const rec = getRecValue(formModel.body);
+  const dueDate = getDueDateValue(formModel.body);
   const showCreationDate = isNewTask;
-  const showCompletionDate = isNewTask && formData.completed;
+  const showCompletionDate = isNewTask && formModel.completed;
   const mdGridItems =
     (showCreationDate || showCompletionDate) &&
     !(showCreationDate && showCompletionDate)
       ? 4
       : 6;
-  const { openMentionsCombobox, removeMentions, renameMentions } =
-    useMentions();
-  const plugins = useMemo(
-    () => [
-      createMentionsPlugin({
-        mentions: [
-          {
-            trigger: "+",
-            style: {
-              color: theme.palette.info.contrastText,
-              backgroundColor: theme.palette.info.light,
-            },
-          },
-          {
-            trigger: "@",
-            style: {
-              color: theme.palette.success.contrastText,
-              backgroundColor: theme.palette.success.light,
-            },
-          },
-          ...Object.keys(tags).map((key) => ({
-            trigger: `${key}:`,
-            style: getTagStyle(key, theme),
-          })),
-        ],
-      }),
-    ],
-    [tags, theme]
-  );
+  const {
+    openMentionsMenu,
+    removeMentions,
+    insertMention,
+    renameMentions,
+    hasMentions,
+  } = useBeautifulMentions();
 
   const handleDueDateChange = (value: Date | null) => {
     if ((value && !isValid(value)) || isDateEqual(value, dueDate)) {
       return;
     }
     if (value) {
-      renameMentions({
-        newText: formatDate(value),
-        trigger: "due:",
-      });
+      const trigger = "due:";
+      const dateStr = formatDate(value);
+      if (hasMentions({ trigger: "due:" })) {
+        renameMentions({
+          newValue: dateStr,
+          trigger,
+          focus: false,
+        });
+      } else {
+        insertMention({
+          value: dateStr,
+          trigger,
+          focus: false,
+        });
+      }
     } else {
-      removeMentions({ trigger: "due:" });
+      removeMentions({ trigger: "due:", focus: false });
     }
   };
 
   const handleRecChange = (value: string | null) => {
     if (value) {
-      renameMentions({
-        newText: value,
-        trigger: "rec:",
-      });
+      if (hasMentions({ trigger: "rec:" })) {
+        renameMentions({
+          newValue: value,
+          trigger: "rec:",
+          focus: false,
+        });
+      } else {
+        insertMention({
+          value: value,
+          trigger: "rec:",
+          focus: false,
+        });
+      }
     } else {
-      removeMentions({ trigger: "rec:" });
-    }
-  };
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
-      onEnterPress();
+      removeMentions({ trigger: "rec:", focus: false });
     }
   };
 
   const handleChange = (data: Partial<Task>) => {
-    onChange(stringifyTask({ ...formData, ...data }));
+    onChange(stringifyTask({ ...formModel, ...data }));
   };
 
   return (
     <Stack>
       <Box sx={{ mb: 2 }}>
-        <MuiFluentEdit
+        <Editor
           label={t("Description")}
           placeholder={t<string>("Enter text and tags")}
-          aria-label="Text editor"
+          ariaLabel="Text editor"
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck={false}
-          initialValue={formData.body}
-          onKeyDown={handleKeyDown}
-          onChange={(body) => handleChange({ body })}
-          autoFocus
-          multiline={false}
-          plugins={plugins}
-        >
-          <MentionCombobox
-            renderAddMentionLabel={(value) => t("Add tag", { name: value })}
-            items={[
-              ...projects.map((i) => ({ text: i, trigger: "+" })),
-              ...contexts.map((i) => ({ text: i, trigger: "@" })),
-              ...Object.entries(tags).flatMap(([trigger, items]) =>
-                items.map((i) => ({ text: i, trigger: trigger }))
-              ),
-            ]}
-          />
-        </MuiFluentEdit>
+          onChange={(value) => handleChange({ body: value })}
+          onEnter={onEnterPress}
+          items={items}
+        />
       </Box>
       <Grid spacing={2} container>
         {(touchScreen || platform === "ios" || platform === "android") && (
@@ -199,7 +177,7 @@ const TaskForm = (props: TaskFormProps) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => openMentionsCombobox("@")}
+                onClick={() => openMentionsMenu({ trigger: "@" })}
               >
                 {t("@Context")}
               </Button>
@@ -208,7 +186,7 @@ const TaskForm = (props: TaskFormProps) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => openMentionsCombobox("+")}
+                onClick={() => openMentionsMenu({ trigger: "+" })}
               >
                 {t("+Project")}
               </Button>
@@ -227,7 +205,7 @@ const TaskForm = (props: TaskFormProps) => {
           md={mdGridItems}
         >
           <PrioritySelect
-            value={formData.priority}
+            value={formModel.priority}
             onChange={(priority) => handleChange({ priority })}
           />
         </Grid>
@@ -236,7 +214,7 @@ const TaskForm = (props: TaskFormProps) => {
             <LocalizationDatePicker
               ariaLabel="Creation date"
               label={t("Creation Date")}
-              value={formData.creationDate}
+              value={formModel.creationDate}
               onChange={(value) => {
                 if (!value || isValid(value)) {
                   handleChange({ creationDate: value ?? undefined });
@@ -250,7 +228,7 @@ const TaskForm = (props: TaskFormProps) => {
             <LocalizationDatePicker
               ariaLabel="Completion date"
               label={t("Completion Date")}
-              value={formData.completionDate}
+              value={formModel.completionDate}
               onChange={(value) => {
                 if (!value || isValid(value)) {
                   handleChange({ completionDate: value ?? undefined });

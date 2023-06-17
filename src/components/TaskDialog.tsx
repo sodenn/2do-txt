@@ -7,9 +7,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FluentEditProvider } from "@react-fluent-edit/core";
-import { MentionsProvider } from "@react-fluent-edit/mentions";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useSettingsStore from "../stores/settings-store";
 import useTaskDialogStore from "../stores/task-dialog-store";
@@ -30,7 +28,7 @@ const TaskDialog = () => {
   const { t } = useTranslation();
   const {
     findTaskListByTaskId,
-    taskLists,
+    taskLists: _taskLists,
     activeTaskList,
     addTask,
     editTask,
@@ -49,38 +47,56 @@ const TaskDialog = () => {
   const createCreationDate = useSettingsStore(
     (state) => state.createCreationDate
   );
-  const [key, setKey] = useState(0);
-  const [raw, setRaw] = useState(rawText(createCreationDate, task));
+  const [value, setValue] = useState<string>();
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
-  const formDisabled = !raw || (!activeTaskList && !selectedTaskList);
-  const contexts = activeTaskList ? activeTaskList.contexts : commonContexts;
-  const projects = activeTaskList ? activeTaskList.projects : commonProjects;
+  const formDisabled = !value || (!activeTaskList && !selectedTaskList);
+  const contexts = useMemo(
+    () =>
+      Object.keys(activeTaskList ? activeTaskList.contexts : commonContexts),
+    [activeTaskList, commonContexts]
+  );
+  const projects = useMemo(
+    () =>
+      Object.keys(activeTaskList ? activeTaskList.projects : commonProjects),
+    [activeTaskList, commonProjects]
+  );
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
+  const taskLists = useMemo(
+    () => (activeTaskList || task ? [] : _taskLists),
+    [_taskLists, activeTaskList, task]
+  );
 
-  const closeDialog = () => closeTaskDialog();
-
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (formDisabled) {
       return;
     }
-    closeDialog();
+    closeTaskDialog();
     if (task) {
-      editTask({ raw, _id: task._id });
+      editTask({ raw: value, _id: task._id });
     } else if (selectedTaskList) {
-      addTask({ raw }, selectedTaskList);
+      addTask({ raw: value }, selectedTaskList);
     }
-  };
+  }, [
+    addTask,
+    closeTaskDialog,
+    editTask,
+    formDisabled,
+    value,
+    selectedTaskList,
+    task,
+  ]);
 
-  const handleChange = (raw: string) => setRaw(raw);
-
-  const handleFileSelect = (taskList?: TaskList) => {
-    setSelectedTaskList(taskList);
-  };
+  const handleClose = useCallback(
+    (event: any, reason: "backdropClick" | "escapeKeyDown") => {
+      return reason !== "backdropClick" ? closeTaskDialog() : undefined;
+    },
+    [closeTaskDialog]
+  );
 
   const handleEnter = () => {
-    setRaw(rawText(createCreationDate, task));
+    setValue(rawText(createCreationDate, task));
     setSelectedTaskList(() => {
       if (task) {
         return findTaskListByTaskId(task._id);
@@ -88,20 +104,12 @@ const TaskDialog = () => {
         return activeTaskList;
       }
     });
-    setKey(key + 1);
   };
 
   const handleExit = () => {
     cleanupTaskDialog();
-    setRaw(rawText(createCreationDate));
+    setValue(undefined);
     setSelectedTaskList(undefined);
-  };
-
-  const handleClose = (
-    event: any,
-    reason: "backdropClick" | "escapeKeyDown"
-  ) => {
-    return reason !== "backdropClick" ? closeDialog() : undefined;
   };
 
   const TransitionProps = {
@@ -109,34 +117,30 @@ const TaskDialog = () => {
     onExited: handleExit,
   };
 
-  const taskForm = (
-    // eslint-disable-next-line react/jsx-key
-    <FluentEditProvider providers={[<MentionsProvider />]}>
-      <TaskForm
-        key={key}
-        raw={raw}
-        newTask={!!task?._id}
-        contexts={Object.keys(contexts)}
-        projects={Object.keys(projects)}
-        tags={tags}
-        taskLists={activeTaskList || task ? [] : taskLists}
-        onChange={handleChange}
-        onFileSelect={handleFileSelect}
-        onEnterPress={handleSave}
-      />
-    </FluentEditProvider>
-  );
+  const taskForm = value ? (
+    <TaskForm
+      value={value}
+      newTask={!!task?._id}
+      contexts={contexts}
+      projects={projects}
+      tags={tags}
+      taskLists={taskLists}
+      onChange={setValue}
+      onFileSelect={setSelectedTaskList}
+      onEnterPress={handleSave}
+    />
+  ) : null;
 
   if (fullScreenDialog) {
     return (
       <FullScreenDialog
         data-testid="task-dialog"
         open={open}
-        onClose={closeDialog}
+        onClose={closeTaskDialog}
         TransitionProps={TransitionProps}
       >
         <FullScreenDialogTitle
-          onClose={closeDialog}
+          onClose={closeTaskDialog}
           accept={{
             text: t("Save"),
             disabled: formDisabled,
@@ -163,7 +167,7 @@ const TaskDialog = () => {
       <DialogTitle>{task?._id ? t("Edit Task") : t("Create Task")}</DialogTitle>
       <DialogContent>{taskForm}</DialogContent>
       <DialogActions>
-        <Button tabIndex={-1} onClick={closeDialog}>
+        <Button tabIndex={-1} onClick={closeTaskDialog}>
           {t("Cancel")}
         </Button>
         <Button
