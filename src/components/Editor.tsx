@@ -12,6 +12,7 @@ import {
   Fade,
   MenuItem,
   MenuList,
+  PaletteMode,
   Paper,
   Typography,
   styled,
@@ -49,7 +50,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import useThemeStore from "../stores/theme-store";
+import { usePaletteMode } from "../stores/theme-store";
 
 interface EditorContextProps {
   initialValue: string;
@@ -95,7 +96,6 @@ export const taskContextDarkStyle = css`
   color: rgba(0, 0, 0, 0.87);
   background-color: rgb(129, 199, 132);
 `;
-
 export const taskProjectStyle = css`
   color: #fff;
   background-color: #03a9f4;
@@ -104,7 +104,6 @@ export const taskProjectDarkStyle = css`
   color: rgba(0, 0, 0, 0.87);
   background-color: rgb(79, 195, 247);
 `;
-
 export const taskDudDateStyle = css`
   color: #fff;
   background-color: #ff9800;
@@ -115,7 +114,6 @@ export const taskDudDateDarkStyle = css`
   background-color: rgb(255, 183, 77);
   white-space: nowrap;
 `;
-
 export const taskTagStyle = css`
   color: #fff;
   background-color: #858585;
@@ -126,13 +124,49 @@ export const taskTagDarkStyle = css`
   background-color: #909090;
   white-space: nowrap;
 `;
-
 export const menuAnchorStyle = css`
   z-index: 1300;
 `;
 
+type Trigger = "@" | "\\+" | "due:" | "\\w+:";
+
+const styleMap: Record<PaletteMode, Record<Trigger, string>> = {
+  light: {
+    "@": taskContextStyle,
+    "\\+": taskProjectStyle,
+    "due:": taskDudDateStyle,
+    "\\w+:": taskTagStyle,
+  },
+  dark: {
+    "@": taskContextDarkStyle,
+    "\\+": taskProjectDarkStyle,
+    "due:": taskDudDateDarkStyle,
+    "\\w+:": taskTagDarkStyle,
+  },
+} as const;
+
+function getMentionStyle(themeMode: PaletteMode, trigger: Trigger) {
+  return {
+    [trigger]: styleMap[themeMode][trigger] + " " + mentionStyle,
+    [trigger + "Focused"]: mentionStyleFocused,
+  };
+}
+
+function useMentionStyles(): Record<string, string> {
+  const mode = usePaletteMode();
+  return useMemo(
+    () => ({
+      ...getMentionStyle(mode, "@"),
+      ...getMentionStyle(mode, "\\+"),
+      ...getMentionStyle(mode, "due:"),
+      ...getMentionStyle(mode, "\\w+:"),
+    }),
+    [mode]
+  );
+}
+
 const useEditorConfig = (triggers: string[], initialValue: string) => {
-  const mode = useThemeStore((state) => state.mode);
+  const styles = useMentionStyles();
   return useMemo(
     () => ({
       onError(error: any) {
@@ -144,31 +178,10 @@ const useEditorConfig = (triggers: string[], initialValue: string) => {
       nodes: [BeautifulMentionNode, ZeroWidthNode],
       namespace: "",
       theme: {
-        beautifulMentions: {
-          "@":
-            (mode === "dark" ? taskContextDarkStyle : taskContextStyle) +
-            " " +
-            mentionStyle,
-          "@Focused": mentionStyleFocused,
-          "\\+":
-            (mode === "dark" ? taskProjectDarkStyle : taskProjectStyle) +
-            " " +
-            mentionStyle,
-          "\\+Focused": mentionStyleFocused,
-          "due:":
-            (mode === "dark" ? taskDudDateDarkStyle : taskDudDateStyle) +
-            " " +
-            mentionStyle,
-          "due:Focused": mentionStyleFocused,
-          "\\w+:":
-            (mode === "dark" ? taskTagDarkStyle : taskTagStyle) +
-            " " +
-            mentionStyle,
-          "\\w+:Focused": mentionStyleFocused,
-        },
+        beautifulMentions: styles,
       },
     }),
-    [initialValue, mode, triggers]
+    [initialValue, styles, triggers]
   );
 };
 
