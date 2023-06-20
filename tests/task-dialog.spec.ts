@@ -137,7 +137,7 @@ test.describe("Task dialog", () => {
     ).not.toHaveText(dueDateTag);
   });
 
-  test("should allow me to edit a task", async ({ page, isMobile }) => {
+  test("should allow me to edit a task", async ({ page }) => {
     // select existing task in the list
     await page.getByText("Pay the invoice").click();
 
