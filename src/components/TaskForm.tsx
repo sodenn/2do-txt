@@ -216,9 +216,7 @@ const TaskGrid = (props: TaskGridProps) => {
               label={t("Creation Date")}
               value={formModel.creationDate}
               onChange={(value) => {
-                if (!value || isValid(value)) {
-                  handleChange({ creationDate: value ?? undefined });
-                }
+                handleChange({ creationDate: value ?? undefined });
               }}
             />
           </Grid>
@@ -230,9 +228,7 @@ const TaskGrid = (props: TaskGridProps) => {
               label={t("Completion Date")}
               value={formModel.completionDate}
               onChange={(value) => {
-                if (!value || isValid(value)) {
-                  handleChange({ completionDate: value ?? undefined });
-                }
+                handleChange({ completionDate: value ?? undefined });
               }}
             />
           </Grid>

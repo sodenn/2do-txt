@@ -68,23 +68,23 @@ test.describe("Task dialog", () => {
     ).toBeFocused();
 
     // open the date picker
-    const datePickerButton = isMobile
-      ? '[aria-label="Due date"]'
-      : '[aria-label*="Choose date"]';
-    await page.locator(datePickerButton).click();
+    const pickerButton = isMobile
+      ? "Due date textfield"
+      : "Due date pickerbutton";
+    await page.getByTestId(pickerButton).click();
 
     const today = new Date();
-    const dueDateSelector = '[aria-current="date"]';
+    const currentDateSelector = '[aria-current="date"]';
     const dueDateTag = `due:${formatDate(today)}`;
 
     // choose date and confirm
-    await page.locator(dueDateSelector).click();
+    await page.locator(currentDateSelector).click();
     if (isMobile) {
       await page.getByRole("button", { name: "OK" }).click();
     }
 
     // make sure the date picker contain a value
-    await expect(page.locator('[aria-label="Due date"]')).toHaveValue(
+    await expect(page.getByTestId("Due date textfield")).toHaveValue(
       format(today, "MM/dd/yyyy")
     );
 
@@ -99,7 +99,7 @@ test.describe("Task dialog", () => {
     await page.getByRole("textbox", { name: "Text editor" }).press("Backspace");
 
     // make sure the date picker doesn't contain a value
-    await expect(page.locator('[aria-label="Due date"]')).toHaveValue("");
+    await expect(page.getByTestId("Due date textfield")).toHaveValue("");
 
     // make sure the text field doesn't contain the due date
     await expect(
@@ -107,16 +107,16 @@ test.describe("Task dialog", () => {
     ).not.toHaveText(dueDateTag);
 
     // open the date picker
-    await page.locator(datePickerButton).click();
+    await page.getByTestId(pickerButton).click();
 
     // choose date and confirm
-    await page.locator(dueDateSelector).click();
+    await page.locator(currentDateSelector).click();
     if (isMobile) {
       await page.getByRole("button", { name: "OK" }).click();
     }
 
     // make sure the date picker contain a value
-    await expect(page.locator('[aria-label="Due date"]')).toHaveValue(
+    await expect(page.getByTestId("Due date textfield")).toHaveValue(
       format(today, "MM/dd/yyyy")
     );
 
@@ -126,7 +126,7 @@ test.describe("Task dialog", () => {
     );
 
     // open the date picker
-    await page.locator(datePickerButton).click();
+    await page.getByTestId(pickerButton).click();
 
     // clear date selection
     await page.getByRole("button", { name: "Clear" }).click();
@@ -147,12 +147,12 @@ test.describe("Task dialog", () => {
     );
 
     // make sure the creation date is set
-    await expect(
-      page.getByRole("textbox", { name: "Creation date" })
-    ).toHaveValue("11/26/2021");
+    await expect(page.getByTestId("Creation date textfield")).toHaveValue(
+      "11/26/2021"
+    );
 
     // make sure the due date is set
-    await expect(page.getByRole("textbox", { name: "Due date" })).toHaveValue(
+    await expect(page.getByTestId("Due date textfield")).toHaveValue(
       "12/15/2021"
     );
 
@@ -315,7 +315,7 @@ test.describe("Task dialog", () => {
     await page.keyboard.press("Enter");
 
     // make sure due date was selected
-    await expect(page.locator('[aria-label="Due date"]')).toHaveValue(
+    await expect(page.getByTestId("Due date textfield")).toHaveValue(
       format(new Date(), "MM/dd/yyyy")
     );
 
