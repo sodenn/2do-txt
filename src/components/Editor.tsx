@@ -67,7 +67,7 @@ interface EditorProps
   placeholder?: string;
 }
 
-export const mentionStyle = css`
+const mentionStyle = css`
   padding: 0 4px;
   margin: 0 1px;
   vertical-align: baseline;
@@ -80,7 +80,7 @@ export const mentionStyle = css`
   cursor: pointer;
 `;
 
-export const mentionStyleFocused = css`
+const mentionStyleFocused = css`
   outline: 2px solid transparent;
   outline-offset: 2px;
   --shadow-color: #111827;
@@ -88,43 +88,43 @@ export const mentionStyleFocused = css`
   box-shadow: var(--shadow, 0 0 #0000), var(--shadow, 0 0 #0000), var(--shadow);
 `;
 
-export const taskContextStyle = css`
+const taskContextStyle = css`
   color: #fff;
   background-color: #4caf50;
 `;
-export const taskContextDarkStyle = css`
+const taskContextDarkStyle = css`
   color: rgba(0, 0, 0, 0.87);
   background-color: rgb(129, 199, 132);
 `;
-export const taskProjectStyle = css`
+const taskProjectStyle = css`
   color: #fff;
   background-color: #03a9f4;
 `;
-export const taskProjectDarkStyle = css`
+const taskProjectDarkStyle = css`
   color: rgba(0, 0, 0, 0.87);
   background-color: rgb(79, 195, 247);
 `;
-export const taskDudDateStyle = css`
+const taskDudDateStyle = css`
   color: #fff;
   background-color: #ff9800;
   white-space: nowrap;
 `;
-export const taskDudDateDarkStyle = css`
+const taskDudDateDarkStyle = css`
   color: rgba(0, 0, 0, 0.87);
   background-color: rgb(255, 183, 77);
   white-space: nowrap;
 `;
-export const taskTagStyle = css`
+const taskTagStyle = css`
   color: #fff;
   background-color: #858585;
   white-space: nowrap;
 `;
-export const taskTagDarkStyle = css`
+const taskTagDarkStyle = css`
   color: rgba(0, 0, 0, 0.87);
   background-color: #909090;
   white-space: nowrap;
 `;
-export const menuAnchorStyle = css`
+const menuAnchorStyle = css`
   z-index: 1300;
 `;
 
@@ -185,7 +185,7 @@ const useEditorConfig = (triggers: string[], initialValue: string) => {
   );
 };
 
-export const useIsFocused = () => {
+const useIsFocused = () => {
   const [editor] = useLexicalComposerContext();
   const [hasFocus, setHasFocus] = useState(
     () => editor.getRootElement() === document.activeElement
