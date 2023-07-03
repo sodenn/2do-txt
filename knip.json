@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@2/schema.json",
+  "ignore": ["**/lib/**", "tools/**"],
+  "ignoreDependencies": [
+    "cap",
+    "playwright",
+    "@capacitor/ios",
+    "fast-xml-parser",
+    "cordova-plugin-inappbrowser",
+    "cordova-plugin-ios-keychain",
+    "@semantic-release/changelog",
+    "@semantic-release/exec",
+    "@semantic-release/git",
+    "prettier-plugin-organize-imports"
+  ]
+}
