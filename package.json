@@ -121,6 +121,6 @@
     "typescript": "5.1.6",
     "vite": "4.3.9",
     "vite-plugin-eslint": "1.8.1",
-    "vitest": "0.32.2"
+    "vitest": "0.32.4"
   }
 }
