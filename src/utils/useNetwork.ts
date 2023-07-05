@@ -23,7 +23,7 @@ function useNetwork() {
         setDisplayDate(new Date());
       }
     },
-    [displayDate, enqueueSnackbar, setConnected, setDisplayDate, t]
+    [displayDate, enqueueSnackbar, setConnected, setDisplayDate, t],
   );
 
   return { connected, handleDisconnected };

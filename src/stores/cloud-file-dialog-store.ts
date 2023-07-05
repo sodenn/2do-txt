@@ -16,7 +16,7 @@ const useCloudFileDialogStore = create<CloudFileDialogStoreInterface>(
     openCloudFileDialog: (provider?: Provider) => set({ open: true, provider }),
     closeCloudFileDialog: () => set({ open: false }),
     cleanupCloudFileDialog: () => set({ open: false, provider: undefined }),
-  })
+  }),
 );
 
 export default useCloudFileDialogStore;

@@ -44,7 +44,7 @@ function useSearchParamsEffect() {
         setSearchParams(params);
       }
     },
-    [searchParams, setSearchParams]
+    [searchParams, setSearchParams],
   );
 
   useEffect(() => {

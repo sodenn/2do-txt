@@ -37,7 +37,7 @@ const ClosedFileList = (props: ClosedFileListProps) => {
   const { t } = useTranslation();
   const { loadTodoFile } = useTask();
   const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath
+    (state) => state.setActiveTaskListPath,
   );
 
   const handleOpen = async (filePath: string) => {

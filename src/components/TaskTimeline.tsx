@@ -37,7 +37,7 @@ const TaskTimeline = memo((props: TaskTimelineProps) => {
   } = props;
   const { t } = useTranslation();
   const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog
+    (state) => state.openConfirmationDialog,
   );
   const { deleteTask, completeTask } = useTask();
   const searchTerm = useFilterStore((state) => state.searchTerm);
@@ -98,7 +98,7 @@ const TaskTimeline = memo((props: TaskTimelineProps) => {
               ref={(el) => {
                 if (listItemsRef.current && el) {
                   const notFocusablePredecessor = tasks.some(
-                    (t, idx) => t._timelineFlags.firstOfToday && idx < index
+                    (t, idx) => t._timelineFlags.firstOfToday && idx < index,
                   );
                   listItemsRef.current[
                     notFocusablePredecessor ? index - 1 : index

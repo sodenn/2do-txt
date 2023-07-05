@@ -29,14 +29,14 @@ const FileMenu = () => {
   const { t } = useTranslation();
   const touchScreen = hasTouchScreen();
   const openFileManagementDialog = useFileManagementDialogStore(
-    (state) => state.openFileManagementDialog
+    (state) => state.openFileManagementDialog,
   );
   const openShortcutsDialog = useShortcutsDialogStore(
-    (state) => state.openShortcutsDialog
+    (state) => state.openShortcutsDialog,
   );
   const { taskLists, activeTaskList } = useTask();
   const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath
+    (state) => state.setActiveTaskListPath,
   );
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);

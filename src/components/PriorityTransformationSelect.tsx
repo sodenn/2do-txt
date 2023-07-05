@@ -7,10 +7,10 @@ import useSettingsStore, {
 const PriorityTransformationSelect = () => {
   const { t } = useTranslation();
   const priorityTransformation = useSettingsStore(
-    (state) => state.priorityTransformation
+    (state) => state.priorityTransformation,
   );
   const setCompletedTaskPriority = useSettingsStore(
-    (state) => state.setCompletedTaskPriority
+    (state) => state.setCompletedTaskPriority,
   );
 
   return (

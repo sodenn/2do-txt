@@ -42,7 +42,7 @@ export function getDirname(path: string) {
 function bufferToHex(buffer: ArrayBuffer): string {
   return Array.prototype.map
     .call(new Uint8Array(buffer), (item: number) =>
-      ("00" + item.toString(16)).slice(-2)
+      ("00" + item.toString(16)).slice(-2),
     )
     .join("");
 }

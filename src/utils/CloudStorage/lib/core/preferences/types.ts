@@ -12,14 +12,14 @@ export interface CloudPreferencesOptions {
 }
 
 export type GetRef = (
-  identifier: string
+  identifier: string,
 ) => Promise<CloudFileRef & WithIdentifier>;
 
 export type GetRefs = () => Promise<(CloudFileRef & WithIdentifier)[]>;
 
 export type SetRef = (
   identifier: string,
-  ref: CloudFileRef
+  ref: CloudFileRef,
 ) => Promise<CloudFileRef & WithIdentifier>;
 
 export type RemoveRef = (identifier: string) => Promise<void>;

@@ -8,7 +8,7 @@ interface KeyboardInfo {
 type KeyboardStyle = "dark" | "light" | "system";
 
 async function addKeyboardDidShowListener(
-  listener: (info: KeyboardInfo) => void
+  listener: (info: KeyboardInfo) => void,
 ) {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {

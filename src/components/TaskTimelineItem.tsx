@@ -299,7 +299,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
         </TimelineContent>
       </TimelineItem>
     );
-  }
+  },
 );
 
 export default TaskTimelineItem;

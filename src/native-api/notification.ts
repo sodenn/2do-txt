@@ -42,12 +42,12 @@ interface WebNotification extends NotificationMethods {
 const mobileNotification: NotificationMethods = {
   async isPermissionGranted() {
     return LocalNotifications.checkPermissions().then(
-      (result) => result.display === "granted"
+      (result) => result.display === "granted",
     );
   },
   async requestPermission() {
     return LocalNotifications.requestPermissions().then(
-      (result) => result.display === "granted"
+      (result) => result.display === "granted",
     );
   },
   async cancel(ids: number[]) {
@@ -78,7 +78,7 @@ const webNotification: WebNotification = {
   timeoutIds: [],
   async isPermissionGranted() {
     return Notification.requestPermission().then(
-      (result) => result === "granted"
+      (result) => result === "granted",
     );
   },
   async requestPermission() {
@@ -94,14 +94,14 @@ const webNotification: WebNotification = {
         } else {
           return true;
         }
-      }
+      },
     );
   },
   async schedule(notifications: Notification[]) {
     const receivedNotifications =
       await webNotification.getReceivedNotifications();
     const filteredNotifications = notifications.filter((opt) =>
-      receivedNotifications.every((sn) => sn.notificationId !== opt.id)
+      receivedNotifications.every((sn) => sn.notificationId !== opt.id),
     );
     return filteredNotifications
       .map(webNotification.createNotification)
@@ -116,16 +116,19 @@ const webNotification: WebNotification = {
     const diffInHours = differenceInHours(scheduleAt, now);
     const ms = scheduleAt.getTime() - new Date().getTime();
     if (diffInHours > -24) {
-      const timeoutId = setTimeout(() => {
-        new Notification(title, {
-          body: body,
-          icon: logo,
-        });
-        webNotification.addReceivedNotification({
-          notificationId: id,
-          receivingDate: scheduleAt,
-        });
-      }, Math.max(ms, 0));
+      const timeoutId = setTimeout(
+        () => {
+          new Notification(title, {
+            body: body,
+            icon: logo,
+          });
+          webNotification.addReceivedNotification({
+            notificationId: id,
+            receivingDate: scheduleAt,
+          });
+        },
+        Math.max(ms, 0),
+      );
       webNotification.timeoutIds = [
         ...webNotification.timeoutIds,
         { notificationId: id, value: timeoutId },
@@ -149,30 +152,33 @@ const webNotification: WebNotification = {
     ];
     await setPreferencesItem(
       "received-notifications",
-      JSON.stringify(newReceivedNotifications)
+      JSON.stringify(newReceivedNotifications),
     );
   },
   async removeReceivedNotification(ids: number[]) {
     const receivedNotifications =
       await webNotification.getReceivedNotifications();
     const newReceivedNotifications = receivedNotifications.filter(
-      (item) => !ids.includes(item.notificationId)
+      (item) => !ids.includes(item.notificationId),
     );
     await setPreferencesItem(
       "received-notifications",
-      JSON.stringify(newReceivedNotifications)
+      JSON.stringify(newReceivedNotifications),
     );
   },
   subscribe() {
-    const timer = window.setInterval(async () => {
-      const scheduledNotifications =
-        await webNotification.getReceivedNotifications();
-      const twoDaysAgo = subDays(new Date(), 2);
-      const newValue = scheduledNotifications.filter((n) =>
-        isAfter(n.receivingDate, twoDaysAgo)
-      );
-      setPreferencesItem("received-notifications", JSON.stringify(newValue));
-    }, 1000 * 60 * 60);
+    const timer = window.setInterval(
+      async () => {
+        const scheduledNotifications =
+          await webNotification.getReceivedNotifications();
+        const twoDaysAgo = subDays(new Date(), 2);
+        const newValue = scheduledNotifications.filter((n) =>
+          isAfter(n.receivingDate, twoDaysAgo),
+        );
+        setPreferencesItem("received-notifications", JSON.stringify(newValue));
+      },
+      1000 * 60 * 60,
+    );
     return () => {
       clearInterval(timer);
     };
@@ -208,7 +214,7 @@ async function requestNotificationPermission(): Promise<boolean> {
 }
 
 async function scheduleNotifications(
-  notifications: Notification[]
+  notifications: Notification[],
 ): Promise<number[]> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)

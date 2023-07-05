@@ -16,7 +16,7 @@ const Transition = forwardRef<HTMLCollection, SlideProps>(
         {children}
       </Slide>
     );
-  }
+  },
 );
 
 const PaperComponent = (props: PaperProps) => {

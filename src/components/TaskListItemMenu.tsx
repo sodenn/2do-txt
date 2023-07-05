@@ -33,7 +33,7 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
   const { t } = useTranslation();
   const { deleteTask } = useTask();
   const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog
+    (state) => state.openConfirmationDialog,
   );
   const [open, setOpen] = useState(false);
   const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);

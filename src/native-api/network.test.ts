@@ -7,7 +7,7 @@ describe("network", () => {
     const path = "Documents/todo";
     const url = joinURL(baseUrl, path);
     expect(url).toBe(
-      "https://demo.owncloud.org/remote.php/webdav/Documents/todo"
+      "https://demo.owncloud.org/remote.php/webdav/Documents/todo",
     );
   });
 
@@ -16,7 +16,7 @@ describe("network", () => {
     const path = "Documents/todo";
     const url = joinURL(baseUrl, path);
     expect(url).toBe(
-      "https://demo.owncloud.org/remote.php/webdav/Documents/todo"
+      "https://demo.owncloud.org/remote.php/webdav/Documents/todo",
     );
   });
 
@@ -25,7 +25,7 @@ describe("network", () => {
     const path = "/Documents/todo";
     const url = joinURL(baseUrl, path);
     expect(url).toBe(
-      "https://demo.owncloud.org/remote.php/webdav/Documents/todo"
+      "https://demo.owncloud.org/remote.php/webdav/Documents/todo",
     );
   });
 
@@ -34,7 +34,7 @@ describe("network", () => {
     const path = "Documents/todo/";
     const url = joinURL(baseUrl, path);
     expect(url).toBe(
-      "https://demo.owncloud.org/remote.php/webdav/Documents/todo/"
+      "https://demo.owncloud.org/remote.php/webdav/Documents/todo/",
     );
   });
 

@@ -33,7 +33,7 @@ interface SettingsStoreInterface extends SettingsStoreData {
   setArchiveMode: (archiveMode: ArchiveMode) => void;
   setTaskView: (taskView: TaskView) => void;
   setCompletedTaskPriority: (
-    priorityTransformation: PriorityTransformation
+    priorityTransformation: PriorityTransformation,
   ) => void;
 }
 
@@ -85,7 +85,7 @@ export async function settingsLoader(): Promise<SettingsStoreData> {
 }
 
 export function initializeSettingsStore(
-  preloadedState: Partial<SettingsStoreInterface> = {}
+  preloadedState: Partial<SettingsStoreInterface> = {},
 ) {
   return createStore<SettingsStoreInterface>((set) => ({
     ...getDefaultInitialState(),
@@ -95,7 +95,7 @@ export function initializeSettingsStore(
         const createCreationDate = !state.createCreationDate;
         setPreferencesItem(
           "create-creation-date",
-          createCreationDate.toString()
+          createCreationDate.toString(),
         );
         return {
           createCreationDate,
@@ -106,7 +106,7 @@ export function initializeSettingsStore(
         const createCompletionDate = !state.createCompletionDate;
         setPreferencesItem(
           "create-completion-date",
-          createCompletionDate.toString()
+          createCompletionDate.toString(),
         );
         return {
           createCompletionDate,
@@ -130,7 +130,7 @@ export function initializeSettingsStore(
       setPreferencesItem("task-view", taskView);
     },
     setCompletedTaskPriority: (
-      priorityTransformation: PriorityTransformation
+      priorityTransformation: PriorityTransformation,
     ) => {
       set({ priorityTransformation });
       setPreferencesItem("priority-transformation", priorityTransformation);
@@ -139,7 +139,7 @@ export function initializeSettingsStore(
 }
 
 export default function useSettingsStore<T = SettingsStoreInterface>(
-  selector: (state: SettingsStoreInterface) => T = (state) => state as T
+  selector: (state: SettingsStoreInterface) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

@@ -6,7 +6,7 @@ import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 const ExampleFileButton = () => {
   const { t } = useTranslation();
   const openFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.openFileCreateDialog
+    (state) => state.openFileCreateDialog,
   );
 
   const handleClick = () => {

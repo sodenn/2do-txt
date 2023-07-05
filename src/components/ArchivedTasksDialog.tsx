@@ -22,10 +22,10 @@ const ArchivedTasksDialog = () => {
   const open = useArchivedTasksDialogStore((state) => state.open);
   const filePath = useArchivedTasksDialogStore((state) => state.filePath);
   const closeArchivedTasksDialog = useArchivedTasksDialogStore(
-    (state) => state.closeArchivedTasksDialog
+    (state) => state.closeArchivedTasksDialog,
   );
   const cleanupArchivedTasksDialog = useArchivedTasksDialogStore(
-    (state) => state.cleanupArchivedTasksDialog
+    (state) => state.cleanupArchivedTasksDialog,
   );
   const { t } = useTranslation();
   const { loadDoneFile, restoreTask } = useTask();

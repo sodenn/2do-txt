@@ -16,7 +16,7 @@ const iosSecureStorage = {
       Keychain.get(
         (value: string) => resolve(value),
         () => resolve(null),
-        key
+        key,
       );
     });
   },
@@ -64,7 +64,7 @@ const desktopSecureStorage = {
 };
 
 async function getSecureStorageItem(
-  key: SecureStorageKeys
+  key: SecureStorageKeys,
 ): Promise<string | null> {
   const platform = getPlatform();
   return platform === "ios"

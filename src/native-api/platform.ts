@@ -66,7 +66,7 @@ async function removeAllBecomeActiveListeners(listeners: (() => unknown)[]) {
   const platform = getPlatform();
   if (platform === "web" || platform === "desktop") {
     listeners?.forEach((listener) =>
-      window.removeEventListener("focus", listener)
+      window.removeEventListener("focus", listener),
     );
   }
   if (platform === "ios" || platform === "android") {

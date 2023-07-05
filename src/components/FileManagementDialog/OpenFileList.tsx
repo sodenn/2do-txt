@@ -211,7 +211,7 @@ const FileListItem = forwardRef<HTMLLIElement, FileListItemProps>(
         </ListItemButton>
       </ListItem>
     );
-  }
+  },
 );
 
 const CloudSyncMenuItem = (opt: CloudSyncMenuItemProps) => {
@@ -264,7 +264,7 @@ const EnableCloudSyncMenuItem = (props: EnableCloudSyncMenuItemProps) => {
           if (doneFileExists) {
             const doneFileData = await readFile(doneFilePath);
             await uploadFile(provider, doneFilePath, doneFileData).catch(
-              (e) => void e
+              (e) => void e,
             );
           }
         }
@@ -286,7 +286,7 @@ const EnableCloudSyncMenuItem = (props: EnableCloudSyncMenuItemProps) => {
           </span>,
           {
             variant: "warning",
-          }
+          },
         );
       }
     } finally {
@@ -360,10 +360,10 @@ const FileMenu = (props: FileMenuProps) => {
     const promise = readFile(filePath);
     writeToClipboard(promise)
       .then(() =>
-        enqueueSnackbar(t("Copied to clipboard"), { variant: "info" })
+        enqueueSnackbar(t("Copied to clipboard"), { variant: "info" }),
       )
       .catch(() =>
-        enqueueSnackbar(t("Copy to clipboard failed"), { variant: "error" })
+        enqueueSnackbar(t("Copy to clipboard failed"), { variant: "error" }),
       )
       .finally(handleCloseMenu);
   };

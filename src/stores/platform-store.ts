@@ -25,7 +25,7 @@ export async function platformLoader(): Promise<PlatformStoreData> {
 }
 
 export function initializePlatformStore(
-  preloadedState: Partial<PlatformStoreInterface> = {}
+  preloadedState: Partial<PlatformStoreInterface> = {},
 ) {
   return createStore<PlatformStoreInterface>(() => ({
     ...getDefaultInitialState(),
@@ -34,7 +34,7 @@ export function initializePlatformStore(
 }
 
 export default function usePlatformStore<T>(
-  selector: (state: PlatformStoreInterface) => T
+  selector: (state: PlatformStoreInterface) => T,
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

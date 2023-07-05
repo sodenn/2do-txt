@@ -119,7 +119,7 @@ const TimelineAddButton = forwardRef<HTMLElement, TimelineAddButtonProps>(
         </TimelineContent>
       </TimelineItem>
     );
-  }
+  },
 );
 
 export default TimelineAddButton;

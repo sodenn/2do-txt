@@ -17,7 +17,7 @@ const AddTaskButton = (props: IconButtonProps) => {
 
   const hotkeys = useMemo(
     () => ({ n: () => openTaskDialog() }),
-    [openTaskDialog]
+    [openTaskDialog],
   );
 
   useHotkeys(hotkeys);

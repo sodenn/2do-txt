@@ -20,14 +20,14 @@ const FileActionButton = () => {
   const platform = usePlatformStore((state) => state.platform);
   const { openFileDialog } = useFilePicker();
   const openFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.openFileCreateDialog
+    (state) => state.openFileCreateDialog,
   );
   const closeFileManagementDialog = useFileManagementDialogStore(
-    (state) => state.closeFileManagementDialog
+    (state) => state.closeFileManagementDialog,
   );
   const { cloudStorages } = useCloudStorage();
   const openCloudFileDialog = useCloudFileDialogStore(
-    (state) => state.openCloudFileDialog
+    (state) => state.openCloudFileDialog,
   );
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);

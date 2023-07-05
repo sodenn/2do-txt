@@ -14,7 +14,7 @@ function mobileOauth(opt: OauthOptions) {
     const browser = cordova.InAppBrowser.open(
       authUrl,
       "_blank",
-      "location=yes"
+      "location=yes",
     );
 
     let isResolved = false;

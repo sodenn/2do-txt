@@ -38,14 +38,14 @@ const TaskDialog = () => {
   } = useTask();
   const closeTaskDialog = useTaskDialogStore((state) => state.closeTaskDialog);
   const cleanupTaskDialog = useTaskDialogStore(
-    (state) => state.cleanupTaskDialog
+    (state) => state.cleanupTaskDialog,
   );
   const open = useTaskDialogStore((state) => state.open);
   const task = useTaskDialogStore((state) => state.task);
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const createCreationDate = useSettingsStore(
-    (state) => state.createCreationDate
+    (state) => state.createCreationDate,
   );
   const [value, setValue] = useState<string>();
   const [selectedTaskList, setSelectedTaskList] = useState<
@@ -55,17 +55,17 @@ const TaskDialog = () => {
   const contexts = useMemo(
     () =>
       Object.keys(activeTaskList ? activeTaskList.contexts : commonContexts),
-    [activeTaskList, commonContexts]
+    [activeTaskList, commonContexts],
   );
   const projects = useMemo(
     () =>
       Object.keys(activeTaskList ? activeTaskList.projects : commonProjects),
-    [activeTaskList, commonProjects]
+    [activeTaskList, commonProjects],
   );
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
   const taskLists = useMemo(
     () => (activeTaskList || task ? [] : _taskLists),
-    [_taskLists, activeTaskList, task]
+    [_taskLists, activeTaskList, task],
   );
 
   const handleSave = useCallback(() => {
@@ -92,7 +92,7 @@ const TaskDialog = () => {
     (event: any, reason: "backdropClick" | "escapeKeyDown") => {
       return reason !== "backdropClick" ? closeTaskDialog() : undefined;
     },
-    [closeTaskDialog]
+    [closeTaskDialog],
   );
 
   const handleEnter = () => {

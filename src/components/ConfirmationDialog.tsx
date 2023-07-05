@@ -15,10 +15,10 @@ const ConfirmationDialog = () => {
   const buttons = useConfirmationDialogStore((state) => state.buttons);
   const onClose = useConfirmationDialogStore((state) => state.onClose);
   const closeConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.closeConfirmationDialog
+    (state) => state.closeConfirmationDialog,
   );
   const cleanupConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.cleanupConfirmationDialog
+    (state) => state.cleanupConfirmationDialog,
   );
 
   const handleClick = (handler?: () => void) => {

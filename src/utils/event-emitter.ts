@@ -8,17 +8,17 @@ type EventListenersMap = Map<string, EventListeners<any>[]>;
 type EventEmitter<EventMap extends Record<string, any>> = {
   on: <K extends keyof EventMap>(
     eventName: K,
-    listener: (data: EventMap[K]) => void
+    listener: (data: EventMap[K]) => void,
   ) => void;
   off: <K extends keyof EventMap>(
     eventName: K,
-    listener: (data: EventMap[K]) => void
+    listener: (data: EventMap[K]) => void,
   ) => void;
   emit: <K extends keyof EventMap>(eventName: K, data: EventMap[K]) => void;
 };
 
 export const createEventEmitter = <
-  EventMap extends Record<string, any>
+  EventMap extends Record<string, any>,
 >(): EventEmitter<EventMap> => {
   const listeners: EventListenersMap = new Map();
 
@@ -28,7 +28,7 @@ export const createEventEmitter = <
 
   const on = <K extends keyof EventMap>(
     eventName: K,
-    listener: (data: EventMap[K]) => void
+    listener: (data: EventMap[K]) => void,
   ): void => {
     listeners.set(eventName as string, [
       ...(listeners.get(eventName as string) || []),
@@ -38,7 +38,7 @@ export const createEventEmitter = <
 
   const off = <K extends keyof EventMap>(
     eventName: K,
-    listener: (data: EventMap[K]) => void
+    listener: (data: EventMap[K]) => void,
   ): void => {
     if (!listeners.has(eventName as string)) {
       return;
@@ -47,7 +47,7 @@ export const createEventEmitter = <
     const index = listenersForEvent.findIndex(
       (eventListener) =>
         eventListener.eventName === eventName &&
-        eventListener.listener === listener
+        eventListener.listener === listener,
     );
     if (index !== -1) {
       listenersForEvent.splice(index, 1);
@@ -56,7 +56,7 @@ export const createEventEmitter = <
 
   const emit = <K extends keyof EventMap>(
     eventName: K,
-    data: EventMap[K]
+    data: EventMap[K],
   ): void => {
     if (!listeners.has(eventName as string)) {
       return;

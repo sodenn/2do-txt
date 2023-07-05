@@ -66,7 +66,7 @@ function getFileNameWithoutExt(path: string) {
 
 async function _getUniqueFilePath(
   filePath: string,
-  fileExists: (path: string) => Promise<boolean>
+  fileExists: (path: string) => Promise<boolean>,
 ): Promise<{ filePath: string; fileName: string }> {
   let exists = true;
   let p = filePath;
@@ -87,7 +87,7 @@ async function _getUniqueFilePath(
 const capFilesystem: Filesystem = {
   async getUri(path: string) {
     return CapFilesystem.getUri({ directory: Directory.Documents, path }).then(
-      (result) => result.uri
+      (result) => result.uri,
     );
   },
   async readFile(path: string) {
@@ -109,7 +109,7 @@ const capFilesystem: Filesystem = {
   },
   async readdir(path: string) {
     return CapFilesystem.readdir({ directory: Directory.Documents, path }).then(
-      (result) => result.files.map((file) => ({ name: file.name }))
+      (result) => result.files.map((file) => ({ name: file.name })),
     );
   },
   async fileExists(path: string) {

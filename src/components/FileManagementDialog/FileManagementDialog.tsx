@@ -25,14 +25,14 @@ interface CloseOptions {
 const FileManagementDialog = () => {
   const platform = usePlatformStore((state) => state.platform);
   const fileManagementDialogOpen = useFileManagementDialogStore(
-    (state) => state.open
+    (state) => state.open,
   );
   const closeFileManagementDialog = useFileManagementDialogStore(
-    (state) => state.closeFileManagementDialog
+    (state) => state.closeFileManagementDialog,
   );
   const { unlinkCloudFile } = useCloudStorage();
   const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog
+    (state) => state.openConfirmationDialog,
   );
   const { t } = useTranslation();
   const { taskLists, closeTodoFile } = useTask();
@@ -55,12 +55,12 @@ const FileManagementDialog = () => {
         .filter(
           (filePath) =>
             filePath !== defaultDoneFilePath &&
-            !filePath.endsWith(`_${defaultDoneFilePath}`)
+            !filePath.endsWith(`_${defaultDoneFilePath}`),
         );
       setClosedFiles(closedFiles);
       return closedFiles;
     },
-    [taskLists]
+    [taskLists],
   );
 
   const listFiles = useCallback(() => {

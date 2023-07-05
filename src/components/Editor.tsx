@@ -161,7 +161,7 @@ function useMentionStyles(): Record<string, string> {
       ...getMentionStyle(mode, "due:"),
       ...getMentionStyle(mode, "\\w+:"),
     }),
-    [mode]
+    [mode],
   );
 }
 
@@ -181,14 +181,14 @@ const useEditorConfig = (triggers: string[], initialValue: string) => {
         beautifulMentions: styles,
       },
     }),
-    [initialValue, styles, triggers]
+    [initialValue, styles, triggers],
   );
 };
 
 const useIsFocused = () => {
   const [editor] = useLexicalComposerContext();
   const [hasFocus, setHasFocus] = useState(
-    () => editor.getRootElement() === document.activeElement
+    () => editor.getRootElement() === document.activeElement,
   );
 
   useLayoutEffect(() => {
@@ -199,7 +199,7 @@ const useIsFocused = () => {
           setHasFocus(true);
           return false;
         },
-        COMMAND_PRIORITY_NORMAL
+        COMMAND_PRIORITY_NORMAL,
       ),
       editor.registerCommand(
         BLUR_COMMAND,
@@ -207,8 +207,8 @@ const useIsFocused = () => {
           setHasFocus(false);
           return false;
         },
-        COMMAND_PRIORITY_NORMAL
-      )
+        COMMAND_PRIORITY_NORMAL,
+      ),
     );
   }, [editor]);
 
@@ -241,11 +241,11 @@ function SingleLinePlugin({ onEnter }: { onEnter?: () => void }) {
             }
             return false;
           },
-          COMMAND_PRIORITY_LOW
-        )
+          COMMAND_PRIORITY_LOW,
+        ),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [editor, isMentionsMenuOpen]
+    [editor, isMentionsMenuOpen],
   );
   return null;
 }
@@ -273,7 +273,7 @@ const MenuComponent = forwardRef<HTMLUListElement, BeautifulMentionsMenuProps>(
         </Paper>
       </Fade>
     );
-  }
+  },
 );
 
 const MenuItemComponent = forwardRef<
@@ -357,7 +357,7 @@ export function Editor(props: EditorProps) {
         onChange(root.getTextContent());
       });
     },
-    [onChange]
+    [onChange],
   );
 
   const handleClick = useCallback(() => {

@@ -21,7 +21,7 @@ const TaskView = () => {
   const { taskLists, activeTaskList, deleteTask } = useTask();
   const _openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
   const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog
+    (state) => state.openConfirmationDialog,
   );
   const [focusedTaskId, setFocusedTaskId] = useState<string>();
   const listItemsRef = useRef<HTMLDivElement[]>([]);
@@ -31,7 +31,7 @@ const TaskView = () => {
     taskView === "timeline"
       ? timelineTasks
       : taskGroups.flatMap((i) =>
-          i.groups.reduce<Task[]>((prev, curr) => [...prev, ...curr.items], [])
+          i.groups.reduce<Task[]>((prev, curr) => [...prev, ...curr.items], []),
         );
 
   const focusNextListItem = useCallback(
@@ -42,7 +42,7 @@ const TaskView = () => {
       if (task) {
         index = tasks.indexOf(task);
         const notFocusablePredecessor = tasks.some(
-          (t, idx) => t._id === "-1" && idx < index
+          (t, idx) => t._id === "-1" && idx < index,
         );
         if (notFocusablePredecessor) {
           index = index - 1;
@@ -56,7 +56,7 @@ const TaskView = () => {
       }
       listItemsRef.current[index].focus();
     },
-    [focusedTaskId, tasks]
+    [focusedTaskId, tasks],
   );
 
   const openTaskDialog = useCallback(() => {
@@ -98,7 +98,7 @@ const TaskView = () => {
       e: openTaskDialog,
       d: openDeleteTaskDialog,
     }),
-    [focusNextListItem, openDeleteTaskDialog, openTaskDialog]
+    [focusNextListItem, openDeleteTaskDialog, openTaskDialog],
   );
 
   useHotkeys(hotkeys);
@@ -113,7 +113,7 @@ const TaskView = () => {
         <Stack spacing={1}>
           {taskGroups
             .filter((i) =>
-              activeTaskList ? i.filePath === activeTaskList.filePath : i
+              activeTaskList ? i.filePath === activeTaskList.filePath : i,
             )
             .map((i, idx) => (
               <TaskList

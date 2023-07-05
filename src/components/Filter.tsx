@@ -65,7 +65,7 @@ const Filter = () => {
       resetActiveProjects,
       resetActiveTags,
       setSearchTerm,
-    ]
+    ],
   );
 
   useHotkeys(hotkeys);
@@ -115,7 +115,7 @@ const Filter = () => {
                 acc[key] = tags[key].length;
                 return acc;
               },
-              {}
+              {},
             )}
             activeItems={activeTags}
             onClick={toggleTag}

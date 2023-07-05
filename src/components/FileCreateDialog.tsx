@@ -43,23 +43,23 @@ const FileCreateDialog = () => {
   const platform = usePlatformStore((state) => state.platform);
   const fileCreateDialogOpen = useFileCreateDialogStore((state) => state.open);
   const createExampleFile = useFileCreateDialogStore(
-    (state) => state.createExampleFile
+    (state) => state.createExampleFile,
   );
   const createFirstTask = useFileCreateDialogStore(
-    (state) => state.createFirstTask
+    (state) => state.createFirstTask,
   );
   const closeFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.closeFileCreateDialog
+    (state) => state.closeFileCreateDialog,
   );
   const { saveTodoFile } = useTask();
   const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath
+    (state) => state.setActiveTaskListPath,
   );
   const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 
   const handleClose = useCallback(
     () => closeFileCreateDialog(),
-    [closeFileCreateDialog]
+    [closeFileCreateDialog],
   );
 
   const createNewFile = useCallback(
@@ -86,7 +86,7 @@ const FileCreateDialog = () => {
       setActiveTaskListPath,
       createFirstTask,
       openTaskDialog,
-    ]
+    ],
   );
 
   if (platform === "desktop") {
@@ -140,14 +140,14 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const [fileName, setFileName] = useState("");
   const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog
+    (state) => state.openConfirmationDialog,
   );
   const { uploadFile, cloudStorages } = useCloudStorage();
   const createExampleFile = useFileCreateDialogStore(
-    (state) => state.createExampleFile
+    (state) => state.createExampleFile,
   );
   const cleanupFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.cleanupFileCreateDialog
+    (state) => state.cleanupFileCreateDialog,
   );
   const [selectedProvider, setSelectedProvider] = useState<
     Provider | "no-sync"
@@ -169,7 +169,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         await uploadFile(selectedProvider, fileName, "");
       }
     },
-    [onClose, onCreateFile, selectedProvider, cloudStorages, uploadFile]
+    [onClose, onCreateFile, selectedProvider, cloudStorages, uploadFile],
   );
 
   const handleSave = async () => {
@@ -219,7 +219,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
       }
 
       const { fileName: _fileName } = await getUniqueFilePath(
-        defaultTodoFilePath
+        defaultTodoFilePath,
       );
       setFileName(_fileName);
 
@@ -237,7 +237,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         setSkip(false);
       }
     },
-    [open, onClose, cloudStorages.length, createTodoFileAndSync]
+    [open, onClose, cloudStorages.length, createTodoFileAndSync],
   );
 
   useEffect(() => {

@@ -127,7 +127,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
         </TaskItemButton>
       </div>
     );
-  }
+  },
 );
 
 export default TaskListItem;
