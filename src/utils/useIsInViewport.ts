@@ -32,7 +32,7 @@ export function useIsInViewport(elem: Element) {
         }));
         previous.current = { y: currentY, ratio: currentRatio };
       }),
-    []
+    [],
   );
 
   useEffect(() => {

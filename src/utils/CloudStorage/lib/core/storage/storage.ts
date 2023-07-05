@@ -13,7 +13,7 @@ export function createCloudStorage({
   client,
 }: CloudStorageConfiguration): CloudStorage {
   function op<A extends object, R>(
-    fn: (...args: A[]) => Promise<R>
+    fn: (...args: A[]) => Promise<R>,
   ): (...args: A[]) => Promise<R> {
     return async (...args: A[]) => {
       try {
@@ -43,7 +43,7 @@ export function createCloudStorage({
   }
 
   const downloadFile = async (
-    options: DownloadFileOption
+    options: DownloadFileOption,
   ): Promise<DownloadFileResult> => {
     const { response, cloudFile } = await client.downloadFile(options);
     const content = await response.clone().arrayBuffer();
@@ -80,7 +80,7 @@ export function createCloudStorage({
   };
 
   const syncFile = async (
-    options: SyncFileOptions
+    options: SyncFileOptions,
   ): Promise<SyncFileResult> => {
     const result = await client.syncFile(options);
 

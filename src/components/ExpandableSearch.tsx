@@ -34,7 +34,7 @@ const ExpandableSearch = forwardRef<HTMLInputElement, ExpandableSearchProps>(
 
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
         window.HTMLInputElement.prototype,
-        "value"
+        "value",
       )?.set;
       nativeInputValueSetter?.call(input, "");
 
@@ -114,7 +114,7 @@ const ExpandableSearch = forwardRef<HTMLInputElement, ExpandableSearchProps>(
         )}
       </>
     );
-  }
+  },
 );
 
 export default ExpandableSearch;

@@ -21,7 +21,7 @@ function handleError(error: any): Promise<never> {
 }
 
 export const createDropboxClient = (
-  config: DropboxClientConfiguration = {}
+  config: DropboxClientConfiguration = {},
 ): DropboxClient => {
   const { dropboxOptions = {} } = config;
   const dbx = new Dropbox(dropboxOptions);
@@ -47,7 +47,7 @@ export const createDropboxClient = (
       items: result.entries
         .filter(
           (e) =>
-            !!e.path_lower && (e[".tag"] === "folder" || e[".tag"] === "file")
+            !!e.path_lower && (e[".tag"] === "folder" || e[".tag"] === "file"),
         )
         .map((e) => {
           if (e[".tag"] === "folder") {

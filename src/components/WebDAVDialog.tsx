@@ -25,7 +25,7 @@ const WebDavDialog = () => {
   const { t } = useTranslation();
   const webDAVDialogOpen = useWebDAVDialogStore((state) => state.open);
   const closeWebDAVDialog = useWebDAVDialogStore(
-    (state) => state.closeWebDAVDialog
+    (state) => state.closeWebDAVDialog,
   );
   const [url, setUrl] = useState("");
   const [username, setUsername] = useState("");

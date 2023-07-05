@@ -50,10 +50,10 @@ export async function taskLoader(): Promise<TaskStoreData> {
     filePaths.map((filePath) =>
       readFile(filePath)
         .then(
-          (data) => ({ type: "success", filePath, data } as TodoFileSuccess)
+          (data) => ({ type: "success", filePath, data }) as TodoFileSuccess,
         )
-        .catch(() => ({ type: "error", filePath } as TodoFileError))
-    )
+        .catch(() => ({ type: "error", filePath }) as TodoFileError),
+    ),
   );
   const files = result
     .filter((i): i is TodoFileSuccess => i.type === "success")
@@ -78,7 +78,7 @@ export async function taskLoader(): Promise<TaskStoreData> {
 }
 
 export function initializeTaskStore(
-  preloadedState: Partial<TaskStoreInterface> = {}
+  preloadedState: Partial<TaskStoreInterface> = {},
 ) {
   return createStore<TaskStoreInterface>((set) => ({
     ...getDefaultInitialState(),
@@ -88,7 +88,7 @@ export function initializeTaskStore(
       set((state) => ({
         taskLists: state.taskLists.some((t) => t.filePath === taskList.filePath)
           ? state.taskLists.map((t) =>
-              t.filePath === taskList.filePath ? taskList : t
+              t.filePath === taskList.filePath ? taskList : t,
             )
           : [...state.taskLists, taskList],
       }));
@@ -99,7 +99,7 @@ export function initializeTaskStore(
       }
       set((state) => ({
         taskLists: state.taskLists.filter(
-          (list) => list.filePath !== taskList.filePath
+          (list) => list.filePath !== taskList.filePath,
         ),
       }));
     },
@@ -107,7 +107,7 @@ export function initializeTaskStore(
 }
 
 export default function useTaskStore<T>(
-  selector: (state: TaskStoreInterface) => T
+  selector: (state: TaskStoreInterface) => T,
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

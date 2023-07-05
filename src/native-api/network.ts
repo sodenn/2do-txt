@@ -4,7 +4,7 @@ import { getPlatform } from "./platform";
 
 function request(
   input: RequestInfo | URL,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<Response> {
   const platform = getPlatform();
   return platform === "desktop"
@@ -14,7 +14,7 @@ function request(
 
 async function desktopFetch(
   input: RequestInfo | URL,
-  init: RequestInit = {}
+  init: RequestInit = {},
 ): Promise<Response> {
   const client = await getClient();
   const options =
@@ -82,10 +82,10 @@ async function isConnected() {
 }
 
 function addNetworkStatusChangeListener(
-  listener: (connected: boolean) => void
+  listener: (connected: boolean) => void,
 ) {
   Network.addListener("networkStatusChange", ({ connected }) =>
-    listener(connected)
+    listener(connected),
   );
 }
 

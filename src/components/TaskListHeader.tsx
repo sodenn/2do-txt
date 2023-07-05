@@ -24,7 +24,7 @@ const Container = styled(Box)(({ theme }) => ({
 const TaskListHeader = (props: TaskListHeaderProps) => {
   const { fileName, filePath } = props;
   const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath
+    (state) => state.setActiveTaskListPath,
   );
   return (
     <StyledListItemButton

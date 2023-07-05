@@ -46,7 +46,7 @@ function normalizeResult(result: DAVResultRaw): DAVResult {
   };
   output.multistatus.response = getPropertyOfType(
     output.multistatus?.response,
-    "array"
+    "array",
   );
   output.multistatus.response =
     output.multistatus.response.map(normalizeResponse);
@@ -66,7 +66,7 @@ export function parseXML(xml: string): Promise<DAVResult> {
 
 export function prepareFileFromProps(
   props: DAVResultResponseProps,
-  rawFilename: string
+  rawFilename: string,
 ): CloudItem {
   // Last modified time, raw size, item type and mime
   const {

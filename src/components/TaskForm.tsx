@@ -42,10 +42,13 @@ const TaskForm = (props: TaskFormProps) => {
   const { value, projects, contexts, tags, ...other } = props;
 
   const _tags = useMemo(() => {
-    const tags = Object.keys(props.tags).reduce((acc, key) => {
-      acc[key + ":"] = props.tags[key];
-      return acc;
-    }, {} as Record<string, string[]>);
+    const tags = Object.keys(props.tags).reduce(
+      (acc, key) => {
+        acc[key + ":"] = props.tags[key];
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
     if (Object.keys(tags).every((k) => k !== "due:")) {
       tags["due:"] = [];
     }
@@ -59,7 +62,7 @@ const TaskForm = (props: TaskFormProps) => {
       "\\w+:": [],
       ..._tags,
     }),
-    [contexts, projects, _tags]
+    [contexts, projects, _tags],
   );
 
   const triggers = useMemo(() => Object.keys(items), [items]);

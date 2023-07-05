@@ -73,7 +73,7 @@ const CloudFileDialog = () => {
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const { createNewTodoFile, saveDoneFile, taskLists } = useTask();
   const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath
+    (state) => state.setActiveTaskListPath,
   );
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
@@ -81,14 +81,14 @@ const CloudFileDialog = () => {
   const open = useCloudFileDialogStore((state) => state.open);
   const provider = useCloudFileDialogStore((state) => state.provider);
   const closeCloudFileDialog = useCloudFileDialogStore(
-    (state) => state.closeCloudFileDialog
+    (state) => state.closeCloudFileDialog,
   );
   const cleanupCloudFileDialog = useCloudFileDialogStore(
-    (state) => state.cleanupCloudFileDialog
+    (state) => state.cleanupCloudFileDialog,
   );
   const platform = usePlatformStore((state) => state.platform);
   const openFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.openFileCreateDialog
+    (state) => state.openFileCreateDialog,
   );
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
@@ -137,19 +137,19 @@ const CloudFileDialog = () => {
     if (doneFile && remoteDoneFilePath) {
       const localDoneFilePath = await join(
         getDirname(localFilePath),
-        doneFile.name
+        doneFile.name,
       );
       const doneFileContent = await downloadFile(
         provider,
         localDoneFilePath,
-        remoteDoneFilePath
+        remoteDoneFilePath,
       );
       await saveDoneFile(localDoneFilePath, doneFileContent);
       if (archiveMode === "no-archiving") {
         setArchiveMode("manual");
         enqueueSnackbar(
           t("Task archiving was turned on because a done.txt file was found"),
-          { variant: "info" }
+          { variant: "info" },
         );
       }
     }
@@ -262,7 +262,7 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
 
   const handleNavForward = async (
     cloudDirectory: CloudDirectory,
-    index: number
+    index: number,
   ) => {
     setLoading(index);
     await loadItems(cloudDirectory.path);
@@ -303,13 +303,13 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
                   components={{ code: <code style={{ marginLeft: 5 }} /> }}
                 />
               </span>,
-              { variant: "warning" }
+              { variant: "warning" },
             );
           })
           .finally(() => setLoading(false));
       }
     },
-    [provider, currentPath, enqueueSnackbar, list, onClose, onFilesChange]
+    [provider, currentPath, enqueueSnackbar, list, onClose, onFilesChange],
   );
 
   const handleLoadMoreItems = (path = currentPath) => {
@@ -333,8 +333,8 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
       .then((refs) => refs.filter((ref) => ref.provider === provider))
       .then((refs) =>
         refs.filter((ref) =>
-          taskLists.some((t) => t.filePath === ref.identifier)
-        )
+          taskLists.some((t) => t.filePath === ref.identifier),
+        ),
       )
       .then(setCloudFileRefs);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -386,7 +386,7 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
           {files.items
             .filter(
               (c): c is CloudDirectory & WithDirectoryType =>
-                c.type === "directory"
+                c.type === "directory",
             )
             .map((cloudDirectory, idx) => (
               <CloudFolderButton

@@ -25,7 +25,7 @@ export function createDropboxStorage(refreshToken: string) {
 
 export async function requestDropboxRefreshToken(
   codeVerifier: string,
-  code: string
+  code: string,
 ) {
   const dbxAuth = new DropboxAuth({ clientId });
   dbxAuth.setCodeVerifier(codeVerifier);
@@ -57,7 +57,7 @@ export async function getDropboxOathOptions() {
     "offline",
     undefined,
     undefined,
-    true
+    true,
   )) as string;
 
   const codeVerifier = dbxAuth.getCodeVerifier();

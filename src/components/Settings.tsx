@@ -20,23 +20,23 @@ const Settings = () => {
   const { isNotificationPermissionGranted, requestNotificationPermission } =
     useNotification();
   const showNotifications = useSettingsStore(
-    (state) => state.showNotifications
+    (state) => state.showNotifications,
   );
   const setShowNotifications = useSettingsStore(
-    (state) => state.setShowNotifications
+    (state) => state.setShowNotifications,
   );
   const createCompletionDate = useSettingsStore(
-    (state) => state.createCompletionDate
+    (state) => state.createCompletionDate,
   );
   const createCreationDate = useSettingsStore(
-    (state) => state.createCreationDate
+    (state) => state.createCreationDate,
   );
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const toggleCreateCompletionDate = useSettingsStore(
-    (state) => state.toggleCreateCompletionDate
+    (state) => state.toggleCreateCompletionDate,
   );
   const toggleCreateCreationDate = useSettingsStore(
-    (state) => state.toggleCreateCreationDate
+    (state) => state.toggleCreateCreationDate,
   );
 
   const handleShowNotifications = async () => {

@@ -73,7 +73,7 @@ export function initializeCloudStore({
       createWebDAVStorage({
         baseUrl: webDAV.baseUrl,
         basicAuth: { username: webDAV.username, password: webDAV.password },
-      })
+      }),
     );
   }
   if (dropbox?.refreshToken) {
@@ -88,7 +88,7 @@ export function initializeCloudStore({
       set((state) => ({
         cloudStorages: state.cloudStorages.some((s) => s.provider === "WebDAV")
           ? state.cloudStorages.map((s) =>
-              s.provider === "WebDAV" ? cloudStorage : s
+              s.provider === "WebDAV" ? cloudStorage : s,
             )
           : [...state.cloudStorages, cloudStorage],
       }));
@@ -100,7 +100,7 @@ export function initializeCloudStore({
       set((state) => ({
         cloudStorages: state.cloudStorages.some((s) => s.provider === "Dropbox")
           ? state.cloudStorages.map((s) =>
-              s.provider === "Dropbox" ? cloudStorage : s
+              s.provider === "Dropbox" ? cloudStorage : s,
             )
           : [...state.cloudStorages, cloudStorage],
       }));
@@ -109,7 +109,7 @@ export function initializeCloudStore({
     removeStorage: async (provider: Provider) => {
       set((state) => ({
         cloudStorages: state.cloudStorages.filter(
-          (s) => s.provider !== provider
+          (s) => s.provider !== provider,
         ),
       }));
     },
@@ -118,7 +118,7 @@ export function initializeCloudStore({
 }
 
 export default function useCloudStore<T>(
-  selector: (state: CloudStoreInterface) => T
+  selector: (state: CloudStoreInterface) => T,
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

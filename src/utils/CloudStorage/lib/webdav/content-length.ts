@@ -36,7 +36,7 @@ function isBuffer(value: any): boolean {
 }
 
 function byteLength(
-  str: string | { toString(): string; [x: string]: any }
+  str: string | { toString(): string; [x: string]: any },
 ): number {
   if (!str) {
     return 0;

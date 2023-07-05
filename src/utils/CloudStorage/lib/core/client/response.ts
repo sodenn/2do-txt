@@ -1,7 +1,7 @@
 import { CloudError } from "../errors";
 
 export async function handleResponseErrors(
-  response: Response
+  response: Response,
 ): Promise<Response> {
   const { status, text } = response;
   if (status === 401) {

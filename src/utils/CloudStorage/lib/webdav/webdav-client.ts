@@ -69,7 +69,7 @@ export const createWebDAVClient = (config: WebDAVClientOptions): Client => {
     const dirname = path.substring(0, path.length - filename.length);
     const cloudFiles = await getFileMetaDataList(dirname);
     const cloudFile = cloudFiles.find(
-      (i) => i.name === filename && i.type === "file"
+      (i) => i.name === filename && i.type === "file",
     );
     if (!cloudFile) {
       throw new CloudError({ type: "Not Found" });
@@ -116,7 +116,7 @@ export const createWebDAVClient = (config: WebDAVClientOptions): Client => {
             serverBasePath === "/"
               ? decodeURIComponent(normalisePath(href))
               : decodeURIComponent(
-                  normalisePath(relativePath(serverBasePath, href))
+                  normalisePath(relativePath(serverBasePath, href)),
                 );
           return prepareFileFromProps(props, filename);
         })

@@ -25,7 +25,7 @@ const SearchBar = ({ onExpand }: SearchBarProps) => {
 
   const hotkeys = useMemo(
     () => ({ f: () => searchInputRef.current?.focus() }),
-    []
+    [],
   );
 
   useHotkeys(hotkeys);

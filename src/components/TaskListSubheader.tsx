@@ -38,7 +38,7 @@ const TaskListSubheader = ({ title }: TaskListSubheaderProps) => {
         />
       </StyledListSubheader>
     ),
-    [title, sortBy]
+    [title, sortBy],
   );
 };
 

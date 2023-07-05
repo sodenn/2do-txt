@@ -51,7 +51,7 @@ const tagStyle = (
   chip: boolean,
   completed: boolean,
   mode: PaletteMode,
-  tagKey: string
+  tagKey: string,
 ): SxProps<Theme> => ({
   whiteSpace: "nowrap",
   color: chip

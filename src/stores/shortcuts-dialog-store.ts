@@ -11,7 +11,7 @@ const useShortcutsDialogStore = create<ShortcutsDialogStoreInterface>(
     open: false,
     openShortcutsDialog: () => set({ open: true }),
     closeShortcutsDialog: () => set({ open: false }),
-  })
+  }),
 );
 
 export default useShortcutsDialogStore;

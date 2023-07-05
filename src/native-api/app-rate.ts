@@ -22,11 +22,11 @@ async function increaseCounter(counter: number) {
 }
 
 function setNextRatingRequestDate(
-  nextRatingRequestDate = getNextRatingRequestDate()
+  nextRatingRequestDate = getNextRatingRequestDate(),
 ) {
   return setPreferencesItem(
     "app-rate-date",
-    nextRatingRequestDate.toISOString()
+    nextRatingRequestDate.toISOString(),
   );
 }
 

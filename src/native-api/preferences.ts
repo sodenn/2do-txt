@@ -29,7 +29,7 @@ async function getPreferencesItem<T extends string>(key: PreferencesKeys) {
 
 async function setPreferencesItem(
   key: PreferencesKeys,
-  value: string
+  value: string,
 ): Promise<void> {
   return Preferences.set({ key, value: value });
 }

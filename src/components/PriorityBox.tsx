@@ -18,7 +18,7 @@ const PriorityBoxContent = styled(SpanBox)<{ completed: number }>(
     "&:before, &:after": {
       content: '"\\00a0\\00a0"',
     },
-  })
+  }),
 );
 
 const PriorityBoxRoot = styled(SpanBox)(() => ({

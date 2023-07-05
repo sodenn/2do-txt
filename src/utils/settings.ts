@@ -34,7 +34,7 @@ async function addTodoFilePath(filePath: string) {
 
   await setPreferencesItem(
     "todo-txt-paths",
-    JSON.stringify([...filePaths, filePath])
+    JSON.stringify([...filePaths, filePath]),
   );
 }
 

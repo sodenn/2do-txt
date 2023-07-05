@@ -28,7 +28,7 @@ function useNotification() {
 
       return _scheduleNotifications(opt);
     },
-    [t]
+    [t],
   );
 
   return {

@@ -14,7 +14,7 @@ export type DownloadFileOption = WithPath;
 export type DownloadFileResult = WithResponse & WithCloudFile;
 
 export type DownloadFile = (
-  options: DownloadFileOption
+  options: DownloadFileOption,
 ) => Promise<DownloadFileResult>;
 
 export interface UploadFileOptions extends WithPath, WithContent {
@@ -30,7 +30,7 @@ export type DeleteFile = (options: DeleteFileOptions) => Promise<void>;
 export type GetFileMetaDataOptions = WithPath;
 
 export type GetFileMetaData = (
-  options: GetFileMetaDataOptions
+  options: GetFileMetaDataOptions,
 ) => Promise<CloudFile>;
 
 export type SyncFileOptions = WithRef & Partial<WithContent>;

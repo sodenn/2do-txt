@@ -41,7 +41,7 @@ const useConfirmationDialogStore = create<ConfirmationDialogStoreInterface>(
         buttons: undefined,
         onClose: undefined,
       }),
-  })
+  }),
 );
 
 export default useConfirmationDialogStore;

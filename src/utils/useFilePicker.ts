@@ -22,7 +22,7 @@ function useFilePicker() {
       await addTodoFilePath(path);
       scheduleDueTaskNotifications(taskList.items);
     },
-    [loadTodoFile, scheduleDueTaskNotifications]
+    [loadTodoFile, scheduleDueTaskNotifications],
   );
 
   const openFileDialog = useCallback(async () => {
@@ -42,7 +42,7 @@ function useFilePicker() {
       openFileDialog,
       openDesktopFile,
     }),
-    [openDesktopFile, openFileDialog, setFileInput]
+    [openDesktopFile, openFileDialog, setFileInput],
   );
 }
 

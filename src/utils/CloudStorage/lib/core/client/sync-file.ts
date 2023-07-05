@@ -35,7 +35,7 @@ export function createSyncFileFunction({
       });
       const outdated = isDateBefore(
         parseDate(ref.lastModified),
-        parseDate(cloudFile.lastModified)
+        parseDate(cloudFile.lastModified),
       );
       if (!outdated) {
         // no action needed
@@ -83,11 +83,11 @@ export function createSyncFileFunction({
     const sameDate = isDateEqual(refLastModified, cloudLastModified);
     const refDateBeforeCloudDate = isDateBefore(
       refLastModified,
-      cloudLastModified
+      cloudLastModified,
     );
     const refDateAfterCloudDate = isDateAfter(
       refLastModified,
-      cloudLastModified
+      cloudLastModified,
     );
 
     if (sameDate && sameContent) {

@@ -28,7 +28,7 @@ interface ArchiveTaskOptions {
 function useArchivedTask() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const openArchivedTasksDialog = useArchivedTasksDialogStore(
-    (state) => state.openArchivedTasksDialog
+    (state) => state.openArchivedTasksDialog,
   );
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
@@ -54,7 +54,7 @@ function useArchivedTask() {
 
           const ref = await getCloudFileRef(doneFilePath).catch((e) => void e);
           const cloudFile = await getMetaData(doneFilePath).catch(
-            (e) => void e
+            (e) => void e,
           );
 
           const addSyncOption = async () => {
@@ -83,7 +83,7 @@ function useArchivedTask() {
           // download cloud done file
           if (archiveMode === "no-archiving") {
             const todoFileRef = await getCloudFileRef(filePath).catch(
-              (e) => void e
+              (e) => void e,
             );
             if (!todoFileRef) {
               return "do-nothing";
@@ -91,7 +91,7 @@ function useArchivedTask() {
             const content = await downloadFile(
               todoFileRef.provider,
               doneFilePath,
-              cloudFile.path
+              cloudFile.path,
             );
             await writeFile({
               path: doneFilePath,
@@ -102,14 +102,14 @@ function useArchivedTask() {
             await addSyncOption();
             return "do-nothing";
           }
-        })
+        }),
       );
 
       if (updateArchiveMode.some((i) => i === "enable")) {
         setArchiveMode("manual");
         enqueueSnackbar(
           t("Task archiving was turned on because a done.txt file was found"),
-          { variant: "info" }
+          { variant: "info" },
         );
       }
 
@@ -119,8 +119,8 @@ function useArchivedTask() {
 
       await Promise.all(
         syncOptions.map((options) =>
-          syncFile(options.localPath, options.content, false)
-        )
+          syncFile(options.localPath, options.content, false),
+        ),
       );
     },
     [
@@ -132,7 +132,7 @@ function useArchivedTask() {
       enqueueSnackbar,
       syncFile,
       t,
-    ]
+    ],
   );
 
   const saveDoneFile = useCallback(async (filePath: string, text: string) => {
@@ -181,7 +181,7 @@ function useArchivedTask() {
       }
 
       const completedTasks = completedTaskList.items.filter(
-        (i) => i.raw !== task.raw
+        (i) => i.raw !== task.raw,
       );
 
       const newItems =
@@ -206,7 +206,7 @@ function useArchivedTask() {
 
       return newTaskList;
     },
-    [archiveMode, deleteCloudFile, loadDoneFile, saveDoneFile]
+    [archiveMode, deleteCloudFile, loadDoneFile, saveDoneFile],
   );
 
   const archiveTask = useCallback(
@@ -218,7 +218,7 @@ function useArchivedTask() {
 
       const text = stringifyTaskList(
         [...(result ? result.items : []), task],
-        result ? result.lineEnding : taskList.lineEnding
+        result ? result.lineEnding : taskList.lineEnding,
       );
 
       await saveDoneFile(filePath, text);
@@ -242,7 +242,7 @@ function useArchivedTask() {
               {t("Archived tasks")}
             </Button>
           ),
-        }
+        },
       );
     },
     [
@@ -252,7 +252,7 @@ function useArchivedTask() {
       saveDoneFile,
       openArchivedTasksDialog,
       t,
-    ]
+    ],
   );
 
   const archiveTasks = useCallback(
@@ -280,7 +280,7 @@ function useArchivedTask() {
 
           const doneFileText = stringifyTaskList(
             allCompletedTasks,
-            completedTasks ? completedTasks.lineEnding : lineEnding
+            completedTasks ? completedTasks.lineEnding : lineEnding,
           );
 
           if (allCompletedTasks.length === 0) {
@@ -293,15 +293,15 @@ function useArchivedTask() {
           if (doneFilePath && newCompletedTasks.length > 0) {
             enqueueSnackbar(
               t("All completed tasks have been archived", { doneFilePath }),
-              { variant: "success" }
+              { variant: "success" },
             );
           }
 
           return newTaskList;
-        })
+        }),
       );
     },
-    [enqueueSnackbar, loadDoneFile, saveDoneFile, t]
+    [enqueueSnackbar, loadDoneFile, saveDoneFile, t],
   );
 
   const restoreArchivedTasks = useCallback(
@@ -324,7 +324,7 @@ function useArchivedTask() {
               (i, index) => ({
                 ...i,
                 _order: index,
-              })
+              }),
             ),
           };
 
@@ -332,15 +332,15 @@ function useArchivedTask() {
 
           enqueueSnackbar(
             t("All completed tasks have been restored", { doneFilePath }),
-            { variant: "success" }
+            { variant: "success" },
           );
 
           deleteCloudFile(doneFilePath);
           return newTaskList;
-        })
+        }),
       );
     },
-    [deleteCloudFile, enqueueSnackbar, loadDoneFile, t]
+    [deleteCloudFile, enqueueSnackbar, loadDoneFile, t],
   );
 
   return {

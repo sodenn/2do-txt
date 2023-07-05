@@ -16,7 +16,7 @@ export const useHotkeys = (listeners: ListenerMap) => {
       const isInput = target.nodeName === "INPUT" || target.isContentEditable;
 
       const presentations = document.querySelectorAll<HTMLDivElement>(
-        '[role="presentation"]'
+        '[role="presentation"]',
       );
       const isBackdropOpen = [...presentations].some((presentation) => {
         return (

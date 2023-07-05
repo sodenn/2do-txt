@@ -56,7 +56,7 @@ const WebFilePicker = ({ children }: PropsWithChildren) => {
   const [files, setFiles] = useState<File[]>([]);
   const { setFileInput } = useFilePicker();
   const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath
+    (state) => state.setActiveTaskListPath,
   );
   const { enqueueSnackbar } = useSnackbar();
   const { createNewTodoFile, taskLists } = useTask();
@@ -102,7 +102,7 @@ const WebFilePicker = ({ children }: PropsWithChildren) => {
             enqueueSnackbar(t("The file could not be opened"), {
               variant: "error",
             });
-          }
+          },
         );
 
         if (updateFilePath && filePath) {
@@ -124,7 +124,7 @@ const WebFilePicker = ({ children }: PropsWithChildren) => {
       setActiveTaskListPath,
       taskLists.length,
       t,
-    ]
+    ],
   );
 
   const handleClick = (event: any) => {

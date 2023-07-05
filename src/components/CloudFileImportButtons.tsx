@@ -14,7 +14,7 @@ const CloudFileImportButtons = () => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openCloudFileDialog = useCloudFileDialogStore(
-    (state) => state.openCloudFileDialog
+    (state) => state.openCloudFileDialog,
   );
   const { cloudStorageEnabled, cloudStorages } = useCloudStorage();
   const open = Boolean(anchorEl);

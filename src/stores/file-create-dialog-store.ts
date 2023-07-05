@@ -33,7 +33,7 @@ const useFileCreateDialogStore = create<FileCreateDialogStoreInterface>(
         createFirstTask: false,
         createExampleFile: false,
       }),
-  })
+  }),
 );
 
 export default useFileCreateDialogStore;

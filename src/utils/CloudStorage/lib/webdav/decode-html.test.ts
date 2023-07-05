@@ -35,7 +35,7 @@ describe("decodeHTMLEntities", () => {
   it("should handle multiple entities in a single string", () => {
     const text = 'This &amp; that &lt; are &gt; different "quotes"';
     expect(decodeHTMLEntities(text)).toBe(
-      'This & that < are > different "quotes"'
+      'This & that < are > different "quotes"',
     );
   });
 });

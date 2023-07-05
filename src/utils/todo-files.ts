@@ -13,7 +13,7 @@ export function getDoneFilePath(todoFilePath: string) {
     ? todoFilePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath)
     : todoFilePath.replace(
         new RegExp(`${fileName}$`),
-        `${fileNameWithoutEnding}_${defaultDoneFilePath}`
+        `${fileNameWithoutEnding}_${defaultDoneFilePath}`,
       );
 }
 

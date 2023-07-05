@@ -23,7 +23,7 @@ const useArchivedTasksDialogStore = create<ArchivedTasksDialogStoreInterface>(
       set({ ...opt, open: true }),
     closeArchivedTasksDialog: () => set({ open: false }),
     cleanupArchivedTasksDialog: () => set({ open: false, filePath: undefined }),
-  })
+  }),
 );
 
 export default useArchivedTasksDialogStore;

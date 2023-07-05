@@ -134,7 +134,7 @@ function resolvePath(...parts: string[]) {
   // Normalize the path
   resolvedPath = normalizeArray(
     resolvedPath.split("/"),
-    !resolvedAbsolute
+    !resolvedAbsolute,
   ).join("/");
 
   return (resolvedAbsolute ? "/" : "") + resolvedPath || ".";

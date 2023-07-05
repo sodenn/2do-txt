@@ -11,7 +11,7 @@ const useFileManagementDialogStore = create<FileManagementDialogStoreInterface>(
     open: false,
     openFileManagementDialog: () => set({ open: true }),
     closeFileManagementDialog: () => set({ open: false }),
-  })
+  }),
 );
 
 export default useFileManagementDialogStore;

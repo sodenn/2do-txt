@@ -43,7 +43,7 @@ export const createCloudPreferences = ({
       const newRefs = refs.every((r) => r.identifier !== identifier)
         ? [...refs, refWithIdentifier]
         : refs.map((r) =>
-            r.identifier === identifier ? refWithIdentifier : r
+            r.identifier === identifier ? refWithIdentifier : r,
           );
       const value = JSON.stringify(newRefs);
       await storage.setItem(refsKey, value);
@@ -66,7 +66,7 @@ export const createCloudPreferences = ({
           if (ref.provider === provider) {
             return preferences.removeRef(ref.identifier);
           }
-        })
+        }),
       );
     },
     async getProviders() {

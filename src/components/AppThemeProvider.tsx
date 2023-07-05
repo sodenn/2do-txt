@@ -69,7 +69,7 @@ const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
 
 const getPaletteMode = (
   themeMode: ThemeMode,
-  prefersDarkMode: boolean
+  prefersDarkMode: boolean,
 ): PaletteMode => {
   if (themeMode === "light" || themeMode === "dark") {
     return themeMode;
@@ -100,7 +100,7 @@ const AppThemeProvider = ({ children }: PropsWithChildren) => {
   const paletteMode = getPaletteMode(themeMode, prefersDarkMode);
   const theme = useMemo(
     () => createTheme(getThemeOptions(paletteMode), translations[language]),
-    [language, paletteMode]
+    [language, paletteMode],
   );
 
   useEffect(() => applyThemeMode(theme, themeMode), [theme, themeMode]);
