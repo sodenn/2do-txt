@@ -25,7 +25,7 @@ test.describe("Task View", () => {
   for (const taskView of ["list", "timeline"]) {
     test(`${taskView}: should render an empty task list`, async ({ page }) => {
       await expect(
-        page.getByRole("list", { name: "Task list" })
+        page.getByRole("list", { name: "Task list" }),
       ).not.toBeVisible();
     });
 
@@ -122,7 +122,7 @@ test.describe("Task View", () => {
       const taskItem = page.getByTestId("task-button").nth(0);
 
       await expect(taskItem).toHaveText(
-        "Ask John for a jogging session @Private"
+        "Ask John for a jogging session @Private",
       );
       await page
         .getByTestId("task")
@@ -130,7 +130,7 @@ test.describe("Task View", () => {
         .getByRole("checkbox", { name: "Complete task" })
         .click();
       await expect(taskItem).not.toHaveText(
-        "Ask John for a jogging session @Private"
+        "Ask John for a jogging session @Private",
       );
     });
 

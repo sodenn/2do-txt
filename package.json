@@ -81,7 +81,7 @@
     "i18next-http-backend": "2.2.1",
     "jszip": "3.10.1",
     "lexical": "0.11.2",
-    "lexical-beautiful-mentions": "0.1.8",
+    "lexical-beautiful-mentions": "0.1.12",
     "lodash": "4.17.21",
     "notistack": "3.0.1",
     "pulltorefreshjs": "0.1.22",

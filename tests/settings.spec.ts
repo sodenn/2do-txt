@@ -10,7 +10,7 @@ test.describe("Appearance", () => {
     page,
   }) => {
     await expect(
-      page.getByRole("button", { name: "Select theme mode" })
+      page.getByRole("button", { name: "Select theme mode" }),
     ).toContainText("System");
     await checkInLocalStorage(page, "theme-mode", "system");
   });
@@ -22,7 +22,7 @@ test.describe("Appearance", () => {
     await page.getByRole("option", { name: "Light" }).click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
-      "#fff"
+      "#fff",
     );
     await checkInLocalStorage(page, "theme-mode", "light");
 
@@ -30,7 +30,7 @@ test.describe("Appearance", () => {
     await page.getByRole("option", { name: "Dark" }).click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
-      "#0a1726"
+      "#0a1726",
     );
     await checkInLocalStorage(page, "theme-mode", "dark");
   });
@@ -44,7 +44,7 @@ test.describe("Language", () => {
     await page.getByRole("button", { name: "Select language" }).click();
     await page.getByRole("option", { name: "English" }).click();
     await expect(
-      page.getByRole("button", { name: "Select language" })
+      page.getByRole("button", { name: "Select language" }),
     ).toHaveText("English");
     await expect(page.locator("text=Language").first()).toBeVisible();
 
@@ -52,7 +52,7 @@ test.describe("Language", () => {
     await page.getByRole("button", { name: "Select language" }).click();
     await page.getByRole("option", { name: "German" }).click();
     await expect(
-      page.getByRole("button", { name: "Select language" })
+      page.getByRole("button", { name: "Select language" }),
     ).toHaveText("Deutsch");
     await expect(page.locator("text=Sprache").first()).toBeVisible();
     await checkInLocalStorage(page, "language", "de");

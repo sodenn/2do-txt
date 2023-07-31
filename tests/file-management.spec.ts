@@ -55,7 +55,7 @@ test.describe("Reorder Files", () => {
     await page.mouse.move(
       destinationPosition!.x + destinationPosition!.width / 2,
       destinationPosition!.y + destinationPosition!.height / 2,
-      { steps: 10 }
+      { steps: 10 },
     );
     await page.mouse.up();
 
@@ -97,7 +97,7 @@ test.describe("Reorder Files", () => {
     });
     await page.reload();
     await expect(page.getByRole("alert")).toHaveText(
-      "File not found: todo.txt"
+      "File not found: todo.txt",
     );
     await page.evaluate(() => {
       return localStorage["CapacitorStorage.todo-txt-paths"] === "[]";

@@ -14,8 +14,8 @@ test("should not show an offline warning when not connected to WebDAV", async ({
   await page.waitForTimeout(1000);
   await expect(
     page.getByText(
-      "Unable to connect to cloud storage. Check network connection."
-    )
+      "Unable to connect to cloud storage. Check network connection.",
+    ),
   ).not.toBeVisible({ timeout: 1000 });
 });
 
@@ -32,8 +32,8 @@ test("should show an offline warning when connected to WebDAV", async ({
   await page.waitForTimeout(1000);
   await expect(
     page.getByText(
-      "Unable to connect to cloud storage. Check network connection."
-    )
+      "Unable to connect to cloud storage. Check network connection.",
+    ),
   ).toBeVisible();
 });
 
@@ -94,7 +94,7 @@ test("should navigate back and forward", async ({ page }) => {
   await page.getByRole("button", { name: "Back" }).click();
   await page.getByRole("button", { name: "Documents /Documents" }).click();
   await expect(
-    page.getByRole("button", { name: "todo.txt /Documents/todo.txt" })
+    page.getByRole("button", { name: "todo.txt /Documents/todo.txt" }),
   ).toBeVisible();
 });
 
