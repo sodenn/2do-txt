@@ -355,7 +355,7 @@ test.describe("Task dialog", () => {
     await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
-  test.only("should insert spaces when adding mentions via keyboard", async ({
+  test("should insert spaces when adding mentions via keyboard", async ({
     page,
     isMobile,
   }) => {
