@@ -22,7 +22,10 @@ test.describe("Task dialog", () => {
     await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
-  test("should allow me to add a task with contexts", async ({ page }) => {
+  test("should allow me to add a task with contexts", async ({
+    page,
+    isMobile,
+  }) => {
     await page.getByRole("button", { name: "Add task" }).click();
 
     await expect(
@@ -40,6 +43,10 @@ test.describe("Task dialog", () => {
     await page.getByRole("textbox", { name: "Text editor" }).type("@", delay);
     // select "Holiday" from the mention list
     await page.keyboard.press("ArrowDown");
+    if (isMobile) {
+      // press twice because on mobile the first press will select the first item
+      await page.keyboard.press("ArrowDown");
+    }
     await page.keyboard.press("Enter");
 
     await expect(page.getByRole("textbox", { name: "Text editor" })).toHaveText(
@@ -348,8 +355,9 @@ test.describe("Task dialog", () => {
     await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
-  test("should insert spaces when adding mentions via keyboard", async ({
+  test.only("should insert spaces when adding mentions via keyboard", async ({
     page,
+    isMobile,
   }) => {
     await page.getByRole("button", { name: "Add task" }).click();
 
@@ -357,13 +365,17 @@ test.describe("Task dialog", () => {
       .getByRole("textbox", { name: "Text editor" })
       .type("@Private", delay);
 
-    await page.keyboard.press("Enter");
+    isMobile
+      ? await page.getByRole("menuitem", { name: "Private" }).click()
+      : await page.keyboard.press("Enter");
 
     await page
       .getByRole("textbox", { name: "Text editor" })
       .type("@Private", delay);
 
-    await page.keyboard.press("Enter");
+    isMobile
+      ? await page.getByRole("menuitem", { name: "Private" }).click()
+      : await page.keyboard.press("Enter");
 
     await expect(
       page.locator('[data-beautiful-mention="@Private"]'),
