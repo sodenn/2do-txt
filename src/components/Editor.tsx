@@ -30,6 +30,7 @@ import {
   LineBreakNode,
 } from "lexical";
 import {
+  $convertToMentionNodes,
   BeautifulMentionNode,
   BeautifulMentionsItemsProps,
   BeautifulMentionsMenuItemProps,
@@ -37,8 +38,6 @@ import {
   BeautifulMentionsPlugin,
   ZeroWidthNode,
   ZeroWidthPlugin,
-  convertToMentionNodes,
-  useBeautifulMentions,
 } from "lexical-beautiful-mentions";
 import React, {
   ComponentProps,
@@ -171,7 +170,6 @@ const useEditorConfig = (triggers: string[], initialValue: string) => {
     () => ({
       onError(error: any) {
         console.log(error);
-        // throw error;
       },
       editorState: setEditorState(initialValue, triggers),
       // @ts-ignore
@@ -215,37 +213,42 @@ const useIsFocused = () => {
   return hasFocus;
 };
 
-function SingleLinePlugin({ onEnter }: { onEnter?: () => void }) {
+function SingleLinePlugin({
+  onEnter,
+  mentionMenuOpen,
+}: {
+  onEnter?: () => void;
+  mentionMenuOpen: boolean;
+}) {
   const [editor] = useLexicalComposerContext();
-  const { isMentionsMenuOpen } = useBeautifulMentions();
   useEffect(
     () =>
-      mergeRegister(
-        editor.registerNodeTransform(LineBreakNode, (node) => {
-          node.remove();
-        }),
-        editor.registerCommand(
-          KEY_ENTER_COMMAND,
-          (event) => {
-            const isOpen = isMentionsMenuOpen();
-            if (
-              event &&
-              onEnter &&
-              !isOpen &&
-              !event.shiftKey &&
-              !event.ctrlKey &&
-              !event.metaKey
-            ) {
-              onEnter();
-              return true;
-            }
-            return false;
-          },
-          COMMAND_PRIORITY_LOW,
-        ),
+      editor.registerCommand(
+        KEY_ENTER_COMMAND,
+        (event) => {
+          if (
+            event &&
+            onEnter &&
+            !mentionMenuOpen &&
+            !event.shiftKey &&
+            !event.ctrlKey &&
+            !event.metaKey
+          ) {
+            onEnter();
+            return true;
+          }
+          return false;
+        },
+        COMMAND_PRIORITY_LOW,
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [editor, isMentionsMenuOpen],
+    [editor, mentionMenuOpen, onEnter],
+  );
+  useEffect(
+    () =>
+      editor.registerNodeTransform(LineBreakNode, (node) => {
+        node.remove();
+      }),
+    [editor],
   );
   return null;
 }
@@ -255,7 +258,7 @@ function setEditorState(initialValue: string, triggers: string[]) {
     const root = $getRoot();
     if (root.getFirstChild() === null) {
       const paragraph = $createParagraphNode();
-      paragraph.append(...convertToMentionNodes(initialValue, triggers));
+      paragraph.append(...$convertToMentionNodes(initialValue, triggers));
       root.append(paragraph);
     }
   };
@@ -349,6 +352,7 @@ export function Editor(props: EditorProps) {
   const theme = useTheme();
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
+  const [mentionMenuOpen, setMentionMenuOpen] = useState(false);
 
   const handleChange = useCallback(
     (editorState: EditorState) => {
@@ -363,6 +367,14 @@ export function Editor(props: EditorProps) {
   const handleClick = useCallback(() => {
     editor.focus();
   }, [editor]);
+
+  const handleMentionsMenuOpen = useCallback(() => {
+    setMentionMenuOpen(true);
+  }, []);
+
+  const handleMentionsMenuClose = useCallback(() => {
+    setMentionMenuOpen(false);
+  }, []);
 
   return (
     <div style={{ margin: "0 1px" }}>
@@ -404,7 +416,7 @@ export function Editor(props: EditorProps) {
         <HistoryPlugin />
         <AutoFocusPlugin defaultSelection="rootEnd" />
         <ZeroWidthPlugin />
-        <SingleLinePlugin onEnter={onEnter} />
+        <SingleLinePlugin onEnter={onEnter} mentionMenuOpen={mentionMenuOpen} />
         <BeautifulMentionsPlugin
           items={items}
           menuComponent={MenuComponent}
@@ -413,6 +425,8 @@ export function Editor(props: EditorProps) {
           insertOnBlur
           allowSpaces={false}
           menuAnchorClassName={menuAnchorStyle}
+          onMenuOpen={handleMentionsMenuOpen}
+          onMenuClose={handleMentionsMenuClose}
         />
       </Fieldset>
     </div>

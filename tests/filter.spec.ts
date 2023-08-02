@@ -14,7 +14,7 @@ test.describe("Search", () => {
     page,
   }) => {
     await expect(
-      page.getByRole("search", { name: "Search for tasks" })
+      page.getByRole("search", { name: "Search for tasks" }),
     ).not.toBeVisible();
   });
 
@@ -42,15 +42,15 @@ test.describe("Search", () => {
     test.skip(!!isMobile, "desktop only");
     await page.setViewportSize({ width: 600, height: 1080 });
     await expect(
-      page.getByRole("search", { name: "Search for tasks" })
+      page.getByRole("search", { name: "Search for tasks" }),
     ).not.toBeFocused();
     await page.keyboard.press("f");
     await expect(
-      page.getByRole("search", { name: "Search for tasks" })
+      page.getByRole("search", { name: "Search for tasks" }),
     ).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(
-      page.getByRole("search", { name: "Search for tasks" })
+      page.getByRole("search", { name: "Search for tasks" }),
     ).not.toBeFocused();
   });
 
@@ -63,11 +63,11 @@ test.describe("Search", () => {
       .getByRole("search", { name: "Search for tasks" })
       .fill("invoice");
     await expect(
-      page.getByRole("search", { name: "Search for tasks" })
+      page.getByRole("search", { name: "Search for tasks" }),
     ).not.toBeEmpty();
     await page.getByRole("button", { name: "Clear search term" }).click();
     await expect(
-      page.getByRole("search", { name: "Search for tasks" })
+      page.getByRole("search", { name: "Search for tasks" }),
     ).toBeEmpty();
     await expect(page.getByTestId("task")).toHaveCount(8);
   });
@@ -82,11 +82,11 @@ test.describe("Search", () => {
       .getByRole("search", { name: "Search for tasks" })
       .fill("invoice");
     await expect(
-      page.getByRole("search", { name: "Search for tasks" })
+      page.getByRole("search", { name: "Search for tasks" }),
     ).not.toBeEmpty();
     await page.getByRole("button", { name: "Clear search term" }).click();
     await expect(
-      page.getByRole("search", { name: "Search for tasks" })
+      page.getByRole("search", { name: "Search for tasks" }),
     ).toBeEmpty();
     await expect(page.getByTestId("task")).toHaveCount(8);
   });
@@ -144,11 +144,11 @@ test.describe("Filter", () => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await expect(
-      page.getByRole("button", { name: "Holiday is used 2 times" })
+      page.getByRole("button", { name: "Holiday is used 2 times" }),
     ).toBeVisible();
     await page.getByRole("checkbox", { name: "Hide completed tasks" }).click();
     await expect(
-      page.getByRole("button", { name: "Holiday is used 1 times" })
+      page.getByRole("button", { name: "Holiday is used 1 times" }),
     ).toBeVisible();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
@@ -158,13 +158,13 @@ test.describe("Filter", () => {
     await page.locator('[aria-label="Sort tasks"]').click();
     await page.locator('text="Priority"').click();
     await expect(
-      page.locator('[aria-label="Task group"] >> text="A"')
+      page.locator('[aria-label="Task group"] >> text="A"'),
     ).toHaveCount(1);
     await expect(
-      page.locator('[aria-label="Task group"] >> text="B"')
+      page.locator('[aria-label="Task group"] >> text="B"'),
     ).toHaveCount(1);
     await expect(
-      page.locator('[aria-label="Task group"] >> text="Without priority"')
+      page.locator('[aria-label="Task group"] >> text="Without priority"'),
     ).toHaveCount(1);
   });
 

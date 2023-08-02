@@ -99,7 +99,7 @@ const TaskGrid = (props: TaskGridProps) => {
       ? 4
       : 6;
   const {
-    openMentionsMenu,
+    openMentionMenu,
     removeMentions,
     insertMention,
     renameMentions,
@@ -180,7 +180,7 @@ const TaskGrid = (props: TaskGridProps) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => openMentionsMenu({ trigger: "@" })}
+                onClick={() => openMentionMenu({ trigger: "@" })}
               >
                 {t("@Context")}
               </Button>
@@ -189,7 +189,7 @@ const TaskGrid = (props: TaskGridProps) => {
                 variant="outlined"
                 color="primary"
                 size="large"
-                onClick={() => openMentionsMenu({ trigger: "+" })}
+                onClick={() => openMentionMenu({ trigger: "+" })}
               >
                 {t("+Project")}
               </Button>

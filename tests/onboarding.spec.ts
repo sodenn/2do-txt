@@ -17,7 +17,7 @@ test.describe("New file", () => {
     await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor
     await expect(
-      page.getByRole("textbox", { name: "Text editor" })
+      page.getByRole("textbox", { name: "Text editor" }),
     ).toBeFocused();
   });
 });
@@ -37,7 +37,7 @@ test.describe("File import", () => {
   test("should allow me to import files", async ({ page }) => {
     const content = readFileSync("public/todo.txt");
     await expect(
-      page.getByRole("button", { name: "Import todo.txt" })
+      page.getByRole("button", { name: "Import todo.txt" }),
     ).toBeVisible();
 
     await page.setInputFiles('[data-testid="file-picker"]', {
@@ -46,7 +46,7 @@ test.describe("File import", () => {
       buffer: Buffer.from(content),
     });
     await expect(page.getByRole("button", { name: "File menu" })).toHaveText(
-      "todo1.txt"
+      "todo1.txt",
     );
 
     await page.setInputFiles('[data-testid="file-picker"]', {
@@ -55,7 +55,7 @@ test.describe("File import", () => {
       buffer: Buffer.from(content),
     });
     await expect(page.getByRole("button", { name: "File menu" })).toHaveText(
-      "todo2.txt"
+      "todo2.txt",
     );
 
     await page.getByRole("button", { name: "File menu" }).click();
