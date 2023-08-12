@@ -95,7 +95,7 @@ const capFilesystem: Filesystem = {
       directory: Directory.Documents,
       encoding: CapEncoding.UTF8,
       path,
-    }).then((result) => result.data);
+    }).then((result) => result.data as string);
   },
   async writeFile(options: WriteFileOptions) {
     return CapFilesystem.writeFile({

@@ -185,9 +185,9 @@ test.describe("Task dialog", () => {
       1,
     );
 
-    await expect(page.getByRole("menuitem", { name: `Add "pr"` })).toHaveCount(
-      1,
-    );
+    await expect(
+      page.getByRole("menuitem", { name: "Choose pr", exact: true }),
+    ).toHaveCount(1);
 
     await page.getByRole("textbox", { name: "Text editor" }).press("ArrowDown");
 
@@ -281,7 +281,7 @@ test.describe("Task dialog", () => {
       .type("Play soccer with friends @private");
 
     await expect(
-      page.getByRole("menuitem", { name: `Add "private"` }),
+      page.getByRole("menuitem", { name: "Choose private", exact: true }),
     ).toHaveCount(1);
 
     await expect(
@@ -423,7 +423,9 @@ test.describe("Task dialog", () => {
   test("should insert a new mention", async ({ page }) => {
     await page.getByRole("button", { name: "Add task" }).click();
     await page.getByRole("textbox", { name: "Text editor" }).type("@Test");
-    await page.getByRole("menuitem", { name: `Add "Test"` }).click();
+    await page
+      .getByRole("menuitem", { name: "Choose Test", exact: true })
+      .click();
     await expect(page.locator('[data-beautiful-mention="@Test"]')).toHaveCount(
       1,
     );
