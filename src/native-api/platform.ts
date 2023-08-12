@@ -3,6 +3,8 @@ import { Capacitor } from "@capacitor/core";
 
 type Platform = "desktop" | "web" | "ios" | "android";
 
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 function getPlatform(): Platform {
   if ((window as any).__TAURI__) {
     return "desktop";
@@ -75,6 +77,7 @@ async function removeAllBecomeActiveListeners(listeners: (() => unknown)[]) {
 }
 
 export {
+  isSafari,
   addBecomeActiveListener,
   getPlatform,
   hasTouchScreen,
