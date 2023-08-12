@@ -169,7 +169,7 @@ test.describe("Task dialog", () => {
     ).toHaveValue("A");
   });
 
-  test.only("should accept the entered text as a context after blur from input", async ({
+  test("should accept the entered text as a context after blur from input", async ({
     page,
     browserName,
   }) => {
@@ -271,7 +271,7 @@ test.describe("Task dialog", () => {
     );
   });
 
-  test.only("should respect upper case and lower case when adding new contexts", async ({
+  test("should respect upper case and lower case when adding new contexts", async ({
     page,
   }) => {
     await page.getByRole("button", { name: "Add task" }).click();
@@ -420,7 +420,7 @@ test.describe("Task dialog", () => {
     ).toHaveCount(1);
   });
 
-  test.only("should insert a new mention", async ({ page }) => {
+  test("should insert a new mention", async ({ page }) => {
     await page.getByRole("button", { name: "Add task" }).click();
     await page.getByRole("textbox", { name: "Text editor" }).type("@Test");
     await page
