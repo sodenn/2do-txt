@@ -218,9 +218,8 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         return;
       }
 
-      const { fileName: _fileName } = await getUniqueFilePath(
-        defaultTodoFilePath,
-      );
+      const { fileName: _fileName } =
+        await getUniqueFilePath(defaultTodoFilePath);
       setFileName(_fileName);
 
       if (cloudStorages.length > 0) {
