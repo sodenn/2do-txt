@@ -9,7 +9,6 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
-  Fade,
   MenuItem,
   MenuList,
   PaletteMode,
@@ -266,15 +265,13 @@ function setEditorState(initialValue: string, triggers: string[]) {
 
 const MenuComponent = forwardRef<HTMLUListElement, BeautifulMentionsMenuProps>(
   (props, ref) => {
-    const { open, loading, children, ...other } = props;
+    const { loading, children, ...other } = props;
     return (
-      <Fade appear in={open}>
-        <Paper elevation={2}>
-          <MenuList ref={ref} sx={{ mt: "24px" }} {...other}>
-            {children}
-          </MenuList>
-        </Paper>
-      </Fade>
+      <Paper elevation={2}>
+        <MenuList ref={ref} sx={{ mt: "24px" }} {...other}>
+          {children}
+        </MenuList>
+      </Paper>
     );
   },
 );
@@ -282,8 +279,8 @@ const MenuComponent = forwardRef<HTMLUListElement, BeautifulMentionsMenuProps>(
 const MenuItemComponent = forwardRef<
   HTMLLIElement,
   BeautifulMentionsMenuItemProps
->((props, ref) => {
-  return <MenuItem ref={ref} {...props} />;
+>(({ itemValue, ...other }, ref) => {
+  return <MenuItem ref={ref} {...other} />;
 });
 
 const Legend = styled("legend")`
