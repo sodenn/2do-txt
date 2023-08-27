@@ -33,6 +33,7 @@ const FullScreenDialog = ({ children, ...rest }: DialogProps) => {
         fullScreen
         TransitionComponent={Transition}
         PaperComponent={PaperComponent}
+        hideBackdrop={true}
         {...rest}
       >
         {children}
