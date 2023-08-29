@@ -8,14 +8,14 @@ import {
 } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import useFilterStore, { FilterType, SortKey } from "../stores/filter-store";
-import useSettingsStore from "../stores/settings-store";
-import { useHotkeys } from "../utils/useHotkeys";
-import useTask from "../utils/useTask";
-import ChipList from "./ChipList";
-import Heading from "./Heading";
+import useFilterStore, { FilterType, SortKey } from "@/stores/filter-store";
+import useSettingsStore from "@/stores/settings-store";
+import { useHotkeys } from "@/utils/useHotkeys";
+import useTask from "@/utils/useTask";
+import ChipList from "@/components/ChipList";
+import Heading from "@/components/Heading";
 
-const Filter = () => {
+export default function Filter() {
   const { t } = useTranslation();
   const { taskLists, activeTaskList, ...rest } = useTask();
   const {
@@ -40,15 +40,11 @@ const Filter = () => {
     setSearchTerm,
   } = useFilterStore();
   const taskView = useSettingsStore((state) => state.taskView);
-
   const attributes = activeTaskList ? activeTaskList : rest;
-
   const { priorities, projects, contexts, tags } = hideCompletedTasks
     ? attributes.incomplete
     : attributes;
-
   const showSortBy = taskLists.some((list) => list.items.length > 0);
-
   const hotkeys = useMemo(
     () => ({
       x: () => {
@@ -188,6 +184,4 @@ const Filter = () => {
       </Box>
     </Stack>
   );
-};
-
-export default Filter;
+}

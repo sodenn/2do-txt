@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { useStore as useZustandStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { Platform, getPlatform } from "../native-api/platform";
+import { Platform, getPlatform } from "@/native-api/platform";
 
 export interface PlatformStoreData {
   platform: Platform;
@@ -9,9 +9,11 @@ export interface PlatformStoreData {
 
 type PlatformStoreInterface = PlatformStoreData;
 
-const getDefaultInitialState = (): PlatformStoreData => ({
-  platform: "web",
-});
+function getDefaultInitialState(): PlatformStoreData {
+  return {
+    platform: "android",
+  };
+}
 
 export type PlatformStoreType = ReturnType<typeof initializePlatformStore>;
 
@@ -25,7 +27,7 @@ export async function platformLoader(): Promise<PlatformStoreData> {
 }
 
 export function initializePlatformStore(
-  preloadedState: Partial<PlatformStoreInterface> = {},
+  preloadedState: Partial<PlatformStoreInterface> = {}
 ) {
   return createStore<PlatformStoreInterface>(() => ({
     ...getDefaultInitialState(),
@@ -34,7 +36,7 @@ export function initializePlatformStore(
 }
 
 export default function usePlatformStore<T>(
-  selector: (state: PlatformStoreInterface) => T,
+  selector: (state: PlatformStoreInterface) => T
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

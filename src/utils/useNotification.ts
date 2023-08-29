@@ -7,9 +7,9 @@ import {
   isNotificationPermissionGranted,
   requestNotificationPermission,
   shouldNotificationsBeRescheduled,
-} from "../native-api/notification";
+} from "@/native-api/notification";
 
-function useNotification() {
+export default function useNotification() {
   const { t } = useTranslation();
 
   const scheduleNotifications = useCallback(
@@ -28,7 +28,7 @@ function useNotification() {
 
       return _scheduleNotifications(opt);
     },
-    [t],
+    [t]
   );
 
   return {
@@ -39,5 +39,3 @@ function useNotification() {
     scheduleNotifications,
   };
 }
-
-export default useNotification;

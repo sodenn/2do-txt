@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import {
   addNetworkStatusChangeListener,
   removeAllNetworkStatusChangeListeners,
-} from "../native-api/network";
-import { useCloudStorage } from "./CloudStorage";
-import useNetwork from "./useNetwork";
+} from "@/native-api/network";
+import { useCloudStorage } from "@/utils/CloudStorage";
+import useNetwork from "@/utils/useNetwork";
 
 export function useNetworkEffect() {
   const { cloudStorages } = useCloudStorage();

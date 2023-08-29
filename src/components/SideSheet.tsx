@@ -11,12 +11,12 @@ import {
 } from "@mui/material";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import usePlatformStore from "../stores/platform-store";
-import useScrollingStore from "../stores/scrolling-store";
-import useSideSheetStore from "../stores/side-sheet-store";
-import useTask from "../utils/useTask";
-import Filter from "./Filter";
-import Settings from "./Settings";
+import usePlatformStore from "@/stores/platform-store";
+import useScrollingStore from "@/stores/scrolling-store";
+import useSideSheetStore from "@/stores/side-sheet-store";
+import useTask from "@/utils/useTask";
+import Filter from "@/components/Filter";
+import Settings from "@/components/Settings";
 
 const drawerWidth = 320;
 
@@ -101,7 +101,7 @@ export function MainContainer({ children }: PropsWithChildren) {
   );
 }
 
-const SideSheet = () => {
+export default function SideSheet() {
   const { t } = useTranslation();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("lg"));
@@ -210,6 +210,4 @@ const SideSheet = () => {
       </TabContext>
     </SwipeableDrawer>
   );
-};
-
-export default SideSheet;
+}

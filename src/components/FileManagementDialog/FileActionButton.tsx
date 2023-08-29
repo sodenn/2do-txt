@@ -4,18 +4,18 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, IconProps, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import React, { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useCloudFileDialogStore from "../../stores/cloud-file-dialog-store";
-import useFileCreateDialogStore from "../../stores/file-create-dialog-store";
-import useFileManagementDialogStore from "../../stores/file-management-dialog-store";
-import usePlatformStore from "../../stores/platform-store";
+import useCloudFileDialogStore from "@/stores/cloud-file-dialog-store";
+import useFileCreateDialogStore from "@/stores/file-create-dialog-store";
+import useFileManagementDialogStore from "@/stores/file-management-dialog-store";
+import usePlatformStore from "@/stores/platform-store";
 import {
   Provider,
   cloudStorageIcons,
   useCloudStorage,
-} from "../../utils/CloudStorage";
-import useFilePicker from "../../utils/useFilePicker";
+} from "@/utils/CloudStorage";
+import useFilePicker from "@/utils/useFilePicker";
 
-const FileActionButton = () => {
+export default function FileActionButton() {
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
   const { openFileDialog } = useFilePicker();
@@ -63,6 +63,17 @@ const FileActionButton = () => {
         })
       : icon;
   };
+
+  if (cloudStorages.length === 0) {
+    return (
+      <>
+        <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
+        <Button onClick={handleOpenFile}>
+          {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
+        </Button>
+      </>
+    );
+  }
 
   return (
     <>
@@ -113,6 +124,4 @@ const FileActionButton = () => {
       </Menu>
     </>
   );
-};
-
-export default FileActionButton;
+}

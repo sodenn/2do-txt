@@ -24,10 +24,10 @@ import {
 import { format } from "date-fns";
 import { KeyboardEvent, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import useSettingsStore from "../stores/settings-store";
-import { formatLocaleDate } from "../utils/date";
-import { TimelineTask } from "../utils/task-list";
-import TaskBody from "./TaskBody";
+import useSettingsStore from "@/stores/settings-store";
+import { formatLocaleDate } from "@/utils/date";
+import { TimelineTask } from "@/utils/task-list";
+import TaskBody from "@/components/TaskBody";
 
 const locales = {
   de: "d. LLL.",
@@ -299,7 +299,7 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
         </TimelineContent>
       </TimelineItem>
     );
-  },
+  }
 );
 
 export default TaskTimelineItem;

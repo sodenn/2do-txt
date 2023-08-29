@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Task } from "../utils/task";
+import { Task } from "@/utils/task";
 
 interface TaskDialogStoreInterface {
   open: boolean;

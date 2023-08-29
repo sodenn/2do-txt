@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { arrayMove } from "./array";
+import { arrayMove } from "@/utils/array";
 import {
   TaskList,
   TaskListFilter,
@@ -8,8 +8,8 @@ import {
   getCommonTaskListAttributes,
   parseTaskList,
   sortByOriginalOrder,
-} from "./task-list";
-import { defaultTodoFilePath } from "./todo-files";
+} from "@/utils/task-list";
+import { defaultTodoFilePath } from "@/utils/todo-files";
 
 describe("task-list", () => {
   it("should group by context", async () => {

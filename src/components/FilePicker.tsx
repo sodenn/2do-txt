@@ -10,10 +10,10 @@ import {
 } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
-import useFilterStore from "../stores/filter-store";
-import usePlatformStore from "../stores/platform-store";
-import useFilePicker from "../utils/useFilePicker";
-import useTask from "../utils/useTask";
+import useFilterStore from "@/stores/filter-store";
+import usePlatformStore from "@/stores/platform-store";
+import useFilePicker from "@/utils/useFilePicker";
+import useTask from "@/utils/useTask";
 
 const Root = styled("div")({
   height: "100%",
@@ -41,17 +41,15 @@ const StyledPaper = styled(Paper)({
   justifyContent: "center",
 });
 
-const FilePicker = ({ children }: PropsWithChildren) => {
+export default function FilePicker({ children }: PropsWithChildren) {
   const platform = usePlatformStore((state) => state.platform);
-
   if (platform === "desktop") {
     return <DesktopFilePicker>{children}</DesktopFilePicker>;
   }
-
   return <WebFilePicker>{children}</WebFilePicker>;
-};
+}
 
-const WebFilePicker = ({ children }: PropsWithChildren) => {
+function WebFilePicker({ children }: PropsWithChildren) {
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
   const { setFileInput } = useFilePicker();
@@ -167,9 +165,9 @@ const WebFilePicker = ({ children }: PropsWithChildren) => {
       </Root>
     </>
   );
-};
+}
 
-const DesktopFilePicker = ({ children }: PropsWithChildren) => {
+function DesktopFilePicker({ children }: PropsWithChildren) {
   const { t } = useTranslation();
   const [isDragActive, setIsDragActive] = useState(false);
   const { openDesktopFile } = useFilePicker();
@@ -206,6 +204,4 @@ const DesktopFilePicker = ({ children }: PropsWithChildren) => {
       {children}
     </Root>
   );
-};
-
-export default FilePicker;
+}

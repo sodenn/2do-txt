@@ -1,5 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { createNextRecurringTask, parseTask, transformPriority } from "./task";
+import {
+  createNextRecurringTask,
+  parseTask,
+  transformPriority,
+} from "@/utils/task";
 
 describe("task priority", () => {
   it("should remove the priority of a completed task", async () => {
@@ -75,7 +79,7 @@ describe("recurring tasks", () => {
     const recurringTask = createNextRecurringTask(task, true);
     expect(recurringTask).toBeDefined();
     expect(recurringTask!.raw).toBe(
-      "2022-06-01 This is a test rec:1m due:2022-07-01",
+      "2022-06-01 This is a test rec:1m due:2022-07-01"
     );
   });
 
@@ -84,7 +88,7 @@ describe("recurring tasks", () => {
     const recurringTask = createNextRecurringTask(task, true);
     expect(recurringTask).toBeDefined();
     expect(recurringTask!.raw).toBe(
-      "2022-06-01 This is a test rec:+10m due:2023-03-20",
+      "2022-06-01 This is a test rec:+10m due:2023-03-20"
     );
   });
 
@@ -93,18 +97,18 @@ describe("recurring tasks", () => {
     const recurringTask = createNextRecurringTask(task, true);
     expect(recurringTask).toBeDefined();
     expect(recurringTask!.raw).toBe(
-      "2022-06-01 This is a test rec:1w due:2022-06-08",
+      "2022-06-01 This is a test rec:1w due:2022-06-08"
     );
   });
 
   it("should create next recurring task with context", async () => {
     const task = parseTask(
-      "2022-05-01 This is a test rec:1w due:2022-05-20 @Test",
+      "2022-05-01 This is a test rec:1w due:2022-05-20 @Test"
     );
     const recurringTask = createNextRecurringTask(task, false);
     expect(recurringTask).toBeDefined();
     expect(recurringTask!.raw).toBe(
-      "This is a test rec:1w due:2022-06-08 @Test",
+      "This is a test rec:1w due:2022-06-08 @Test"
     );
   });
 

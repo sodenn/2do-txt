@@ -8,14 +8,19 @@ import {
 } from "date-fns";
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import PriorityBox from "../components/PriorityBox";
-import TagBox from "../components/TagBox";
-import useFilterStore from "../stores/filter-store";
+import PriorityBox from "@/components/PriorityBox";
+import TagBox from "@/components/TagBox";
+import useFilterStore from "@/stores/filter-store";
 import useSettingsStore, {
   PriorityTransformation,
-} from "../stores/settings-store";
-import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
-import { generateId } from "./uuid";
+} from "@/stores/settings-store";
+import {
+  formatDate,
+  formatLocaleDate,
+  parseDate,
+  todayDate,
+} from "@/utils/date";
+import { generateId } from "@/utils/uuid";
 
 type Priority = "A" | "B" | "C" | "D" | string;
 
@@ -137,7 +142,7 @@ export function parseTask(text: string, order = -1) {
 }
 
 function parseTaskBody(
-  body: string,
+  body: string
 ): Pick<Task, "contexts" | "projects" | "tags" | "dueDate"> {
   const tokens = body
     .trim()
@@ -271,7 +276,7 @@ export function useFormatBody() {
 
 export function createNextRecurringTask(
   task: Task,
-  createCreationDate: boolean,
+  createCreationDate: boolean
 ) {
   const recMatch = getRecMatch(task.body);
 
@@ -300,7 +305,7 @@ export function createNextRecurringTask(
   const newDueDate = addToDate(
     strict ? oldDueDate : oldCompletionDate,
     number,
-    unit,
+    unit
   );
 
   const recurringTask = parseTask(stringifyTask(task));
@@ -315,7 +320,7 @@ export function createNextRecurringTask(
   recurringTask.body = dueDateMatch
     ? recurringTask.body.replace(
         dueDateMatch[0].trim(),
-        `due:${newDueDateString}`,
+        `due:${newDueDateString}`
       )
     : `${recurringTask.body} due:${newDueDateString}`;
 
@@ -340,7 +345,7 @@ function addToDate(date: Date, amount: number, unit: string) {
 
 export function transformPriority(
   task: Task,
-  transformation: PriorityTransformation,
+  transformation: PriorityTransformation
 ) {
   if (task.completed) {
     if (transformation === "remove") {

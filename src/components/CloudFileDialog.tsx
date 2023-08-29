@@ -23,12 +23,12 @@ import {
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { getDirname, join, selectFolder } from "../native-api/filesystem";
-import useCloudFileDialogStore from "../stores/cloud-file-dialog-store";
-import useFileCreateDialogStore from "../stores/file-create-dialog-store";
-import useFilterStore from "../stores/filter-store";
-import usePlatformStore from "../stores/platform-store";
-import useSettingsStore from "../stores/settings-store";
+import { getDirname, join, selectFolder } from "@/native-api/filesystem";
+import useCloudFileDialogStore from "@/stores/cloud-file-dialog-store";
+import useFileCreateDialogStore from "@/stores/file-create-dialog-store";
+import useFilterStore from "@/stores/filter-store";
+import usePlatformStore from "@/stores/platform-store";
+import useSettingsStore from "@/stores/settings-store";
 import {
   CloudDirectory,
   CloudFile,
@@ -38,12 +38,14 @@ import {
   WithDirectoryType,
   WithFileType,
   useCloudStorage,
-} from "../utils/CloudStorage";
-import { getDoneFilePath } from "../utils/todo-files";
-import useTask from "../utils/useTask";
-import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
-import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
-import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
+} from "@/utils/CloudStorage";
+import { getDoneFilePath } from "@/utils/todo-files";
+import useTask from "@/utils/useTask";
+import {
+  FullScreenDialog,
+  FullScreenDialogContent,
+  FullScreenDialogTitle,
+} from "@/components/FullScreenDialog";
 
 interface CloudFileDialogContentProps {
   provider?: Provider;
@@ -67,7 +69,7 @@ interface CloudFolderButtonProps {
   onClick: () => void;
 }
 
-const CloudFileDialog = () => {
+export default function CloudFileDialog() {
   const { t } = useTranslation();
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
@@ -238,9 +240,9 @@ const CloudFileDialog = () => {
       </DialogActions>
     </Dialog>
   );
-};
+}
 
-const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
+function CloudFileDialogContent(props: CloudFileDialogContentProps) {
   const { provider, onSelect, onFilesChange, onClose } = props;
   const { t } = useTranslation();
   const { taskLists } = useTask();
@@ -406,9 +408,9 @@ const CloudFileDialogContent = (props: CloudFileDialogContentProps) => {
       )}
     </>
   );
-};
+}
 
-const CloudFileButton = (props: CloudFileButtonProps) => {
+function CloudFileButton(props: CloudFileButtonProps) {
   const { cloudFile, cloudFileRefs, selectedFile, disabled, onClick } = props;
 
   const disableItem = (cloudFile: CloudFile) => {
@@ -428,9 +430,9 @@ const CloudFileButton = (props: CloudFileButtonProps) => {
       {disableItem(cloudFile) && <SyncOutlinedIcon color="disabled" />}
     </ListItemButton>
   );
-};
+}
 
-const CloudFolderButton = (props: CloudFolderButtonProps) => {
+function CloudFolderButton(props: CloudFolderButtonProps) {
   const { cloudDirectory, loading, disabled, onClick } = props;
 
   return (
@@ -449,6 +451,4 @@ const CloudFolderButton = (props: CloudFolderButtonProps) => {
       )}
     </ListItemButton>
   );
-};
-
-export default CloudFileDialog;
+}

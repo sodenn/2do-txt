@@ -6,13 +6,13 @@ const Root = styled(Typography)({
   textAlign: "left",
 });
 
-const StartEllipsis = (props: PropsWithChildren<TypographyProps>) => {
+export default function StartEllipsis(
+  props: PropsWithChildren<TypographyProps>,
+) {
   const { children, ...rest } = props;
   return (
     <Root noWrap {...rest}>
       <span style={{ unicodeBidi: "plaintext" }}>{children}</span>
     </Root>
   );
-};
-
-export default StartEllipsis;
+}

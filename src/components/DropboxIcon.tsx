@@ -2,7 +2,7 @@ import { SvgIcon, SvgIconProps } from "@mui/material";
 
 // Source: https://www.dropbox.com/sh/42f8d4kq6yt5lte/AACqjH2o8fnQQ8pV1D70np_9a/Glyph/Dropbox/SVG?dl=0&preview=DropboxGlyph_Blue.svg&subfolder_nav_tracking=1
 
-const DropboxIcon = (props: SvgIconProps) => {
+export default function DropboxIcon(props: SvgIconProps) {
   return (
     <SvgIcon {...props} viewBox="0 0 235.45 200">
       <path
@@ -11,6 +11,4 @@ const DropboxIcon = (props: SvgIconProps) => {
       />
     </SvgIcon>
   );
-};
-
-export default DropboxIcon;
+}

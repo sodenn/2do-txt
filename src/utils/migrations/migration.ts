@@ -1,5 +1,5 @@
-import { migrate1 } from "./migration1";
-import { migrate2 } from "./migration2";
+import { migrate1 } from "@/utils/migrations/migration1";
+import { migrate2 } from "@/utils/migrations/migration2";
 
 export async function migrate() {
   await migrate1().catch((error) => {

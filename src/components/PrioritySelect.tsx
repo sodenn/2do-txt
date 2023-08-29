@@ -4,12 +4,14 @@ import {
   InputLabel,
   MenuItem,
   OutlinedInput,
+  Paper,
+  PaperProps,
   Select,
   TextField,
 } from "@mui/material";
-import { FC, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { hasTouchScreen } from "../native-api/platform";
+import { hasTouchScreen } from "@/native-api/platform";
 
 const options = [
   "A",
@@ -57,7 +59,11 @@ interface PrioritySelectProps {
   onChange?: (priority: any) => void;
 }
 
-const PrioritySelect: FC<PrioritySelectProps> = (props) => {
+function PaperComponent(props: PaperProps) {
+  return <Paper {...props} elevation={8} />;
+}
+
+export default function PrioritySelect(props: PrioritySelectProps) {
   const { value: initialValue, onChange } = props;
   const { t } = useTranslation();
   const [value, setValue] = useState(initialValue ?? null);
@@ -77,6 +83,7 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
     <>
       {!touchScreen && (
         <Autocomplete
+          PaperComponent={PaperComponent}
           autoSelect={autoSelect}
           autoHighlight={autoSelect}
           value={value}
@@ -121,6 +128,4 @@ const PrioritySelect: FC<PrioritySelectProps> = (props) => {
       )}
     </>
   );
-};
-
-export default PrioritySelect;
+}

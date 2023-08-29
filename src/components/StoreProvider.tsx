@@ -5,52 +5,52 @@ import {
   CloudStoreType,
   cloudLoader,
   initializeCloudStore,
-} from "../stores/cloud-store";
+} from "@/stores/cloud-store";
 import {
   FilterStoreData,
   FilterStoreProvider,
   FilterStoreType,
   filterLoader,
   initializeFilterStore,
-} from "../stores/filter-store";
+} from "@/stores/filter-store";
 import {
   NetworkStoreData,
   NetworkStoreProvider,
   NetworkStoreType,
   initializeNetworkStore,
   networkLoader,
-} from "../stores/network-store";
+} from "@/stores/network-store";
 import {
   PlatformStoreData,
   PlatformStoreProvider,
   PlatformStoreType,
   initializePlatformStore,
   platformLoader,
-} from "../stores/platform-store";
+} from "@/stores/platform-store";
 import {
   SettingsStoreData,
   SettingsStoreProvider,
   SettingsStoreType,
   initializeSettingsStore,
   settingsLoader,
-} from "../stores/settings-store";
+} from "@/stores/settings-store";
 import {
   TaskStoreData,
   TaskStoreProvider,
   TaskStoreType,
   initializeTaskStore,
   taskLoader,
-} from "../stores/task-state";
+} from "@/stores/task-state";
 import {
   ThemeStoreData,
   ThemeStoreProvider,
   ThemeStoreType,
   initializeThemeStore,
   themeLoader,
-} from "../stores/theme-store";
-import { migrate } from "../utils/migrations";
+} from "@/stores/theme-store";
+import { migrate } from "@/utils/migrations";
 
-export interface AppLoaderData {
+export interface LoaderData {
   filter: FilterStoreData;
   settings: SettingsStoreData;
   platform: PlatformStoreData;
@@ -60,7 +60,7 @@ export interface AppLoaderData {
   network: NetworkStoreData;
 }
 
-export async function appLoader(): Promise<AppLoaderData> {
+export async function loader(): Promise<LoaderData> {
   await migrate();
   const [filter, settings, platform, theme, task, cloud, network] =
     await Promise.all([
@@ -75,10 +75,10 @@ export async function appLoader(): Promise<AppLoaderData> {
   return { filter, settings, platform, theme, task, cloud, network };
 }
 
-const AppStoreProvider = ({
+export default function StoreProvider({
   children,
   ...props
-}: PropsWithChildren<AppLoaderData>) => {
+}: PropsWithChildren<LoaderData>) {
   const cloudStoreRef = useRef<CloudStoreType>();
   const filterStoreRef = useRef<FilterStoreType>();
   const networkStoreRef = useRef<NetworkStoreType>();
@@ -126,6 +126,4 @@ const AppStoreProvider = ({
       </FilterStoreProvider>
     </CloudStoreProvider>
   );
-};
-
-export default AppStoreProvider;
+}

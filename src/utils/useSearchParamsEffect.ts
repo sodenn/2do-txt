@@ -4,9 +4,9 @@ import { useSearchParams } from "react-router-dom";
 import useFilterStore, {
   FilterStoreData,
   SearchParams,
-} from "../stores/filter-store";
+} from "@/stores/filter-store";
 
-function useSearchParamsEffect() {
+export default function useSearchParamsEffect() {
   const [searchParams, setSearchParams] = useSearchParams();
   const filterStore = useFilterStore((state) => state);
 
@@ -44,12 +44,10 @@ function useSearchParamsEffect() {
         setSearchParams(params);
       }
     },
-    [searchParams, setSearchParams],
+    [searchParams, setSearchParams]
   );
 
   useEffect(() => {
     updateSearchParams(filterStore);
   }, [updateSearchParams, filterStore]);
 }
-
-export default useSearchParamsEffect;

@@ -1,19 +1,19 @@
 import { Box, Container, styled } from "@mui/material";
-import useScrollingStore from "../stores/scrolling-store";
-import ArchivedTasksDialog from "./ArchivedTasksDialog";
-import CloudFileDialog from "./CloudFileDialog";
-import ConfirmationDialog from "./ConfirmationDialog";
-import FileCreateDialog from "./FileCreateDialog";
-import FileManagementDialog from "./FileManagementDialog";
-import FilePicker from "./FilePicker";
-import Header from "./Header";
-import Onboarding from "./Onboarding";
-import PageEffect from "./PageEffect";
-import ShortcutsDialog from "./ShortcutsDialog";
-import SideSheet, { MainContainer } from "./SideSheet";
-import TaskDialog from "./TaskDialog";
-import TaskView from "./TaskView";
-import WebDAVDialog from "./WebDAVDialog";
+import useScrollingStore from "@/stores/scrolling-store";
+import ArchivedTasksDialog from "@/components/ArchivedTasksDialog";
+import CloudFileDialog from "@/components/CloudFileDialog";
+import ConfirmationDialog from "@/components/ConfirmationDialog";
+import FileCreateDialog from "@/components/FileCreateDialog";
+import FileManagementDialog from "@/components/FileManagementDialog";
+import FilePicker from "@/components/FilePicker";
+import Header from "@/components/Header";
+import Onboarding from "@/components/Onboarding";
+import PageEffect from "@/components/PageEffect";
+import ShortcutsDialog from "@/components/ShortcutsDialog";
+import SideSheet, { MainContainer } from "@/components/SideSheet";
+import TaskDialog from "@/components/TaskDialog";
+import TaskView from "@/components/TaskView";
+import WebDAVDialog from "@/components/WebDAVDialog";
 
 const SafeAreaContainer = styled(Container)({
   paddingRight: "env(safe-area-inset-right)",
@@ -21,7 +21,7 @@ const SafeAreaContainer = styled(Container)({
   paddingBottom: "env(safe-area-inset-bottom)",
 });
 
-const Page = () => {
+export default function Page() {
   const top = useScrollingStore((state) => state.top);
   return (
     <FilePicker>
@@ -50,6 +50,4 @@ const Page = () => {
       <PageEffect />
     </FilePicker>
   );
-};
-
-export default Page;
+}

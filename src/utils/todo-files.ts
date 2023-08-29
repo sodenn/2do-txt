@@ -1,4 +1,4 @@
-import { getFilename, getFileNameWithoutExt } from "../native-api/filesystem";
+import { getFilename, getFileNameWithoutExt } from "@/native-api/filesystem";
 
 export const defaultTodoFilePath = "todo.txt";
 export const defaultDoneFilePath = "done.txt";
@@ -13,7 +13,7 @@ export function getDoneFilePath(todoFilePath: string) {
     ? todoFilePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath)
     : todoFilePath.replace(
         new RegExp(`${fileName}$`),
-        `${fileNameWithoutEnding}_${defaultDoneFilePath}`,
+        `${fileNameWithoutEnding}_${defaultDoneFilePath}`
       );
 }
 

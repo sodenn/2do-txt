@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { getPlatform } from "./platform";
+import { getPlatform } from "@/native-api/platform";
 
 interface OauthOptions {
   authUrl: string;
@@ -14,7 +14,7 @@ function mobileOauth(opt: OauthOptions) {
     const browser = cordova.InAppBrowser.open(
       authUrl,
       "_blank",
-      "location=yes",
+      "location=yes"
     );
 
     let isResolved = false;
@@ -60,7 +60,7 @@ async function desktopOauth(opt: OauthOptions) {
   }, {});
 }
 
-async function oauth(opt: OauthOptions) {
+export async function oauth(opt: OauthOptions) {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {
     return mobileOauth(opt);
@@ -70,5 +70,3 @@ async function oauth(opt: OauthOptions) {
   }
   throw new Error(`oauth: platform "${platform}" not supported`);
 }
-
-export { oauth };

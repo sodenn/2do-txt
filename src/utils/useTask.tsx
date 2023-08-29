@@ -5,7 +5,7 @@ import { isEqual, omit } from "lodash";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { promptForRating } from "../native-api/app-rate";
+import { promptForRating } from "@/native-api/app-rate";
 import {
   deleteFile,
   fileExists,
@@ -13,18 +13,18 @@ import {
   getFilename,
   getUri,
   writeFile,
-} from "../native-api/filesystem";
-import { setPreferencesItem } from "../native-api/preferences";
-import { share } from "../native-api/share";
-import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
-import useFilterStore from "../stores/filter-store";
-import usePlatformStore from "../stores/platform-store";
-import useSettingsStore from "../stores/settings-store";
-import useTasksStore, { taskLoader } from "../stores/task-state";
-import useNotification from "../utils/useNotification";
-import { todayDate } from "./date";
-import { hashCode } from "./hashcode";
-import { addTodoFilePath, removeTodoFilePath } from "./settings";
+} from "@/native-api/filesystem";
+import { setPreferencesItem } from "@/native-api/preferences";
+import { share } from "@/native-api/share";
+import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
+import useFilterStore from "@/stores/filter-store";
+import usePlatformStore from "@/stores/platform-store";
+import useSettingsStore from "@/stores/settings-store";
+import useTasksStore, { taskLoader } from "@/stores/task-state";
+import useNotification from "@/utils/useNotification";
+import { todayDate } from "@/utils/date";
+import { hashCode } from "@/utils/hashcode";
+import { addTodoFilePath, removeTodoFilePath } from "@/utils/settings";
 import {
   Task,
   TaskFormData,
@@ -32,17 +32,17 @@ import {
   createNextRecurringTask,
   parseTask,
   transformPriority,
-} from "./task";
+} from "@/utils/task";
 import {
   TaskList,
   parseTaskList as _parseTaskList,
   getCommonTaskListAttributes,
   stringifyTaskList,
   updateTaskListAttributes,
-} from "./task-list";
-import { getDoneFilePath } from "./todo-files";
-import useArchivedTask from "./useArchivedTask";
-import { generateId } from "./uuid";
+} from "@/utils/task-list";
+import { getDoneFilePath } from "@/utils/todo-files";
+import useArchivedTask from "@/utils/useArchivedTask";
+import { generateId } from "@/utils/uuid";
 
 type SaveTodoFile = {
   (filePath: string, text: string): Promise<TaskList>;
@@ -60,31 +60,31 @@ function areTaskListsEqual(a: TaskList[], b: TaskList[]) {
   return isEqual(taskListsWithoutId(a), taskListsWithoutId(b));
 }
 
-function useTask() {
+export default function useTask() {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const platform = usePlatformStore((state) => state.platform);
   const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog,
+    (state) => state.openConfirmationDialog
   );
   const showNotifications = useSettingsStore(
-    (state) => state.showNotifications,
+    (state) => state.showNotifications
   );
   const createCreationDate = useSettingsStore(
-    (state) => state.createCreationDate,
+    (state) => state.createCreationDate
   );
   const createCompletionDate = useSettingsStore(
-    (state) => state.createCompletionDate,
+    (state) => state.createCompletionDate
   );
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const priorityTransformation = useSettingsStore(
-    (state) => state.priorityTransformation,
+    (state) => state.priorityTransformation
   );
   const activeTaskListPath = useFilterStore(
-    (state) => state.activeTaskListPath,
+    (state) => state.activeTaskListPath
   );
   const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath,
+    (state) => state.setActiveTaskListPath
   );
   const taskLists = useTasksStore((state) => state.taskLists);
   const todoFiles = useTasksStore((state) => state.todoFiles);
@@ -120,7 +120,7 @@ function useTask() {
       }
       return taskLists.find((list) => list.items.some((i) => i._id === taskId));
     },
-    [taskLists],
+    [taskLists]
   );
 
   const parseTaskList = useCallback((filePath: string, text: string) => {
@@ -140,7 +140,7 @@ function useTask() {
       addTaskList(taskList);
       return taskList;
     },
-    [addTaskList, parseTaskList],
+    [addTaskList, parseTaskList]
   );
 
   const saveTodoFile = useCallback<SaveTodoFile>(
@@ -167,7 +167,7 @@ function useTask() {
         return listOrPath;
       }
     },
-    [addTaskList, loadTodoFile],
+    [addTaskList, loadTodoFile]
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -193,7 +193,7 @@ function useTask() {
         },
       ]);
     },
-    [showNotifications, scheduleNotifications],
+    [showNotifications, scheduleNotifications]
   );
 
   const addTask = useCallback(
@@ -238,7 +238,7 @@ function useTask() {
 
       return saveTodoFile({ ...taskList, items: [...items, newTask] });
     },
-    [saveTodoFile, scheduleDueTaskNotification],
+    [saveTodoFile, scheduleDueTaskNotification]
   );
 
   const editTask = useCallback(
@@ -268,7 +268,7 @@ function useTask() {
       findTaskListByTaskId,
       saveTodoFile,
       scheduleDueTaskNotification,
-    ],
+    ]
   );
 
   const deleteTask = useCallback(
@@ -282,7 +282,7 @@ function useTask() {
       items.filter((t) => t._order > task._order).forEach((t) => t._order--);
       return saveTodoFile({ ...taskList, items });
     },
-    [cancelNotifications, findTaskListByTaskId, saveTodoFile],
+    [cancelNotifications, findTaskListByTaskId, saveTodoFile]
   );
 
   const completeTask = useCallback(
@@ -300,7 +300,7 @@ function useTask() {
         }
         const recurringTasks = createNextRecurringTask(
           task,
-          createCreationDate,
+          createCreationDate
         );
         if (recurringTasks) {
           const index = taskList.items.findIndex((i) => i._id === task._id);
@@ -337,17 +337,17 @@ function useTask() {
       createCreationDate,
       cancelNotifications,
       archiveTask,
-    ],
+    ]
   );
 
   const deleteTodoFile = useCallback(async (filePath: string) => {
     await deleteFile(filePath).catch(() =>
-      console.debug(`${filePath} does not exist`),
+      console.debug(`${filePath} does not exist`)
     );
     const doneFilePath = getDoneFilePath(filePath);
     if (doneFilePath) {
       await deleteFile(doneFilePath).catch(() =>
-        console.debug(`${doneFilePath} does not exist`),
+        console.debug(`${doneFilePath} does not exist`)
       );
     }
   }, []);
@@ -356,7 +356,7 @@ function useTask() {
     async (filePath: string) => {
       const taskList = taskLists.find((list) => list.filePath === filePath);
       taskList?.items.forEach((task) =>
-        cancelNotifications([hashCode(task.raw)]),
+        cancelNotifications([hashCode(task.raw)])
       );
 
       await removeTodoFilePath(filePath);
@@ -369,7 +369,7 @@ function useTask() {
       if (filePath === activeTaskListPath) {
         if (taskLists.length === 2) {
           const fallbackList = taskLists.find(
-            (list) => list.filePath !== activeTaskListPath,
+            (list) => list.filePath !== activeTaskListPath
           );
           if (fallbackList) {
             setActiveTaskListPath(fallbackList.filePath);
@@ -391,7 +391,7 @@ function useTask() {
       cancelNotifications,
       deleteTodoFile,
       setActiveTaskListPath,
-    ],
+    ]
   );
 
   const generateZipFile = useCallback(
@@ -418,7 +418,7 @@ function useTask() {
         };
       }
     },
-    [loadDoneFile],
+    [loadDoneFile]
   );
 
   const downloadTodoFile = useCallback(
@@ -439,7 +439,7 @@ function useTask() {
         }
       }
     },
-    [activeTaskList, generateZipFile],
+    [activeTaskList, generateZipFile]
   );
 
   const shareTodoFile = useCallback(async () => {
@@ -464,18 +464,18 @@ function useTask() {
     async (taskList: Task[]) => {
       taskList.forEach(scheduleDueTaskNotification);
     },
-    [scheduleDueTaskNotification],
+    [scheduleDueTaskNotification]
   );
 
   const reorderTaskList = useCallback(
     async (filePaths: string[]) => {
       await setPreferencesItem("todo-txt-paths", JSON.stringify(filePaths));
       const reorderedList = [...taskLists].sort(
-        (a, b) => filePaths.indexOf(a.filePath) - filePaths.indexOf(b.filePath),
+        (a, b) => filePaths.indexOf(a.filePath) - filePaths.indexOf(b.filePath)
       );
       setTaskLists(reorderedList);
     },
-    [setTaskLists, taskLists],
+    [setTaskLists, taskLists]
   );
 
   const createNewTodoFile = useCallback(
@@ -524,7 +524,7 @@ function useTask() {
         return saveFile(filePath, text);
       }
     },
-    [saveTodoFile, scheduleDueTaskNotifications, openConfirmationDialog, t],
+    [saveTodoFile, scheduleDueTaskNotifications, openConfirmationDialog, t]
   );
 
   const restoreTask = useCallback(
@@ -536,7 +536,7 @@ function useTask() {
 
       if (!taskList) {
         throw new Error(
-          `Cannot find task list by path "${filePathOrTaskList}"`,
+          `Cannot find task list by path "${filePathOrTaskList}"`
         );
       }
 
@@ -549,7 +549,7 @@ function useTask() {
         await saveTodoFile(newTaskList);
       }
     },
-    [_restoreTask, saveTodoFile, taskLists],
+    [_restoreTask, saveTodoFile, taskLists]
   );
 
   const archiveTasks = useCallback(async () => {
@@ -559,7 +559,7 @@ function useTask() {
         if (taskList) {
           return saveTodoFile(taskList);
         }
-      }),
+      })
     );
   }, [_archiveTasks, saveTodoFile, taskLists]);
 
@@ -570,7 +570,7 @@ function useTask() {
         if (taskList) {
           return saveTodoFile(taskList);
         }
-      }),
+      })
     );
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
@@ -581,7 +581,7 @@ function useTask() {
       });
       await closeTodoFile(filePath);
     },
-    [enqueueSnackbar, closeTodoFile, t],
+    [enqueueSnackbar, closeTodoFile, t]
   );
 
   const loadTodoFilesFromDisk = useCallback(async () => {
@@ -609,7 +609,7 @@ function useTask() {
     todoFiles.errors.forEach((err) => handleFileNotFound(err.filePath));
     shouldNotificationsBeRescheduled().then(() => {
       taskLists.forEach((taskList) =>
-        scheduleDueTaskNotifications(taskList.items),
+        scheduleDueTaskNotifications(taskList.items)
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -642,5 +642,3 @@ function useTask() {
     handleInit,
   };
 }
-
-export default useTask;

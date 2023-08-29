@@ -4,7 +4,7 @@ import { createStore } from "zustand/vanilla";
 import {
   getPreferencesItem,
   setPreferencesItem,
-} from "../native-api/preferences";
+} from "@/native-api/preferences";
 
 export type SortKey =
   | "priority"
@@ -53,17 +53,19 @@ interface FilterStoreInterface extends FilterStoreData {
   setActiveTaskListPath: (activeTaskListPath?: string) => void;
 }
 
-const getDefaultInitialState = (): FilterStoreData => ({
-  searchTerm: "",
-  sortBy: "",
-  filterType: "AND",
-  activePriorities: [],
-  activeProjects: [],
-  activeContexts: [],
-  activeTags: [],
-  hideCompletedTasks: false,
-  activeTaskListPath: undefined,
-});
+function getDefaultInitialState(): FilterStoreData {
+  return {
+    searchTerm: "",
+    sortBy: "",
+    filterType: "AND",
+    activePriorities: [],
+    activeProjects: [],
+    activeContexts: [],
+    activeTags: [],
+    hideCompletedTasks: false,
+    activeTaskListPath: undefined,
+  };
+}
 
 export type FilterStoreType = ReturnType<typeof initializeFilterStore>;
 
@@ -97,7 +99,7 @@ export async function filterLoader(): Promise<FilterStoreData> {
 }
 
 export function initializeFilterStore(
-  preloadedState: Partial<FilterStoreInterface> = {},
+  preloadedState: Partial<FilterStoreInterface> = {}
 ) {
   return createStore<FilterStoreInterface>((set) => ({
     ...getDefaultInitialState(),
@@ -153,7 +155,7 @@ export function initializeFilterStore(
 }
 
 export default function useFilterStore<T = FilterStoreInterface>(
-  selector: (state: FilterStoreInterface) => T = (state) => state as T,
+  selector: (state: FilterStoreInterface) => T = (state) => state as T
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

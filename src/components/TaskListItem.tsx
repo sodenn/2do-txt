@@ -1,9 +1,9 @@
 import { Checkbox, ListItemButton, Stack, styled } from "@mui/material";
 import { forwardRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Task } from "../utils/task";
-import TaskBody from "./TaskBody";
-import TaskListItemMenu from "./TaskListItemMenu";
+import { Task } from "@/utils/task";
+import TaskBody from "@/components/TaskBody";
+import TaskListItemMenu from "@/components/TaskListItemMenu";
 
 const TaskItemButton = styled(ListItemButton)(({ theme }) => ({
   [theme.breakpoints.up("sm")]: {
@@ -127,7 +127,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
         </TaskItemButton>
       </div>
     );
-  },
+  }
 );
 
 export default TaskListItem;

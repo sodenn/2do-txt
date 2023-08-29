@@ -1,5 +1,5 @@
 import { Box, BoxProps, styled } from "@mui/material";
-import TagBox from "./TagBox";
+import TagBox from "@/components/TagBox";
 
 interface PriorityBoxProps extends BoxProps {
   completed: boolean;
@@ -27,12 +27,12 @@ const PriorityBoxRoot = styled(SpanBox)(() => ({
   },
 }));
 
-const PriorityBox = ({
+export default function PriorityBox({
   children,
   chip,
   completed,
   ...rest
-}: PriorityBoxProps) => {
+}: PriorityBoxProps) {
   if (chip) {
     return (
       <TagBox
@@ -55,6 +55,4 @@ const PriorityBox = ({
       </PriorityBoxContent>
     </PriorityBoxRoot>
   );
-};
-
-export default PriorityBox;
+}

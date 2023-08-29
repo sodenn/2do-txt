@@ -8,12 +8,12 @@ interface HeadingProps extends PropsWithChildren {
   gutterBottom?: boolean;
 }
 
-const Heading = ({
+export default function Heading({
   disabled,
   helperText,
   gutterBottom,
   children,
-}: HeadingProps) => {
+}: HeadingProps) {
   return (
     <Stack
       spacing={1}
@@ -40,6 +40,4 @@ const Heading = ({
       )}
     </Stack>
   );
-};
-
-export default Heading;
+}

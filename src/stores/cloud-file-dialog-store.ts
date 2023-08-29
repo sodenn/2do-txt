@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Provider } from "../utils/CloudStorage";
+import { Provider } from "@/utils/CloudStorage";
 
 interface CloudFileDialogStoreInterface {
   open: boolean;
@@ -16,7 +16,7 @@ const useCloudFileDialogStore = create<CloudFileDialogStoreInterface>(
     openCloudFileDialog: (provider?: Provider) => set({ open: true, provider }),
     closeCloudFileDialog: () => set({ open: false }),
     cleanupCloudFileDialog: () => set({ open: false, provider: undefined }),
-  }),
+  })
 );
 
 export default useCloudFileDialogStore;

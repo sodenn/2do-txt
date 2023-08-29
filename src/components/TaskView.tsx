@@ -1,27 +1,27 @@
 import { Stack } from "@mui/material";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
-import useSettingsStore from "../stores/settings-store";
-import useTaskDialogStore from "../stores/task-dialog-store";
-import { Task } from "../utils/task";
+import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
+import useSettingsStore from "@/stores/settings-store";
+import useTaskDialogStore from "@/stores/task-dialog-store";
+import { Task } from "@/utils/task";
 import {
   TimelineTask,
   useTaskGroups,
   useTimelineTasks,
-} from "../utils/task-list";
-import { useHotkeys } from "../utils/useHotkeys";
-import useTask from "../utils/useTask";
-import TaskList from "./TaskList";
-import TaskTimeline from "./TaskTimeline";
+} from "@/utils/task-list";
+import { useHotkeys } from "@/utils/useHotkeys";
+import useTask from "@/utils/useTask";
+import TaskList from "@/components/TaskList";
+import TaskTimeline from "@/components/TaskTimeline";
 
-const TaskView = () => {
+export default function TaskView() {
   const { t } = useTranslation();
   const taskView = useSettingsStore((state) => state.taskView);
   const { taskLists, activeTaskList, deleteTask } = useTask();
   const _openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
   const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog,
+    (state) => state.openConfirmationDialog
   );
   const [focusedTaskId, setFocusedTaskId] = useState<string>();
   const listItemsRef = useRef<HTMLDivElement[]>([]);
@@ -31,7 +31,7 @@ const TaskView = () => {
     taskView === "timeline"
       ? timelineTasks
       : taskGroups.flatMap((i) =>
-          i.groups.reduce<Task[]>((prev, curr) => [...prev, ...curr.items], []),
+          i.groups.reduce<Task[]>((prev, curr) => [...prev, ...curr.items], [])
         );
 
   const focusNextListItem = useCallback(
@@ -42,7 +42,7 @@ const TaskView = () => {
       if (task) {
         index = tasks.indexOf(task);
         const notFocusablePredecessor = tasks.some(
-          (t, idx) => t._id === "-1" && idx < index,
+          (t, idx) => t._id === "-1" && idx < index
         );
         if (notFocusablePredecessor) {
           index = index - 1;
@@ -56,7 +56,7 @@ const TaskView = () => {
       }
       listItemsRef.current[index].focus();
     },
-    [focusedTaskId, tasks],
+    [focusedTaskId, tasks]
   );
 
   const openTaskDialog = useCallback(() => {
@@ -98,7 +98,7 @@ const TaskView = () => {
       e: openTaskDialog,
       d: openDeleteTaskDialog,
     }),
-    [focusNextListItem, openDeleteTaskDialog, openTaskDialog],
+    [focusNextListItem, openDeleteTaskDialog, openTaskDialog]
   );
 
   useHotkeys(hotkeys);
@@ -113,7 +113,7 @@ const TaskView = () => {
         <Stack spacing={1}>
           {taskGroups
             .filter((i) =>
-              activeTaskList ? i.filePath === activeTaskList.filePath : i,
+              activeTaskList ? i.filePath === activeTaskList.filePath : i
             )
             .map((i, idx) => (
               <TaskList
@@ -144,6 +144,4 @@ const TaskView = () => {
       )}
     </>
   );
-};
-
-export default TaskView;
+}

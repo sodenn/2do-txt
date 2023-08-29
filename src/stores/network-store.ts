@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { useStore as useZustandStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { isConnected } from "../native-api/network";
+import { isConnected } from "@/native-api/network";
 
 export interface NetworkStoreData {
   connected: boolean;
@@ -14,10 +14,12 @@ interface NetworkStoreInterface extends NetworkStoreData {
   setDisplayDate: (displayDate?: Date) => void;
 }
 
-const getDefaultInitialState = (): NetworkStoreData => ({
-  connected: true,
-  displayDate: undefined,
-});
+function getDefaultInitialState(): NetworkStoreData {
+  return {
+    connected: true,
+    displayDate: undefined,
+  };
+}
 
 export type NetworkStoreType = ReturnType<typeof initializeNetworkStore>;
 
@@ -31,7 +33,7 @@ export async function networkLoader(): Promise<NetworkStoreData> {
 }
 
 export function initializeNetworkStore(
-  preloadedState: Partial<NetworkStoreInterface> = {},
+  preloadedState: Partial<NetworkStoreInterface> = {}
 ) {
   return createStore<NetworkStoreInterface>((set) => ({
     ...getDefaultInitialState(),
@@ -42,7 +44,7 @@ export function initializeNetworkStore(
 }
 
 export default function useNetworkStore<T = NetworkStoreInterface>(
-  selector: (state: NetworkStoreInterface) => T = (state) => state as T,
+  selector: (state: NetworkStoreInterface) => T = (state) => state as T
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

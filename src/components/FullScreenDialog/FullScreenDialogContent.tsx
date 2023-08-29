@@ -4,7 +4,7 @@ import {
   addKeyboardDidHideListener,
   addKeyboardDidShowListener,
   removeAllKeyboardListeners,
-} from "../../native-api/keyboard";
+} from "@/native-api/keyboard";
 import { useFullScreenDialog } from "./FullScreenDialogProvider";
 
 const SafeArea = styled("div")({
@@ -17,7 +17,7 @@ interface FullScreenDialogContentProps extends PropsWithChildren {
   disableGutters?: boolean;
 }
 
-const FullScreenDialogContent = (props: FullScreenDialogContentProps) => {
+export function FullScreenDialogContent(props: FullScreenDialogContentProps) {
   const { children, disableGutters } = props;
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
   const { setDivider } = useFullScreenDialog();
@@ -60,6 +60,4 @@ const FullScreenDialogContent = (props: FullScreenDialogContentProps) => {
       <SafeArea>{children}</SafeArea>
     </Box>
   );
-};
-
-export default FullScreenDialogContent;
+}

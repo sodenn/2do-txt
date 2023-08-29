@@ -9,10 +9,10 @@ import {
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouteError } from "react-router-dom";
-import logo from "../images/logo.png";
-import { hideSplashScreen } from "../native-api/splash-screen";
+import logo from "@/images/logo.png";
+import { hideSplashScreen } from "@/native-api/splash-screen";
 
-function ErrorBoundary() {
+export default function ErrorBoundary() {
   const { t } = useTranslation();
   const error = useRouteError() as any;
   const message = error.message;
@@ -46,5 +46,3 @@ function ErrorBoundary() {
     </>
   );
 }
-
-export default ErrorBoundary;

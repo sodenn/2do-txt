@@ -3,22 +3,22 @@ import { isValid } from "date-fns";
 import { useBeautifulMentions } from "lexical-beautiful-mentions";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { hasTouchScreen } from "../native-api/platform";
-import usePlatformStore from "../stores/platform-store";
-import { formatDate, isDateEqual } from "../utils/date";
+import { hasTouchScreen } from "@/native-api/platform";
+import usePlatformStore from "@/stores/platform-store";
+import { formatDate, isDateEqual } from "@/utils/date";
 import {
   Task,
   getDueDateValue,
   getRecValue,
   parseTask,
   stringifyTask,
-} from "../utils/task";
-import { TaskList } from "../utils/task-list";
-import { Editor, EditorContext } from "./Editor";
-import FileSelect from "./FileSelect";
-import LocalizationDatePicker from "./LocalizationDatePicker";
-import PrioritySelect from "./PrioritySelect";
-import RecurrenceSelect from "./RecurrenceSelect";
+} from "@/utils/task";
+import { TaskList } from "@/utils/task-list";
+import { Editor, EditorContext } from "@/components/Editor";
+import FileSelect from "@/components/FileSelect";
+import LocalizationDatePicker from "@/components/LocalizationDatePicker";
+import PrioritySelect from "@/components/PrioritySelect";
+import RecurrenceSelect from "@/components/RecurrenceSelect";
 
 interface TaskFormProps {
   value: string;
@@ -38,7 +38,7 @@ interface TaskGridProps
   formModel: Task;
 }
 
-const TaskForm = (props: TaskFormProps) => {
+export default function TaskForm(props: TaskFormProps) {
   const { value, projects, contexts, tags, ...other } = props;
 
   const _tags = useMemo(() => {
@@ -47,7 +47,7 @@ const TaskForm = (props: TaskFormProps) => {
         acc[key + ":"] = props.tags[key];
         return acc;
       },
-      {} as Record<string, string[]>,
+      {} as Record<string, string[]>
     );
     if (Object.keys(tags).every((k) => k !== "due:")) {
       tags["due:"] = [];
@@ -62,7 +62,7 @@ const TaskForm = (props: TaskFormProps) => {
       "\\w+:": [],
       ..._tags,
     }),
-    [contexts, projects, _tags],
+    [contexts, projects, _tags]
   );
 
   const triggers = useMemo(() => Object.keys(items), [items]);
@@ -74,9 +74,9 @@ const TaskForm = (props: TaskFormProps) => {
       <TaskGrid {...other} items={items} formModel={formModel} />
     </EditorContext>
   );
-};
+}
 
-const TaskGrid = (props: TaskGridProps) => {
+function TaskGrid(props: TaskGridProps) {
   const touchScreen = hasTouchScreen();
   const platform = usePlatformStore((state) => state.platform);
   const {
@@ -250,6 +250,4 @@ const TaskGrid = (props: TaskGridProps) => {
       </Grid>
     </Stack>
   );
-};
-
-export default TaskForm;
+}

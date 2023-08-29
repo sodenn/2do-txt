@@ -19,7 +19,7 @@ const List = styled("ul")(({ theme }) => ({
   margin: 0,
 }));
 
-const ChipList = (props: ChipListProps) => {
+export default function ChipList(props: ChipListProps) {
   const {
     items = {},
     activeItems = [],
@@ -58,6 +58,4 @@ const ChipList = (props: ChipListProps) => {
       ))}
     </List>
   );
-};
-
-export default ChipList;
+}

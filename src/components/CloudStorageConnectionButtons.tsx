@@ -8,7 +8,7 @@ import {
   Provider,
   cloudStorageIcons,
   useCloudStorage,
-} from "../utils/CloudStorage";
+} from "@/utils/CloudStorage";
 
 interface CloudStorageConnectionButtonsProps {
   status?: "connect" | "disconnect";
@@ -17,10 +17,10 @@ interface CloudStorageConnectionButtonsProps {
 
 const providers: Provider[] = ["Dropbox", "WebDAV"];
 
-const CloudStorageConnectionButtons = ({
+export default function CloudStorageConnectionButtons({
   status,
   onMenuItemClick,
-}: CloudStorageConnectionButtonsProps) => {
+}: CloudStorageConnectionButtonsProps) {
   const {
     cloudStorageEnabled,
     cloudStorages,
@@ -121,6 +121,4 @@ const CloudStorageConnectionButtons = ({
       </Menu>
     </>
   );
-};
-
-export default CloudStorageConnectionButtons;
+}

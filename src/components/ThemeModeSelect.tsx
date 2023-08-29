@@ -1,8 +1,8 @@
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useThemeStore, { ThemeMode } from "../stores/theme-store";
+import useThemeStore, { ThemeMode } from "@/stores/theme-store";
 
-const ThemeModeSelect = () => {
+export default function ThemeModeSelect() {
   const { t } = useTranslation();
   const themeMode = useThemeStore((state) => state.mode);
   const setThemeMode = useThemeStore((state) => state.setThemeMode);
@@ -25,6 +25,4 @@ const ThemeModeSelect = () => {
       </MenuItem>
     </Select>
   );
-};
-
-export default ThemeModeSelect;
+}

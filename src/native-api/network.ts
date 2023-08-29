@@ -1,10 +1,10 @@
 import { Network } from "@capacitor/network";
 import { Body, getClient, ResponseType } from "@tauri-apps/api/http";
-import { getPlatform } from "./platform";
+import { getPlatform } from "@/native-api/platform";
 
-function request(
+export function request(
   input: RequestInfo | URL,
-  init?: RequestInit,
+  init?: RequestInit
 ): Promise<Response> {
   const platform = getPlatform();
   return platform === "desktop"
@@ -14,7 +14,7 @@ function request(
 
 async function desktopFetch(
   input: RequestInfo | URL,
-  init: RequestInit = {},
+  init: RequestInit = {}
 ): Promise<Response> {
   const client = await getClient();
   const options =
@@ -60,7 +60,7 @@ function buildDesktopRequestBody(opt: RequestInit) {
   }
 }
 
-function joinURL(...parts: string[]) {
+export function joinURL(...parts: string[]) {
   return parts
     .map((part, i) => {
       if (i === 0) {
@@ -77,26 +77,18 @@ function joinURL(...parts: string[]) {
     .join("/");
 }
 
-async function isConnected() {
+export async function isConnected() {
   return Network.getStatus().then(({ connected }) => connected);
 }
 
-function addNetworkStatusChangeListener(
-  listener: (connected: boolean) => void,
+export function addNetworkStatusChangeListener(
+  listener: (connected: boolean) => void
 ) {
   Network.addListener("networkStatusChange", ({ connected }) =>
-    listener(connected),
+    listener(connected)
   );
 }
 
-async function removeAllNetworkStatusChangeListeners() {
+export async function removeAllNetworkStatusChangeListeners() {
   Network.removeAllListeners().then((r) => void r);
 }
-
-export {
-  addNetworkStatusChangeListener,
-  isConnected,
-  joinURL,
-  removeAllNetworkStatusChangeListeners,
-  request,
-};

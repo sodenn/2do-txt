@@ -10,16 +10,16 @@ import { Box, Chip, IconButton } from "@mui/material";
 import { format } from "date-fns";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import useTaskDialogStore from "../stores/task-dialog-store";
-import { todayDate } from "../utils/date";
-import { TimelineTask } from "../utils/task-list";
+import useTaskDialogStore from "@/stores/task-dialog-store";
+import { todayDate } from "@/utils/date";
+import { TimelineTask } from "@/utils/task-list";
 
 interface TimelineAddButtonProps {
   date?: Date;
   flags: TimelineTask["_timelineFlags"];
 }
 
-const YearChip = ({ date, flags }: TimelineAddButtonProps) => {
+function YearChip({ date, flags }: TimelineAddButtonProps) {
   return (
     <Box
       sx={{
@@ -43,7 +43,7 @@ const YearChip = ({ date, flags }: TimelineAddButtonProps) => {
       />
     </Box>
   );
-};
+}
 
 const TimelineAddButton = forwardRef<HTMLElement, TimelineAddButtonProps>(
   ({ flags }, ref) => {
@@ -119,7 +119,7 @@ const TimelineAddButton = forwardRef<HTMLElement, TimelineAddButtonProps>(
         </TimelineContent>
       </TimelineItem>
     );
-  },
+  }
 );
 
 export default TimelineAddButton;

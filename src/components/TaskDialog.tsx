@@ -9,22 +9,24 @@ import {
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useSettingsStore from "../stores/settings-store";
-import useTaskDialogStore from "../stores/task-dialog-store";
-import { formatDate, todayDate } from "../utils/date";
-import { Task } from "../utils/task";
-import { TaskList } from "../utils/task-list";
-import useTask from "../utils/useTask";
-import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
-import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
-import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
-import TaskForm from "./TaskForm";
+import useSettingsStore from "@/stores/settings-store";
+import useTaskDialogStore from "@/stores/task-dialog-store";
+import { formatDate, todayDate } from "@/utils/date";
+import { Task } from "@/utils/task";
+import { TaskList } from "@/utils/task-list";
+import useTask from "@/utils/useTask";
+import {
+  FullScreenDialog,
+  FullScreenDialogContent,
+  FullScreenDialogTitle,
+} from "@/components/FullScreenDialog";
+import TaskForm from "@/components/TaskForm";
 
 const rawText = (createCreationDate: boolean, task?: Task): string => {
   return task ? task.raw : createCreationDate ? formatDate(todayDate()) : "";
 };
 
-const TaskDialog = () => {
+export default function TaskDialog() {
   const { t } = useTranslation();
   const {
     findTaskListByTaskId,
@@ -38,14 +40,14 @@ const TaskDialog = () => {
   } = useTask();
   const closeTaskDialog = useTaskDialogStore((state) => state.closeTaskDialog);
   const cleanupTaskDialog = useTaskDialogStore(
-    (state) => state.cleanupTaskDialog,
+    (state) => state.cleanupTaskDialog
   );
   const open = useTaskDialogStore((state) => state.open);
   const task = useTaskDialogStore((state) => state.task);
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const createCreationDate = useSettingsStore(
-    (state) => state.createCreationDate,
+    (state) => state.createCreationDate
   );
   const [value, setValue] = useState<string>();
   const [selectedTaskList, setSelectedTaskList] = useState<
@@ -55,17 +57,17 @@ const TaskDialog = () => {
   const contexts = useMemo(
     () =>
       Object.keys(activeTaskList ? activeTaskList.contexts : commonContexts),
-    [activeTaskList, commonContexts],
+    [activeTaskList, commonContexts]
   );
   const projects = useMemo(
     () =>
       Object.keys(activeTaskList ? activeTaskList.projects : commonProjects),
-    [activeTaskList, commonProjects],
+    [activeTaskList, commonProjects]
   );
   const tags = activeTaskList ? activeTaskList.tags : commonTags;
   const taskLists = useMemo(
     () => (activeTaskList || task ? [] : _taskLists),
-    [_taskLists, activeTaskList, task],
+    [_taskLists, activeTaskList, task]
   );
 
   const handleSave = useCallback(() => {
@@ -92,7 +94,7 @@ const TaskDialog = () => {
     (event: any, reason: "backdropClick" | "escapeKeyDown") => {
       return reason !== "backdropClick" ? closeTaskDialog() : undefined;
     },
-    [closeTaskDialog],
+    [closeTaskDialog]
   );
 
   const handleEnter = () => {
@@ -180,6 +182,4 @@ const TaskDialog = () => {
       </DialogActions>
     </Dialog>
   );
-};
-
-export default TaskDialog;
+}

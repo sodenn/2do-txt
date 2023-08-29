@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { subscribeNotifications } from "../native-api/notification";
+import { subscribeNotifications } from "@/native-api/notification";
 
 export function useNotificationsEffect() {
   useEffect(() => {

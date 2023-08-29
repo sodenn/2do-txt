@@ -1,4 +1,4 @@
-import { getPlatform } from "../../native-api/platform";
+import { getPlatform } from "@/native-api/platform";
 
 export function shouldUseInAppBrowser() {
   const platform = getPlatform();

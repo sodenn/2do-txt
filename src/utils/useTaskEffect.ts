@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import {
   addBecomeActiveListener,
   removeAllBecomeActiveListeners,
-} from "../native-api/platform";
-import useTask from "./useTask";
+} from "@/native-api/platform";
+import useTask from "@/utils/useTask";
 
 export function useTaskEffect() {
   const { handleInit, handleActive } = useTask();

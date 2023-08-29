@@ -14,11 +14,11 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { readFile } from "../../native-api/filesystem";
-import useFilterStore from "../../stores/filter-store";
-import { addTodoFilePath } from "../../utils/settings";
-import useTask from "../../utils/useTask";
-import StartEllipsis from "../StartEllipsis";
+import { readFile } from "@/native-api/filesystem";
+import useFilterStore from "@/stores/filter-store";
+import { addTodoFilePath } from "@/utils/settings";
+import useTask from "@/utils/useTask";
+import StartEllipsis from "@/components/StartEllipsis";
 
 interface ClosedFileListProps {
   list: string[];
@@ -26,13 +26,13 @@ interface ClosedFileListProps {
   onDelete: (filePath: string) => void;
 }
 
-interface FileMenuProps {
+interface FileProps {
   filePath: string;
   onOpen: (filePath: string) => void;
   onDelete: (filePath: string) => void;
 }
 
-const ClosedFileList = (props: ClosedFileListProps) => {
+export default function ClosedFileList(props: ClosedFileListProps) {
   const { list, onOpen, onDelete } = props;
   const { t } = useTranslation();
   const { loadTodoFile } = useTask();
@@ -62,28 +62,38 @@ const ClosedFileList = (props: ClosedFileListProps) => {
         </ListSubheader>
       }
     >
-      {list.map((filePath, idx) => (
-        <ListItem
-          key={idx}
-          disablePadding
-          secondaryAction={
-            <FileMenu
-              filePath={filePath}
-              onOpen={handleOpen}
-              onDelete={onDelete}
-            />
-          }
-        >
-          <ListItemButton sx={{ pl: 3, overflow: "hidden" }} role={undefined}>
-            <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
-          </ListItemButton>
-        </ListItem>
+      {list.map((filePath) => (
+        <File
+          key={filePath}
+          filePath={filePath}
+          onOpen={handleOpen}
+          onDelete={onDelete}
+        />
       ))}
     </List>
   );
-};
+}
 
-const FileMenu = (props: FileMenuProps) => {
+function File(props: FileProps) {
+  return (
+    <ListItem
+      disablePadding
+      secondaryAction={
+        <FileMenu
+          filePath={props.filePath}
+          onOpen={props.onOpen}
+          onDelete={props.onDelete}
+        />
+      }
+    >
+      <ListItemButton sx={{ pl: 3, overflow: "hidden" }} role={undefined}>
+        <StartEllipsis variant="inherit">{props.filePath}</StartEllipsis>
+      </ListItemButton>
+    </ListItem>
+  );
+}
+
+function FileMenu(props: FileProps) {
   const { filePath, onOpen, onDelete } = props;
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -134,6 +144,4 @@ const FileMenu = (props: FileMenuProps) => {
       </Menu>
     </>
   );
-};
-
-export default ClosedFileList;
+}

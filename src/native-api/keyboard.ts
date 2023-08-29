@@ -1,5 +1,5 @@
 import { Keyboard, KeyboardStyle as _KeyboardStyle } from "@capacitor/keyboard";
-import { getPlatform } from "./platform";
+import { getPlatform } from "@/native-api/platform";
 
 interface KeyboardInfo {
   keyboardHeight: number;
@@ -7,8 +7,8 @@ interface KeyboardInfo {
 
 type KeyboardStyle = "dark" | "light" | "system";
 
-async function addKeyboardDidShowListener(
-  listener: (info: KeyboardInfo) => void,
+export async function addKeyboardDidShowListener(
+  listener: (info: KeyboardInfo) => void
 ) {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {
@@ -16,21 +16,21 @@ async function addKeyboardDidShowListener(
   }
 }
 
-async function addKeyboardDidHideListener(listener: () => void) {
+export async function addKeyboardDidHideListener(listener: () => void) {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {
     Keyboard.addListener("keyboardDidHide", listener);
   }
 }
 
-async function removeAllKeyboardListeners() {
+export async function removeAllKeyboardListeners() {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {
     Keyboard.removeAllListeners().catch((e) => void e);
   }
 }
 
-async function setKeyboardStyle(style: KeyboardStyle) {
+export async function setKeyboardStyle(style: KeyboardStyle) {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {
     Keyboard.setStyle({ style: getStyle(style) }).catch((e) => void e);
@@ -47,10 +47,3 @@ function getStyle(style: KeyboardStyle) {
       return _KeyboardStyle.Default;
   }
 }
-
-export {
-  addKeyboardDidHideListener,
-  addKeyboardDidShowListener,
-  removeAllKeyboardListeners,
-  setKeyboardStyle,
-};

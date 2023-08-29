@@ -25,11 +25,11 @@ import { forwardRef, memo, useEffect, useMemo, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { List as MovableList, arrayMove } from "react-movable";
 import { OnChangeMeta } from "react-movable/lib/types";
-import { writeToClipboard } from "../../native-api/clipboard";
-import { fileExists, readFile } from "../../native-api/filesystem";
-import { hasTouchScreen } from "../../native-api/platform";
-import usePlatformStore from "../../stores/platform-store";
-import useSettingsStore from "../../stores/settings-store";
+import { writeToClipboard } from "@/native-api/clipboard";
+import { fileExists, readFile } from "@/native-api/filesystem";
+import { hasTouchScreen } from "@/native-api/platform";
+import usePlatformStore from "@/stores/platform-store";
+import useSettingsStore from "@/stores/settings-store";
 import {
   CloudFileRef,
   CloudStorageError,
@@ -37,12 +37,12 @@ import {
   WithIdentifier,
   cloudStorageIcons,
   useCloudStorage,
-} from "../../utils/CloudStorage";
-import { formatLocalDateTime, parseDate } from "../../utils/date";
-import { TaskList } from "../../utils/task-list";
-import { getDoneFilePath } from "../../utils/todo-files";
-import useTask from "../../utils/useTask";
-import StartEllipsis from "../StartEllipsis";
+} from "@/utils/CloudStorage";
+import { formatLocalDateTime, parseDate } from "@/utils/date";
+import { TaskList } from "@/utils/task-list";
+import { getDoneFilePath } from "@/utils/todo-files";
+import useTask from "@/utils/useTask";
+import StartEllipsis from "@/components/StartEllipsis";
 
 type CloudFileRefWithIdentifier = CloudFileRef & WithIdentifier;
 
@@ -56,7 +56,7 @@ interface OpenFileListProps {
   onClose: (options: CloseOptions) => void;
 }
 
-interface FileListItemProps {
+interface FileProps {
   filePath: string;
   taskList: TaskList;
   onDownload: (taskList: TaskList) => void;
@@ -87,26 +87,17 @@ interface EnableCloudSyncMenuItemProps {
   cloudFileRef?: CloudFileRefWithIdentifier;
 }
 
-const OpenFileList = memo((props: OpenFileListProps) => {
+function OpenFileList(props: OpenFileListProps) {
   const { subheader, onClose } = props;
-  const wrapper = useRef<HTMLDivElement>(null);
-  const [container, setContainer] = useState<Element | null>(null);
+  const container = useRef<HTMLDivElement>(null);
   const { taskLists, reorderTaskList, downloadTodoFile } = useTask();
   const [items, setItems] = useState(taskLists.map((t) => t.filePath));
   const { t } = useTranslation();
 
-  useEffect(() => {
-    setContainer(wrapper.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wrapper.current]);
-
+  // update list items when a file was deleted
   useEffect(() => {
     setItems(taskLists.map((t) => t.filePath));
   }, [taskLists]);
-
-  if (items.length === 0) {
-    return null;
-  }
 
   const handleChange = ({ oldIndex, newIndex }: OnChangeMeta) => {
     const newItems = arrayMove(items, oldIndex, newIndex);
@@ -114,12 +105,16 @@ const OpenFileList = memo((props: OpenFileListProps) => {
     reorderTaskList(newItems);
   };
 
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
-    <div ref={wrapper}>
+    <div ref={container}>
       <MovableList
         lockVertically
         values={items}
-        container={container}
+        container={container.current}
         renderList={({ children, props }) => (
           <List
             sx={{ py: 0 }}
@@ -136,7 +131,7 @@ const OpenFileList = memo((props: OpenFileListProps) => {
           </List>
         )}
         renderItem={({ value, props }) => (
-          <FileListItem
+          <File
             taskList={taskLists.find((t) => t.filePath === value)!}
             filePath={value}
             onClose={onClose}
@@ -150,71 +145,69 @@ const OpenFileList = memo((props: OpenFileListProps) => {
       />
     </div>
   );
+}
+
+const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
+  const { filePath, taskList, onClose, onDownload, ...rest } = props;
+  const language = useSettingsStore((state) => state.language);
+  const { getCloudFileRef } = useCloudStorage();
+  const [cloudFileRef, setCloudFileRef] =
+    useState<CloudFileRefWithIdentifier>();
+  const cloudFileLastModified = cloudFileRef
+    ? parseDate(cloudFileRef.lastSync)
+    : undefined;
+
+  useEffect(() => {
+    getCloudFileRef(filePath).then(setCloudFileRef);
+  }, [filePath, getCloudFileRef]);
+
+  return (
+    <ListItem
+      ref={ref}
+      disablePadding
+      secondaryAction={
+        <FileMenu
+          filePath={filePath}
+          cloudFileRef={cloudFileRef}
+          onChange={setCloudFileRef}
+          onClose={onClose}
+          onDownloadClick={() => onDownload(taskList)}
+        />
+      }
+      {...rest}
+      data-testid="draggable-file"
+      aria-label={`Draggable file ${filePath}`}
+    >
+      <ListItemButton sx={{ pl: 2, overflow: "hidden" }} role={undefined}>
+        <ListItemIcon sx={{ minWidth: 36 }}>
+          <DragIndicatorIcon />
+        </ListItemIcon>
+        <Box sx={{ overflow: "hidden" }}>
+          <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
+          {cloudFileRef && (
+            <Box
+              sx={{
+                display: "inline-flex",
+                alignItems: "center",
+                color: "text.secondary",
+                mt: 0.5,
+                gap: 0.5,
+              }}
+            >
+              <SyncOutlinedIcon color="inherit" fontSize="inherit" />
+              <Typography variant="body2">
+                {cloudFileLastModified &&
+                  formatLocalDateTime(cloudFileLastModified, language)}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      </ListItemButton>
+    </ListItem>
+  );
 });
 
-const FileListItem = forwardRef<HTMLLIElement, FileListItemProps>(
-  (props, ref) => {
-    const { filePath, taskList, onClose, onDownload, ...rest } = props;
-    const language = useSettingsStore((state) => state.language);
-    const { getCloudFileRef } = useCloudStorage();
-    const [cloudFileRef, setCloudFileRef] =
-      useState<CloudFileRefWithIdentifier>();
-    const cloudFileLastModified = cloudFileRef
-      ? parseDate(cloudFileRef.lastSync)
-      : undefined;
-
-    useEffect(() => {
-      getCloudFileRef(filePath).then(setCloudFileRef);
-    }, [filePath, getCloudFileRef]);
-
-    return (
-      <ListItem
-        ref={ref}
-        disablePadding
-        secondaryAction={
-          <FileMenu
-            filePath={filePath}
-            cloudFileRef={cloudFileRef}
-            onChange={setCloudFileRef}
-            onClose={onClose}
-            onDownloadClick={() => onDownload(taskList)}
-          />
-        }
-        {...rest}
-        data-testid="draggable-file"
-        aria-label={`Draggable file ${filePath}`}
-      >
-        <ListItemButton sx={{ pl: 2, overflow: "hidden" }} role={undefined}>
-          <ListItemIcon sx={{ minWidth: 36 }}>
-            <DragIndicatorIcon />
-          </ListItemIcon>
-          <Box sx={{ overflow: "hidden" }}>
-            <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
-            {cloudFileRef && (
-              <Box
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  color: "text.secondary",
-                  mt: 0.5,
-                  gap: 0.5,
-                }}
-              >
-                <SyncOutlinedIcon color="inherit" fontSize="inherit" />
-                <Typography variant="body2">
-                  {cloudFileLastModified &&
-                    formatLocalDateTime(cloudFileLastModified, language)}
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </ListItemButton>
-      </ListItem>
-    );
-  },
-);
-
-const CloudSyncMenuItem = (opt: CloudSyncMenuItemProps) => {
+function CloudSyncMenuItem(opt: CloudSyncMenuItemProps) {
   const { onClick, onChange, identifier, provider } = opt;
   const { t } = useTranslation();
   const { syncFile, getCloudFileRef } = useCloudStorage();
@@ -239,9 +232,9 @@ const CloudSyncMenuItem = (opt: CloudSyncMenuItemProps) => {
       </Typography>
     </MenuItem>
   );
-};
+}
 
-const EnableCloudSyncMenuItem = (props: EnableCloudSyncMenuItemProps) => {
+function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
   const { provider, filePath, cloudFileRef, onClick, onChange, onLoad } = props;
   const { t } = useTranslation();
   const { cloudStorages, cloudStorageEnabled, uploadFile, unlinkCloudFile } =
@@ -320,9 +313,9 @@ const EnableCloudSyncMenuItem = (props: EnableCloudSyncMenuItemProps) => {
       <Typography>{buttonText}</Typography>
     </MenuItem>
   );
-};
+}
 
-const FileMenu = (props: FileMenuProps) => {
+function FileMenu(props: FileMenuProps) {
   const { filePath, cloudFileRef, onChange, onClose, onDownloadClick } = props;
   const { cloudStorages } = useCloudStorage();
   const touchScreen = hasTouchScreen();
@@ -433,6 +426,6 @@ const FileMenu = (props: FileMenuProps) => {
       </Menu>
     </>
   );
-};
+}
 
-export default OpenFileList;
+export default memo(OpenFileList);

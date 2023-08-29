@@ -6,15 +6,15 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TaskList } from "../utils/task-list";
-import StartEllipsis from "./StartEllipsis";
+import { TaskList } from "@/utils/task-list";
+import StartEllipsis from "@/components/StartEllipsis";
 
 interface FileSelectProps {
   options: TaskList[];
   onSelect: (value?: TaskList) => void;
 }
 
-const FileSelect = (props: FileSelectProps) => {
+export default function FileSelect(props: FileSelectProps) {
   const { options, onSelect } = props;
   const { t } = useTranslation();
   const [filePath, setFilePath] = useState("");
@@ -42,6 +42,4 @@ const FileSelect = (props: FileSelectProps) => {
       </Select>
     </FormControl>
   );
-};
-
-export default FileSelect;
+}

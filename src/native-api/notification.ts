@@ -1,11 +1,14 @@
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { differenceInHours, isAfter, subDays } from "date-fns";
-import logo from "../images/logo.png";
-import { dateReviver } from "../utils/date";
-import { getPlatform } from "./platform";
-import { getPreferencesItem, setPreferencesItem } from "./preferences";
+import logo from "@/images/logo.png";
+import { dateReviver } from "@/utils/date";
+import { getPlatform } from "@/native-api/platform";
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "@/native-api/preferences";
 
-interface Notification {
+export interface Notification {
   id: number;
   title: string;
   body: string;
@@ -42,12 +45,12 @@ interface WebNotification extends NotificationMethods {
 const mobileNotification: NotificationMethods = {
   async isPermissionGranted() {
     return LocalNotifications.checkPermissions().then(
-      (result) => result.display === "granted",
+      (result) => result.display === "granted"
     );
   },
   async requestPermission() {
     return LocalNotifications.requestPermissions().then(
-      (result) => result.display === "granted",
+      (result) => result.display === "granted"
     );
   },
   async cancel(ids: number[]) {
@@ -78,7 +81,7 @@ const webNotification: WebNotification = {
   timeoutIds: [],
   async isPermissionGranted() {
     return Notification.requestPermission().then(
-      (result) => result === "granted",
+      (result) => result === "granted"
     );
   },
   async requestPermission() {
@@ -94,14 +97,14 @@ const webNotification: WebNotification = {
         } else {
           return true;
         }
-      },
+      }
     );
   },
   async schedule(notifications: Notification[]) {
     const receivedNotifications =
       await webNotification.getReceivedNotifications();
     const filteredNotifications = notifications.filter((opt) =>
-      receivedNotifications.every((sn) => sn.notificationId !== opt.id),
+      receivedNotifications.every((sn) => sn.notificationId !== opt.id)
     );
     return filteredNotifications
       .map(webNotification.createNotification)
@@ -127,7 +130,7 @@ const webNotification: WebNotification = {
             receivingDate: scheduleAt,
           });
         },
-        Math.max(ms, 0),
+        Math.max(ms, 0)
       );
       webNotification.timeoutIds = [
         ...webNotification.timeoutIds,
@@ -152,18 +155,18 @@ const webNotification: WebNotification = {
     ];
     await setPreferencesItem(
       "received-notifications",
-      JSON.stringify(newReceivedNotifications),
+      JSON.stringify(newReceivedNotifications)
     );
   },
   async removeReceivedNotification(ids: number[]) {
     const receivedNotifications =
       await webNotification.getReceivedNotifications();
     const newReceivedNotifications = receivedNotifications.filter(
-      (item) => !ids.includes(item.notificationId),
+      (item) => !ids.includes(item.notificationId)
     );
     await setPreferencesItem(
       "received-notifications",
-      JSON.stringify(newReceivedNotifications),
+      JSON.stringify(newReceivedNotifications)
     );
   },
   subscribe() {
@@ -173,11 +176,11 @@ const webNotification: WebNotification = {
           await webNotification.getReceivedNotifications();
         const twoDaysAgo = subDays(new Date(), 2);
         const newValue = scheduledNotifications.filter((n) =>
-          isAfter(n.receivingDate, twoDaysAgo),
+          isAfter(n.receivingDate, twoDaysAgo)
         );
         setPreferencesItem("received-notifications", JSON.stringify(newValue));
       },
-      1000 * 60 * 60,
+      1000 * 60 * 60
     );
     return () => {
       clearInterval(timer);
@@ -185,36 +188,36 @@ const webNotification: WebNotification = {
   },
 };
 
-async function subscribeNotifications(): Promise<() => void> {
+export async function subscribeNotifications(): Promise<() => void> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.subscribe()
     : webNotification.subscribe();
 }
 
-async function cancelNotifications(ids: number[]): Promise<void> {
+export async function cancelNotifications(ids: number[]): Promise<void> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.cancel(ids)
     : webNotification.cancel(ids);
 }
 
-async function isNotificationPermissionGranted(): Promise<boolean> {
+export async function isNotificationPermissionGranted(): Promise<boolean> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.isPermissionGranted()
     : webNotification.isPermissionGranted();
 }
 
-async function requestNotificationPermission(): Promise<boolean> {
+export async function requestNotificationPermission(): Promise<boolean> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.requestPermission()
     : webNotification.requestPermission();
 }
 
-async function scheduleNotifications(
-  notifications: Notification[],
+export async function scheduleNotifications(
+  notifications: Notification[]
 ): Promise<number[]> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
@@ -222,19 +225,9 @@ async function scheduleNotifications(
     : webNotification.schedule(notifications);
 }
 
-async function shouldNotificationsBeRescheduled() {
+export async function shouldNotificationsBeRescheduled() {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.shouldNotificationsBeRescheduled()
     : webNotification.shouldNotificationsBeRescheduled();
 }
-
-export {
-  cancelNotifications,
-  isNotificationPermissionGranted,
-  requestNotificationPermission,
-  scheduleNotifications,
-  shouldNotificationsBeRescheduled,
-  subscribeNotifications,
-};
-export type { Notification };

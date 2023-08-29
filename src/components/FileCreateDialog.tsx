@@ -19,19 +19,21 @@ import {
   fileExists,
   getUniqueFilePath,
   saveFile,
-} from "../native-api/filesystem";
-import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
-import useFileCreateDialogStore from "../stores/file-create-dialog-store";
-import useFilterStore from "../stores/filter-store";
-import usePlatformStore from "../stores/platform-store";
-import useTaskDialogStore from "../stores/task-dialog-store";
-import { Provider, useCloudStorage } from "../utils/CloudStorage";
-import { addTodoFilePath } from "../utils/settings";
-import { defaultTodoFilePath } from "../utils/todo-files";
-import useTask from "../utils/useTask";
-import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
-import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
-import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
+} from "@/native-api/filesystem";
+import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
+import useFileCreateDialogStore from "@/stores/file-create-dialog-store";
+import useFilterStore from "@/stores/filter-store";
+import usePlatformStore from "@/stores/platform-store";
+import useTaskDialogStore from "@/stores/task-dialog-store";
+import { Provider, useCloudStorage } from "@/utils/CloudStorage";
+import { addTodoFilePath } from "@/utils/settings";
+import { defaultTodoFilePath } from "@/utils/todo-files";
+import useTask from "@/utils/useTask";
+import {
+  FullScreenDialog,
+  FullScreenDialogContent,
+  FullScreenDialogTitle,
+} from "@/components/FullScreenDialog";
 
 interface FileCreateDialogProps {
   open: boolean;

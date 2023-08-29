@@ -6,7 +6,7 @@ import { initReactI18next } from "react-i18next";
 import "typeface-roboto";
 import App from "./App";
 import "./index.css";
-import { formatLocaleDate } from "./utils/date";
+import { formatLocaleDate } from "@/utils/date";
 
 i18n
   .use(Backend)

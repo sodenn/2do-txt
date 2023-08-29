@@ -8,7 +8,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { forwardRef, useRef, useState } from "react";
-import SearchInput from "./SearchInput";
+import SearchInput from "@/components/SearchInput";
 
 interface ExpandableSearchProps extends InputBaseProps {
   onExpand?: (expanded: boolean) => void;

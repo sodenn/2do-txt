@@ -68,7 +68,7 @@ interface SearchInputProps extends InputBaseProps {
   onReset?: () => void;
 }
 
-const SearchInput = (props: SearchInputProps) => {
+export default function SearchInput(props: SearchInputProps) {
   const { value, onReset, onChange, ...rest } = props;
   const { t } = useTranslation();
 
@@ -113,6 +113,4 @@ const SearchInput = (props: SearchInputProps) => {
       />
     </Search>
   );
-};
-
-export default SearchInput;
+}

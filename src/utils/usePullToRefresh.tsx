@@ -3,12 +3,12 @@ import PullToRefresh from "pulltorefreshjs";
 import { useEffect } from "react";
 import ReactDOMServer from "react-dom/server";
 import { useTranslation } from "react-i18next";
-import { hasTouchScreen } from "../native-api/platform";
+import { hasTouchScreen } from "@/native-api/platform";
 
 export default function usePullToRefresh(
   onRefresh: () => Promise<void>,
   mainElement: string,
-  disable = false,
+  disable = false
 ) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ export default function usePullToRefresh(
                 style={{ color: theme.palette.text.disabled }}
               ></div>
             </div>
-          </div>,
+          </div>
         );
       },
       instructionsPullToRefresh: t("Pull to refresh"),
