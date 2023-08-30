@@ -97,11 +97,11 @@ export default function FileMenu() {
           </MenuItem>
         )}
         {taskLists.length > 1 &&
-          taskLists.map(({ filePath }, idx) => (
+          taskLists.map(({ filePath }) => (
             <MenuItem
               selected={activeTaskList?.filePath === filePath}
               onClick={() => handleSetActiveList(filePath)}
-              key={idx}
+              key={filePath}
             >
               <ListItemIcon>
                 <InsertDriveFileOutlinedIcon fontSize="small" />

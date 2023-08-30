@@ -30,8 +30,8 @@ export default function ChipList(props: ChipListProps) {
 
   return (
     <List>
-      {Object.entries(items).map(([item, usages], index) => (
-        <li key={index}>
+      {Object.entries(items).map(([item, usages]) => (
+        <li key={usages}>
           <Badge
             badgeContent={usages === 1 ? undefined : usages}
             color="primary"

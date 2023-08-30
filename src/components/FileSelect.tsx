@@ -32,8 +32,8 @@ export default function FileSelect(props: FileSelectProps) {
         <MenuItem disabled value="">
           <em>{t("Select todo.txt")}</em>
         </MenuItem>
-        {options.map((item, index) => (
-          <MenuItem key={index} value={item.filePath}>
+        {options.map((item) => (
+          <MenuItem key={item.filePath} value={item.filePath}>
             <StartEllipsis sx={{ maxWidth: 300 }}>
               {item.filePath}
             </StartEllipsis>

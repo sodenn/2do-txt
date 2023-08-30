@@ -49,11 +49,11 @@ export default function ConfirmationDialog() {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        {buttons?.map((button, idx) => (
+        {buttons?.map((button) => (
           <Button
             aria-label={button.text}
             onClick={() => handleClick(button.handler)}
-            key={idx}
+            key={button.text}
           >
             {button.text}
           </Button>

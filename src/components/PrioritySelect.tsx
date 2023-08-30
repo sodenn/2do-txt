@@ -118,8 +118,8 @@ export default function PrioritySelect(props: PrioritySelectProps) {
             }
             onChange={(event) => handleChange(event.target.value)}
           >
-            {selectOptions.map((item, index) => (
-              <MenuItem key={index} value={item}>
+            {selectOptions.map((item) => (
+              <MenuItem key={item} value={item}>
                 {!item ? <em>{t("None")}</em> : item}
               </MenuItem>
             ))}

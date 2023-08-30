@@ -253,7 +253,7 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
   const [cloudFileRefs, setCloudFileRefs] = useState<CloudFileRef[]>([]);
   const [currentPath, setCurrentPath] = useState("");
   const [previousPaths, setPreviousPaths] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean | number>(true);
+  const [loading, setLoading] = useState<boolean | string>(true);
   const disabled =
     loading === true || (typeof loading === "number" && loading >= 0);
 
@@ -262,11 +262,8 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
     onSelect(cloudFile);
   };
 
-  const handleNavForward = async (
-    cloudDirectory: CloudDirectory,
-    index: number,
-  ) => {
-    setLoading(index);
+  const handleNavForward = async (cloudDirectory: CloudDirectory) => {
+    setLoading(cloudDirectory.path);
     await loadItems(cloudDirectory.path);
     setPreviousPaths((curr) => [...curr, currentPath]);
     setCurrentPath(cloudDirectory.path);
@@ -375,9 +372,9 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
           )}
           {files.items
             .filter((c): c is CloudFile & WithFileType => c.type === "file")
-            .map((cloudFile, idx) => (
+            .map((cloudFile) => (
               <CloudFileButton
-                key={idx}
+                key={cloudFile.path}
                 cloudFile={cloudFile}
                 cloudFileRefs={cloudFileRefs}
                 selectedFile={selectedFile}
@@ -392,10 +389,10 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
             )
             .map((cloudDirectory, idx) => (
               <CloudFolderButton
-                key={idx}
+                key={cloudDirectory.path}
                 cloudDirectory={cloudDirectory}
-                onClick={() => handleNavForward(cloudDirectory, idx)}
-                loading={loading === idx}
+                onClick={() => handleNavForward(cloudDirectory)}
+                loading={loading === cloudDirectory.path}
                 disabled={disabled}
               />
             ))}

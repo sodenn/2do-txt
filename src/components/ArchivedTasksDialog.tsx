@@ -70,9 +70,9 @@ export default function ArchivedTasksDialog() {
       <DialogTitle>{t("Archived tasks")}</DialogTitle>
       <DialogContent dividers>
         <List dense>
-          {tasks.map((task, index) => (
+          {tasks.map((task) => (
             <ListItem
-              key={index}
+              key={task._id}
               secondaryAction={
                 <Tooltip title={t("Restore task")}>
                   <IconButton

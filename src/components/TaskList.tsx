@@ -75,7 +75,7 @@ const TaskList = memo((props: TaskListProps) => {
                           listItemsRef.current[index] = el;
                         }
                       }}
-                      key={index}
+                      key={task._id}
                       task={task}
                       focused={focusedTaskId === task._id}
                       onClick={() => onListItemClick(task)}
