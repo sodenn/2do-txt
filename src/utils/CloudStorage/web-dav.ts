@@ -3,7 +3,7 @@ import {
   createCloudStorage,
   createWebDAVClient,
   WebDAVClientOptions,
-} from "./lib";
+} from "@/utils/CloudStorage/lib";
 
 export function createWebDAVStorage({
   baseUrl,

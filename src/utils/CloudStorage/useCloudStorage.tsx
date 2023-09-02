@@ -1,31 +1,23 @@
-import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
-import { Alert, Button, CircularProgress } from "@mui/material";
-import { SnackbarKey, useSnackbar } from "notistack";
-import { ReactNode, useCallback } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import DropboxIcon from "../../components/DropboxIcon";
-import {
-  fileExists,
-  getFilename,
-  writeFile,
-} from "../../native-api/filesystem";
-import { oauth } from "../../native-api/oath";
+import DropboxIcon from "@/components/DropboxIcon";
+import { fileExists, getFilename, writeFile } from "@/native-api/filesystem";
+import { oauth } from "@/native-api/oath";
 import {
   getPreferencesItem,
   removePreferencesItem,
   setPreferencesItem,
-} from "../../native-api/preferences";
+} from "@/native-api/preferences";
 import {
   removeSecureStorageItem,
   setSecureStorageItem,
-} from "../../native-api/secure-storage";
-import useCloudStorageStore from "../../stores/cloud-store";
-import usePlatformStore from "../../stores/platform-store";
-import useWebDAVDialogStore from "../../stores/webdav-dialog-store";
-import { getDoneFilePath } from "../todo-files";
-import { shouldUseInAppBrowser } from "./auth";
-import { getDropboxOathOptions, requestDropboxRefreshToken } from "./dropbox";
+} from "@/native-api/secure-storage";
+import useCloudStorageStore from "@/stores/cloud-store";
+import usePlatformStore from "@/stores/platform-store";
+import useWebDAVDialogStore from "@/stores/webdav-dialog-store";
+import { shouldUseInAppBrowser } from "@/utils/CloudStorage/auth";
+import {
+  getDropboxOathOptions,
+  requestDropboxRefreshToken,
+} from "@/utils/CloudStorage/dropbox";
 import {
   Client,
   CloudError,
@@ -33,8 +25,15 @@ import {
   CloudStorageError,
   Provider,
   WebDAVClientOptions,
-} from "./lib";
-import { cloudStoragePreferences } from "./preferences";
+} from "@/utils/CloudStorage/lib";
+import { cloudStoragePreferences } from "@/utils/CloudStorage/preferences";
+import { getDoneFilePath } from "@/utils/todo-files";
+import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
+import { Alert, Button, CircularProgress } from "@mui/material";
+import { SnackbarKey, useSnackbar } from "notistack";
+import { ReactNode, useCallback } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export const cloudStorageIcons: Record<Provider, ReactNode> = {
   Dropbox: <DropboxIcon />,
