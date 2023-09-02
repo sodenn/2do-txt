@@ -1,8 +1,8 @@
+import { ExpandableSearch } from "@/components/ExpandableSearch";
 import { useFilterStore } from "@/stores/filter-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import { Box } from "@mui/material";
 import { ChangeEvent, useMemo, useRef } from "react";
-import { ExpandableSearch } from "./ExpandableSearch";
 
 interface SearchBarProps {
   onExpand?: (expanded: boolean) => void;

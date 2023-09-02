@@ -10,8 +10,6 @@ import {
 } from "@/native-api/platform";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { taskLoader } from "@/stores/task-state";
-import { cloudStoragePreferences } from "@/utils/CloudStorage/preferences";
-import { useCloudStorage } from "@/utils/CloudStorage/useCloudStorage";
 import { parseDate } from "@/utils/date";
 import {
   getTodoFilePathFromDoneFilePath,
@@ -22,6 +20,8 @@ import { usePullToRefresh } from "@/utils/usePullToRefresh";
 import { useTask } from "@/utils/useTask";
 import { differenceInMinutes } from "date-fns";
 import { useCallback, useEffect } from "react";
+import { cloudStoragePreferences } from "./preferences";
+import { useCloudStorage } from "./useCloudStorage";
 
 export function useCloudStorageEffect() {
   const {
