@@ -1,3 +1,4 @@
+import { formatLocaleDate } from "@/utils/date";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-http-backend";
@@ -6,7 +7,6 @@ import { initReactI18next } from "react-i18next";
 import "typeface-roboto";
 import App from "./App";
 import "./index.css";
-import { formatLocaleDate } from "@/utils/date";
 
 i18n
   .use(Backend)

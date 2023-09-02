@@ -1,5 +1,5 @@
-import { writeText } from "@tauri-apps/api/clipboard";
 import { getPlatform } from "@/native-api/platform";
+import { writeText } from "@tauri-apps/api/clipboard";
 
 export async function writeToClipboard(promise: Promise<string>) {
   const platform = getPlatform();

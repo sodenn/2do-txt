@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api/tauri";
 import { getPlatform } from "@/native-api/platform";
+import { invoke } from "@tauri-apps/api/tauri";
 
 type SecureStorageKeys =
   | "Dropbox-refresh-token"
@@ -16,7 +16,7 @@ const iosSecureStorage = {
       Keychain.get(
         (value: string) => resolve(value),
         () => resolve(null),
-        key
+        key,
       );
     });
   },
@@ -64,7 +64,7 @@ const desktopSecureStorage = {
 };
 
 export async function getSecureStorageItem(
-  key: SecureStorageKeys
+  key: SecureStorageKeys,
 ): Promise<string | null> {
   const platform = getPlatform();
   return platform === "ios"
@@ -76,7 +76,7 @@ export async function getSecureStorageItem(
 
 export async function setSecureStorageItem(
   key: SecureStorageKeys,
-  value: string
+  value: string,
 ) {
   const platform = getPlatform();
   return platform === "ios"

@@ -1,5 +1,3 @@
-import { differenceInMinutes } from "date-fns";
-import { useCallback, useEffect } from "react";
 import {
   CreateFileData,
   DeleteFileData,
@@ -12,6 +10,8 @@ import {
 } from "@/native-api/platform";
 import useScrollingStore from "@/stores/scrolling-store";
 import { taskLoader } from "@/stores/task-state";
+import { differenceInMinutes } from "date-fns";
+import { useCallback, useEffect } from "react";
 import { parseDate } from "../date";
 import { getTodoFilePathFromDoneFilePath, isDoneFilePath } from "../todo-files";
 import useArchivedTask from "../useArchivedTask";
@@ -39,7 +39,7 @@ export function useCloudStorageEffect() {
         return loadTodoFile(path, content);
       }
     },
-    [loadTodoFile]
+    [loadTodoFile],
   );
 
   const handleCreateFile = useCallback(
@@ -53,17 +53,17 @@ export function useCloudStorageEffect() {
       const provider = todoFileRef.provider;
       uploadFile(provider, data.path, data.content);
     },
-    [getCloudFileRef, uploadFile]
+    [getCloudFileRef, uploadFile],
   );
 
   const handleUpdateFile = useCallback(
     async (data: UpdateFileData) => {
       const showProgress = !data.path.endsWith("done.txt");
       syncFile(data.path, data.content, showProgress).then((content) =>
-        reloadTodoFile(data.path, content)
+        reloadTodoFile(data.path, content),
       );
     },
-    [reloadTodoFile, syncFile]
+    [reloadTodoFile, syncFile],
   );
 
   const handleDeleteFile = useCallback(async (data: DeleteFileData) => {
@@ -97,13 +97,13 @@ export function useCloudStorageEffect() {
       await Promise.all(
         files.map(async ({ filePath, text }) =>
           syncFile(filePath, text).then((content) =>
-            reloadTodoFile(filePath, content)
-          )
-        )
+            reloadTodoFile(filePath, content),
+          ),
+        ),
       ).finally(() => hideProgress?.());
       await syncDoneFiles(files.map((f) => f.filePath));
     },
-    [reloadTodoFile, showProgressSnackbar, syncDoneFiles, syncFile]
+    [reloadTodoFile, showProgressSnackbar, syncDoneFiles, syncFile],
   );
 
   const handleActive = useCallback(() => {
@@ -140,6 +140,6 @@ export function useCloudStorageEffect() {
   usePullToRefresh(
     syncAllTodoFiles,
     "#scroll-container",
-    cloudStorages.length === 0 || !top
+    cloudStorages.length === 0 || !top,
   );
 }

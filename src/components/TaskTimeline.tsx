@@ -1,17 +1,17 @@
+import ScrollTo from "@/components/ScrollTo";
+import TaskTimelineItem from "@/components/TaskTimelineItem";
+import TimelineAddButton from "@/components/TimelineAddButton";
+import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
+import useFilterStore from "@/stores/filter-store";
+import { Task } from "@/utils/task";
+import { TimelineTask } from "@/utils/task-list";
+import useTask from "@/utils/useTask";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Timeline } from "@mui/lab";
 import { Box, Typography } from "@mui/material";
 import { isEqual } from "lodash";
 import { MutableRefObject, memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
-import useFilterStore from "@/stores/filter-store";
-import { Task } from "@/utils/task";
-import { TimelineTask } from "@/utils/task-list";
-import useTask from "@/utils/useTask";
-import ScrollTo from "@/components/ScrollTo";
-import TaskTimelineItem from "@/components/TaskTimelineItem";
-import TimelineAddButton from "@/components/TimelineAddButton";
 
 interface TaskTimelineProps {
   tasks: TimelineTask[];
@@ -37,7 +37,7 @@ const TaskTimeline = memo((props: TaskTimelineProps) => {
   } = props;
   const { t } = useTranslation();
   const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog
+    (state) => state.openConfirmationDialog,
   );
   const { deleteTask, completeTask } = useTask();
   const searchTerm = useFilterStore((state) => state.searchTerm);
@@ -98,7 +98,7 @@ const TaskTimeline = memo((props: TaskTimelineProps) => {
               ref={(el) => {
                 if (listItemsRef.current && el) {
                   const notFocusablePredecessor = tasks.some(
-                    (t, idx) => t._timelineFlags.firstOfToday && idx < index
+                    (t, idx) => t._timelineFlags.firstOfToday && idx < index,
                   );
                   listItemsRef.current[
                     notFocusablePredecessor ? index - 1 : index

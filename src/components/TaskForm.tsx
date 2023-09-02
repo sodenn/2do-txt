@@ -1,8 +1,8 @@
-import { Box, Button, Grid, Stack } from "@mui/material";
-import { isValid } from "date-fns";
-import { useBeautifulMentions } from "lexical-beautiful-mentions";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { Editor, EditorContext } from "@/components/Editor";
+import FileSelect from "@/components/FileSelect";
+import LocalizationDatePicker from "@/components/LocalizationDatePicker";
+import PrioritySelect from "@/components/PrioritySelect";
+import RecurrenceSelect from "@/components/RecurrenceSelect";
 import { hasTouchScreen } from "@/native-api/platform";
 import usePlatformStore from "@/stores/platform-store";
 import { formatDate, isDateEqual } from "@/utils/date";
@@ -14,11 +14,11 @@ import {
   stringifyTask,
 } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
-import { Editor, EditorContext } from "@/components/Editor";
-import FileSelect from "@/components/FileSelect";
-import LocalizationDatePicker from "@/components/LocalizationDatePicker";
-import PrioritySelect from "@/components/PrioritySelect";
-import RecurrenceSelect from "@/components/RecurrenceSelect";
+import { Box, Button, Grid, Stack } from "@mui/material";
+import { isValid } from "date-fns";
+import { useBeautifulMentions } from "lexical-beautiful-mentions";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 interface TaskFormProps {
   value: string;
@@ -47,7 +47,7 @@ export default function TaskForm(props: TaskFormProps) {
         acc[key + ":"] = props.tags[key];
         return acc;
       },
-      {} as Record<string, string[]>
+      {} as Record<string, string[]>,
     );
     if (Object.keys(tags).every((k) => k !== "due:")) {
       tags["due:"] = [];
@@ -62,7 +62,7 @@ export default function TaskForm(props: TaskFormProps) {
       "\\w+:": [],
       ..._tags,
     }),
-    [contexts, projects, _tags]
+    [contexts, projects, _tags],
   );
 
   const triggers = useMemo(() => Object.keys(items), [items]);

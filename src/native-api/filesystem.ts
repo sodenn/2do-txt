@@ -1,3 +1,5 @@
+import { getPlatform } from "@/native-api/platform";
+import { createEventEmitter } from "@/utils/event-emitter";
 import {
   Encoding as CapEncoding,
   Filesystem as CapFilesystem,
@@ -6,8 +8,6 @@ import {
 import { open, save } from "@tauri-apps/api/dialog";
 import { readTextFile, removeFile, writeTextFile } from "@tauri-apps/api/fs";
 import { documentDir, join as tauriJoin } from "@tauri-apps/api/path";
-import { createEventEmitter } from "@/utils/event-emitter";
-import { getPlatform } from "@/native-api/platform";
 
 interface Filesystem {
   getUri(path: string): Promise<string>;
@@ -66,7 +66,7 @@ export function getFileNameWithoutExt(path: string) {
 
 async function _getUniqueFilePath(
   filePath: string,
-  fileExists: (path: string) => Promise<boolean>
+  fileExists: (path: string) => Promise<boolean>,
 ): Promise<{ filePath: string; fileName: string }> {
   let exists = true;
   let p = filePath;
@@ -87,7 +87,7 @@ async function _getUniqueFilePath(
 const capFilesystem: Filesystem = {
   async getUri(path: string) {
     return CapFilesystem.getUri({ directory: Directory.Documents, path }).then(
-      (result) => result.uri
+      (result) => result.uri,
     );
   },
   async readFile(path: string) {
@@ -109,7 +109,7 @@ const capFilesystem: Filesystem = {
   },
   async readdir(path: string) {
     return CapFilesystem.readdir({ directory: Directory.Documents, path }).then(
-      (result) => result.files.map((file) => ({ name: file.name }))
+      (result) => result.files.map((file) => ({ name: file.name })),
     );
   },
   async fileExists(path: string) {

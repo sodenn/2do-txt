@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { arrayMove } from "@/utils/array";
 import {
   TaskList,
@@ -10,6 +9,7 @@ import {
   sortByOriginalOrder,
 } from "@/utils/task-list";
 import { defaultTodoFilePath } from "@/utils/todo-files";
+import { describe, expect, it } from "vitest";
 
 describe("task-list", () => {
   it("should group by context", async () => {

@@ -1,5 +1,5 @@
-import { Box, BoxProps, styled } from "@mui/material";
 import TagBox from "@/components/TagBox";
+import { Box, BoxProps, styled } from "@mui/material";
 
 interface PriorityBoxProps extends BoxProps {
   completed: boolean;

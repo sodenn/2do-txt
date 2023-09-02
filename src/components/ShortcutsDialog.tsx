@@ -1,3 +1,5 @@
+import Kbd from "@/components/Kbd";
+import useShortcutsDialogStore from "@/stores/shortcuts-dialog-store";
 import {
   Button,
   Dialog,
@@ -11,8 +13,6 @@ import {
   TableRow,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useShortcutsDialogStore from "@/stores/shortcuts-dialog-store";
-import Kbd from "@/components/Kbd";
 
 export default function ShortcutsDialog() {
   const { t } = useTranslation();

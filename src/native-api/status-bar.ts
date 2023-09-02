@@ -1,5 +1,5 @@
-import { StatusBar, Style } from "@capacitor/status-bar";
 import { ThemeMode } from "@/stores/theme-store";
+import { StatusBar, Style } from "@capacitor/status-bar";
 
 export function setStatusBarStyling(mode: ThemeMode) {
   StatusBar.setStyle({

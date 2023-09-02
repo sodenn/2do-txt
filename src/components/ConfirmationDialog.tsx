@@ -1,3 +1,4 @@
+import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
 import {
   Button,
   Dialog,
@@ -6,7 +7,6 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
 
 export default function ConfirmationDialog() {
   const open = useConfirmationDialogStore((state) => state.open);

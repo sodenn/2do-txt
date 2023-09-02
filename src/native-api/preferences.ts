@@ -20,7 +20,7 @@ export type PreferencesKeys =
   | "Dropbox-code-verifier";
 
 export async function getPreferencesItem<T extends string>(
-  key: PreferencesKeys
+  key: PreferencesKeys,
 ) {
   const result = await Preferences.get({ key });
   if (result) {
@@ -31,13 +31,13 @@ export async function getPreferencesItem<T extends string>(
 
 export async function setPreferencesItem(
   key: PreferencesKeys,
-  value: string
+  value: string,
 ): Promise<void> {
   return Preferences.set({ key, value: value });
 }
 
 export async function removePreferencesItem(
-  key: PreferencesKeys
+  key: PreferencesKeys,
 ): Promise<void> {
   return Preferences.remove({ key });
 }

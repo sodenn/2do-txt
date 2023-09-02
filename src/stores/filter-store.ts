@@ -1,10 +1,10 @@
-import { createContext, useContext } from "react";
-import { useStore as useZustandStore } from "zustand";
-import { createStore } from "zustand/vanilla";
 import {
   getPreferencesItem,
   setPreferencesItem,
 } from "@/native-api/preferences";
+import { createContext, useContext } from "react";
+import { useStore as useZustandStore } from "zustand";
+import { createStore } from "zustand/vanilla";
 
 export type SortKey =
   | "priority"
@@ -99,7 +99,7 @@ export async function filterLoader(): Promise<FilterStoreData> {
 }
 
 export function initializeFilterStore(
-  preloadedState: Partial<FilterStoreInterface> = {}
+  preloadedState: Partial<FilterStoreInterface> = {},
 ) {
   return createStore<FilterStoreInterface>((set) => ({
     ...getDefaultInitialState(),
@@ -155,7 +155,7 @@ export function initializeFilterStore(
 }
 
 export default function useFilterStore<T = FilterStoreInterface>(
-  selector: (state: FilterStoreInterface) => T = (state) => state as T
+  selector: (state: FilterStoreInterface) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

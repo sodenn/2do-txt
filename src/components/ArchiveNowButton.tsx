@@ -1,6 +1,6 @@
+import useTask from "@/utils/useTask";
 import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useTask from "@/utils/useTask";
 
 export default function ArchiveNowButton() {
   const { t } = useTranslation();

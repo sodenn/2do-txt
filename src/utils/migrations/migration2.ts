@@ -58,7 +58,7 @@ export async function migrate2() {
   oldDoneRefs = oldDoneRefs
     .map((ref) => {
       const oldTodoRef = oldTodoRefs.find(
-        (r) => r.localFilePath === ref.localFilePath
+        (r) => r.localFilePath === ref.localFilePath,
       );
       const doneFilePath = getDoneFilePath(ref.localFilePath);
       const lastSync = oldTodoRef?.lastSync || ref.lastSync;
@@ -83,7 +83,7 @@ export async function migrate2() {
         .catch(() => {
           // ignore error
           return undefined;
-        })
+        }),
     ),
     ...oldDoneRefs.map(({ localFilePath }) =>
       readFile(localFilePath)
@@ -99,7 +99,7 @@ export async function migrate2() {
         .catch(() => {
           // no done file found
           return undefined;
-        })
+        }),
     ),
   ]);
 
@@ -120,10 +120,10 @@ async function migrateCloudFileRefs({
   files,
 }: MigrateCloudFileRefsOptions) {
   const todoFiles = files.filter(
-    (file): file is ReadResult => file?.fileType === "todo"
+    (file): file is ReadResult => file?.fileType === "todo",
   );
   const doneFiles = files.filter(
-    (file): file is ReadResult => file?.fileType === "done"
+    (file): file is ReadResult => file?.fileType === "done",
   );
 
   const todoRefs: CloudFileRef[] = oldTodoRefs.map((ref) => ({

@@ -1,3 +1,4 @@
+import { hasTouchScreen } from "@/native-api/platform";
 import {
   Autocomplete,
   FormControl,
@@ -11,7 +12,6 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { hasTouchScreen } from "@/native-api/platform";
 
 const options = [
   "A",

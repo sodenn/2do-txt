@@ -1,9 +1,3 @@
-import { Checkbox, FormControlLabel, Stack } from "@mui/material";
-import { Trans, useTranslation } from "react-i18next";
-import useSettingsStore from "@/stores/settings-store";
-import useSideSheetStore from "@/stores/side-sheet-store";
-import { useCloudStorage } from "@/utils/CloudStorage";
-import useNotification from "@/utils/useNotification";
 import ArchiveModeSelect from "@/components/ArchiveModeSelect";
 import ArchiveNowButton from "@/components/ArchiveNowButton";
 import CloudStorageConnectionButtons from "@/components/CloudStorageConnectionButtons";
@@ -12,6 +6,12 @@ import LanguageSelect from "@/components/LanguageSelect";
 import PriorityTransformationSelect from "@/components/PriorityTransformationSelect";
 import TaskViewSelect from "@/components/TaskViewSelect";
 import ThemeModeSelect from "@/components/ThemeModeSelect";
+import useSettingsStore from "@/stores/settings-store";
+import useSideSheetStore from "@/stores/side-sheet-store";
+import { useCloudStorage } from "@/utils/CloudStorage";
+import useNotification from "@/utils/useNotification";
+import { Checkbox, FormControlLabel, Stack } from "@mui/material";
+import { Trans, useTranslation } from "react-i18next";
 
 export default function Settings() {
   const { t } = useTranslation();

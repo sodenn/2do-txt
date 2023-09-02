@@ -1,7 +1,7 @@
-import { styled } from "@mui/material";
-import { PropsWithChildren } from "react";
 import { hasTouchScreen } from "@/native-api/platform";
 import usePlatformStore from "@/stores/platform-store";
+import { styled } from "@mui/material";
+import { PropsWithChildren } from "react";
 
 const StyledKbd = styled("kbd")(({ theme }) => ({
   padding: "0 0.4em",

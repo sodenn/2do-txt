@@ -1,3 +1,8 @@
+import StartEllipsis from "@/components/StartEllipsis";
+import { readFile } from "@/native-api/filesystem";
+import useFilterStore from "@/stores/filter-store";
+import { addTodoFilePath } from "@/utils/settings";
+import useTask from "@/utils/useTask";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
@@ -14,11 +19,6 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { readFile } from "@/native-api/filesystem";
-import useFilterStore from "@/stores/filter-store";
-import { addTodoFilePath } from "@/utils/settings";
-import useTask from "@/utils/useTask";
-import StartEllipsis from "@/components/StartEllipsis";
 
 interface ClosedFileListProps {
   list: string[];

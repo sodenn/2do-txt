@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api/tauri";
 import { getPlatform } from "@/native-api/platform";
+import { invoke } from "@tauri-apps/api/tauri";
 
 interface OauthOptions {
   authUrl: string;
@@ -14,7 +14,7 @@ function mobileOauth(opt: OauthOptions) {
     const browser = cordova.InAppBrowser.open(
       authUrl,
       "_blank",
-      "location=yes"
+      "location=yes",
     );
 
     let isResolved = false;

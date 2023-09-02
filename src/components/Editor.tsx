@@ -1,3 +1,4 @@
+import { usePaletteMode } from "@/stores/theme-store";
 import { css } from "@emotion/css";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -48,7 +49,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { usePaletteMode } from "@/stores/theme-store";
 
 interface EditorContextProps {
   initialValue: string;

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
-interface ListenerMap {
+export interface HotkeyListeners {
   [key: string]: (ev: KeyboardEvent) => unknown;
 }
 
-export const useHotkeys = (listeners: ListenerMap) => {
+export const useHotkeys = (listeners: HotkeyListeners) => {
   useEffect(() => {
     const handler = (ev: KeyboardEvent) => {
       const listener = listeners[ev.key];

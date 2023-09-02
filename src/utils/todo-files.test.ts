@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { defaultTodoFilePath, getDoneFilePath } from "@/utils/todo-files";
+import { describe, expect, it } from "vitest";
 
 describe("todo-files", () => {
   it("should get done file path from long source path", async () => {

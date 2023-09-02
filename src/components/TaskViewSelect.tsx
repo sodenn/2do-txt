@@ -1,8 +1,8 @@
-import { MenuItem, Select } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import NewBadge from "@/components/NewBadge";
 import useFilterStore from "@/stores/filter-store";
 import useSettingsStore, { TaskView } from "@/stores/settings-store";
-import NewBadge from "@/components/NewBadge";
+import { MenuItem, Select } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export default function TaskViewSelect() {
   const { t } = useTranslation();

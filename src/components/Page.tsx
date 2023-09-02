@@ -1,5 +1,3 @@
-import { Box, Container, styled } from "@mui/material";
-import useScrollingStore from "@/stores/scrolling-store";
 import ArchivedTasksDialog from "@/components/ArchivedTasksDialog";
 import CloudFileDialog from "@/components/CloudFileDialog";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
@@ -14,6 +12,8 @@ import SideSheet, { MainContainer } from "@/components/SideSheet";
 import TaskDialog from "@/components/TaskDialog";
 import TaskView from "@/components/TaskView";
 import WebDAVDialog from "@/components/WebDAVDialog";
+import useScrollingStore from "@/stores/scrolling-store";
+import { Box, Container, styled } from "@mui/material";
 
 const SafeAreaContainer = styled(Container)({
   paddingRight: "env(safe-area-inset-right)",

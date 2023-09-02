@@ -1,3 +1,9 @@
+import Filter from "@/components/Filter";
+import Settings from "@/components/Settings";
+import usePlatformStore from "@/stores/platform-store";
+import useScrollingStore from "@/stores/scrolling-store";
+import useSideSheetStore from "@/stores/side-sheet-store";
+import useTask from "@/utils/useTask";
 import { TabContext, TabPanel } from "@mui/lab";
 import {
   Box,
@@ -11,12 +17,6 @@ import {
 } from "@mui/material";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import usePlatformStore from "@/stores/platform-store";
-import useScrollingStore from "@/stores/scrolling-store";
-import useSideSheetStore from "@/stores/side-sheet-store";
-import useTask from "@/utils/useTask";
-import Filter from "@/components/Filter";
-import Settings from "@/components/Settings";
 
 const drawerWidth = 320;
 

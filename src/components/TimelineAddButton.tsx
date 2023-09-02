@@ -1,3 +1,6 @@
+import useTaskDialogStore from "@/stores/task-dialog-store";
+import { todayDate } from "@/utils/date";
+import { TimelineTask } from "@/utils/task-list";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import {
   TimelineConnector,
@@ -10,9 +13,6 @@ import { Box, Chip, IconButton } from "@mui/material";
 import { format } from "date-fns";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import useTaskDialogStore from "@/stores/task-dialog-store";
-import { todayDate } from "@/utils/date";
-import { TimelineTask } from "@/utils/task-list";
 
 interface TimelineAddButtonProps {
   date?: Date;
@@ -119,7 +119,7 @@ const TimelineAddButton = forwardRef<HTMLElement, TimelineAddButtonProps>(
         </TimelineContent>
       </TimelineItem>
     );
-  }
+  },
 );
 
 export default TimelineAddButton;

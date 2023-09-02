@@ -1,10 +1,10 @@
+import { getPlatform } from "@/native-api/platform";
 import { Network } from "@capacitor/network";
 import { Body, getClient, ResponseType } from "@tauri-apps/api/http";
-import { getPlatform } from "@/native-api/platform";
 
 export function request(
   input: RequestInfo | URL,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<Response> {
   const platform = getPlatform();
   return platform === "desktop"
@@ -14,7 +14,7 @@ export function request(
 
 async function desktopFetch(
   input: RequestInfo | URL,
-  init: RequestInit = {}
+  init: RequestInit = {},
 ): Promise<Response> {
   const client = await getClient();
   const options =
@@ -82,10 +82,10 @@ export async function isConnected() {
 }
 
 export function addNetworkStatusChangeListener(
-  listener: (connected: boolean) => void
+  listener: (connected: boolean) => void,
 ) {
   Network.addListener("networkStatusChange", ({ connected }) =>
-    listener(connected)
+    listener(connected),
   );
 }
 

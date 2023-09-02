@@ -1,7 +1,7 @@
+import { useIsInViewport } from "@/utils/useIsInViewport";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Box, Fab, Fade, styled } from "@mui/material";
-import { useIsInViewport } from "@/utils/useIsInViewport";
 
 interface ScrollTopProps {
   target: HTMLElement;

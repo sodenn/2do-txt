@@ -1,3 +1,4 @@
+import SearchInput from "@/components/SearchInput";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
@@ -8,7 +9,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { forwardRef, useRef, useState } from "react";
-import SearchInput from "@/components/SearchInput";
 
 interface ExpandableSearchProps extends InputBaseProps {
   onExpand?: (expanded: boolean) => void;

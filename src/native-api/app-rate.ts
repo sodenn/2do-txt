@@ -1,11 +1,11 @@
-import { RateApp } from "capacitor-rate-app";
-import { addWeeks, isAfter } from "date-fns";
-import { parseDate } from "@/utils/date";
 import { getPlatform } from "@/native-api/platform";
 import {
   getPreferencesItem,
   setPreferencesItem,
 } from "@/native-api/preferences";
+import { parseDate } from "@/utils/date";
+import { RateApp } from "capacitor-rate-app";
+import { addWeeks, isAfter } from "date-fns";
 
 function getNextRatingRequestDate() {
   return addWeeks(new Date(), 2);
@@ -25,11 +25,11 @@ async function increaseCounter(counter: number) {
 }
 
 function setNextRatingRequestDate(
-  nextRatingRequestDate = getNextRatingRequestDate()
+  nextRatingRequestDate = getNextRatingRequestDate(),
 ) {
   return setPreferencesItem(
     "app-rate-date",
-    nextRatingRequestDate.toISOString()
+    nextRatingRequestDate.toISOString(),
   );
 }
 

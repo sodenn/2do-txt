@@ -1,8 +1,8 @@
+import useNetworkStore from "@/stores/network-store";
 import { differenceInSeconds } from "date-fns";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import useNetworkStore from "@/stores/network-store";
 
 export default function useNetwork() {
   const { t } = useTranslation();
@@ -23,7 +23,7 @@ export default function useNetwork() {
         setDisplayDate(new Date());
       }
     },
-    [displayDate, enqueueSnackbar, setConnected, setDisplayDate, t]
+    [displayDate, enqueueSnackbar, setConnected, setDisplayDate, t],
   );
 
   return { connected, handleDisconnected };

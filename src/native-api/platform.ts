@@ -4,7 +4,7 @@ import { Capacitor } from "@capacitor/core";
 export type Platform = "desktop" | "web" | "ios" | "android";
 
 export const isSafari = /^((?!chrome|android).)*safari/i.test(
-  navigator.userAgent
+  navigator.userAgent,
 );
 
 export function getPlatform(): Platform {
@@ -67,12 +67,12 @@ export async function addBecomeActiveListener(listener: () => unknown) {
 }
 
 export async function removeAllBecomeActiveListeners(
-  listeners: (() => unknown)[]
+  listeners: (() => unknown)[],
 ) {
   const platform = getPlatform();
   if (platform === "web" || platform === "desktop") {
     listeners?.forEach((listener) =>
-      window.removeEventListener("focus", listener)
+      window.removeEventListener("focus", listener),
     );
   }
   if (platform === "ios" || platform === "android") {

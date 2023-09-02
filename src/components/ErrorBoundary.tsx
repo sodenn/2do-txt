@@ -1,3 +1,5 @@
+import logo from "@/images/logo.png";
+import { hideSplashScreen } from "@/native-api/splash-screen";
 import {
   Alert,
   AppBar,
@@ -9,8 +11,6 @@ import {
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouteError } from "react-router-dom";
-import logo from "@/images/logo.png";
-import { hideSplashScreen } from "@/native-api/splash-screen";
 
 export default function ErrorBoundary() {
   const { t } = useTranslation();

@@ -1,3 +1,12 @@
+import useFilterStore, { FilterType, SortKey } from "@/stores/filter-store";
+import { groupBy } from "@/utils/array";
+import {
+  formatDate,
+  formatLocaleDate,
+  parseDate,
+  todayDate,
+} from "@/utils/date";
+import { Task, parseTask, stringifyTask } from "@/utils/task";
 import {
   addDays,
   isAfter,
@@ -8,15 +17,6 @@ import {
 } from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import useFilterStore, { FilterType, SortKey } from "@/stores/filter-store";
-import { groupBy } from "@/utils/array";
-import {
-  formatDate,
-  formatLocaleDate,
-  parseDate,
-  todayDate,
-} from "@/utils/date";
-import { Task, parseTask, stringifyTask } from "@/utils/task";
 
 interface TaskListParseResult extends TaskListAttributes {
   items: Task[];
@@ -122,7 +122,7 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
 
 export function useTimelineTasks(
   taskLists: TaskList[],
-  activeTaskList?: TaskList
+  activeTaskList?: TaskList,
 ): TimelineTask[] {
   taskLists = activeTaskList ? [activeTaskList] : taskLists;
   const items = taskLists.flatMap((list) => list.items);
@@ -172,7 +172,9 @@ export function useTimelineTasks(
   const dueTasks = filteredTasks
     .filter(
       (t) =>
-        t.dueDate && !t.completionDate && isBefore(t.dueDate, addDays(today, 1))
+        t.dueDate &&
+        !t.completionDate &&
+        isBefore(t.dueDate, addDays(today, 1)),
     )
     .map((t) => ({ ...t, _timelineDate: today }))
     .sort((a, b) => timelineSort(a.dueDate, b.dueDate, "asc"));
@@ -260,7 +262,7 @@ export function useTimelineTasks(
 
 export function useTaskGroups(
   taskLists: TaskList[],
-  activeTaskList?: TaskList
+  activeTaskList?: TaskList,
 ) {
   taskLists = activeTaskList ? [activeTaskList] : taskLists;
 
@@ -293,7 +295,7 @@ export function useTaskGroups(
   return filteredTaskLists.map((filteredTaskList) => ({
     ...filteredTaskList,
     groups: convertToTaskGroups(filteredTaskList.items, sortBy).map((item) =>
-      formatGroupLabel(item, sortBy)
+      formatGroupLabel(item, sortBy),
     ),
   }));
 }
@@ -304,7 +306,7 @@ function andTypePredicate(
   activePriorities: string[],
   activeProjects: string[],
   activeContexts: string[],
-  activeTags: string[]
+  activeTags: string[],
 ) {
   return (task: Task) => {
     if (hideCompletedTasks && task.completed) {
@@ -318,25 +320,25 @@ function andTypePredicate(
     const priorityCondition =
       activePriorities.length === 0 ||
       activePriorities.every(
-        (activePriority) => task.priority === activePriority
+        (activePriority) => task.priority === activePriority,
       );
 
     const projectCondition =
       activeProjects.length === 0 ||
       activeProjects.every((activeProject) =>
-        task.projects.includes(activeProject)
+        task.projects.includes(activeProject),
       );
 
     const contextCondition =
       activeContexts.length === 0 ||
       activeContexts.every((activeContext) =>
-        task.contexts.includes(activeContext)
+        task.contexts.includes(activeContext),
       );
 
     const tagsCondition =
       activeTags.length === 0 ||
       activeTags.every((activeTag) =>
-        Object.keys(task.tags).includes(activeTag)
+        Object.keys(task.tags).includes(activeTag),
       );
 
     return (
@@ -355,7 +357,7 @@ function orTypePredicate(
   activePriorities: string[],
   activeProjects: string[],
   activeContexts: string[],
-  activeTags: string[]
+  activeTags: string[],
 ) {
   return (task: Task) => {
     const filterDisabled =
@@ -378,19 +380,19 @@ function orTypePredicate(
       task.body.toLowerCase().includes(searchTerm.toLowerCase());
 
     const priorityCondition = activePriorities.some(
-      (activePriority) => task.priority === activePriority
+      (activePriority) => task.priority === activePriority,
     );
 
     const projectCondition = activeProjects.some((activeProject) =>
-      task.projects.includes(activeProject)
+      task.projects.includes(activeProject),
     );
 
     const contextCondition = activeContexts.some((activeContext) =>
-      task.contexts.includes(activeContext)
+      task.contexts.includes(activeContext),
     );
 
     const tagsCondition = activeTags.some((activeTag) =>
-      Object.keys(task.tags).includes(activeTag)
+      Object.keys(task.tags).includes(activeTag),
     );
 
     return (
@@ -405,7 +407,7 @@ function orTypePredicate(
 
 export function filterTasks<T extends Task>(
   tasks: T[],
-  filter: TaskListFilter
+  filter: TaskListFilter,
 ) {
   const {
     type,
@@ -424,7 +426,7 @@ export function filterTasks<T extends Task>(
           activePriorities,
           activeProjects,
           activeContexts,
-          activeTags
+          activeTags,
         )
       : andTypePredicate(
           hideCompletedTasks,
@@ -432,14 +434,14 @@ export function filterTasks<T extends Task>(
           activePriorities,
           activeProjects,
           activeContexts,
-          activeTags
-        )
+          activeTags,
+        ),
   );
 }
 
 export function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
   const groups = groupBy(taskList.sort(sortByOriginalOrder), (task) =>
-    getGroupKey(task, sortBy)
+    getGroupKey(task, sortBy),
   );
   return Object.entries(groups)
     .map(mapGroups)
@@ -448,7 +450,7 @@ export function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
 
 function getTaskListAttributes(
   taskList: Task[],
-  incompleteTasksOnly: boolean
+  incompleteTasksOnly: boolean,
 ): TaskListAttributes {
   const priorities = taskList
     .filter((i) => !incompleteTasksOnly || !i.completed)
@@ -503,16 +505,16 @@ export function getCommonTaskListAttributes(taskLists: TaskList[]) {
   const priorities = reduceDictionaries(taskLists.map((l) => l.priorities));
 
   const incompleteProjects = reduceDictionaries(
-    taskLists.map((l) => l.incomplete.projects)
+    taskLists.map((l) => l.incomplete.projects),
   );
   const incompleteTags = reduceDictionaries(
-    taskLists.map((l) => l.incomplete.tags)
+    taskLists.map((l) => l.incomplete.tags),
   );
   const incompleteContexts = reduceDictionaries(
-    taskLists.map((l) => l.incomplete.contexts)
+    taskLists.map((l) => l.incomplete.contexts),
   );
   const incompletePriorities = reduceDictionaries(
-    taskLists.map((l) => l.incomplete.priorities)
+    taskLists.map((l) => l.incomplete.priorities),
   );
 
   return {
@@ -569,7 +571,7 @@ function useFormatGroupLabel() {
         return group;
       }
     },
-    [language, t]
+    [language, t],
   );
 }
 
@@ -662,7 +664,7 @@ function timelineSort(a?: Date, b?: Date, direction: "asc" | "desc" = "desc") {
 }
 
 function reduceDictionaries<T extends number | string[]>(
-  dictionaries: Record<string, T>[]
+  dictionaries: Record<string, T>[],
 ): Record<string, T> {
   if (containsNumberDictionaries(dictionaries)) {
     const arr: Record<string, number>[] = dictionaries;
@@ -700,19 +702,19 @@ function reduceDictionaries<T extends number | string[]>(
 }
 
 function containsNumberDictionaries(
-  dictionary: Record<string, any>[]
+  dictionary: Record<string, any>[],
 ): dictionary is Record<string, number>[] {
   return dictionary.every((dictionary) =>
-    Object.values(dictionary).every((v) => typeof v === "number")
+    Object.values(dictionary).every((v) => typeof v === "number"),
   );
 }
 
 function containsStringArrayDictionaries(
-  dictionary: Record<string, any>[]
+  dictionary: Record<string, any>[],
 ): dictionary is Record<string, string[]>[] {
   return dictionary.every((dictionary) =>
     Object.values(dictionary).every(
-      (v) => Array.isArray(v) && v.every((s) => typeof s === "string")
-    )
+      (v) => Array.isArray(v) && v.every((s) => typeof s === "string"),
+    ),
   );
 }

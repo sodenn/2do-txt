@@ -1,5 +1,5 @@
-import { Keyboard, KeyboardStyle as _KeyboardStyle } from "@capacitor/keyboard";
 import { getPlatform } from "@/native-api/platform";
+import { Keyboard, KeyboardStyle as _KeyboardStyle } from "@capacitor/keyboard";
 
 interface KeyboardInfo {
   keyboardHeight: number;
@@ -8,7 +8,7 @@ interface KeyboardInfo {
 type KeyboardStyle = "dark" | "light" | "system";
 
 export async function addKeyboardDidShowListener(
-  listener: (info: KeyboardInfo) => void
+  listener: (info: KeyboardInfo) => void,
 ) {
   const platform = getPlatform();
   if (platform === "ios" || platform === "android") {

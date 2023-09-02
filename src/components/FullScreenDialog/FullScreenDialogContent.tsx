@@ -1,10 +1,10 @@
-import { Box, styled } from "@mui/material";
-import { PropsWithChildren, useEffect, useState } from "react";
 import {
   addKeyboardDidHideListener,
   addKeyboardDidShowListener,
   removeAllKeyboardListeners,
 } from "@/native-api/keyboard";
+import { Box, styled } from "@mui/material";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { useFullScreenDialog } from "./FullScreenDialogProvider";
 
 const SafeArea = styled("div")({

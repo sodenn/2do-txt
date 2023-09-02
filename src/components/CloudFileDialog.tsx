@@ -1,3 +1,26 @@
+import {
+  FullScreenDialog,
+  FullScreenDialogContent,
+  FullScreenDialogTitle,
+} from "@/components/FullScreenDialog";
+import { getDirname, join, selectFolder } from "@/native-api/filesystem";
+import useCloudFileDialogStore from "@/stores/cloud-file-dialog-store";
+import useFileCreateDialogStore from "@/stores/file-create-dialog-store";
+import useFilterStore from "@/stores/filter-store";
+import usePlatformStore from "@/stores/platform-store";
+import useSettingsStore from "@/stores/settings-store";
+import {
+  CloudDirectory,
+  CloudFile,
+  CloudFileRef,
+  ListResult,
+  Provider,
+  WithDirectoryType,
+  WithFileType,
+  useCloudStorage,
+} from "@/utils/CloudStorage";
+import { getDoneFilePath } from "@/utils/todo-files";
+import useTask from "@/utils/useTask";
 import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -23,29 +46,6 @@ import {
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { getDirname, join, selectFolder } from "@/native-api/filesystem";
-import useCloudFileDialogStore from "@/stores/cloud-file-dialog-store";
-import useFileCreateDialogStore from "@/stores/file-create-dialog-store";
-import useFilterStore from "@/stores/filter-store";
-import usePlatformStore from "@/stores/platform-store";
-import useSettingsStore from "@/stores/settings-store";
-import {
-  CloudDirectory,
-  CloudFile,
-  CloudFileRef,
-  ListResult,
-  Provider,
-  WithDirectoryType,
-  WithFileType,
-  useCloudStorage,
-} from "@/utils/CloudStorage";
-import { getDoneFilePath } from "@/utils/todo-files";
-import useTask from "@/utils/useTask";
-import {
-  FullScreenDialog,
-  FullScreenDialogContent,
-  FullScreenDialogTitle,
-} from "@/components/FullScreenDialog";
 
 interface CloudFileDialogContentProps {
   provider?: Provider;
@@ -112,9 +112,7 @@ export default function CloudFileDialog() {
     if (!selectedFile || !open || !provider) {
       return;
     }
-
     setLoading(true);
-
     const remoteFilePath = selectedFile.path;
     let localFilePath: string;
     if (platform === "desktop") {
@@ -127,11 +125,8 @@ export default function CloudFileDialog() {
     } else {
       localFilePath = selectedFile.name;
     }
-
     const content = await downloadFile(provider, localFilePath, remoteFilePath);
-
     await createNewTodoFile(localFilePath, content);
-
     const remoteDoneFilePath = getDoneFilePath(remoteFilePath);
     const doneFile = files?.items.find((i) => i.path === remoteDoneFilePath) as
       | CloudFile
@@ -155,7 +150,6 @@ export default function CloudFileDialog() {
         );
       }
     }
-
     setActiveTaskListPath(localFilePath);
     handleClose();
   };
@@ -387,7 +381,7 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
               (c): c is CloudDirectory & WithDirectoryType =>
                 c.type === "directory",
             )
-            .map((cloudDirectory, idx) => (
+            .map((cloudDirectory) => (
               <CloudFolderButton
                 key={cloudDirectory.path}
                 cloudDirectory={cloudDirectory}

@@ -1,3 +1,7 @@
+import useFilterStore from "@/stores/filter-store";
+import usePlatformStore from "@/stores/platform-store";
+import useFilePicker from "@/utils/useFilePicker";
+import useTask from "@/utils/useTask";
 import { Fade, Paper, styled, Typography } from "@mui/material";
 import { listen } from "@tauri-apps/api/event";
 import { useSnackbar } from "notistack";
@@ -10,10 +14,6 @@ import {
 } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
-import useFilterStore from "@/stores/filter-store";
-import usePlatformStore from "@/stores/platform-store";
-import useFilePicker from "@/utils/useFilePicker";
-import useTask from "@/utils/useTask";
 
 const Root = styled("div")({
   height: "100%",

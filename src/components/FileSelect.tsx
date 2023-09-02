@@ -1,3 +1,5 @@
+import StartEllipsis from "@/components/StartEllipsis";
+import { TaskList } from "@/utils/task-list";
 import {
   FormControl,
   MenuItem,
@@ -6,8 +8,6 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TaskList } from "@/utils/task-list";
-import StartEllipsis from "@/components/StartEllipsis";
 
 interface FileSelectProps {
   options: TaskList[];

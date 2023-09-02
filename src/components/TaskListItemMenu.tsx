@@ -1,3 +1,8 @@
+import Kbd from "@/components/Kbd";
+import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
+import useTaskDialogStore from "@/stores/task-dialog-store";
+import { Task } from "@/utils/task";
+import useTask from "@/utils/useTask";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
   Box,
@@ -12,11 +17,6 @@ import {
 } from "@mui/material";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
-import useTaskDialogStore from "@/stores/task-dialog-store";
-import { Task } from "@/utils/task";
-import useTask from "@/utils/useTask";
-import Kbd from "@/components/Kbd";
 
 const ListIconButton = styled(IconButton)({
   padding: 9, // use the same padding as the checkbox on the opposite side
@@ -33,7 +33,7 @@ export default function TaskListItemMenu(props: TaskListItemMenuProps) {
   const { t } = useTranslation();
   const { deleteTask } = useTask();
   const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog
+    (state) => state.openConfirmationDialog,
   );
   const [open, setOpen] = useState(false);
   const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
