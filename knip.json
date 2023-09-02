@@ -14,7 +14,6 @@
     "@semantic-release/commit-analyzer",
     "@semantic-release/github",
     "@semantic-release/npm",
-    "@semantic-release/release-notes-generator",
-    "prettier-plugin-organize-imports"
+    "@semantic-release/release-notes-generator"
   ]
 }

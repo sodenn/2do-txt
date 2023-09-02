@@ -1,3 +1,10 @@
+import StartEllipsis from "@/components/StartEllipsis";
+import logo from "@/images/logo.png";
+import { hasTouchScreen } from "@/native-api/platform";
+import useFileManagementDialogStore from "@/stores/file-management-dialog-store";
+import useFilterStore from "@/stores/filter-store";
+import useShortcutsDialogStore from "@/stores/shortcuts-dialog-store";
+import useTask from "@/utils/useTask";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -13,13 +20,6 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import logo from "@/images/logo.png";
-import { hasTouchScreen } from "@/native-api/platform";
-import useFileManagementDialogStore from "@/stores/file-management-dialog-store";
-import useFilterStore from "@/stores/filter-store";
-import useShortcutsDialogStore from "@/stores/shortcuts-dialog-store";
-import useTask from "@/utils/useTask";
-import StartEllipsis from "@/components/StartEllipsis";
 
 const buttonMaxWidthXs = 170;
 const buttonMaxWidth = 300;

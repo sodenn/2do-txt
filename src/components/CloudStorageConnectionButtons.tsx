@@ -1,14 +1,14 @@
+import {
+  Provider,
+  cloudStorageIcons,
+  useCloudStorage,
+} from "@/utils/CloudStorage";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { LoadingButton } from "@mui/lab";
 import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Provider,
-  cloudStorageIcons,
-  useCloudStorage,
-} from "@/utils/CloudStorage";
 
 interface CloudStorageConnectionButtonsProps {
   status?: "connect" | "disconnect";

@@ -1,6 +1,5 @@
-import { Stack } from "@mui/material";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import TaskList from "@/components/TaskList";
+import TaskTimeline from "@/components/TaskTimeline";
 import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
 import useSettingsStore from "@/stores/settings-store";
 import useTaskDialogStore from "@/stores/task-dialog-store";
@@ -12,8 +11,9 @@ import {
 } from "@/utils/task-list";
 import { HotkeyListeners, useHotkeys } from "@/utils/useHotkeys";
 import useTask from "@/utils/useTask";
-import TaskList from "@/components/TaskList";
-import TaskTimeline from "@/components/TaskTimeline";
+import { Stack } from "@mui/material";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function TaskView() {
   const { t } = useTranslation();

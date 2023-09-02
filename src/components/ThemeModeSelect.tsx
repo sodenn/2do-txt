@@ -1,6 +1,6 @@
+import useThemeStore, { ThemeMode } from "@/stores/theme-store";
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useThemeStore, { ThemeMode } from "@/stores/theme-store";
 
 export default function ThemeModeSelect() {
   const { t } = useTranslation();

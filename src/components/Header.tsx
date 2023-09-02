@@ -1,14 +1,14 @@
-import { AppBar, Box, Fade, styled, Toolbar } from "@mui/material";
-import { useState } from "react";
-import usePlatformStore from "@/stores/platform-store";
-import useSideSheetStore from "@/stores/side-sheet-store";
-import useTask from "@/utils/useTask";
 import AddTaskButton from "@/components/AddTaskButton";
 import FileMenu from "@/components/FileMenu";
 import SearchBar from "@/components/SearchBar";
 import ShareButton from "@/components/ShareButton";
 import { HeaderContainer } from "@/components/SideSheet";
 import SideSheetButton from "@/components/SideSheetButton";
+import usePlatformStore from "@/stores/platform-store";
+import useSideSheetStore from "@/stores/side-sheet-store";
+import useTask from "@/utils/useTask";
+import { AppBar, Box, Fade, styled, Toolbar } from "@mui/material";
+import { useState } from "react";
 
 interface HeaderProps {
   divider?: boolean;

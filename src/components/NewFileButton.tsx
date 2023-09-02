@@ -1,7 +1,7 @@
+import useFileCreateDialogStore from "@/stores/file-create-dialog-store";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useFileCreateDialogStore from "@/stores/file-create-dialog-store";
 
 export default function NewFileButton() {
   const { t } = useTranslation();

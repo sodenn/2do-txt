@@ -1,3 +1,21 @@
+import StartEllipsis from "@/components/StartEllipsis";
+import { writeToClipboard } from "@/native-api/clipboard";
+import { fileExists, readFile } from "@/native-api/filesystem";
+import { hasTouchScreen } from "@/native-api/platform";
+import usePlatformStore from "@/stores/platform-store";
+import useSettingsStore from "@/stores/settings-store";
+import {
+  CloudFileRef,
+  CloudStorageError,
+  Provider,
+  WithIdentifier,
+  cloudStorageIcons,
+  useCloudStorage,
+} from "@/utils/CloudStorage";
+import { formatLocalDateTime, parseDate } from "@/utils/date";
+import { TaskList } from "@/utils/task-list";
+import { getDoneFilePath } from "@/utils/todo-files";
+import useTask from "@/utils/useTask";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -25,24 +43,6 @@ import { forwardRef, memo, useEffect, useMemo, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { List as MovableList, arrayMove } from "react-movable";
 import { OnChangeMeta } from "react-movable/lib/types";
-import { writeToClipboard } from "@/native-api/clipboard";
-import { fileExists, readFile } from "@/native-api/filesystem";
-import { hasTouchScreen } from "@/native-api/platform";
-import usePlatformStore from "@/stores/platform-store";
-import useSettingsStore from "@/stores/settings-store";
-import {
-  CloudFileRef,
-  CloudStorageError,
-  Provider,
-  WithIdentifier,
-  cloudStorageIcons,
-  useCloudStorage,
-} from "@/utils/CloudStorage";
-import { formatLocalDateTime, parseDate } from "@/utils/date";
-import { TaskList } from "@/utils/task-list";
-import { getDoneFilePath } from "@/utils/todo-files";
-import useTask from "@/utils/useTask";
-import StartEllipsis from "@/components/StartEllipsis";
 
 type CloudFileRefWithIdentifier = CloudFileRef & WithIdentifier;
 

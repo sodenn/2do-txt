@@ -1,3 +1,8 @@
+import { setKeyboardStyle } from "@/native-api/keyboard";
+import { setPreferencesItem } from "@/native-api/preferences";
+import { hideSplashScreen } from "@/native-api/splash-screen";
+import { setStatusBarStyling } from "@/native-api/status-bar";
+import useThemeStore, { ThemeMode } from "@/stores/theme-store";
 import {
   createTheme,
   CssBaseline,
@@ -10,11 +15,6 @@ import {
 import { deDE, enUS, Localization } from "@mui/material/locale";
 import { PropsWithChildren, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { setKeyboardStyle } from "@/native-api/keyboard";
-import { setPreferencesItem } from "@/native-api/preferences";
-import { hideSplashScreen } from "@/native-api/splash-screen";
-import { setStatusBarStyling } from "@/native-api/status-bar";
-import useThemeStore, { ThemeMode } from "@/stores/theme-store";
 
 const translations: Record<string, Localization> = {
   en: enUS,
