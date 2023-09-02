@@ -1,8 +1,8 @@
+import { Language, useSettingsStore } from "@/stores/settings-store";
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useSettingsStore, { Language } from "../stores/settings-store";
 
-const LanguageSelect = () => {
+export function LanguageSelect() {
   const { t } = useTranslation();
   const language = useSettingsStore((state) => state.language);
   const changeLanguage = useSettingsStore((state) => state.changeLanguage);
@@ -22,6 +22,4 @@ const LanguageSelect = () => {
       </MenuItem>
     </Select>
   );
-};
-
-export default LanguageSelect;
+}

@@ -1,8 +1,8 @@
+import { todayDate } from "@/utils/date";
 import { Badge, styled } from "@mui/material";
 import { isAfter } from "date-fns";
 import { PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
-import { todayDate } from "../utils/date";
 
 interface NewBadgeProps extends PropsWithChildren {
   till: Date;
@@ -14,7 +14,7 @@ const StyledBadge = styled(Badge)({
   },
 });
 
-const NewBadge = ({ till, children }: NewBadgeProps) => {
+export function NewBadge({ till, children }: NewBadgeProps) {
   const today = todayDate();
   const { t } = useTranslation();
 
@@ -27,6 +27,4 @@ const NewBadge = ({ till, children }: NewBadgeProps) => {
       {children}
     </StyledBadge>
   );
-};
-
-export default NewBadge;
+}

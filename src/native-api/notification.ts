@@ -1,11 +1,14 @@
+import logo from "@/images/logo.png";
+import { getPlatform } from "@/native-api/platform";
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "@/native-api/preferences";
+import { dateReviver } from "@/utils/date";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { differenceInHours, isAfter, subDays } from "date-fns";
-import logo from "../images/logo.png";
-import { dateReviver } from "../utils/date";
-import { getPlatform } from "./platform";
-import { getPreferencesItem, setPreferencesItem } from "./preferences";
 
-interface Notification {
+export interface Notification {
   id: number;
   title: string;
   body: string;
@@ -185,35 +188,35 @@ const webNotification: WebNotification = {
   },
 };
 
-async function subscribeNotifications(): Promise<() => void> {
+export async function subscribeNotifications(): Promise<() => void> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.subscribe()
     : webNotification.subscribe();
 }
 
-async function cancelNotifications(ids: number[]): Promise<void> {
+export async function cancelNotifications(ids: number[]): Promise<void> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.cancel(ids)
     : webNotification.cancel(ids);
 }
 
-async function isNotificationPermissionGranted(): Promise<boolean> {
+export async function isNotificationPermissionGranted(): Promise<boolean> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.isPermissionGranted()
     : webNotification.isPermissionGranted();
 }
 
-async function requestNotificationPermission(): Promise<boolean> {
+export async function requestNotificationPermission(): Promise<boolean> {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.requestPermission()
     : webNotification.requestPermission();
 }
 
-async function scheduleNotifications(
+export async function scheduleNotifications(
   notifications: Notification[],
 ): Promise<number[]> {
   const platform = getPlatform();
@@ -222,19 +225,9 @@ async function scheduleNotifications(
     : webNotification.schedule(notifications);
 }
 
-async function shouldNotificationsBeRescheduled() {
+export async function shouldNotificationsBeRescheduled() {
   const platform = getPlatform();
   return ["ios", "android"].includes(platform)
     ? mobileNotification.shouldNotificationsBeRescheduled()
     : webNotification.shouldNotificationsBeRescheduled();
 }
-
-export {
-  cancelNotifications,
-  isNotificationPermissionGranted,
-  requestNotificationPermission,
-  scheduleNotifications,
-  shouldNotificationsBeRescheduled,
-  subscribeNotifications,
-};
-export type { Notification };

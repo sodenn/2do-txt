@@ -1,5 +1,5 @@
+import { getFileNameWithoutExt, join } from "@/native-api/filesystem";
 import { describe, expect, it } from "vitest";
-import { getFileNameWithoutExt, join } from "./filesystem";
 
 describe("filesystem", () => {
   it("should return the filename without its extension", async () => {

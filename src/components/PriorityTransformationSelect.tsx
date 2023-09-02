@@ -1,10 +1,11 @@
+import {
+  PriorityTransformation,
+  useSettingsStore,
+} from "@/stores/settings-store";
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useSettingsStore, {
-  PriorityTransformation,
-} from "../stores/settings-store";
 
-const PriorityTransformationSelect = () => {
+export function PriorityTransformationSelect() {
   const { t } = useTranslation();
   const priorityTransformation = useSettingsStore(
     (state) => state.priorityTransformation,
@@ -28,6 +29,4 @@ const PriorityTransformationSelect = () => {
       <MenuItem value="archive">{t("Archive priority")}</MenuItem>
     </Select>
   );
-};
-
-export default PriorityTransformationSelect;
+}

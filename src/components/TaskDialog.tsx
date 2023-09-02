@@ -1,4 +1,16 @@
 import {
+  FullScreenDialog,
+  FullScreenDialogContent,
+  FullScreenDialogTitle,
+} from "@/components/FullScreenDialog";
+import { TaskForm } from "@/components/TaskForm";
+import { useSettingsStore } from "@/stores/settings-store";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
+import { formatDate, todayDate } from "@/utils/date";
+import { Task } from "@/utils/task";
+import { TaskList } from "@/utils/task-list";
+import { useTask } from "@/utils/useTask";
+import {
   Button,
   Dialog,
   DialogActions,
@@ -9,22 +21,12 @@ import {
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useSettingsStore from "../stores/settings-store";
-import useTaskDialogStore from "../stores/task-dialog-store";
-import { formatDate, todayDate } from "../utils/date";
-import { Task } from "../utils/task";
-import { TaskList } from "../utils/task-list";
-import useTask from "../utils/useTask";
-import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
-import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
-import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
-import TaskForm from "./TaskForm";
 
 const rawText = (createCreationDate: boolean, task?: Task): string => {
   return task ? task.raw : createCreationDate ? formatDate(todayDate()) : "";
 };
 
-const TaskDialog = () => {
+export function TaskDialog() {
   const { t } = useTranslation();
   const {
     findTaskListByTaskId,
@@ -180,6 +182,4 @@ const TaskDialog = () => {
       </DialogActions>
     </Dialog>
   );
-};
-
-export default TaskDialog;
+}

@@ -1,10 +1,10 @@
+import { subscribeNotifications } from "@/native-api/notification";
+import { useNotification } from "@/utils/useNotification";
 import { renderHook } from "@testing-library/react";
 import { addHours, addMinutes } from "date-fns";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { subscribeNotifications } from "../native-api/notification";
-import useNotification from "../utils/useNotification";
 
 type NotificationMethods = ReturnType<typeof useNotification>;
 

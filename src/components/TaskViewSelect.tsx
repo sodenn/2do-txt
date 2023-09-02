@@ -1,10 +1,10 @@
+import { NewBadge } from "@/components/NewBadge";
+import { useFilterStore } from "@/stores/filter-store";
+import { TaskView, useSettingsStore } from "@/stores/settings-store";
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useFilterStore from "../stores/filter-store";
-import useSettingsStore, { TaskView } from "../stores/settings-store";
-import NewBadge from "./NewBadge";
 
-const TaskViewSelect = () => {
+export function TaskViewSelect() {
   const { t } = useTranslation();
   const taskView = useSettingsStore((state) => state.taskView);
   const setTaskView = useSettingsStore((state) => state.setTaskView);
@@ -35,6 +35,4 @@ const TaskViewSelect = () => {
       </MenuItem>
     </Select>
   );
-};
-
-export default TaskViewSelect;
+}

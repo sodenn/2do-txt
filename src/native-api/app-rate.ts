@@ -1,8 +1,11 @@
+import { getPlatform } from "@/native-api/platform";
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "@/native-api/preferences";
+import { parseDate } from "@/utils/date";
 import { RateApp } from "capacitor-rate-app";
 import { addWeeks, isAfter } from "date-fns";
-import { parseDate } from "../utils/date";
-import { getPlatform } from "./platform";
-import { getPreferencesItem, setPreferencesItem } from "./preferences";
 
 function getNextRatingRequestDate() {
   return addWeeks(new Date(), 2);
@@ -56,7 +59,7 @@ async function isTimeForRatingRequest() {
   return isAfter(currentDate, nextRatingRequestDate);
 }
 
-async function promptForRating() {
+export async function promptForRating() {
   const platform = getPlatform();
   if (platform !== "ios" && platform !== "android") {
     return;
@@ -78,5 +81,3 @@ async function promptForRating() {
     RateApp.requestReview(),
   ]);
 }
-
-export { promptForRating };

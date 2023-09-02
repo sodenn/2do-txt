@@ -1,19 +1,19 @@
-import { Button } from "@mui/material";
-import { useSnackbar } from "notistack";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import {
   deleteFile,
   getFilename,
   readFile,
   writeFile,
-} from "../native-api/filesystem";
-import useArchivedTasksDialogStore from "../stores/archived-tasks-dialog-store";
-import useSettingsStore from "../stores/settings-store";
-import { useCloudStorage } from "./CloudStorage";
-import { Task } from "./task";
-import { TaskList, parseTaskList, stringifyTaskList } from "./task-list";
-import { getDoneFilePath } from "./todo-files";
+} from "@/native-api/filesystem";
+import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
+import { useSettingsStore } from "@/stores/settings-store";
+import { useCloudStorage } from "@/utils/CloudStorage";
+import { Task } from "@/utils/task";
+import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
+import { getDoneFilePath } from "@/utils/todo-files";
+import { Button } from "@mui/material";
+import { useSnackbar } from "notistack";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 interface RestoreTaskOptions {
   taskList: TaskList;
@@ -25,7 +25,7 @@ interface ArchiveTaskOptions {
   task: Task;
 }
 
-function useArchivedTask() {
+export function useArchivedTask() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const openArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.openArchivedTasksDialog,
@@ -353,5 +353,3 @@ function useArchivedTask() {
     restoreArchivedTasks,
   };
 }
-
-export default useArchivedTask;

@@ -1,4 +1,4 @@
-import { getFilename, getFileNameWithoutExt } from "../native-api/filesystem";
+import { getFilename, getFileNameWithoutExt } from "@/native-api/filesystem";
 
 export const defaultTodoFilePath = "todo.txt";
 export const defaultDoneFilePath = "done.txt";

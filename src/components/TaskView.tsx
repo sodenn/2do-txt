@@ -1,21 +1,21 @@
-import { Stack } from "@mui/material";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
-import useSettingsStore from "../stores/settings-store";
-import useTaskDialogStore from "../stores/task-dialog-store";
-import { Task } from "../utils/task";
+import { TaskList } from "@/components/TaskList";
+import { TaskTimeline } from "@/components/TaskTimeline";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useSettingsStore } from "@/stores/settings-store";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
+import { Task } from "@/utils/task";
 import {
   TimelineTask,
   useTaskGroups,
   useTimelineTasks,
-} from "../utils/task-list";
-import { useHotkeys } from "../utils/useHotkeys";
-import useTask from "../utils/useTask";
-import TaskList from "./TaskList";
-import TaskTimeline from "./TaskTimeline";
+} from "@/utils/task-list";
+import { HotkeyListeners, useHotkeys } from "@/utils/useHotkeys";
+import { useTask } from "@/utils/useTask";
+import { Stack } from "@mui/material";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-const TaskView = () => {
+export function TaskView() {
   const { t } = useTranslation();
   const taskView = useSettingsStore((state) => state.taskView);
   const { taskLists, activeTaskList, deleteTask } = useTask();
@@ -92,13 +92,16 @@ const TaskView = () => {
   }, [deleteTask, focusedTaskId, openConfirmationDialog, t, tasks]);
 
   const hotkeys = useMemo(
-    () => ({
-      ArrowUp: () => focusNextListItem("up"),
-      ArrowDown: () => focusNextListItem("down"),
-      e: openTaskDialog,
-      d: openDeleteTaskDialog,
-    }),
-    [focusNextListItem, openDeleteTaskDialog, openTaskDialog],
+    (): HotkeyListeners =>
+      taskLists.length === 0
+        ? {}
+        : {
+            ArrowUp: () => focusNextListItem("up"),
+            ArrowDown: () => focusNextListItem("down"),
+            e: openTaskDialog,
+            d: openDeleteTaskDialog,
+          },
+    [focusNextListItem, openDeleteTaskDialog, openTaskDialog, taskLists.length],
   );
 
   useHotkeys(hotkeys);
@@ -115,9 +118,9 @@ const TaskView = () => {
             .filter((i) =>
               activeTaskList ? i.filePath === activeTaskList.filePath : i,
             )
-            .map((i, idx) => (
+            .map((i) => (
               <TaskList
-                key={idx}
+                key={i.filePath}
                 fileName={i.fileName}
                 filePath={i.filePath}
                 taskGroups={i.groups}
@@ -144,6 +147,4 @@ const TaskView = () => {
       )}
     </>
   );
-};
-
-export default TaskView;
+}

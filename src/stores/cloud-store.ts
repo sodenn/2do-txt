@@ -1,14 +1,14 @@
-import { createContext, useContext } from "react";
-import { useStore as useZustandStore } from "zustand";
-import { createStore } from "zustand/vanilla";
-import { getSecureStorageItem } from "../native-api/secure-storage";
+import { getSecureStorageItem } from "@/native-api/secure-storage";
 import {
   CloudStorage,
   Provider,
   WebDAVClientOptions,
   createDropboxStorage,
   createWebDAVStorage,
-} from "../utils/CloudStorage";
+} from "@/utils/CloudStorage";
+import { createContext, useContext } from "react";
+import { useStore as useZustandStore } from "zustand";
+import { createStore } from "zustand/vanilla";
 
 interface CloudStoreData {
   authError: boolean;
@@ -33,10 +33,12 @@ export interface CloudLoaderData {
   };
 }
 
-const getDefaultInitialState = (): CloudStoreData => ({
-  cloudStorages: [],
-  authError: false,
-});
+function getDefaultInitialState(): CloudStoreData {
+  return {
+    cloudStorages: [],
+    authError: false,
+  };
+}
 
 export type CloudStoreType = ReturnType<typeof initializeCloudStore>;
 
@@ -117,9 +119,7 @@ export function initializeCloudStore({
   }));
 }
 
-export default function useCloudStore<T>(
-  selector: (state: CloudStoreInterface) => T,
-) {
+export function useCloudStore<T>(selector: (state: CloudStoreInterface) => T) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");
   return useZustandStore(store, selector);

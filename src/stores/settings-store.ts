@@ -1,11 +1,11 @@
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "@/native-api/preferences";
 import { createContext, useContext } from "react";
 import { getI18n } from "react-i18next";
 import { useStore as useZustandStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import {
-  getPreferencesItem,
-  setPreferencesItem,
-} from "../native-api/preferences";
 
 export type Language = "de" | "en";
 
@@ -37,15 +37,17 @@ interface SettingsStoreInterface extends SettingsStoreData {
   ) => void;
 }
 
-const getDefaultInitialState = (): SettingsStoreData => ({
-  createCreationDate: true,
-  createCompletionDate: true,
-  showNotifications: false,
-  archiveMode: "no-archiving",
-  taskView: "list",
-  priorityTransformation: "keep",
-  language: "en",
-});
+function getDefaultInitialState(): SettingsStoreData {
+  return {
+    createCreationDate: true,
+    createCompletionDate: true,
+    showNotifications: false,
+    archiveMode: "no-archiving",
+    taskView: "list",
+    priorityTransformation: "keep",
+    language: "en",
+  };
+}
 
 export type SettingsStoreType = ReturnType<typeof initializeSettingsStore>;
 
@@ -138,7 +140,7 @@ export function initializeSettingsStore(
   }));
 }
 
-export default function useSettingsStore<T = SettingsStoreInterface>(
+export function useSettingsStore<T = SettingsStoreInterface>(
   selector: (state: SettingsStoreInterface) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);

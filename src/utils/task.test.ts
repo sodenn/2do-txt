@@ -1,5 +1,9 @@
+import {
+  createNextRecurringTask,
+  parseTask,
+  transformPriority,
+} from "@/utils/task";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { createNextRecurringTask, parseTask, transformPriority } from "./task";
 
 describe("task priority", () => {
   it("should remove the priority of a completed task", async () => {

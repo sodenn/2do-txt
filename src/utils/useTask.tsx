@@ -1,11 +1,4 @@
-import { format, isBefore, subHours } from "date-fns";
-import FileSaver from "file-saver";
-import JSZip, { OutputType } from "jszip";
-import { isEqual, omit } from "lodash";
-import { useSnackbar } from "notistack";
-import { useCallback } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { promptForRating } from "../native-api/app-rate";
+import { promptForRating } from "@/native-api/app-rate";
 import {
   deleteFile,
   fileExists,
@@ -13,18 +6,17 @@ import {
   getFilename,
   getUri,
   writeFile,
-} from "../native-api/filesystem";
-import { setPreferencesItem } from "../native-api/preferences";
-import { share } from "../native-api/share";
-import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
-import useFilterStore from "../stores/filter-store";
-import usePlatformStore from "../stores/platform-store";
-import useSettingsStore from "../stores/settings-store";
-import useTasksStore, { taskLoader } from "../stores/task-state";
-import useNotification from "../utils/useNotification";
-import { todayDate } from "./date";
-import { hashCode } from "./hashcode";
-import { addTodoFilePath, removeTodoFilePath } from "./settings";
+} from "@/native-api/filesystem";
+import { setPreferencesItem } from "@/native-api/preferences";
+import { share } from "@/native-api/share";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useFilterStore } from "@/stores/filter-store";
+import { usePlatformStore } from "@/stores/platform-store";
+import { useSettingsStore } from "@/stores/settings-store";
+import { taskLoader, useTaskStore } from "@/stores/task-state";
+import { todayDate } from "@/utils/date";
+import { hashCode } from "@/utils/hashcode";
+import { addTodoFilePath, removeTodoFilePath } from "@/utils/settings";
 import {
   Task,
   TaskFormData,
@@ -32,17 +24,25 @@ import {
   createNextRecurringTask,
   parseTask,
   transformPriority,
-} from "./task";
+} from "@/utils/task";
 import {
   TaskList,
   parseTaskList as _parseTaskList,
   getCommonTaskListAttributes,
   stringifyTaskList,
   updateTaskListAttributes,
-} from "./task-list";
-import { getDoneFilePath } from "./todo-files";
-import useArchivedTask from "./useArchivedTask";
-import { generateId } from "./uuid";
+} from "@/utils/task-list";
+import { getDoneFilePath } from "@/utils/todo-files";
+import { useArchivedTask } from "@/utils/useArchivedTask";
+import { useNotification } from "@/utils/useNotification";
+import { generateId } from "@/utils/uuid";
+import { format, isBefore, subHours } from "date-fns";
+import FileSaver from "file-saver";
+import JSZip, { OutputType } from "jszip";
+import { isEqual, omit } from "lodash";
+import { useSnackbar } from "notistack";
+import { useCallback } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 type SaveTodoFile = {
   (filePath: string, text: string): Promise<TaskList>;
@@ -60,7 +60,7 @@ function areTaskListsEqual(a: TaskList[], b: TaskList[]) {
   return isEqual(taskListsWithoutId(a), taskListsWithoutId(b));
 }
 
-function useTask() {
+export function useTask() {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const platform = usePlatformStore((state) => state.platform);
@@ -86,11 +86,11 @@ function useTask() {
   const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath,
   );
-  const taskLists = useTasksStore((state) => state.taskLists);
-  const todoFiles = useTasksStore((state) => state.todoFiles);
-  const setTaskLists = useTasksStore((state) => state.setTaskLists);
-  const addTaskList = useTasksStore((state) => state.addTaskList);
-  const removeTaskList = useTasksStore((state) => state.removeTaskList);
+  const taskLists = useTaskStore((state) => state.taskLists);
+  const todoFiles = useTaskStore((state) => state.todoFiles);
+  const setTaskLists = useTaskStore((state) => state.setTaskLists);
+  const addTaskList = useTaskStore((state) => state.addTaskList);
+  const removeTaskList = useTaskStore((state) => state.removeTaskList);
   const {
     scheduleNotifications,
     cancelNotifications,
@@ -642,5 +642,3 @@ function useTask() {
     handleInit,
   };
 }
-
-export default useTask;

@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import {
   Notification,
   scheduleNotifications as _scheduleNotifications,
@@ -7,9 +5,11 @@ import {
   isNotificationPermissionGranted,
   requestNotificationPermission,
   shouldNotificationsBeRescheduled,
-} from "../native-api/notification";
+} from "@/native-api/notification";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
-function useNotification() {
+export function useNotification() {
   const { t } = useTranslation();
 
   const scheduleNotifications = useCallback(
@@ -39,5 +39,3 @@ function useNotification() {
     scheduleNotifications,
   };
 }
-
-export default useNotification;

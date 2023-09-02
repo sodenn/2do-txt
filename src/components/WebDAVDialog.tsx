@@ -1,3 +1,10 @@
+import {
+  FullScreenDialog,
+  FullScreenDialogContent,
+  FullScreenDialogTitle,
+} from "@/components/FullScreenDialog";
+import { useWebDAVDialogStore } from "@/stores/webdav-dialog-store";
+import { useCloudStorage } from "@/utils/CloudStorage";
 import { LoadingButton } from "@mui/lab";
 import {
   Alert,
@@ -14,13 +21,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import useWebDAVDialogStore from "../stores/webdav-dialog-store";
-import { useCloudStorage } from "../utils/CloudStorage";
-import FullScreenDialog from "./FullScreenDialog/FullScreenDialog";
-import FullScreenDialogContent from "./FullScreenDialog/FullScreenDialogContent";
-import FullScreenDialogTitle from "./FullScreenDialog/FullScreenDialogTitle";
 
-const WebDavDialog = () => {
+export function WebDAVDialog() {
   const theme = useTheme();
   const { t } = useTranslation();
   const webDAVDialogOpen = useWebDAVDialogStore((state) => state.open);
@@ -169,6 +171,4 @@ const WebDavDialog = () => {
       </DialogActions>
     </Dialog>
   );
-};
-
-export default WebDavDialog;
+}

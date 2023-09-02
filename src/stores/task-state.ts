@@ -1,8 +1,8 @@
+import { getFilename, readFile } from "@/native-api/filesystem";
+import { getTodoFilePaths } from "@/utils/settings";
+import { TaskList, parseTaskList } from "@/utils/task-list";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";
-import { getFilename, readFile } from "../native-api/filesystem";
-import { getTodoFilePaths } from "../utils/settings";
-import { TaskList, parseTaskList } from "../utils/task-list";
 
 interface TodoFileSuccess {
   type: "success";
@@ -33,10 +33,12 @@ interface TaskStoreInterface extends TaskStoreData {
   removeTaskList: (taskList?: TaskList) => void;
 }
 
-const getDefaultInitialState = (): TaskStoreData => ({
-  taskLists: [],
-  todoFiles: { files: [], errors: [] },
-});
+function getDefaultInitialState(): TaskStoreData {
+  return {
+    taskLists: [],
+    todoFiles: { files: [], errors: [] },
+  };
+}
 
 export type TaskStoreType = ReturnType<typeof initializeTaskStore>;
 
@@ -106,9 +108,7 @@ export function initializeTaskStore(
   }));
 }
 
-export default function useTaskStore<T>(
-  selector: (state: TaskStoreInterface) => T,
-) {
+export function useTaskStore<T>(selector: (state: TaskStoreInterface) => T) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");
   return useZustandStore(store, selector);

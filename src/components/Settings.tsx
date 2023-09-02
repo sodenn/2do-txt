@@ -1,19 +1,19 @@
+import { ArchiveModeSelect } from "@/components/ArchiveModeSelect";
+import { ArchiveNowButton } from "@/components/ArchiveNowButton";
+import { CloudStorageConnectionButtons } from "@/components/CloudStorageConnectionButtons";
+import { Heading } from "@/components/Heading";
+import { LanguageSelect } from "@/components/LanguageSelect";
+import { PriorityTransformationSelect } from "@/components/PriorityTransformationSelect";
+import { TaskViewSelect } from "@/components/TaskViewSelect";
+import { ThemeModeSelect } from "@/components/ThemeModeSelect";
+import { useSettingsStore } from "@/stores/settings-store";
+import { useSideSheetStore } from "@/stores/side-sheet-store";
+import { useCloudStorage } from "@/utils/CloudStorage";
+import { useNotification } from "@/utils/useNotification";
 import { Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { Trans, useTranslation } from "react-i18next";
-import useSettingsStore from "../stores/settings-store";
-import useSideSheetStore from "../stores/side-sheet-store";
-import { useCloudStorage } from "../utils/CloudStorage";
-import useNotification from "../utils/useNotification";
-import ArchiveModeSelect from "./ArchiveModeSelect";
-import ArchiveNowButton from "./ArchiveNowButton";
-import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
-import Heading from "./Heading";
-import LanguageSelect from "./LanguageSelect";
-import PriorityTransformationSelect from "./PriorityTransformationSelect";
-import TaskViewSelect from "./TaskViewSelect";
-import ThemeModeSelect from "./ThemeModeSelect";
 
-const Settings = () => {
+export function Settings() {
   const { t } = useTranslation();
   const { cloudStorageEnabled } = useCloudStorage();
   const closeSideSheet = useSideSheetStore((state) => state.closeSideSheet);
@@ -126,6 +126,4 @@ const Settings = () => {
       )}
     </Stack>
   );
-};
-
-export default Settings;
+}

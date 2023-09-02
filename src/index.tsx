@@ -1,12 +1,12 @@
+import { Routes } from "@/components/Routes";
+import { formatLocaleDate } from "@/utils/date";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-http-backend";
 import { createRoot } from "react-dom/client";
 import { initReactI18next } from "react-i18next";
 import "typeface-roboto";
-import App from "./App";
 import "./index.css";
-import { formatLocaleDate } from "./utils/date";
 
 i18n
   .use(Backend)
@@ -32,4 +32,4 @@ i18n
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
-root.render(<App />);
+root.render(<Routes />);

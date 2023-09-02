@@ -1,7 +1,7 @@
+import { hasTouchScreen } from "@/native-api/platform";
+import { usePlatformStore } from "@/stores/platform-store";
 import { styled } from "@mui/material";
 import { PropsWithChildren } from "react";
-import { hasTouchScreen } from "../native-api/platform";
-import usePlatformStore from "../stores/platform-store";
 
 const StyledKbd = styled("kbd")(({ theme }) => ({
   padding: "0 0.4em",
@@ -13,7 +13,7 @@ const StyledKbd = styled("kbd")(({ theme }) => ({
   boxShadow: `0 0 0 1px ${theme.palette.text.primary}`,
 }));
 
-const Kbd = ({ children }: PropsWithChildren) => {
+export function Kbd({ children }: PropsWithChildren) {
   const touchScreen = hasTouchScreen();
   const platform = usePlatformStore((state) => state.platform);
 
@@ -22,6 +22,4 @@ const Kbd = ({ children }: PropsWithChildren) => {
   }
 
   return <StyledKbd>{children}</StyledKbd>;
-};
-
-export default Kbd;
+}

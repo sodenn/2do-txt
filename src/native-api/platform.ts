@@ -1,11 +1,13 @@
 import { App } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 
-type Platform = "desktop" | "web" | "ios" | "android";
+export type Platform = "desktop" | "web" | "ios" | "android";
 
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+export const isSafari = /^((?!chrome|android).)*safari/i.test(
+  navigator.userAgent,
+);
 
-function getPlatform(): Platform {
+export function getPlatform(): Platform {
   if ((window as any).__TAURI__) {
     return "desktop";
   }
@@ -27,7 +29,7 @@ function getPlatform(): Platform {
   throw new Error();
 }
 
-function hasTouchScreen() {
+export function hasTouchScreen() {
   if ("maxTouchPoints" in navigator) {
     return navigator.maxTouchPoints > 0;
   } else if ("msMaxTouchPoints" in navigator) {
@@ -50,7 +52,7 @@ function hasTouchScreen() {
   }
 }
 
-async function addBecomeActiveListener(listener: () => unknown) {
+export async function addBecomeActiveListener(listener: () => unknown) {
   const platform = getPlatform();
   if (platform === "web" || platform === "desktop") {
     window.addEventListener("focus", listener);
@@ -64,7 +66,9 @@ async function addBecomeActiveListener(listener: () => unknown) {
   }
 }
 
-async function removeAllBecomeActiveListeners(listeners: (() => unknown)[]) {
+export async function removeAllBecomeActiveListeners(
+  listeners: (() => unknown)[],
+) {
   const platform = getPlatform();
   if (platform === "web" || platform === "desktop") {
     listeners?.forEach((listener) =>
@@ -75,12 +79,3 @@ async function removeAllBecomeActiveListeners(listeners: (() => unknown)[]) {
     App.removeAllListeners();
   }
 }
-
-export {
-  isSafari,
-  addBecomeActiveListener,
-  getPlatform,
-  hasTouchScreen,
-  removeAllBecomeActiveListeners,
-};
-export type { Platform };

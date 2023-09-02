@@ -29,7 +29,7 @@ const StyledAppBar = styled(AppBar)({
   paddingRight: "env(safe-area-inset-right)",
 });
 
-const FullScreenDialogTitle = (props: FullScreenDialogTitleProps) => {
+export function FullScreenDialogTitle(props: FullScreenDialogTitleProps) {
   const { onClose, accept, children } = props;
   const { divider } = useFullScreenDialog();
   return (
@@ -64,6 +64,4 @@ const FullScreenDialogTitle = (props: FullScreenDialogTitleProps) => {
       {divider && <Divider />}
     </Box>
   );
-};
-
-export default FullScreenDialogTitle;
+}

@@ -1,3 +1,4 @@
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import {
   Button,
   Dialog,
@@ -6,9 +7,8 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
 
-const ConfirmationDialog = () => {
+export function ConfirmationDialog() {
   const open = useConfirmationDialogStore((state) => state.open);
   const title = useConfirmationDialogStore((state) => state.title);
   const content = useConfirmationDialogStore((state) => state.content);
@@ -49,11 +49,11 @@ const ConfirmationDialog = () => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        {buttons?.map((button, idx) => (
+        {buttons?.map((button) => (
           <Button
             aria-label={button.text}
             onClick={() => handleClick(button.handler)}
-            key={idx}
+            key={button.text}
           >
             {button.text}
           </Button>
@@ -61,6 +61,4 @@ const ConfirmationDialog = () => {
       </DialogActions>
     </Dialog>
   );
-};
-
-export default ConfirmationDialog;
+}

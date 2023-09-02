@@ -1,3 +1,7 @@
+import { TaskBody } from "@/components/TaskBody";
+import { useSettingsStore } from "@/stores/settings-store";
+import { formatLocaleDate } from "@/utils/date";
+import { TimelineTask } from "@/utils/task-list";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
@@ -24,10 +28,6 @@ import {
 import { format } from "date-fns";
 import { KeyboardEvent, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import useSettingsStore from "../stores/settings-store";
-import { formatLocaleDate } from "../utils/date";
-import { TimelineTask } from "../utils/task-list";
-import TaskBody from "./TaskBody";
 
 const locales = {
   de: "d. LLL.",
@@ -229,7 +229,7 @@ const TaskListItem = forwardRef<
   );
 });
 
-const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
+export const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
   (props, ref) => {
     const {
       task,
@@ -301,5 +301,3 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
     );
   },
 );
-
-export default TaskTimelineItem;

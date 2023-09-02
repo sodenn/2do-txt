@@ -1,9 +1,9 @@
+import { TaskBody } from "@/components/TaskBody";
+import { TaskListItemMenu } from "@/components/TaskListItemMenu";
+import { Task } from "@/utils/task";
 import { Checkbox, ListItemButton, Stack, styled } from "@mui/material";
 import { forwardRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Task } from "../utils/task";
-import TaskBody from "./TaskBody";
-import TaskListItemMenu from "./TaskListItemMenu";
 
 const TaskItemButton = styled(ListItemButton)(({ theme }) => ({
   [theme.breakpoints.up("sm")]: {
@@ -38,7 +38,7 @@ interface TaskListItemProps {
   onBlur: () => void;
 }
 
-const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
+export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
   (props, ref) => {
     const { task, focused, onClick, onCheckboxClick, onBlur, onFocus } = props;
     const checkboxRef = useRef<HTMLButtonElement>(null);
@@ -129,5 +129,3 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
     );
   },
 );
-
-export default TaskListItem;

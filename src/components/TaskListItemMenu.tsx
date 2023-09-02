@@ -1,3 +1,8 @@
+import { Kbd } from "@/components/Kbd";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
+import { Task } from "@/utils/task";
+import { useTask } from "@/utils/useTask";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
   Box,
@@ -12,11 +17,6 @@ import {
 } from "@mui/material";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useConfirmationDialogStore from "../stores/confirmation-dialog-store";
-import useTaskDialogStore from "../stores/task-dialog-store";
-import { Task } from "../utils/task";
-import useTask from "../utils/useTask";
-import Kbd from "./Kbd";
 
 const ListIconButton = styled(IconButton)({
   padding: 9, // use the same padding as the checkbox on the opposite side
@@ -28,7 +28,7 @@ interface TaskListItemMenuProps {
   menuButtonRef: MutableRefObject<HTMLButtonElement | null>;
 }
 
-const TaskListItemMenu = (props: TaskListItemMenuProps) => {
+export function TaskListItemMenu(props: TaskListItemMenuProps) {
   const { task, menuRef, menuButtonRef } = props;
   const { t } = useTranslation();
   const { deleteTask } = useTask();
@@ -146,6 +146,4 @@ const TaskListItemMenu = (props: TaskListItemMenuProps) => {
       </Popper>
     </>
   );
-};
-
-export default TaskListItemMenu;
+}

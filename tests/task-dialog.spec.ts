@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { format } from "date-fns";
-import { formatDate } from "../src/utils/date";
+
+function formatDate(date: Date): string {
+  return format(date, "yyyy-MM-dd");
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:5173");

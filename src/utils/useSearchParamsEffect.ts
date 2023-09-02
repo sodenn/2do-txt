@@ -1,12 +1,13 @@
+import {
+  FilterStoreData,
+  SearchParams,
+  useFilterStore,
+} from "@/stores/filter-store";
 import { isEqual } from "lodash";
 import { useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import useFilterStore, {
-  FilterStoreData,
-  SearchParams,
-} from "../stores/filter-store";
 
-function useSearchParamsEffect() {
+export function useSearchParamsEffect() {
   const [searchParams, setSearchParams] = useSearchParams();
   const filterStore = useFilterStore((state) => state);
 
@@ -51,5 +52,3 @@ function useSearchParamsEffect() {
     updateSearchParams(filterStore);
   }, [updateSearchParams, filterStore]);
 }
-
-export default useSearchParamsEffect;

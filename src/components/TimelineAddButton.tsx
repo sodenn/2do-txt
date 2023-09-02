@@ -1,3 +1,6 @@
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
+import { todayDate } from "@/utils/date";
+import { TimelineTask } from "@/utils/task-list";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import {
   TimelineConnector,
@@ -10,16 +13,13 @@ import { Box, Chip, IconButton } from "@mui/material";
 import { format } from "date-fns";
 import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import useTaskDialogStore from "../stores/task-dialog-store";
-import { todayDate } from "../utils/date";
-import { TimelineTask } from "../utils/task-list";
 
 interface TimelineAddButtonProps {
   date?: Date;
   flags: TimelineTask["_timelineFlags"];
 }
 
-const YearChip = ({ date, flags }: TimelineAddButtonProps) => {
+function YearChip({ date, flags }: TimelineAddButtonProps) {
   return (
     <Box
       sx={{
@@ -43,83 +43,82 @@ const YearChip = ({ date, flags }: TimelineAddButtonProps) => {
       />
     </Box>
   );
-};
+}
 
-const TimelineAddButton = forwardRef<HTMLElement, TimelineAddButtonProps>(
-  ({ flags }, ref) => {
-    const { t } = useTranslation();
-    const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
+export const TimelineAddButton = forwardRef<
+  HTMLElement,
+  TimelineAddButtonProps
+>(({ flags }, ref) => {
+  const { t } = useTranslation();
+  const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 
-    const handleClick = () => openTaskDialog();
+  const handleClick = () => openTaskDialog();
 
-    return (
-      <TimelineItem ref={ref} sx={{ minHeight: 0 }}>
-        <TimelineOppositeContent
+  return (
+    <TimelineItem ref={ref} sx={{ minHeight: 0 }}>
+      <TimelineOppositeContent
+        sx={{
+          flex: 0,
+          pl: 0,
+          pr: 1,
+          pt: flags.first || flags.firstOfYear ? 9 : 2,
+          display: {
+            xs: "none",
+            sm: "block",
+          },
+        }}
+      >
+        <Box
           sx={{
-            flex: 0,
-            pl: 0,
-            pr: 1,
-            pt: flags.first || flags.firstOfYear ? 9 : 2,
-            display: {
-              xs: "none",
-              sm: "block",
-            },
+            width: 120,
+            color: "info.main",
+            fontWeight: "bold",
           }}
         >
-          <Box
-            sx={{
-              width: 120,
-              color: "info.main",
-              fontWeight: "bold",
-            }}
-          >
-            {t("Today")}
-          </Box>
-        </TimelineOppositeContent>
-        <TimelineSeparator>
-          <TimelineConnector
-            sx={{
-              bgcolor: "action.disabled",
-              visibility: flags.first ? "hidden" : "visible",
-            }}
-          />
-          <YearChip flags={flags} date={todayDate()} />
-          <IconButton
-            onClick={handleClick}
-            sx={{ mx: 1, width: 38, height: 38 }}
-            color="info"
-          >
-            <AddOutlinedIcon />
-          </IconButton>
-          <TimelineConnector
-            sx={{
-              bgcolor: flags.lastOfToday ? "action.disabled" : "info.main",
-            }}
-          />
-        </TimelineSeparator>
-        <TimelineContent
+          {t("Today")}
+        </Box>
+      </TimelineOppositeContent>
+      <TimelineSeparator>
+        <TimelineConnector
           sx={{
-            cursor: "pointer",
-            pb: 1,
-            pt: { xs: 1, sm: flags.first || flags.firstOfYear ? 8 : 1 },
-            px: { xs: 0, sm: 0.5 },
+            bgcolor: "action.disabled",
+            visibility: flags.first ? "hidden" : "visible",
           }}
+        />
+        <YearChip flags={flags} date={todayDate()} />
+        <IconButton
           onClick={handleClick}
+          sx={{ mx: 1, width: 38, height: 38 }}
+          color="info"
         >
-          <Box
-            sx={{
-              px: { xs: 0, sm: 2 },
-              py: 1,
-              color: "info.main",
-              fontWeight: "bold",
-            }}
-          >
-            {t("Add task for today")}
-          </Box>
-        </TimelineContent>
-      </TimelineItem>
-    );
-  },
-);
-
-export default TimelineAddButton;
+          <AddOutlinedIcon />
+        </IconButton>
+        <TimelineConnector
+          sx={{
+            bgcolor: flags.lastOfToday ? "action.disabled" : "info.main",
+          }}
+        />
+      </TimelineSeparator>
+      <TimelineContent
+        sx={{
+          cursor: "pointer",
+          pb: 1,
+          pt: { xs: 1, sm: flags.first || flags.firstOfYear ? 8 : 1 },
+          px: { xs: 0, sm: 0.5 },
+        }}
+        onClick={handleClick}
+      >
+        <Box
+          sx={{
+            px: { xs: 0, sm: 2 },
+            py: 1,
+            color: "info.main",
+            fontWeight: "bold",
+          }}
+        >
+          {t("Add task for today")}
+        </Box>
+      </TimelineContent>
+    </TimelineItem>
+  );
+});

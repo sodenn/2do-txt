@@ -1,16 +1,16 @@
+import { useCloudFileDialogStore } from "@/stores/cloud-file-dialog-store";
+import {
+  Provider,
+  cloudStorageIcons,
+  useCloudStorage,
+} from "@/utils/CloudStorage";
 import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useCloudFileDialogStore from "../stores/cloud-file-dialog-store";
-import {
-  Provider,
-  cloudStorageIcons,
-  useCloudStorage,
-} from "../utils/CloudStorage";
 
-const CloudFileImportButtons = () => {
+export function CloudFileImportButtons() {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openCloudFileDialog = useCloudFileDialogStore(
@@ -88,6 +88,4 @@ const CloudFileImportButtons = () => {
       </Menu>
     </>
   );
-};
-
-export default CloudFileImportButtons;
+}

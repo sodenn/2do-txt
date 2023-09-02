@@ -19,7 +19,7 @@ const List = styled("ul")(({ theme }) => ({
   margin: 0,
 }));
 
-const ChipList = (props: ChipListProps) => {
+export function ChipList(props: ChipListProps) {
   const {
     items = {},
     activeItems = [],
@@ -30,8 +30,8 @@ const ChipList = (props: ChipListProps) => {
 
   return (
     <List>
-      {Object.entries(items).map(([item, usages], index) => (
-        <li key={index}>
+      {Object.entries(items).map(([item, usages]) => (
+        <li key={item}>
           <Badge
             badgeContent={usages === 1 ? undefined : usages}
             color="primary"
@@ -58,6 +58,4 @@ const ChipList = (props: ChipListProps) => {
       ))}
     </List>
   );
-};
-
-export default ChipList;
+}

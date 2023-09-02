@@ -2,7 +2,7 @@ import {
   getPreferencesItem,
   removePreferencesItem,
   setPreferencesItem,
-} from "../../native-api/preferences";
+} from "@/native-api/preferences";
 
 export async function migrate1() {
   const todoFilePath = await getPreferencesItem("todo-txt-path" as any);

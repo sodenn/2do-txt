@@ -1,3 +1,4 @@
+import { usePaletteMode } from "@/stores/theme-store";
 import { css } from "@emotion/css";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -48,7 +49,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { usePaletteMode } from "../stores/theme-store";
 
 interface EditorContextProps {
   initialValue: string;
@@ -163,7 +163,7 @@ function useMentionStyles(): Record<string, string> {
   );
 }
 
-const useEditorConfig = (triggers: string[], initialValue: string) => {
+function useEditorConfig(triggers: string[], initialValue: string) {
   const styles = useMentionStyles();
   return useMemo(
     () => ({
@@ -180,9 +180,9 @@ const useEditorConfig = (triggers: string[], initialValue: string) => {
     }),
     [initialValue, styles, triggers],
   );
-};
+}
 
-const useIsFocused = () => {
+function useIsFocused() {
   const [editor] = useLexicalComposerContext();
   const [hasFocus, setHasFocus] = useState(
     () => editor.getRootElement() === document.activeElement,
@@ -210,7 +210,7 @@ const useIsFocused = () => {
   }, [editor]);
 
   return hasFocus;
-};
+}
 
 function SingleLinePlugin({
   onEnter,

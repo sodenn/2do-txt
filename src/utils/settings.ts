@@ -1,9 +1,9 @@
 import {
   getPreferencesItem,
   setPreferencesItem,
-} from "../native-api/preferences";
+} from "@/native-api/preferences";
 
-async function getTodoFilePaths() {
+export async function getTodoFilePaths() {
   const pathStr = await getPreferencesItem("todo-txt-paths");
   try {
     const paths: string[] = pathStr ? JSON.parse(pathStr) : [];
@@ -14,7 +14,7 @@ async function getTodoFilePaths() {
   }
 }
 
-async function addTodoFilePath(filePath: string) {
+export async function addTodoFilePath(filePath: string) {
   const filePathsStr = await getPreferencesItem("todo-txt-paths");
 
   let filePaths: string[] = [];
@@ -38,7 +38,7 @@ async function addTodoFilePath(filePath: string) {
   );
 }
 
-async function removeTodoFilePath(filePath: string) {
+export async function removeTodoFilePath(filePath: string) {
   const filePathsStr = await getPreferencesItem("todo-txt-paths");
   let updatedFilePathsStr = JSON.stringify([]);
 
@@ -54,5 +54,3 @@ async function removeTodoFilePath(filePath: string) {
 
   await setPreferencesItem("todo-txt-paths", updatedFilePathsStr);
 }
-
-export { addTodoFilePath, getTodoFilePaths, removeTodoFilePath };

@@ -1,8 +1,8 @@
+import { useTask } from "@/utils/useTask";
 import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useTask from "../utils/useTask";
 
-const ArchiveNowButton = () => {
+export function ArchiveNowButton() {
   const { t } = useTranslation();
   const { archiveTasks } = useTask();
   return (
@@ -10,6 +10,4 @@ const ArchiveNowButton = () => {
       {t("Archive now")}
     </Button>
   );
-};
-
-export default ArchiveNowButton;
+}

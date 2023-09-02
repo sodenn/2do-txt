@@ -1,7 +1,7 @@
+import { getPreferencesItem } from "@/native-api/preferences";
 import { PaletteMode, useMediaQuery } from "@mui/material";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";
-import { getPreferencesItem } from "../native-api/preferences";
 
 export type ThemeMode = "dark" | "light" | "system";
 
@@ -49,9 +49,7 @@ export function initializeThemeStore(
   }));
 }
 
-export default function useThemeStore<T>(
-  selector: (state: ThemeStoreInterface) => T,
-) {
+export function useThemeStore<T>(selector: (state: ThemeStoreInterface) => T) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");
   return useZustandStore(store, selector);

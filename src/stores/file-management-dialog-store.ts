@@ -6,12 +6,9 @@ interface FileManagementDialogStoreInterface {
   closeFileManagementDialog: () => void;
 }
 
-const useFileManagementDialogStore = create<FileManagementDialogStoreInterface>(
-  (set) => ({
+export const useFileManagementDialogStore =
+  create<FileManagementDialogStoreInterface>((set) => ({
     open: false,
     openFileManagementDialog: () => set({ open: true }),
     closeFileManagementDialog: () => set({ open: false }),
-  }),
-);
-
-export default useFileManagementDialogStore;
+  }));

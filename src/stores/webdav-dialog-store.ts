@@ -6,10 +6,10 @@ interface WebDAVDialogStoreInterface {
   closeWebDAVDialog: () => void;
 }
 
-const useWebDAVDialogStore = create<WebDAVDialogStoreInterface>((set) => ({
-  open: false,
-  openWebDAVDialog: () => set({ open: true }),
-  closeWebDAVDialog: () => set({ open: false }),
-}));
-
-export default useWebDAVDialogStore;
+export const useWebDAVDialogStore = create<WebDAVDialogStoreInterface>(
+  (set) => ({
+    open: false,
+    openWebDAVDialog: () => set({ open: true }),
+    closeWebDAVDialog: () => set({ open: false }),
+  }),
+);

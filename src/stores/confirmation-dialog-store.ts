@@ -23,8 +23,8 @@ interface ConfirmationDialogStoreInterface extends ConfirmationDialogStoreData {
   cleanupConfirmationDialog: () => void;
 }
 
-const useConfirmationDialogStore = create<ConfirmationDialogStoreInterface>(
-  (set) => ({
+export const useConfirmationDialogStore =
+  create<ConfirmationDialogStoreInterface>((set) => ({
     open: false,
     title: undefined,
     content: undefined,
@@ -41,7 +41,4 @@ const useConfirmationDialogStore = create<ConfirmationDialogStoreInterface>(
         buttons: undefined,
         onClose: undefined,
       }),
-  }),
-);
-
-export default useConfirmationDialogStore;
+  }));

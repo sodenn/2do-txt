@@ -1,10 +1,10 @@
+import { usePlatformStore } from "@/stores/platform-store";
+import { useTask } from "@/utils/useTask";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import ShareIcon from "@mui/icons-material/Share";
 import { IconButton, IconButtonProps } from "@mui/material";
-import usePlatformStore from "../stores/platform-store";
-import useTask from "../utils/useTask";
 
-const ShareButton = (props: IconButtonProps) => {
+export function ShareButton(props: IconButtonProps) {
   const { downloadTodoFile, shareTodoFile } = useTask();
   const platform = usePlatformStore((state) => state.platform);
 
@@ -31,6 +31,4 @@ const ShareButton = (props: IconButtonProps) => {
       {platform === "android" && <ShareIcon />}
     </IconButton>
   );
-};
-
-export default ShareButton;
+}

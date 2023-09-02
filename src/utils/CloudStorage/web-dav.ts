@@ -1,4 +1,4 @@
-import { request } from "../../native-api/network";
+import { request } from "@/native-api/network";
 import {
   createCloudStorage,
   createWebDAVClient,

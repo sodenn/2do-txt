@@ -1,9 +1,9 @@
+import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import useFileCreateDialogStore from "../stores/file-create-dialog-store";
 
-const ExampleFileButton = () => {
+export function ExampleFileButton() {
   const { t } = useTranslation();
   const openFileCreateDialog = useFileCreateDialogStore(
     (state) => state.openFileCreateDialog,
@@ -23,6 +23,4 @@ const ExampleFileButton = () => {
       {t("Create example file")}
     </Button>
   );
-};
-
-export default ExampleFileButton;
+}

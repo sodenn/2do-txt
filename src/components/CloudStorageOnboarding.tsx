@@ -1,8 +1,8 @@
-import { useCloudStorage } from "../utils/CloudStorage";
-import CloudFileImportButtons from "./CloudFileImportButtons";
-import CloudStorageConnectionButtons from "./CloudStorageConnectionButtons";
+import { CloudFileImportButtons } from "@/components/CloudFileImportButtons";
+import { CloudStorageConnectionButtons } from "@/components/CloudStorageConnectionButtons";
+import { useCloudStorage } from "@/utils/CloudStorage";
 
-const CloudStorageOnboarding = () => {
+export function CloudStorageOnboarding() {
   const { cloudStorages } = useCloudStorage();
   return (
     <>
@@ -12,6 +12,4 @@ const CloudStorageOnboarding = () => {
       )}
     </>
   );
-};
-
-export default CloudStorageOnboarding;
+}

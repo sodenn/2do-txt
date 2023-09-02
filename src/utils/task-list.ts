@@ -1,3 +1,12 @@
+import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
+import { groupBy } from "@/utils/array";
+import {
+  formatDate,
+  formatLocaleDate,
+  parseDate,
+  todayDate,
+} from "@/utils/date";
+import { Task, parseTask, stringifyTask } from "@/utils/task";
 import {
   addDays,
   isAfter,
@@ -8,10 +17,6 @@ import {
 } from "date-fns";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import useFilterStore, { FilterType, SortKey } from "../stores/filter-store";
-import { groupBy } from "./array";
-import { formatDate, formatLocaleDate, parseDate, todayDate } from "./date";
-import { Task, parseTask, stringifyTask } from "./task";
 
 interface TaskListParseResult extends TaskListAttributes {
   items: Task[];
@@ -19,7 +24,7 @@ interface TaskListParseResult extends TaskListAttributes {
   incomplete: TaskListAttributes;
 }
 
-interface TaskList extends TaskListParseResult {
+export interface TaskList extends TaskListParseResult {
   filePath: string;
   fileName: string;
 }
@@ -31,12 +36,12 @@ interface TaskListAttributes {
   tags: Record<string, string[]>;
 }
 
-interface TaskGroup {
+export interface TaskGroup {
   label: string;
   items: Task[];
 }
 
-interface TaskListFilter {
+export interface TaskListFilter {
   type: FilterType;
   searchTerm: string;
   activePriorities: string[];
@@ -46,7 +51,7 @@ interface TaskListFilter {
   hideCompletedTasks: boolean;
 }
 
-interface TimelineTask extends Task {
+export interface TimelineTask extends Task {
   _timelineFlags: {
     today: boolean;
     firstOfToday: boolean;
@@ -60,7 +65,7 @@ interface TimelineTask extends Task {
   _timelineDate?: Date;
 }
 
-function updateTaskListAttributes(taskList: TaskList): TaskList {
+export function updateTaskListAttributes(taskList: TaskList): TaskList {
   const attributes = getTaskListAttributes(taskList.items, false);
   const incomplete = getTaskListAttributes(taskList.items, true);
   return {
@@ -70,7 +75,7 @@ function updateTaskListAttributes(taskList: TaskList): TaskList {
   };
 }
 
-function parseTaskList(text?: string): TaskListParseResult {
+export function parseTaskList(text?: string): TaskListParseResult {
   if (text) {
     const lineEnding = /\r\n/.test(text) ? "\r\n" : "\n";
 
@@ -108,14 +113,14 @@ function parseTaskList(text?: string): TaskListParseResult {
   }
 }
 
-function stringifyTaskList(taskList: Task[], lineEnding: string) {
+export function stringifyTaskList(taskList: Task[], lineEnding: string) {
   return [...taskList]
     .sort((t1, t2) => t1._order - t2._order)
     .map((t) => stringifyTask(t))
     .join(lineEnding);
 }
 
-function useTimelineTasks(
+export function useTimelineTasks(
   taskLists: TaskList[],
   activeTaskList?: TaskList,
 ): TimelineTask[] {
@@ -255,7 +260,10 @@ function useTimelineTasks(
     }));
 }
 
-function useTaskGroups(taskLists: TaskList[], activeTaskList?: TaskList) {
+export function useTaskGroups(
+  taskLists: TaskList[],
+  activeTaskList?: TaskList,
+) {
   taskLists = activeTaskList ? [activeTaskList] : taskLists;
 
   const {
@@ -397,7 +405,10 @@ function orTypePredicate(
   };
 }
 
-function filterTasks<T extends Task>(tasks: T[], filter: TaskListFilter) {
+export function filterTasks<T extends Task>(
+  tasks: T[],
+  filter: TaskListFilter,
+) {
   const {
     type,
     searchTerm,
@@ -428,7 +439,7 @@ function filterTasks<T extends Task>(tasks: T[], filter: TaskListFilter) {
   );
 }
 
-function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
+export function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
   const groups = groupBy(taskList.sort(sortByOriginalOrder), (task) =>
     getGroupKey(task, sortBy),
   );
@@ -487,7 +498,7 @@ function getTaskListAttributes(
   };
 }
 
-function getCommonTaskListAttributes(taskLists: TaskList[]) {
+export function getCommonTaskListAttributes(taskLists: TaskList[]) {
   const projects = reduceDictionaries(taskLists.map((l) => l.projects));
   const tags = reduceDictionaries(taskLists.map((l) => l.tags));
   const contexts = reduceDictionaries(taskLists.map((l) => l.contexts));
@@ -520,7 +531,7 @@ function getCommonTaskListAttributes(taskLists: TaskList[]) {
   };
 }
 
-function sortByOriginalOrder(a: Task, b: Task) {
+export function sortByOriginalOrder(a: Task, b: Task) {
   if (a._order < b._order) {
     return -1;
   } else if (a._order > b._order) {
@@ -707,16 +718,3 @@ function containsStringArrayDictionaries(
     ),
   );
 }
-
-export {
-  convertToTaskGroups,
-  filterTasks,
-  getCommonTaskListAttributes,
-  parseTaskList,
-  sortByOriginalOrder,
-  stringifyTaskList,
-  updateTaskListAttributes,
-  useTaskGroups,
-  useTimelineTasks,
-};
-export type { TaskGroup, TaskList, TaskListFilter, TimelineTask };

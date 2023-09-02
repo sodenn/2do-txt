@@ -1,10 +1,10 @@
-import { createContext, useContext } from "react";
-import { useStore as useZustandStore } from "zustand";
-import { createStore } from "zustand/vanilla";
 import {
   getPreferencesItem,
   setPreferencesItem,
-} from "../native-api/preferences";
+} from "@/native-api/preferences";
+import { createContext, useContext } from "react";
+import { useStore as useZustandStore } from "zustand";
+import { createStore } from "zustand/vanilla";
 
 export type SortKey =
   | "priority"
@@ -53,17 +53,19 @@ interface FilterStoreInterface extends FilterStoreData {
   setActiveTaskListPath: (activeTaskListPath?: string) => void;
 }
 
-const getDefaultInitialState = (): FilterStoreData => ({
-  searchTerm: "",
-  sortBy: "",
-  filterType: "AND",
-  activePriorities: [],
-  activeProjects: [],
-  activeContexts: [],
-  activeTags: [],
-  hideCompletedTasks: false,
-  activeTaskListPath: undefined,
-});
+function getDefaultInitialState(): FilterStoreData {
+  return {
+    searchTerm: "",
+    sortBy: "",
+    filterType: "AND",
+    activePriorities: [],
+    activeProjects: [],
+    activeContexts: [],
+    activeTags: [],
+    hideCompletedTasks: false,
+    activeTaskListPath: undefined,
+  };
+}
 
 export type FilterStoreType = ReturnType<typeof initializeFilterStore>;
 
@@ -152,7 +154,7 @@ export function initializeFilterStore(
   }));
 }
 
-export default function useFilterStore<T = FilterStoreInterface>(
+export function useFilterStore<T = FilterStoreInterface>(
   selector: (state: FilterStoreInterface) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);

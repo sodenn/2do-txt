@@ -1,7 +1,7 @@
+import { Platform, getPlatform } from "@/native-api/platform";
 import { createContext, useContext } from "react";
 import { useStore as useZustandStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { Platform, getPlatform } from "../native-api/platform";
 
 export interface PlatformStoreData {
   platform: Platform;
@@ -9,9 +9,11 @@ export interface PlatformStoreData {
 
 type PlatformStoreInterface = PlatformStoreData;
 
-const getDefaultInitialState = (): PlatformStoreData => ({
-  platform: "web",
-});
+function getDefaultInitialState(): PlatformStoreData {
+  return {
+    platform: "android",
+  };
+}
 
 export type PlatformStoreType = ReturnType<typeof initializePlatformStore>;
 
@@ -33,7 +35,7 @@ export function initializePlatformStore(
   }));
 }
 
-export default function usePlatformStore<T>(
+export function usePlatformStore<T>(
   selector: (state: PlatformStoreInterface) => T,
 ) {
   const store = useContext(zustandContext);

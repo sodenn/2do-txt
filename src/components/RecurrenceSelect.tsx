@@ -1,3 +1,4 @@
+import { getRecValueMatch } from "@/utils/task";
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import {
@@ -13,14 +14,13 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getRecValueMatch } from "../utils/task";
 
 interface RecurrenceSelectProps {
   value?: string;
   onChange?: (value: string | null) => void;
 }
 
-const RecurrenceSelect = (props: RecurrenceSelectProps) => {
+export function RecurrenceSelect(props: RecurrenceSelectProps) {
   const { value, onChange } = props;
   const { t } = useTranslation();
   const [strict, setStrict] = useState(false);
@@ -125,6 +125,4 @@ const RecurrenceSelect = (props: RecurrenceSelectProps) => {
       )}
     </Stack>
   );
-};
-
-export default RecurrenceSelect;
+}

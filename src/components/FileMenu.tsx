@@ -1,3 +1,10 @@
+import { StartEllipsis } from "@/components/StartEllipsis";
+import logo from "@/images/logo.png";
+import { hasTouchScreen } from "@/native-api/platform";
+import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
+import { useFilterStore } from "@/stores/filter-store";
+import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
+import { useTask } from "@/utils/useTask";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -13,19 +20,12 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import logo from "../images/logo.png";
-import { hasTouchScreen } from "../native-api/platform";
-import useFileManagementDialogStore from "../stores/file-management-dialog-store";
-import useFilterStore from "../stores/filter-store";
-import useShortcutsDialogStore from "../stores/shortcuts-dialog-store";
-import useTask from "../utils/useTask";
-import StartEllipsis from "./StartEllipsis";
 
 const buttonMaxWidthXs = 170;
 const buttonMaxWidth = 300;
 const menuMaxWidth = 350;
 
-const FileMenu = () => {
+export function FileMenu() {
   const { t } = useTranslation();
   const touchScreen = hasTouchScreen();
   const openFileManagementDialog = useFileManagementDialogStore(
@@ -97,11 +97,11 @@ const FileMenu = () => {
           </MenuItem>
         )}
         {taskLists.length > 1 &&
-          taskLists.map(({ filePath }, idx) => (
+          taskLists.map(({ filePath }) => (
             <MenuItem
               selected={activeTaskList?.filePath === filePath}
               onClick={() => handleSetActiveList(filePath)}
-              key={idx}
+              key={filePath}
             >
               <ListItemIcon>
                 <InsertDriveFileOutlinedIcon fontSize="small" />
@@ -129,6 +129,4 @@ const FileMenu = () => {
       </Menu>
     </>
   );
-};
-
-export default FileMenu;
+}

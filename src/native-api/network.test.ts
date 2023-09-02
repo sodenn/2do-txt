@@ -1,5 +1,5 @@
+import { joinURL } from "@/native-api/network";
 import { describe, expect, it } from "vitest";
-import { joinURL } from "./network";
 
 describe("network", () => {
   it("it should add a slash between parts", async () => {

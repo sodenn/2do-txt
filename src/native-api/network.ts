@@ -1,8 +1,8 @@
+import { getPlatform } from "@/native-api/platform";
 import { Network } from "@capacitor/network";
 import { Body, getClient, ResponseType } from "@tauri-apps/api/http";
-import { getPlatform } from "./platform";
 
-function request(
+export function request(
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> {
@@ -60,7 +60,7 @@ function buildDesktopRequestBody(opt: RequestInit) {
   }
 }
 
-function joinURL(...parts: string[]) {
+export function joinURL(...parts: string[]) {
   return parts
     .map((part, i) => {
       if (i === 0) {
@@ -77,11 +77,11 @@ function joinURL(...parts: string[]) {
     .join("/");
 }
 
-async function isConnected() {
+export async function isConnected() {
   return Network.getStatus().then(({ connected }) => connected);
 }
 
-function addNetworkStatusChangeListener(
+export function addNetworkStatusChangeListener(
   listener: (connected: boolean) => void,
 ) {
   Network.addListener("networkStatusChange", ({ connected }) =>
@@ -89,14 +89,6 @@ function addNetworkStatusChangeListener(
   );
 }
 
-async function removeAllNetworkStatusChangeListeners() {
+export async function removeAllNetworkStatusChangeListeners() {
   Network.removeAllListeners().then((r) => void r);
 }
-
-export {
-  addNetworkStatusChangeListener,
-  isConnected,
-  joinURL,
-  removeAllNetworkStatusChangeListeners,
-  request,
-};

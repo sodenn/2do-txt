@@ -1,3 +1,5 @@
+import { getPlatform } from "@/native-api/platform";
+import { createEventEmitter } from "@/utils/event-emitter";
 import {
   Encoding as CapEncoding,
   Filesystem as CapFilesystem,
@@ -6,8 +8,6 @@ import {
 import { open, save } from "@tauri-apps/api/dialog";
 import { readTextFile, removeFile, writeTextFile } from "@tauri-apps/api/fs";
 import { documentDir, join as tauriJoin } from "@tauri-apps/api/path";
-import { createEventEmitter } from "../utils/event-emitter";
-import { getPlatform } from "./platform";
 
 interface Filesystem {
   getUri(path: string): Promise<string>;
@@ -37,7 +37,7 @@ interface Dir {
   name: string;
 }
 
-function getDirname(path: string) {
+export function getDirname(path: string) {
   // Replace any backslashes with forward slashes (for Windows compatibility)
   path = path.replace(/\\/g, "/");
   // Remove any trailing slashes
@@ -55,11 +55,11 @@ function getDirname(path: string) {
   return dirname;
 }
 
-function getFilename(path: string) {
+export function getFilename(path: string) {
   return path.replace(/^.*[\\/]/, "");
 }
 
-function getFileNameWithoutExt(path: string) {
+export function getFileNameWithoutExt(path: string) {
   const filename = getFilename(path);
   return filename.split(".").slice(0, -1).join(".");
 }
@@ -244,17 +244,17 @@ async function getFilesystem() {
   return platform === "desktop" ? desktopFilesystem : capFilesystem;
 }
 
-async function getUri(path: string) {
+export async function getUri(path: string) {
   const filesystem = await getFilesystem();
   return filesystem.getUri(path);
 }
 
-async function readFile(path: string) {
+export async function readFile(path: string) {
   const filesystem = await getFilesystem();
   return filesystem.readFile(path);
 }
 
-async function writeFile(options: WriteFileOptions) {
+export async function writeFile(options: WriteFileOptions) {
   const filesystem = await getFilesystem();
   const exist = await filesystem.fileExists(options.path);
   const path = await filesystem.writeFile(options);
@@ -265,38 +265,38 @@ async function writeFile(options: WriteFileOptions) {
   return path;
 }
 
-async function deleteFile(path: string) {
+export async function deleteFile(path: string) {
   const filesystem = await getFilesystem();
   await filesystem.deleteFile(path);
   filesystemEmitter.emit("delete", { path });
 }
 
-async function readdir(path: string) {
+export async function readdir(path: string) {
   const filesystem = await getFilesystem();
   return filesystem.readdir(path);
 }
 
-async function fileExists(path: string) {
+export async function fileExists(path: string) {
   const filesystem = await getFilesystem();
   return filesystem.fileExists(path);
 }
 
-async function getUniqueFilePath(path: string) {
+export async function getUniqueFilePath(path: string) {
   const filesystem = await getFilesystem();
   return filesystem.getUniqueFilePath(path);
 }
 
-async function selectFolder() {
+export async function selectFolder() {
   const filesystem = await getFilesystem();
   return filesystem.selectFolder();
 }
 
-async function selectFile() {
+export async function selectFile() {
   const filesystem = await getFilesystem();
   return filesystem.selectFile();
 }
 
-async function saveFile(defaultPath?: string) {
+export async function saveFile(defaultPath?: string) {
   const filesystem = await getFilesystem();
   const path = await filesystem.saveFile(defaultPath);
   if (path) {
@@ -305,24 +305,7 @@ async function saveFile(defaultPath?: string) {
   return path;
 }
 
-async function join(...paths: string[]) {
+export async function join(...paths: string[]) {
   const filesystem = await getFilesystem();
   return filesystem.join(...paths);
 }
-
-export {
-  deleteFile,
-  fileExists,
-  getDirname,
-  getFileNameWithoutExt,
-  getFilename,
-  getUniqueFilePath,
-  getUri,
-  join,
-  readFile,
-  readdir,
-  saveFile,
-  selectFile,
-  selectFolder,
-  writeFile,
-};

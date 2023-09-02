@@ -1,5 +1,5 @@
+import { getPlatform } from "@/native-api/platform";
 import { invoke } from "@tauri-apps/api/tauri";
-import { getPlatform } from "./platform";
 
 type SecureStorageKeys =
   | "Dropbox-refresh-token"
@@ -63,7 +63,7 @@ const desktopSecureStorage = {
   },
 };
 
-async function getSecureStorageItem(
+export async function getSecureStorageItem(
   key: SecureStorageKeys,
 ): Promise<string | null> {
   const platform = getPlatform();
@@ -74,7 +74,10 @@ async function getSecureStorageItem(
     : webSecureStorage.getSecureStorageItem(key);
 }
 
-async function setSecureStorageItem(key: SecureStorageKeys, value: string) {
+export async function setSecureStorageItem(
+  key: SecureStorageKeys,
+  value: string,
+) {
   const platform = getPlatform();
   return platform === "ios"
     ? iosSecureStorage.setSecureStorageItem(key, value)
@@ -83,7 +86,7 @@ async function setSecureStorageItem(key: SecureStorageKeys, value: string) {
     : webSecureStorage.setSecureStorageItem(key, value);
 }
 
-async function removeSecureStorageItem(key: SecureStorageKeys) {
+export async function removeSecureStorageItem(key: SecureStorageKeys) {
   const platform = getPlatform();
   return platform === "ios"
     ? iosSecureStorage.removeSecureStorageItem(key)
@@ -91,5 +94,3 @@ async function removeSecureStorageItem(key: SecureStorageKeys) {
     ? desktopSecureStorage.removeSecureStorageItem(key)
     : webSecureStorage.removeSecureStorageItem(key);
 }
-
-export { getSecureStorageItem, removeSecureStorageItem, setSecureStorageItem };

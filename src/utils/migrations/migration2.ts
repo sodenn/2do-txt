@@ -1,11 +1,11 @@
-import { readFile } from "../../native-api/filesystem";
+import { readFile } from "@/native-api/filesystem";
 import {
   getPreferencesItem,
   removePreferencesItem,
   setPreferencesItem,
-} from "../../native-api/preferences";
-import { CloudFileRef, createChecksum } from "../CloudStorage";
-import { getDoneFilePath } from "../todo-files";
+} from "@/native-api/preferences";
+import { CloudFileRef, createChecksum } from "@/utils/CloudStorage";
+import { getDoneFilePath } from "@/utils/todo-files";
 
 interface Ref {
   name: string;
