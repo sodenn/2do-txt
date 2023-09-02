@@ -19,7 +19,7 @@ const List = styled("ul")(({ theme }) => ({
   margin: 0,
 }));
 
-export default function ChipList(props: ChipListProps) {
+export function ChipList(props: ChipListProps) {
   const {
     items = {},
     activeItems = [],

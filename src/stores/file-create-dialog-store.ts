@@ -16,7 +16,7 @@ interface FileCreateDialogStoreInterface extends FileCreateDialogStoreData {
   cleanupFileCreateDialog: () => void;
 }
 
-const useFileCreateDialogStore = create<FileCreateDialogStoreInterface>(
+export const useFileCreateDialogStore = create<FileCreateDialogStoreInterface>(
   (set) => ({
     open: false,
     createFirstTask: false,
@@ -35,5 +35,3 @@ const useFileCreateDialogStore = create<FileCreateDialogStoreInterface>(
       }),
   }),
 );
-
-export default useFileCreateDialogStore;

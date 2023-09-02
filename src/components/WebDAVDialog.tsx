@@ -3,7 +3,7 @@ import {
   FullScreenDialogContent,
   FullScreenDialogTitle,
 } from "@/components/FullScreenDialog";
-import useWebDAVDialogStore from "@/stores/webdav-dialog-store";
+import { useWebDAVDialogStore } from "@/stores/webdav-dialog-store";
 import { useCloudStorage } from "@/utils/CloudStorage";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -22,7 +22,7 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function WebDavDialog() {
+export function WebDAVDialog() {
   const theme = useTheme();
   const { t } = useTranslation();
   const webDAVDialogOpen = useWebDAVDialogStore((state) => state.open);

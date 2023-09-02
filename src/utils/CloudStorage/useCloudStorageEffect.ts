@@ -8,7 +8,7 @@ import {
   addBecomeActiveListener,
   removeAllBecomeActiveListeners,
 } from "@/native-api/platform";
-import useScrollingStore from "@/stores/scrolling-store";
+import { useScrollingStore } from "@/stores/scrolling-store";
 import { taskLoader } from "@/stores/task-state";
 import { cloudStoragePreferences } from "@/utils/CloudStorage/preferences";
 import { useCloudStorage } from "@/utils/CloudStorage/useCloudStorage";
@@ -17,9 +17,9 @@ import {
   getTodoFilePathFromDoneFilePath,
   isDoneFilePath,
 } from "@/utils/todo-files";
-import useArchivedTask from "@/utils/useArchivedTask";
-import usePullToRefresh from "@/utils/usePullToRefresh";
-import useTask from "@/utils/useTask";
+import { useArchivedTask } from "@/utils/useArchivedTask";
+import { usePullToRefresh } from "@/utils/usePullToRefresh";
+import { useTask } from "@/utils/useTask";
 import { differenceInMinutes } from "date-fns";
 import { useCallback, useEffect } from "react";
 

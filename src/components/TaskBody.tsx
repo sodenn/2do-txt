@@ -10,7 +10,7 @@ const TextContainer = styled("span")({
   hyphens: "auto",
 });
 
-export default function TaskBody({ task }: TaskBodyProps) {
+export function TaskBody({ task }: TaskBodyProps) {
   const formatBody = useFormatBody();
   return <TextContainer>{formatBody(task)}</TextContainer>;
 }

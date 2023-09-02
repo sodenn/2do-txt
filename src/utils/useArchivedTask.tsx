@@ -4,8 +4,8 @@ import {
   readFile,
   writeFile,
 } from "@/native-api/filesystem";
-import useArchivedTasksDialogStore from "@/stores/archived-tasks-dialog-store";
-import useSettingsStore from "@/stores/settings-store";
+import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
+import { useSettingsStore } from "@/stores/settings-store";
 import { useCloudStorage } from "@/utils/CloudStorage";
 import { Task } from "@/utils/task";
 import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
@@ -25,7 +25,7 @@ interface ArchiveTaskOptions {
   task: Task;
 }
 
-export default function useArchivedTask() {
+export function useArchivedTask() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const openArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.openArchivedTasksDialog,

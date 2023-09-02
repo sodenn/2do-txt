@@ -1,8 +1,8 @@
-import StartEllipsis from "@/components/StartEllipsis";
+import { StartEllipsis } from "@/components/StartEllipsis";
 import { readFile } from "@/native-api/filesystem";
-import useFilterStore from "@/stores/filter-store";
+import { useFilterStore } from "@/stores/filter-store";
 import { addTodoFilePath } from "@/utils/settings";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
@@ -32,7 +32,7 @@ interface FileProps {
   onDelete: (filePath: string) => void;
 }
 
-export default function ClosedFileList(props: ClosedFileListProps) {
+export function ClosedFileList(props: ClosedFileListProps) {
   const { list, onOpen, onDelete } = props;
   const { t } = useTranslation();
   const { loadTodoFile } = useTask();

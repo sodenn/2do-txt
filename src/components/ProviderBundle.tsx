@@ -1,11 +1,11 @@
-import AppThemeProvider from "@/components/AppThemeProvider";
-import StoreProvider, { LoaderData } from "@/components/StoreProvider";
+import { AppThemeProvider } from "@/components/AppThemeProvider";
+import { LoaderData, StoreProvider } from "@/components/StoreProvider";
 import { Grow } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { PropsWithChildren } from "react";
 import { useLoaderData } from "react-router-dom";
 
-export default function ProviderBundle({ children }: PropsWithChildren) {
+export function ProviderBundle({ children }: PropsWithChildren) {
   const loaderData = useLoaderData() as LoaderData;
   return (
     <StoreProvider

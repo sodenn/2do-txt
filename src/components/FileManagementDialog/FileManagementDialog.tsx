@@ -1,10 +1,10 @@
 import { deleteFile, getFilename, readdir } from "@/native-api/filesystem";
-import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
-import useFileManagementDialogStore from "@/stores/file-management-dialog-store";
-import usePlatformStore from "@/stores/platform-store";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
+import { usePlatformStore } from "@/stores/platform-store";
 import { useCloudStorage } from "@/utils/CloudStorage";
 import { defaultDoneFilePath } from "@/utils/todo-files";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import {
   Dialog,
   DialogActions,
@@ -13,16 +13,16 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import ClosedFileList from "./ClosedFileList";
-import FileActionButton from "./FileActionButton";
-import OpenFileList from "./OpenFileList";
+import { ClosedFileList } from "./ClosedFileList";
+import { FileActionButton } from "./FileActionButton";
+import { OpenFileList } from "./OpenFileList";
 
 interface CloseOptions {
   filePath: string;
   deleteFile: boolean;
 }
 
-export default function FileManagementDialog() {
+export function FileManagementDialog() {
   const platform = usePlatformStore((state) => state.platform);
   const fileManagementDialogOpen = useFileManagementDialogStore(
     (state) => state.open,

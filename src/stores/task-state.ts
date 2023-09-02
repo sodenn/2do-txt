@@ -108,9 +108,7 @@ export function initializeTaskStore(
   }));
 }
 
-export default function useTaskStore<T>(
-  selector: (state: TaskStoreInterface) => T,
-) {
+export function useTaskStore<T>(selector: (state: TaskStoreInterface) => T) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");
   return useZustandStore(store, selector);

@@ -1,8 +1,9 @@
-import PriorityBox from "@/components/PriorityBox";
-import TagBox from "@/components/TagBox";
-import useFilterStore from "@/stores/filter-store";
-import useSettingsStore, {
+import { PriorityBox } from "@/components/PriorityBox";
+import { TagBox } from "@/components/TagBox";
+import { useFilterStore } from "@/stores/filter-store";
+import {
   PriorityTransformation,
+  useSettingsStore,
 } from "@/stores/settings-store";
 import {
   formatDate,

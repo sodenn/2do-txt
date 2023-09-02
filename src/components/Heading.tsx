@@ -8,7 +8,7 @@ interface HeadingProps extends PropsWithChildren {
   gutterBottom?: boolean;
 }
 
-export default function Heading({
+export function Heading({
   disabled,
   helperText,
   gutterBottom,

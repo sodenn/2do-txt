@@ -1,5 +1,5 @@
 import { isSafari } from "@/native-api/platform";
-import usePlatformStore from "@/stores/platform-store";
+import { usePlatformStore } from "@/stores/platform-store";
 import { useEffect, useRef } from "react";
 
 export function usePreventPushingViewOffscreen() {

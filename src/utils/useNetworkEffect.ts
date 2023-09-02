@@ -3,7 +3,7 @@ import {
   removeAllNetworkStatusChangeListeners,
 } from "@/native-api/network";
 import { useCloudStorage } from "@/utils/CloudStorage";
-import useNetwork from "@/utils/useNetwork";
+import { useNetwork } from "@/utils/useNetwork";
 import { useEffect } from "react";
 
 export function useNetworkEffect() {

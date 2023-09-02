@@ -14,7 +14,7 @@ const StyledBadge = styled(Badge)({
   },
 });
 
-export default function NewBadge({ till, children }: NewBadgeProps) {
+export function NewBadge({ till, children }: NewBadgeProps) {
   const today = todayDate();
   const { t } = useTranslation();
 

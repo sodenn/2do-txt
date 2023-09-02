@@ -63,7 +63,7 @@ function PaperComponent(props: PaperProps) {
   return <Paper {...props} elevation={8} />;
 }
 
-export default function PrioritySelect(props: PrioritySelectProps) {
+export function PrioritySelect(props: PrioritySelectProps) {
   const { value: initialValue, onChange } = props;
   const { t } = useTranslation();
   const [value, setValue] = useState(initialValue ?? null);

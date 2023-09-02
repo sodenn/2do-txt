@@ -1,8 +1,8 @@
-import CloudFileImportButtons from "@/components/CloudFileImportButtons";
-import CloudStorageConnectionButtons from "@/components/CloudStorageConnectionButtons";
+import { CloudFileImportButtons } from "@/components/CloudFileImportButtons";
+import { CloudStorageConnectionButtons } from "@/components/CloudStorageConnectionButtons";
 import { useCloudStorage } from "@/utils/CloudStorage";
 
-export default function CloudStorageOnboarding() {
+export function CloudStorageOnboarding() {
   const { cloudStorages } = useCloudStorage();
   return (
     <>

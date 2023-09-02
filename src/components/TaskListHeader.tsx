@@ -1,5 +1,5 @@
-import StartEllipsis from "@/components/StartEllipsis";
-import useFilterStore from "@/stores/filter-store";
+import { StartEllipsis } from "@/components/StartEllipsis";
+import { useFilterStore } from "@/stores/filter-store";
 import LaunchIcon from "@mui/icons-material/Launch";
 import { Box, ListItemButton, styled } from "@mui/material";
 
@@ -21,7 +21,7 @@ const Container = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
-export default function TaskListHeader(props: TaskListHeaderProps) {
+export function TaskListHeader(props: TaskListHeaderProps) {
   const { fileName, filePath } = props;
   const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath,

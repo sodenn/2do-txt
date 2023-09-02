@@ -1,5 +1,5 @@
 import { subscribeNotifications } from "@/native-api/notification";
-import useNotification from "@/utils/useNotification";
+import { useNotification } from "@/utils/useNotification";
 import { renderHook } from "@testing-library/react";
 import { addHours, addMinutes } from "date-fns";
 import i18n from "i18next";

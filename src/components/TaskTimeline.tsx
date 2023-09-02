@@ -1,11 +1,11 @@
-import ScrollTo from "@/components/ScrollTo";
-import TaskTimelineItem from "@/components/TaskTimelineItem";
-import TimelineAddButton from "@/components/TimelineAddButton";
-import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
-import useFilterStore from "@/stores/filter-store";
+import { ScrollTo } from "@/components/ScrollTo";
+import { TaskTimelineItem } from "@/components/TaskTimelineItem";
+import { TimelineAddButton } from "@/components/TimelineAddButton";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useFilterStore } from "@/stores/filter-store";
 import { Task } from "@/utils/task";
 import { TimelineTask } from "@/utils/task-list";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Timeline } from "@mui/lab";
 import { Box, Typography } from "@mui/material";
@@ -26,7 +26,7 @@ function propsAreEqual(prev: TaskTimelineProps, next: TaskTimelineProps) {
   return isEqual(prev.tasks, next.tasks);
 }
 
-const TaskTimeline = memo((props: TaskTimelineProps) => {
+export const TaskTimeline = memo((props: TaskTimelineProps) => {
   const {
     tasks,
     focusedTaskId,
@@ -126,5 +126,3 @@ const TaskTimeline = memo((props: TaskTimelineProps) => {
     </Timeline>
   );
 }, propsAreEqual);
-
-export default TaskTimeline;

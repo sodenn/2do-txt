@@ -1,10 +1,10 @@
 import { Editor, EditorContext } from "@/components/Editor";
-import FileSelect from "@/components/FileSelect";
-import LocalizationDatePicker from "@/components/LocalizationDatePicker";
-import PrioritySelect from "@/components/PrioritySelect";
-import RecurrenceSelect from "@/components/RecurrenceSelect";
+import { FileSelect } from "@/components/FileSelect";
+import { LocalizationDatePicker } from "@/components/LocalizationDatePicker";
+import { PrioritySelect } from "@/components/PrioritySelect";
+import { RecurrenceSelect } from "@/components/RecurrenceSelect";
 import { hasTouchScreen } from "@/native-api/platform";
-import usePlatformStore from "@/stores/platform-store";
+import { usePlatformStore } from "@/stores/platform-store";
 import { formatDate, isDateEqual } from "@/utils/date";
 import {
   Task,
@@ -38,7 +38,7 @@ interface TaskGridProps
   formModel: Task;
 }
 
-export default function TaskForm(props: TaskFormProps) {
+export function TaskForm(props: TaskFormProps) {
   const { value, projects, contexts, tags, ...other } = props;
 
   const _tags = useMemo(() => {

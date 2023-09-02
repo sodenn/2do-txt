@@ -1,5 +1,5 @@
-import TaskBody from "@/components/TaskBody";
-import TaskListItemMenu from "@/components/TaskListItemMenu";
+import { TaskBody } from "@/components/TaskBody";
+import { TaskListItemMenu } from "@/components/TaskListItemMenu";
 import { Task } from "@/utils/task";
 import { Checkbox, ListItemButton, Stack, styled } from "@mui/material";
 import { forwardRef, useRef } from "react";
@@ -38,7 +38,7 @@ interface TaskListItemProps {
   onBlur: () => void;
 }
 
-const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
+export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
   (props, ref) => {
     const { task, focused, onClick, onCheckboxClick, onBlur, onFocus } = props;
     const checkboxRef = useRef<HTMLButtonElement>(null);
@@ -129,5 +129,3 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
     );
   },
 );
-
-export default TaskListItem;

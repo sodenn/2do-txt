@@ -1,8 +1,8 @@
-import TaskList from "@/components/TaskList";
-import TaskTimeline from "@/components/TaskTimeline";
-import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
-import useSettingsStore from "@/stores/settings-store";
-import useTaskDialogStore from "@/stores/task-dialog-store";
+import { TaskList } from "@/components/TaskList";
+import { TaskTimeline } from "@/components/TaskTimeline";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useSettingsStore } from "@/stores/settings-store";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { Task } from "@/utils/task";
 import {
   TimelineTask,
@@ -10,12 +10,12 @@ import {
   useTimelineTasks,
 } from "@/utils/task-list";
 import { HotkeyListeners, useHotkeys } from "@/utils/useHotkeys";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import { Stack } from "@mui/material";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function TaskView() {
+export function TaskView() {
   const { t } = useTranslation();
   const taskView = useSettingsStore((state) => state.taskView);
   const { taskLists, activeTaskList, deleteTask } = useTask();

@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouteError } from "react-router-dom";
 
-export default function ErrorBoundary() {
+export function ErrorBoundary() {
   const { t } = useTranslation();
   const error = useRouteError() as any;
   const message = error.message;

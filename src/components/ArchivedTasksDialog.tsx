@@ -1,7 +1,7 @@
-import TaskBody from "@/components/TaskBody";
-import useArchivedTasksDialogStore from "@/stores/archived-tasks-dialog-store";
+import { TaskBody } from "@/components/TaskBody";
+import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { Task } from "@/utils/task";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import RestoreOutlinedIcon from "@mui/icons-material/RestoreOutlined";
 import {
   Button,
@@ -18,7 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function ArchivedTasksDialog() {
+export function ArchivedTasksDialog() {
   const open = useArchivedTasksDialogStore((state) => state.open);
   const filePath = useArchivedTasksDialogStore((state) => state.filePath);
   const closeArchivedTasksDialog = useArchivedTasksDialogStore(

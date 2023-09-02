@@ -1,10 +1,10 @@
-import useNetworkStore from "@/stores/network-store";
+import { useNetworkStore } from "@/stores/network-store";
 import { differenceInSeconds } from "date-fns";
 import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function useNetwork() {
+export function useNetwork() {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { connected, displayDate, setConnected, setDisplayDate } =

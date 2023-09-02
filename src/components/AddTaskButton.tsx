@@ -1,12 +1,12 @@
-import Kbd from "@/components/Kbd";
-import useTaskDialogStore from "@/stores/task-dialog-store";
+import { Kbd } from "@/components/Kbd";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import AddIcon from "@mui/icons-material/Add";
 import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function AddTaskButton(props: IconButtonProps) {
+export function AddTaskButton(props: IconButtonProps) {
   const { t } = useTranslation();
   const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 

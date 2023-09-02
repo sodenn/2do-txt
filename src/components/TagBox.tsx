@@ -107,7 +107,7 @@ function getStyle(props: TagBoxProps, mode: PaletteMode) {
   }
 }
 
-export default function TagBox(props: TagBoxProps) {
+export function TagBox(props: TagBoxProps) {
   const { chip, tagKey, completed, ...rest } = props;
   const {
     palette: { mode },

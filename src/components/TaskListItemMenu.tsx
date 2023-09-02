@@ -1,8 +1,8 @@
-import Kbd from "@/components/Kbd";
-import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
-import useTaskDialogStore from "@/stores/task-dialog-store";
+import { Kbd } from "@/components/Kbd";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { Task } from "@/utils/task";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
   Box,
@@ -28,7 +28,7 @@ interface TaskListItemMenuProps {
   menuButtonRef: MutableRefObject<HTMLButtonElement | null>;
 }
 
-export default function TaskListItemMenu(props: TaskListItemMenuProps) {
+export function TaskListItemMenu(props: TaskListItemMenuProps) {
   const { task, menuRef, menuButtonRef } = props;
   const { t } = useTranslation();
   const { deleteTask } = useTask();

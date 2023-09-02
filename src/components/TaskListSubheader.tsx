@@ -1,4 +1,4 @@
-import useFilterStore from "@/stores/filter-store";
+import { useFilterStore } from "@/stores/filter-store";
 import { alpha, Chip, ListSubheader, styled } from "@mui/material";
 import { useMemo } from "react";
 
@@ -14,7 +14,7 @@ interface TaskListSubheaderProps {
   title: string;
 }
 
-export default function TaskListSubheader({ title }: TaskListSubheaderProps) {
+export function TaskListSubheader({ title }: TaskListSubheaderProps) {
   const sortBy = useFilterStore((state) => state.sortBy);
   return useMemo(
     () => (

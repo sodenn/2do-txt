@@ -15,9 +15,7 @@ interface FullScreenDialogState {
 // @ts-ignore
 const FullScreenDialogCtx = createContext<FullScreenDialogState>(undefined);
 
-export default function FullScreenDialogProvider({
-  children,
-}: PropsWithChildren) {
+export function FullScreenDialogProvider({ children }: PropsWithChildren) {
   const [divider, setDivider] = useState<boolean>(false);
   return (
     <FullScreenDialogCtx.Provider value={{ divider, setDivider }}>

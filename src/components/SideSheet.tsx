@@ -1,9 +1,9 @@
-import Filter from "@/components/Filter";
-import Settings from "@/components/Settings";
-import usePlatformStore from "@/stores/platform-store";
-import useScrollingStore from "@/stores/scrolling-store";
-import useSideSheetStore from "@/stores/side-sheet-store";
-import useTask from "@/utils/useTask";
+import { Filter } from "@/components/Filter";
+import { Settings } from "@/components/Settings";
+import { usePlatformStore } from "@/stores/platform-store";
+import { useScrollingStore } from "@/stores/scrolling-store";
+import { useSideSheetStore } from "@/stores/side-sheet-store";
+import { useTask } from "@/utils/useTask";
 import { TabContext, TabPanel } from "@mui/lab";
 import {
   Box,
@@ -101,7 +101,7 @@ export function MainContainer({ children }: PropsWithChildren) {
   );
 }
 
-export default function SideSheet() {
+export function SideSheet() {
   const { t } = useTranslation();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("lg"));

@@ -140,7 +140,7 @@ export function initializeSettingsStore(
   }));
 }
 
-export default function useSettingsStore<T = SettingsStoreInterface>(
+export function useSettingsStore<T = SettingsStoreInterface>(
   selector: (state: SettingsStoreInterface) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);

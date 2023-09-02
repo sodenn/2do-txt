@@ -1,9 +1,9 @@
-import TaskListHeader from "@/components/TaskListHeader";
-import TaskListItem from "@/components/TaskListItem";
-import TaskListSubheader from "@/components/TaskListSubheader";
+import { TaskListHeader } from "@/components/TaskListHeader";
+import { TaskListItem } from "@/components/TaskListItem";
+import { TaskListSubheader } from "@/components/TaskListSubheader";
 import { Task } from "@/utils/task";
 import { TaskGroup } from "@/utils/task-list";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import { Box, List, Typography } from "@mui/material";
 import { isEqual } from "lodash";
 import { MutableRefObject, memo } from "react";
@@ -32,7 +32,7 @@ function propsAreEqual(prev: TaskListProps, next: TaskListProps) {
   );
 }
 
-const TaskList = memo((props: TaskListProps) => {
+export const TaskList = memo((props: TaskListProps) => {
   const {
     fileName,
     filePath,
@@ -93,5 +93,3 @@ const TaskList = memo((props: TaskListProps) => {
     </Box>
   );
 }, propsAreEqual);
-
-export default TaskList;

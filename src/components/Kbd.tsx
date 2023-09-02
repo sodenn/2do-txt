@@ -1,5 +1,5 @@
 import { hasTouchScreen } from "@/native-api/platform";
-import usePlatformStore from "@/stores/platform-store";
+import { usePlatformStore } from "@/stores/platform-store";
 import { styled } from "@mui/material";
 import { PropsWithChildren } from "react";
 
@@ -13,7 +13,7 @@ const StyledKbd = styled("kbd")(({ theme }) => ({
   boxShadow: `0 0 0 1px ${theme.palette.text.primary}`,
 }));
 
-export default function Kbd({ children }: PropsWithChildren) {
+export function Kbd({ children }: PropsWithChildren) {
   const touchScreen = hasTouchScreen();
   const platform = usePlatformStore((state) => state.platform);
 

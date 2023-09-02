@@ -1,9 +1,9 @@
-import StartEllipsis from "@/components/StartEllipsis";
+import { StartEllipsis } from "@/components/StartEllipsis";
 import { writeToClipboard } from "@/native-api/clipboard";
 import { fileExists, readFile } from "@/native-api/filesystem";
 import { hasTouchScreen } from "@/native-api/platform";
-import usePlatformStore from "@/stores/platform-store";
-import useSettingsStore from "@/stores/settings-store";
+import { usePlatformStore } from "@/stores/platform-store";
+import { useSettingsStore } from "@/stores/settings-store";
 import {
   CloudFileRef,
   CloudStorageError,
@@ -15,7 +15,7 @@ import {
 import { formatLocalDateTime, parseDate } from "@/utils/date";
 import { TaskList } from "@/utils/task-list";
 import { getDoneFilePath } from "@/utils/todo-files";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -87,7 +87,7 @@ interface EnableCloudSyncMenuItemProps {
   cloudFileRef?: CloudFileRefWithIdentifier;
 }
 
-function OpenFileList(props: OpenFileListProps) {
+export const OpenFileList = memo((props: OpenFileListProps) => {
   const { subheader, onClose } = props;
   const container = useRef<HTMLDivElement>(null);
   const { taskLists, reorderTaskList, downloadTodoFile } = useTask();
@@ -145,7 +145,7 @@ function OpenFileList(props: OpenFileListProps) {
       />
     </div>
   );
-}
+});
 
 const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
   const { filePath, taskList, onClose, onDownload, ...rest } = props;
@@ -427,5 +427,3 @@ function FileMenu(props: FileMenuProps) {
     </>
   );
 }
-
-export default memo(OpenFileList);

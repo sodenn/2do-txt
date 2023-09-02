@@ -6,9 +6,7 @@ const Root = styled(Typography)({
   textAlign: "left",
 });
 
-export default function StartEllipsis(
-  props: PropsWithChildren<TypographyProps>,
-) {
+export function StartEllipsis(props: PropsWithChildren<TypographyProps>) {
   const { children, ...rest } = props;
   return (
     <Root noWrap {...rest}>

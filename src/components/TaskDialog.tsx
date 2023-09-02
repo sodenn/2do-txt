@@ -3,13 +3,13 @@ import {
   FullScreenDialogContent,
   FullScreenDialogTitle,
 } from "@/components/FullScreenDialog";
-import TaskForm from "@/components/TaskForm";
-import useSettingsStore from "@/stores/settings-store";
-import useTaskDialogStore from "@/stores/task-dialog-store";
+import { TaskForm } from "@/components/TaskForm";
+import { useSettingsStore } from "@/stores/settings-store";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { formatDate, todayDate } from "@/utils/date";
 import { Task } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import {
   Button,
   Dialog,
@@ -26,7 +26,7 @@ const rawText = (createCreationDate: boolean, task?: Task): string => {
   return task ? task.raw : createCreationDate ? formatDate(todayDate()) : "";
 };
 
-export default function TaskDialog() {
+export function TaskDialog() {
   const { t } = useTranslation();
   const {
     findTaskListByTaskId,

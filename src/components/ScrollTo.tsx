@@ -13,7 +13,7 @@ const StyledBox = styled(Box)({
   paddingBottom: "env(safe-area-inset-bottom)",
 });
 
-export default function ScrollTo({ target }: ScrollTopProps) {
+export function ScrollTo({ target }: ScrollTopProps) {
   const { visible, direction } = useIsInViewport(target);
 
   const handleClick = () => {

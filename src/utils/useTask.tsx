@@ -9,11 +9,11 @@ import {
 } from "@/native-api/filesystem";
 import { setPreferencesItem } from "@/native-api/preferences";
 import { share } from "@/native-api/share";
-import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
-import useFilterStore from "@/stores/filter-store";
-import usePlatformStore from "@/stores/platform-store";
-import useSettingsStore from "@/stores/settings-store";
-import useTasksStore, { taskLoader } from "@/stores/task-state";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useFilterStore } from "@/stores/filter-store";
+import { usePlatformStore } from "@/stores/platform-store";
+import { useSettingsStore } from "@/stores/settings-store";
+import { taskLoader, useTaskStore } from "@/stores/task-state";
 import { todayDate } from "@/utils/date";
 import { hashCode } from "@/utils/hashcode";
 import { addTodoFilePath, removeTodoFilePath } from "@/utils/settings";
@@ -33,8 +33,8 @@ import {
   updateTaskListAttributes,
 } from "@/utils/task-list";
 import { getDoneFilePath } from "@/utils/todo-files";
-import useArchivedTask from "@/utils/useArchivedTask";
-import useNotification from "@/utils/useNotification";
+import { useArchivedTask } from "@/utils/useArchivedTask";
+import { useNotification } from "@/utils/useNotification";
 import { generateId } from "@/utils/uuid";
 import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
@@ -60,7 +60,7 @@ function areTaskListsEqual(a: TaskList[], b: TaskList[]) {
   return isEqual(taskListsWithoutId(a), taskListsWithoutId(b));
 }
 
-export default function useTask() {
+export function useTask() {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const platform = usePlatformStore((state) => state.platform);
@@ -86,11 +86,11 @@ export default function useTask() {
   const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath,
   );
-  const taskLists = useTasksStore((state) => state.taskLists);
-  const todoFiles = useTasksStore((state) => state.todoFiles);
-  const setTaskLists = useTasksStore((state) => state.setTaskLists);
-  const addTaskList = useTasksStore((state) => state.addTaskList);
-  const removeTaskList = useTasksStore((state) => state.removeTaskList);
+  const taskLists = useTaskStore((state) => state.taskLists);
+  const todoFiles = useTaskStore((state) => state.todoFiles);
+  const setTaskLists = useTaskStore((state) => state.setTaskLists);
+  const addTaskList = useTaskStore((state) => state.addTaskList);
+  const removeTaskList = useTaskStore((state) => state.removeTaskList);
   const {
     scheduleNotifications,
     cancelNotifications,

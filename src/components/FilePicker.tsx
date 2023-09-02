@@ -1,7 +1,7 @@
-import useFilterStore from "@/stores/filter-store";
-import usePlatformStore from "@/stores/platform-store";
-import useFilePicker from "@/utils/useFilePicker";
-import useTask from "@/utils/useTask";
+import { useFilterStore } from "@/stores/filter-store";
+import { usePlatformStore } from "@/stores/platform-store";
+import { useFilePicker } from "@/utils/useFilePicker";
+import { useTask } from "@/utils/useTask";
 import { Fade, Paper, styled, Typography } from "@mui/material";
 import { listen } from "@tauri-apps/api/event";
 import { useSnackbar } from "notistack";
@@ -41,7 +41,7 @@ const StyledPaper = styled(Paper)({
   justifyContent: "center",
 });
 
-export default function FilePicker({ children }: PropsWithChildren) {
+export function FilePicker({ children }: PropsWithChildren) {
   const platform = usePlatformStore((state) => state.platform);
   if (platform === "desktop") {
     return <DesktopFilePicker>{children}</DesktopFilePicker>;

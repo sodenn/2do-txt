@@ -29,7 +29,7 @@ function isValidDate(date: Date) {
   return isValid(date) && isAfter(date, minDate) && isBefore(date, maxDate);
 }
 
-const LocalizationDatePicker = forwardRef<
+export const LocalizationDatePicker = forwardRef<
   HTMLInputElement,
   LocalizationDatePickerProps
 >((props, ref) => {
@@ -121,5 +121,3 @@ const LocalizationDatePicker = forwardRef<
     </LocalizationProvider>
   );
 });
-
-export default LocalizationDatePicker;

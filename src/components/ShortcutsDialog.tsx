@@ -1,5 +1,5 @@
-import Kbd from "@/components/Kbd";
-import useShortcutsDialogStore from "@/stores/shortcuts-dialog-store";
+import { Kbd } from "@/components/Kbd";
+import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
 import {
   Button,
   Dialog,
@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-export default function ShortcutsDialog() {
+export function ShortcutsDialog() {
   const { t } = useTranslation();
   const { open: shortcutsDialogOpen, closeShortcutsDialog } =
     useShortcutsDialogStore();

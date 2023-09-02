@@ -1,10 +1,10 @@
-import StartEllipsis from "@/components/StartEllipsis";
+import { StartEllipsis } from "@/components/StartEllipsis";
 import logo from "@/images/logo.png";
 import { hasTouchScreen } from "@/native-api/platform";
-import useFileManagementDialogStore from "@/stores/file-management-dialog-store";
-import useFilterStore from "@/stores/filter-store";
-import useShortcutsDialogStore from "@/stores/shortcuts-dialog-store";
-import useTask from "@/utils/useTask";
+import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
+import { useFilterStore } from "@/stores/filter-store";
+import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
+import { useTask } from "@/utils/useTask";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -25,7 +25,7 @@ const buttonMaxWidthXs = 170;
 const buttonMaxWidth = 300;
 const menuMaxWidth = 350;
 
-export default function FileMenu() {
+export function FileMenu() {
   const { t } = useTranslation();
   const touchScreen = hasTouchScreen();
   const openFileManagementDialog = useFileManagementDialogStore(

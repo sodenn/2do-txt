@@ -20,7 +20,7 @@ interface RecurrenceSelectProps {
   onChange?: (value: string | null) => void;
 }
 
-export default function RecurrenceSelect(props: RecurrenceSelectProps) {
+export function RecurrenceSelect(props: RecurrenceSelectProps) {
   const { value, onChange } = props;
   const { t } = useTranslation();
   const [strict, setStrict] = useState(false);

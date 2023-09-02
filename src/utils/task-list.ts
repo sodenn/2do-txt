@@ -1,4 +1,4 @@
-import useFilterStore, { FilterType, SortKey } from "@/stores/filter-store";
+import { useFilterStore, FilterType, SortKey } from "@/stores/filter-store";
 import { groupBy } from "@/utils/array";
 import {
   formatDate,

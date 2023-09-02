@@ -1,5 +1,5 @@
-import TaskBody from "@/components/TaskBody";
-import useSettingsStore from "@/stores/settings-store";
+import { TaskBody } from "@/components/TaskBody";
+import { useSettingsStore } from "@/stores/settings-store";
 import { formatLocaleDate } from "@/utils/date";
 import { TimelineTask } from "@/utils/task-list";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
@@ -229,7 +229,7 @@ const TaskListItem = forwardRef<
   );
 });
 
-const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
+export const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
   (props, ref) => {
     const {
       task,
@@ -301,5 +301,3 @@ const TaskTimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
     );
   },
 );
-
-export default TaskTimelineItem;

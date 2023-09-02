@@ -154,7 +154,7 @@ export function initializeFilterStore(
   }));
 }
 
-export default function useFilterStore<T = FilterStoreInterface>(
+export function useFilterStore<T = FilterStoreInterface>(
   selector: (state: FilterStoreInterface) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);

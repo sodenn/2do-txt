@@ -9,7 +9,7 @@ import {
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function useNotification() {
+export function useNotification() {
   const { t } = useTranslation();
 
   const scheduleNotifications = useCallback(

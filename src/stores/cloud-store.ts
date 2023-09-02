@@ -119,9 +119,7 @@ export function initializeCloudStore({
   }));
 }
 
-export default function useCloudStore<T>(
-  selector: (state: CloudStoreInterface) => T,
-) {
+export function useCloudStore<T>(selector: (state: CloudStoreInterface) => T) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");
   return useZustandStore(store, selector);

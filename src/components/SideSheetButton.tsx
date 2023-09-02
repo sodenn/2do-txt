@@ -1,11 +1,11 @@
-import useSideSheetStore from "@/stores/side-sheet-store";
+import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton, useMediaQuery, useTheme } from "@mui/material";
 import { useMemo } from "react";
 
-export default function SideSheetButton() {
+export function SideSheetButton() {
   const theme = useTheme();
   const md = useMediaQuery(theme.breakpoints.down("lg"));
   const sideSheetOpen = useSideSheetStore((state) => state.open);

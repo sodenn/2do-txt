@@ -75,7 +75,7 @@ export async function loader(): Promise<LoaderData> {
   return { filter, settings, platform, theme, task, cloud, network };
 }
 
-export default function StoreProvider({
+export function StoreProvider({
   children,
   ...props
 }: PropsWithChildren<LoaderData>) {

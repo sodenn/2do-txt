@@ -1,11 +1,11 @@
 import { readFile, selectFile } from "@/native-api/filesystem";
-import useFilePickerStore from "@/stores/file-picker-store";
-import usePlatformStore from "@/stores/platform-store";
+import { useFilePickerStore } from "@/stores/file-picker-store";
+import { usePlatformStore } from "@/stores/platform-store";
 import { addTodoFilePath } from "@/utils/settings";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import { useCallback, useMemo } from "react";
 
-function useFilePicker() {
+export function useFilePicker() {
   const platform = usePlatformStore((state) => state.platform);
   const fileInput = useFilePickerStore((state) => state.fileInput);
   const setFileInput = useFilePickerStore((state) => state.setFileInput);
@@ -45,5 +45,3 @@ function useFilePicker() {
     [openDesktopFile, openFileDialog, setFileInput],
   );
 }
-
-export default useFilePicker;

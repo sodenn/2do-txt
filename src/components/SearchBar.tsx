@@ -1,14 +1,14 @@
-import useFilterStore from "@/stores/filter-store";
+import { useFilterStore } from "@/stores/filter-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import { Box } from "@mui/material";
 import { ChangeEvent, useMemo, useRef } from "react";
-import ExpandableSearch from "./ExpandableSearch";
+import { ExpandableSearch } from "./ExpandableSearch";
 
 interface SearchBarProps {
   onExpand?: (expanded: boolean) => void;
 }
 
-export default function SearchBar({ onExpand }: SearchBarProps) {
+export function SearchBar({ onExpand }: SearchBarProps) {
   const searchTerm = useFilterStore((state) => state.searchTerm);
   const setSearchTerm = useFilterStore((state) => state.setSearchTerm);
   const searchInputRef = useRef<HTMLInputElement>(null);

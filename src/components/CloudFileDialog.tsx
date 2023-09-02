@@ -4,11 +4,11 @@ import {
   FullScreenDialogTitle,
 } from "@/components/FullScreenDialog";
 import { getDirname, join, selectFolder } from "@/native-api/filesystem";
-import useCloudFileDialogStore from "@/stores/cloud-file-dialog-store";
-import useFileCreateDialogStore from "@/stores/file-create-dialog-store";
-import useFilterStore from "@/stores/filter-store";
-import usePlatformStore from "@/stores/platform-store";
-import useSettingsStore from "@/stores/settings-store";
+import { useCloudFileDialogStore } from "@/stores/cloud-file-dialog-store";
+import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
+import { useFilterStore } from "@/stores/filter-store";
+import { usePlatformStore } from "@/stores/platform-store";
+import { useSettingsStore } from "@/stores/settings-store";
 import {
   CloudDirectory,
   CloudFile,
@@ -20,7 +20,7 @@ import {
   useCloudStorage,
 } from "@/utils/CloudStorage";
 import { getDoneFilePath } from "@/utils/todo-files";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
@@ -69,7 +69,7 @@ interface CloudFolderButtonProps {
   onClick: () => void;
 }
 
-export default function CloudFileDialog() {
+export function CloudFileDialog() {
   const { t } = useTranslation();
   const theme = useTheme();
   const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));

@@ -2,7 +2,7 @@ import {
   addBecomeActiveListener,
   removeAllBecomeActiveListeners,
 } from "@/native-api/platform";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import { useEffect } from "react";
 
 export function useTaskEffect() {

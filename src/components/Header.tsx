@@ -1,12 +1,12 @@
-import AddTaskButton from "@/components/AddTaskButton";
-import FileMenu from "@/components/FileMenu";
-import SearchBar from "@/components/SearchBar";
-import ShareButton from "@/components/ShareButton";
+import { AddTaskButton } from "@/components/AddTaskButton";
+import { FileMenu } from "@/components/FileMenu";
+import { SearchBar } from "@/components/SearchBar";
+import { ShareButton } from "@/components/ShareButton";
 import { HeaderContainer } from "@/components/SideSheet";
-import SideSheetButton from "@/components/SideSheetButton";
-import usePlatformStore from "@/stores/platform-store";
-import useSideSheetStore from "@/stores/side-sheet-store";
-import useTask from "@/utils/useTask";
+import { SideSheetButton } from "@/components/SideSheetButton";
+import { usePlatformStore } from "@/stores/platform-store";
+import { useSideSheetStore } from "@/stores/side-sheet-store";
+import { useTask } from "@/utils/useTask";
 import { AppBar, Box, Fade, styled, Toolbar } from "@mui/material";
 import { useState } from "react";
 
@@ -20,7 +20,7 @@ const SafeAreaAppBar = styled(AppBar)({
   paddingRight: "env(safe-area-inset-right)",
 });
 
-export default function Header({ divider = false }: HeaderProps) {
+export function Header({ divider = false }: HeaderProps) {
   const platform = usePlatformStore((state) => state.platform);
   const { activeTaskList, taskLists } = useTask();
   const sideSheetOpen = useSideSheetStore((state) => state.open);

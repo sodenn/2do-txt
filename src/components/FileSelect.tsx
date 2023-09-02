@@ -1,4 +1,4 @@
-import StartEllipsis from "@/components/StartEllipsis";
+import { StartEllipsis } from "@/components/StartEllipsis";
 import { TaskList } from "@/utils/task-list";
 import {
   FormControl,
@@ -14,7 +14,7 @@ interface FileSelectProps {
   onSelect: (value?: TaskList) => void;
 }
 
-export default function FileSelect(props: FileSelectProps) {
+export function FileSelect(props: FileSelectProps) {
   const { options, onSelect } = props;
   const { t } = useTranslation();
   const [filePath, setFilePath] = useState("");

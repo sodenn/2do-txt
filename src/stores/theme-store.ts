@@ -49,9 +49,7 @@ export function initializeThemeStore(
   }));
 }
 
-export default function useThemeStore<T>(
-  selector: (state: ThemeStoreInterface) => T,
-) {
+export function useThemeStore<T>(selector: (state: ThemeStoreInterface) => T) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");
   return useZustandStore(store, selector);

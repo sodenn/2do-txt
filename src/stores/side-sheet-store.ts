@@ -7,11 +7,9 @@ interface SideSheetStoreInterface {
   closeSideSheet: () => void;
 }
 
-const useSideSheetStore = create<SideSheetStoreInterface>((set) => ({
+export const useSideSheetStore = create<SideSheetStoreInterface>((set) => ({
   open: false,
   toggleSideSheet: () => set((state) => ({ open: !state.open })),
   openSideSheet: () => set({ open: true }),
   closeSideSheet: () => set({ open: false }),
 }));
-
-export default useSideSheetStore;

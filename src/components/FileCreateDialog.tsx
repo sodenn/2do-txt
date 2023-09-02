@@ -8,15 +8,15 @@ import {
   getUniqueFilePath,
   saveFile,
 } from "@/native-api/filesystem";
-import useConfirmationDialogStore from "@/stores/confirmation-dialog-store";
-import useFileCreateDialogStore from "@/stores/file-create-dialog-store";
-import useFilterStore from "@/stores/filter-store";
-import usePlatformStore from "@/stores/platform-store";
-import useTaskDialogStore from "@/stores/task-dialog-store";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
+import { useFilterStore } from "@/stores/filter-store";
+import { usePlatformStore } from "@/stores/platform-store";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { Provider, useCloudStorage } from "@/utils/CloudStorage";
 import { addTodoFilePath } from "@/utils/settings";
 import { defaultTodoFilePath } from "@/utils/todo-files";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import {
   Button,
   Dialog,
@@ -41,7 +41,7 @@ interface FileCreateDialogProps {
   onCreateFile: (filePath: string) => Promise<void>;
 }
 
-const FileCreateDialog = () => {
+export function FileCreateDialog() {
   const platform = usePlatformStore((state) => state.platform);
   const fileCreateDialogOpen = useFileCreateDialogStore((state) => state.open);
   const createExampleFile = useFileCreateDialogStore(
@@ -108,9 +108,9 @@ const FileCreateDialog = () => {
       open={fileCreateDialogOpen}
     />
   );
-};
+}
 
-const DesktopFileCreateDialog = (props: FileCreateDialogProps) => {
+function DesktopFileCreateDialog(props: FileCreateDialogProps) {
   const { onCreateFile, onClose, open } = props;
   const { loadTodoFilesFromDisk } = useTask();
 
@@ -133,7 +133,7 @@ const DesktopFileCreateDialog = (props: FileCreateDialogProps) => {
   }, [openFileDialog]);
 
   return null;
-};
+}
 
 const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   const { onCreateFile, onClose, open } = props;
@@ -341,5 +341,3 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     </Dialog>
   );
 };
-
-export default FileCreateDialog;

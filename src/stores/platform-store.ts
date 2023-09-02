@@ -35,7 +35,7 @@ export function initializePlatformStore(
   }));
 }
 
-export default function usePlatformStore<T>(
+export function usePlatformStore<T>(
   selector: (state: PlatformStoreInterface) => T,
 ) {
   const store = useContext(zustandContext);

@@ -1,4 +1,4 @@
-import TagBox from "@/components/TagBox";
+import { TagBox } from "@/components/TagBox";
 import { Box, BoxProps, styled } from "@mui/material";
 
 interface PriorityBoxProps extends BoxProps {
@@ -27,7 +27,7 @@ const PriorityBoxRoot = styled(SpanBox)(() => ({
   },
 }));
 
-export default function PriorityBox({
+export function PriorityBox({
   children,
   chip,
   completed,

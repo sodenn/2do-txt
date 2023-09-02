@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import ReactDOMServer from "react-dom/server";
 import { useTranslation } from "react-i18next";
 
-export default function usePullToRefresh(
+export function usePullToRefresh(
   onRefresh: () => Promise<void>,
   mainElement: string,
   disable = false,

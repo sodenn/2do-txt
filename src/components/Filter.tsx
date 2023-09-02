@@ -1,9 +1,9 @@
-import ChipList from "@/components/ChipList";
-import Heading from "@/components/Heading";
-import useFilterStore, { FilterType, SortKey } from "@/stores/filter-store";
-import useSettingsStore from "@/stores/settings-store";
+import { ChipList } from "@/components/ChipList";
+import { Heading } from "@/components/Heading";
+import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
+import { useSettingsStore } from "@/stores/settings-store";
 import { useHotkeys } from "@/utils/useHotkeys";
-import useTask from "@/utils/useTask";
+import { useTask } from "@/utils/useTask";
 import {
   Box,
   Checkbox,
@@ -15,7 +15,7 @@ import {
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function Filter() {
+export function Filter() {
   const { t } = useTranslation();
   const { taskLists, activeTaskList, ...rest } = useTask();
   const {

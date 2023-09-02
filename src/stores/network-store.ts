@@ -43,7 +43,7 @@ export function initializeNetworkStore(
   }));
 }
 
-export default function useNetworkStore<T = NetworkStoreInterface>(
+export function useNetworkStore<T = NetworkStoreInterface>(
   selector: (state: NetworkStoreInterface) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);

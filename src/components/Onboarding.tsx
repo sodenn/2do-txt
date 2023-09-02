@@ -1,10 +1,10 @@
-import CloudStorageOnboarding from "@/components/CloudStorageOnboarding";
-import ExampleFileButton from "@/components/ExampleFileButton";
-import NewFileButton from "@/components/NewFileButton";
+import { CloudStorageOnboarding } from "@/components/CloudStorageOnboarding";
+import { ExampleFileButton } from "@/components/ExampleFileButton";
+import { NewFileButton } from "@/components/NewFileButton";
 import logo from "@/images/logo.png";
-import usePlatformStore from "@/stores/platform-store";
-import useFilePicker from "@/utils/useFilePicker";
-import useTask from "@/utils/useTask";
+import { usePlatformStore } from "@/stores/platform-store";
+import { useFilePicker } from "@/utils/useFilePicker";
+import { useTask } from "@/utils/useTask";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { Box, Button, Stack, styled, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -20,7 +20,7 @@ const StyledBox = styled("div")(({ theme }) => ({
   },
 }));
 
-export default function Onboarding() {
+export function Onboarding() {
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
   const { taskLists } = useTask();

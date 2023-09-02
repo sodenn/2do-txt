@@ -1,10 +1,11 @@
-import useSettingsStore, {
+import {
   PriorityTransformation,
+  useSettingsStore,
 } from "@/stores/settings-store";
 import { MenuItem, Select } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-export default function PriorityTransformationSelect() {
+export function PriorityTransformationSelect() {
   const { t } = useTranslation();
   const priorityTransformation = useSettingsStore(
     (state) => state.priorityTransformation,

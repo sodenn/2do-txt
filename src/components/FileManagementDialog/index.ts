@@ -1,1 +1,1 @@
-export { default } from "./FileManagementDialog";
+export { FileManagementDialog } from "./FileManagementDialog";

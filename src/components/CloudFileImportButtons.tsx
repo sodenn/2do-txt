@@ -1,4 +1,4 @@
-import useCloudFileDialogStore from "@/stores/cloud-file-dialog-store";
+import { useCloudFileDialogStore } from "@/stores/cloud-file-dialog-store";
 import {
   Provider,
   cloudStorageIcons,
@@ -10,7 +10,7 @@ import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function CloudFileImportButtons() {
+export function CloudFileImportButtons() {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openCloudFileDialog = useCloudFileDialogStore(
