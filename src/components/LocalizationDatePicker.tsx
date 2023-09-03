@@ -1,12 +1,25 @@
-import { useMediaQuery } from "@mui/material";
+import useMediaQuery from "@/utils/useMediaQuery";
 import {
+  FormControl,
+  FormLabel,
+  IconButton,
+  IconButtonProps,
+  Input,
+  InputProps,
+} from "@mui/joy";
+import {
+  BaseSingleInputFieldProps,
   DatePicker,
   DatePickerProps,
+  DateValidationError,
+  FieldSection,
   FieldSelectedSections,
   LocalizationProvider,
+  UseDateFieldProps,
   deDE,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useDateField } from "@mui/x-date-pickers/DateField/useDateField";
 import { Locale, isAfter, isBefore, isValid } from "date-fns";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
@@ -27,6 +40,85 @@ const maxDate = new Date("2099-12-31T00:00:00.000");
 
 function isValidDate(date: Date) {
   return isValid(date) && isAfter(date, minDate) && isBefore(date, maxDate);
+}
+
+interface JoyDateFieldProps
+  extends UseDateFieldProps<Date>,
+    BaseSingleInputFieldProps<
+      Date | null,
+      Date,
+      FieldSection,
+      DateValidationError
+    > {}
+
+interface JoyFieldProps extends InputProps {
+  label?: React.ReactNode;
+  InputProps?: {
+    ref?: React.Ref<any>;
+    endAdornment?: React.ReactNode;
+    startAdornment?: React.ReactNode;
+  };
+  formControlSx?: InputProps["sx"];
+}
+
+type JoyFieldComponent = ((
+  props: JoyFieldProps & React.RefAttributes<HTMLDivElement>,
+) => React.JSX.Element) & { propTypes?: any };
+
+const JoyField = forwardRef<HTMLInputElement, JoyFieldProps>(
+  (props, inputRef) => {
+    const {
+      disabled,
+      id,
+      label,
+      // @ts-ignore
+      InputProps: { ref: containerRef, startAdornment, endAdornment } = {},
+      formControlSx,
+      ...other
+    } = props;
+    return (
+      <FormControl
+        disabled={disabled}
+        id={id}
+        sx={[
+          {
+            flexGrow: 1,
+          },
+          ...(Array.isArray(formControlSx) ? formControlSx : [formControlSx]),
+        ]}
+        ref={containerRef}
+      >
+        <FormLabel>{label}</FormLabel>
+        <Input
+          disabled={disabled}
+          slotProps={{ input: { ref: inputRef } }}
+          startDecorator={startAdornment}
+          endDecorator={endAdornment}
+          {...other}
+        />
+      </FormControl>
+    );
+  },
+) as JoyFieldComponent;
+
+function JoyDateField(props: JoyDateFieldProps) {
+  const {
+    inputRef: externalInputRef,
+    slots,
+    slotProps,
+    ...textFieldProps
+  } = props;
+
+  const response = useDateField({
+    props: textFieldProps,
+    inputRef: externalInputRef,
+  });
+
+  return <JoyField {...response} />;
+}
+
+function JoyOpenPickerButton(props: IconButtonProps) {
+  return <IconButton {...props} variant="plain" color="neutral" />;
 }
 
 export const LocalizationDatePicker = forwardRef<
@@ -83,6 +175,11 @@ export const LocalizationDatePicker = forwardRef<
         minDate={minDate}
         maxDate={maxDate}
         onChange={handleChange}
+        slots={{
+          field: JoyDateField,
+          // @ts-ignore
+          openPickerButton: JoyOpenPickerButton,
+        }}
         ref={ref}
         value={value}
         selectedSections={selectedSections}

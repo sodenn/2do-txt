@@ -1,5 +1,5 @@
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import { Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Tooltip, Typography } from "@mui/joy";
 import { PropsWithChildren, ReactNode } from "react";
 
 interface HeadingProps extends PropsWithChildren {
@@ -23,8 +23,8 @@ export function Heading({
     >
       <Typography
         component="div"
-        variant="subtitle1"
-        color={disabled ? "text.secondary" : undefined}
+        level="title-md"
+        textColor={disabled ? "text.secondary" : undefined}
       >
         {children}
       </Typography>

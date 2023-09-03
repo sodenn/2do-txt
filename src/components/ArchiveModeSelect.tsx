@@ -1,6 +1,6 @@
 import { ArchiveMode, useSettingsStore } from "@/stores/settings-store";
 import { useTask } from "@/utils/useTask";
-import { MenuItem, Select } from "@mui/material";
+import { Option, Select, SelectProps } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function ArchiveModeSelect() {
@@ -9,32 +9,35 @@ export function ArchiveModeSelect() {
   const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
   const { archiveTasks, restoreArchivedTasks } = useTask();
 
-  const handleChange = (value: ArchiveMode) => {
-    setArchiveMode(value);
-    if (value === "automatic") {
+  const handleChange: SelectProps<ArchiveMode>["onChange"] = (_, value) => {
+    const newValue = value || "no-archiving";
+    setArchiveMode(newValue);
+    if (newValue === "automatic") {
       archiveTasks();
-    } else if (value === "no-archiving") {
+    } else if (newValue === "no-archiving") {
       restoreArchivedTasks();
     }
   };
 
   return (
     <Select
-      fullWidth
-      size="small"
       value={archiveMode}
-      inputProps={{ "aria-label": "Select archive mode" }}
-      onChange={(event) => handleChange(event.target.value as ArchiveMode)}
+      onChange={handleChange}
+      slotProps={{
+        button: {
+          "aria-label": "Select archive mode",
+        },
+      }}
     >
-      <MenuItem value="no-archiving" aria-label="No archiving">
+      <Option value="no-archiving" aria-label="No archiving">
         {t("No archiving")}
-      </MenuItem>
-      <MenuItem value="manual" aria-label="Archive manually">
+      </Option>
+      <Option value="manual" aria-label="Archive manually">
         {t("Archive manually")}
-      </MenuItem>
-      <MenuItem value="automatic" aria-label="Archive automatically">
+      </Option>
+      <Option value="automatic" aria-label="Archive automatically">
         {t("Archive automatically")}
-      </MenuItem>
+      </Option>
     </Select>
   );
 }

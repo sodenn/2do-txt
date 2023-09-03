@@ -5,7 +5,6 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-http-backend";
 import { createRoot } from "react-dom/client";
 import { initReactI18next } from "react-i18next";
-import "typeface-roboto";
 import "./index.css";
 
 i18n

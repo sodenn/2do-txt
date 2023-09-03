@@ -6,7 +6,7 @@ import { usePlatformStore } from "@/stores/platform-store";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import { Box, Button, Stack, styled, Typography } from "@mui/material";
+import { Box, Button, Stack, styled, Typography } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 const StyledBox = styled("div")(({ theme }) => ({
@@ -36,7 +36,7 @@ export function Onboarding() {
           sx={{ textAlign: "center" }}
           gutterBottom
           component="h1"
-          variant="h4"
+          level="h4"
           role="heading"
           aria-label="Onboarding"
         >
@@ -45,14 +45,15 @@ export function Onboarding() {
         <NewFileButton />
         <ExampleFileButton />
         <Button
+          color="neutral"
+          variant="outlined"
+          component="span"
+          fullWidth
           onClick={openFileDialog}
           aria-label={
             platform === "desktop" ? "Open todo.txt" : "Import todo.txt"
           }
-          startIcon={<FolderOpenOutlinedIcon />}
-          fullWidth
-          variant="outlined"
-          component="span"
+          startDecorator={<FolderOpenOutlinedIcon />}
         >
           {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
         </Button>

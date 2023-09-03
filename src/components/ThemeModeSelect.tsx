@@ -1,28 +1,45 @@
+import { usePaletteMode } from "@/components/AppThemeProvider";
 import { ThemeMode, useThemeStore } from "@/stores/theme-store";
-import { MenuItem, Select } from "@mui/material";
+import { Option, Select, SelectProps } from "@mui/joy";
+import { useColorScheme as useJoyColorScheme } from "@mui/joy/styles/CssVarsProvider";
+import { useColorScheme as useMaterialColorScheme } from "@mui/material/styles/CssVarsProvider";
 import { useTranslation } from "react-i18next";
 
 export function ThemeModeSelect() {
   const { t } = useTranslation();
   const themeMode = useThemeStore((state) => state.mode);
   const setThemeMode = useThemeStore((state) => state.setThemeMode);
+  const { getPaletteMode } = usePaletteMode();
+  const { setMode: setMaterialMode } = useMaterialColorScheme();
+  const { setMode: setJoyMode } = useJoyColorScheme();
+
+  const handleClick: SelectProps<ThemeMode>["onChange"] = (_, value) => {
+    const newValue = value || "system";
+    const paletteMode = getPaletteMode(newValue);
+    setMaterialMode(paletteMode);
+    setJoyMode(paletteMode);
+    setThemeMode(newValue);
+  };
+
   return (
     <Select
-      fullWidth
-      size="small"
       value={themeMode}
-      inputProps={{ "aria-label": "Select theme mode" }}
-      onChange={(event) => setThemeMode(event.target.value as ThemeMode)}
+      onChange={handleClick}
+      slotProps={{
+        button: {
+          "aria-label": "Select theme mode",
+        },
+      }}
     >
-      <MenuItem value="light" aria-label="Light">
+      <Option value="light" aria-label="Light">
         {t("Light")}
-      </MenuItem>
-      <MenuItem value="dark" aria-label="Dark">
+      </Option>
+      <Option value="dark" aria-label="Dark">
         {t("Dark")}
-      </MenuItem>
-      <MenuItem value="system" aria-label="System">
+      </Option>
+      <Option value="system" aria-label="System">
         {t("System")}
-      </MenuItem>
+      </Option>
     </Select>
   );
 }

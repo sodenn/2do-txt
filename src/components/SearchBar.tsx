@@ -1,7 +1,7 @@
 import { ExpandableSearch } from "@/components/ExpandableSearch";
 import { useFilterStore } from "@/stores/filter-store";
 import { useHotkeys } from "@/utils/useHotkeys";
-import { Box } from "@mui/material";
+import { Box } from "@mui/joy";
 import { ChangeEvent, useMemo, useRef } from "react";
 
 interface SearchBarProps {

@@ -11,8 +11,8 @@ import { useFilePicker } from "@/utils/useFilePicker";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Button, IconProps, ListItemIcon, Menu, MenuItem } from "@mui/material";
-import React, { MouseEvent, useState } from "react";
+import { Button, Dropdown, ListItemDecorator, Menu, MenuItem } from "@mui/joy";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 export function FileActionButton() {
@@ -29,16 +29,6 @@ export function FileActionButton() {
   const openCloudFileDialog = useCloudFileDialogStore(
     (state) => state.openCloudFileDialog,
   );
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleCreateFile = () => {
     openFileCreateDialog();
@@ -57,7 +47,7 @@ export function FileActionButton() {
 
   const renderCloudStorageIcon = (provider: Provider) => {
     const icon = cloudStorageIcons[provider];
-    return React.isValidElement<IconProps>(icon)
+    return React.isValidElement<{ fontSize?: string }>(icon)
       ? React.cloneElement(icon, {
           fontSize: "small",
         })
@@ -76,38 +66,24 @@ export function FileActionButton() {
   }
 
   return (
-    <>
+    <Dropdown>
       <Button
-        onClick={handleClick}
         aria-label="Choose action"
-        endIcon={<KeyboardArrowDownIcon />}
+        endDecorator={<KeyboardArrowDownIcon />}
       >
         {t("Choose action")}
       </Button>
-      <Menu
-        sx={{ mt: 0.5 }}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
+      <Menu sx={{ mt: 0.5 }} placement="bottom-end">
         <MenuItem onClick={handleCreateFile}>
-          <ListItemIcon>
+          <ListItemDecorator>
             <AddOutlinedIcon />
-          </ListItemIcon>
+          </ListItemDecorator>
           {t("Create todo.txt")}
         </MenuItem>
         <MenuItem onClick={handleOpenFile}>
-          <ListItemIcon>
+          <ListItemDecorator>
             <FolderOpenOutlinedIcon />
-          </ListItemIcon>
+          </ListItemDecorator>
           {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
         </MenuItem>
         {cloudStorages
@@ -117,11 +93,13 @@ export function FileActionButton() {
               key={provider}
               onClick={() => handleImportFromStorage(provider)}
             >
-              <ListItemIcon>{renderCloudStorageIcon(provider)}</ListItemIcon>
+              <ListItemDecorator>
+                {renderCloudStorageIcon(provider)}
+              </ListItemDecorator>
               {t("Import from cloud storage", { provider })}
             </MenuItem>
           ))}
       </Menu>
-    </>
+    </Dropdown>
   );
 }

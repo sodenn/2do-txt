@@ -1,5 +1,5 @@
 import { Language, useSettingsStore } from "@/stores/settings-store";
-import { MenuItem, Select } from "@mui/material";
+import { Option, Select } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function LanguageSelect() {
@@ -8,18 +8,20 @@ export function LanguageSelect() {
   const changeLanguage = useSettingsStore((state) => state.changeLanguage);
   return (
     <Select
-      fullWidth
-      size="small"
       value={language}
-      inputProps={{ "aria-label": "Select language" }}
-      onChange={(event) => changeLanguage(event.target.value as Language)}
+      onChange={(_, value) => changeLanguage(value as Language)}
+      slotProps={{
+        button: {
+          "aria-label": "Select language",
+        },
+      }}
     >
-      <MenuItem value="en" aria-label="English">
+      <Option value="en" aria-label="English">
         {t("English")}
-      </MenuItem>
-      <MenuItem value="de" aria-label="German">
+      </Option>
+      <Option value="de" aria-label="German">
         {t("German")}
-      </MenuItem>
+      </Option>
     </Select>
   );
 }

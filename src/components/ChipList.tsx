@@ -1,11 +1,11 @@
-import { Badge, Chip, styled } from "@mui/material";
+import { Badge, Chip, ChipProps, styled } from "@mui/joy";
 
 interface ChipListProps {
   items?: Record<string, number>;
   activeItems?: string[];
   multiple?: boolean;
   onClick?: (item: string) => void;
-  color?: "info" | "success" | "warning" | "secondary";
+  color?: ChipProps["color"];
 }
 
 const List = styled("ul")(({ theme }) => ({
@@ -33,7 +33,7 @@ export function ChipList(props: ChipListProps) {
       {Object.entries(items).map(([item, usages]) => (
         <li key={item}>
           <Badge
-            badgeContent={usages === 1 ? undefined : usages}
+            badgeContent={usages === 1 ? 0 : usages}
             color="primary"
             anchorOrigin={{
               vertical: "bottom",
@@ -41,18 +41,19 @@ export function ChipList(props: ChipListProps) {
             }}
           >
             <Chip
-              sx={{ px: 1 }}
+              sx={{ px: 2 }}
               disabled={
                 multiple
                   ? false
                   : activeItems.length > 0 && !activeItems.includes(item)
               }
-              variant={activeItems.includes(item) ? "filled" : "outlined"}
-              label={item}
+              variant={activeItems.includes(item) ? "solid" : "outlined"}
               color={color}
               onClick={() => onClick?.(item)}
               aria-label={`${item} is used ${usages} times`}
-            />
+            >
+              {item}
+            </Chip>
           </Badge>
         </li>
       ))}

@@ -6,24 +6,19 @@ import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
 import { useTask } from "@/utils/useTask";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
-  Button,
   Divider,
-  ListItemIcon,
-  ListItemText,
+  Dropdown,
+  ListItemDecorator,
   Menu,
+  MenuButton,
   MenuItem,
-} from "@mui/material";
-import { useState } from "react";
+} from "@mui/joy";
 import { useTranslation } from "react-i18next";
-
-const buttonMaxWidthXs = 170;
-const buttonMaxWidth = 300;
-const menuMaxWidth = 350;
 
 export function FileMenu() {
   const { t } = useTranslation();
@@ -38,62 +33,44 @@ export function FileMenu() {
   const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath,
   );
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-    return new Promise((resolve) => setTimeout(resolve, 200));
-  };
 
   const handleSetActiveList = async (filePath: string) => {
-    await handleClose();
     setActiveTaskListPath(filePath);
   };
 
   const handleManageFile = () => {
-    handleClose();
     openFileManagementDialog();
   };
 
   const handleKeyboardShortcutsClick = () => {
-    handleClose();
     openShortcutsDialog();
   };
 
   return (
-    <>
-      <Button
-        sx={{ maxWidth: { xs: buttonMaxWidthXs, md: buttonMaxWidth }, pl: 2 }}
-        size="large"
+    <Dropdown>
+      <MenuButton
+        sx={{ maxWidth: { xs: 170, md: 300 }, pl: 2 }}
+        size="md"
+        color="primary"
+        variant="soft"
         aria-label="File menu"
-        startIcon={<img src={logo} alt="Logo" height={22} />}
-        endIcon={<KeyboardArrowDownIcon />}
-        onClick={handleClick}
+        startDecorator={<img src={logo} alt="Logo" height={22} />}
+        endDecorator={<ArrowDropDown />}
       >
         <StartEllipsis>
           {activeTaskList ? activeTaskList.fileName : "2do.txt"}
         </StartEllipsis>
-      </Button>
-      <Menu
-        sx={{ maxWidth: menuMaxWidth }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
+      </MenuButton>
+      <Menu sx={{ maxWidth: 350 }} placement="bottom-start">
         {taskLists.length > 1 && (
           <MenuItem
             selected={!activeTaskList}
             onClick={() => handleSetActiveList("")}
           >
-            <ListItemIcon>
+            <ListItemDecorator>
               <DashboardIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>{t("All")}</ListItemText>
+            </ListItemDecorator>{" "}
+            {t("All")}
           </MenuItem>
         )}
         {taskLists.length > 1 &&
@@ -103,30 +80,30 @@ export function FileMenu() {
               onClick={() => handleSetActiveList(filePath)}
               key={filePath}
             >
-              <ListItemIcon>
+              <ListItemDecorator>
                 <InsertDriveFileOutlinedIcon fontSize="small" />
-              </ListItemIcon>
+              </ListItemDecorator>
               <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
             </MenuItem>
           ))}
         {taskLists.length > 0 && (
           <MenuItem onClick={handleManageFile}>
-            <ListItemIcon>
+            <ListItemDecorator>
               <AllInboxRoundedIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>{t("Files…")}</ListItemText>
+            </ListItemDecorator>{" "}
+            {t("Files…")}
           </MenuItem>
         )}
         {!touchScreen && taskLists.length > 1 && <Divider />}
         {!touchScreen && (
           <MenuItem onClick={handleKeyboardShortcutsClick}>
-            <ListItemIcon>
+            <ListItemDecorator>
               <KeyboardIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>{t("Keyboard Shortcuts")}</ListItemText>
+            </ListItemDecorator>{" "}
+            {t("Keyboard Shortcuts")}
           </MenuItem>
         )}
       </Menu>
-    </>
+    </Dropdown>
   );
 }

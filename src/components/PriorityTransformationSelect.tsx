@@ -2,7 +2,7 @@ import {
   PriorityTransformation,
   useSettingsStore,
 } from "@/stores/settings-store";
-import { MenuItem, Select } from "@mui/material";
+import { Option, Select } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function PriorityTransformationSelect() {
@@ -16,17 +16,19 @@ export function PriorityTransformationSelect() {
 
   return (
     <Select
-      fullWidth
-      size="small"
       value={priorityTransformation}
-      aria-label="Select completed task priority handling"
-      onChange={(event) =>
-        setCompletedTaskPriority(event.target.value as PriorityTransformation)
+      onChange={(_, value) =>
+        setCompletedTaskPriority(value as PriorityTransformation)
       }
+      slotProps={{
+        button: {
+          "aria-label": "Select completed task priority handling",
+        },
+      }}
     >
-      <MenuItem value="keep">{t("Keep priority")}</MenuItem>
-      <MenuItem value="remove">{t("Remove priority")}</MenuItem>
-      <MenuItem value="archive">{t("Archive priority")}</MenuItem>
+      <Option value="keep">{t("Keep priority")}</Option>
+      <Option value="remove">{t("Remove priority")}</Option>
+      <Option value="archive">{t("Archive priority")}</Option>
     </Select>
   );
 }

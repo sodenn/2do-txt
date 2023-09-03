@@ -1,16 +1,11 @@
+import { Fade } from "@/components/Fade";
 import { SearchInput } from "@/components/SearchInput";
+import useMediaQuery from "@/utils/useMediaQuery";
 import SearchIcon from "@mui/icons-material/Search";
-import {
-  Box,
-  Fade,
-  IconButton,
-  InputBaseProps,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, IconButton, InputProps, useTheme } from "@mui/joy";
 import { forwardRef, useRef, useState } from "react";
 
-interface ExpandableSearchProps extends InputBaseProps {
+interface ExpandableSearchProps extends InputProps {
   onExpand?: (expanded: boolean) => void;
 }
 
@@ -40,18 +35,20 @@ export const ExpandableSearch = forwardRef<
     )?.set;
     nativeInputValueSetter?.call(input, "");
 
-    const ev2 = new Event("input", { bubbles: true });
-    input.dispatchEvent(ev2);
+    const ev = new Event("input", { bubbles: true });
+    input.dispatchEvent(ev);
 
     setShowInput(false);
   };
 
   const handleEnteredInput = () => {
+    console.log("handleEnteredInput");
     const input = (ref as any).current;
     input.focus();
   };
 
   const handleExitedInput = () => {
+    console.log("handleExitedInput");
     setShowButton(true);
     onExpand?.(false);
   };
@@ -68,7 +65,7 @@ export const ExpandableSearch = forwardRef<
       onBlur={handleBlur}
       onReset={handleReset}
       value={value}
-      inputRef={ref}
+      ref={ref}
     />
   );
 
@@ -103,8 +100,8 @@ export const ExpandableSearch = forwardRef<
               onExited={handleExitedButton}
             >
               <IconButton
-                size="large"
-                color="inherit"
+                size="md"
+                variant="outlined"
                 aria-label="Expand search bar"
                 onClick={() => setShowButton(false)}
               >

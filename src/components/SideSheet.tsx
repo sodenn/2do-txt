@@ -3,18 +3,20 @@ import { Settings } from "@/components/Settings";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
+import { transitions } from "@/utils/transitions";
+import useMediaQuery from "@/utils/useMediaQuery";
 import { useTask } from "@/utils/useTask";
-import { TabContext, TabPanel } from "@mui/lab";
 import {
   Box,
-  SwipeableDrawer,
   Tab,
+  TabList,
+  TabPanel,
   Tabs,
-  Toolbar,
+  TabsProps,
   styled,
-  useMediaQuery,
   useTheme,
-} from "@mui/material";
+} from "@mui/joy";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -24,15 +26,15 @@ export const HeaderContainer = styled("div", {
   shouldForwardProp: (prop) => prop !== "open",
 })<{ open: boolean }>(({ theme, open }) => ({
   [theme.breakpoints.up("lg")]: {
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
+    transition: transitions.create(["margin", "width"], {
+      easing: transitions.easing.sharp,
+      duration: transitions.duration.leavingScreen,
     }),
     ...(open && {
       marginLeft: `${drawerWidth}px`,
-      transition: theme.transitions.create(["margin", "width"], {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
+      transition: transitions.create(["margin", "width"], {
+        easing: transitions.easing.easeOut,
+        duration: transitions.duration.enteringScreen,
       }),
     }),
   },
@@ -51,15 +53,15 @@ const Main = styled("main", {
   },
   [theme.breakpoints.up("lg")]: {
     flexGrow: 1,
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
+    transition: transitions.create(["margin"], {
+      easing: transitions.easing.sharp,
+      duration: transitions.duration.leavingScreen,
     }),
     marginLeft: `-${drawerWidth}px`,
     ...(open && {
-      transition: theme.transitions.create("margin", {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
+      transition: transitions.create(["margin"], {
+        easing: transitions.easing.easeOut,
+        duration: transitions.duration.enteringScreen,
       }),
       marginLeft: 0,
     }),
@@ -74,6 +76,11 @@ const SaveAreaHeader = styled("div")({
 const SaveAreaContent = styled("div")({
   paddingBottom: "env(safe-area-inset-bottom)",
   paddingLeft: "env(safe-area-inset-left)",
+});
+
+const StyledTab = styled(Tab)({
+  paddingBlockStart: 11,
+  paddingBlockEnd: 10,
 });
 
 export function MainContainer({ children }: PropsWithChildren) {
@@ -130,8 +137,8 @@ export function SideSheet() {
 
   const [tab, setTab] = useState<string>(hideFilter ? "settings" : "filter");
 
-  const handleChange = (event: any, newValue: string) => {
-    setTab(newValue);
+  const handleChange: TabsProps["onChange"] = (event, newValue) => {
+    setTab(newValue as string);
   };
 
   useEffect(() => {
@@ -171,31 +178,20 @@ export function SideSheet() {
       onOpen={openSideSheet}
       onClose={closeSideSheet}
     >
-      <TabContext value={tab}>
-        <Box sx={{ flex: "none", borderBottom: 1, borderColor: "divider" }}>
-          <Toolbar sx={{ alignItems: "flex-end" }}>
-            <SaveAreaHeader>
+      <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
+        <Box sx={{ flex: "none" }}>
+          <SaveAreaHeader>
+            <TabList sx={{ px: 1 }}>
+              <StyledTab value="filter" aria-label="Filter">
+                {t("Filter")}
+              </StyledTab>
               {!hideFilter && (
-                <Tabs value={tab} onChange={handleChange}>
-                  <Tab label={t("Filter")} value="filter" aria-label="Filter" />
-                  <Tab
-                    label={t("Settings")}
-                    value="settings"
-                    aria-label="Settings"
-                  />
-                </Tabs>
+                <StyledTab value="settings" aria-label="Settings">
+                  {t("Settings")}
+                </StyledTab>
               )}
-              {hideFilter && (
-                <Tabs value="settings">
-                  <Tab
-                    label={t("Settings")}
-                    value="settings"
-                    aria-label="Settings"
-                  />
-                </Tabs>
-              )}
-            </SaveAreaHeader>
-          </Toolbar>
+            </TabList>
+          </SaveAreaHeader>
         </Box>
         <Box sx={{ overflowY: "auto", flex: "auto" }}>
           <SaveAreaContent>
@@ -207,7 +203,7 @@ export function SideSheet() {
             </TabPanel>
           </SaveAreaContent>
         </Box>
-      </TabContext>
+      </Tabs>
     </SwipeableDrawer>
   );
 }

@@ -1,6 +1,6 @@
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
-import { Button } from "@mui/material";
+import Button from "@mui/joy/Button";
 import { useTranslation } from "react-i18next";
 
 export function ExampleFileButton() {
@@ -15,10 +15,11 @@ export function ExampleFileButton() {
 
   return (
     <Button
+      color="neutral"
+      variant="outlined"
       aria-label="Create example file"
       onClick={handleClick}
-      startIcon={<LightbulbOutlinedIcon />}
-      variant="outlined"
+      startDecorator={<LightbulbOutlinedIcon />}
     >
       {t("Create example file")}
     </Button>
