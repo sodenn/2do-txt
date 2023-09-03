@@ -4,7 +4,7 @@ import { TaskListSubheader } from "@/components/TaskListSubheader";
 import { Task } from "@/utils/task";
 import { TaskGroup } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
-import { Box, List, Typography } from "@mui/material";
+import { Box, List, ListItem, Typography } from "@mui/joy";
 import { isEqual } from "lodash";
 import { MutableRefObject, memo } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,12 +14,11 @@ interface TaskListProps {
   filePath: string;
   taskGroups: TaskGroup[];
   tasks: Task[];
-  focusedTaskId?: string;
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
   showHeader?: boolean;
-  onListItemClick: (task: Task) => void;
   onFocus: (index: number) => void;
   onBlur: () => void;
+  onClick: (task: Task) => void;
 }
 
 function propsAreEqual(prev: TaskListProps, next: TaskListProps) {
@@ -38,12 +37,11 @@ export const TaskList = memo((props: TaskListProps) => {
     filePath,
     taskGroups,
     tasks,
-    focusedTaskId,
     listItemsRef,
     showHeader = false,
     onFocus,
     onBlur,
-    onListItemClick,
+    onClick,
   } = props;
   const { t } = useTranslation();
   const { completeTask } = useTask();
@@ -55,17 +53,17 @@ export const TaskList = memo((props: TaskListProps) => {
       {!hasItems && (
         <Typography
           sx={{ mt: 1, mx: 2, mb: 3, fontStyle: "italic" }}
-          color="text.disabled"
+          color="neutral"
         >
           {t("No tasks")}
         </Typography>
       )}
       {hasItems && (
-        <List aria-label="Task list" subheader={<li />}>
+        <List aria-label="Task list">
           {taskGroups.map((group) => (
-            <li key={group.label}>
-              <ul style={{ padding: 0 }}>
-                {group.label && <TaskListSubheader title={group.label} />}
+            <ListItem nested key={group.label}>
+              {group.label && <TaskListSubheader title={group.label} />}
+              <List>
                 {group.items.map((task) => {
                   const index = tasks.indexOf(task);
                   return (
@@ -77,16 +75,15 @@ export const TaskList = memo((props: TaskListProps) => {
                       }}
                       key={task._id}
                       task={task}
-                      focused={focusedTaskId === task._id}
-                      onClick={() => onListItemClick(task)}
+                      onButtonClick={() => onClick(task)}
                       onCheckboxClick={() => completeTask(task)}
                       onFocus={() => onFocus(index)}
                       onBlur={onBlur}
                     />
                   );
                 })}
-              </ul>
-            </li>
+              </List>
+            </ListItem>
           ))}
         </List>
       )}

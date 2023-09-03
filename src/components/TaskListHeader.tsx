@@ -1,16 +1,12 @@
 import { StartEllipsis } from "@/components/StartEllipsis";
 import { useFilterStore } from "@/stores/filter-store";
 import LaunchIcon from "@mui/icons-material/Launch";
-import { Box, ListItemButton, styled } from "@mui/material";
+import { Box, ListItemButton, styled } from "@mui/joy";
 
 interface TaskListHeaderProps {
   fileName: string;
   filePath: string;
 }
-
-const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius,
-}));
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -27,7 +23,7 @@ export function TaskListHeader(props: TaskListHeaderProps) {
     (state) => state.setActiveTaskListPath,
   );
   return (
-    <StyledListItemButton
+    <ListItemButton
       tabIndex={-1}
       onClick={() => setActiveTaskListPath(filePath)}
     >
@@ -35,6 +31,6 @@ export function TaskListHeader(props: TaskListHeaderProps) {
         <StartEllipsis variant="h5">{fileName}</StartEllipsis>
         <LaunchIcon />
       </Container>
-    </StyledListItemButton>
+    </ListItemButton>
   );
 }
