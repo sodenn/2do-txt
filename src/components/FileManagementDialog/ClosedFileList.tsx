@@ -3,21 +3,21 @@ import { readFile } from "@/native-api/filesystem";
 import { useFilterStore } from "@/stores/filter-store";
 import { addTodoFilePath } from "@/utils/settings";
 import { useTask } from "@/utils/useTask";
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import {
-  IconButton,
+  Dropdown,
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
+  ListItemDecorator,
   ListSubheader,
   Menu,
+  MenuButton,
   MenuItem,
   Typography,
-} from "@mui/material";
-import { useState } from "react";
+} from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 interface ClosedFileListProps {
@@ -54,22 +54,20 @@ export function ClosedFileList(props: ClosedFileListProps) {
   }
 
   return (
-    <List
-      sx={{ py: 0 }}
-      subheader={
-        <ListSubheader sx={{ bgcolor: "inherit" }} component="div">
-          {t("Closed files")}
-        </ListSubheader>
-      }
-    >
-      {list.map((filePath) => (
-        <File
-          key={filePath}
-          filePath={filePath}
-          onOpen={handleOpen}
-          onDelete={onDelete}
-        />
-      ))}
+    <List>
+      <ListItem nested>
+        <ListSubheader>{t("Closed files")}</ListSubheader>
+        <List>
+          {list.map((filePath) => (
+            <File
+              key={filePath}
+              filePath={filePath}
+              onOpen={handleOpen}
+              onDelete={onDelete}
+            />
+          ))}
+        </List>
+      </ListItem>
     </List>
   );
 }
@@ -77,8 +75,7 @@ export function ClosedFileList(props: ClosedFileListProps) {
 function File(props: FileProps) {
   return (
     <ListItem
-      disablePadding
-      secondaryAction={
+      endAction={
         <FileMenu
           filePath={props.filePath}
           onOpen={props.onOpen}
@@ -86,7 +83,7 @@ function File(props: FileProps) {
         />
       }
     >
-      <ListItemButton sx={{ pl: 3, overflow: "hidden" }} role={undefined}>
+      <ListItemButton>
         <StartEllipsis variant="inherit">{props.filePath}</StartEllipsis>
       </ListItemButton>
     </ListItem>
@@ -96,52 +93,34 @@ function File(props: FileProps) {
 function FileMenu(props: FileProps) {
   const { filePath, onOpen, onDelete } = props;
   const { t } = useTranslation();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleOpen = () => {
     onOpen(filePath);
-    handleClose();
   };
 
   const handleDelete = () => {
     onDelete(filePath);
-    handleClose();
   };
 
   return (
-    <>
-      <IconButton aria-label="more" aria-haspopup="true" onClick={handleClick}>
-        <MoreVertIcon />
-      </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-      >
+    <Dropdown>
+      <MenuButton aria-label="more" aria-haspopup="true">
+        <ArrowDropDown />
+      </MenuButton>
+      <Menu placement="bottom-end">
         <MenuItem onClick={handleOpen}>
-          <ListItemIcon>
+          <ListItemDecorator>
             <OpenInNewOutlinedIcon />
-          </ListItemIcon>
+          </ListItemDecorator>
           <Typography>{t("Open")}</Typography>
         </MenuItem>
         <MenuItem onClick={handleDelete}>
-          <ListItemIcon>
+          <ListItemDecorator>
             <DeleteOutlineOutlinedIcon />
-          </ListItemIcon>
+          </ListItemDecorator>
           <Typography>{t("Delete")}</Typography>
         </MenuItem>
       </Menu>
-    </>
+    </Dropdown>
   );
 }

@@ -68,7 +68,7 @@ export function TaskListItemMenu({
     <Dropdown onOpenChange={onOpenChange}>
       <MenuButton
         slots={{ root: IconButton }}
-        slotProps={{ root: { variant: "outlined", color: "neutral" } }}
+        slotProps={{ root: { variant: "plain", color: "neutral" } }}
         aria-label="Task menu"
         aria-haspopup="true"
         tabIndex={-1}

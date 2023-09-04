@@ -18,8 +18,10 @@ const StyledListItem = styled(ListItem, {
   ".MuiMenuButton-root": {
     visibility: menuOpen ? "visible" : "hidden",
   },
-  "@media (pointer: coarse) .MuiMenuButton-root": {
-    visibility: "visible",
+  "@media (pointer: coarse)": {
+    ".MuiMenuButton-root": {
+      visibility: "visible",
+    },
   },
   "&:hover .MuiMenuButton-root": {
     visibility: "visible",

@@ -1,11 +1,13 @@
 import useMediaQuery from "@/utils/useMediaQuery";
 import {
+  Button,
   FormControl,
   FormLabel,
   IconButton,
   IconButtonProps,
   Input,
   InputProps,
+  Stack,
 } from "@mui/joy";
 import {
   BaseSingleInputFieldProps,
@@ -15,11 +17,13 @@ import {
   FieldSection,
   FieldSelectedSections,
   LocalizationProvider,
+  PickersActionBarProps,
   UseDateFieldProps,
   deDE,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useDateField } from "@mui/x-date-pickers/DateField/useDateField";
+import { useLocaleText } from "@mui/x-date-pickers/internals";
 import { Locale, isAfter, isBefore, isValid } from "date-fns";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
@@ -59,6 +63,7 @@ interface JoyFieldProps extends InputProps {
     startAdornment?: React.ReactNode;
   };
   formControlSx?: InputProps["sx"];
+  inputProps?: any;
 }
 
 type JoyFieldComponent = ((
@@ -71,6 +76,7 @@ const JoyField = forwardRef<HTMLInputElement, JoyFieldProps>(
       disabled,
       id,
       label,
+      inputProps,
       // @ts-ignore
       InputProps: { ref: containerRef, startAdornment, endAdornment } = {},
       formControlSx,
@@ -116,9 +122,42 @@ function JoyDateField(props: JoyDateFieldProps) {
 
   return <JoyField {...response} />;
 }
-
 function JoyOpenPickerButton(props: IconButtonProps) {
   return <IconButton {...props} variant="plain" color="neutral" />;
+}
+
+function JoyActionBar(props: PickersActionBarProps) {
+  const { onClear, actions, className } = props;
+  const localeText = useLocaleText();
+
+  if (actions == null || actions.length === 0) {
+    return null;
+  }
+
+  const menuItems = actions?.map((actionType) => {
+    switch (actionType) {
+      case "clear":
+        return (
+          <Button size="sm" variant="solid" onClick={onClear} key={actionType}>
+            {localeText.clearButtonLabel}
+          </Button>
+        );
+      default:
+        return null;
+    }
+  });
+
+  return (
+    <Stack
+      sx={{ px: 2, pb: 2 }}
+      justifyContent="end"
+      direction="row"
+      spacing={1}
+      className={className}
+    >
+      {menuItems}
+    </Stack>
+  );
 }
 
 export const LocalizationDatePicker = forwardRef<
@@ -179,6 +218,7 @@ export const LocalizationDatePicker = forwardRef<
           field: JoyDateField,
           // @ts-ignore
           openPickerButton: JoyOpenPickerButton,
+          actionBar: JoyActionBar,
         }}
         ref={ref}
         value={value}
@@ -200,7 +240,7 @@ export const LocalizationDatePicker = forwardRef<
             "data-testid": `${ariaLabel} pickerbutton`,
           },
           actionBar: {
-            actions: desktop ? ["clear"] : ["accept", "cancel", "clear"],
+            actions: ["clear"],
           },
           popper: {
             modifiers: [
