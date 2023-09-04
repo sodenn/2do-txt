@@ -11,7 +11,7 @@ jobs:
       gitTag: ${{ steps.semantic.outputs.gitTag }}
       gitRev: ${{ steps.git_rev.outputs.gitRev }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -50,7 +50,7 @@ jobs:
         platform: [macos-latest, ubuntu-22.04, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ needs.release.outputs.gitRev }}
       - name: Setup node
