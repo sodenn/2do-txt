@@ -31,6 +31,7 @@ import {
 } from "@dnd-kit/modifiers";
 import {
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
@@ -61,7 +62,6 @@ import {
 import { useSnackbar } from "notistack";
 import { memo, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { arrayMove } from "react-movable";
 
 type CloudFileRefWithIdentifier = CloudFileRef & WithIdentifier;
 

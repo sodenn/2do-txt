@@ -12,6 +12,7 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import {
+  Button,
   Dropdown,
   ListItemDecorator,
   Menu,
@@ -60,16 +61,16 @@ export function FileActionButton() {
       : icon;
   };
 
-  // if (cloudStorages.length === 0) {
-  //   return (
-  //     <>
-  //       <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
-  //       <Button onClick={handleOpenFile}>
-  //         {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
-  //       </Button>
-  //     </>
-  //   );
-  // }
+  if (cloudStorages.length === 0) {
+    return (
+      <>
+        <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
+        <Button onClick={handleOpenFile}>
+          {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
+        </Button>
+      </>
+    );
+  }
 
   return (
     <Dropdown>
