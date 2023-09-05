@@ -9,9 +9,15 @@ import {
 } from "@/utils/CloudStorage";
 import { useFilePicker } from "@/utils/useFilePicker";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Button, Dropdown, ListItemDecorator, Menu, MenuItem } from "@mui/joy";
+import {
+  Dropdown,
+  ListItemDecorator,
+  Menu,
+  MenuButton,
+  MenuItem,
+} from "@mui/joy";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -54,26 +60,28 @@ export function FileActionButton() {
       : icon;
   };
 
-  if (cloudStorages.length === 0) {
-    return (
-      <>
-        <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
-        <Button onClick={handleOpenFile}>
-          {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
-        </Button>
-      </>
-    );
-  }
+  // if (cloudStorages.length === 0) {
+  //   return (
+  //     <>
+  //       <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
+  //       <Button onClick={handleOpenFile}>
+  //         {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
+  //       </Button>
+  //     </>
+  //   );
+  // }
 
   return (
     <Dropdown>
-      <Button
+      <MenuButton
+        color="primary"
+        variant="solid"
         aria-label="Choose action"
-        endDecorator={<KeyboardArrowDownIcon />}
+        endDecorator={<ArrowDropDown />}
       >
         {t("Choose action")}
-      </Button>
-      <Menu sx={{ mt: 0.5 }} placement="bottom-end">
+      </MenuButton>
+      <Menu placement="bottom-end">
         <MenuItem onClick={handleCreateFile}>
           <ListItemDecorator>
             <AddOutlinedIcon />

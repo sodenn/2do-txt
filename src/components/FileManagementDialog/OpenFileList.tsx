@@ -16,6 +16,26 @@ import { formatLocalDateTime, parseDate } from "@/utils/date";
 import { TaskList } from "@/utils/task-list";
 import { getDoneFilePath } from "@/utils/todo-files";
 import { useTask } from "@/utils/useTask";
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  restrictToParentElement,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -31,7 +51,6 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemButton,
   ListItemDecorator,
   ListSubheader,
   Menu,
@@ -40,10 +59,9 @@ import {
   Typography,
 } from "@mui/joy";
 import { useSnackbar } from "notistack";
-import { forwardRef, memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { List as MovableList, arrayMove } from "react-movable";
-import { OnChangeMeta } from "react-movable/lib/types";
+import { arrayMove } from "react-movable";
 
 type CloudFileRefWithIdentifier = CloudFileRef & WithIdentifier;
 
@@ -57,7 +75,8 @@ interface OpenFileListProps {
   onClose: (options: CloseOptions) => void;
 }
 
-interface FileProps {
+interface FileListItemProps {
+  id: string;
   filePath: string;
   taskList: TaskList;
   onDownload: (taskList: TaskList) => void;
@@ -87,21 +106,33 @@ interface EnableCloudSyncMenuItemProps {
 }
 
 export const OpenFileList = memo((props: OpenFileListProps) => {
-  const { subheader, onClose } = props;
-  const container = useRef<HTMLDivElement>(null);
+  const { subheader, onClose, ...other } = props;
   const { taskLists, reorderTaskList, downloadTodoFile } = useTask();
   const [items, setItems] = useState(taskLists.map((t) => t.filePath));
   const { t } = useTranslation();
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   // update list items when a file was deleted
   useEffect(() => {
     setItems(taskLists.map((t) => t.filePath));
   }, [taskLists]);
 
-  const handleChange = ({ oldIndex, newIndex }: OnChangeMeta) => {
-    const newItems = arrayMove(items, oldIndex, newIndex);
-    setItems(newItems);
-    reorderTaskList(newItems);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.indexOf(active.id as string);
+        const newIndex = items.indexOf(over.id as string);
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        reorderTaskList(newItems);
+        return newItems;
+      });
+    }
   };
 
   if (items.length === 0) {
@@ -109,40 +140,44 @@ export const OpenFileList = memo((props: OpenFileListProps) => {
   }
 
   return (
-    <div ref={container}>
-      <MovableList
-        lockVertically
-        values={items}
-        container={container.current}
-        renderList={({ children, props }) => (
-          <List variant="outlined" sx={{ borderRadius: "sm" }} {...props}>
-            <ListItem nested>
-              {subheader && (
-                <ListSubheader sticky>{t("Open files")}</ListSubheader>
-              )}
-              <List>{children}</List>
-            </ListItem>
-          </List>
-        )}
-        renderItem={({ value, props }) => (
-          <File
-            taskList={taskLists.find((t) => t.filePath === value)!}
-            filePath={value}
-            onClose={onClose}
-            onDownload={() =>
-              downloadTodoFile(taskLists.find((t) => t.filePath === value))
-            }
-            {...props}
-          />
-        )}
-        onChange={handleChange}
-      />
-    </div>
+    <List variant="outlined" sx={{ borderRadius: "sm" }} {...other}>
+      <ListItem nested>
+        {subheader && <ListSubheader sticky>{t("Open files")}</ListSubheader>}
+        <List>
+          <DndContext
+            sensors={sensors}
+            modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={items}
+              strategy={verticalListSortingStrategy}
+            >
+              {items.map((filePath) => (
+                <FileListItem
+                  id={filePath}
+                  key={filePath}
+                  taskList={taskLists.find((t) => t.filePath === filePath)!}
+                  filePath={filePath}
+                  onDownload={() =>
+                    downloadTodoFile(
+                      taskLists.find((t) => t.filePath === filePath),
+                    )
+                  }
+                  onClose={onClose}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        </List>
+      </ListItem>
+    </List>
   );
 });
 
-const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
-  const { filePath, taskList, onClose, onDownload, ...rest } = props;
+function FileListItem(props: FileListItemProps) {
+  const { id, filePath, taskList, onClose, onDownload } = props;
   const language = useSettingsStore((state) => state.language);
   const { getCloudFileRef } = useCloudStorage();
   const [cloudFileRef, setCloudFileRef] =
@@ -150,6 +185,13 @@ const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
   const cloudFileLastModified = cloudFileRef
     ? parseDate(cloudFileRef.lastSync)
     : undefined;
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   useEffect(() => {
     getCloudFileRef(filePath).then(setCloudFileRef);
@@ -157,7 +199,8 @@ const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
 
   return (
     <ListItem
-      ref={ref}
+      ref={setNodeRef}
+      style={style}
       endAction={
         <FileMenu
           filePath={filePath}
@@ -167,38 +210,31 @@ const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
           onDownloadClick={() => onDownload(taskList)}
         />
       }
-      {...rest}
       data-testid="draggable-file"
       aria-label={`Draggable file ${filePath}`}
     >
-      <ListItemButton sx={{ pl: 2, overflow: "hidden" }} role={undefined}>
-        <ListItemDecorator>
-          <DragIndicatorIcon />
-        </ListItemDecorator>
-        <Box sx={{ overflow: "hidden" }}>
-          <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
-          {cloudFileRef && (
-            <Box
-              sx={{
-                display: "inline-flex",
-                alignItems: "center",
-                color: "text.secondary",
-                mt: 0.5,
-                gap: 0.5,
-              }}
-            >
-              <SyncOutlinedIcon color="inherit" fontSize="inherit" />
-              <Typography level="body-sm">
-                {cloudFileLastModified &&
-                  formatLocalDateTime(cloudFileLastModified, language)}
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      </ListItemButton>
+      <ListItemDecorator
+        {...listeners}
+        {...attributes}
+        sx={{ cursor: "pointer" }}
+      >
+        <DragIndicatorIcon />
+      </ListItemDecorator>
+      <Box sx={{ overflow: "hidden" }}>
+        <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
+        {cloudFileRef && (
+          <Box>
+            <SyncOutlinedIcon color="inherit" fontSize="inherit" />
+            <Typography level="body-sm">
+              {cloudFileLastModified &&
+                formatLocalDateTime(cloudFileLastModified, language)}
+            </Typography>
+          </Box>
+        )}
+      </Box>
     </ListItem>
   );
-});
+}
 
 function CloudSyncMenuItem(opt: CloudSyncMenuItemProps) {
   const { onChange, identifier, provider } = opt;
