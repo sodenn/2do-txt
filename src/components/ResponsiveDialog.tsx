@@ -6,6 +6,7 @@ import ModalDialog from "@mui/joy/ModalDialog";
 import Typography from "@mui/joy/Typography";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import { Transition } from "react-transition-group";
+import { TransitionStatus } from "react-transition-group/Transition";
 
 interface ResponsiveDialogProps {
   open?: boolean;
@@ -88,7 +89,6 @@ export function ResponsiveDialogActions(
       spacing={1}
       justifyContent="end"
       sx={{
-        ...(!props.fullScreen && { pt: 2 }),
         gridArea: "actions",
       }}
     >
@@ -111,7 +111,7 @@ function CenterLayout(props: PropsWithChildren<WithFullScreen>) {
           "actions"
         `,
         marginTop: "-4px",
-        gap: 1,
+        gap: 2,
       }}
     >
       {children}
@@ -143,6 +143,76 @@ function FullScreenLayout(props: PropsWithChildren<WithFullScreen>) {
 
 const timeout = 250;
 
+type TransitionStyles = Record<
+  TransitionStatus,
+  Record<string, string | number>
+>;
+
+interface Styles {
+  modal: Record<string, string | number>;
+  modalTransition: TransitionStyles;
+  dialog: Record<string, string | number>;
+  dialogTransition: TransitionStyles;
+}
+
+interface DialogStyles {
+  fade: Styles;
+  slide: Styles;
+}
+
+const dialogStyles: DialogStyles = {
+  fade: {
+    modal: {
+      opacity: 0,
+      backdropFilter: "none",
+      transition: `opacity ${timeout}ms, backdrop-filter ${timeout}ms`,
+    },
+    modalTransition: {
+      entering: { opacity: 1, backdropFilter: "blur(8px)" },
+      entered: { opacity: 1, backdropFilter: "blur(8px)" },
+      exiting: {},
+      exited: {},
+      unmounted: {},
+    },
+    dialog: {
+      opacity: 0,
+      transition: `opacity ${timeout}ms`,
+    },
+    dialogTransition: {
+      entering: { opacity: 1 },
+      entered: { opacity: 1 },
+      exiting: {},
+      exited: {},
+      unmounted: {},
+    },
+  },
+  slide: {
+    modal: {},
+    modalTransition: {
+      entering: {},
+      entered: {},
+      exiting: {},
+      exited: {},
+      unmounted: {},
+    },
+    dialog: {
+      transition: `transform ${timeout}ms ease-in-out`,
+      transform: "translateY(100%)",
+    },
+    dialogTransition: {
+      entering: {
+        transform: "translateY(100%)",
+      },
+      entered: {
+        transform: "translateY(0)",
+      },
+      exiting: {},
+      exited: {},
+      unmounted: {},
+    },
+  },
+};
+
 export function ResponsiveDialog(
   props: PropsWithChildren<ResponsiveDialogProps>,
 ) {
@@ -157,13 +227,15 @@ export function ResponsiveDialog(
     }
   }, [open]);
 
+  const styles = fullScreen ? dialogStyles.slide : dialogStyles.fade;
+
   return (
     <Transition
       in={open}
       timeout={timeout}
       onExited={() => setRenderModal(false)}
     >
-      {(state: string) => (
+      {(state: TransitionStatus) => (
         <Modal
           keepMounted
           open={!["exited", "exiting"].includes(state)}
@@ -172,13 +244,8 @@ export function ResponsiveDialog(
           slotProps={{
             backdrop: {
               sx: {
-                opacity: 0,
-                backdropFilter: "none",
-                transition: `opacity ${timeout}ms, backdrop-filter ${timeout}ms`,
-                ...{
-                  entering: { opacity: 1, backdropFilter: "blur(8px)" },
-                  entered: { opacity: 1, backdropFilter: "blur(8px)" },
-                }[state],
+                ...styles.modal,
+                ...styles.modalTransition[state],
               },
             },
           }}
@@ -194,12 +261,8 @@ export function ResponsiveDialog(
                 width: fullWidth ? "100%" : "unset",
                 maxWidth: "600px",
               }),
-              opacity: 0,
-              transition: `opacity ${timeout}ms`,
-              ...{
-                entering: { opacity: 1 },
-                entered: { opacity: 1 },
-              }[state],
+              ...styles.dialog,
+              ...styles.dialogTransition[state],
             }}
           >
             {renderModal && (

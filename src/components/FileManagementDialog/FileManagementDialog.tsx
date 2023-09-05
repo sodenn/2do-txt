@@ -1,3 +1,9 @@
+import {
+  ResponsiveDialog,
+  ResponsiveDialogActions,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
 import { deleteFile, getFilename, readdir } from "@/native-api/filesystem";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
@@ -5,12 +11,6 @@ import { usePlatformStore } from "@/stores/platform-store";
 import { useCloudStorage } from "@/utils/CloudStorage";
 import { defaultDoneFilePath } from "@/utils/todo-files";
 import { useTask } from "@/utils/useTask";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { ClosedFileList } from "./ClosedFileList";
@@ -135,15 +135,13 @@ export function FileManagementDialog() {
   }, [listFiles, fileManagementDialogOpen]);
 
   return (
-    <Dialog
-      maxWidth="xs"
+    <ResponsiveDialog
       fullWidth
-      scroll="paper"
       open={fileManagementDialogOpen}
       onClose={handleCloseDialog}
     >
-      <DialogTitle>{t("Files")}</DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
+      <ResponsiveDialogTitle>{t("Files")}</ResponsiveDialogTitle>
+      <ResponsiveDialogContent>
         <OpenFileList
           subheader={closedFiles.length > 0}
           onClose={handleCloseFile}
@@ -153,10 +151,10 @@ export function FileManagementDialog() {
           onOpen={handleCloseDialog}
           onDelete={handleDeleteFile}
         />
-      </DialogContent>
-      <DialogActions sx={{ px: 2, pt: 1, pb: 2 }}>
+      </ResponsiveDialogContent>
+      <ResponsiveDialogActions>
         <FileActionButton />
-      </DialogActions>
-    </Dialog>
+      </ResponsiveDialogActions>
+    </ResponsiveDialog>
   );
 }

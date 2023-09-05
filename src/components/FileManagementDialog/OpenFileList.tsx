@@ -27,17 +27,18 @@ import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import {
   Box,
   CircularProgress,
+  Dropdown,
   IconButton,
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
-  ListItemText,
+  ListItemDecorator,
   ListSubheader,
   Menu,
+  MenuButton,
   MenuItem,
   Typography,
-} from "@mui/material";
+} from "@mui/joy";
 import { useSnackbar } from "notistack";
 import { forwardRef, memo, useEffect, useMemo, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -74,14 +75,12 @@ interface FileMenuProps {
 interface CloudSyncMenuItemProps {
   identifier: string;
   provider: Provider;
-  onClick: () => void;
   onChange: (cloudFileRef: CloudFileRefWithIdentifier) => void;
 }
 
 interface EnableCloudSyncMenuItemProps {
   provider: Provider;
   filePath: string;
-  onClick: () => void;
   onChange: (cloudFileRef?: CloudFileRefWithIdentifier) => void;
   onLoad: (loading: boolean) => void;
   cloudFileRef?: CloudFileRefWithIdentifier;
@@ -116,18 +115,13 @@ export const OpenFileList = memo((props: OpenFileListProps) => {
         values={items}
         container={container.current}
         renderList={({ children, props }) => (
-          <List
-            sx={{ py: 0 }}
-            subheader={
-              subheader ? (
-                <ListSubheader sx={{ bgcolor: "inherit" }} component="div">
-                  {t("Open files")}
-                </ListSubheader>
-              ) : undefined
-            }
-            {...props}
-          >
-            {children}
+          <List variant="outlined" sx={{ borderRadius: "sm" }} {...props}>
+            <ListItem nested>
+              {subheader && (
+                <ListSubheader sticky>{t("Open files")}</ListSubheader>
+              )}
+              <List>{children}</List>
+            </ListItem>
           </List>
         )}
         renderItem={({ value, props }) => (
@@ -164,8 +158,7 @@ const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
   return (
     <ListItem
       ref={ref}
-      disablePadding
-      secondaryAction={
+      endAction={
         <FileMenu
           filePath={filePath}
           cloudFileRef={cloudFileRef}
@@ -179,9 +172,9 @@ const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
       aria-label={`Draggable file ${filePath}`}
     >
       <ListItemButton sx={{ pl: 2, overflow: "hidden" }} role={undefined}>
-        <ListItemIcon sx={{ minWidth: 36 }}>
+        <ListItemDecorator>
           <DragIndicatorIcon />
-        </ListItemIcon>
+        </ListItemDecorator>
         <Box sx={{ overflow: "hidden" }}>
           <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
           {cloudFileRef && (
@@ -195,7 +188,7 @@ const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
               }}
             >
               <SyncOutlinedIcon color="inherit" fontSize="inherit" />
-              <Typography variant="body2">
+              <Typography level="body-sm">
                 {cloudFileLastModified &&
                   formatLocalDateTime(cloudFileLastModified, language)}
               </Typography>
@@ -208,7 +201,7 @@ const File = forwardRef<HTMLLIElement, FileProps>((props, ref) => {
 });
 
 function CloudSyncMenuItem(opt: CloudSyncMenuItemProps) {
-  const { onClick, onChange, identifier, provider } = opt;
+  const { onChange, identifier, provider } = opt;
   const { t } = useTranslation();
   const { syncFile, getCloudFileRef } = useCloudStorage();
   const { loadTodoFile } = useTask();
@@ -219,12 +212,11 @@ function CloudSyncMenuItem(opt: CloudSyncMenuItemProps) {
       loadTodoFile(identifier, content);
     }
     getCloudFileRef(identifier).then(onChange);
-    onClick();
   };
 
   return (
     <MenuItem onClick={handleClick}>
-      <ListItemIcon>{cloudStorageIcons[provider]}</ListItemIcon>
+      <ListItemDecorator>{cloudStorageIcons[provider]}</ListItemDecorator>
       <Typography>
         {t("Sync with cloud storage", {
           provider: provider,
@@ -235,7 +227,7 @@ function CloudSyncMenuItem(opt: CloudSyncMenuItemProps) {
 }
 
 function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
-  const { provider, filePath, cloudFileRef, onClick, onChange, onLoad } = props;
+  const { provider, filePath, cloudFileRef, onChange, onLoad } = props;
   const { t } = useTranslation();
   const { cloudStorages, cloudStorageEnabled, uploadFile, unlinkCloudFile } =
     useCloudStorage();
@@ -243,7 +235,6 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
   const [loading, setLoading] = useState(false);
 
   const enableCloudSync = async () => {
-    onClick();
     try {
       setLoading(true);
       onLoad(true);
@@ -305,11 +296,11 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
 
   return (
     <MenuItem onClick={enableCloudSync} disabled={loading}>
-      <ListItemIcon>
-        {loading && <CircularProgress size={24} />}
+      <ListItemDecorator>
+        {loading && <CircularProgress size="sm" />}
         {!loading && !cloudFileRef && cloudStorageIcons[provider]}
         {!loading && cloudFileRef && <CloudOffRoundedIcon />}
-      </ListItemIcon>
+      </ListItemDecorator>
       <Typography>{buttonText}</Typography>
     </MenuItem>
   );
@@ -322,9 +313,7 @@ function FileMenu(props: FileMenuProps) {
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
   const { enqueueSnackbar } = useSnackbar();
-  const [anchorEl, setAnchorEl] = useState(null);
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
-  const open = Boolean(anchorEl);
   const providers = useMemo(() => {
     const value = [...cloudStorages.map((s) => s.provider)];
     if (cloudFileRef && !value.includes(cloudFileRef.provider)) {
@@ -336,17 +325,8 @@ function FileMenu(props: FileMenuProps) {
   const deleteFile =
     platform === "web" || platform === "ios" || platform === "android";
 
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
   const handleCloseFile = () => {
     onClose({ filePath, deleteFile });
-    handleCloseMenu();
   };
 
   const handleCopyToClipboard = () => {
@@ -358,32 +338,25 @@ function FileMenu(props: FileMenuProps) {
       .catch(() =>
         enqueueSnackbar(t("Copy to clipboard failed"), { variant: "error" }),
       )
-      .finally(handleCloseMenu);
+      .finally();
   };
 
   return (
-    <>
-      <IconButton
-        edge="end"
+    <Dropdown>
+      <MenuButton
         aria-label="File actions"
         aria-haspopup="true"
-        onClick={handleClick}
+        slots={{ root: IconButton }}
+        slotProps={{ root: { variant: "plain", color: "neutral" } }}
       >
         {!cloudSyncLoading && <MoreVertIcon />}
-        {cloudSyncLoading && <CircularProgress size={24} />}
-      </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-      >
+        {cloudSyncLoading && <CircularProgress size="sm" />}
+      </MenuButton>
+      <Menu placement="bottom-end">
         {cloudFileRef && !touchScreen && (
           <CloudSyncMenuItem
             identifier={cloudFileRef.identifier}
             provider={cloudFileRef.provider}
-            onClick={handleCloseMenu}
             onChange={onChange}
           />
         )}
@@ -391,7 +364,6 @@ function FileMenu(props: FileMenuProps) {
           <EnableCloudSyncMenuItem
             key={provider}
             provider={provider}
-            onClick={handleCloseMenu}
             onChange={onChange}
             filePath={filePath}
             onLoad={setCloudSyncLoading}
@@ -402,28 +374,28 @@ function FileMenu(props: FileMenuProps) {
         ))}
         {(platform === "desktop" || platform === "web") && (
           <MenuItem onClick={handleCopyToClipboard}>
-            <ListItemIcon>
+            <ListItemDecorator>
               <ContentCopyIcon />
-            </ListItemIcon>
-            <Typography>{t("Copy to clipboard")}</Typography>
+            </ListItemDecorator>{" "}
+            {t("Copy to clipboard")}
           </MenuItem>
         )}
         {platform === "web" && (
           <MenuItem aria-label="Download todo.txt" onClick={onDownloadClick}>
-            <ListItemIcon>
+            <ListItemDecorator>
               <DownloadIcon />
-            </ListItemIcon>
-            <ListItemText>{t("Download")}</ListItemText>
+            </ListItemDecorator>{" "}
+            {t("Download")}
           </MenuItem>
         )}
         <MenuItem onClick={handleCloseFile} aria-label="Delete file">
-          <ListItemIcon>
+          <ListItemDecorator>
             {deleteFile && <DeleteOutlineOutlinedIcon />}
             {!deleteFile && <CloseOutlinedIcon />}
-          </ListItemIcon>
-          <ListItemText>{deleteFile ? t("Delete") : t("Close")}</ListItemText>
+          </ListItemDecorator>{" "}
+          {deleteFile ? t("Delete") : t("Close")}
         </MenuItem>
       </Menu>
-    </>
+    </Dropdown>
   );
 }

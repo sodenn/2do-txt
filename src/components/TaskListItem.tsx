@@ -17,6 +17,9 @@ const StyledListItem = styled(ListItem, {
 })<{ menuOpen: boolean }>(({ menuOpen }) => ({
   ".MuiMenuButton-root": {
     visibility: menuOpen ? "visible" : "hidden",
+    backgroundColor: menuOpen
+      ? "var(--joy-palette-neutral-plainActiveBg)"
+      : undefined,
   },
   "@media (pointer: coarse)": {
     ".MuiMenuButton-root": {
