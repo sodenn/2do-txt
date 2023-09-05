@@ -79,6 +79,7 @@
   "todo.txt already exists. Do you want to replace it": "<strong>{{filePath}}</strong> already exists. Do you want to replace it?",
   "Replace": "Replace",
   "Open files": "Open files",
+  "Close file": "Closed files <strong>{{fileName}}</strong>?",
   "Closed files": "Closed files",
   "Copy to clipboard": "Copy to clipboard",
   "Copied to clipboard": "Copied to clipboard",

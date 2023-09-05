@@ -4,23 +4,17 @@ import {
   ResponsiveDialogContent,
   ResponsiveDialogTitle,
 } from "@/components/ResponsiveDialog";
-import { deleteFile, getFilename, readdir } from "@/native-api/filesystem";
-import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { deleteFile, readdir } from "@/native-api/filesystem";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useCloudStorage } from "@/utils/CloudStorage";
 import { defaultDoneFilePath } from "@/utils/todo-files";
 import { useTask } from "@/utils/useTask";
 import { useCallback, useEffect, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { ClosedFileList } from "./ClosedFileList";
 import { FileActionButton } from "./FileActionButton";
 import { OpenFileList } from "./OpenFileList";
-
-interface CloseOptions {
-  filePath: string;
-  deleteFile: boolean;
-}
 
 export function FileManagementDialog() {
   const platform = usePlatformStore((state) => state.platform);
@@ -31,9 +25,6 @@ export function FileManagementDialog() {
     (state) => state.closeFileManagementDialog,
   );
   const { unlinkCloudFile } = useCloudStorage();
-  const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog,
-  );
   const { t } = useTranslation();
   const { taskLists, closeTodoFile } = useTask();
   const [closedFiles, setClosedFiles] = useState<string[]>([]);
@@ -67,55 +58,15 @@ export function FileManagementDialog() {
     listAllFiles().then(listClosedFiles);
   }, [listAllFiles, listClosedFiles]);
 
-  const openDeleteConfirmationDialog = (filePath: string) => {
-    return new Promise<boolean>((resolve) => {
-      openConfirmationDialog({
-        title: t("Delete"),
-        onClose: () => resolve(false),
-        content: (
-          <Trans
-            i18nKey="Delete file"
-            values={{ fileName: getFilename(filePath) }}
-          />
-        ),
-        buttons: [
-          { text: t("Cancel"), handler: () => resolve(false) },
-          {
-            text: t("Delete"),
-            handler: () => resolve(true),
-          },
-        ],
-      });
-    });
-  };
-
-  const handleCloseFile = async (options: CloseOptions) => {
-    const { filePath, deleteFile } = options;
-
-    const closeFile = () => {
-      if (taskLists.length === 1) {
-        handleCloseDialog();
-      }
-      closeTodoFile(filePath).then(listFiles);
-    };
-
-    if (deleteFile) {
-      const confirmed = await openDeleteConfirmationDialog(filePath);
-      if (!confirmed) {
-        return;
-      }
-      closeFile();
-    } else {
-      closeFile();
+  const handleCloseFile = async (filePath: string) => {
+    if (taskLists.length === 1) {
+      handleCloseDialog();
     }
+    closeTodoFile(filePath).then(listFiles);
     await unlinkCloudFile(filePath);
   };
 
   const handleDeleteFile = async (filePath: string) => {
-    const confirmed = await openDeleteConfirmationDialog(filePath);
-    if (!confirmed) {
-      return;
-    }
     deleteFile(filePath)
       .catch((error) => {
         console.debug(error);

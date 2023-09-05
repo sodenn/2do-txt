@@ -83,6 +83,7 @@
   "Copy to clipboard": "In Zwischenablage kopieren",
   "Copied to clipboard": "In die Zwischenablage kopiert",
   "Select todo.txt": "todo.txt wählen",
+  "Close file": "Datei <strong>{{fileName}}</strong> schließen?",
   "Delete file": "Datei <strong>{{fileName}}</strong> löschen?",
   "Connect to cloud storage": "Mit {{provider}} verbinden",
   "Disconnect from cloud storage": "{{provider}} trennen",

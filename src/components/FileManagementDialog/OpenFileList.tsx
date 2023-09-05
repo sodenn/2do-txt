@@ -1,6 +1,6 @@
 import { StartEllipsis } from "@/components/StartEllipsis";
 import { writeToClipboard } from "@/native-api/clipboard";
-import { fileExists, readFile } from "@/native-api/filesystem";
+import { fileExists, getFilename, readFile } from "@/native-api/filesystem";
 import { hasTouchScreen } from "@/native-api/platform";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useSettingsStore } from "@/stores/settings-store";
@@ -37,10 +37,11 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import CancelIcon from "@mui/icons-material/Cancel";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import DeleteForever from "@mui/icons-material/DeleteForever";
 import DownloadIcon from "@mui/icons-material/Download";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -57,6 +58,7 @@ import {
   Menu,
   MenuButton,
   MenuItem,
+  Stack,
   Typography,
 } from "@mui/joy";
 import { useSnackbar } from "notistack";
@@ -65,14 +67,9 @@ import { Trans, useTranslation } from "react-i18next";
 
 type CloudFileRefWithIdentifier = CloudFileRef & WithIdentifier;
 
-interface CloseOptions {
-  filePath: string;
-  deleteFile: boolean;
-}
-
 interface OpenFileListProps {
   subheader: boolean;
-  onClose: (options: CloseOptions) => void;
+  onClose: (filePath: string) => void;
 }
 
 interface FileListItemProps {
@@ -80,15 +77,17 @@ interface FileListItemProps {
   filePath: string;
   taskList: TaskList;
   onDownload: (taskList: TaskList) => void;
-  onClose: (options: CloseOptions) => void;
+  markedForClosing?: string;
+  onMarkedForClosing: (filePath?: string) => void;
+  onClose: (filePath: string) => void;
 }
 
 interface FileMenuProps {
   filePath: string;
   cloudFileRef?: CloudFileRefWithIdentifier;
   onChange: (cloudFileRef?: CloudFileRefWithIdentifier) => void;
-  onClose: (options: CloseOptions) => void;
   onDownloadClick: () => void;
+  onMarkedForClosing: (filePath?: string) => void;
 }
 
 interface CloudSyncMenuItemProps {
@@ -105,6 +104,11 @@ interface EnableCloudSyncMenuItemProps {
   cloudFileRef?: CloudFileRefWithIdentifier;
 }
 
+function useShouldDeleteFile() {
+  const platform = usePlatformStore((state) => state.platform);
+  return platform === "web" || platform === "ios" || platform === "android";
+}
+
 export const OpenFileList = memo((props: OpenFileListProps) => {
   const { subheader, onClose, ...other } = props;
   const { taskLists, reorderTaskList, downloadTodoFile } = useTask();
@@ -116,6 +120,7 @@ export const OpenFileList = memo((props: OpenFileListProps) => {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+  const [markedForClosing, setMarkedForClosing] = useState<string>();
 
   // update list items when a file was deleted
   useEffect(() => {
@@ -166,6 +171,8 @@ export const OpenFileList = memo((props: OpenFileListProps) => {
                     )
                   }
                   onClose={onClose}
+                  markedForClosing={markedForClosing}
+                  onMarkedForClosing={setMarkedForClosing}
                 />
               ))}
             </SortableContext>
@@ -175,9 +182,16 @@ export const OpenFileList = memo((props: OpenFileListProps) => {
     </List>
   );
 });
-
 function FileListItem(props: FileListItemProps) {
-  const { id, filePath, taskList, onClose, onDownload } = props;
+  const {
+    id,
+    filePath,
+    taskList,
+    markedForClosing,
+    onClose,
+    onMarkedForClosing,
+    onDownload,
+  } = props;
   const language = useSettingsStore((state) => state.language);
   const { getCloudFileRef } = useCloudStorage();
   const [cloudFileRef, setCloudFileRef] =
@@ -187,6 +201,8 @@ function FileListItem(props: FileListItemProps) {
     : undefined;
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
+  const deleteFile = useShouldDeleteFile();
+  const showClosePrompt = markedForClosing === filePath;
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -202,13 +218,28 @@ function FileListItem(props: FileListItemProps) {
       ref={setNodeRef}
       style={style}
       endAction={
-        <FileMenu
-          filePath={filePath}
-          cloudFileRef={cloudFileRef}
-          onChange={setCloudFileRef}
-          onClose={onClose}
-          onDownloadClick={() => onDownload(taskList)}
-        />
+        showClosePrompt ? (
+          <Stack spacing={1} direction="row">
+            <IconButton
+              color="neutral"
+              onClick={() => onMarkedForClosing(undefined)}
+            >
+              <CancelIcon />
+            </IconButton>
+            <IconButton color="danger" onClick={() => onClose(filePath)}>
+              {deleteFile && <DeleteForever />}
+              {!deleteFile && <CloseOutlinedIcon />}
+            </IconButton>
+          </Stack>
+        ) : (
+          <FileMenu
+            filePath={filePath}
+            cloudFileRef={cloudFileRef}
+            onChange={setCloudFileRef}
+            onMarkedForClosing={onMarkedForClosing}
+            onDownloadClick={() => onDownload(taskList)}
+          />
+        )
       }
       data-testid="draggable-file"
       aria-label={`Draggable file ${filePath}`}
@@ -216,22 +247,42 @@ function FileListItem(props: FileListItemProps) {
       <ListItemDecorator
         {...listeners}
         {...attributes}
-        sx={{ cursor: "pointer" }}
+        sx={{
+          cursor: "pointer",
+          display: showClosePrompt ? "none" : "inline-flex",
+        }}
       >
         <DragIndicatorIcon />
       </ListItemDecorator>
-      <Box sx={{ overflow: "hidden" }}>
-        <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
-        {cloudFileRef && (
-          <Box>
-            <SyncOutlinedIcon color="inherit" fontSize="inherit" />
-            <Typography level="body-sm">
-              {cloudFileLastModified &&
-                formatLocalDateTime(cloudFileLastModified, language)}
-            </Typography>
-          </Box>
-        )}
-      </Box>
+      {!showClosePrompt && (
+        <Box sx={{ overflow: "hidden" }}>
+          <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
+          {cloudFileRef && (
+            <Box>
+              <SyncOutlinedIcon color="inherit" fontSize="inherit" />
+              <Typography level="body-sm">
+                {cloudFileLastModified &&
+                  formatLocalDateTime(cloudFileLastModified, language)}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      )}
+      {showClosePrompt && (
+        <Typography>
+          {deleteFile ? (
+            <Trans
+              i18nKey="Delete file"
+              values={{ fileName: getFilename(filePath) }}
+            />
+          ) : (
+            <Trans
+              i18nKey="Close file"
+              values={{ fileName: getFilename(filePath) }}
+            />
+          )}
+        </Typography>
+      )}
     </ListItem>
   );
 }
@@ -343,13 +394,20 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
 }
 
 function FileMenu(props: FileMenuProps) {
-  const { filePath, cloudFileRef, onChange, onClose, onDownloadClick } = props;
+  const {
+    filePath,
+    cloudFileRef,
+    onChange,
+    onMarkedForClosing,
+    onDownloadClick,
+  } = props;
   const { cloudStorages } = useCloudStorage();
   const touchScreen = hasTouchScreen();
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
   const { enqueueSnackbar } = useSnackbar();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
+  const deleteFile = useShouldDeleteFile();
   const providers = useMemo(() => {
     const value = [...cloudStorages.map((s) => s.provider)];
     if (cloudFileRef && !value.includes(cloudFileRef.provider)) {
@@ -358,11 +416,8 @@ function FileMenu(props: FileMenuProps) {
     return value;
   }, [cloudFileRef, cloudStorages]);
 
-  const deleteFile =
-    platform === "web" || platform === "ios" || platform === "android";
-
   const handleCloseFile = () => {
-    onClose({ filePath, deleteFile });
+    onMarkedForClosing(filePath);
   };
 
   const handleCopyToClipboard = () => {
@@ -426,7 +481,7 @@ function FileMenu(props: FileMenuProps) {
         )}
         <MenuItem onClick={handleCloseFile} aria-label="Delete file">
           <ListItemDecorator>
-            {deleteFile && <DeleteOutlineOutlinedIcon />}
+            {deleteFile && <DeleteForever />}
             {!deleteFile && <CloseOutlinedIcon />}
           </ListItemDecorator>{" "}
           {deleteFile ? t("Delete") : t("Close")}
