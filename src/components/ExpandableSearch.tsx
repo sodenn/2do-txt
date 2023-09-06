@@ -42,13 +42,11 @@ export const ExpandableSearch = forwardRef<
   };
 
   const handleEnteredInput = () => {
-    console.log("handleEnteredInput");
     const input = (ref as any).current;
     input.focus();
   };
 
   const handleExitedInput = () => {
-    console.log("handleExitedInput");
     setShowButton(true);
     onExpand?.(false);
   };

@@ -7,6 +7,7 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "@/utils/CloudStorage";
+import { useDialogButtonSize } from "@/utils/useDialogButtonSize";
 import { useFilePicker } from "@/utils/useFilePicker";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
@@ -36,6 +37,7 @@ export function FileActionButton() {
   const openCloudFileDialog = useCloudFileDialogStore(
     (state) => state.openCloudFileDialog,
   );
+  const buttonSize = useDialogButtonSize();
 
   const handleCreateFile = () => {
     openFileCreateDialog();
@@ -64,9 +66,11 @@ export function FileActionButton() {
   if (cloudStorages.length === 0) {
     return (
       <>
-        <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
-        <Button onClick={handleOpenFile}>
-          {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
+        <Button size={buttonSize} onClick={handleOpenFile}>
+          {platform === "desktop" ? t("Open") : t("Import")}
+        </Button>
+        <Button size={buttonSize} onClick={handleCreateFile}>
+          {t("Create")}
         </Button>
       </>
     );
@@ -77,6 +81,7 @@ export function FileActionButton() {
       <MenuButton
         color="primary"
         variant="solid"
+        size={buttonSize}
         aria-label="Choose action"
         endDecorator={<ArrowDropDown />}
       >
@@ -87,13 +92,13 @@ export function FileActionButton() {
           <ListItemDecorator>
             <AddOutlinedIcon />
           </ListItemDecorator>
-          {t("Create todo.txt")}
+          {t("Create")}
         </MenuItem>
         <MenuItem onClick={handleOpenFile}>
           <ListItemDecorator>
             <FolderOpenOutlinedIcon />
           </ListItemDecorator>
-          {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
+          {platform === "desktop" ? t("Open") : t("Import")}
         </MenuItem>
         {cloudStorages
           .map((s) => s.provider)
@@ -105,7 +110,7 @@ export function FileActionButton() {
               <ListItemDecorator>
                 {renderCloudStorageIcon(provider)}
               </ListItemDecorator>
-              {t("Import from cloud storage", { provider })}
+              {t("Cloud storage")}
             </MenuItem>
           ))}
       </Menu>

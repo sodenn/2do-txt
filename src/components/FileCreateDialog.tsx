@@ -1,8 +1,9 @@
 import {
-  FullScreenDialog,
-  FullScreenDialogContent,
-  FullScreenDialogTitle,
-} from "@/components/FullScreenDialog";
+  ResponsiveDialog,
+  ResponsiveDialogActions,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
 import {
   fileExists,
   getUniqueFilePath,
@@ -16,22 +17,16 @@ import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { Provider, useCloudStorage } from "@/utils/CloudStorage";
 import { addTodoFilePath } from "@/utils/settings";
 import { defaultTodoFilePath } from "@/utils/todo-files";
+import { useDialogButtonSize } from "@/utils/useDialogButtonSize";
 import { useTask } from "@/utils/useTask";
 import {
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   FormControl,
-  FormControlLabel,
   FormLabel,
+  Input,
   Radio,
   RadioGroup,
-  TextField,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+} from "@mui/joy";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -138,8 +133,7 @@ function DesktopFileCreateDialog(props: FileCreateDialogProps) {
 const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   const { onCreateFile, onClose, open } = props;
   const { t } = useTranslation();
-  const theme = useTheme();
-  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
+  const buttonSize = useDialogButtonSize();
   const [fileName, setFileName] = useState("");
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog,
@@ -178,7 +172,6 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     if (!fileName) {
       return;
     }
-
     const exists = await fileExists(fileName);
     if (exists) {
       openConfirmationDialog({
@@ -219,7 +212,6 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
       if (!open || fileName) {
         return;
       }
-
       const { fileName: _fileName } =
         await getUniqueFilePath(defaultTodoFilePath);
       setFileName(_fileName);
@@ -249,95 +241,54 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     return null;
   }
 
-  const dialogContent = (
-    <>
-      <TextField
-        value={fileName}
-        onChange={(event) => setFileName(event.target.value)}
-        margin="normal"
-        label={t("File Name")}
-        fullWidth
-        variant="outlined"
-        inputProps={{
-          "aria-label": "File name",
-        }}
-      />
-      {cloudStorages.length > 0 && (
-        <FormControl sx={{ mt: 1 }}>
-          <FormLabel id="cloud-sync">
-            {t("Sync with cloud storage", { provider: t("cloud storage") })}
-          </FormLabel>
-          <RadioGroup
-            aria-labelledby="cloud-sync"
-            aria-label="Sync with cloud storage"
-            value={selectedProvider}
-            onChange={handleCloudStorageChange}
-          >
-            <FormControlLabel
-              value="no-sync"
-              control={<Radio />}
-              label={t("Not sync")}
-            />
-            {cloudStorages
-              .map((c) => c.provider)
-              .map((provider) => (
-                <FormControlLabel
-                  key={provider}
-                  value={provider}
-                  control={<Radio />}
-                  label={provider}
-                />
-              ))}
-          </RadioGroup>
-        </FormControl>
-      )}
-    </>
-  );
-
-  if (fullScreenDialog) {
-    return (
-      <FullScreenDialog
-        data-testid="file-create-dialog"
-        open={open}
-        onClose={onClose}
-        TransitionProps={{ onExited: handleExited }}
-      >
-        <FullScreenDialogTitle
-          onClose={onClose}
-          accept={{
-            text: t("Create"),
-            disabled: !fileName,
-            onClick: handleSave,
-            "aria-label": "Create file",
-          }}
-        >
-          {title}
-        </FullScreenDialogTitle>
-        <FullScreenDialogContent>{dialogContent}</FullScreenDialogContent>
-      </FullScreenDialog>
-    );
-  }
-
   return (
-    <Dialog
-      maxWidth="xs"
-      fullWidth
-      open={open}
-      onClose={onClose}
-      TransitionProps={{ onExited: handleExited }}
-    >
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent>{dialogContent}</DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>{t("Cancel")}</Button>
+    <ResponsiveDialog fullWidth open={open} onClose={onClose}>
+      <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
+      <ResponsiveDialogContent>
+        <FormControl>
+          <FormLabel>{t("File Name")}</FormLabel>
+          <Input
+            value={fileName}
+            onChange={(event) => setFileName(event.target.value)}
+            fullWidth
+            variant="outlined"
+            slotProps={{
+              input: {
+                "aria-label": "File name",
+              },
+            }}
+          />
+        </FormControl>
+        {cloudStorages.length > 0 && (
+          <FormControl>
+            <FormLabel>
+              {t("Sync with cloud storage", { provider: t("cloud storage") })}
+            </FormLabel>
+            <RadioGroup
+              aria-label="Sync with cloud storage"
+              value={selectedProvider}
+              onChange={handleCloudStorageChange}
+            >
+              <Radio value="no-sync" label={t("Not sync")} />
+              {cloudStorages
+                .map((c) => c.provider)
+                .map((provider) => (
+                  <Radio key={provider} value={provider} label={provider} />
+                ))}
+            </RadioGroup>
+          </FormControl>
+        )}
+      </ResponsiveDialogContent>
+      <ResponsiveDialogActions>
         <Button
+          size={buttonSize}
           aria-label="Create file"
           disabled={!fileName}
           onClick={handleSave}
         >
           {t("Create")}
         </Button>
-      </DialogActions>
-    </Dialog>
+      </ResponsiveDialogActions>
+    </ResponsiveDialog>
   );
 };

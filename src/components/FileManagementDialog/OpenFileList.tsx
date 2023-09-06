@@ -59,6 +59,7 @@ import {
   MenuButton,
   MenuItem,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/joy";
 import { useSnackbar } from "notistack";
@@ -202,6 +203,7 @@ function FileListItem(props: FileListItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
   const deleteFile = useShouldDeleteFile();
+  const { t } = useTranslation();
   const showClosePrompt = markedForClosing === filePath;
 
   const style = {
@@ -220,16 +222,20 @@ function FileListItem(props: FileListItemProps) {
       endAction={
         showClosePrompt ? (
           <Stack spacing={1} direction="row">
-            <IconButton
-              color="neutral"
-              onClick={() => onMarkedForClosing(undefined)}
-            >
-              <CancelIcon />
-            </IconButton>
-            <IconButton color="danger" onClick={() => onClose(filePath)}>
-              {deleteFile && <DeleteForever />}
-              {!deleteFile && <CloseOutlinedIcon />}
-            </IconButton>
+            <Tooltip title={t("Cancel")}>
+              <IconButton
+                color="neutral"
+                onClick={() => onMarkedForClosing(undefined)}
+              >
+                <CancelIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={deleteFile ? t("Delete") : t("Close")}>
+              <IconButton color="danger" onClick={() => onClose(filePath)}>
+                {deleteFile && <DeleteForever />}
+                {!deleteFile && <CloseOutlinedIcon />}
+              </IconButton>
+            </Tooltip>
           </Stack>
         ) : (
           <FileMenu

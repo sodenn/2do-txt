@@ -7,16 +7,16 @@ import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import {
+  Box,
   Dropdown,
+  IconButton,
   List,
   ListItem,
-  ListItemButton,
   ListItemDecorator,
   ListSubheader,
   Menu,
   MenuButton,
   MenuItem,
-  Typography,
 } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
@@ -26,7 +26,7 @@ interface ClosedFileListProps {
   onDelete: (filePath: string) => void;
 }
 
-interface FileProps {
+interface FileListItemProps {
   filePath: string;
   onOpen: (filePath: string) => void;
   onDelete: (filePath: string) => void;
@@ -59,7 +59,7 @@ export function ClosedFileList(props: ClosedFileListProps) {
         <ListSubheader>{t("Closed files")}</ListSubheader>
         <List>
           {list.map((filePath) => (
-            <File
+            <FileListItem
               key={filePath}
               filePath={filePath}
               onOpen={handleOpen}
@@ -72,25 +72,25 @@ export function ClosedFileList(props: ClosedFileListProps) {
   );
 }
 
-function File(props: FileProps) {
+function FileListItem(props: FileListItemProps) {
   return (
     <ListItem
       endAction={
-        <FileMenu
+        <FileLietItemMenu
           filePath={props.filePath}
           onOpen={props.onOpen}
           onDelete={props.onDelete}
         />
       }
     >
-      <ListItemButton>
+      <Box sx={{ overflow: "hidden" }}>
         <StartEllipsis variant="inherit">{props.filePath}</StartEllipsis>
-      </ListItemButton>
+      </Box>
     </ListItem>
   );
 }
 
-function FileMenu(props: FileProps) {
+function FileLietItemMenu(props: FileListItemProps) {
   const { filePath, onOpen, onDelete } = props;
   const { t } = useTranslation();
 
@@ -104,21 +104,26 @@ function FileMenu(props: FileProps) {
 
   return (
     <Dropdown>
-      <MenuButton aria-label="more" aria-haspopup="true">
+      <MenuButton
+        aria-label="more"
+        aria-haspopup="true"
+        slots={{ root: IconButton }}
+        slotProps={{ root: { variant: "plain", color: "neutral" } }}
+      >
         <ArrowDropDown />
       </MenuButton>
       <Menu placement="bottom-end">
         <MenuItem onClick={handleOpen}>
           <ListItemDecorator>
             <OpenInNewOutlinedIcon />
-          </ListItemDecorator>
-          <Typography>{t("Open")}</Typography>
+          </ListItemDecorator>{" "}
+          {t("Open")}
         </MenuItem>
         <MenuItem onClick={handleDelete}>
           <ListItemDecorator>
             <DeleteOutlineOutlinedIcon />
-          </ListItemDecorator>
-          <Typography>{t("Delete")}</Typography>
+          </ListItemDecorator>{" "}
+          {t("Delete")}
         </MenuItem>
       </Menu>
     </Dropdown>

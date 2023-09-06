@@ -1,10 +1,10 @@
-import useMediaQuery from "@/utils/useMediaQuery";
-import { Box, ButtonProps, Stack, useTheme } from "@mui/joy";
+import { useFullScreenDialog } from "@/utils/useFullScreenDialog";
+import { Box, Stack } from "@mui/joy";
 import Modal from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
 import ModalDialog from "@mui/joy/ModalDialog";
 import Typography from "@mui/joy/Typography";
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { Transition } from "react-transition-group";
 import { TransitionStatus } from "react-transition-group/Transition";
 
@@ -12,133 +12,6 @@ interface ResponsiveDialogProps {
   open?: boolean;
   onClose?: () => void;
   fullWidth?: boolean;
-}
-
-interface WithFullScreen {
-  fullScreen?: boolean;
-}
-
-function getActionChildren(props: PropsWithChildren<WithFullScreen>) {
-  return React.Children.map(props.children, (child) => {
-    if (React.isValidElement<ButtonProps>(child)) {
-      return React.cloneElement(child, {
-        size: props.fullScreen ? "sm" : "md",
-        ...(props.fullScreen && {
-          sx: {
-            //marginTop: "var(--ModalClose-inset, 8px)",
-          },
-        }),
-      });
-    }
-    return child;
-  });
-}
-
-function getLayoutChildren(
-  props: PropsWithChildren<WithFullScreen>,
-): React.ReactNode {
-  return React.Children.map(props.children, (child) => {
-    if (React.isValidElement<WithFullScreen>(child)) {
-      return React.cloneElement(child, { fullScreen: props.fullScreen });
-    }
-    return child;
-  });
-}
-
-export function ResponsiveDialogTitle({
-  children,
-  fullScreen,
-}: PropsWithChildren<WithFullScreen>) {
-  return (
-    <Typography
-      fontSize="lg"
-      fontWeight="lg"
-      sx={{
-        flex: 1,
-        marginLeft: fullScreen ? "35px" : undefined,
-        marginRight: !fullScreen ? "35px" : undefined,
-        gridArea: "title",
-      }}
-    >
-      {children}
-    </Typography>
-  );
-}
-
-export function ResponsiveDialogContent(
-  props: PropsWithChildren<WithFullScreen>,
-) {
-  return (
-    <Box
-      sx={{
-        gridArea: "content",
-      }}
-    >
-      {props.children}
-    </Box>
-  );
-}
-
-export function ResponsiveDialogActions(
-  props: PropsWithChildren<WithFullScreen>,
-) {
-  const children = getActionChildren(props);
-  return (
-    <Stack
-      direction="row"
-      spacing={1}
-      justifyContent="end"
-      sx={{
-        gridArea: "actions",
-      }}
-    >
-      {children}
-    </Stack>
-  );
-}
-
-function CenterLayout(props: PropsWithChildren<WithFullScreen>) {
-  const children = getLayoutChildren(props);
-  return (
-    <Box
-      sx={{
-        display: "grid",
-        gridTemplateColumns: "1fr",
-        gridTemplateRows: "auto 1fr auto",
-        gridTemplateAreas: `
-          "title"
-          "content"
-          "actions"
-        `,
-        marginTop: "-4px",
-        gap: 2,
-      }}
-    >
-      {children}
-    </Box>
-  );
-}
-
-function FullScreenLayout(props: PropsWithChildren<WithFullScreen>) {
-  const children = getLayoutChildren(props);
-  return (
-    <Box
-      sx={{
-        display: "grid",
-        gridTemplateColumns: "1fr auto",
-        gridTemplateRows: "1fr auto",
-        gridTemplateAreas: `
-          "title actions"
-          "content content"
-        `,
-        alignItems: "baseline",
-        marginTop: "-4px",
-        gap: 1,
-      }}
-    >
-      {children}
-    </Box>
-  );
 }
 
 const timeout = 250;
@@ -213,12 +86,102 @@ const dialogStyles: DialogStyles = {
   },
 };
 
+export function ResponsiveDialogTitle({ children }: PropsWithChildren) {
+  const fullScreen = useFullScreenDialog();
+  return (
+    <Typography
+      fontSize="lg"
+      fontWeight="lg"
+      sx={{
+        flex: 1,
+        marginLeft: fullScreen ? "35px" : undefined,
+        marginRight: !fullScreen ? "35px" : undefined,
+        gridArea: "title",
+      }}
+    >
+      {children}
+    </Typography>
+  );
+}
+
+export function ResponsiveDialogContent(props: PropsWithChildren) {
+  return (
+    <Box
+      sx={{
+        gridArea: "content",
+      }}
+    >
+      {props.children}
+    </Box>
+  );
+}
+
+export function ResponsiveDialogActions({ children }: PropsWithChildren) {
+  return (
+    <Stack
+      direction="row"
+      spacing={1}
+      justifyContent="end"
+      sx={{
+        gridArea: "actions",
+        position: "relative",
+        top: "-3px",
+      }}
+    >
+      {children}
+    </Stack>
+  );
+}
+
+function CenterLayout({ children }: PropsWithChildren) {
+  return (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "1fr",
+        gridTemplateRows: "auto 1fr auto",
+        gridTemplateAreas: `
+          "title"
+          "content"
+          "actions"
+        `,
+        position: "relative",
+        top: "-4px",
+        gap: 2,
+      }}
+    >
+      {children}
+    </Box>
+  );
+}
+
+function FullScreenLayout({ children }: PropsWithChildren) {
+  return (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "1fr auto",
+        gridTemplateRows: "1fr auto",
+        gridTemplateAreas: `
+          "title actions"
+          "content content"
+        `,
+        alignItems: "start",
+        position: "relative",
+        top: "-4px",
+        gap: 2,
+      }}
+    >
+      {children}
+    </Box>
+  );
+}
+
 export function ResponsiveDialog(
   props: PropsWithChildren<ResponsiveDialogProps>,
 ) {
   const { open, onClose, children, fullWidth } = props;
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const fullScreen = useFullScreenDialog();
   const [renderModal, setRenderModal] = useState(false);
 
   useEffect(() => {
@@ -274,14 +237,8 @@ export function ResponsiveDialog(
                       : undefined
                   }
                 />
-                {fullScreen && (
-                  <FullScreenLayout fullScreen={true}>
-                    {children}
-                  </FullScreenLayout>
-                )}
-                {!fullScreen && (
-                  <CenterLayout fullScreen={false}>{children}</CenterLayout>
-                )}
+                {fullScreen && <FullScreenLayout>{children}</FullScreenLayout>}
+                {!fullScreen && <CenterLayout>{children}</CenterLayout>}
               </>
             )}
           </ModalDialog>
