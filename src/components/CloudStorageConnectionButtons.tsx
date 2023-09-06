@@ -65,9 +65,9 @@ export function CloudStorageConnectionButtons({
       <Button
         aria-label="Connect to cloud storage"
         loading={loading}
+        color="neutral"
         variant="outlined"
         startDecorator={cloudStorageIcons[provider]}
-        fullWidth
         onClick={() => handleItemClick(provider)}
       >
         {cloudStorages.some((s) => s.provider === provider)

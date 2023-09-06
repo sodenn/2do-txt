@@ -242,7 +242,12 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   }
 
   return (
-    <ResponsiveDialog fullWidth open={open} onClose={onClose}>
+    <ResponsiveDialog
+      fullWidth
+      open={open}
+      onClose={onClose}
+      onExited={handleExited}
+    >
       <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
       <ResponsiveDialogContent>
         <FormControl>

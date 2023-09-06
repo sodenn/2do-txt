@@ -17,6 +17,7 @@ export function ExampleFileButton() {
     <Button
       color="neutral"
       variant="outlined"
+      fullWidth
       aria-label="Create example file"
       onClick={handleClick}
       startDecorator={<LightbulbOutlinedIcon />}

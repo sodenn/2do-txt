@@ -255,13 +255,13 @@ function FileListItem(props: FileListItemProps) {
         <Box sx={{ overflow: "hidden" }}>
           <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
           {cloudFileRef && (
-            <Box>
-              <SyncOutlinedIcon color="inherit" fontSize="inherit" />
+            <Stack spacing={1} direction="row" alignItems="center">
+              <SyncOutlinedIcon fontSize="inherit" />
               <Typography level="body-sm">
                 {cloudFileLastModified &&
                   formatLocalDateTime(cloudFileLastModified, language)}
               </Typography>
-            </Box>
+            </Stack>
           )}
         </Box>
       )}

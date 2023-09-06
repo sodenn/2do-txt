@@ -10,6 +10,7 @@ export function NewFileButton() {
   );
   return (
     <Button
+      fullWidth
       variant="solid"
       aria-label="Create task"
       onClick={() =>

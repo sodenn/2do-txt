@@ -1,4 +1,4 @@
-import { SvgIcon, SvgIconProps } from "@mui/material";
+import { SvgIcon, SvgIconProps } from "@mui/joy";
 
 // Source: https://www.dropbox.com/sh/42f8d4kq6yt5lte/AACqjH2o8fnQQ8pV1D70np_9a/Glyph/Dropbox/SVG?dl=0&preview=DropboxGlyph_Blue.svg&subfolder_nav_tracking=1
 

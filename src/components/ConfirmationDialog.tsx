@@ -1,12 +1,11 @@
-import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
+  ResponsiveDialog,
+  ResponsiveDialogActions,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { Box, Button } from "@mui/joy";
 
 export function ConfirmationDialog() {
   const open = useConfirmationDialogStore((state) => state.open);
@@ -34,31 +33,29 @@ export function ConfirmationDialog() {
   };
 
   return (
-    <Dialog
-      maxWidth="xs"
+    <ResponsiveDialog
+      fullScreen={false}
       open={open}
       onClose={handleClose}
-      TransitionProps={{
-        onExited: () => cleanupConfirmationDialog(),
-      }}
+      onExited={cleanupConfirmationDialog}
     >
-      {title && <DialogTitle>{title}</DialogTitle>}
-      <DialogContent>
-        <DialogContentText sx={{ overflow: "hidden", wordBreak: "break-word" }}>
+      {title && <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>}
+      <ResponsiveDialogContent>
+        <Box sx={{ overflow: "hidden", wordBreak: "break-word" }}>
           {content}
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
+        </Box>
+      </ResponsiveDialogContent>
+      <ResponsiveDialogActions>
         {buttons?.map((button) => (
           <Button
-            aria-label={button.text}
-            onClick={() => handleClick(button.handler)}
             key={button.text}
+            onClick={() => handleClick(button.handler)}
+            aria-label={button.text}
           >
             {button.text}
           </Button>
         ))}
-      </DialogActions>
-    </Dialog>
+      </ResponsiveDialogActions>
+    </ResponsiveDialog>
   );
 }

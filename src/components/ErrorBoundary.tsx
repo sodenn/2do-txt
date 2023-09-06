@@ -1,13 +1,6 @@
 import logo from "@/images/logo.png";
 import { hideSplashScreen } from "@/native-api/splash-screen";
-import {
-  Alert,
-  AppBar,
-  Box,
-  CssBaseline,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Alert, CssBaseline, Stack, Typography } from "@mui/joy";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouteError } from "react-router-dom";
@@ -24,25 +17,27 @@ export function ErrorBoundary() {
   return (
     <>
       <CssBaseline />
-      <AppBar position="static" color="default" elevation={1}>
-        <Toolbar sx={{ gap: 1 }}>
-          <img src={logo} alt="Logo" height={28} />
-          <Typography variant="h6" component="div">
-            {t("Error")}
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Box sx={{ mx: 3, my: 2 }}>
-        <Typography gutterBottom variant="subtitle1">
+      <Stack
+        spacing={1}
+        direction="row"
+        alignItems="center"
+        sx={{ py: 2, px: 3 }}
+      >
+        <img src={logo} alt="Logo" height={28} />
+        <Typography level="title-lg" component="div">
+          {t("Error")}
+        </Typography>
+      </Stack>
+      <Stack spacing={2} sx={{ my: 2, mx: 3 }}>
+        <Typography gutterBottom level="body-md">
           {t("An error has occurred")}
         </Typography>
         {message && (
-          <Alert icon={false} severity="warning">
-            <Typography variant="caption">{t("Error message")}: </Typography>
-            <code>{message}</code>
+          <Alert variant="outlined" color="danger" sx={{ userSelect: "text" }}>
+            {t("Error message")}: <code>{message}</code>
           </Alert>
         )}
-      </Box>
+      </Stack>
     </>
   );
 }

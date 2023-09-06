@@ -1,5 +1,7 @@
 const { chromium } = require("@playwright/test");
 
+// open -a Google\ Chrome --args --disable-web-security --user-data-dir="path"
+
 (async () => {
   // Make sure to run headed.
   const browser = await chromium.launch({

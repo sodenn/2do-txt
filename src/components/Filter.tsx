@@ -146,7 +146,6 @@ export function Filter() {
           <Select
             disabled={taskView === "timeline"}
             defaultValue=""
-            //displayEmpty
             value={sortBy}
             onChange={(_, value) => setSortBy(value as SortKey)}
             slotProps={{

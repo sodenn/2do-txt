@@ -6,12 +6,20 @@ import ModalDialog from "@mui/joy/ModalDialog";
 import Typography from "@mui/joy/Typography";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { Transition } from "react-transition-group";
-import { TransitionStatus } from "react-transition-group/Transition";
+import {
+  TransitionProps,
+  TransitionStatus,
+} from "react-transition-group/Transition";
 
-interface ResponsiveDialogProps {
+interface ResponsiveDialogProps
+  extends Pick<
+    TransitionProps,
+    "onExited" | "onEnter" | "onEntered" | "onExit"
+  > {
   open?: boolean;
   onClose?: () => void;
   fullWidth?: boolean;
+  fullScreen?: boolean;
 }
 
 const timeout = 250;
@@ -180,9 +188,27 @@ function FullScreenLayout({ children }: PropsWithChildren) {
 export function ResponsiveDialog(
   props: PropsWithChildren<ResponsiveDialogProps>,
 ) {
-  const { open, onClose, children, fullWidth } = props;
-  const fullScreen = useFullScreenDialog();
+  const {
+    open,
+    onClose,
+    children,
+    fullWidth,
+    onExited,
+    onExit,
+    onEntered,
+    onEnter,
+  } = props;
+  const _fullScreen = useFullScreenDialog();
+  const fullScreen =
+    typeof props.fullScreen === "boolean" ? props.fullScreen : _fullScreen;
   const [renderModal, setRenderModal] = useState(false);
+
+  const styles = fullScreen ? dialogStyles.slide : dialogStyles.fade;
+
+  const handleExited = (node: HTMLElement) => {
+    setRenderModal(false);
+    onExited?.(node);
+  };
 
   useEffect(() => {
     if (open) {
@@ -190,13 +216,14 @@ export function ResponsiveDialog(
     }
   }, [open]);
 
-  const styles = fullScreen ? dialogStyles.slide : dialogStyles.fade;
-
   return (
     <Transition
       in={open}
       timeout={timeout}
-      onExited={() => setRenderModal(false)}
+      onEnter={onEnter}
+      onEntered={onEntered}
+      onExit={onExit}
+      onExited={handleExited}
     >
       {(state: TransitionStatus) => (
         <Modal
