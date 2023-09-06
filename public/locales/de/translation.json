@@ -78,8 +78,6 @@
   "Import todo.txt": "todo.txt importieren",
   "todo.txt already exists. Do you want to replace it": "<strong>{{filePath}}</strong> existiert bereits. Möchtest du die Datei ersetzen?",
   "Replace": "Ersetzen",
-  "Open files": "Geöffnete Dateien",
-  "Closed files": "Geschlossene Dateien",
   "Copy to clipboard": "In Zwischenablage kopieren",
   "Copied to clipboard": "In die Zwischenablage kopiert",
   "Select todo.txt": "todo.txt wählen",

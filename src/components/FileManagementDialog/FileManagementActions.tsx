@@ -23,7 +23,7 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-export function FileActionButton() {
+export function FileManagementActions() {
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
   const { openFileDialog } = useFilePicker();

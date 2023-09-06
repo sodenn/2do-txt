@@ -13,7 +13,6 @@ import {
   useCloudStorage,
 } from "@/utils/CloudStorage";
 import { formatLocalDateTime, parseDate } from "@/utils/date";
-import { TaskList } from "@/utils/task-list";
 import { getDoneFilePath } from "@/utils/todo-files";
 import { useTask } from "@/utils/useTask";
 import {
@@ -54,7 +53,6 @@ import {
   List,
   ListItem,
   ListItemDecorator,
-  ListSubheader,
   Menu,
   MenuButton,
   MenuItem,
@@ -68,19 +66,16 @@ import { Trans, useTranslation } from "react-i18next";
 
 type CloudFileRefWithIdentifier = CloudFileRef & WithIdentifier;
 
-interface OpenFileListProps {
-  subheader: boolean;
+interface FileListProps {
   onClose: (filePath: string) => void;
 }
 
 interface FileListItemProps {
-  id: string;
   filePath: string;
-  taskList: TaskList;
-  onDownload: (taskList: TaskList) => void;
+  onClose: (filePath: string) => void;
+  onDownload: (filePath: string) => void;
   markedForClosing?: string;
   onMarkedForClosing: (filePath?: string) => void;
-  onClose: (filePath: string) => void;
 }
 
 interface FileMenuProps {
@@ -110,11 +105,12 @@ function useShouldDeleteFile() {
   return platform === "web" || platform === "ios" || platform === "android";
 }
 
-export const OpenFileList = memo((props: OpenFileListProps) => {
-  const { subheader, onClose, ...other } = props;
-  const { taskLists, reorderTaskList, downloadTodoFile } = useTask();
+export const FileList = memo((props: FileListProps) => {
+  const { onClose, ...other } = props;
+  const { taskLists, reorderTaskList, downloadTodoFile, closeTodoFile } =
+    useTask();
+  const { unlinkCloudFile } = useCloudStorage();
   const [items, setItems] = useState(taskLists.map((t) => t.filePath));
-  const { t } = useTranslation();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -123,7 +119,7 @@ export const OpenFileList = memo((props: OpenFileListProps) => {
   );
   const [markedForClosing, setMarkedForClosing] = useState<string>();
 
-  // update list items when a file was deleted
+  // update list items when a file was closed/deleted
   useEffect(() => {
     setItems(taskLists.map((t) => t.filePath));
   }, [taskLists]);
@@ -141,53 +137,48 @@ export const OpenFileList = memo((props: OpenFileListProps) => {
     }
   };
 
+  const handleCloseFile = async (filePath: string) => {
+    onClose(filePath);
+    closeTodoFile(filePath);
+    await unlinkCloudFile(filePath);
+  };
+
+  const handleDownload = (filePath: string) => {
+    downloadTodoFile(taskLists.find((t) => t.filePath === filePath));
+  };
+
   if (items.length === 0) {
     return null;
   }
 
   return (
     <List variant="outlined" sx={{ borderRadius: "sm" }} {...other}>
-      <ListItem nested>
-        {subheader && <ListSubheader sticky>{t("Open files")}</ListSubheader>}
-        <List>
-          <DndContext
-            sensors={sensors}
-            modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={items}
-              strategy={verticalListSortingStrategy}
-            >
-              {items.map((filePath) => (
-                <FileListItem
-                  id={filePath}
-                  key={filePath}
-                  taskList={taskLists.find((t) => t.filePath === filePath)!}
-                  filePath={filePath}
-                  onDownload={() =>
-                    downloadTodoFile(
-                      taskLists.find((t) => t.filePath === filePath),
-                    )
-                  }
-                  onClose={onClose}
-                  markedForClosing={markedForClosing}
-                  onMarkedForClosing={setMarkedForClosing}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-        </List>
-      </ListItem>
+      <DndContext
+        sensors={sensors}
+        modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={items} strategy={verticalListSortingStrategy}>
+          {items.map((filePath) => (
+            <FileListItem
+              key={filePath}
+              filePath={filePath}
+              onDownload={handleDownload}
+              onClose={handleCloseFile}
+              markedForClosing={markedForClosing}
+              onMarkedForClosing={setMarkedForClosing}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
     </List>
   );
 });
+
 function FileListItem(props: FileListItemProps) {
   const {
-    id,
     filePath,
-    taskList,
     markedForClosing,
     onClose,
     onMarkedForClosing,
@@ -201,7 +192,7 @@ function FileListItem(props: FileListItemProps) {
     ? parseDate(cloudFileRef.lastSync)
     : undefined;
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
+    useSortable({ id: filePath });
   const deleteFile = useShouldDeleteFile();
   const { t } = useTranslation();
   const showClosePrompt = markedForClosing === filePath;
@@ -243,7 +234,7 @@ function FileListItem(props: FileListItemProps) {
             cloudFileRef={cloudFileRef}
             onChange={setCloudFileRef}
             onMarkedForClosing={onMarkedForClosing}
-            onDownloadClick={() => onDownload(taskList)}
+            onDownloadClick={() => onDownload(filePath)}
           />
         )
       }
