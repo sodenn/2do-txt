@@ -60,6 +60,7 @@ export function PrioritySelect(props: PrioritySelectProps) {
       <FormLabel>{t("Priority")}</FormLabel>
       {!touchScreen && (
         <Autocomplete
+          placeholder={t("None")}
           autoSelect={autoSelect}
           autoHighlight={autoSelect}
           value={value}

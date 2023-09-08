@@ -1,8 +1,9 @@
 import {
-  FullScreenDialog,
-  FullScreenDialogContent,
-  FullScreenDialogTitle,
-} from "@/components/FullScreenDialog";
+  ResponsiveDialog,
+  ResponsiveDialogActions,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
 import { TaskForm } from "@/components/TaskForm";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
@@ -10,15 +11,8 @@ import { formatDate, todayDate } from "@/utils/date";
 import { Task } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Button } from "@mui/joy";
+import { ModalProps } from "@mui/joy/Modal";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -44,8 +38,6 @@ export function TaskDialog() {
   );
   const open = useTaskDialogStore((state) => state.open);
   const task = useTaskDialogStore((state) => state.task);
-  const theme = useTheme();
-  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const createCreationDate = useSettingsStore(
     (state) => state.createCreationDate,
   );
@@ -90,8 +82,8 @@ export function TaskDialog() {
     task,
   ]);
 
-  const handleClose = useCallback(
-    (event: any, reason: "backdropClick" | "escapeKeyDown") => {
+  const handleClose = useCallback<NonNullable<ModalProps["onClose"]>>(
+    (_, reason) => {
       return reason !== "backdropClick" ? closeTaskDialog() : undefined;
     },
     [closeTaskDialog],
@@ -114,64 +106,34 @@ export function TaskDialog() {
     setSelectedTaskList(undefined);
   };
 
-  const TransitionProps = {
-    onEnter: handleEnter,
-    onExited: handleExit,
-  };
-
-  const taskForm = value ? (
-    <TaskForm
-      value={value}
-      newTask={!!task?._id}
-      contexts={contexts}
-      projects={projects}
-      tags={tags}
-      taskLists={taskLists}
-      onChange={setValue}
-      onFileSelect={setSelectedTaskList}
-      onEnterPress={handleSave}
-    />
-  ) : null;
-
-  if (fullScreenDialog) {
-    return (
-      <FullScreenDialog
-        data-testid="task-dialog"
-        open={open}
-        onClose={closeTaskDialog}
-        TransitionProps={TransitionProps}
-      >
-        <FullScreenDialogTitle
-          onClose={closeTaskDialog}
-          accept={{
-            text: t("Save"),
-            disabled: formDisabled,
-            onClick: handleSave,
-            "aria-label": "Save task",
-          }}
-        >
-          {task?._id ? t("Edit Task") : t("Create Task")}
-        </FullScreenDialogTitle>
-        <FullScreenDialogContent>{taskForm}</FullScreenDialogContent>
-      </FullScreenDialog>
-    );
-  }
-
   return (
-    <Dialog
+    <ResponsiveDialog
       data-testid="task-dialog"
-      maxWidth="sm"
       fullWidth
       open={open}
       onClose={handleClose}
-      TransitionProps={TransitionProps}
+      onEnter={handleEnter}
+      onExit={handleExit}
     >
-      <DialogTitle>{task?._id ? t("Edit Task") : t("Create Task")}</DialogTitle>
-      <DialogContent>{taskForm}</DialogContent>
-      <DialogActions>
-        <Button tabIndex={-1} onClick={closeTaskDialog}>
-          {t("Cancel")}
-        </Button>
+      <ResponsiveDialogTitle>
+        {task?._id ? t("Edit Task") : t("Create Task")}
+      </ResponsiveDialogTitle>
+      <ResponsiveDialogContent>
+        {value && (
+          <TaskForm
+            value={value}
+            newTask={!!task?._id}
+            contexts={contexts}
+            projects={projects}
+            tags={tags}
+            taskLists={taskLists}
+            onChange={setValue}
+            onFileSelect={setSelectedTaskList}
+            onEnterPress={handleSave}
+          />
+        )}
+      </ResponsiveDialogContent>
+      <ResponsiveDialogActions>
         <Button
           aria-label="Save task"
           disabled={formDisabled}
@@ -179,7 +141,7 @@ export function TaskDialog() {
         >
           {t("Save")}
         </Button>
-      </DialogActions>
-    </Dialog>
+      </ResponsiveDialogActions>
+    </ResponsiveDialog>
   );
 }

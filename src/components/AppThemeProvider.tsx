@@ -177,44 +177,16 @@ const joyTheme = extendTheme({
         variant: "soft",
       },
     },
+    JoyInput: {
+      defaultProps: {
+        spellCheck: false,
+      },
+    },
   },
 });
-console.log(joyTheme.vars.palette.warning);
 
 function getThemeOptions(mode: PaletteMode): ThemeOptions {
   return {
-    // components: {
-    //   MuiButtonBase: {
-    //     defaultProps: {
-    //       disableTouchRipple: true,
-    //     },
-    //   },
-    //   MuiTab: {
-    //     defaultProps: {
-    //       disableTouchRipple: true,
-    //     },
-    //   },
-    //   MuiTooltip: {
-    //     defaultProps: {
-    //       enterDelay: 700,
-    //       enterNextDelay: 700,
-    //       disableTouchListener: true,
-    //     },
-    //   },
-    //   MuiButton: {
-    //     defaultProps: {
-    //       disableElevation: true,
-    //       style: {
-    //         textTransform: "none",
-    //       },
-    //     },
-    //   },
-    //   MuiTextField: {
-    //     defaultProps: {
-    //       spellCheck: false,
-    //     },
-    //   },
-    // },
     palette: {
       mode,
       ...(mode === "light"

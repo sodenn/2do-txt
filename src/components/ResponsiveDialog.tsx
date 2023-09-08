@@ -1,6 +1,6 @@
 import { useFullScreenDialog } from "@/utils/useFullScreenDialog";
 import { Box, Stack } from "@mui/joy";
-import Modal from "@mui/joy/Modal";
+import Modal, { ModalProps } from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
 import ModalDialog from "@mui/joy/ModalDialog";
 import Typography from "@mui/joy/Typography";
@@ -13,11 +13,11 @@ import {
 
 interface ResponsiveDialogProps
   extends Pick<
-    TransitionProps,
-    "onExited" | "onEnter" | "onEntered" | "onExit"
-  > {
+      TransitionProps,
+      "onExited" | "onEnter" | "onEntered" | "onExit"
+    >,
+    Pick<ModalProps, "onClose"> {
   open?: boolean;
-  onClose?: () => void;
   fullWidth?: boolean;
   fullScreen?: boolean;
 }

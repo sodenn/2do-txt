@@ -29,17 +29,20 @@ function getColor(props: TagBoxProps) {
   return "neutral";
 }
 
-function Tag(props: TypographyProps & { completed: boolean }) {
+function Tag({
+  completed,
+  ...other
+}: TypographyProps & { completed: boolean }) {
   return (
     <Typography
       component="span"
       sx={{
         display: "inline",
         borderRadius: "sm",
-        ...(props.completed && { p: 0 }),
-        ...props.sx,
+        ...(completed && { p: 0 }),
+        ...other.sx,
       }}
-      {...props}
+      {...other}
     />
   );
 }

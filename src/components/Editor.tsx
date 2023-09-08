@@ -1,4 +1,3 @@
-import { usePaletteMode } from "@/stores/theme-store";
 import { css } from "@emotion/css";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -10,14 +9,14 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
+  Box,
+  FormControl,
+  FormLabel,
   MenuItem,
   MenuList,
-  PaletteMode,
-  Paper,
   Typography,
   styled,
-  useTheme,
-} from "@mui/material";
+} from "@mui/joy";
 import {
   $createParagraphNode,
   $getRoot,
@@ -70,12 +69,14 @@ const mentionStyle = css`
   margin: 0 1px;
   vertical-align: baseline;
   display: inline-block;
-  border-radius: 4px;
   word-break: break-word;
   user-select: none;
   outline: none;
   line-height: 22px;
   cursor: pointer;
+  border-radius: var(--joy-radius-sm);
+  border-width: var(--variant-borderWidth);
+  border-style: solid;
 `;
 
 const mentionStyleFocused = css`
@@ -87,79 +88,76 @@ const mentionStyleFocused = css`
 `;
 
 const taskContextStyle = css`
-  color: #fff;
-  background-color: #4caf50;
-`;
-const taskContextDarkStyle = css`
-  color: rgba(0, 0, 0, 0.87);
-  background-color: rgb(129, 199, 132);
+  --joy-palette-success-outlinedBorder: var(--joy-palette-success-700, #0a470a);
+  color: var(
+    --joy-palette-success-outlinedColor,
+    var(--joy-palette-success-500, #1f7a1f)
+  );
+  border-color: var(
+    --joy-palette-success-outlinedBorder,
+    var(--joy-palette-success-300, #a1e8a1)
+  );
 `;
 const taskProjectStyle = css`
-  color: #fff;
-  background-color: #03a9f4;
-`;
-const taskProjectDarkStyle = css`
-  color: rgba(0, 0, 0, 0.87);
-  background-color: rgb(79, 195, 247);
+  color: var(
+    --joy-palette-primary-outlinedColor,
+    var(--joy-palette-primary-500, #0b6bcb)
+  );
+  border-color: var(
+    --joy-palette-primary-outlinedBorder,
+    var(--joy-palette-primary-300, #97c3f0)
+  );
 `;
 const taskDudDateStyle = css`
-  color: #fff;
-  background-color: #ff9800;
-  white-space: nowrap;
-`;
-const taskDudDateDarkStyle = css`
-  color: rgba(0, 0, 0, 0.87);
-  background-color: rgb(255, 183, 77);
-  white-space: nowrap;
+  color: var(
+    --joy-palette-warning-outlinedColor,
+    var(--joy-palette-warning-500, #9a5b13)
+  );
+  border-color: var(
+    --joy-palette-warning-outlinedBorder,
+    var(--joy-palette-warning-300, #f3c896)
+  );
 `;
 const taskTagStyle = css`
-  color: #fff;
-  background-color: #858585;
-  white-space: nowrap;
+  color: var(
+    --joy-palette-neutral-outlinedColor,
+    var(--joy-palette-neutral-700, #32383e)
+  );
+  border-color: var(
+    --joy-palette-neutral-outlinedBorder,
+    var(--joy-palette-neutral-300, #cdd7e1)
+  );
 `;
-const taskTagDarkStyle = css`
-  color: rgba(0, 0, 0, 0.87);
-  background-color: #909090;
-  white-space: nowrap;
-`;
+
 const menuAnchorStyle = css`
   z-index: 1300;
 `;
 
 type Trigger = "@" | "\\+" | "due:" | "\\w+:";
 
-const styleMap: Record<PaletteMode, Record<Trigger, string>> = {
-  light: {
-    "@": taskContextStyle,
-    "\\+": taskProjectStyle,
-    "due:": taskDudDateStyle,
-    "\\w+:": taskTagStyle,
-  },
-  dark: {
-    "@": taskContextDarkStyle,
-    "\\+": taskProjectDarkStyle,
-    "due:": taskDudDateDarkStyle,
-    "\\w+:": taskTagDarkStyle,
-  },
+const styleMap: Record<Trigger, string> = {
+  "@": taskContextStyle,
+  "\\+": taskProjectStyle,
+  "due:": taskDudDateStyle,
+  "\\w+:": taskTagStyle,
 } as const;
 
-function getMentionStyle(themeMode: PaletteMode, trigger: Trigger) {
+function getMentionStyle(trigger: Trigger) {
   return {
-    [trigger]: styleMap[themeMode][trigger] + " " + mentionStyle,
+    [trigger]: styleMap[trigger] + " " + mentionStyle,
     [trigger + "Focused"]: mentionStyleFocused,
   };
 }
 
 function useMentionStyles(): Record<string, string> {
-  const mode = usePaletteMode();
   return useMemo(
     () => ({
-      ...getMentionStyle(mode, "@"),
-      ...getMentionStyle(mode, "\\+"),
-      ...getMentionStyle(mode, "due:"),
-      ...getMentionStyle(mode, "\\w+:"),
+      ...getMentionStyle("@"),
+      ...getMentionStyle("\\+"),
+      ...getMentionStyle("due:"),
+      ...getMentionStyle("\\w+:"),
     }),
-    [mode],
+    [],
   );
 }
 
@@ -187,7 +185,6 @@ function useIsFocused() {
   const [hasFocus, setHasFocus] = useState(
     () => editor.getRootElement() === document.activeElement,
   );
-
   useLayoutEffect(() => {
     return mergeRegister(
       editor.registerCommand(
@@ -263,68 +260,66 @@ function setEditorState(initialValue: string, triggers: string[]) {
   };
 }
 
-const MenuComponent = forwardRef<HTMLUListElement, BeautifulMentionsMenuProps>(
-  (props, ref) => {
-    const { loading, children, ...other } = props;
-    return (
-      <Paper elevation={2}>
-        <MenuList ref={ref} sx={{ mt: "24px" }} {...other}>
-          {children}
-        </MenuList>
-      </Paper>
-    );
+const Textbox = styled(Box)<{ focused?: boolean }>(({ theme, focused }) => ({
+  "--Input-focused": "0",
+  "--Input-focusedThickness": "var(--joy-focus-thickness)",
+  "--Input-focusedHighlight": "var(--joy-palette-primary-500)",
+  position: "relative",
+  borderRadius: theme.radius.sm,
+  border: `1px solid ${theme.palette.neutral.outlinedBorder}`,
+  padding: `7px 12px`,
+  "&.focused": {
+    "--Input-focused": 1,
   },
-);
-
-const MenuItemComponent = forwardRef<
-  HTMLLIElement,
-  BeautifulMentionsMenuItemProps
->(({ itemValue, ...other }, ref) => {
-  return <MenuItem ref={ref} {...other} />;
-});
-
-const Legend = styled("legend")`
-  user-select: none;
-  margin-left: -5px;
-  font-size: 12px;
-  padding: 0 4px;
-`;
-
-const Fieldset = styled("fieldset")(({ theme }) => {
-  const borderColor =
-    theme.palette.mode === "light"
-      ? "rgba(0, 0, 0, 0.23)"
-      : "rgba(255, 255, 255, 0.23)";
-  return {
-    position: "relative",
-    userSelect: "auto",
-    borderRadius: theme.shape.borderRadius,
-    borderWidth: 1,
-    minHeight: 65,
-    margin: "-2px -1px",
-    padding: "7px 14px 14px 15px",
-    borderColor: borderColor,
-    borderStyle: "solid",
-    cursor: "text",
-    "@media (hover: hover) and (pointer: fine)": {
-      "&:hover": {
-        borderColor: theme.palette.text.primary,
-      },
+  ...(focused && {
+    "&::before": {
+      boxSizing: "border-box",
+      content: "''",
+      display: "block",
+      position: "absolute",
+      pointerEvents: "none",
+      inset: 0,
+      zIndex: 1,
+      margin: "calc(var(--variant-borderWidth, 0px) * -1)",
+      borderRadius: theme.radius.sm,
+      boxShadow:
+        "var(--Input-focusedInset, inset) 0 0 0 calc(var(--Input-focused) * var(--Input-focusedThickness)) var(--Input-focusedHighlight)",
     },
-  };
-});
+  }),
+}));
 
-const Placeholder = styled(Typography)(({ theme }) => ({
-  color: theme.palette.action.disabled,
+const Placeholder = styled(Typography)({
+  "--Textarea-placeholderColor": "inherit",
+  "--Textarea-placeholderOpacity": 0.64,
+  color: "var(--Textarea-placeholderColor)",
+  opacity: "var(--Textarea-placeholderOpacity)",
   position: "absolute",
   pointerEvents: "none",
-  left: 15,
+  left: 12,
   top: 7,
   display: "inline-block",
   userSelect: "none",
   overflow: "hidden",
   textOverflow: "ellipsis",
-}));
+});
+
+const MenuComponent = forwardRef<HTMLUListElement, BeautifulMentionsMenuProps>(
+  (props, ref) => {
+    const { loading, children, ...other } = props;
+    return (
+      <MenuList sx={{ mt: "24px" }} ref={ref} variant="outlined" {...other}>
+        {children}
+      </MenuList>
+    );
+  },
+);
+
+const MenuItemComponent = forwardRef<
+  HTMLDivElement,
+  BeautifulMentionsMenuItemProps
+>(({ itemValue, ...other }, ref) => {
+  return <MenuItem ref={ref} {...other} />;
+});
 
 export function EditorContext({
   initialValue,
@@ -346,7 +341,6 @@ export function Editor(props: EditorProps) {
     onEnter,
     ...contentEditableProps
   } = props;
-  const theme = useTheme();
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
   const [mentionMenuOpen, setMentionMenuOpen] = useState(false);
@@ -374,26 +368,9 @@ export function Editor(props: EditorProps) {
   }, []);
 
   return (
-    <div style={{ margin: "0 1px" }}>
-      <Fieldset
-        onClick={handleClick}
-        style={{
-          ...(focused && {
-            borderColor: theme.palette.primary.main,
-            borderWidth: 2,
-            margin: "-2px",
-          }),
-        }}
-      >
-        {label && (
-          <Legend
-            sx={{
-              color: focused ? "primary.main" : "text.secondary",
-            }}
-          >
-            {label}
-          </Legend>
-        )}
+    <FormControl>
+      {label && <FormLabel onClick={handleClick}>{label}</FormLabel>}
+      <Textbox focused={focused} className={focused ? "focused" : undefined}>
         <PlainTextPlugin
           contentEditable={
             <ContentEditable
@@ -425,7 +402,7 @@ export function Editor(props: EditorProps) {
           onMenuOpen={handleMentionsMenuOpen}
           onMenuClose={handleMentionsMenuClose}
         />
-      </Fieldset>
-    </div>
+      </Textbox>
+    </FormControl>
   );
 }
