@@ -69,7 +69,7 @@ export function Filter() {
             items={priorities}
             activeItems={activePriorities}
             onClick={togglePriority}
-            color="neutral"
+            color="priority"
           />
         </Box>
       )}

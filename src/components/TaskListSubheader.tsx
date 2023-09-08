@@ -16,7 +16,7 @@ export function TaskListSubheader({ title }: TaskListSubheaderProps) {
       }}
     >
       <Chip
-        sx={{ px: 2 }}
+        sx={{ px: 1 }}
         size="sm"
         variant="outlined"
         aria-label="Task group"

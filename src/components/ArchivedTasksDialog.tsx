@@ -1,20 +1,14 @@
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
 import { TaskBody } from "@/components/TaskBody";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { Task } from "@/utils/task";
 import { useTask } from "@/utils/useTask";
 import RestoreOutlinedIcon from "@mui/icons-material/RestoreOutlined";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Tooltip,
-} from "@mui/material";
+import { IconButton, List, ListItem, Tooltip } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -31,8 +25,6 @@ export function ArchivedTasksDialog() {
   const { loadDoneFile, restoreTask } = useTask();
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleClose = () => closeArchivedTasksDialog();
-
   const handleRestore = async (task: Task) => {
     if (filePath) {
       await restoreTask(filePath, task);
@@ -40,7 +32,7 @@ export function ArchivedTasksDialog() {
         if (result && result.items.length > 0) {
           setTasks(result.items);
         } else {
-          handleClose();
+          closeArchivedTasksDialog();
         }
       });
     }
@@ -57,27 +49,22 @@ export function ArchivedTasksDialog() {
   }, [filePath, loadDoneFile]);
 
   return (
-    <Dialog
-      maxWidth="sm"
-      scroll="paper"
+    <ResponsiveDialog
       fullWidth
       open={open}
-      onClose={handleClose}
-      TransitionProps={{
-        onExited: cleanupArchivedTasksDialog,
-      }}
+      onClose={closeArchivedTasksDialog}
+      onExited={cleanupArchivedTasksDialog}
     >
-      <DialogTitle>{t("Archived tasks")}</DialogTitle>
-      <DialogContent dividers>
-        <List dense>
+      <ResponsiveDialogTitle>{t("Archived tasks")}</ResponsiveDialogTitle>
+      <ResponsiveDialogContent>
+        <List size="sm">
           {tasks.map((task) => (
             <ListItem
               key={task._id}
-              secondaryAction={
+              endAction={
                 <Tooltip title={t("Restore task")}>
                   <IconButton
                     onClick={() => handleRestore(task)}
-                    edge="end"
                     aria-label="restore"
                   >
                     <RestoreOutlinedIcon />
@@ -85,14 +72,11 @@ export function ArchivedTasksDialog() {
                 </Tooltip>
               }
             >
-              <ListItemText primary={<TaskBody task={task} />} />
+              <TaskBody task={task} />
             </ListItem>
           ))}
         </List>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>{t("Close")}</Button>
-      </DialogActions>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

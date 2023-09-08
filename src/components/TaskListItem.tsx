@@ -29,6 +29,9 @@ const StyledListItem = styled(ListItem, {
   "&:hover .MuiMenuButton-root": {
     visibility: "visible",
   },
+  ".MuiListItem-startAction": {
+    top: "auto",
+  },
 }));
 
 const StyledListItemButton = styled(ListItemButton)({
@@ -80,6 +83,7 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
             ref={checkboxRef}
             onClick={onCheckboxClick}
             checked={task.completed}
+            sx={{ top: 2 }}
             slotProps={{
               input: {
                 tabIndex: -1,

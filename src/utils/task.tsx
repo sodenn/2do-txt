@@ -12,7 +12,7 @@ import {
   todayDate,
 } from "@/utils/date";
 import { generateId } from "@/utils/uuid";
-import { Box } from "@mui/material";
+import { Typography } from "@mui/joy";
 import {
   addBusinessDays,
   addDays,
@@ -183,7 +183,7 @@ function parseTaskBody(
 
 export function useFormatBody() {
   const taskView = useSettingsStore((state) => state.taskView);
-  const chips = taskView === "list";
+  const outlined = taskView === "list";
   const dueDate = taskView === "list";
   const {
     t,
@@ -201,7 +201,7 @@ export function useFormatBody() {
         if (/^@\S+/.test(token)) {
           return (
             <TagBox
-              chip={chips}
+              outlined={outlined}
               completed={task.completed}
               type="context"
               key={index}
@@ -212,7 +212,7 @@ export function useFormatBody() {
         } else if (/^\+\S+/.test(token)) {
           return (
             <TagBox
-              chip={chips}
+              outlined={outlined}
               completed={task.completed}
               type="project"
               key={index}
@@ -236,7 +236,7 @@ export function useFormatBody() {
           return (
             <TagBox
               key={index}
-              chip={chips}
+              outlined={outlined}
               completed={task.completed}
               type="tag"
               tagKey={key}
@@ -252,7 +252,11 @@ export function useFormatBody() {
 
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <PriorityBox chip={chips} completed={task.completed} key={task._id}>
+        <PriorityBox
+          outlined={outlined}
+          completed={task.completed}
+          key={task._id}
+        >
           {task.priority}
         </PriorityBox>
       );
@@ -260,17 +264,18 @@ export function useFormatBody() {
     }
 
     return (
-      <Box
+      <Typography
         component="span"
+        variant="plain"
+        color={task.completed ? "completed" : undefined}
         sx={{
           ...(task.completed && {
             textDecoration: "line-through",
-            color: "text.disabled",
           }),
         }}
       >
         {elements.reduce((prev, curr) => [prev, " ", curr])}
-      </Box>
+      </Typography>
     );
   };
 }
