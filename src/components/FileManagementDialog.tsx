@@ -1,8 +1,17 @@
+import {
+  ResponsiveDialog,
+  ResponsiveDialogActions,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
 import { useSnackbar } from "@/components/Snackbar";
 import { StartEllipsis } from "@/components/StartEllipsis";
 import { writeToClipboard } from "@/native-api/clipboard";
 import { fileExists, getFilename, readFile } from "@/native-api/filesystem";
 import { hasTouchScreen } from "@/native-api/platform";
+import { useCloudFileDialogStore } from "@/stores/cloud-file-dialog-store";
+import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
+import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import {
@@ -15,6 +24,8 @@ import {
 } from "@/utils/CloudStorage";
 import { formatLocalDateTime, parseDate } from "@/utils/date";
 import { getDoneFilePath } from "@/utils/todo-files";
+import { useDialogButtonSize } from "@/utils/useDialogButtonSize";
+import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
 import {
   DndContext,
@@ -37,6 +48,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
@@ -44,10 +57,12 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteForever from "@mui/icons-material/DeleteForever";
 import DownloadIcon from "@mui/icons-material/Download";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import {
   Box,
+  Button,
   CircularProgress,
   Dropdown,
   IconButton,
@@ -61,7 +76,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/joy";
-import { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 type CloudFileRefWithIdentifier = CloudFileRef & WithIdentifier;
@@ -105,7 +120,135 @@ function useShouldDeleteFile() {
   return platform === "web" || platform === "ios" || platform === "android";
 }
 
-export const FileList = memo((props: FileListProps) => {
+export function FileManagementDialog() {
+  const fileManagementDialogOpen = useFileManagementDialogStore(
+    (state) => state.open,
+  );
+  const closeFileManagementDialog = useFileManagementDialogStore(
+    (state) => state.closeFileManagementDialog,
+  );
+  const { t } = useTranslation();
+  const { taskLists } = useTask();
+
+  const handleCloseFile = async () => {
+    if (taskLists.length === 1) {
+      closeFileManagementDialog();
+    }
+  };
+
+  return (
+    <ResponsiveDialog
+      fullWidth
+      open={fileManagementDialogOpen}
+      onClose={closeFileManagementDialog}
+    >
+      <ResponsiveDialogTitle>{t("Files")}</ResponsiveDialogTitle>
+      <ResponsiveDialogContent>
+        <FileList onClose={handleCloseFile} />
+      </ResponsiveDialogContent>
+      <ResponsiveDialogActions>
+        <FileManagementActions />
+      </ResponsiveDialogActions>
+    </ResponsiveDialog>
+  );
+}
+
+function FileManagementActions() {
+  const { t } = useTranslation();
+  const platform = usePlatformStore((state) => state.platform);
+  const { openFileDialog } = useFilePicker();
+  const openFileCreateDialog = useFileCreateDialogStore(
+    (state) => state.openFileCreateDialog,
+  );
+  const closeFileManagementDialog = useFileManagementDialogStore(
+    (state) => state.closeFileManagementDialog,
+  );
+  const { cloudStorages } = useCloudStorage();
+  const openCloudFileDialog = useCloudFileDialogStore(
+    (state) => state.openCloudFileDialog,
+  );
+  const buttonSize = useDialogButtonSize();
+
+  const handleCreateFile = () => {
+    openFileCreateDialog();
+    closeFileManagementDialog();
+  };
+
+  const handleOpenFile = () => {
+    openFileDialog();
+    closeFileManagementDialog();
+  };
+
+  const handleImportFromStorage = (provider: Provider) => {
+    openCloudFileDialog(provider);
+    closeFileManagementDialog();
+  };
+
+  const renderCloudStorageIcon = (provider: Provider) => {
+    const icon = cloudStorageIcons[provider];
+    return React.isValidElement<{ fontSize?: string }>(icon)
+      ? React.cloneElement(icon, {
+          fontSize: "small",
+        })
+      : icon;
+  };
+
+  if (cloudStorages.length === 0) {
+    return (
+      <>
+        <Button size={buttonSize} onClick={handleOpenFile}>
+          {platform === "desktop" ? t("Open") : t("Import")}
+        </Button>
+        <Button size={buttonSize} onClick={handleCreateFile}>
+          {t("Create")}
+        </Button>
+      </>
+    );
+  }
+
+  return (
+    <Dropdown>
+      <MenuButton
+        color="primary"
+        variant="solid"
+        size={buttonSize}
+        aria-label="Choose action"
+        endDecorator={<ArrowDropDown />}
+      >
+        {t("Choose action")}
+      </MenuButton>
+      <Menu placement="bottom-end">
+        <MenuItem onClick={handleCreateFile}>
+          <ListItemDecorator>
+            <AddOutlinedIcon />
+          </ListItemDecorator>
+          {t("Create")}
+        </MenuItem>
+        <MenuItem onClick={handleOpenFile}>
+          <ListItemDecorator>
+            <FolderOpenOutlinedIcon />
+          </ListItemDecorator>
+          {platform === "desktop" ? t("Open") : t("Import")}
+        </MenuItem>
+        {cloudStorages
+          .map((s) => s.provider)
+          .map((provider) => (
+            <MenuItem
+              key={provider}
+              onClick={() => handleImportFromStorage(provider)}
+            >
+              <ListItemDecorator>
+                {renderCloudStorageIcon(provider)}
+              </ListItemDecorator>
+              {t("Cloud storage")}
+            </MenuItem>
+          ))}
+      </Menu>
+    </Dropdown>
+  );
+}
+
+const FileList = memo((props: FileListProps) => {
   const { onClose, ...other } = props;
   const { taskLists, reorderTaskList, downloadTodoFile, closeTodoFile } =
     useTask();
