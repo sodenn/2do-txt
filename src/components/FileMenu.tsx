@@ -83,7 +83,7 @@ export function FileMenu() {
               <ListItemDecorator>
                 <InsertDriveFileOutlinedIcon fontSize="small" />
               </ListItemDecorator>
-              <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
+              <StartEllipsis>{filePath}</StartEllipsis>
             </MenuItem>
           ))}
         {taskLists.length > 0 && (

@@ -21,7 +21,7 @@ export function ShareButton(props: IconButtonProps) {
     <IconButton
       tabIndex={-1}
       aria-label="Share todo.txt"
-      size="md"
+      variant="outlined"
       onClick={handleClick}
       {...props}
     >

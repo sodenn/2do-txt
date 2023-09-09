@@ -24,11 +24,12 @@ export function TaskListHeader(props: TaskListHeaderProps) {
   );
   return (
     <ListItemButton
+      sx={{ mx: 1, p: 1, borderRadius: "sm" }}
       tabIndex={-1}
       onClick={() => setActiveTaskListPath(filePath)}
     >
       <Container>
-        <StartEllipsis variant="h5">{fileName}</StartEllipsis>
+        <StartEllipsis level="title-lg">{fileName}</StartEllipsis>
         <LaunchIcon />
       </Container>
     </ListItemButton>

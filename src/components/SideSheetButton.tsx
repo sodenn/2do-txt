@@ -21,6 +21,7 @@ export function SideSheetButton() {
       tabIndex={-1}
       onClick={toggleSideSheet}
       size="md"
+      variant="outlined"
       aria-label="Toggle menu"
     >
       {(!sideSheetOpen || md) && <MenuIcon />}

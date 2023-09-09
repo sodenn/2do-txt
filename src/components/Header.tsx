@@ -42,8 +42,8 @@ export function Header({ divider = false }: HeaderProps) {
             {taskLists.length > 0 && (
               <SearchBar onExpand={setSearchBarExpanded} />
             )}
-            {taskLists.length > 0 && <AddTaskButton />}
             {showTodoFileDownloadButton && <ShareButton />}
+            {taskLists.length > 0 && <AddTaskButton />}
           </Stack>
         </SafeAreaBox>
         {divider && <Divider />}

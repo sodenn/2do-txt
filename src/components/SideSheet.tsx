@@ -182,14 +182,14 @@ export function SideSheet() {
         <Box sx={{ flex: "none" }}>
           <SaveAreaHeader>
             <TabList sx={{ px: 1 }}>
-              <StyledTab value="filter" aria-label="Filter">
-                {t("Filter")}
-              </StyledTab>
               {!hideFilter && (
-                <StyledTab value="settings" aria-label="Settings">
-                  {t("Settings")}
+                <StyledTab value="filter" aria-label="Filter">
+                  {t("Filter")}
                 </StyledTab>
               )}
+              <StyledTab value="settings" aria-label="Settings">
+                {t("Settings")}
+              </StyledTab>
             </TabList>
           </SaveAreaHeader>
         </Box>
