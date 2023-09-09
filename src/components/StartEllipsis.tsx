@@ -1,4 +1,4 @@
-import { styled, Typography, TypographyProps } from "@mui/material";
+import { styled, Typography, TypographyProps } from "@mui/joy";
 import { PropsWithChildren } from "react";
 
 const Root = styled(Typography)({

@@ -1,5 +1,5 @@
 import { getPreferencesItem } from "@/native-api/preferences";
-import { PaletteMode, useMediaQuery } from "@mui/material";
+import useMediaQuery from "@/utils/useMediaQuery";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";
 
@@ -12,6 +12,8 @@ export interface ThemeStoreData {
 interface ThemeStoreInterface extends ThemeStoreData {
   setThemeMode: (mode: ThemeMode) => void;
 }
+
+type PaletteMode = "light" | "dark";
 
 const getDefaultInitialState = (): ThemeStoreData => ({
   mode: "system",

@@ -16,7 +16,6 @@ import {
   isDoneFilePath,
 } from "@/utils/todo-files";
 import { useArchivedTask } from "@/utils/useArchivedTask";
-import { usePullToRefresh } from "@/utils/usePullToRefresh";
 import { useTask } from "@/utils/useTask";
 import { differenceInMinutes } from "date-fns";
 import { useCallback, useEffect } from "react";
@@ -30,7 +29,7 @@ export function useCloudStorageEffect() {
     requestTokens,
     getCloudFileRef,
     uploadFile,
-    cloudStorages,
+    // cloudStorages,
   } = useCloudStorage();
   const { syncDoneFiles } = useArchivedTask();
   const { loadTodoFile } = useTask();
@@ -140,9 +139,9 @@ export function useCloudStorageEffect() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  usePullToRefresh(
-    syncAllTodoFiles,
-    "#scroll-container",
-    cloudStorages.length === 0 || !top,
-  );
+  // usePullToRefresh(
+  //   syncAllTodoFiles,
+  //   "#scroll-container",
+  //   cloudStorages.length === 0 || !top,
+  // );
 }

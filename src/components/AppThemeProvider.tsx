@@ -3,7 +3,7 @@ import { setPreferencesItem } from "@/native-api/preferences";
 import { hideSplashScreen } from "@/native-api/splash-screen";
 import { setStatusBarStyling } from "@/native-api/status-bar";
 import { ThemeMode, useThemeStore } from "@/stores/theme-store";
-import { extendTheme } from "@mui/joy";
+import { CssBaseline, extendTheme } from "@mui/joy";
 import type { PaletteRange } from "@mui/joy/styles";
 import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy/styles";
 import { PaletteMode, ThemeOptions, useMediaQuery } from "@mui/material";
@@ -270,6 +270,7 @@ export function AppThemeProvider({ children }: PropsWithChildren) {
       defaultMode="system"
     >
       <JoyCssVarsProvider theme={joyTheme} defaultMode="system">
+        <CssBaseline />
         {children}
       </JoyCssVarsProvider>
     </MaterialCssVarsProvider>

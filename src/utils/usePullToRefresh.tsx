@@ -1,5 +1,5 @@
 import { hasTouchScreen } from "@/native-api/platform";
-import { useTheme } from "@mui/material";
+import { useTheme } from "@mui/joy";
 import PullToRefresh from "pulltorefreshjs";
 import { useEffect } from "react";
 import ReactDOMServer from "react-dom/server";
@@ -25,11 +25,11 @@ export function usePullToRefresh(
             <div className="__PREFIX__content">
               <div
                 className="__PREFIX__icon"
-                style={{ color: theme.palette.text.disabled }}
+                style={{ color: theme.palette.neutral.plainDisabledColor }}
               ></div>
               <div
                 className="__PREFIX__text"
-                style={{ color: theme.palette.text.disabled }}
+                style={{ color: theme.palette.neutral.plainDisabledColor }}
               ></div>
             </div>
           </div>,
@@ -45,5 +45,11 @@ export function usePullToRefresh(
     return () => {
       instance.destroy();
     };
-  }, [disable, mainElement, onRefresh, t, theme.palette.text.disabled]);
+  }, [
+    t,
+    disable,
+    mainElement,
+    onRefresh,
+    theme.palette.neutral.plainDisabledColor,
+  ]);
 }

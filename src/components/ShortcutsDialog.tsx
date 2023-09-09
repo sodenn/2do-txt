@@ -1,17 +1,11 @@
 import { Kbd } from "@/components/Kbd";
-import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
 import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
+import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
+import { Table } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function ShortcutsDialog() {
@@ -19,64 +13,61 @@ export function ShortcutsDialog() {
   const { open: shortcutsDialogOpen, closeShortcutsDialog } =
     useShortcutsDialogStore();
   return (
-    <Dialog
-      maxWidth="sm"
+    <ResponsiveDialog
       fullWidth
+      fullScreen={false}
       open={shortcutsDialogOpen}
       onClose={closeShortcutsDialog}
     >
-      <DialogTitle>{t("Keyboard Shortcuts")}</DialogTitle>
-      <DialogContent>
+      <ResponsiveDialogTitle>{t("Keyboard Shortcuts")}</ResponsiveDialogTitle>
+      <ResponsiveDialogContent>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>{t("Key")}</TableCell>
-              <TableCell>{t("Description")}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell>
+          <thead>
+            <tr>
+              <td>{t("Key")}</td>
+              <td>{t("Description")}</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
                 <Kbd>F</Kbd>
-              </TableCell>
-              <TableCell>{t("F")}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
+              </td>
+              <td>{t("F")}</td>
+            </tr>
+            <tr>
+              <td>
                 <Kbd>X</Kbd>
-              </TableCell>
-              <TableCell>{t("X")}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
+              </td>
+              <td>{t("X")}</td>
+            </tr>
+            <tr>
+              <td>
                 <Kbd>M</Kbd>
-              </TableCell>
-              <TableCell>{t("M")}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
+              </td>
+              <td>{t("M")}</td>
+            </tr>
+            <tr>
+              <td>
                 <Kbd>N</Kbd>
-              </TableCell>
-              <TableCell>{t("N")}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
+              </td>
+              <td>{t("N")}</td>
+            </tr>
+            <tr>
+              <td>
                 <Kbd>E</Kbd>
-              </TableCell>
-              <TableCell>{t("E")}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
+              </td>
+              <td>{t("E")}</td>
+            </tr>
+            <tr>
+              <td>
                 <Kbd>D</Kbd>
-              </TableCell>
-              <TableCell>{t("D")}</TableCell>
-            </TableRow>
-          </TableBody>
+              </td>
+              <td>{t("D")}</td>
+            </tr>
+          </tbody>
         </Table>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={closeShortcutsDialog}>{t("Close")}</Button>
-      </DialogActions>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }
