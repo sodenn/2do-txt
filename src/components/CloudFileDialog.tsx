@@ -4,6 +4,7 @@ import {
   ResponsiveDialogContent,
   ResponsiveDialogTitle,
 } from "@/components/ResponsiveDialog";
+import { useSnackbar } from "@/components/Snackbar";
 import { getDirname, join, selectFolder } from "@/native-api/filesystem";
 import { useCloudFileDialogStore } from "@/stores/cloud-file-dialog-store";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
@@ -37,7 +38,6 @@ import {
   ListItemDecorator,
   Typography,
 } from "@mui/joy";
-import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -87,7 +87,7 @@ export function CloudFileDialog() {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListResult | undefined>();
-  const { enqueueSnackbar } = useSnackbar();
+  const { openSnackbar } = useSnackbar();
 
   const handleClose = () => {
     setLoading(false);
@@ -136,10 +136,12 @@ export function CloudFileDialog() {
       await saveDoneFile(localDoneFilePath, doneFileContent);
       if (archiveMode === "no-archiving") {
         setArchiveMode("manual");
-        enqueueSnackbar(
-          t("Task archiving was turned on because a done.txt file was found"),
-          { variant: "info" },
-        );
+        openSnackbar({
+          color: "primary",
+          message: t(
+            "Task archiving was turned on because a done.txt file was found",
+          ),
+        });
       }
     }
     setActiveTaskListPath(localFilePath);
@@ -194,7 +196,7 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
   const { provider, onSelect, onFilesChange, onClose } = props;
   const { t } = useTranslation();
   const { taskLists } = useTask();
-  const { enqueueSnackbar } = useSnackbar();
+  const { openSnackbar } = useSnackbar();
   const { list, getCloudFileRefs } = useCloudStorage();
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListResult | undefined>();
@@ -242,21 +244,21 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
           })
           .catch((e: any) => {
             onClose();
-            enqueueSnackbar(
-              <span>
+            openSnackbar({
+              color: "warning",
+              message: (
                 <Trans
                   i18nKey="Error connecting with cloud storage"
                   values={{ provider, message: e.message }}
                   components={{ code: <code style={{ marginLeft: 5 }} /> }}
                 />
-              </span>,
-              { variant: "warning" },
-            );
+              ),
+            });
           })
           .finally(() => setLoading(false));
       }
     },
-    [provider, currentPath, enqueueSnackbar, list, onClose, onFilesChange],
+    [provider, currentPath, openSnackbar, list, onClose, onFilesChange],
   );
 
   const handleLoadMoreItems = (path = currentPath) => {

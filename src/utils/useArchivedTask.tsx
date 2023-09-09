@@ -1,3 +1,4 @@
+import { SnackbarActionButton, useSnackbar } from "@/components/Snackbar";
 import {
   deleteFile,
   getFilename,
@@ -10,8 +11,6 @@ import { useCloudStorage } from "@/utils/CloudStorage";
 import { Task } from "@/utils/task";
 import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
 import { getDoneFilePath } from "@/utils/todo-files";
-import { Button } from "@mui/material";
-import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -26,7 +25,7 @@ interface ArchiveTaskOptions {
 }
 
 export function useArchivedTask() {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { openSnackbar, closeSnackbar } = useSnackbar();
   const openArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.openArchivedTasksDialog,
   );
@@ -107,10 +106,12 @@ export function useArchivedTask() {
 
       if (updateArchiveMode.some((i) => i === "enable")) {
         setArchiveMode("manual");
-        enqueueSnackbar(
-          t("Task archiving was turned on because a done.txt file was found"),
-          { variant: "info" },
-        );
+        openSnackbar({
+          color: "primary",
+          message: t(
+            "Task archiving was turned on because a done.txt file was found",
+          ),
+        });
       }
 
       if (updateArchiveMode.every((i) => i === "disable")) {
@@ -129,7 +130,7 @@ export function useArchivedTask() {
       archiveMode,
       downloadFile,
       setArchiveMode,
-      enqueueSnackbar,
+      openSnackbar,
       syncFile,
       t,
     ],
@@ -223,36 +224,26 @@ export function useArchivedTask() {
 
       await saveDoneFile(filePath, text);
 
-      const key = enqueueSnackbar(
-        t("Task archived", {
+      openSnackbar({
+        color: "success",
+        message: t("Task archived", {
           fileName: getFilename(filePath),
         }),
-        {
-          variant: "success",
-          action: (
-            <Button
-              color="inherit"
-              onClick={() => {
-                openArchivedTasksDialog({
-                  filePath,
-                });
-                closeSnackbar(key);
-              }}
-            >
-              {t("Archived tasks")}
-            </Button>
-          ),
-        },
-      );
+        renderAction: (closeSnackbar) => (
+          <SnackbarActionButton
+            onClick={() => {
+              openArchivedTasksDialog({
+                filePath,
+              });
+              closeSnackbar();
+            }}
+          >
+            {t("Archived tasks")}
+          </SnackbarActionButton>
+        ),
+      });
     },
-    [
-      closeSnackbar,
-      enqueueSnackbar,
-      loadDoneFile,
-      saveDoneFile,
-      openArchivedTasksDialog,
-      t,
-    ],
+    [openSnackbar, loadDoneFile, saveDoneFile, openArchivedTasksDialog, t],
   );
 
   const archiveTasks = useCallback(
@@ -291,17 +282,19 @@ export function useArchivedTask() {
 
           const doneFilePath = getDoneFilePath(filePath);
           if (doneFilePath && newCompletedTasks.length > 0) {
-            enqueueSnackbar(
-              t("All completed tasks have been archived", { doneFilePath }),
-              { variant: "success" },
-            );
+            openSnackbar({
+              color: "success",
+              message: t("All completed tasks have been archived", {
+                doneFilePath,
+              }),
+            });
           }
 
           return newTaskList;
         }),
       );
     },
-    [enqueueSnackbar, loadDoneFile, saveDoneFile, t],
+    [openSnackbar, loadDoneFile, saveDoneFile, t],
   );
 
   const restoreArchivedTasks = useCallback(
@@ -330,17 +323,19 @@ export function useArchivedTask() {
 
           await deleteFile(doneFilePath);
 
-          enqueueSnackbar(
-            t("All completed tasks have been restored", { doneFilePath }),
-            { variant: "success" },
-          );
+          openSnackbar({
+            color: "success",
+            message: t("All completed tasks have been restored", {
+              doneFilePath,
+            }),
+          });
 
           deleteCloudFile(doneFilePath);
           return newTaskList;
         }),
       );
     },
-    [deleteCloudFile, enqueueSnackbar, loadDoneFile, t],
+    [deleteCloudFile, openSnackbar, loadDoneFile, t],
   );
 
   return {

@@ -1,11 +1,11 @@
 import { Fade } from "@/components/Fade";
+import { useSnackbar } from "@/components/Snackbar";
 import { useFilterStore } from "@/stores/filter-store";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
 import { Card, styled, Typography } from "@mui/joy";
 import { listen } from "@tauri-apps/api/event";
-import { useSnackbar } from "notistack";
 import {
   ChangeEvent,
   PropsWithChildren,
@@ -57,7 +57,7 @@ function WebFilePicker({ children }: PropsWithChildren) {
   const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath,
   );
-  const { enqueueSnackbar } = useSnackbar();
+  const { openSnackbar } = useSnackbar();
   const { createNewTodoFile, taskLists } = useTask();
   const platform = usePlatformStore((state) => state.platform);
 
@@ -98,8 +98,9 @@ function WebFilePicker({ children }: PropsWithChildren) {
 
         const filePath = await createNewTodoFile(file.name, content).catch(
           () => {
-            enqueueSnackbar(t("The file could not be opened"), {
-              variant: "error",
+            openSnackbar({
+              color: "danger",
+              message: t("The file could not be opened"),
             });
           },
         );
@@ -110,8 +111,9 @@ function WebFilePicker({ children }: PropsWithChildren) {
       };
 
       fileReader.onerror = () => {
-        enqueueSnackbar(t("The file could not be opened"), {
-          variant: "error",
+        openSnackbar({
+          color: "danger",
+          message: t("The file could not be opened"),
         });
       };
 
@@ -119,7 +121,7 @@ function WebFilePicker({ children }: PropsWithChildren) {
     },
     [
       createNewTodoFile,
-      enqueueSnackbar,
+      openSnackbar,
       setActiveTaskListPath,
       taskLists.length,
       t,

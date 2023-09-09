@@ -1,3 +1,4 @@
+import { useSnackbar } from "@/components/Snackbar";
 import { StartEllipsis } from "@/components/StartEllipsis";
 import { writeToClipboard } from "@/native-api/clipboard";
 import { fileExists, getFilename, readFile } from "@/native-api/filesystem";
@@ -60,7 +61,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/joy";
-import { useSnackbar } from "notistack";
 import { memo, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -253,7 +253,7 @@ function FileListItem(props: FileListItemProps) {
       </ListItemDecorator>
       {!showClosePrompt && (
         <Box sx={{ overflow: "hidden" }}>
-          <StartEllipsis variant="inherit">{filePath}</StartEllipsis>
+          <StartEllipsis>{filePath}</StartEllipsis>
           {cloudFileRef && (
             <Stack spacing={1} direction="row" alignItems="center">
               <SyncOutlinedIcon fontSize="inherit" />
@@ -315,7 +315,7 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
   const { t } = useTranslation();
   const { cloudStorages, cloudStorageEnabled, uploadFile, unlinkCloudFile } =
     useCloudStorage();
-  const { enqueueSnackbar } = useSnackbar();
+  const { openSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
 
   const enableCloudSync = async () => {
@@ -344,18 +344,16 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
     } catch (e: any) {
       if (!(e instanceof CloudStorageError && e.type === "Unauthorized")) {
         console.debug(e);
-        enqueueSnackbar(
-          <span>
+        openSnackbar({
+          color: "warning",
+          message: (
             <Trans
               i18nKey="Error syncing file to cloud storage"
               values={{ provider, message: e.message }}
               components={{ code: <code style={{ marginLeft: 5 }} /> }}
             />
-          </span>,
-          {
-            variant: "warning",
-          },
-        );
+          ),
+        });
       }
     } finally {
       setLoading(false);
@@ -402,7 +400,7 @@ function FileMenu(props: FileMenuProps) {
   const touchScreen = hasTouchScreen();
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
-  const { enqueueSnackbar } = useSnackbar();
+  const { openSnackbar } = useSnackbar();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
   const deleteFile = useShouldDeleteFile();
   const providers = useMemo(() => {
@@ -421,10 +419,13 @@ function FileMenu(props: FileMenuProps) {
     const promise = readFile(filePath);
     writeToClipboard(promise)
       .then(() =>
-        enqueueSnackbar(t("Copied to clipboard"), { variant: "info" }),
+        openSnackbar({ color: "primary", message: t("Copied to clipboard") }),
       )
       .catch(() =>
-        enqueueSnackbar(t("Copy to clipboard failed"), { variant: "error" }),
+        openSnackbar({
+          color: "danger",
+          message: t("Copy to clipboard failed"),
+        }),
       )
       .finally();
   };

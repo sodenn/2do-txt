@@ -1,7 +1,6 @@
 import { AppThemeProvider } from "@/components/AppThemeProvider";
+import { SnackbarProvider } from "@/components/Snackbar";
 import { LoaderData, StoreProvider } from "@/components/StoreProvider";
-import { Grow } from "@mui/material";
-import { SnackbarProvider } from "notistack";
 import { PropsWithChildren } from "react";
 import { useLoaderData } from "react-router-dom";
 
@@ -18,17 +17,7 @@ export function ProviderBundle({ children }: PropsWithChildren) {
       network={loaderData.network}
     >
       <AppThemeProvider>
-        <SnackbarProvider
-          maxSnack={3}
-          preventDuplicate={true}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          TransitionComponent={Grow}
-        >
-          {children}
-        </SnackbarProvider>
+        <SnackbarProvider>{children}</SnackbarProvider>
       </AppThemeProvider>
     </StoreProvider>
   );

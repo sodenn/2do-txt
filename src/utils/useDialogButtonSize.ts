@@ -1,6 +1,6 @@
-import { useFullScreenDialog } from "@/utils/useFullScreenDialog";
+import { useMobileScreen } from "@/utils/useMobileScreen";
 
 export function useDialogButtonSize() {
-  const fullScreen = useFullScreenDialog();
-  return fullScreen ? "sm" : "md";
+  const mobileScreen = useMobileScreen();
+  return mobileScreen ? "sm" : "md";
 }

@@ -88,7 +88,6 @@
     "lexical": "0.12.0",
     "lexical-beautiful-mentions": "0.1.15",
     "lodash": "4.17.21",
-    "notistack": "3.0.1",
     "pulltorefreshjs": "0.1.22",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -96,6 +95,7 @@
     "react-i18next": "13.2.1",
     "react-router-dom": "6.15.0",
     "react-transition-group": "^4.4.5",
+    "sonner": "0.7.1",
     "zustand": "4.4.1"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { useFullScreenDialog } from "@/utils/useFullScreenDialog";
+import { useMobileScreen } from "@/utils/useMobileScreen";
 import { Box, Stack } from "@mui/joy";
 import Modal, { ModalProps } from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
@@ -95,15 +95,15 @@ const dialogStyles: DialogStyles = {
 };
 
 export function ResponsiveDialogTitle({ children }: PropsWithChildren) {
-  const fullScreen = useFullScreenDialog();
+  const mobileScreen = useMobileScreen();
   return (
     <Typography
       fontSize="lg"
       fontWeight="lg"
       sx={{
         flex: 1,
-        marginLeft: fullScreen ? "35px" : undefined,
-        marginRight: !fullScreen ? "35px" : undefined,
+        marginLeft: mobileScreen ? "35px" : undefined,
+        marginRight: !mobileScreen ? "35px" : undefined,
         gridArea: "title",
       }}
     >
@@ -198,9 +198,9 @@ export function ResponsiveDialog(
     onEntered,
     onEnter,
   } = props;
-  const _fullScreen = useFullScreenDialog();
+  const mobileScreen = useMobileScreen();
   const fullScreen =
-    typeof props.fullScreen === "boolean" ? props.fullScreen : _fullScreen;
+    typeof props.fullScreen === "boolean" ? props.fullScreen : mobileScreen;
   const [renderModal, setRenderModal] = useState(false);
 
   const styles = fullScreen ? dialogStyles.slide : dialogStyles.fade;
