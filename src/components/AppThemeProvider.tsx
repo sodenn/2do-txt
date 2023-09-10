@@ -7,12 +7,7 @@ import { CssBaseline, extendTheme } from "@mui/joy";
 import type { PaletteRange } from "@mui/joy/styles";
 import { CssVarsProvider } from "@mui/joy/styles";
 import { useColorScheme } from "@mui/joy/styles/CssVarsProvider";
-import {
-  THEME_ID as MATERIAL_THEME_ID,
-  Experimental_CssVarsProvider as MaterialCssVarsProvider,
-  experimental_extendTheme as materialExtendTheme,
-} from "@mui/material/styles";
-import { PropsWithChildren, useEffect, useMemo, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 
 declare module "@mui/joy/styles" {
   interface ColorPalettePropOverrides {
@@ -203,7 +198,6 @@ function ApplyTheme() {
 
 export function AppThemeProvider({ children }: PropsWithChildren) {
   const [mounted, setMounted] = useState(false);
-  const materialTheme = useMemo(() => materialExtendTheme(), []);
   const mode = useThemeStore((state) => state.mode);
 
   useEffect(() => {
@@ -215,15 +209,10 @@ export function AppThemeProvider({ children }: PropsWithChildren) {
   }
 
   return (
-    <MaterialCssVarsProvider
-      theme={{ [MATERIAL_THEME_ID]: materialTheme }}
-      defaultMode="system"
-    >
-      <CssVarsProvider theme={theme} defaultMode={mode} disableNestedContext>
-        <CssBaseline />
-        <ApplyTheme />
-        {children}
-      </CssVarsProvider>
-    </MaterialCssVarsProvider>
+    <CssVarsProvider theme={theme} defaultMode={mode} disableNestedContext>
+      <CssBaseline />
+      <ApplyTheme />
+      {children}
+    </CssVarsProvider>
   );
 }

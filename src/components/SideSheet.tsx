@@ -17,10 +17,17 @@ import {
   useTheme,
 } from "@mui/joy";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import {
+  THEME_ID as MATERIAL_THEME_ID,
+  Experimental_CssVarsProvider as MaterialCssVarsProvider,
+  experimental_extendTheme as materialExtendTheme,
+} from "@mui/material/styles";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const drawerWidth = 320;
+
+const materialTheme = materialExtendTheme();
 
 export const HeaderContainer = styled("div", {
   shouldForwardProp: (prop) => prop !== "open",
@@ -145,60 +152,66 @@ export function SideSheet() {
   }, [hideFilter]);
 
   return (
-    <SwipeableDrawer
-      disableSwipeToOpen={platform === "web"}
-      data-shortcut="m"
-      data-shortcut-ignore={!matches}
-      data-testid="Menu"
-      aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
-      anchor="left"
-      variant={matches ? "persistent" : undefined}
-      open={sideSheetOpen}
-      sx={{
-        "& .MuiDrawer-paper": {
-          backgroundImage: "unset",
-          boxSizing: "border-box",
-          ...(!matches && {
-            width: drawerWidth,
-          }),
-        },
-        ...(matches && {
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-          },
-        }),
-      }}
-      onOpen={openSideSheet}
-      onClose={closeSideSheet}
+    <MaterialCssVarsProvider
+      theme={{ [MATERIAL_THEME_ID]: materialTheme }}
+      defaultMode="system"
     >
-      <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
-        <Box sx={{ flex: "none" }}>
-          <SaveAreaHeader>
-            <TabList sx={{ px: 1, height: 57 }}>
-              {!hideFilter && (
-                <Tab value="filter" aria-label="Filter">
-                  {t("Filter")}
+      <SwipeableDrawer
+        disableSwipeToOpen={platform === "web"}
+        data-shortcut="m"
+        data-shortcut-ignore={!matches}
+        data-testid="Menu"
+        aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
+        anchor="left"
+        variant={matches ? "persistent" : undefined}
+        open={sideSheetOpen}
+        sx={{
+          "& .MuiDrawer-paper": {
+            backgroundImage: "unset",
+            boxSizing: "border-box",
+            ...(!matches && {
+              width: drawerWidth,
+            }),
+          },
+          ...(matches && {
+            width: drawerWidth,
+            flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              borderRight: "1px solid var(--joy-palette-neutral-300)",
+            },
+          }),
+        }}
+        onOpen={openSideSheet}
+        onClose={closeSideSheet}
+      >
+        <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
+          <Box sx={{ flex: "none" }}>
+            <SaveAreaHeader>
+              <TabList sx={{ px: 1, height: 57 }}>
+                {!hideFilter && (
+                  <Tab value="filter" aria-label="Filter">
+                    {t("Filter")}
+                  </Tab>
+                )}
+                <Tab value="settings" aria-label="Settings">
+                  {t("Settings")}
                 </Tab>
-              )}
-              <Tab value="settings" aria-label="Settings">
-                {t("Settings")}
-              </Tab>
-            </TabList>
-          </SaveAreaHeader>
-        </Box>
-        <Box sx={{ overflowY: "auto", flex: "auto" }}>
-          <SaveAreaContent>
-            <TabPanel value="filter">
-              <Filter />
-            </TabPanel>
-            <TabPanel value="settings">
-              <Settings />
-            </TabPanel>
-          </SaveAreaContent>
-        </Box>
-      </Tabs>
-    </SwipeableDrawer>
+              </TabList>
+            </SaveAreaHeader>
+          </Box>
+          <Box sx={{ overflowY: "auto", flex: "auto" }}>
+            <SaveAreaContent>
+              <TabPanel value="filter">
+                <Filter />
+              </TabPanel>
+              <TabPanel value="settings">
+                <Settings />
+              </TabPanel>
+            </SaveAreaContent>
+          </Box>
+        </Tabs>
+      </SwipeableDrawer>
+    </MaterialCssVarsProvider>
   );
 }
