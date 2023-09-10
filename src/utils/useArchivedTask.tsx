@@ -25,7 +25,7 @@ interface ArchiveTaskOptions {
 }
 
 export function useArchivedTask() {
-  const { openSnackbar, closeSnackbar } = useSnackbar();
+  const { openSnackbar } = useSnackbar();
   const openArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.openArchivedTasksDialog,
   );

@@ -1,4 +1,3 @@
-import { css } from "@emotion/css";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -48,6 +47,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import "./Editor.css";
 
 interface EditorContextProps {
   initialValue: string;
@@ -64,88 +64,19 @@ interface EditorProps
   placeholder?: string;
 }
 
-const mentionStyle = css`
-  padding: 0 4px;
-  margin: 0 1px;
-  vertical-align: baseline;
-  display: inline-block;
-  word-break: break-word;
-  user-select: none;
-  outline: none;
-  line-height: 22px;
-  cursor: pointer;
-  border-radius: var(--joy-radius-sm);
-  border-width: var(--variant-borderWidth);
-  border-style: solid;
-`;
-
-const mentionStyleFocused = css`
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  --shadow-color: #111827;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  box-shadow: var(--shadow, 0 0 #0000), var(--shadow, 0 0 #0000), var(--shadow);
-`;
-
-const taskContextStyle = css`
-  --joy-palette-success-outlinedBorder: var(--joy-palette-success-700, #0a470a);
-  color: var(
-    --joy-palette-success-outlinedColor,
-    var(--joy-palette-success-500, #1f7a1f)
-  );
-  border-color: var(
-    --joy-palette-success-outlinedBorder,
-    var(--joy-palette-success-300, #a1e8a1)
-  );
-`;
-const taskProjectStyle = css`
-  color: var(
-    --joy-palette-primary-outlinedColor,
-    var(--joy-palette-primary-500, #0b6bcb)
-  );
-  border-color: var(
-    --joy-palette-primary-outlinedBorder,
-    var(--joy-palette-primary-300, #97c3f0)
-  );
-`;
-const taskDudDateStyle = css`
-  color: var(
-    --joy-palette-warning-outlinedColor,
-    var(--joy-palette-warning-500, #9a5b13)
-  );
-  border-color: var(
-    --joy-palette-warning-outlinedBorder,
-    var(--joy-palette-warning-300, #f3c896)
-  );
-`;
-const taskTagStyle = css`
-  color: var(
-    --joy-palette-neutral-outlinedColor,
-    var(--joy-palette-neutral-700, #32383e)
-  );
-  border-color: var(
-    --joy-palette-neutral-outlinedBorder,
-    var(--joy-palette-neutral-300, #cdd7e1)
-  );
-`;
-
-const menuAnchorStyle = css`
-  z-index: 1300;
-`;
-
 type Trigger = "@" | "\\+" | "due:" | "\\w+:";
 
 const styleMap: Record<Trigger, string> = {
-  "@": taskContextStyle,
-  "\\+": taskProjectStyle,
-  "due:": taskDudDateStyle,
-  "\\w+:": taskTagStyle,
+  "@": "Editor-mention Editor-context",
+  "\\+": "Editor-mention Editor-project",
+  "due:": "Editor-mention Editor-due",
+  "\\w+:": "Editor-mention Editor-tag",
 } as const;
 
 function getMentionStyle(trigger: Trigger) {
   return {
-    [trigger]: styleMap[trigger] + " " + mentionStyle,
-    [trigger + "Focused"]: mentionStyleFocused,
+    [trigger]: styleMap[trigger],
+    [trigger + "Focused"]: "Editor-focused",
   };
 }
 
@@ -260,7 +191,9 @@ function setEditorState(initialValue: string, triggers: string[]) {
   };
 }
 
-const Textbox = styled(Box)<{ focused?: boolean }>(({ theme, focused }) => ({
+const Textbox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "focused",
+})<{ focused?: boolean }>(({ theme, focused }) => ({
   "--Input-focused": "0",
   "--Input-focusedThickness": "var(--joy-focus-thickness)",
   "--Input-focusedHighlight": "var(--joy-palette-primary-500)",
@@ -398,7 +331,7 @@ export function Editor(props: EditorProps) {
           creatable
           insertOnBlur
           allowSpaces={false}
-          menuAnchorClassName={menuAnchorStyle}
+          menuAnchorClassName="Editor-mention-anchor"
           onMenuOpen={handleMentionsMenuOpen}
           onMenuClose={handleMentionsMenuClose}
         />

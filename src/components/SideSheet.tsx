@@ -1,4 +1,5 @@
 import { Filter } from "@/components/Filter";
+import { MaterialTheme } from "@/components/MaterialTheme";
 import { Settings } from "@/components/Settings";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useScrollingStore } from "@/stores/scrolling-store";
@@ -17,17 +18,10 @@ import {
   useTheme,
 } from "@mui/joy";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
-import {
-  THEME_ID as MATERIAL_THEME_ID,
-  Experimental_CssVarsProvider as MaterialCssVarsProvider,
-  experimental_extendTheme as materialExtendTheme,
-} from "@mui/material/styles";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const drawerWidth = 320;
-
-const materialTheme = materialExtendTheme();
 
 export const HeaderContainer = styled("div", {
   shouldForwardProp: (prop) => prop !== "open",
@@ -152,10 +146,7 @@ export function SideSheet() {
   }, [hideFilter]);
 
   return (
-    <MaterialCssVarsProvider
-      theme={{ [MATERIAL_THEME_ID]: materialTheme }}
-      defaultMode="system"
-    >
+    <MaterialTheme>
       <SwipeableDrawer
         disableSwipeToOpen={platform === "web"}
         data-shortcut="m"
@@ -212,6 +203,6 @@ export function SideSheet() {
           </Box>
         </Tabs>
       </SwipeableDrawer>
-    </MaterialCssVarsProvider>
+    </MaterialTheme>
   );
 }
