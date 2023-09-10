@@ -74,10 +74,6 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
       <FormControl sx={{ flex: 1 }}>
         <FormLabel>{t("Recurrence")}</FormLabel>
         <Select
-          //labelId="recurrence-select"
-          //aria-label="Select unit"
-          //displayEmpty
-          //input={<OutlinedInput label={t("Recurrence")} role="combobox" />}
           value={unit}
           onChange={(_, value) => handleChangeUnit(value)}
           slotProps={{

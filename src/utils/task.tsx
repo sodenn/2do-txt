@@ -272,6 +272,7 @@ export function useFormatBody() {
           ...(task.completed && {
             textDecoration: "line-through",
           }),
+          fontSize: "inherit",
         }}
       >
         {elements.reduce((prev, curr) => [prev, " ", curr])}

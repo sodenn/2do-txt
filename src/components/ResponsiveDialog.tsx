@@ -102,8 +102,9 @@ export function ResponsiveDialogTitle({ children }: PropsWithChildren) {
       fontWeight="lg"
       sx={{
         flex: 1,
-        marginLeft: mobileScreen ? "35px" : undefined,
-        marginRight: !mobileScreen ? "35px" : undefined,
+        pt: "20px",
+        pl: mobileScreen ? "55px" : "20px",
+        pr: !mobileScreen ? "55px" : undefined,
         gridArea: "title",
       }}
     >
@@ -113,10 +114,17 @@ export function ResponsiveDialogTitle({ children }: PropsWithChildren) {
 }
 
 export function ResponsiveDialogContent(props: PropsWithChildren) {
+  const mobileScreen = useMobileScreen();
   return (
     <Box
       sx={{
+        overflowY: "auto",
+        overflowX: "hidden",
         gridArea: "content",
+        px: "20px",
+        ...(mobileScreen && {
+          height: "100%",
+        }),
       }}
     >
       {props.children}
@@ -125,6 +133,7 @@ export function ResponsiveDialogContent(props: PropsWithChildren) {
 }
 
 export function ResponsiveDialogActions({ children }: PropsWithChildren) {
+  const mobileScreen = useMobileScreen();
   return (
     <Stack
       direction="row"
@@ -132,8 +141,16 @@ export function ResponsiveDialogActions({ children }: PropsWithChildren) {
       justifyContent="end"
       sx={{
         gridArea: "actions",
-        position: "relative",
-        top: "-3px",
+        ...(!mobileScreen && {
+          px: "20px",
+          pb: "20px",
+        }),
+        ...(mobileScreen && {
+          position: "relative",
+          top: "-3px", // align with modal close button
+          pt: "20px",
+          pr: "20px",
+        }),
       }}
     >
       {children}
@@ -145,6 +162,8 @@ function CenterLayout({ children }: PropsWithChildren) {
   return (
     <Box
       sx={{
+        height: "100%",
+        overflow: "hidden",
         display: "grid",
         gridTemplateColumns: "1fr",
         gridTemplateRows: "auto 1fr auto",
@@ -153,8 +172,6 @@ function CenterLayout({ children }: PropsWithChildren) {
           "content"
           "actions"
         `,
-        position: "relative",
-        top: "-4px",
         gap: 2,
       }}
     >
@@ -167,17 +184,18 @@ function FullScreenLayout({ children }: PropsWithChildren) {
   return (
     <Box
       sx={{
+        height: "100%",
         display: "grid",
         gridTemplateColumns: "1fr auto",
-        gridTemplateRows: "1fr auto",
+        gridTemplateRows: "auto 1fr",
         gridTemplateAreas: `
           "title actions"
           "content content"
         `,
         alignItems: "start",
         position: "relative",
-        top: "-4px",
-        gap: 2,
+        top: "-4px", // align with modal close button
+        gap: 1,
       }}
     >
       {children}
@@ -246,6 +264,7 @@ export function ResponsiveDialog(
           <ModalDialog
             layout={fullScreen ? "fullscreen" : "center"}
             sx={{
+              p: 0, // define padding on title, content and action instead
               // @ts-ignore
               ...(!fullScreen && {
                 width: fullWidth ? "100%" : "unset",

@@ -20,6 +20,7 @@ export function PriorityBox({
         fontWeight: "bold",
         display: "inline",
         borderRadius: "sm",
+        py: 0, // prevent overlapping of tags in case of multiline text
         ...(completed && {
           p: 0,
         }),

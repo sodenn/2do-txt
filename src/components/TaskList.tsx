@@ -52,14 +52,15 @@ export const TaskList = memo((props: TaskListProps) => {
       {showHeader && <TaskListHeader fileName={fileName} filePath={filePath} />}
       {!hasItems && (
         <Typography
-          sx={{ mt: 1, mx: 2, mb: 3, fontStyle: "italic" }}
+          sx={{ pt: 1, px: 2, pb: 3 }}
+          level="body-md"
           color="neutral"
         >
           {t("No tasks")}
         </Typography>
       )}
       {hasItems && (
-        <List aria-label="Task list" sx={{ pl: { xs: 1 } }}>
+        <List aria-label="Task list" sx={{ pl: { xs: 1, sm: 0 } }}>
           {taskGroups.map((group) => (
             <ListItem nested key={group.label}>
               {group.label && <TaskListSubheader title={group.label} />}

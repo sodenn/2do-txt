@@ -8,7 +8,6 @@ import {
   addBecomeActiveListener,
   removeAllBecomeActiveListeners,
 } from "@/native-api/platform";
-import { useScrollingStore } from "@/stores/scrolling-store";
 import { taskLoader } from "@/stores/task-state";
 import { parseDate } from "@/utils/date";
 import {
@@ -33,7 +32,7 @@ export function useCloudStorageEffect() {
   } = useCloudStorage();
   const { syncDoneFiles } = useArchivedTask();
   const { loadTodoFile } = useTask();
-  const top = useScrollingStore((state) => state.top);
+  // const top = useScrollingStore((state) => state.top);
 
   const reloadTodoFile = useCallback(
     async (path: string, content?: string) => {

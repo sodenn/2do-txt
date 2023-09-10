@@ -10,6 +10,7 @@ import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { formatDate, todayDate } from "@/utils/date";
 import { Task } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
+import { useDialogButtonSize } from "@/utils/useDialogButtonSize";
 import { useTask } from "@/utils/useTask";
 import { Button } from "@mui/joy";
 import { ModalProps } from "@mui/joy/Modal";
@@ -32,6 +33,7 @@ export function TaskDialog() {
     projects: commonProjects,
     tags: commonTags,
   } = useTask();
+  const buttonSize = useDialogButtonSize();
   const closeTaskDialog = useTaskDialogStore((state) => state.closeTaskDialog);
   const cleanupTaskDialog = useTaskDialogStore(
     (state) => state.cleanupTaskDialog,
@@ -135,6 +137,7 @@ export function TaskDialog() {
       </ResponsiveDialogContent>
       <ResponsiveDialogActions>
         <Button
+          size={buttonSize}
           aria-label="Save task"
           disabled={formDisabled}
           onClick={handleSave}

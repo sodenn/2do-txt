@@ -156,7 +156,7 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   return (
-    <Grid spacing={1} container>
+    <Grid spacing={1} container sx={{ my: 0 }}>
       <Grid xs={12}>
         <Editor
           label={t("Description")}
@@ -177,7 +177,6 @@ function TaskGrid(props: TaskGridProps) {
               fullWidth
               variant="outlined"
               color="primary"
-              size="lg"
               onClick={() => openMentionMenu({ trigger: "@" })}
             >
               {t("@Context")}
@@ -186,7 +185,6 @@ function TaskGrid(props: TaskGridProps) {
               fullWidth
               variant="outlined"
               color="primary"
-              size="lg"
               onClick={() => openMentionMenu({ trigger: "+" })}
             >
               {t("+Project")}

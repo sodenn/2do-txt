@@ -475,10 +475,7 @@ export function TaskTimeline(props: TaskTimelineProps) {
     searchTerm
   ) {
     return (
-      <Typography
-        sx={{ mt: 1, mx: 2, mb: 3, fontStyle: "italic" }}
-        color="secondary"
-      >
+      <Typography sx={{ pt: 1, px: 2, pb: 3 }} level="body-md" color="neutral">
         {t("No tasks found")}
       </Typography>
     );

@@ -69,7 +69,7 @@ const Main = styled("main", {
   },
 }));
 
-const SaveAreaHeader = styled("div")({
+const SaveTabList = styled(TabList)({
   paddingTop: "env(safe-area-inset-top)",
   paddingLeft: "env(safe-area-inset-left)",
 });
@@ -178,18 +178,16 @@ export function SideSheet() {
       >
         <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
           <Box sx={{ flex: "none" }}>
-            <SaveAreaHeader>
-              <TabList sx={{ px: 1, height: 57 }}>
-                {!hideFilter && (
-                  <Tab value="filter" aria-label="Filter">
-                    {t("Filter")}
-                  </Tab>
-                )}
-                <Tab value="settings" aria-label="Settings">
-                  {t("Settings")}
+            <SaveTabList sx={{ height: 57 }}>
+              {!hideFilter && (
+                <Tab value="filter" aria-label="Filter">
+                  {t("Filter")}
                 </Tab>
-              </TabList>
-            </SaveAreaHeader>
+              )}
+              <Tab value="settings" aria-label="Settings">
+                {t("Settings")}
+              </Tab>
+            </SaveTabList>
           </Box>
           <Box sx={{ overflowY: "auto", flex: "auto" }}>
             <SaveAreaContent>

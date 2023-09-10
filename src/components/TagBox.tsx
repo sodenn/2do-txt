@@ -1,6 +1,6 @@
-import { BoxProps, Typography, TypographyProps } from "@mui/joy";
+import { Typography, TypographyProps } from "@mui/joy";
 
-interface TagBoxProps extends BoxProps {
+interface TagBoxProps extends TypographyProps {
   outlined: boolean;
   completed: boolean;
   type?: "context" | "project" | "tag";
@@ -29,34 +29,23 @@ function getColor(props: TagBoxProps) {
   return "neutral";
 }
 
-function Tag({
-  completed,
-  ...other
-}: TypographyProps & { completed: boolean }) {
+export function TagBox(props: TagBoxProps) {
+  const { outlined, completed, tagKey, type, ...other } = props;
+  const color = getColor(props);
   return (
     <Typography
       component="span"
+      variant={!outlined || completed ? "plain" : "outlined"}
+      color={color}
       sx={{
         display: "inline",
         borderRadius: "sm",
-        ...(completed && { p: 0 }),
+        whiteSpace: "nowrap",
+        py: 0, // prevent overlapping of tags in case of multiline text
+        ...(completed && { p: 0 }), // prevent the interruption of strikethrough text
         ...other.sx,
       }}
       {...other}
     />
-  );
-}
-
-export function TagBox(props: TagBoxProps) {
-  const { outlined, completed, children } = props;
-  const color = getColor(props);
-  return (
-    <Tag
-      variant={!outlined || completed ? "plain" : "outlined"}
-      color={color}
-      completed={completed}
-    >
-      {children}
-    </Tag>
   );
 }
