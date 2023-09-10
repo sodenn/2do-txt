@@ -51,7 +51,8 @@ const theme = extendTheme({
           900: "#831843",
           // Adjust the global variant tokens as you'd like.
           // The tokens should be the same for all color schemes.
-          solidBg: "var(--joy-palette-priority-400)",
+          solidBg: "var(--joy-palette-priority-500)",
+          solidColor: "var(--joy-palette-common-white)",
           solidActiveBg: "var(--joy-palette-priority-500)",
           outlinedBorder: "var(--joy-palette-priority-500)",
           outlinedColor: "var(--joy-palette-priority-700)",
@@ -99,8 +100,9 @@ const theme = extendTheme({
           700: "#be185d",
           800: "#9d174d",
           900: "#831843",
-          solidBg: "var(--joy-palette-priority-800)",
-          solidActiveBg: "var(--joy-palette-priority-500)",
+          solidBg: "var(--joy-palette-priority-900)",
+          solidColor: "var(--joy-palette-common-white)",
+          solidActiveBg: "var(--joy-palette-priority-900)",
           outlinedBorder: "var(--joy-palette-priority-900)",
           outlinedColor: "var(--joy-palette-priority-200)",
           outlinedActiveBg: "var(--joy-palette-priority-900)",
