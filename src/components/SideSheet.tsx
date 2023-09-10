@@ -99,7 +99,7 @@ export function MainContainer({ children }: PropsWithChildren) {
   }, [setTop]);
 
   return (
-    <Main ref={ref} open={sideSheetOpen}>
+    <Main ref={ref} open={sideSheetOpen} id="scroll-container">
       {children}
     </Main>
   );
