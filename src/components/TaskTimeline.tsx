@@ -66,10 +66,6 @@ interface TaskCheckboxProps extends IconButtonProps {
   task: TimelineTask;
 }
 
-interface TimelineConnectorProps extends BoxProps {
-  pos: "top" | "mid" | "bottom";
-}
-
 interface TaskItemProps {
   task: TimelineTask;
   focused: boolean;
@@ -98,6 +94,7 @@ function TaskDate({
       color="neutral"
       sx={{
         width: 120,
+        height: "var(--IconButton-size, 2.5rem)",
         justifyContent: "right",
         alignItems: "center",
         gap: 1,
@@ -123,11 +120,9 @@ function TimelineItem(props: TimelineItemProps) {
   const { sx, chip, ...other } = props;
 
   const gridTemplateAreas = [
-    `". connectorTop ."`,
+    `". connector ."`,
     ...(chip ? [`". chip ."`] : []),
-    ...(chip ? [`". connectorMid ."`] : []),
     `"date action content"`,
-    `". connectorBottom content"`,
   ].join("\n");
 
   return (
@@ -159,7 +154,7 @@ const TimelineContent = forwardRef<HTMLDivElement, ListItemButtonProps>(
           borderRadius: "sm",
           gridArea: "content",
           px: { xs: 0, sm: 1 },
-          py: 1,
+          py: { xs: "1px", sm: "5px" },
           ...sx,
         }}
         {...other}
@@ -168,23 +163,17 @@ const TimelineContent = forwardRef<HTMLDivElement, ListItemButtonProps>(
   },
 );
 
-function TimelineConnector(props: TimelineConnectorProps) {
-  const { sx, pos, ...other } = props;
+function TimelineConnector(props: BoxProps) {
+  const { sx, ...other } = props;
   return (
     <Box
       sx={{
         minHeight: 8,
         borderWidth: "2px",
-        borderColor: "neutral.softBg",
+        borderColor: "neutral.outlinedBorder",
         borderStyle: "solid",
         borderRadius: "sm",
         flex: 1,
-        gridArea:
-          pos === "top"
-            ? "connectorTop"
-            : pos === "mid"
-            ? "connectorMid"
-            : "connectorBottom",
         ...sx,
       }}
       {...other}
@@ -207,21 +196,37 @@ function YearChip({ date }: YearChipProps) {
 function TaskCheckbox({ task, ...other }: TaskCheckboxProps) {
   const mobileScreen = useMobileScreen();
   return (
-    <IconButton
-      size={mobileScreen ? "sm" : "md"}
-      variant="plain"
-      tabIndex={-1}
-      color={task._timelineFlags.today ? "primary" : "neutral"}
-      aria-label="Complete task"
-      aria-checked={task.completed}
+    <Box
       sx={{
+        display: "flex",
+        gap: 0.5,
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
         gridArea: "action",
       }}
-      {...other}
     >
-      {!task.completed && <RadioButtonUncheckedIcon />}
-      {task.completed && <TaskAltIcon />}
-    </IconButton>
+      <IconButton
+        size={mobileScreen ? "sm" : "md"}
+        variant="plain"
+        tabIndex={-1}
+        color={task._timelineFlags.today ? "primary" : "neutral"}
+        aria-label="Complete task"
+        aria-checked={task.completed}
+        {...other}
+      >
+        {!task.completed && <RadioButtonUncheckedIcon />}
+        {task.completed && <TaskAltIcon />}
+      </IconButton>
+      <TimelineConnector
+        sx={{
+          ...(task._timelineFlags.today &&
+            !task._timelineFlags.lastOfToday && {
+              borderColor: "primary.outlinedBorder",
+            }),
+        }}
+      />
+    </Box>
   );
 }
 
@@ -295,6 +300,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
                     xs: "flex",
                     sm: task._timelineFlags.today ? "flex" : "none",
                   },
+                  alignItems: "center",
                   gap: 0.5,
                 }}
               >
@@ -304,9 +310,11 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
             )}
             {task.completionDate && (
               <Typography
-                color="neutral"
+                color="completed"
+                variant="plain"
                 sx={{
                   display: { xs: "flex", sm: "none" },
+                  alignItems: "center",
                   gap: 0.5,
                 }}
               >
@@ -319,6 +327,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
                 color="neutral"
                 sx={{
                   display: { xs: "flex", sm: "none" },
+                  alignItems: "center",
                   gap: 0.5,
                 }}
               >
@@ -340,39 +349,18 @@ const TaskItem = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
       chip={task._timelineFlags.firstOfYear && !!task._timelineDate}
     >
       <TimelineConnector
-        pos="top"
         sx={{
           ...(task._timelineFlags.today &&
             !task._timelineFlags.firstOfToday && {
-              borderColor: "primary.softBg",
+              borderColor: "primary.outlinedBorder",
             }),
+          gridArea: "connector",
         }}
       />
       {task._timelineFlags.firstOfYear && task._timelineDate && (
         <YearChip date={format(task._timelineDate, "yyyy")} />
       )}
-      {task._timelineFlags.firstOfYear && task._timelineDate && (
-        <TimelineConnector
-          sx={{
-            minHeight: 16,
-            ...(task._timelineFlags.today &&
-              !task._timelineFlags.firstOfToday && {
-                borderColor: "primary.softBg",
-              }),
-          }}
-          pos="mid"
-        />
-      )}
       <TaskCheckbox onClick={onCheckboxClick} task={task} />
-      <TimelineConnector
-        pos="bottom"
-        sx={{
-          ...(task._timelineFlags.today &&
-            !task._timelineFlags.lastOfToday && {
-              borderColor: "primary.softBg",
-            }),
-        }}
-      />
       <TaskContent ref={ref} {...props} />
       <TaskDate
         flags={task._timelineFlags}
@@ -396,28 +384,29 @@ const TodayItem = forwardRef<HTMLButtonElement, TodayItemProps>(
 
     return (
       <TimelineItem chip={flags.firstOfYear}>
-        <TimelineConnector sx={{ borderColor: "primary.softBg" }} pos="top" />
+        <TimelineConnector sx={{ gridArea: "connector" }} />
         {flags.firstOfYear && <YearChip date={date} />}
-        {flags.firstOfYear && (
-          <TimelineConnector
-            sx={{ borderColor: "primary.softBg", minHeight: 16 }}
-            pos="mid"
-          />
-        )}
-        <IconButton
-          ref={ref}
-          sx={{ gridArea: "action" }}
-          onClick={handleClick}
-          color="primary"
-          variant="plain"
-          size={mobileScreen ? "sm" : "md"}
+        <Box
+          style={{
+            display: "flex",
+            gap: 0.5,
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gridArea: "action",
+          }}
         >
-          <AddOutlinedIcon />
-        </IconButton>
-        <TimelineConnector
-          sx={{ borderColor: "primary.softBg" }}
-          pos="bottom"
-        />
+          <IconButton
+            ref={ref}
+            onClick={handleClick}
+            color="primary"
+            variant="plain"
+            size={mobileScreen ? "sm" : "md"}
+          >
+            <AddOutlinedIcon />
+          </IconButton>
+          <TimelineConnector sx={{ borderColor: "primary.outlinedBorder" }} />
+        </Box>
         <TimelineContent
           sx={{
             height: {
