@@ -59,7 +59,7 @@ export function SnackbarActionButton(props: IconButtonProps) {
       variant="plain"
       sx={{
         "--IconButton-size": "32px",
-        transform: "translate(0.3rem, -0.3rem)",
+        transform: "translateX(5px)",
       }}
       {...props}
     />
@@ -107,7 +107,6 @@ export function SnackbarProvider({ children }: PropsWithChildren) {
               color={color}
               invertedColors
               sx={{
-                alignItems: "flex-start",
                 overflow: "hidden",
                 minWidth: mobileScreen ? "100%" : 300,
               }}
@@ -173,7 +172,7 @@ export function SnackbarProvider({ children }: PropsWithChildren) {
 
   return (
     <SnackbarContext.Provider value={value}>
-      <Toaster position="bottom-center" expand />
+      <Toaster position="bottom-center" expand offset={20} />
       {children}
     </SnackbarContext.Provider>
   );
