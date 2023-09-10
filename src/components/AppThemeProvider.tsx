@@ -26,6 +26,9 @@ declare module "@mui/joy/styles" {
 }
 
 const theme = extendTheme({
+  shadow: {
+    xs: "unset",
+  },
   colorSchemes: {
     light: {
       palette: {
