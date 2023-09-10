@@ -10,7 +10,7 @@ export interface ThemeStoreData {
 }
 
 interface ThemeStoreInterface extends ThemeStoreData {
-  setThemeMode: (mode: ThemeMode) => void;
+  setMode: (mode: ThemeMode) => void;
 }
 
 type PaletteMode = "light" | "dark";
@@ -45,7 +45,7 @@ export function initializeThemeStore(
   return createStore<ThemeStoreInterface>((set) => ({
     ...getDefaultInitialState(),
     ...preloadedState,
-    setThemeMode: (mode: ThemeMode) => {
+    setMode: (mode: ThemeMode) => {
       set({ mode });
     },
   }));

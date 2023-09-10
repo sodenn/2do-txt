@@ -2,26 +2,17 @@ import { setKeyboardStyle } from "@/native-api/keyboard";
 import { setPreferencesItem } from "@/native-api/preferences";
 import { hideSplashScreen } from "@/native-api/splash-screen";
 import { setStatusBarStyling } from "@/native-api/status-bar";
-import { ThemeMode, useThemeStore } from "@/stores/theme-store";
+import { useThemeStore } from "@/stores/theme-store";
 import { CssBaseline, extendTheme } from "@mui/joy";
 import type { PaletteRange } from "@mui/joy/styles";
-import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy/styles";
-import { PaletteMode, ThemeOptions, useMediaQuery } from "@mui/material";
-import { Localization, deDE, enUS } from "@mui/material/locale";
+import { CssVarsProvider } from "@mui/joy/styles";
+import { useColorScheme } from "@mui/joy/styles/CssVarsProvider";
 import {
   THEME_ID as MATERIAL_THEME_ID,
   Experimental_CssVarsProvider as MaterialCssVarsProvider,
   experimental_extendTheme as materialExtendTheme,
 } from "@mui/material/styles";
-import { CssVarsTheme } from "@mui/material/styles/experimental_extendTheme";
-import {
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { useTranslation } from "react-i18next";
+import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 declare module "@mui/joy/styles" {
   interface ColorPalettePropOverrides {
@@ -39,15 +30,14 @@ declare module "@mui/joy/styles" {
   }
 }
 
-const translations: Record<string, Localization> = {
-  en: enUS,
-  de: deDE,
-};
-
-const joyTheme = extendTheme({
+const theme = extendTheme({
   colorSchemes: {
     light: {
       palette: {
+        background: {
+          body: "rgb(255, 255, 255)", // because hover bg color is the same as the default body bg color in light mode
+          surface: "rgb(255, 255, 255)",
+        },
         priority: {
           // Credit:
           // https://github.com/tailwindlabs/tailwindcss/blob/master/src/public/colors.js
@@ -185,80 +175,40 @@ const joyTheme = extendTheme({
   },
 });
 
-function getThemeOptions(mode: PaletteMode): ThemeOptions {
-  return {
-    palette: {
-      mode,
-      ...(mode === "light"
-        ? {}
-        : {
-            background: {
-              default: "#0a1726",
-              paper: "#0a1726",
-            },
-          }),
-    },
-  };
-}
+function ApplyTheme() {
+  const mode = useThemeStore((state) => state.mode);
+  const { setMode } = useColorScheme();
 
-export function usePaletteMode() {
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const getPaletteMode = useCallback(
-    (mode: ThemeMode) => {
-      if (mode === "light" || mode === "dark") {
-        return mode;
-      } else {
-        return prefersDarkMode ? "dark" : "light";
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      const bodyBgColor = window.getComputedStyle(
+        document.body,
+      ).backgroundColor;
+      const themeColorMetaTag = document.querySelector(
+        'meta[name="theme-color"]',
+      );
+      if (themeColorMetaTag) {
+        themeColorMetaTag.setAttribute("content", bodyBgColor);
       }
-    },
-    [prefersDarkMode],
-  );
-  return useMemo(() => ({ getPaletteMode }), [getPaletteMode]);
-}
+    });
+    setMode(mode);
+    setPreferencesItem("theme-mode", mode);
+    setStatusBarStyling(mode);
+    setKeyboardStyle(mode);
+    hideSplashScreen();
+  }, [mode, setMode]);
 
-function useThemeMode(): { paletteMode: PaletteMode; themeMode: ThemeMode } {
-  const { getPaletteMode } = usePaletteMode();
-  const themeMode = useThemeStore((state) => state.mode);
-  const paletteMode = getPaletteMode(themeMode);
-  return {
-    themeMode,
-    paletteMode,
-  };
-}
-
-function applyThemeMode(theme: CssVarsTheme, mode: ThemeMode) {
-  setPreferencesItem("theme-mode", mode);
-  const themeColorMetaTag = document.querySelector('meta[name="theme-color"]');
-  if (themeColorMetaTag) {
-    themeColorMetaTag.setAttribute(
-      "content",
-      theme.vars.palette.background.default,
-    );
-  }
-  setStatusBarStyling(mode);
-  setKeyboardStyle(mode);
-  hideSplashScreen();
+  return null;
 }
 
 export function AppThemeProvider({ children }: PropsWithChildren) {
-  const {
-    i18n: { language },
-  } = useTranslation();
-  const { paletteMode, themeMode } = useThemeMode();
-  const theme = useMemo(
-    () =>
-      materialExtendTheme(getThemeOptions(paletteMode), translations[language]),
-    [language, paletteMode],
-  );
   const [mounted, setMounted] = useState(false);
+  const materialTheme = useMemo(() => materialExtendTheme(), []);
+  const mode = useThemeStore((state) => state.mode);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    applyThemeMode(theme, themeMode);
-  }, [themeMode, theme]);
 
   if (!mounted) {
     return null;
@@ -266,13 +216,14 @@ export function AppThemeProvider({ children }: PropsWithChildren) {
 
   return (
     <MaterialCssVarsProvider
-      theme={{ [MATERIAL_THEME_ID]: theme }}
+      theme={{ [MATERIAL_THEME_ID]: materialTheme }}
       defaultMode="system"
     >
-      <JoyCssVarsProvider theme={joyTheme} defaultMode="system">
+      <CssVarsProvider theme={theme} defaultMode={mode} disableNestedContext>
         <CssBaseline />
+        <ApplyTheme />
         {children}
-      </JoyCssVarsProvider>
+      </CssVarsProvider>
     </MaterialCssVarsProvider>
   );
 }

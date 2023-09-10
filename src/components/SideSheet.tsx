@@ -78,11 +78,6 @@ const SaveAreaContent = styled("div")({
   paddingLeft: "env(safe-area-inset-left)",
 });
 
-const StyledTab = styled(Tab)({
-  paddingBlockStart: 11,
-  paddingBlockEnd: 10,
-});
-
 export function MainContainer({ children }: PropsWithChildren) {
   const ref = useRef<HTMLDivElement | null>(null);
   const sideSheetOpen = useSideSheetStore((state) => state.open);
@@ -181,15 +176,15 @@ export function SideSheet() {
       <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
         <Box sx={{ flex: "none" }}>
           <SaveAreaHeader>
-            <TabList sx={{ px: 1 }}>
+            <TabList sx={{ px: 1, height: 57 }}>
               {!hideFilter && (
-                <StyledTab value="filter" aria-label="Filter">
+                <Tab value="filter" aria-label="Filter">
                   {t("Filter")}
-                </StyledTab>
+                </Tab>
               )}
-              <StyledTab value="settings" aria-label="Settings">
+              <Tab value="settings" aria-label="Settings">
                 {t("Settings")}
-              </StyledTab>
+              </Tab>
             </TabList>
           </SaveAreaHeader>
         </Box>

@@ -4,7 +4,7 @@ import { TaskListSubheader } from "@/components/TaskListSubheader";
 import { Task } from "@/utils/task";
 import { TaskGroup } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
-import { Box, List, ListItem, Typography } from "@mui/joy";
+import { List, ListItem, Typography } from "@mui/joy";
 import { isEqual } from "lodash";
 import { MutableRefObject, memo } from "react";
 import { useTranslation } from "react-i18next";
@@ -48,7 +48,7 @@ export const TaskList = memo((props: TaskListProps) => {
   const hasItems = taskGroups.some((g) => g.items.length > 0);
 
   return (
-    <Box>
+    <>
       {showHeader && <TaskListHeader fileName={fileName} filePath={filePath} />}
       {!hasItems && (
         <Typography
@@ -87,6 +87,6 @@ export const TaskList = memo((props: TaskListProps) => {
           ))}
         </List>
       )}
-    </Box>
+    </>
   );
 }, propsAreEqual);
