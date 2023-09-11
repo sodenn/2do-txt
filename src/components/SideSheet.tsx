@@ -70,12 +70,12 @@ const Main = styled("main", {
   },
 }));
 
-const SaveTabList = styled(TabList)({
+const SaveTabList = styled(Box)({
   paddingTop: "env(safe-area-inset-top)",
   paddingLeft: "env(safe-area-inset-left)",
 });
 
-const SaveAreaContent = styled("div")({
+const SaveAreaContent = styled(Box)({
   paddingBottom: "env(safe-area-inset-bottom)",
   paddingLeft: "env(safe-area-inset-left)",
 });
@@ -182,8 +182,8 @@ export function SideSheet() {
         onClose={closeSideSheet}
       >
         <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
-          <Box sx={{ flex: "none" }}>
-            <SaveTabList sx={{ height: 57 }}>
+          <SaveTabList sx={{ flex: "none" }}>
+            <TabList sx={{ height: 57 }}>
               {!hideFilter && (
                 <Tab value="filter" aria-label="Filter">
                   {t("Filter")}
@@ -192,18 +192,16 @@ export function SideSheet() {
               <Tab value="settings" aria-label="Settings">
                 {t("Settings")}
               </Tab>
-            </SaveTabList>
-          </Box>
-          <Box sx={{ overflowY: "auto", flex: "auto" }}>
-            <SaveAreaContent>
-              <TabPanel value="filter">
-                <Filter />
-              </TabPanel>
-              <TabPanel value="settings">
-                <Settings />
-              </TabPanel>
-            </SaveAreaContent>
-          </Box>
+            </TabList>
+          </SaveTabList>
+          <SaveAreaContent sx={{ overflowY: "auto", flex: "auto" }}>
+            <TabPanel value="filter">
+              <Filter />
+            </TabPanel>
+            <TabPanel value="settings">
+              <Settings />
+            </TabPanel>
+          </SaveAreaContent>
         </Tabs>
       </SwipeableDrawer>
     </MaterialTheme>

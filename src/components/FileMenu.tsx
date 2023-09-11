@@ -91,7 +91,7 @@ export function FileMenu() {
 
   if (taskLists.length > 0) {
     menuItems.push(
-      <MenuItem onClick={handleManageFile}>
+      <MenuItem onClick={handleManageFile} key="Files…">
         <ListItemDecorator>
           <AllInboxRoundedIcon fontSize="small" />
         </ListItemDecorator>{" "}
@@ -101,12 +101,12 @@ export function FileMenu() {
   }
 
   if (!touchScreen && taskLists.length > 1) {
-    menuItems.push(<Divider />);
+    menuItems.push(<Divider key="divider" />);
   }
 
   if (!touchScreen) {
     menuItems.push(
-      <MenuItem onClick={handleKeyboardShortcutsClick}>
+      <MenuItem onClick={handleKeyboardShortcutsClick} key="Keyboard Shortcuts">
         <ListItemDecorator>
           <KeyboardIcon fontSize="small" />
         </ListItemDecorator>{" "}
@@ -117,7 +117,7 @@ export function FileMenu() {
 
   if (menuItems.length === 1) {
     menuItems.push(
-      <MenuItem onClick={handleCreateFile}>
+      <MenuItem onClick={handleCreateFile} key="Create file">
         <ListItemDecorator>
           <AddOutlinedIcon fontSize="small" />
         </ListItemDecorator>{" "}

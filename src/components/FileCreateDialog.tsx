@@ -207,44 +207,38 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     setSelectedProvider("no-sync");
   };
 
-  const init = useCallback(
-    async (fileName?: string) => {
-      if (!open || fileName) {
-        return;
-      }
-      const { fileName: _fileName } =
-        await getUniqueFilePath(defaultTodoFilePath);
-      setFileName(_fileName);
+  const init = useCallback(async () => {
+    if (!open || fileName) {
+      return;
+    }
 
-      if (cloudStorages.length > 0) {
-        setSkip(false);
-        return;
-      }
+    const { fileName: uniqueFileName } =
+      await getUniqueFilePath(defaultTodoFilePath);
+    setFileName(uniqueFileName);
 
-      const exists = await fileExists(defaultTodoFilePath);
-      if (!exists) {
-        await createTodoFileAndSync(_fileName);
-        onClose();
-        setSkip(true);
-      } else {
-        setSkip(false);
-      }
-    },
-    [open, onClose, cloudStorages.length, createTodoFileAndSync],
-  );
+    if (cloudStorages.length > 0) {
+      setSkip(false);
+      return;
+    }
+
+    const exists = await fileExists(defaultTodoFilePath);
+    if (!exists) {
+      await createTodoFileAndSync(uniqueFileName);
+      onClose();
+      setSkip(true);
+    } else {
+      setSkip(false);
+    }
+  }, [open, fileName, cloudStorages.length, createTodoFileAndSync, onClose]);
 
   useEffect(() => {
     init();
   }, [init]);
 
-  if (typeof skip === "undefined" || skip) {
-    return null;
-  }
-
   return (
     <ResponsiveDialog
       fullWidth
-      open={open}
+      open={open && typeof skip !== "undefined" && !skip}
       onClose={onClose}
       onExited={handleExited}
     >
