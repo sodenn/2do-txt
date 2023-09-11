@@ -1,3 +1,8 @@
+import {
+  addKeyboardDidHideListener,
+  addKeyboardDidShowListener,
+  removeAllKeyboardListeners,
+} from "@/native-api/keyboard";
 import { useMobileScreen } from "@/utils/useMobileScreen";
 import { Box, ModalDialogProps, Stack } from "@mui/joy";
 import Modal, { ModalProps } from "@mui/joy/Modal";
@@ -116,8 +121,23 @@ export function ResponsiveDialogTitle({ children }: PropsWithChildren) {
 
 export function ResponsiveDialogContent(props: PropsWithChildren) {
   const mobileScreen = useMobileScreen();
+  const [root, setRoot] = useState<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    addKeyboardDidShowListener((info) => {
+      root?.style.setProperty("padding-bottom", info.keyboardHeight + "px");
+    });
+    addKeyboardDidHideListener(() => {
+      root?.style.removeProperty("padding-bottom");
+    });
+    return () => {
+      removeAllKeyboardListeners();
+    };
+  }, [root]);
+
   return (
     <Box
+      ref={setRoot}
       sx={{
         overflowY: "auto",
         overflowX: "hidden",

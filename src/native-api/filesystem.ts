@@ -14,7 +14,6 @@ interface Filesystem {
   readFile(path: string): Promise<string>;
   writeFile(options: WriteFileOptions): Promise<string>;
   deleteFile(path: string): Promise<void>;
-  readdir(path: string): Promise<Dir[]>;
   fileExists(path: string): Promise<boolean>;
   getUniqueFilePath(filePath: string): Promise<UniqueFilePath>;
   selectFolder(): Promise<string | undefined>;
@@ -31,10 +30,6 @@ interface UniqueFilePath {
 interface WriteFileOptions {
   path: string;
   data: string;
-}
-
-interface Dir {
-  name: string;
 }
 
 export function getDirname(path: string) {
@@ -107,11 +102,6 @@ const capFilesystem: Filesystem = {
   async deleteFile(path: string) {
     return CapFilesystem.deleteFile({ directory: Directory.Documents, path });
   },
-  async readdir(path: string) {
-    return CapFilesystem.readdir({ directory: Directory.Documents, path }).then(
-      (result) => result.files.map((file) => ({ name: file.name })),
-    );
-  },
   async fileExists(path: string) {
     return capFilesystem
       .readFile(path)
@@ -165,9 +155,6 @@ const desktopFilesystem: Filesystem = {
   },
   async deleteFile(path: string) {
     await removeFile(path);
-  },
-  async readdir(_: string) {
-    throw new Error("Not implemented");
   },
   async fileExists(path: string) {
     return desktopFilesystem
@@ -269,11 +256,6 @@ export async function deleteFile(path: string) {
   const filesystem = await getFilesystem();
   await filesystem.deleteFile(path);
   filesystemEmitter.emit("delete", { path });
-}
-
-export async function readdir(path: string) {
-  const filesystem = await getFilesystem();
-  return filesystem.readdir(path);
 }
 
 export async function fileExists(path: string) {
