@@ -11,8 +11,8 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   if (testInfo.title.startsWith("timeline:")) {
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByRole("tab", { name: "Settings" }).click();
-    await page.getByRole("button", { name: "Select task view" }).click();
-    await page.getByRole("option", { name: "Timeline View" }).click();
+    await page.getByLabel("Select task view").click();
+    await page.getByLabel("Timeline View").click();
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page
       .getByRole("button", { name: "Toggle menu" })
@@ -24,15 +24,19 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 test.describe("Task View", () => {
   for (const taskView of ["list", "timeline"]) {
     test(`${taskView}: should render an empty task list`, async ({ page }) => {
-      await expect(
-        page.getByRole("list", { name: "Task list" }),
-      ).not.toBeVisible();
+      await page.getByRole("button", { name: "Create Task" }).click();
+      await page.getByRole("button", { name: "Close" }).click();
+      if (taskView === "list") {
+        await expect(page.getByText("No tasks")).toBeVisible();
+      } else {
+        await expect(page.getByText("Add task for today")).toBeVisible();
+      }
     });
 
     test(`${taskView}: should render a task list with items`, async ({
       page,
     }) => {
-      await expect(page.getByRole("list", { name: "Task list" })).toBeVisible();
+      await expect(page.getByTestId("task-list")).toBeVisible();
       await expect(page.getByTestId("task")).toHaveCount(8);
     });
 
@@ -68,10 +72,10 @@ test.describe("Task View", () => {
       const taskCheckbox = page
         .getByTestId("task")
         .nth(0)
-        .locator('input[type="checkbox"]');
-      await expect(taskCheckbox).not.toBeChecked();
+        .getByLabel("Complete task");
+      expect(await taskCheckbox.getAttribute("aria-checked")).toBe("false");
       await taskCheckbox.click();
-      await expect(taskCheckbox).toBeChecked();
+      expect(await taskCheckbox.getAttribute("aria-checked")).toBe("true");
       // make sure that the click does not open the task dialog
       await expect(page.getByTestId("task-dialog")).not.toBeVisible();
     });
@@ -79,14 +83,17 @@ test.describe("Task View", () => {
     test(`${taskView}: should complete a task by pressing the space key`, async ({
       page,
     }) => {
+      await page.keyboard.press("ArrowDown");
       const taskCheckbox = page
         .getByTestId("task")
         .nth(0)
-        .locator('input[type="checkbox"]');
-      await taskCheckbox.focus();
-      await expect(taskCheckbox).not.toBeChecked();
+        .getByLabel("Complete task");
+      expect(await taskCheckbox.getAttribute("aria-checked")).toBe("false");
       await page.keyboard.press("Space");
-      await expect(taskCheckbox).toBeChecked();
+      // make sure that the click does not open the task dialog
+      await page.waitForTimeout(500);
+      await expect(page.getByTestId("task-dialog")).not.toBeVisible();
+      expect(await taskCheckbox.getAttribute("aria-checked")).toBe("true");
     });
 
     test(`${taskView}: should edit a task by pressing the shortcut key`, async ({
@@ -137,15 +144,12 @@ test.describe("Task View", () => {
     test(`${taskView}: should delete a task via the task menu`, async ({
       page,
     }, testInfo) => {
-      if (testInfo.title.startsWith("timeline:")) {
+      if (testInfo.title.startsWith("list:")) {
         test.skip();
       }
       await expect(page.getByTestId("task")).toHaveCount(8);
-      const taskButton = page.getByTestId("task-button").nth(1);
-      await taskButton.hover();
-      await taskButton.getByRole("button", { name: "Task menu" }).click();
-      await page.getByRole("menuitem", { name: "Delete task" }).click();
-      // confirm deletion
+      const taskItem = page.getByTestId("task").nth(1);
+      await taskItem.getByLabel("Delete task").click();
       await page.getByRole("button", { name: "Delete" }).click();
       await expect(page.getByTestId("task")).toHaveCount(7);
     });

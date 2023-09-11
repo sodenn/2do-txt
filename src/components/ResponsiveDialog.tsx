@@ -1,5 +1,5 @@
 import { useMobileScreen } from "@/utils/useMobileScreen";
-import { Box, Stack } from "@mui/joy";
+import { Box, ModalDialogProps, Stack } from "@mui/joy";
 import Modal, { ModalProps } from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
 import ModalDialog from "@mui/joy/ModalDialog";
@@ -16,7 +16,8 @@ interface ResponsiveDialogProps
       TransitionProps,
       "onExited" | "onEnter" | "onEntered" | "onExit"
     >,
-    Pick<ModalProps, "onClose"> {
+    Pick<ModalProps, "onClose">,
+    ModalDialogProps {
   open?: boolean;
   fullWidth?: boolean;
   fullScreen?: boolean;
@@ -203,9 +204,7 @@ function FullScreenLayout({ children }: PropsWithChildren) {
   );
 }
 
-export function ResponsiveDialog(
-  props: PropsWithChildren<ResponsiveDialogProps>,
-) {
+export function ResponsiveDialog(props: ResponsiveDialogProps) {
   const {
     open,
     onClose,
@@ -215,10 +214,13 @@ export function ResponsiveDialog(
     onExit,
     onEntered,
     onEnter,
+    fullScreen: fullScreenProp,
+    sx,
+    ...other
   } = props;
   const mobileScreen = useMobileScreen();
   const fullScreen =
-    typeof props.fullScreen === "boolean" ? props.fullScreen : mobileScreen;
+    typeof fullScreenProp === "boolean" ? fullScreenProp : mobileScreen;
   const [renderModal, setRenderModal] = useState(false);
 
   const styles = fullScreen ? dialogStyles.slide : dialogStyles.fade;
@@ -272,11 +274,14 @@ export function ResponsiveDialog(
               }),
               ...styles.dialog,
               ...styles.dialogTransition[state],
+              ...sx,
             }}
+            {...other}
           >
             {renderModal && (
               <>
                 <ModalClose
+                  aria-label="Close"
                   sx={
                     fullScreen
                       ? { right: "unset", left: "var(--ModalClose-inset, 8px)" }

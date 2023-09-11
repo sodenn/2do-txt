@@ -98,7 +98,7 @@ const JoyField = forwardRef<HTMLInputElement, JoyFieldProps>(
         <FormLabel>{label}</FormLabel>
         <Input
           disabled={disabled}
-          slotProps={{ input: { ref: inputRef } }}
+          slotProps={{ input: { ref: inputRef, ...inputProps } }}
           startDecorator={startAdornment}
           endDecorator={endAdornment}
           {...other}
@@ -236,6 +236,13 @@ export const LocalizationDatePicker = forwardRef<
               },
               onDoubleClick: handleDoubleClick,
               onKeyDown: handleKeyDown,
+            }),
+            field: () => ({
+              inputProps: {
+                // @ts-ignore
+                "data-testid": `${ariaLabel} textfield`,
+                "aria-label": ariaLabel,
+              },
             }),
             openPickerButton: {
               // @ts-ignore

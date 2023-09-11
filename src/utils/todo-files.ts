@@ -1,7 +1,7 @@
 import { getFilename, getFileNameWithoutExt } from "@/native-api/filesystem";
 
 export const defaultTodoFilePath = "todo.txt";
-export const defaultDoneFilePath = "done.txt";
+const defaultDoneFilePath = "done.txt";
 
 export function getDoneFilePath(todoFilePath: string) {
   const fileName = getFilename(todoFilePath);

@@ -9,28 +9,26 @@ test.describe("Appearance", () => {
   test("should use the system setting as the default theme mode", async ({
     page,
   }) => {
-    await expect(
-      page.getByRole("button", { name: "Select theme mode" }),
-    ).toContainText("System");
+    await expect(page.getByLabel("Select theme mode")).toContainText("System");
     await checkInLocalStorage(page, "theme-mode", "system");
   });
 
   test("should allow me to switch between light mode to dark mode", async ({
     page,
   }) => {
-    await page.getByRole("button", { name: "Select theme mode" }).click();
-    await page.getByRole("option", { name: "Light" }).click();
+    await page.getByLabel("Select theme mode").click();
+    await page.getByLabel("Light").click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
-      "#fff",
+      "rgb(255, 255, 255)",
     );
     await checkInLocalStorage(page, "theme-mode", "light");
 
-    await page.getByRole("button", { name: "Select theme mode" }).click();
-    await page.getByRole("option", { name: "Dark" }).click();
+    await page.getByLabel("Select theme mode").click();
+    await page.getByLabel("Dark").click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
-      "#0a1726",
+      "rgb(14, 14, 16)",
     );
     await checkInLocalStorage(page, "theme-mode", "dark");
   });
@@ -41,19 +39,15 @@ test.describe("Language", () => {
     page,
   }) => {
     // select English
-    await page.getByRole("button", { name: "Select language" }).click();
-    await page.getByRole("option", { name: "English" }).click();
-    await expect(
-      page.getByRole("button", { name: "Select language" }),
-    ).toHaveText("English");
+    await page.getByLabel("Select language").click();
+    await page.getByLabel("English").click();
+    await expect(page.getByLabel("Select language")).toHaveText("English");
     await expect(page.locator("text=Language").first()).toBeVisible();
 
     // select German
-    await page.getByRole("button", { name: "Select language" }).click();
-    await page.getByRole("option", { name: "German" }).click();
-    await expect(
-      page.getByRole("button", { name: "Select language" }),
-    ).toHaveText("Deutsch");
+    await page.getByLabel("Select language").click();
+    await page.getByLabel("German").click();
+    await expect(page.getByLabel("Select language")).toHaveText("Deutsch");
     await expect(page.locator("text=Sprache").first()).toBeVisible();
     await checkInLocalStorage(page, "language", "de");
   });

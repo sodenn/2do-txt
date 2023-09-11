@@ -2,7 +2,7 @@ import { getThemeProps, useThemeWithoutDefault as useTheme } from "@mui/system";
 import * as React from "react";
 import { useSyncExternalStore } from "react";
 
-export interface UseMediaQueryOptions {
+interface UseMediaQueryOptions {
   defaultMatches?: boolean;
   matchMedia?: typeof window.matchMedia;
   noSsr?: boolean;

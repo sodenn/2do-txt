@@ -436,7 +436,7 @@ test.describe("Task dialog", () => {
 
   test("should add add and remove recurrence", async ({ page }) => {
     await page.getByRole("button", { name: "Add task" }).click();
-    await page.getByRole("combobox", { name: "Select unit" }).click();
+    await page.getByLabel("Recurrence").click();
     await page.getByText("Days", { exact: true }).click();
 
     await page.getByRole("spinbutton", { name: "Amount" }).focus();
@@ -449,7 +449,7 @@ test.describe("Task dialog", () => {
     await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveText(
       "rec:2d",
     );
-    await page.getByRole("combobox", { name: "Select unit" }).click();
+    await page.getByLabel("Recurrence").click();
     await page.getByText("No recurrence").click();
     // make sure rec-tag was removed
     await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveCount(

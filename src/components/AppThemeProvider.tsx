@@ -180,7 +180,12 @@ function ApplyTheme() {
   const { setMode } = useColorScheme();
 
   useEffect(() => {
-    requestAnimationFrame(() => {
+    setMode(mode);
+    setStatusBarStyling(mode);
+    setPreferencesItem("theme-mode", mode);
+    setKeyboardStyle(mode);
+    hideSplashScreen();
+    const observer = new MutationObserver(() => {
       const bodyBgColor = window.getComputedStyle(
         document.body,
       ).backgroundColor;
@@ -191,11 +196,13 @@ function ApplyTheme() {
         themeColorMetaTag.setAttribute("content", bodyBgColor);
       }
     });
-    setMode(mode);
-    setPreferencesItem("theme-mode", mode);
-    setStatusBarStyling(mode);
-    setKeyboardStyle(mode);
-    hideSplashScreen();
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-joy-color-scheme"],
+    });
+    return () => {
+      observer.disconnect();
+    };
   }, [mode, setMode]);
 
   return null;

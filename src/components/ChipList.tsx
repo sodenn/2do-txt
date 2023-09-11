@@ -50,7 +50,6 @@ export function ChipList(props: ChipListProps) {
               variant={activeItems.includes(item) ? "solid" : "outlined"}
               color={color}
               onClick={() => onClick?.(item)}
-              aria-label={`${item} is used ${usages} times`}
             >
               {item}
             </Chip>

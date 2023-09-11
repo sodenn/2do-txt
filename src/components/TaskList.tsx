@@ -60,7 +60,7 @@ export const TaskList = memo((props: TaskListProps) => {
         </Typography>
       )}
       {hasItems && (
-        <List aria-label="Task list" sx={{ pl: { xs: 1, sm: 0 } }}>
+        <List data-testid="task-list" sx={{ pl: { xs: 1, sm: 0 } }}>
           {taskGroups.map((group) => (
             <ListItem nested key={group.label}>
               {group.label && <TaskListSubheader title={group.label} />}

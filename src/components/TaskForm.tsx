@@ -156,7 +156,7 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   return (
-    <Grid spacing={1} container sx={{ my: 0 }}>
+    <Grid spacing={2} container sx={{ my: 0 }}>
       <Grid xs={12}>
         <Editor
           label={t("Description")}

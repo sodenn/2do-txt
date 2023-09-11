@@ -99,6 +99,7 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
             borderRadius: "sm",
           }}
           onClick={handleButtonClick}
+          data-testid="task-button"
         >
           <Stack direction="column" sx={{ py: 1 }}>
             <TaskBody task={task} />

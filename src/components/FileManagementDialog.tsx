@@ -381,8 +381,8 @@ function FileListItem(props: FileListItemProps) {
           />
         )
       }
+      role="listitem"
       data-testid="draggable-file"
-      aria-label={`Draggable file ${filePath}`}
     >
       <ListItemDecorator
         {...listeners}
@@ -391,6 +391,7 @@ function FileListItem(props: FileListItemProps) {
           cursor: "pointer",
           display: showClosePrompt ? "none" : "inline-flex",
         }}
+        aria-label={`Draggable file ${filePath}`}
       >
         <DragIndicatorIcon />
       </ListItemDecorator>

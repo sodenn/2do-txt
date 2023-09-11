@@ -109,47 +109,39 @@ test.describe("Filter", () => {
   test("should allow me to filter tasks by priority", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
-    await page.getByRole("button", { name: "A is used 2 times" }).click();
+    await page.getByLabel("A", { exact: true }).click();
     await expect(page).toHaveURL("http://localhost:5173/?priorities=A");
     await expect(page.getByTestId("task")).toHaveCount(2);
-    await page.getByRole("button", { name: "A is used 2 times" }).click();
+    await page.getByLabel("A", { exact: true }).click();
     await expect(page).toHaveURL("http://localhost:5173");
   });
 
   test("should allow me to filter tasks by project", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
-    await page
-      .getByRole("button", { name: "CompanyA is used 1 times" })
-      .click();
+    await page.getByLabel("CompanyA", { exact: true }).click();
     await expect(page).toHaveURL("http://localhost:5173/?projects=CompanyA");
     await expect(page.getByTestId("task")).toHaveCount(1);
-    await page
-      .getByRole("button", { name: "CompanyA is used 1 times" })
-      .click();
+    await page.getByLabel("CompanyA", { exact: true }).click();
     await expect(page).toHaveURL("http://localhost:5173");
   });
 
   test("should allow me to filter tasks by context", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
-    await page.getByRole("button", { name: "Private is used 4 times" }).click();
+    await page.getByLabel("Private", { exact: true }).click();
     await expect(page).toHaveURL("http://localhost:5173/?contexts=Private");
     await expect(page.getByTestId("task")).toHaveCount(4);
-    await page.getByRole("button", { name: "Private is used 4 times" }).click();
+    await page.getByLabel("Private", { exact: true }).click();
     await expect(page).toHaveURL("http://localhost:5173");
   });
 
   test("should allow me to hide completed tasks", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
-    await expect(
-      page.getByRole("button", { name: "Holiday is used 2 times" }),
-    ).toBeVisible();
+    await expect(page.getByLabel("Holiday", { exact: true })).toBeVisible();
     await page.getByRole("checkbox", { name: "Hide completed tasks" }).click();
-    await expect(
-      page.getByRole("button", { name: "Holiday is used 1 times" }),
-    ).toBeVisible();
+    await expect(page.getByLabel("Holiday", { exact: true })).toBeVisible();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
@@ -171,10 +163,8 @@ test.describe("Filter", () => {
   test("should clear active filter by shortcut", async ({ page, isMobile }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
     await page.getByRole("button", { name: "Toggle menu" }).click();
-    await page.getByRole("button", { name: "Private is used 4 times" }).click();
-    await page
-      .getByRole("button", { name: "CompanyA is used 1 times" })
-      .click();
+    await page.getByLabel("Private", { exact: true }).click();
+    await page.getByLabel("CompanyA", { exact: true }).click();
     await page.keyboard.press("x");
     await expect(page).toHaveURL("http://localhost:5173");
   });

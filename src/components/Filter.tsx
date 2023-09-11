@@ -170,7 +170,11 @@ export function Filter() {
           checked={hideCompletedTasks}
           onChange={(event) => setHideCompletedTasks(event.target.checked)}
           label={t("Hide completed tasks")}
-          aria-label="Hide completed tasks"
+          slotProps={{
+            input: {
+              "aria-label": "Hide completed tasks",
+            },
+          }}
         />
       </Box>
     </Stack>

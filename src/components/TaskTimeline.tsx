@@ -241,9 +241,18 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
   };
 
   const handleKeyUp = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === " ") {
+    if (event.code === "Space") {
       event.preventDefault();
+      event.stopPropagation();
       onCheckboxClick();
+    }
+  };
+
+  const handleClick = (event: any) => {
+    if (event.code === "Space") {
+      onCheckboxClick();
+    } else {
+      onClick();
     }
   };
 
@@ -251,7 +260,9 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
     <ListItem
       endAction={
         <IconButton
-          aria-label="Delete"
+          tabIndex={-1}
+          role="button"
+          aria-label="Delete task"
           size="sm"
           color="danger"
           onClick={handleDeleteClick}
@@ -274,7 +285,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
         ref={ref}
         onFocus={onFocus}
         onBlur={onBlur}
-        onClick={onClick}
+        onClick={handleClick}
         onKeyUp={handleKeyUp}
         aria-current={focused}
         sx={{
@@ -346,6 +357,7 @@ const TaskItem = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
   const { task, onCheckboxClick } = props;
   return (
     <TimelineItem
+      data-testid="task"
       chip={task._timelineFlags.firstOfYear && !!task._timelineDate}
     >
       <TimelineConnector
@@ -408,6 +420,7 @@ const TodayItem = forwardRef<HTMLButtonElement, TodayItemProps>(
           <TimelineConnector sx={{ borderColor: "primary.outlinedBorder" }} />
         </Box>
         <TimelineContent
+          tabIndex={-1}
           sx={{
             height: {
               xs: "var(--IconButton-size, 2rem)",
@@ -482,10 +495,10 @@ export function TaskTimeline(props: TaskTimelineProps) {
   }
 
   return (
-    <Box sx={{ pb: 4 }} aria-label="Task list" ref={parent}>
+    <Box sx={{ pb: 4 }} data-testid="task-list" ref={parent}>
       {tasks.map((task, index) => (
         <Box
-          data-testid={!task._timelineFlags.firstOfToday ? "task" : undefined}
+          //data-testid={!task._timelineFlags.firstOfToday ? "task" : undefined}
           key={task._id}
         >
           {!task._timelineFlags.firstOfToday && (

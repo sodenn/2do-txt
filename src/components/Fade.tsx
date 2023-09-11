@@ -1,4 +1,3 @@
-import CSS from "csstype";
 import { PropsWithChildren, cloneElement } from "react";
 import { Transition } from "react-transition-group";
 import {
@@ -12,12 +11,13 @@ const defaultStyle = {
   transition: `opacity ${duration}ms ease-in-out`,
 };
 
-const transitionStyles: Partial<Record<TransitionStatus, CSS.Properties>> = {
-  entering: { opacity: 1 },
-  entered: { opacity: 1 },
-  exiting: { opacity: 0 },
-  exited: { opacity: 0 },
-};
+const transitionStyles: Partial<Record<TransitionStatus, Record<string, any>>> =
+  {
+    entering: { opacity: 1 },
+    entered: { opacity: 1 },
+    exiting: { opacity: 0 },
+    exited: { opacity: 0 },
+  };
 
 type FadeProps = Omit<
   PropsWithChildren<TransitionProps<HTMLDivElement>>,
