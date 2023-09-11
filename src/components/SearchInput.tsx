@@ -20,13 +20,10 @@ const Search = styled("div")(({ theme }) => {
 
 const StyledInputBase = styled(Input)(({ theme }) => ({
   color: "inherit",
-  [theme.breakpoints.down("lg")]: {
-    width: "100%",
-  },
   "& .MuiInput-input": {
     transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     width: "100%",
-    [theme.breakpoints.up("md")]: {
+    [theme.breakpoints.up("sm")]: {
       width: "12ch",
       "&:focus": {
         width: "20ch",

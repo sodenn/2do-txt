@@ -27,7 +27,7 @@ export function usePullToRefresh(options: UsePullToRefreshOptions) {
       return;
     }
     const instance = PullToRefresh.init({
-      mainElement: pullToRefreshSelector, // #safe-area
+      mainElement: pullToRefreshSelector,
       getMarkup(): string {
         return ReactDOMServer.renderToString(
           <div className="__PREFIX__box">
@@ -44,7 +44,7 @@ export function usePullToRefresh(options: UsePullToRefreshOptions) {
           </div>,
         );
       },
-      triggerElement: scrollContainerSelector, // #scroll-container
+      triggerElement: scrollContainerSelector,
       instructionsPullToRefresh: t("Pull to refresh"),
       instructionsReleaseToRefresh: t("Release to refresh"),
       instructionsRefreshing: t("Refreshing"),
