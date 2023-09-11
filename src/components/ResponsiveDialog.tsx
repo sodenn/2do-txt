@@ -4,7 +4,7 @@ import {
   removeAllKeyboardListeners,
 } from "@/native-api/keyboard";
 import { useMobileScreen } from "@/utils/useMobileScreen";
-import { Box, ModalDialogProps, Stack } from "@mui/joy";
+import { Box, ModalDialogProps, Stack, styled } from "@mui/joy";
 import Modal, { ModalProps } from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
 import ModalDialog from "@mui/joy/ModalDialog";
@@ -46,6 +46,23 @@ interface DialogStyles {
   fade: Styles;
   slide: Styles;
 }
+
+const SafeArea = styled("div", {
+  shouldForwardProp: (prop) => prop !== "fullWidth",
+})<{ fullWidth?: boolean }>(({ fullWidth }) => ({
+  paddingRight: "env(safe-area-inset-right)",
+  paddingLeft: "env(safe-area-inset-left)",
+  paddingBottom: "env(safe-area-inset-bottom)",
+  paddingTop: "env(safe-area-inset-top)",
+  width: fullWidth ? "100%" : "unset",
+}));
+
+const SafeModalClose = styled(ModalClose)({
+  marginRight: "env(safe-area-inset-right)",
+  marginLeft: "env(safe-area-inset-left)",
+  marginBottom: "env(safe-area-inset-bottom)",
+  marginTop: "env(safe-area-inset-top)",
+});
 
 const dialogStyles: DialogStyles = {
   fade: {
@@ -299,8 +316,8 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
             {...other}
           >
             {renderModal && (
-              <>
-                <ModalClose
+              <SafeArea fullWidth={fullWidth}>
+                <SafeModalClose
                   aria-label="Close"
                   sx={
                     fullScreen
@@ -310,7 +327,7 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
                 />
                 {fullScreen && <FullScreenLayout>{children}</FullScreenLayout>}
                 {!fullScreen && <CenterLayout>{children}</CenterLayout>}
-              </>
+              </SafeArea>
             )}
           </ModalDialog>
         </Modal>

@@ -139,6 +139,7 @@ export function FileManagementDialog() {
   return (
     <ResponsiveDialog
       fullWidth
+      fullScreen={false}
       open={fileManagementDialogOpen}
       onClose={closeFileManagementDialog}
     >
