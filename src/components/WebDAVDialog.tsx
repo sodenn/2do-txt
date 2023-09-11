@@ -67,66 +67,6 @@ export function WebDAVDialog() {
 
   const disabled = !username || !password || !url;
 
-  const dialogContent = (
-    <Stack sx={{ mt: 2 }} spacing={2}>
-      <FormControl>
-        <FormLabel>{t("URL")}</FormLabel>
-        <Input
-          value={url}
-          onChange={(ev) => setUrl(ev.target.value)}
-          autoFocus
-          fullWidth
-          variant="outlined"
-          type="url"
-          slotProps={{
-            input: {
-              "aria-label": "URL",
-            },
-          }}
-        />
-        <FormHelperText>{t("WebDAV example URL")}</FormHelperText>
-      </FormControl>
-      <FormControl>
-        <FormLabel>{t("Username")}</FormLabel>
-        <Input
-          value={username}
-          onChange={(ev) => setUsername(ev.target.value)}
-          fullWidth
-          variant="outlined"
-          type="text"
-          slotProps={{
-            input: {
-              "aria-label": "Username",
-            },
-          }}
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>{t("Password")}</FormLabel>
-        <Input
-          value={password}
-          onChange={(ev) => setPassword(ev.target.value)}
-          fullWidth
-          variant="outlined"
-          type="password"
-          slotProps={{
-            input: {
-              "aria-label": "Password",
-            },
-          }}
-        />
-      </FormControl>
-      {error && (
-        <Alert color="warning" variant="soft">
-          <div>
-            <Typography level="title-md">{t("Connection Error")}</Typography>
-            <Typography level="body-sm">{error.message}</Typography>
-          </div>
-        </Alert>
-      )}
-    </Stack>
-  );
-
   return (
     <ResponsiveDialog
       fullWidth
@@ -136,7 +76,67 @@ export function WebDAVDialog() {
       onEnter={handleEnter}
     >
       <ResponsiveDialogTitle>{t("WebDAV Server")}</ResponsiveDialogTitle>
-      <ResponsiveDialogContent>{dialogContent}</ResponsiveDialogContent>
+      <ResponsiveDialogContent>
+        <Stack spacing={2}>
+          <FormControl>
+            <FormLabel>{t("URL")}</FormLabel>
+            <Input
+              value={url}
+              onChange={(ev) => setUrl(ev.target.value)}
+              autoFocus
+              fullWidth
+              variant="outlined"
+              type="url"
+              slotProps={{
+                input: {
+                  "aria-label": "URL",
+                },
+              }}
+            />
+            <FormHelperText>{t("WebDAV example URL")}</FormHelperText>
+          </FormControl>
+          <FormControl>
+            <FormLabel>{t("Username")}</FormLabel>
+            <Input
+              value={username}
+              onChange={(ev) => setUsername(ev.target.value)}
+              fullWidth
+              variant="outlined"
+              type="text"
+              slotProps={{
+                input: {
+                  "aria-label": "Username",
+                },
+              }}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>{t("Password")}</FormLabel>
+            <Input
+              value={password}
+              onChange={(ev) => setPassword(ev.target.value)}
+              fullWidth
+              variant="outlined"
+              type="password"
+              slotProps={{
+                input: {
+                  "aria-label": "Password",
+                },
+              }}
+            />
+          </FormControl>
+          {error && (
+            <Alert color="warning" variant="soft">
+              <div>
+                <Typography level="title-md">
+                  {t("Connection Error")}
+                </Typography>
+                <Typography level="body-sm">{error.message}</Typography>
+              </div>
+            </Alert>
+          )}
+        </Stack>
+      </ResponsiveDialogContent>
       <ResponsiveDialogActions>
         <Button
           aria-label="Connect"
