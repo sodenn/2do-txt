@@ -42,7 +42,7 @@ export function TagBox(props: TagBoxProps) {
         borderRadius: "sm",
         whiteSpace: "nowrap",
         py: 0, // prevent overlapping of tags in case of multiline text
-        ...(completed && { p: 0 }), // prevent the interruption of strikethrough text
+        ...((completed || !outlined) && { p: 0 }), // prevent the interruption of strikethrough text
         ...other.sx,
       }}
       {...other}
