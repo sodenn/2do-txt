@@ -102,7 +102,7 @@ export function TaskDialog() {
     });
   };
 
-  const handleExit = () => {
+  const handleExited = () => {
     cleanupTaskDialog();
     setValue(undefined);
     setSelectedTaskList(undefined);
@@ -115,7 +115,7 @@ export function TaskDialog() {
       open={open}
       onClose={handleClose}
       onEnter={handleEnter}
-      onExit={handleExit}
+      onExited={handleExited}
     >
       <ResponsiveDialogTitle>
         {task?._id ? t("Edit Task") : t("Create Task")}

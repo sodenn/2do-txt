@@ -13,6 +13,6 @@ export const useTaskDialogStore = create<TaskDialogStoreInterface>((set) => ({
   open: false,
   task: undefined,
   openTaskDialog: (task?: Task) => set({ open: true, task }),
-  closeTaskDialog: () => set((state) => ({ open: false, task: state.task })),
+  closeTaskDialog: () => set({ open: false }),
   cleanupTaskDialog: () => set({ open: false, task: undefined }),
 }));
