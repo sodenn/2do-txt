@@ -149,6 +149,7 @@ test.describe("Task View", () => {
       }
       await expect(page.getByTestId("task")).toHaveCount(8);
       const taskItem = page.getByTestId("task").nth(1);
+      await taskItem.hover();
       await taskItem.getByLabel("Delete task").click();
       await page.getByRole("button", { name: "Delete" }).click();
       await expect(page.getByTestId("task")).toHaveCount(7);
