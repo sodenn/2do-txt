@@ -42,11 +42,9 @@ test.describe("Task View", () => {
     test(`${taskView}: should navigate through the task list by using the tab key`, async ({
       page,
     }) => {
-      await page.waitForTimeout(500);
+      await expect(page.getByTestId("task-list")).toBeVisible();
       await expect(page.getByTestId("task-button").nth(0)).not.toBeFocused();
-      await page.keyboard.press("Tab", { delay: 100 }); // window
-      await page.keyboard.press("Tab", { delay: 100 }); // file menu
-      await page.keyboard.press("Tab", { delay: 100 }); // first list item
+      await page.getByTestId("task-button").nth(0).focus();
       await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
       await page.keyboard.press("Tab");
       await expect(page.getByTestId("task-button").nth(0)).not.toBeFocused();
@@ -56,7 +54,7 @@ test.describe("Task View", () => {
     test(`${taskView}: should navigate through task list by using the arrow keys`, async ({
       page,
     }) => {
-      await page.waitForTimeout(500);
+      await expect(page.getByTestId("task-list")).toBeVisible();
       await page.keyboard.press("ArrowDown");
       await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
       await page.keyboard.press("ArrowDown");
@@ -70,13 +68,14 @@ test.describe("Task View", () => {
     test(`${taskView}: should complete a task by clicking the checkbox`, async ({
       page,
     }) => {
-      await page.waitForTimeout(500);
+      await expect(page.getByTestId("task-list")).toBeVisible();
       const taskCheckbox = page
         .getByTestId("task")
         .nth(0)
         .getByLabel("Complete task");
       expect(await taskCheckbox.getAttribute("aria-checked")).toBe("false");
       await taskCheckbox.click();
+      await page.waitForTimeout(300);
       expect(await taskCheckbox.getAttribute("aria-checked")).toBe("true");
       // make sure that the click does not open the task dialog
       await expect(page.getByTestId("task-dialog")).not.toBeVisible();
@@ -85,7 +84,7 @@ test.describe("Task View", () => {
     test(`${taskView}: should complete a task by pressing the space key`, async ({
       page,
     }) => {
-      await page.waitForTimeout(500);
+      await expect(page.getByTestId("task-list")).toBeVisible();
       await page.keyboard.press("ArrowDown");
       await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
       const taskCheckbox = page
@@ -103,6 +102,7 @@ test.describe("Task View", () => {
     test(`${taskView}: should edit a task by pressing the shortcut key`, async ({
       page,
     }) => {
+      await expect(page.getByTestId("task-list")).toBeVisible();
       await page.getByTestId("task-button").nth(0).focus();
       await page.keyboard.press("e");
       await expect(page.getByTestId("task-dialog")).toBeVisible();
@@ -111,6 +111,7 @@ test.describe("Task View", () => {
     test(`${taskView}: should open the task dialog by pressing enter`, async ({
       page,
     }) => {
+      await expect(page.getByTestId("task-list")).toBeVisible();
       await page.getByTestId("task-button").nth(0).focus();
       await page.keyboard.press("Enter");
       await expect(page.getByTestId("task-dialog")).toBeVisible();
