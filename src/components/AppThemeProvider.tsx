@@ -207,7 +207,7 @@ function ApplyTheme() {
     return () => {
       observer.disconnect();
     };
-  }, [mode, setMode]);
+  }, [mode, setMaterialMode, setMode]);
 
   return null;
 }
