@@ -1,3 +1,4 @@
+import { MaterialTheme } from "@/components/MaterialTheme";
 import { setKeyboardStyle } from "@/native-api/keyboard";
 import { setPreferencesItem } from "@/native-api/preferences";
 import { hideSplashScreen } from "@/native-api/splash-screen";
@@ -7,6 +8,7 @@ import { CssBaseline, extendTheme } from "@mui/joy";
 import type { PaletteRange } from "@mui/joy/styles";
 import { CssVarsProvider } from "@mui/joy/styles";
 import { useColorScheme } from "@mui/joy/styles/CssVarsProvider";
+import { useColorScheme as useMaterialColorScheme } from "@mui/material/styles/CssVarsProvider";
 import { PropsWithChildren, useEffect, useState } from "react";
 
 declare module "@mui/joy/styles" {
@@ -177,10 +179,12 @@ const theme = extendTheme({
 
 function ApplyTheme() {
   const mode = useThemeStore((state) => state.mode);
+  const { setMode: setMaterialMode } = useMaterialColorScheme();
   const { setMode } = useColorScheme();
 
   useEffect(() => {
     setMode(mode);
+    setMaterialMode(mode);
     setStatusBarStyling(mode);
     setPreferencesItem("theme-mode", mode);
     setKeyboardStyle(mode);
@@ -222,9 +226,11 @@ export function AppThemeProvider({ children }: PropsWithChildren) {
 
   return (
     <CssVarsProvider theme={theme} defaultMode={mode} disableNestedContext>
-      <CssBaseline />
-      <ApplyTheme />
-      {children}
+      <MaterialTheme>
+        <CssBaseline />
+        <ApplyTheme />
+        {children}
+      </MaterialTheme>
     </CssVarsProvider>
   );
 }

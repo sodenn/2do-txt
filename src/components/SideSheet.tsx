@@ -1,5 +1,4 @@
 import { Filter } from "@/components/Filter";
-import { MaterialTheme } from "@/components/MaterialTheme";
 import { Settings } from "@/components/Settings";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useScrollingStore } from "@/stores/scrolling-store";
@@ -148,62 +147,60 @@ export function SideSheet() {
   }, [hideFilter]);
 
   return (
-    <MaterialTheme>
-      <SwipeableDrawer
-        disableSwipeToOpen={platform === "web"}
-        data-shortcut="m"
-        data-shortcut-ignore={!matches}
-        data-testid="Menu"
-        aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
-        anchor="left"
-        variant={matches ? "persistent" : undefined}
-        open={sideSheetOpen}
-        sx={{
-          "& .MuiDrawer-paper": {
-            backgroundImage: "unset",
-            boxSizing: "border-box",
-            ...(!matches && {
-              width: drawerWidth,
-            }),
-          },
-          ...(matches && {
+    <SwipeableDrawer
+      disableSwipeToOpen={platform === "web"}
+      data-shortcut="m"
+      data-shortcut-ignore={!matches}
+      data-testid="Menu"
+      aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
+      anchor="left"
+      variant={matches ? "persistent" : undefined}
+      open={sideSheetOpen}
+      sx={{
+        "& .MuiDrawer-paper": {
+          backgroundImage: "unset",
+          boxSizing: "border-box",
+          ...(!matches && {
             width: drawerWidth,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-              borderRight:
-                mode === "light"
-                  ? "1px solid var(--joy-palette-neutral-300)"
-                  : "1px solid var(--joy-palette-neutral-700)",
-            },
           }),
-        }}
-        onOpen={openSideSheet}
-        onClose={closeSideSheet}
-      >
-        <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
-          <SaveTabList sx={{ flex: "none" }}>
-            <TabList sx={{ height: 57 }}>
-              {!hideFilter && (
-                <Tab value="filter" aria-label="Filter">
-                  {t("Filter")}
-                </Tab>
-              )}
-              <Tab value="settings" aria-label="Settings">
-                {t("Settings")}
+        },
+        ...(matches && {
+          width: drawerWidth,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            borderRight:
+              mode === "light"
+                ? "1px solid var(--joy-palette-neutral-300)"
+                : "1px solid var(--joy-palette-neutral-700)",
+          },
+        }),
+      }}
+      onOpen={openSideSheet}
+      onClose={closeSideSheet}
+    >
+      <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
+        <SaveTabList sx={{ flex: "none" }}>
+          <TabList sx={{ height: 57 }}>
+            {!hideFilter && (
+              <Tab value="filter" aria-label="Filter">
+                {t("Filter")}
               </Tab>
-            </TabList>
-          </SaveTabList>
-          <SaveAreaContent sx={{ overflowY: "auto", flex: "auto" }}>
-            <TabPanel value="filter">
-              <Filter />
-            </TabPanel>
-            <TabPanel value="settings">
-              <Settings />
-            </TabPanel>
-          </SaveAreaContent>
-        </Tabs>
-      </SwipeableDrawer>
-    </MaterialTheme>
+            )}
+            <Tab value="settings" aria-label="Settings">
+              {t("Settings")}
+            </Tab>
+          </TabList>
+        </SaveTabList>
+        <SaveAreaContent sx={{ overflowY: "auto", flex: "auto" }}>
+          <TabPanel value="filter">
+            <Filter />
+          </TabPanel>
+          <TabPanel value="settings">
+            <Settings />
+          </TabPanel>
+        </SaveAreaContent>
+      </Tabs>
+    </SwipeableDrawer>
   );
 }

@@ -1,4 +1,3 @@
-import { MaterialTheme } from "@/components/MaterialTheme";
 import useMediaQuery from "@/utils/useMediaQuery";
 import {
   Button,
@@ -207,70 +206,68 @@ export const LocalizationDatePicker = forwardRef<
   };
 
   return (
-    <MaterialTheme>
-      <LocalizationProvider
-        localeText={
-          language === "de"
-            ? deDE.components.MuiLocalizationProvider.defaultProps.localeText
-            : undefined
-        }
-        dateAdapter={AdapterDateFns}
-        adapterLocale={localeMap[language]}
-      >
-        <DatePicker
-          {...rest}
-          minDate={minDate}
-          maxDate={maxDate}
-          onChange={handleChange}
-          slots={{
-            field: JoyDateField,
-            // @ts-ignore
-            openPickerButton: JoyOpenPickerButton,
-            actionBar: JoyActionBar,
-          }}
-          ref={ref}
-          value={value}
-          selectedSections={selectedSections}
-          onSelectedSectionsChange={setSelectedSections}
-          slotProps={{
-            textField: (props) => ({
-              fullWidth: true,
-              inputProps: {
-                ...props.inputProps,
-                "data-testid": `${ariaLabel} textfield`,
-                "aria-label": ariaLabel,
-              },
-              onDoubleClick: handleDoubleClick,
-              onKeyDown: handleKeyDown,
-            }),
-            field: () => ({
-              inputProps: {
-                // @ts-ignore
-                "data-testid": `${ariaLabel} textfield`,
-                "aria-label": ariaLabel,
-              },
-            }),
-            openPickerButton: {
+    <LocalizationProvider
+      localeText={
+        language === "de"
+          ? deDE.components.MuiLocalizationProvider.defaultProps.localeText
+          : undefined
+      }
+      dateAdapter={AdapterDateFns}
+      adapterLocale={localeMap[language]}
+    >
+      <DatePicker
+        {...rest}
+        minDate={minDate}
+        maxDate={maxDate}
+        onChange={handleChange}
+        slots={{
+          field: JoyDateField,
+          // @ts-ignore
+          openPickerButton: JoyOpenPickerButton,
+          actionBar: JoyActionBar,
+        }}
+        ref={ref}
+        value={value}
+        selectedSections={selectedSections}
+        onSelectedSectionsChange={setSelectedSections}
+        slotProps={{
+          textField: (props) => ({
+            fullWidth: true,
+            inputProps: {
+              ...props.inputProps,
+              "data-testid": `${ariaLabel} textfield`,
+              "aria-label": ariaLabel,
+            },
+            onDoubleClick: handleDoubleClick,
+            onKeyDown: handleKeyDown,
+          }),
+          field: () => ({
+            inputProps: {
               // @ts-ignore
-              "data-testid": `${ariaLabel} pickerbutton`,
+              "data-testid": `${ariaLabel} textfield`,
+              "aria-label": ariaLabel,
             },
-            actionBar: {
-              actions: desktop ? ["clear"] : ["clear", "accept"],
-            },
-            popper: {
-              modifiers: [
-                {
-                  name: "flip",
-                  options: {
-                    altBoundary: false,
-                    fallbackPlacements: ["right", "left"],
-                  },
+          }),
+          openPickerButton: {
+            // @ts-ignore
+            "data-testid": `${ariaLabel} pickerbutton`,
+          },
+          actionBar: {
+            actions: desktop ? ["clear"] : ["clear", "accept"],
+          },
+          popper: {
+            modifiers: [
+              {
+                name: "flip",
+                options: {
+                  altBoundary: false,
+                  fallbackPlacements: ["right", "left"],
                 },
-              ],
-            },
-          }}
-        />
-      </LocalizationProvider>
-    </MaterialTheme>
+              },
+            ],
+          },
+        }}
+      />
+    </LocalizationProvider>
   );
 });
