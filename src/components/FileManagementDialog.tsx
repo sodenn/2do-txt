@@ -91,6 +91,7 @@ interface FileListItemProps {
   onDownload: (filePath: string) => void;
   markedForClosing?: string;
   onMarkedForClosing: (filePath?: string) => void;
+  disableDrag: boolean;
 }
 
 interface FileMenuProps {
@@ -312,6 +313,7 @@ const FileList = memo((props: FileListProps) => {
               onClose={handleCloseFile}
               markedForClosing={markedForClosing}
               onMarkedForClosing={setMarkedForClosing}
+              disableDrag={items.length === 1}
             />
           ))}
         </SortableContext>
@@ -327,6 +329,7 @@ function FileListItem(props: FileListItemProps) {
     onClose,
     onMarkedForClosing,
     onDownload,
+    disableDrag,
   } = props;
   const language = useSettingsStore((state) => state.language);
   const { getCloudFileRef } = useCloudStorage();
@@ -336,7 +339,7 @@ function FileListItem(props: FileListItemProps) {
     ? parseDate(cloudFileRef.lastSync)
     : undefined;
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: filePath });
+    useSortable({ disabled: disableDrag, id: filePath });
   const deleteFile = useShouldDeleteFile();
   const { t } = useTranslation();
   const showClosePrompt = markedForClosing === filePath;
@@ -390,7 +393,7 @@ function FileListItem(props: FileListItemProps) {
         {...attributes}
         sx={{
           cursor: "pointer",
-          display: showClosePrompt ? "none" : "inline-flex",
+          display: showClosePrompt || disableDrag ? "none" : "inline-flex",
         }}
         aria-label={`Draggable file ${filePath}`}
       >

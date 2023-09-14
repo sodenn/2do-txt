@@ -49,18 +49,11 @@ export const TaskList = memo((props: TaskListProps) => {
 
   return (
     <>
-      {showHeader && <TaskListHeader fileName={fileName} filePath={filePath} />}
-      {!hasItems && (
-        <Typography
-          sx={{ pt: 1, px: 2, pb: 3 }}
-          level="body-md"
-          color="neutral"
-        >
-          {t("No tasks")}
-        </Typography>
-      )}
-      {hasItems && (
-        <List data-testid="task-list" sx={{ pl: { xs: 1, sm: 0 } }}>
+      {(hasItems || showHeader) && (
+        <List data-testid="task-list" sx={{ pl: { xs: 0.5, sm: 0 } }}>
+          {showHeader && (
+            <TaskListHeader fileName={fileName} filePath={filePath} />
+          )}
           {taskGroups.map((group) => (
             <ListItem nested key={group.label}>
               {group.label && <TaskListSubheader title={group.label} />}
@@ -87,6 +80,15 @@ export const TaskList = memo((props: TaskListProps) => {
             </ListItem>
           ))}
         </List>
+      )}
+      {!hasItems && (
+        <Typography
+          sx={{ pt: 1, px: 2, pb: 3 }}
+          level="body-md"
+          color="neutral"
+        >
+          {t("No tasks")}
+        </Typography>
       )}
     </>
   );

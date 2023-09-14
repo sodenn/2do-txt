@@ -24,7 +24,9 @@ export function TaskListHeader(props: TaskListHeaderProps) {
   );
   return (
     <ListItemButton
-      sx={{ mx: 1, p: 1, borderRadius: "sm" }}
+      sx={{
+        borderRadius: "sm",
+      }}
       tabIndex={-1}
       onClick={() => setActiveTaskListPath(filePath)}
     >

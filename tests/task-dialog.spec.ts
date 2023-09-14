@@ -221,10 +221,15 @@ test.describe("Task dialog", () => {
     await getEditor(page).type("Play soccer with friends @Hpb", delay);
 
     await page.keyboard.press("ArrowLeft");
+    await page.waitForTimeout(50);
     await getEditor(page).press("Backspace");
+    await page.waitForTimeout(50);
     await getEditor(page).press("o");
+    await page.waitForTimeout(50);
     await page.keyboard.press("ArrowRight");
+    await page.waitForTimeout(50);
     await getEditor(page).type("by ", delay);
+    await page.waitForTimeout(50);
 
     // make sure context was added
     await expect(page.locator('[data-beautiful-mention="@Hobby"]')).toHaveText(

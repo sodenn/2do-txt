@@ -200,12 +200,12 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     setSelectedProvider(event.target.value as Provider);
   };
 
-  const handleExited = () => {
+  const reset = useCallback(() => {
     cleanupFileCreateDialog();
     setFileName("");
     setSkip(undefined);
     setSelectedProvider("no-sync");
-  };
+  }, [cleanupFileCreateDialog]);
 
   const init = useCallback(async () => {
     if (!open || fileName) {
@@ -225,11 +225,19 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     if (!exists) {
       await createTodoFileAndSync(uniqueFileName);
       onClose();
+      reset();
       setSkip(true);
     } else {
       setSkip(false);
     }
-  }, [open, fileName, cloudStorages.length, createTodoFileAndSync, onClose]);
+  }, [
+    open,
+    fileName,
+    cloudStorages.length,
+    createTodoFileAndSync,
+    onClose,
+    reset,
+  ]);
 
   useEffect(() => {
     init();
@@ -240,7 +248,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
       fullWidth
       open={open && typeof skip !== "undefined" && !skip}
       onClose={onClose}
-      onExited={handleExited}
+      onExited={reset}
     >
       <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
       <ResponsiveDialogContent>
