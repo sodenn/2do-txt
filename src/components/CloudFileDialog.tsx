@@ -23,11 +23,11 @@ import {
 } from "@/utils/CloudStorage";
 import { getDoneFilePath } from "@/utils/todo-files";
 import { useTask } from "@/utils/useTask";
-import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
-import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
-import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
-import KeyboardReturnOutlinedIcon from "@mui/icons-material/KeyboardReturnOutlined";
-import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import FolderIcon from "@mui/icons-material/Folder";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import SyncIcon from "@mui/icons-material/Sync";
 import {
   Box,
   Button,
@@ -309,7 +309,7 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
                 {loading === true ? (
                   <CircularProgress size="sm" />
                 ) : (
-                  <KeyboardReturnOutlinedIcon />
+                  <KeyboardReturnIcon />
                 )}
               </ListItemDecorator>{" "}
               {previousPaths.at(-1) || t("Back")}
@@ -373,7 +373,7 @@ function CloudFileButton(props: CloudFileButtonProps) {
       selected={selectedFile && cloudFile.path === selectedFile.path}
     >
       <ListItemDecorator>
-        <InsertDriveFileOutlinedIcon />
+        <InsertDriveFileIcon />
       </ListItemDecorator>
       <ListItemContent>
         <Typography level="title-sm">{cloudFile.name}</Typography>
@@ -383,7 +383,7 @@ function CloudFileButton(props: CloudFileButtonProps) {
       </ListItemContent>
       {disableItem(cloudFile) && (
         <ListItemDecorator>
-          <SyncOutlinedIcon color="disabled" fontSize="small" />
+          <SyncIcon color="disabled" fontSize="small" />
         </ListItemDecorator>
       )}
     </ListItemButton>
@@ -395,7 +395,7 @@ function CloudFolderButton(props: CloudFolderButtonProps) {
   return (
     <ListItemButton onClick={onClick} disabled={disabled}>
       <ListItemDecorator>
-        <FolderOutlinedIcon />
+        <FolderIcon />
       </ListItemDecorator>
       <ListItemContent>
         <Typography level="title-sm">{cloudDirectory.name}</Typography>
@@ -407,7 +407,7 @@ function CloudFolderButton(props: CloudFolderButtonProps) {
         {loading ? (
           <CircularProgress size="sm" />
         ) : (
-          <ArrowForwardIosOutlinedIcon color="disabled" fontSize="small" />
+          <ArrowForwardIosIcon color="disabled" fontSize="small" />
         )}
       </ListItemDecorator>
     </ListItemButton>

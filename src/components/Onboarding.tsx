@@ -5,7 +5,7 @@ import logo from "@/images/logo.png";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
-import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
+import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import { Box, Button, Stack, styled, Typography } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
@@ -53,7 +53,7 @@ export function Onboarding() {
           aria-label={
             platform === "desktop" ? "Open todo.txt" : "Import todo.txt"
           }
-          startDecorator={<FolderOpenOutlinedIcon />}
+          startDecorator={<FolderOpenIcon />}
         >
           {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
         </Button>

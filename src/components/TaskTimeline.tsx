@@ -11,10 +11,10 @@ import { useMobileScreen } from "@/utils/useMobileScreen";
 import { useTask } from "@/utils/useTask";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Delete } from "@mui/icons-material";
-import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
-import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import AddIcon from "@mui/icons-material/Add";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import {
@@ -206,7 +206,7 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
             variant="plain"
             size={mobileScreen ? "sm" : "md"}
           >
-            <AddOutlinedIcon />
+            <AddIcon />
           </IconButton>
           <TimelineConnector sx={{ borderColor: "primary.outlinedBorder" }} />
         </Box>
@@ -346,7 +346,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
                   gap: 0.5,
                 }}
               >
-                <AccessAlarmOutlinedIcon fontSize="small" />
+                <AccessAlarmIcon fontSize="small" />
                 {formatLocaleDate(task.dueDate, language)}
               </Typography>
             )}
@@ -361,7 +361,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
                   gap: 0.5,
                 }}
               >
-                <CheckCircleOutlinedIcon fontSize="small" />
+                <CheckCircleIcon fontSize="small" />
                 {formatLocaleDate(task.completionDate, language)}
               </Typography>
             )}
@@ -375,7 +375,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
                   gap: 0.5,
                 }}
               >
-                <AccessTimeOutlinedIcon fontSize="small" />
+                <AccessTimeIcon fontSize="small" />
                 {formatLocaleDate(task.creationDate, language)}
               </Typography>
             )}
@@ -464,9 +464,7 @@ function TaskDate({ task }: WithTimelineTask) {
         fontSize: "0.9em",
       }}
     >
-      {!!dueDate && !completionDate && (
-        <AccessAlarmOutlinedIcon fontSize="small" />
-      )}
+      {!!dueDate && !completionDate && <AccessAlarmIcon fontSize="small" />}
       {timelineDate && format(timelineDate, locales[language])}
       {flags.firstWithoutDate && t("Without date")}
     </Typography>

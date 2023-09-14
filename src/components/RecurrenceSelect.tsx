@@ -1,6 +1,6 @@
 import { getRecValueMatch } from "@/utils/task";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
-import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import {
   FormControl,
   FormLabel,
@@ -117,7 +117,7 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
                 onClick={() => handleChangeStrict(!strict)}
               >
                 {!strict && <AddCircleOutlineRoundedIcon />}
-                {strict && <AddCircleOutlinedIcon />}
+                {strict && <AddCircleIcon />}
               </IconButton>
             </Tooltip>
           }

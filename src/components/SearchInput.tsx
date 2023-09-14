@@ -1,5 +1,5 @@
 import { useForwardRef } from "@/utils/useForwardRef";
-import CloseOutlined from "@mui/icons-material/CloseOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 import { IconButton, Input, InputProps, styled } from "@mui/joy";
 import { forwardRef } from "react";
@@ -72,7 +72,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
                   visibility: value ? "visible" : "hidden",
                 }}
               >
-                <CloseOutlined fontSize="inherit" />
+                <CloseIcon fontSize="inherit" />
               </IconButton>
             </div>
           }

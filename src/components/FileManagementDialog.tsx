@@ -48,18 +48,18 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
+import AddIcon from "@mui/icons-material/Add";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CancelIcon from "@mui/icons-material/Cancel";
-import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import DeleteForever from "@mui/icons-material/DeleteForever";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import DownloadIcon from "@mui/icons-material/Download";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
+import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
+import SyncIcon from "@mui/icons-material/Sync";
 import {
   Box,
   Button,
@@ -215,20 +215,20 @@ function FileManagementActions() {
         variant="solid"
         size={buttonSize}
         aria-label="Choose action"
-        endDecorator={<ArrowDropDown />}
+        endDecorator={<ArrowDropDownIcon />}
       >
         {t("Choose action")}
       </MenuButton>
       <Menu placement="bottom-end">
         <MenuItem onClick={handleCreateFile}>
           <ListItemDecorator>
-            <AddOutlinedIcon />
+            <AddIcon />
           </ListItemDecorator>
           {t("Create")}
         </MenuItem>
         <MenuItem onClick={handleOpenFile}>
           <ListItemDecorator>
-            <FolderOpenOutlinedIcon />
+            <FolderOpenIcon />
           </ListItemDecorator>
           {platform === "desktop" ? t("Open") : t("Import")}
         </MenuItem>
@@ -370,8 +370,8 @@ function FileListItem(props: FileListItemProps) {
             </Tooltip>
             <Tooltip title={deleteFile ? t("Delete") : t("Close")}>
               <IconButton color="danger" onClick={() => onClose(filePath)}>
-                {deleteFile && <DeleteForever />}
-                {!deleteFile && <CloseOutlinedIcon />}
+                {deleteFile && <DeleteForeverIcon />}
+                {!deleteFile && <CloseIcon />}
               </IconButton>
             </Tooltip>
           </Stack>
@@ -404,7 +404,7 @@ function FileListItem(props: FileListItemProps) {
           <StartEllipsis>{filePath}</StartEllipsis>
           {cloudFileRef && (
             <Stack spacing={1} direction="row" alignItems="center">
-              <SyncOutlinedIcon fontSize="inherit" />
+              <SyncIcon fontSize="inherit" />
               <Typography level="body-sm">
                 {cloudFileLastModified &&
                   formatLocalDateTime(cloudFileLastModified, language)}
@@ -627,8 +627,8 @@ function FileMenu(props: FileMenuProps) {
         )}
         <MenuItem onClick={handleCloseFile} aria-label="Delete file">
           <ListItemDecorator>
-            {deleteFile && <DeleteForever />}
-            {!deleteFile && <CloseOutlinedIcon />}
+            {deleteFile && <DeleteForeverIcon />}
+            {!deleteFile && <CloseIcon />}
           </ListItemDecorator>{" "}
           {deleteFile ? t("Delete") : t("Close")}
         </MenuItem>

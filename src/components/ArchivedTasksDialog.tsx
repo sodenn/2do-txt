@@ -7,7 +7,7 @@ import { TaskBody } from "@/components/TaskBody";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { Task } from "@/utils/task";
 import { useTask } from "@/utils/useTask";
-import RestoreOutlinedIcon from "@mui/icons-material/RestoreOutlined";
+import RestoreIcon from "@mui/icons-material/Restore";
 import { IconButton, List, ListItem, Tooltip } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -67,7 +67,7 @@ export function ArchivedTasksDialog() {
                     onClick={() => handleRestore(task)}
                     aria-label="restore"
                   >
-                    <RestoreOutlinedIcon />
+                    <RestoreIcon />
                   </IconButton>
                 </Tooltip>
               }

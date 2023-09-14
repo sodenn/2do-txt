@@ -4,7 +4,7 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "@/utils/CloudStorage";
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
+import CloudIcon from "@mui/icons-material/Cloud";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   Button,
@@ -51,7 +51,7 @@ export function CloudFileImportButtons() {
         color="neutral"
         variant="outlined"
         aria-label="Import todo.txt from cloud storage"
-        startDecorator={<CloudOutlinedIcon />}
+        startDecorator={<CloudIcon />}
         endDecorator={<KeyboardArrowDownIcon />}
       >
         {t("Import from cloud storage", { provider: t("cloud storage") })}

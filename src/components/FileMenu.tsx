@@ -6,11 +6,11 @@ import { useFileManagementDialogStore } from "@/stores/file-management-dialog-st
 import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
 import { useTask } from "@/utils/useTask";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import AddIcon from "@mui/icons-material/Add";
 import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
-import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 import {
   Divider,
@@ -81,7 +81,7 @@ export function FileMenu() {
           key={filePath}
         >
           <ListItemDecorator>
-            <InsertDriveFileOutlinedIcon fontSize="small" />
+            <InsertDriveFileIcon fontSize="small" />
           </ListItemDecorator>
           <StartEllipsis>{filePath}</StartEllipsis>
         </MenuItem>,
@@ -119,7 +119,7 @@ export function FileMenu() {
     menuItems.push(
       <MenuItem onClick={handleCreateFile} key="Create file">
         <ListItemDecorator>
-          <AddOutlinedIcon fontSize="small" />
+          <AddIcon fontSize="small" />
         </ListItemDecorator>{" "}
         {t("Create")}
       </MenuItem>,
@@ -135,7 +135,7 @@ export function FileMenu() {
         variant="soft"
         aria-label="File menu"
         startDecorator={<img src={logo} alt="Logo" height={22} />}
-        endDecorator={<ArrowDropDown />}
+        endDecorator={<ArrowDropDownIcon />}
       >
         <StartEllipsis>
           {activeTaskList ? activeTaskList.fileName : "2do.txt"}

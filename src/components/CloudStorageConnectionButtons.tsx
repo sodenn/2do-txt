@@ -4,7 +4,7 @@ import {
   useCloudStorage,
 } from "@/utils/CloudStorage";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
+import CloudIcon from "@mui/icons-material/Cloud";
 import {
   Button,
   Dropdown,
@@ -83,7 +83,7 @@ export function CloudStorageConnectionButtons({
         color="neutral"
         variant="outlined"
         aria-label="Connect to cloud storage"
-        startDecorator={<CloudOutlinedIcon />}
+        startDecorator={<CloudIcon />}
         endDecorator={<ArrowDropDown />}
       >
         {status === "connect"
