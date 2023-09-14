@@ -18,7 +18,7 @@ jobs:
       - run: npm ci
       - run: npm test
   e2e:
-    name: 'e2e Tests - ${{ matrix.project }}'
+    name: 'e2e Tests - ${{ matrix.shard }}'
     timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
