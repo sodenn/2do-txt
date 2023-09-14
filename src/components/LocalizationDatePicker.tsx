@@ -128,7 +128,7 @@ function JoyOpenPickerButton(props: IconButtonProps) {
 }
 
 function JoyActionBar(props: PickersActionBarProps) {
-  const { onClear, actions, className } = props;
+  const { onClear, onAccept, actions, className } = props;
   const localeText = useLocaleText();
 
   if (actions == null || actions.length === 0) {
@@ -141,6 +141,12 @@ function JoyActionBar(props: PickersActionBarProps) {
         return (
           <Button size="sm" variant="solid" onClick={onClear} key={actionType}>
             {localeText.clearButtonLabel}
+          </Button>
+        );
+      case "accept":
+        return (
+          <Button size="sm" variant="solid" onClick={onAccept} key={actionType}>
+            {localeText.okButtonLabel}
           </Button>
         );
       default:
@@ -249,7 +255,7 @@ export const LocalizationDatePicker = forwardRef<
               "data-testid": `${ariaLabel} pickerbutton`,
             },
             actionBar: {
-              actions: ["clear"],
+              actions: desktop ? ["clear"] : ["clear", "accept"],
             },
             popper: {
               modifiers: [

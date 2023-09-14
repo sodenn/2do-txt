@@ -18,7 +18,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
       .getByRole("button", { name: "Toggle menu" })
       .evaluate((e) => e.blur());
   }
-  await page.waitForTimeout(200);
+  await page.waitForTimeout(500);
 });
 
 test.describe("Task View", () => {
