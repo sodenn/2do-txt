@@ -8,14 +8,14 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("Archiving", () => {
-  test("should allow me archive tasks automatically", async ({ page }) => {
+  test("should allow me to archive tasks automatically", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("combobox", { name: "Select archive mode" }).click();
     await page.getByRole("option", { name: "Archive automatically" }).click();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
-  test("should allow me archive tasks manually", async ({ page }) => {
+  test("should allow me to archive tasks manually", async ({ page }) => {
     await page.getByRole("combobox", { name: "Select archive mode" }).click();
     await page.getByRole("option", { name: "Archive manually" }).click();
     await expect(page.getByTestId("task")).toHaveCount(8);
