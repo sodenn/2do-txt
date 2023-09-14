@@ -18,7 +18,6 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
       .getByRole("button", { name: "Toggle menu" })
       .evaluate((e) => e.blur());
   }
-  await page.waitForTimeout(500);
 });
 
 test.describe("Task View", () => {
@@ -43,10 +42,11 @@ test.describe("Task View", () => {
     test(`${taskView}: should navigate through the task list by using the tab key`, async ({
       page,
     }) => {
+      await page.waitForTimeout(500);
       await expect(page.getByTestId("task-button").nth(0)).not.toBeFocused();
-      await page.keyboard.press("Tab"); // window
-      await page.keyboard.press("Tab"); // file menu
-      await page.keyboard.press("Tab"); // first list item
+      await page.keyboard.press("Tab", { delay: 100 }); // window
+      await page.keyboard.press("Tab", { delay: 100 }); // file menu
+      await page.keyboard.press("Tab", { delay: 100 }); // first list item
       await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
       await page.keyboard.press("Tab");
       await expect(page.getByTestId("task-button").nth(0)).not.toBeFocused();
@@ -56,6 +56,7 @@ test.describe("Task View", () => {
     test(`${taskView}: should navigate through task list by using the arrow keys`, async ({
       page,
     }) => {
+      await page.waitForTimeout(500);
       await page.keyboard.press("ArrowDown");
       await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
       await page.keyboard.press("ArrowDown");
@@ -69,6 +70,7 @@ test.describe("Task View", () => {
     test(`${taskView}: should complete a task by clicking the checkbox`, async ({
       page,
     }) => {
+      await page.waitForTimeout(500);
       const taskCheckbox = page
         .getByTestId("task")
         .nth(0)
@@ -83,7 +85,9 @@ test.describe("Task View", () => {
     test(`${taskView}: should complete a task by pressing the space key`, async ({
       page,
     }) => {
+      await page.waitForTimeout(500);
       await page.keyboard.press("ArrowDown");
+      await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
       const taskCheckbox = page
         .getByTestId("task")
         .nth(0)
