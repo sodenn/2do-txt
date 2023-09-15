@@ -1,5 +1,5 @@
+import { hasTouchScreen } from "@/native-api/platform";
 import { usePlatformStore } from "@/stores/platform-store";
-import useMediaQuery from "@/utils/useMediaQuery";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -279,7 +279,7 @@ export function Editor(props: EditorProps) {
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
   const [mentionMenuOpen, setMentionMenuOpen] = useState(false);
-  const hasTouchscreen = useMediaQuery("@media (pointer: coarse)");
+  const touchScreen = hasTouchScreen();
   const platform = usePlatformStore((state) => state.platform);
 
   const handleChange = useCallback(
@@ -325,7 +325,7 @@ export function Editor(props: EditorProps) {
         />
         <OnChangePlugin onChange={handleChange} />
         <HistoryPlugin />
-        {!hasTouchscreen && platform === "web" && (
+        {!touchScreen && platform === "web" && (
           <AutoFocusPlugin defaultSelection="rootEnd" />
         )}
         <ZeroWidthPlugin />
