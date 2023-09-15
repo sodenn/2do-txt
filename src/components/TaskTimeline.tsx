@@ -293,7 +293,6 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
           role="button"
           aria-label="Delete task"
           size="sm"
-          color="danger"
           className="DeleteButton"
           onClick={handleDeleteClick}
         >
@@ -510,6 +509,14 @@ const TimelineContent = forwardRef<HTMLDivElement, ListItemButtonProps>(
           gridArea: "content",
           px: { xs: 0, sm: 1 },
           py: { xs: "1px", sm: "7px" },
+          "@media (pointer: coarse)": {
+            '&:not(.Mui-selected, [aria-selected="true"]):active': {
+              backgroundColor: "inherit",
+            },
+            ':not(.Mui-selected, [aria-selected="true"]):hover': {
+              backgroundColor: "inherit",
+            },
+          },
           ...sx,
         }}
         {...other}

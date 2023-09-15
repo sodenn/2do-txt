@@ -35,6 +35,14 @@ const StyledListItemButton = styled(ListItemButton)({
   "&:focus-visible": {
     zIndex: "0",
   },
+  "@media (pointer: coarse)": {
+    '&:not(.Mui-selected, [aria-selected="true"]):active': {
+      backgroundColor: "inherit",
+    },
+    ':not(.Mui-selected, [aria-selected="true"]):hover': {
+      backgroundColor: "inherit",
+    },
+  },
 });
 
 const DateContainer = styled("div")({
