@@ -17,9 +17,17 @@ import { ModalProps } from "@mui/joy/Modal";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const rawText = (createCreationDate: boolean, task?: Task): string => {
+function rawText(createCreationDate: boolean, task?: Task) {
   return task ? task.raw : createCreationDate ? formatDate(todayDate()) : "";
-};
+}
+
+function isEmpty(createCreationDate: boolean, value?: string) {
+  if (createCreationDate && value) {
+    // filter out creation date
+    return value.trim().replace(/^\d{4}-\d{2}-\d{2}$/, "") === "";
+  }
+  return !value?.trim();
+}
 
 export function TaskDialog() {
   const { t } = useTranslation();
@@ -47,7 +55,9 @@ export function TaskDialog() {
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
-  const formDisabled = !value || (!activeTaskList && !selectedTaskList);
+  const formDisabled =
+    isEmpty(createCreationDate, value) ||
+    (!activeTaskList && !selectedTaskList);
   const contexts = useMemo(
     () =>
       Object.keys(activeTaskList ? activeTaskList.contexts : commonContexts),
@@ -65,7 +75,7 @@ export function TaskDialog() {
   );
 
   const handleSave = useCallback(() => {
-    if (formDisabled) {
+    if (formDisabled || !value) {
       return;
     }
     closeTaskDialog();
@@ -139,6 +149,7 @@ export function TaskDialog() {
         <Button
           size={buttonSize}
           aria-label="Save task"
+          aria-disabled={formDisabled}
           disabled={formDisabled}
           onClick={handleSave}
         >

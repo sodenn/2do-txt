@@ -25,6 +25,19 @@ test.describe("Task dialog", () => {
     await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
+  test("should disable the save button when the task description is empty", async ({
+    page,
+  }) => {
+    await page.waitForTimeout(500);
+    await page.keyboard.press("n");
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Save task" }),
+    ).toBeDisabled();
+    await getEditor(page).type("This is a task", delay);
+    await expect(page.getByRole("button", { name: "Save task" })).toBeEnabled();
+  });
+
   test("should allow me to select contexts via enter", async ({
     page,
     isMobile,

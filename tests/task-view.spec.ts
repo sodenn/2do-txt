@@ -28,7 +28,7 @@ test.describe("Task View", () => {
       if (taskView === "list") {
         await expect(page.getByText("No tasks")).toBeVisible();
       } else {
-        await expect(page.getByText("Add task for today")).toBeVisible();
+        await expect(page.getByText("Add new task")).toBeVisible();
       }
     });
 
