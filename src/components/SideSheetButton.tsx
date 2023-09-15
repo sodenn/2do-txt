@@ -1,6 +1,6 @@
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useHotkeys } from "@/utils/useHotkeys";
-import useMediaQuery from "@/utils/useMediaQuery";
+import { useMediaQuery } from "@/utils/useMediaQuery";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton, useTheme } from "@mui/joy";

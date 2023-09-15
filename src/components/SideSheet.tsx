@@ -4,7 +4,7 @@ import { usePlatformStore } from "@/stores/platform-store";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { transitions } from "@/utils/transitions";
-import useMediaQuery from "@/utils/useMediaQuery";
+import { useMediaQuery } from "@/utils/useMediaQuery";
 import { useTask } from "@/utils/useTask";
 import {
   Box,

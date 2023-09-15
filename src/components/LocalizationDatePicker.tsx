@@ -1,4 +1,4 @@
-import useMediaQuery from "@/utils/useMediaQuery";
+import { useMediaQuery } from "@/utils/useMediaQuery";
 import {
   Button,
   FormControl,

@@ -1,6 +1,6 @@
 import { Fade } from "@/components/Fade";
 import { SearchInput } from "@/components/SearchInput";
-import useMediaQuery from "@/utils/useMediaQuery";
+import { useMediaQuery } from "@/utils/useMediaQuery";
 import SearchIcon from "@mui/icons-material/Search";
 import { Box, IconButton, InputProps, useTheme } from "@mui/joy";
 import { forwardRef, useRef, useState } from "react";
