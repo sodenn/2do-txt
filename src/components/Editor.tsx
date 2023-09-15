@@ -1,3 +1,5 @@
+import { usePlatformStore } from "@/stores/platform-store";
+import useMediaQuery from "@/utils/useMediaQuery";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -277,6 +279,8 @@ export function Editor(props: EditorProps) {
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
   const [mentionMenuOpen, setMentionMenuOpen] = useState(false);
+  const hasTouchscreen = useMediaQuery("@media (pointer: coarse)");
+  const platform = usePlatformStore((state) => state.platform);
 
   const handleChange = useCallback(
     (editorState: EditorState) => {
@@ -321,7 +325,9 @@ export function Editor(props: EditorProps) {
         />
         <OnChangePlugin onChange={handleChange} />
         <HistoryPlugin />
-        <AutoFocusPlugin defaultSelection="rootEnd" />
+        {!hasTouchscreen && platform === "web" && (
+          <AutoFocusPlugin defaultSelection="rootEnd" />
+        )}
         <ZeroWidthPlugin />
         <SingleLinePlugin onEnter={onEnter} mentionMenuOpen={mentionMenuOpen} />
         <BeautifulMentionsPlugin

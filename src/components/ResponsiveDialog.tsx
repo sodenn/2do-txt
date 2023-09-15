@@ -65,6 +65,7 @@ const SafeArea = styled("div", {
   paddingLeft: "env(safe-area-inset-left)",
   paddingBottom: "env(safe-area-inset-bottom)",
   paddingTop: "env(safe-area-inset-top)",
+  overflow: "auto",
   width: fullWidth ? "100%" : "unset",
 }));
 
