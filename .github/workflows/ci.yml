@@ -8,6 +8,7 @@ on:
 
 jobs:
   test:
+    name: 'Unit Tests'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,10 +16,12 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      - run: npm ci
-      - run: npm test
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
   e2e:
-    name: 'e2e Tests - ${{ matrix.shard }}'
+    name: 'E2E Tests - ${{ matrix.shard }}'
     timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
@@ -45,6 +48,7 @@ jobs:
           path: blob-report
           retention-days: 1
   merge-reports:
+    name: 'Merge E2E test reports'
     if: always()
     needs: [ e2e ]
     runs-on: ubuntu-latest
@@ -70,6 +74,7 @@ jobs:
           path: playwright-report
           retention-days: 14
   hygiene:
+    name: 'Hygiene'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -77,5 +82,7 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      - run: npm ci
-      - run: npm run hygiene
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint, format, and check for unused dependencies
+        run: npm run hygiene
