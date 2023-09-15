@@ -81,7 +81,7 @@ test("should sync todo.txt with WebDAV", async ({ page }) => {
     .nth(0)
     .locator('input[type="checkbox"]');
   await taskCheckbox.click();
-  await new Promise((resolve) => setTimeout(resolve, 200));
+  await page.waitForTimeout(300);
   const secondSyncDate = await getLastSyncDate(page);
   expect(firstSyncDate).not.toBe(secondSyncDate);
 });
@@ -126,7 +126,7 @@ async function replayFromHar(page: Page) {
 }
 
 async function getLastSyncDate(page: Page) {
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await page.waitForTimeout(300);
   const firstSyncDateHandle = await page.evaluateHandle(() => {
     const arr = JSON.parse(localStorage["CapacitorStorage.cloud-file-refs"]);
     return arr[0];
