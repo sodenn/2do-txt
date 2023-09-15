@@ -25,27 +25,23 @@ test.describe("Task dialog", () => {
     await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
-  test("should allow me to add a task with contexts", async ({
+  test("should allow me to select contexts via enter", async ({
     page,
     isMobile,
   }) => {
+    test.skip(!!isMobile, "not relevant for mobile browser");
+
     await openTaskDialog(page);
 
     await expect(getEditor(page)).toBeFocused();
 
     await getEditor(page).type("Play soccer with friends @", delay);
 
-    // select "Private" from the suggestion list
-    await page.getByRole("menuitem", { name: "Private" }).click();
+    await page.keyboard.press("Enter");
 
     // open the mention menu again
     await getEditor(page).type("@", delay);
-    // select "Holiday" from the mention list
     await page.keyboard.press("ArrowDown");
-    if (isMobile) {
-      // press twice because on mobile the first press will select the first item
-      await page.keyboard.press("ArrowDown");
-    }
     await page.keyboard.press("Enter");
 
     await expect(getEditor(page)).toHaveText(
@@ -173,7 +169,7 @@ test.describe("Task dialog", () => {
     );
 
     await expect(
-      page.getByRole("menuitem", { name: "Choose pr", exact: true }),
+      page.getByRole("menuitem", { name: `Choose "pr"` }),
     ).toHaveCount(1);
 
     await getEditor(page).press("ArrowDown");
@@ -191,14 +187,14 @@ test.describe("Task dialog", () => {
     await expect(page.locator('[data-beautiful-mention="@pr"]')).toHaveCount(1);
   });
 
-  test("should allow me to add new contexts via space bar", async ({
+  test("should allow me to add new contexts when blur from input", async ({
     page,
   }) => {
     await openTaskDialog(page);
 
     await getEditor(page).type("Play soccer with friends @pr", delay);
 
-    await getEditor(page).press("ArrowDown");
+    await page.getByRole("menuitem", { name: `Choose "pr"` }).click();
 
     await getEditor(page).evaluate((e) => e.blur());
 
@@ -213,7 +209,7 @@ test.describe("Task dialog", () => {
     ).toHaveCount(0);
   });
 
-  test("should allow me to fix a new context before inserting it", async ({
+  test("should allow me to fix a typo in a context before inserting it", async ({
     page,
   }) => {
     await openTaskDialog(page);
@@ -228,8 +224,9 @@ test.describe("Task dialog", () => {
     await page.waitForTimeout(50);
     await page.keyboard.press("ArrowRight");
     await page.waitForTimeout(50);
-    await getEditor(page).type("by ", delay);
+    await getEditor(page).type("by");
     await page.waitForTimeout(50);
+    await page.keyboard.press("Space");
 
     // make sure context was added
     await expect(page.locator('[data-beautiful-mention="@Hobby"]')).toHaveText(
@@ -261,7 +258,7 @@ test.describe("Task dialog", () => {
     await getEditor(page).type("Play soccer with friends @private", delay);
 
     await expect(
-      page.getByRole("menuitem", { name: "Choose private", exact: true }),
+      page.getByRole("menuitem", { name: `Choose "private"`, exact: true }),
     ).toHaveCount(1);
 
     await expect(
@@ -395,7 +392,7 @@ test.describe("Task dialog", () => {
     await page.waitForTimeout(500);
     await getEditor(page).type("@Test", delay);
     await page
-      .getByRole("menuitem", { name: "Choose Test", exact: true })
+      .getByRole("menuitem", { name: `Choose "Test"`, exact: true })
       .click();
     await expect(page.locator('[data-beautiful-mention="@Test"]')).toHaveCount(
       1,
@@ -428,7 +425,7 @@ test.describe("Task dialog", () => {
 
 async function openTaskDialog(page: Page) {
   await page.getByRole("button", { name: "Add task" }).click();
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(400);
 }
 
 function getEditor(page: Page) {

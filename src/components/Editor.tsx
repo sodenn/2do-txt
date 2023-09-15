@@ -251,7 +251,7 @@ const MenuItemComponent = forwardRef<
   HTMLDivElement,
   BeautifulMentionsMenuItemProps
 >(({ itemValue, ...other }, ref) => {
-  return <MenuItem ref={ref} {...other} />;
+  return <MenuItem ref={ref} {...other} aria-label={`Choose "${itemValue}"`} />;
 });
 
 export function EditorContext({
