@@ -4,7 +4,7 @@ import { SvgIcon, SvgIconProps } from "@mui/joy";
 
 export function DropboxIcon(props: SvgIconProps) {
   return (
-    <SvgIcon {...props} viewBox="0 0 235.45 200">
+    <SvgIcon {...props} viewBox="0 0 235.45 200" color="inherit">
       <path
         className="cls-1"
         d="M58.86 0 0 37.5 58.86 75l58.87-37.5L58.86 0zM176.59 0l-58.86 37.5L176.59 75l58.86-37.5L176.59 0zM0 112.5 58.86 150l58.87-37.5L58.86 75 0 112.5zM176.59 75l-58.86 37.5 58.86 37.5 58.86-37.5L176.59 75zM58.86 162.5l58.87 37.5 58.86-37.5-58.86-37.5-58.87 37.5z"
