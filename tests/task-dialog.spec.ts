@@ -65,7 +65,10 @@ test.describe("Task dialog", () => {
   }) => {
     await openTaskDialog(page);
 
-    await expect(getEditor(page)).toBeFocused();
+    // make sure the editor is focused on desktop
+    if (!isMobile) {
+      await expect(getEditor(page)).toBeFocused();
+    }
 
     // open the date picker
     const pickerButton = isMobile

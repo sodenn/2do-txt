@@ -3,10 +3,6 @@ import { Capacitor } from "@capacitor/core";
 
 export type Platform = "desktop" | "web" | "ios" | "android";
 
-export const isSafari = /^((?!chrome|android).)*safari/i.test(
-  navigator.userAgent,
-);
-
 export function getPlatform(): Platform {
   if ((window as any).__TAURI__) {
     return "desktop";
