@@ -12,10 +12,7 @@ test.describe("Onboarding", () => {
 });
 
 test.describe("New file", () => {
-  test.only("should allow me to create a new file", async ({
-    page,
-    isMobile,
-  }) => {
+  test("should allow me to create a new file", async ({ page, isMobile }) => {
     await page.getByLabel("Create task").click();
     await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor on desktop
