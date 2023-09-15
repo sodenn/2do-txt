@@ -325,7 +325,7 @@ export function Editor(props: EditorProps) {
         />
         <OnChangePlugin onChange={handleChange} />
         <HistoryPlugin />
-        {!touchScreen && platform === "web" && (
+        {!(touchScreen && platform === "web") && (
           <AutoFocusPlugin defaultSelection="rootEnd" />
         )}
         <ZeroWidthPlugin />

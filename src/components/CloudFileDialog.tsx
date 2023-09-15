@@ -33,6 +33,7 @@ import {
   Button,
   CircularProgress,
   List,
+  ListItem,
   ListItemButton,
   ListItemContent,
   ListItemDecorator,
@@ -296,18 +297,13 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
           <CircularProgress size="md" />
         </Box>
       )}
-      {files && files.items.length === 0 && taskLists.length > 0 && (
-        <Typography level="body-md" color="neutral">
-          <Trans i18nKey="Existing todo.txt files can be synchronized" />
-        </Typography>
-      )}
       {((files && files.items.length > 0) || previousPaths.length > 0) && (
         <List variant="outlined" size="sm" sx={{ borderRadius: "sm" }}>
           {previousPaths.length > 0 && (
             <ListItemButton onClick={() => handleNavBack()}>
               <ListItemDecorator>
                 {loading === true ? (
-                  <CircularProgress size="sm" />
+                  <CircularProgress size="sm" color="neutral" />
                 ) : (
                   <KeyboardReturnIcon />
                 )}
@@ -348,12 +344,16 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
               <ListItemDecorator /> {t("Load more")}
             </ListItemButton>
           )}
+          {files && files.items.length === 0 && (
+            <ListItem>
+              <ListItemContent>
+                <Typography level="body-sm">
+                  {t("No todo.txt files found")}
+                </Typography>
+              </ListItemContent>
+            </ListItem>
+          )}
         </List>
-      )}
-      {files && files.items.length === 0 && (
-        <Typography sx={{ pt: 2 }} level="body-md" color="neutral">
-          {t("There are no todo.txt files", { provider })}
-        </Typography>
       )}
     </>
   );
@@ -405,7 +405,7 @@ function CloudFolderButton(props: CloudFolderButtonProps) {
       </ListItemContent>
       <ListItemDecorator>
         {loading ? (
-          <CircularProgress size="sm" />
+          <CircularProgress size="sm" color="neutral" />
         ) : (
           <ArrowForwardIosIcon color="disabled" fontSize="small" />
         )}
