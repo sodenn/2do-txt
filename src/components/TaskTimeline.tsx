@@ -221,7 +221,7 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
           onClick={handleClick}
         >
           <Typography color="primary" level="title-md">
-            {t("Add task for today")}
+            {t("Add new task")}
           </Typography>
         </TimelineContent>
         <TaskDate task={task} />
