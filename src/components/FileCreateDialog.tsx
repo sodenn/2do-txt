@@ -26,6 +26,7 @@ import {
   Input,
   Radio,
   RadioGroup,
+  Stack,
 } from "@mui/joy";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -252,39 +253,42 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     >
       <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
       <ResponsiveDialogContent>
-        <FormControl>
-          <FormLabel>{t("File Name")}</FormLabel>
-          <Input
-            value={fileName}
-            onChange={(event) => setFileName(event.target.value)}
-            fullWidth
-            variant="outlined"
-            slotProps={{
-              input: {
-                "aria-label": "File name",
-              },
-            }}
-          />
-        </FormControl>
-        {cloudStorages.length > 0 && (
+        <Stack spacing={2}>
           <FormControl>
-            <FormLabel>
-              {t("Sync with cloud storage", { provider: t("cloud storage") })}
-            </FormLabel>
-            <RadioGroup
-              aria-label="Sync with cloud storage"
-              value={selectedProvider}
-              onChange={handleCloudStorageChange}
-            >
-              <Radio value="no-sync" label={t("Not sync")} />
-              {cloudStorages
-                .map((c) => c.provider)
-                .map((provider) => (
-                  <Radio key={provider} value={provider} label={provider} />
-                ))}
-            </RadioGroup>
+            <FormLabel>{t("File Name")}</FormLabel>
+            <Input
+              value={fileName}
+              onChange={(event) => setFileName(event.target.value)}
+              fullWidth
+              variant="outlined"
+              slotProps={{
+                input: {
+                  "aria-label": "File name",
+                },
+              }}
+            />
           </FormControl>
-        )}
+          {cloudStorages.length > 0 && (
+            <FormControl>
+              <FormLabel>
+                {t("Sync with cloud storage", { provider: t("cloud storage") })}
+              </FormLabel>
+              <RadioGroup
+                sx={{ mt: 0 }}
+                aria-label="Sync with cloud storage"
+                value={selectedProvider}
+                onChange={handleCloudStorageChange}
+              >
+                <Radio value="no-sync" label={t("Not sync")} />
+                {cloudStorages
+                  .map((c) => c.provider)
+                  .map((provider) => (
+                    <Radio key={provider} value={provider} label={provider} />
+                  ))}
+              </RadioGroup>
+            </FormControl>
+          )}
+        </Stack>
       </ResponsiveDialogContent>
       <ResponsiveDialogActions>
         <Button
