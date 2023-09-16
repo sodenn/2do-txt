@@ -225,6 +225,7 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
           </Typography>
         </TimelineContent>
         <TaskDate task={task} />
+        <TimelineDate sx={{ color: "primary.plainColor" }}>Today</TimelineDate>
       </TimelineItem>
     );
   },
@@ -445,30 +446,35 @@ function TaskDate({ task }: WithTimelineTask) {
   const language = useSettingsStore((state) => state.language);
   const { t } = useTranslation();
   return (
-    <Typography
+    <TimelineDate
       color="neutral"
       sx={{
-        width: 120,
-        height: "var(--IconButton-size, 2.5rem)",
-        justifyContent: "right",
-        alignItems: "center",
-        gap: 1,
         visibility:
           flags.firstOfDay || flags.firstWithoutDate ? "visible" : "hidden",
-        display: {
-          xs: "none",
-          sm: "inline-flex",
-        },
-        gridArea: "date",
-        fontSize: "0.9em",
       }}
     >
       {!!dueDate && !completionDate && <AccessAlarmIcon fontSize="small" />}
       {timelineDate && format(timelineDate, locales[language])}
       {flags.firstWithoutDate && t("Without date")}
-    </Typography>
+    </TimelineDate>
   );
 }
+
+const TimelineDate = styled(Typography)(({ theme }) => ({
+  width: 120,
+  height: "var(--IconButton-size, 2.5rem)",
+  justifyContent: "right",
+  alignItems: "center",
+  gap: theme.spacing(1),
+  [theme.breakpoints.down("sm")]: {
+    display: "none",
+  },
+  [theme.breakpoints.up("sm")]: {
+    display: "inline-flex",
+  },
+  gridArea: "date",
+  fontSize: "0.9em",
+}));
 
 function TimelineItem(props: TimelineItemProps) {
   const { sx, chip, ...other } = props;
