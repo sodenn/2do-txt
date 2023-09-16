@@ -181,7 +181,13 @@ export function SideSheet() {
     >
       <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
         <SaveTabList sx={{ flex: "none" }}>
-          <TabList sx={{ height: 57 }}>
+          <TabList
+            size="md"
+            sx={{
+              "--ListItem-minHeight": (theme) =>
+                `calc(2.25rem + ${theme.spacing(2)})`,
+            }}
+          >
             {!hideFilter && (
               <Tab value="filter" aria-label="Filter">
                 {t("Filter")}

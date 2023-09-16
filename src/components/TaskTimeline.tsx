@@ -192,6 +192,7 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
         <Box
           sx={{
             display: "flex",
+            pt: 0.25,
             gap: 0.5,
             flexDirection: "column",
             alignItems: "center",
@@ -224,8 +225,9 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
             {t("Add new task")}
           </Typography>
         </TimelineContent>
-        <TaskDate task={task} />
-        <TimelineDate sx={{ color: "primary.plainColor" }}>Today</TimelineDate>
+        <TimelineDate sx={{ color: "primary.plainColor" }}>
+          {t("Today")}
+        </TimelineDate>
       </TimelineItem>
     );
   },
@@ -395,6 +397,7 @@ function TaskCheckbox({
     <Box
       sx={{
         display: "flex",
+        pt: 0.25,
         gap: 0.5,
         flexDirection: "column",
         alignItems: "center",
