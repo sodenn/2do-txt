@@ -76,11 +76,11 @@ const locales = {
 };
 
 const Root = styled(Box)(({ theme }) => ({
+  paddingBottom: theme.spacing(4),
   [theme.breakpoints.down("sm")]: {
     "--IconButton-size": "2rem",
     display: "block",
     justifyContent: "unset",
-    marginLeft: theme.spacing(-0.5),
   },
   [theme.breakpoints.up("sm")]: {
     "--IconButton-size": "2.25rem",
@@ -146,7 +146,7 @@ export function TaskTimeline(props: TaskTimelineProps) {
 
   return (
     <Root>
-      <Box sx={{ pb: 4 }} data-testid="task-list" ref={parent}>
+      <Box data-testid="task-list" ref={parent}>
         {tasks.map((task, index) => (
           <div key={task._id}>
             {!task._timelineFlags.firstOfToday && (
@@ -420,7 +420,7 @@ function TaskCheckbox({
 
 function YearChip({ date }: YearChipProps) {
   return (
-    <Chip sx={{ gridArea: "chip" }} size="sm">
+    <Chip sx={{ gridArea: "chip", mt: 0.5 }} size="sm">
       {date}
     </Chip>
   );
@@ -480,11 +480,12 @@ function TimelineItem(props: TimelineItemProps) {
       sx={{
         display: "grid",
         justifyItems: "center",
-        gap: 0.6,
+        gap: 0.5,
         gridTemplateColumns: "auto 50px 1fr",
         gridTemplateAreas: gridTemplateAreas,
         mt: -1,
         mb: -1,
+        ml: -0.5,
         ...sx,
       }}
       {...other}
