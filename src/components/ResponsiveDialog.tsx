@@ -140,7 +140,7 @@ export function ResponsiveDialogTitle({
       sx={{
         flex: 1,
         pt: "20px",
-        pl: fullScreen ? "55px" : "20px",
+        pl: fullScreen ? "52px" : "20px",
         pr: !fullScreen ? "55px" : undefined,
         gridArea: "title",
       }}
@@ -329,9 +329,8 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
               p: 0, // define padding on title, content and action instead
               // @ts-ignore
               ...(!fullScreen && {
-                width: fullWidth
-                  ? "calc(100% - 2 * var(--ModalDialog-padding))"
-                  : "unset",
+                width: (theme) =>
+                  fullWidth ? `calc(100% - 2 * ${theme.spacing(2)})` : "unset",
                 maxWidth: "600px",
               }),
               ...styles.dialog,
@@ -347,6 +346,7 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
                   sx={
                     fullScreen
                       ? {
+                          top: "14px",
                           right: "unset",
                           left: "var(--ModalClose-inset, 8px)",
                         }

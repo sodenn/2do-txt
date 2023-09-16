@@ -34,10 +34,6 @@ const theme = extendTheme({
   colorSchemes: {
     light: {
       palette: {
-        background: {
-          body: "rgb(255, 255, 255)", // because hover bg color is the same as the default body bg color in light mode
-          surface: "rgb(255, 255, 255)",
-        },
         priority: {
           // Credit:
           // https://github.com/tailwindlabs/tailwindcss/blob/master/src/public/colors.js
