@@ -485,7 +485,6 @@ function TimelineItem(props: TimelineItemProps) {
         gridTemplateAreas: gridTemplateAreas,
         mt: -1,
         mb: -1,
-        ml: -0.5,
         ...sx,
       }}
       {...other}

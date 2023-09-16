@@ -90,7 +90,7 @@ export function CloudStorageConnectionButtons({
           ? t("Connect to cloud storage", { provider: t("cloud storage") })
           : t("Connection")}
       </MenuButton>
-      <Menu sx={{ mt: 0.5 }} placement="bottom-end">
+      <Menu disablePortal sx={{ mt: 0.5 }} placement="bottom-end">
         {filteredProviders.map((provider) => (
           <MenuItem key={provider} onClick={() => handleItemClick(provider)}>
             <ListItemDecorator>{cloudStorageIcons[provider]}</ListItemDecorator>

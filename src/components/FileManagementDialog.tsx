@@ -219,7 +219,10 @@ function FileManagementActions() {
       >
         {t("Choose action")}
       </MenuButton>
-      <Menu placement="bottom-end">
+      <Menu
+        sx={{ zIndex: (theme) => theme.vars.zIndex.modal }}
+        placement="bottom-end"
+      >
         <MenuItem onClick={handleCreateFile}>
           <ListItemDecorator>
             <AddIcon />
@@ -589,7 +592,10 @@ function FileMenu(props: FileMenuProps) {
         {!cloudSyncLoading && <MoreVertIcon />}
         {cloudSyncLoading && <CircularProgress size="sm" />}
       </MenuButton>
-      <Menu placement="bottom-end">
+      <Menu
+        sx={{ zIndex: (theme) => theme.vars.zIndex.modal }}
+        placement="bottom-end"
+      >
         {cloudFileRef && !touchScreen && (
           <CloudSyncMenuItem
             identifier={cloudFileRef.identifier}

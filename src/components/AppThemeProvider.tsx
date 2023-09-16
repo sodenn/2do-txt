@@ -139,27 +139,6 @@ const theme = extendTheme({
     },
   },
   components: {
-    JoyAutocomplete: {
-      styleOverrides: {
-        listbox: ({ theme }) => ({
-          zIndex: theme.vars.zIndex.modal,
-        }),
-      },
-    },
-    JoyMenu: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          zIndex: theme.vars.zIndex.modal,
-        }),
-      },
-    },
-    JoySelect: {
-      styleOverrides: {
-        listbox: ({ theme }) => ({
-          zIndex: theme.vars.zIndex.modal,
-        }),
-      },
-    },
     JoyTooltip: {
       defaultProps: {
         variant: "soft",
