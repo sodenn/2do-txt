@@ -1,8 +1,9 @@
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useHotkeys } from "@/utils/useHotkeys";
+import { useMediaQuery } from "@/utils/useMediaQuery";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MenuIcon from "@mui/icons-material/Menu";
-import { IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { IconButton, useTheme } from "@mui/joy";
 import { useMemo } from "react";
 
 export function SideSheetButton() {
@@ -18,10 +19,9 @@ export function SideSheetButton() {
   return (
     <IconButton
       tabIndex={-1}
-      onClick={() => toggleSideSheet()}
-      size="large"
-      edge="start"
-      color="inherit"
+      onClick={toggleSideSheet}
+      size="md"
+      variant="outlined"
       aria-label="Toggle menu"
     >
       {(!sideSheetOpen || md) && <MenuIcon />}

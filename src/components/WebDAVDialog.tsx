@@ -1,29 +1,25 @@
 import {
-  FullScreenDialog,
-  FullScreenDialogContent,
-  FullScreenDialogTitle,
-} from "@/components/FullScreenDialog";
+  ResponsiveDialog,
+  ResponsiveDialogActions,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
 import { useWebDAVDialogStore } from "@/stores/webdav-dialog-store";
 import { useCloudStorage } from "@/utils/CloudStorage";
-import { LoadingButton } from "@mui/lab";
 import {
   Alert,
-  AlertTitle,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Input,
   Stack,
-  TextField,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+  Typography,
+} from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export function WebDAVDialog() {
-  const theme = useTheme();
   const { t } = useTranslation();
   const webDAVDialogOpen = useWebDAVDialogStore((state) => state.open);
   const closeWebDAVDialog = useWebDAVDialogStore(
@@ -35,7 +31,6 @@ export function WebDAVDialog() {
   const [error, setError] = useState<any>();
   const [loading, setLoading] = useState(false);
   const { createWebDAVStorage } = useCloudStorage();
-  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSubmit = async () => {
     setError(undefined);
@@ -72,103 +67,86 @@ export function WebDAVDialog() {
 
   const disabled = !username || !password || !url;
 
-  const dialogContent = (
-    <Stack sx={{ mt: 2 }} spacing={2}>
-      <TextField
-        value={url}
-        onChange={(ev) => setUrl(ev.target.value)}
-        autoFocus
-        label={t("URL")}
-        fullWidth
-        variant="outlined"
-        type="url"
-        helperText={t("WebDAV example URL")}
-        inputProps={{
-          "aria-label": "URL",
-        }}
-      />
-      <TextField
-        value={username}
-        onChange={(ev) => setUsername(ev.target.value)}
-        label={t("Username")}
-        fullWidth
-        variant="outlined"
-        type="text"
-        inputProps={{
-          "aria-label": "Username",
-        }}
-      />
-      <TextField
-        value={password}
-        onChange={(ev) => setPassword(ev.target.value)}
-        label={t("Password")}
-        fullWidth
-        variant="outlined"
-        type="password"
-        inputProps={{
-          "aria-label": "Password",
-        }}
-      />
-      {error && (
-        <Alert severity="warning" variant="outlined">
-          <AlertTitle>{t("Connection Error")}</AlertTitle>
-          {error.message}
-        </Alert>
-      )}
-    </Stack>
-  );
-
-  const TransitionProps = {
-    onExited: handleExited,
-    onEnter: handleEnter,
-  };
-
-  if (fullScreenDialog) {
-    return (
-      <FullScreenDialog
-        data-testid="webdav-dialog"
-        open={webDAVDialogOpen}
-        onClose={handleClose}
-        TransitionProps={TransitionProps}
-      >
-        <FullScreenDialogTitle
-          onClose={handleClose}
-          accept={{
-            text: t("Connect"),
-            disabled,
-            loading,
-            onClick: handleSubmit,
-            "aria-label": "Connect",
-          }}
-        >
-          {t("WebDAV Server")}
-        </FullScreenDialogTitle>
-        <FullScreenDialogContent>{dialogContent}</FullScreenDialogContent>
-      </FullScreenDialog>
-    );
-  }
-
   return (
-    <Dialog
-      maxWidth="xs"
+    <ResponsiveDialog
       fullWidth
       open={webDAVDialogOpen}
       onClose={handleClose}
-      TransitionProps={TransitionProps}
+      onExited={handleExited}
+      onEnter={handleEnter}
     >
-      <DialogTitle>{t("WebDAV Server")}</DialogTitle>
-      <DialogContent>{dialogContent}</DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>{t("Close")}</Button>
-        <LoadingButton
+      <ResponsiveDialogTitle>{t("WebDAV Server")}</ResponsiveDialogTitle>
+      <ResponsiveDialogContent>
+        <Stack spacing={2}>
+          <FormControl>
+            <FormLabel>{t("URL")}</FormLabel>
+            <Input
+              value={url}
+              onChange={(ev) => setUrl(ev.target.value)}
+              autoFocus
+              fullWidth
+              variant="outlined"
+              type="url"
+              slotProps={{
+                input: {
+                  "aria-label": "URL",
+                },
+              }}
+            />
+            <FormHelperText>{t("WebDAV example URL")}</FormHelperText>
+          </FormControl>
+          <FormControl>
+            <FormLabel>{t("Username")}</FormLabel>
+            <Input
+              value={username}
+              onChange={(ev) => setUsername(ev.target.value)}
+              fullWidth
+              variant="outlined"
+              type="text"
+              slotProps={{
+                input: {
+                  "aria-label": "Username",
+                },
+              }}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>{t("Password")}</FormLabel>
+            <Input
+              value={password}
+              onChange={(ev) => setPassword(ev.target.value)}
+              fullWidth
+              variant="outlined"
+              type="password"
+              slotProps={{
+                input: {
+                  "aria-label": "Password",
+                },
+              }}
+            />
+          </FormControl>
+          {error && (
+            <Alert color="warning" variant="soft">
+              <div>
+                <Typography level="title-md">
+                  {t("Connection Error")}
+                </Typography>
+                <Typography level="body-sm">{error.message}</Typography>
+              </div>
+            </Alert>
+          )}
+        </Stack>
+      </ResponsiveDialogContent>
+      <ResponsiveDialogActions>
+        <Button
           aria-label="Connect"
           onClick={handleSubmit}
           disabled={disabled}
           loading={loading}
         >
           {t("Connect")}
-        </LoadingButton>
-      </DialogActions>
-    </Dialog>
+        </Button>
+      </ResponsiveDialogActions>
+    </ResponsiveDialog>
   );
 }

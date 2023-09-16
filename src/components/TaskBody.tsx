@@ -1,5 +1,5 @@
 import { Task, useFormatBody } from "@/utils/task";
-import { styled } from "@mui/material";
+import { styled } from "@mui/joy";
 
 interface TaskBodyProps {
   task: Task;

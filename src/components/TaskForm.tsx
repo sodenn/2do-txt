@@ -14,7 +14,7 @@ import {
   stringifyTask,
 } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
-import { Box, Button, Grid, Stack } from "@mui/material";
+import { Button, Grid, Stack } from "@mui/joy";
 import { isValid } from "date-fns";
 import { useBeautifulMentions } from "lexical-beautiful-mentions";
 import { useMemo } from "react";
@@ -156,8 +156,8 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   return (
-    <Stack>
-      <Box sx={{ mb: 2 }}>
+    <Grid spacing={touchScreen ? 1 : 2} container sx={{ my: 0 }}>
+      <Grid xs={12}>
         <Editor
           label={t("Description")}
           placeholder={t("Enter text and tags")}
@@ -169,85 +169,79 @@ function TaskGrid(props: TaskGridProps) {
           onEnter={onEnterPress}
           items={items}
         />
-      </Box>
-      <Grid spacing={2} container>
-        {(touchScreen || platform === "ios" || platform === "android") && (
-          <Grid item xs={12}>
-            <Box sx={{ display: "flex", flex: 1, height: "100%" }}>
-              <Button
-                sx={{ mr: 1 }}
-                fullWidth
-                variant="outlined"
-                color="primary"
-                size="large"
-                onClick={() => openMentionMenu({ trigger: "@" })}
-              >
-                {t("@Context")}
-              </Button>
-              <Button
-                fullWidth
-                variant="outlined"
-                color="primary"
-                size="large"
-                onClick={() => openMentionMenu({ trigger: "+" })}
-              >
-                {t("+Project")}
-              </Button>
-            </Box>
-          </Grid>
-        )}
-        {taskLists.length > 0 && (
-          <Grid item xs={12}>
-            <FileSelect options={taskLists} onSelect={onFileSelect} />
-          </Grid>
-        )}
-        <Grid
-          item
-          xs={12}
-          sm={showCreationDate && !showCompletionDate ? 12 : 6}
-          md={mdGridItems}
-        >
-          <PrioritySelect
-            value={formModel.priority}
-            onChange={(priority) => handleChange({ priority })}
-          />
-        </Grid>
-        {showCreationDate && (
-          <Grid item xs={12} sm={6} md={mdGridItems}>
-            <LocalizationDatePicker
-              ariaLabel="Creation date"
-              label={t("Creation Date")}
-              value={formModel.creationDate}
-              onChange={(value) => {
-                handleChange({ creationDate: value ?? undefined });
-              }}
-            />
-          </Grid>
-        )}
-        {showCompletionDate && (
-          <Grid item xs={12} sm={6} md={mdGridItems}>
-            <LocalizationDatePicker
-              ariaLabel="Completion date"
-              label={t("Completion Date")}
-              value={formModel.completionDate}
-              onChange={(value) => {
-                handleChange({ completionDate: value ?? undefined });
-              }}
-            />
-          </Grid>
-        )}
-        <Grid item xs={12} sm={6} md={mdGridItems}>
-          <LocalizationDatePicker
-            ariaLabel="Due date"
-            label={t("Due Date")}
-            value={dueDate}
-            onChange={handleDueDateChange}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <RecurrenceSelect value={rec} onChange={handleRecChange} />
-        </Grid>
       </Grid>
-    </Stack>
+      {(touchScreen || platform === "ios" || platform === "android") && (
+        <Grid xs={12}>
+          <Stack spacing={1} direction="row">
+            <Button
+              fullWidth
+              variant="outlined"
+              color="primary"
+              onClick={() => openMentionMenu({ trigger: "@" })}
+            >
+              {t("@Context")}
+            </Button>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="primary"
+              onClick={() => openMentionMenu({ trigger: "+" })}
+            >
+              {t("+Project")}
+            </Button>
+          </Stack>
+        </Grid>
+      )}
+      {taskLists.length > 0 && (
+        <Grid xs={12}>
+          <FileSelect options={taskLists} onSelect={onFileSelect} />
+        </Grid>
+      )}
+      <Grid
+        xs={12}
+        sm={showCreationDate && !showCompletionDate ? 12 : 6}
+        md={mdGridItems}
+      >
+        <PrioritySelect
+          value={formModel.priority}
+          onChange={(priority) => handleChange({ priority })}
+        />
+      </Grid>
+      {showCreationDate && (
+        <Grid xs={12} sm={6} md={mdGridItems}>
+          <LocalizationDatePicker
+            ariaLabel="Creation date"
+            label={t("Creation Date")}
+            value={formModel.creationDate}
+            onChange={(value) => {
+              handleChange({ creationDate: value ?? undefined });
+            }}
+          />
+        </Grid>
+      )}
+      {showCompletionDate && (
+        <Grid xs={12} sm={6} md={mdGridItems}>
+          <LocalizationDatePicker
+            ariaLabel="Completion date"
+            label={t("Completion Date")}
+            value={formModel.completionDate}
+            onChange={(value) => {
+              handleChange({ completionDate: value ?? undefined });
+            }}
+          />
+        </Grid>
+      )}
+      <Grid xs={12} sm={6} md={mdGridItems}>
+        <LocalizationDatePicker
+          ariaLabel="Due date"
+          label={t("Due Date")}
+          value={dueDate}
+          onChange={handleDueDateChange}
+        />
+      </Grid>
+      <Grid xs={12}>
+        <RecurrenceSelect value={rec} onChange={handleRecChange} />
+      </Grid>
+    </Grid>
   );
 }

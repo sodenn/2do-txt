@@ -16,7 +16,7 @@ export const useHotkeys = (listeners: HotkeyListeners) => {
       const isInput = target.nodeName === "INPUT" || target.isContentEditable;
 
       const presentations = document.querySelectorAll<HTMLDivElement>(
-        '[role="presentation"]',
+        '[role="presentation"]:not([aria-hidden="true"])',
       );
       const isBackdropOpen = [...presentations].some((presentation) => {
         return (

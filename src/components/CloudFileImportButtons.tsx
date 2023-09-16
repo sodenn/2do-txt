@@ -4,32 +4,27 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "@/utils/CloudStorage";
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
+import CloudIcon from "@mui/icons-material/Cloud";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
-import { MouseEvent, useState } from "react";
+import {
+  Button,
+  Dropdown,
+  ListItemDecorator,
+  Menu,
+  MenuButton,
+  MenuItem,
+} from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function CloudFileImportButtons() {
   const { t } = useTranslation();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openCloudFileDialog = useCloudFileDialogStore(
     (state) => state.openCloudFileDialog,
   );
   const { cloudStorageEnabled, cloudStorages } = useCloudStorage();
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const handleMenuItemClick = (provider: Provider) => {
-    handleClose();
     openCloudFileDialog(provider);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
   };
 
   if (!cloudStorageEnabled || cloudStorages.length === 0) {
@@ -42,8 +37,9 @@ export function CloudFileImportButtons() {
       <Button
         aria-label={`Import todo.txt from ${provider}`}
         onClick={() => openCloudFileDialog(provider)}
-        startIcon={cloudStorageIcons[provider]}
+        startDecorator={cloudStorageIcons[provider]}
         variant="outlined"
+        color="neutral"
       >
         {t("Import from cloud storage", { provider })}
       </Button>
@@ -51,41 +47,27 @@ export function CloudFileImportButtons() {
   }
 
   return (
-    <>
-      <Button
+    <Dropdown>
+      <MenuButton
+        color="neutral"
         variant="outlined"
-        fullWidth
-        onClick={handleClick}
         aria-label="Import todo.txt from cloud storage"
-        startIcon={<CloudOutlinedIcon />}
-        endIcon={<KeyboardArrowDownIcon />}
+        startDecorator={<CloudIcon />}
+        endDecorator={<KeyboardArrowDownIcon />}
       >
         {t("Import from cloud storage", { provider: t("cloud storage") })}
-      </Button>
-      <Menu
-        sx={{ mt: 0.5 }}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
+      </MenuButton>
+      <Menu placement="bottom-end">
         {cloudStorages.map(({ provider }) => (
           <MenuItem
             key={provider}
             onClick={() => handleMenuItemClick(provider)}
           >
-            <ListItemIcon>{cloudStorageIcons[provider]}</ListItemIcon>
+            <ListItemDecorator>{cloudStorageIcons[provider]}</ListItemDecorator>{" "}
             {t("Import from cloud storage", { provider })}
           </MenuItem>
         ))}
       </Menu>
-    </>
+    </Dropdown>
   );
 }

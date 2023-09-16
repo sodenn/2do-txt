@@ -13,7 +13,7 @@ import { TaskDialog } from "@/components/TaskDialog";
 import { TaskView } from "@/components/TaskView";
 import { WebDAVDialog } from "@/components/WebDAVDialog";
 import { useScrollingStore } from "@/stores/scrolling-store";
-import { Box, Container, styled } from "@mui/material";
+import { Box, Container, styled } from "@mui/joy";
 
 const SafeAreaContainer = styled(Container)({
   paddingRight: "env(safe-area-inset-right)",
@@ -27,13 +27,12 @@ export function Page() {
     <FilePicker>
       <Header divider={!top} />
       <Box
-        id="scroll-container"
         data-testid="page"
         sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
       >
         <SideSheet />
         <MainContainer>
-          <SafeAreaContainer disableGutters>
+          <SafeAreaContainer disableGutters id="ptr-container">
             <TaskView />
             <Onboarding />
           </SafeAreaContainer>

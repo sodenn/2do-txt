@@ -2,7 +2,7 @@ import { Kbd } from "@/components/Kbd";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import AddIcon from "@mui/icons-material/Add";
-import { Box, IconButton, IconButtonProps, Tooltip } from "@mui/material";
+import { IconButton, IconButtonProps, Tooltip } from "@mui/joy";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -27,17 +27,16 @@ export function AddTaskButton(props: IconButtonProps) {
       title={
         <>
           {t("Create Task")}
-          <Box component="span" sx={{ ml: 0.5 }}>
-            <Kbd>N</Kbd>
-          </Box>
+          <Kbd>N</Kbd>
         </>
       }
     >
       <IconButton
+        color="primary"
+        variant="soft"
         tabIndex={-1}
         aria-label="Add task"
-        size="large"
-        color="inherit"
+        size="md"
         onClick={handleClick}
         {...props}
       >

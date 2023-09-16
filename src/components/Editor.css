@@ -1,0 +1,49 @@
+.Editor-mention {
+  padding: 0 4px;
+  margin: 0 1px;
+  vertical-align: baseline;
+  display: inline-block;
+  word-break: break-word;
+  user-select: none;
+  outline: none;
+  line-height: 22px;
+  cursor: pointer;
+  border-radius: var(--joy-radius-sm);
+  border-width: var(--variant-borderWidth);
+  border-style: solid;
+}
+
+.Editor-context {
+  color: var(--joy-palette-success-outlinedColor);
+  border-color: var(--joy-palette-success-outlinedBorder);
+}
+
+.Editor-project {
+  color: var(--joy-palette-primary-outlinedColor);
+  border-color: var(--joy-palette-primary-outlinedBorder);
+}
+
+.Editor-due {
+  color: var(--joy-palette-warning-outlinedColor);
+  border-color: var(--joy-palette-warning-outlinedBorder);
+}
+
+.Editor-tag {
+  color: var(--joy-palette-neutral-outlinedColor);
+  border-color: var(--joy-palette-neutral-outlinedBorder);
+}
+
+.Editor-mention-anchor {
+  z-index: 1300;
+}
+
+.Editor-focused {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow:
+    var(--joy-shadowRing, 0 0 #000),
+    0px 2px 8px -2px rgba(var(--joy-shadowChannel, 21 21 21) /
+          var(--joy-shadowOpacity, 0.08)),
+    0px 6px 12px -2px rgba(var(--joy-shadowChannel, 21 21 21) /
+          var(--joy-shadowOpacity, 0.08));
+}

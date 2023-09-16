@@ -26,7 +26,7 @@ test.describe("Download", () => {
     // activate archiving
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByRole("tab", { name: "Settings" }).click();
-    await page.getByRole("button", { name: "Select archive mode" }).click();
+    await page.getByRole("combobox", { name: "Select archive mode" }).click();
     await page.getByRole("option", { name: "Archive automatically" }).click();
     await page.keyboard.press("Escape");
 

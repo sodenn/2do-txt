@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, Page, test } from "@playwright/test";
 import { format } from "date-fns";
 
 function formatDate(date: Date): string {
@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
   await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
 });
 
-const delay = { delay: 50 };
+const delay = { delay: 20 };
 
 test.describe("Task dialog", () => {
   test("should allow me to open and close the task dialog via shortcut", async ({
@@ -25,34 +25,39 @@ test.describe("Task dialog", () => {
     await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
-  test("should allow me to add a task with contexts", async ({
+  test("should disable the save button when the task description is empty", async ({
+    page,
+  }) => {
+    await page.waitForTimeout(500);
+    await page.keyboard.press("n");
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Save task" }),
+    ).toBeDisabled();
+    await getEditor(page).type("This is a task", delay);
+    await expect(page.getByRole("button", { name: "Save task" })).toBeEnabled();
+  });
+
+  test("should allow me to select contexts via enter", async ({
     page,
     isMobile,
   }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
+    test.skip(!!isMobile, "not relevant for mobile browser");
 
-    await expect(
-      page.getByRole("textbox", { name: "Text editor" }),
-    ).toBeFocused();
+    await openTaskDialog(page);
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("Play soccer with friends @", delay);
+    await expect(getEditor(page)).toBeFocused();
 
-    // select "Private" from the suggestion list
-    await page.getByRole("menuitem", { name: "Private" }).click();
+    await getEditor(page).type("Play soccer with friends @", delay);
 
-    // open the mention menu again
-    await page.getByRole("textbox", { name: "Text editor" }).type("@", delay);
-    // select "Holiday" from the mention list
-    await page.keyboard.press("ArrowDown");
-    if (isMobile) {
-      // press twice because on mobile the first press will select the first item
-      await page.keyboard.press("ArrowDown");
-    }
     await page.keyboard.press("Enter");
 
-    await expect(page.getByRole("textbox", { name: "Text editor" })).toHaveText(
+    // open the mention menu again
+    await getEditor(page).type("@", delay);
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+
+    await expect(getEditor(page)).toHaveText(
       "Play soccer with friends @Private @Holiday",
     );
 
@@ -71,11 +76,12 @@ test.describe("Task dialog", () => {
     page,
     isMobile,
   }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
-    await expect(
-      page.getByRole("textbox", { name: "Text editor" }),
-    ).toBeFocused();
+    // make sure the editor is focused on desktop
+    if (!isMobile) {
+      await expect(getEditor(page)).toBeFocused();
+    }
 
     // open the date picker
     const pickerButton = isMobile
@@ -99,22 +105,18 @@ test.describe("Task dialog", () => {
     );
 
     // make sure the text field contains the due date
-    await expect(page.getByRole("textbox", { name: "Text editor" })).toHaveText(
-      dueDateTag,
-    );
+    await expect(getEditor(page)).toHaveText(dueDateTag);
 
     // remove the due date from the text field
-    await page.getByRole("textbox", { name: "Text editor" }).click();
+    await getEditor(page).click();
     await page.keyboard.press("End");
-    await page.getByRole("textbox", { name: "Text editor" }).press("Backspace");
+    await getEditor(page).press("Backspace");
 
     // make sure the date picker doesn't contain a value
     await expect(page.getByTestId("Due date textfield")).toHaveValue("");
 
     // make sure the text field doesn't contain the due date
-    await expect(
-      page.getByRole("textbox", { name: "Text editor" }),
-    ).not.toHaveText(dueDateTag);
+    await expect(getEditor(page)).not.toHaveText(dueDateTag);
 
     // open the date picker
     await page.getByTestId(pickerButton).click();
@@ -131,9 +133,7 @@ test.describe("Task dialog", () => {
     );
 
     // make sure the text field contains the due date
-    await expect(page.getByRole("textbox", { name: "Text editor" })).toHaveText(
-      dueDateTag,
-    );
+    await expect(getEditor(page)).toHaveText(dueDateTag);
 
     // open the date picker
     await page.getByTestId(pickerButton).click();
@@ -142,9 +142,7 @@ test.describe("Task dialog", () => {
     await page.getByRole("button", { name: "Clear" }).click();
 
     // make sure the text field doesn't contain the due date
-    await expect(
-      page.getByRole("textbox", { name: "Text editor" }),
-    ).not.toHaveText(dueDateTag);
+    await expect(getEditor(page)).not.toHaveText(dueDateTag);
   });
 
   test("should allow me to edit a task", async ({ page }) => {
@@ -152,7 +150,7 @@ test.describe("Task dialog", () => {
     await page.getByText("Pay the invoice").click();
 
     // make sure the task text is set
-    await expect(page.getByRole("textbox", { name: "Text editor" })).toHaveText(
+    await expect(getEditor(page)).toHaveText(
       "Pay the invoice +CompanyB @Work due:2021-12-15",
     );
 
@@ -178,25 +176,21 @@ test.describe("Task dialog", () => {
   }) => {
     test.skip(browserName === "webkit", "blur not working correctly");
 
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("Play soccer with friends @pr");
+    await getEditor(page).type("Play soccer with friends @pr", delay);
 
     await expect(page.getByRole("menuitem", { name: "Private" })).toHaveCount(
       1,
     );
 
     await expect(
-      page.getByRole("menuitem", { name: "Choose pr", exact: true }),
+      page.getByRole("menuitem", { name: `Choose "pr"` }),
     ).toHaveCount(1);
 
-    await page.getByRole("textbox", { name: "Text editor" }).press("ArrowDown");
+    await getEditor(page).press("ArrowDown");
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .evaluate((e) => e.blur());
+    await getEditor(page).evaluate((e) => e.blur());
 
     await expect(page.getByRole("menuitem", { name: "Add pr" })).toHaveCount(0);
 
@@ -209,20 +203,16 @@ test.describe("Task dialog", () => {
     await expect(page.locator('[data-beautiful-mention="@pr"]')).toHaveCount(1);
   });
 
-  test("should allow me to add new contexts via space bar", async ({
+  test("should allow me to add new contexts when blur from input", async ({
     page,
   }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("Play soccer with friends @pr", delay);
+    await getEditor(page).type("Play soccer with friends @pr", delay);
 
-    await page.getByRole("textbox", { name: "Text editor" }).press("ArrowDown");
+    await page.getByRole("menuitem", { name: `Choose "pr"` }).click();
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .evaluate((e) => e.blur());
+    await getEditor(page).evaluate((e) => e.blur());
 
     // make sure context was added
     await expect(page.locator('[data-beautiful-mention="@pr"]')).toHaveText(
@@ -235,20 +225,24 @@ test.describe("Task dialog", () => {
     ).toHaveCount(0);
   });
 
-  test("should allow me to fix a new context before inserting it", async ({
+  test("should allow me to fix a typo in a context before inserting it", async ({
     page,
   }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("Play soccer with friends @Hpb", delay);
+    await getEditor(page).type("Play soccer with friends @Hpb", delay);
 
     await page.keyboard.press("ArrowLeft");
-    await page.getByRole("textbox", { name: "Text editor" }).press("Backspace");
-    await page.getByRole("textbox", { name: "Text editor" }).press("o");
+    await page.waitForTimeout(50);
+    await getEditor(page).press("Backspace");
+    await page.waitForTimeout(50);
+    await getEditor(page).press("o");
+    await page.waitForTimeout(50);
     await page.keyboard.press("ArrowRight");
-    await page.getByRole("textbox", { name: "Text editor" }).type("by ", delay);
+    await page.waitForTimeout(50);
+    await getEditor(page).type("by");
+    await page.waitForTimeout(50);
+    await page.keyboard.press("Space");
 
     // make sure context was added
     await expect(page.locator('[data-beautiful-mention="@Hobby"]')).toHaveText(
@@ -259,11 +253,9 @@ test.describe("Task dialog", () => {
   test("should no longer show the option to create a new context when the context already exist", async ({
     page,
   }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("Play soccer with friends @Private");
+    await getEditor(page).type("Play soccer with friends @Private", delay);
 
     await expect(
       page.getByRole("menuitem", { name: `Add "Private"` }),
@@ -277,14 +269,12 @@ test.describe("Task dialog", () => {
   test("should respect upper case and lower case when adding new contexts", async ({
     page,
   }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("Play soccer with friends @private");
+    await getEditor(page).type("Play soccer with friends @private", delay);
 
     await expect(
-      page.getByRole("menuitem", { name: "Choose private", exact: true }),
+      page.getByRole("menuitem", { name: `Choose "private"`, exact: true }),
     ).toHaveCount(1);
 
     await expect(
@@ -298,12 +288,10 @@ test.describe("Task dialog", () => {
   }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
 
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
     // type task description
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("Play soccer with friends");
+    await getEditor(page).type("Play soccer with friends", delay);
 
     // navigate to priority input
     await page.keyboard.press("Tab");
@@ -338,12 +326,12 @@ test.describe("Task dialog", () => {
   });
 
   test("should consider pressing the escape key", async ({ page }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
     await expect(page.getByTestId("task-dialog")).toBeVisible();
 
     // open dropdown menu with suggestions
-    await page.getByRole("textbox", { name: "Text editor" }).type("@Private");
+    await getEditor(page).type("@Private", delay);
 
     // close dropdown menu with suggestions by pressing the Escape key
     await page.keyboard.press("Escape");
@@ -362,19 +350,15 @@ test.describe("Task dialog", () => {
     page,
     isMobile,
   }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("@Private", delay);
+    await getEditor(page).type("@Private", delay);
 
     isMobile
       ? await page.getByRole("menuitem", { name: "Private" }).click()
       : await page.keyboard.press("Enter");
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("@Private", delay);
+    await getEditor(page).type("@Private", delay);
 
     isMobile
       ? await page.getByRole("menuitem", { name: "Private" }).click()
@@ -385,8 +369,8 @@ test.describe("Task dialog", () => {
     ).toHaveCount(2);
 
     // delete mention + space
-    await page.getByRole("textbox", { name: "Text editor" }).press("Backspace");
-    await page.getByRole("textbox", { name: "Text editor" }).press("Backspace");
+    await getEditor(page).press("Backspace");
+    await getEditor(page).press("Backspace");
 
     await expect(
       page.locator('[data-beautiful-mention="@Private"]'),
@@ -396,17 +380,13 @@ test.describe("Task dialog", () => {
   test("should insert spaces when adding mentions via mouse click", async ({
     page,
   }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
+    await openTaskDialog(page);
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("@Private", delay);
+    await getEditor(page).type("@Private", delay);
 
     await page.getByRole("menuitem", { name: "Private" }).click();
 
-    await page
-      .getByRole("textbox", { name: "Text editor" })
-      .type("@Private", delay);
+    await getEditor(page).type("@Private", delay);
 
     await page.getByRole("menuitem", { name: "Private" }).click();
 
@@ -415,8 +395,8 @@ test.describe("Task dialog", () => {
     ).toHaveCount(2);
 
     // delete mention + space
-    await page.getByRole("textbox", { name: "Text editor" }).press("Backspace");
-    await page.getByRole("textbox", { name: "Text editor" }).press("Backspace");
+    await getEditor(page).press("Backspace");
+    await getEditor(page).press("Backspace");
 
     await expect(
       page.locator('[data-beautiful-mention="@Private"]'),
@@ -424,10 +404,11 @@ test.describe("Task dialog", () => {
   });
 
   test("should insert a new mention", async ({ page }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
-    await page.getByRole("textbox", { name: "Text editor" }).type("@Test");
+    await openTaskDialog(page);
+    await page.waitForTimeout(500);
+    await getEditor(page).type("@Test", delay);
     await page
-      .getByRole("menuitem", { name: "Choose Test", exact: true })
+      .getByRole("menuitem", { name: `Choose "Test"`, exact: true })
       .click();
     await expect(page.locator('[data-beautiful-mention="@Test"]')).toHaveCount(
       1,
@@ -435,8 +416,8 @@ test.describe("Task dialog", () => {
   });
 
   test("should add add and remove recurrence", async ({ page }) => {
-    await page.getByRole("button", { name: "Add task" }).click();
-    await page.getByRole("combobox", { name: "Select unit" }).click();
+    await openTaskDialog(page);
+    await page.getByLabel("Recurrence").click();
     await page.getByText("Days", { exact: true }).click();
 
     await page.getByRole("spinbutton", { name: "Amount" }).focus();
@@ -449,7 +430,7 @@ test.describe("Task dialog", () => {
     await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveText(
       "rec:2d",
     );
-    await page.getByRole("combobox", { name: "Select unit" }).click();
+    await page.getByLabel("Recurrence").click();
     await page.getByText("No recurrence").click();
     // make sure rec-tag was removed
     await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveCount(
@@ -457,3 +438,12 @@ test.describe("Task dialog", () => {
     );
   });
 });
+
+async function openTaskDialog(page: Page) {
+  await page.getByRole("button", { name: "Add task" }).click();
+  await page.waitForTimeout(400);
+}
+
+function getEditor(page: Page) {
+  return page.getByRole("textbox", { name: "Text editor" });
+}

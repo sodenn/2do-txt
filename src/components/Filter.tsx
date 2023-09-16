@@ -4,14 +4,7 @@ import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  MenuItem,
-  Select,
-  Stack,
-} from "@mui/material";
+import { Box, Checkbox, Option, Select, Stack } from "@mui/joy";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -76,7 +69,7 @@ export function Filter() {
             items={priorities}
             activeItems={activePriorities}
             onClick={togglePriority}
-            color="secondary"
+            color="priority"
           />
         </Box>
       )}
@@ -87,7 +80,7 @@ export function Filter() {
             items={projects}
             activeItems={activeProjects}
             onClick={toggleProject}
-            color="info"
+            color="primary"
           />
         </Box>
       )}
@@ -123,17 +116,17 @@ export function Filter() {
         <Box>
           <Heading gutterBottom>{t("Filter type")}</Heading>
           <Select
-            fullWidth
-            size="small"
             defaultValue="strict"
             value={filterType}
-            aria-label="Filter type"
-            onChange={(event) =>
-              setFilterType(event.target.value as FilterType)
-            }
+            onChange={(_, value) => setFilterType(value as FilterType)}
+            slotProps={{
+              button: {
+                "aria-label": "Filter type",
+              },
+            }}
           >
-            <MenuItem value="AND">{t("AND")}</MenuItem>
-            <MenuItem value="OR">{t("OR")}</MenuItem>
+            <Option value="AND">{t("AND")}</Option>
+            <Option value="OR">{t("OR")}</Option>
           </Select>
         </Box>
       )}
@@ -152,34 +145,36 @@ export function Filter() {
           </Heading>
           <Select
             disabled={taskView === "timeline"}
-            fullWidth
-            size="small"
             defaultValue=""
-            displayEmpty
             value={sortBy}
-            aria-label="Sort tasks"
-            onChange={(event) => setSortBy(event.target.value as SortKey)}
+            onChange={(_, value) => setSortBy(value as SortKey)}
+            slotProps={{
+              button: {
+                "aria-label": "Sort tasks",
+              },
+            }}
           >
-            <MenuItem value="">{t("No sorting")}</MenuItem>
-            <MenuItem value="priority">{t("Priority")}</MenuItem>
-            <MenuItem value="dueDate">{t("Due Date")}</MenuItem>
-            <MenuItem value="context">{t("Context")}</MenuItem>
-            <MenuItem value="project">{t("Project")}</MenuItem>
-            <MenuItem value="tag">{t("Tag")}</MenuItem>
+            <Option value="">{t("No sorting")}</Option>
+            <Option value="priority">{t("Priority")}</Option>
+            <Option value="dueDate">{t("Due Date")}</Option>
+            <Option value="context">{t("Context")}</Option>
+            <Option value="project">{t("Project")}</Option>
+            <Option value="tag">{t("Tag")}</Option>
           </Select>
         </Box>
       )}
       <Box>
         <Heading>{t("Status")}</Heading>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={hideCompletedTasks}
-              onChange={(event, checked) => setHideCompletedTasks(checked)}
-            />
-          }
-          aria-label="Hide completed tasks"
+        <Checkbox
+          sx={{ mt: 1 }}
+          checked={hideCompletedTasks}
+          onChange={(event) => setHideCompletedTasks(event.target.checked)}
           label={t("Hide completed tasks")}
+          slotProps={{
+            input: {
+              "aria-label": "Hide completed tasks",
+            },
+          }}
         />
       </Box>
     </Stack>

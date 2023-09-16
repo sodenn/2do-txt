@@ -1,6 +1,6 @@
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import AddTaskIcon from "@mui/icons-material/AddTask";
-import { Button } from "@mui/material";
+import Button from "@mui/joy/Button";
 import { useTranslation } from "react-i18next";
 
 export function NewFileButton() {
@@ -10,6 +10,8 @@ export function NewFileButton() {
   );
   return (
     <Button
+      fullWidth
+      variant="solid"
       aria-label="Create task"
       onClick={() =>
         openFileCreateDialog({
@@ -17,8 +19,7 @@ export function NewFileButton() {
           createExampleFile: false,
         })
       }
-      startIcon={<AddTaskIcon />}
-      variant="contained"
+      startDecorator={<AddTaskIcon />}
     >
       {t("Create Task")}
     </Button>

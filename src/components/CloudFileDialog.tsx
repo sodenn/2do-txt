@@ -1,8 +1,10 @@
 import {
-  FullScreenDialog,
-  FullScreenDialogContent,
-  FullScreenDialogTitle,
-} from "@/components/FullScreenDialog";
+  ResponsiveDialog,
+  ResponsiveDialogActions,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
+import { useSnackbar } from "@/components/Snackbar";
 import { getDirname, join, selectFolder } from "@/native-api/filesystem";
 import { useCloudFileDialogStore } from "@/stores/cloud-file-dialog-store";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
@@ -21,29 +23,22 @@ import {
 } from "@/utils/CloudStorage";
 import { getDoneFilePath } from "@/utils/todo-files";
 import { useTask } from "@/utils/useTask";
-import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
-import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
-import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
-import KeyboardReturnOutlinedIcon from "@mui/icons-material/KeyboardReturnOutlined";
-import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
-import { LoadingButton } from "@mui/lab";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import FolderIcon from "@mui/icons-material/Folder";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import SyncIcon from "@mui/icons-material/Sync";
 import {
   Box,
   Button,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   List,
+  ListItem,
   ListItemButton,
-  ListItemIcon,
-  ListItemText,
+  ListItemContent,
+  ListItemDecorator,
   Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { useSnackbar } from "notistack";
+} from "@mui/joy";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -71,8 +66,6 @@ interface CloudFolderButtonProps {
 
 export function CloudFileDialog() {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const { createNewTodoFile, saveDoneFile, taskLists } = useTask();
   const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath,
@@ -95,7 +88,7 @@ export function CloudFileDialog() {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListResult | undefined>();
-  const { enqueueSnackbar } = useSnackbar();
+  const { openSnackbar } = useSnackbar();
 
   const handleClose = () => {
     setLoading(false);
@@ -144,10 +137,12 @@ export function CloudFileDialog() {
       await saveDoneFile(localDoneFilePath, doneFileContent);
       if (archiveMode === "no-archiving") {
         setArchiveMode("manual");
-        enqueueSnackbar(
-          t("Task archiving was turned on because a done.txt file was found"),
-          { variant: "info" },
-        );
+        openSnackbar({
+          color: "primary",
+          message: t(
+            "Task archiving was turned on because a done.txt file was found",
+          ),
+        });
       }
     }
     setActiveTaskListPath(localFilePath);
@@ -159,80 +154,42 @@ export function CloudFileDialog() {
     openFileCreateDialog();
   };
 
-  const TransitionProps = {
-    onExited: handleExited,
-  };
-
-  if (fullScreenDialog) {
-    return (
-      <FullScreenDialog
-        data-testid="cloud-file-dialog"
-        open={open}
-        onClose={handleClose}
-        TransitionProps={TransitionProps}
-      >
-        <FullScreenDialogTitle
-          onClose={handleClose}
-          accept={{
-            text: t("Import"),
-            disabled: !selectedFile,
-            loading,
-            onClick: handleSelect,
-            "aria-label": "Import",
-          }}
-        >
-          {provider}
-        </FullScreenDialogTitle>
-        <FullScreenDialogContent disableGutters>
-          <CloudFileDialogContent
-            provider={provider}
-            onSelect={setSelectedFile}
-            onFilesChange={setFiles}
-            onClose={handleClose}
-          />
-        </FullScreenDialogContent>
-      </FullScreenDialog>
-    );
-  }
-
   return (
-    <Dialog
-      maxWidth="xs"
+    <ResponsiveDialog
       fullWidth
-      scroll="paper"
       open={open}
       onClose={handleClose}
-      TransitionProps={TransitionProps}
+      onExited={handleExited}
     >
-      <DialogTitle sx={{ px: 2 }}>
+      <ResponsiveDialogTitle>
         {t(`Import from cloud storage`, {
           provider,
         })}
-      </DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
+      </ResponsiveDialogTitle>
+      <ResponsiveDialogContent>
         <CloudFileDialogContent
           provider={provider}
           onSelect={setSelectedFile}
           onFilesChange={setFiles}
           onClose={handleClose}
         />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>{t("Cancel")}</Button>
+      </ResponsiveDialogContent>
+      <ResponsiveDialogActions>
         {files && files.items.length > 0 && (
-          <LoadingButton
+          <Button
             onClick={handleSelect}
             disabled={!selectedFile}
             loading={loading}
+            aria-label="Import"
           >
             {t("Import")}
-          </LoadingButton>
+          </Button>
         )}
         {files && files.items.length === 0 && taskLists.length === 0 && (
           <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
         )}
-      </DialogActions>
-    </Dialog>
+      </ResponsiveDialogActions>
+    </ResponsiveDialog>
   );
 }
 
@@ -240,7 +197,7 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
   const { provider, onSelect, onFilesChange, onClose } = props;
   const { t } = useTranslation();
   const { taskLists } = useTask();
-  const { enqueueSnackbar } = useSnackbar();
+  const { openSnackbar } = useSnackbar();
   const { list, getCloudFileRefs } = useCloudStorage();
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListResult | undefined>();
@@ -288,21 +245,21 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
           })
           .catch((e: any) => {
             onClose();
-            enqueueSnackbar(
-              <span>
+            openSnackbar({
+              color: "warning",
+              message: (
                 <Trans
                   i18nKey="Error connecting with cloud storage"
                   values={{ provider, message: e.message }}
                   components={{ code: <code style={{ marginLeft: 5 }} /> }}
                 />
-              </span>,
-              { variant: "warning" },
-            );
+              ),
+            });
           })
           .finally(() => setLoading(false));
       }
     },
-    [provider, currentPath, enqueueSnackbar, list, onClose, onFilesChange],
+    [provider, currentPath, openSnackbar, list, onClose, onFilesChange],
   );
 
   const handleLoadMoreItems = (path = currentPath) => {
@@ -337,63 +294,64 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
     <>
       {!files && (
         <Box sx={{ textAlign: "center", my: 3 }}>
-          <CircularProgress size={30} />
+          <CircularProgress size="md" />
         </Box>
       )}
-      {files && files.items.length === 0 && (
-        <Typography sx={{ px: 2, mb: 1 }}>
-          {t("There are no todo.txt files", { provider })}
-        </Typography>
-      )}
-      {files && files.items.length === 0 && taskLists.length > 0 && (
-        <Typography variant="body2" sx={{ px: 2 }} color="text.disabled">
-          <Trans i18nKey="Existing todo.txt files can be synchronized" />
-        </Typography>
-      )}
-      {files && files.items.length > 0 && (
-        <List sx={{ py: 0 }} dense>
+      {((files && files.items.length > 0) || previousPaths.length > 0) && (
+        <List variant="outlined" size="sm" sx={{ borderRadius: "sm" }}>
           {previousPaths.length > 0 && (
             <ListItemButton onClick={() => handleNavBack()}>
-              <ListItemIcon sx={{ minWidth: 40 }}>
+              <ListItemDecorator>
                 {loading === true ? (
-                  <CircularProgress color="inherit" size={24} />
+                  <CircularProgress size="sm" color="neutral" />
                 ) : (
-                  <KeyboardReturnOutlinedIcon />
+                  <KeyboardReturnIcon />
                 )}
-              </ListItemIcon>
-              <ListItemText primary={previousPaths.at(-1) || t("Back")} />
+              </ListItemDecorator>{" "}
+              {previousPaths.at(-1) || t("Back")}
             </ListItemButton>
           )}
-          {files.items
-            .filter((c): c is CloudFile & WithFileType => c.type === "file")
-            .map((cloudFile) => (
-              <CloudFileButton
-                key={cloudFile.path}
-                cloudFile={cloudFile}
-                cloudFileRefs={cloudFileRefs}
-                selectedFile={selectedFile}
-                onClick={() => handleSelect(cloudFile)}
-                disabled={disabled}
-              />
-            ))}
-          {files.items
-            .filter(
-              (c): c is CloudDirectory & WithDirectoryType =>
-                c.type === "directory",
-            )
-            .map((cloudDirectory) => (
-              <CloudFolderButton
-                key={cloudDirectory.path}
-                cloudDirectory={cloudDirectory}
-                onClick={() => handleNavForward(cloudDirectory)}
-                loading={loading === cloudDirectory.path}
-                disabled={disabled}
-              />
-            ))}
-          {files?.hasMore && (
+          {files &&
+            files.items
+              .filter((c): c is CloudFile & WithFileType => c.type === "file")
+              .map((cloudFile) => (
+                <CloudFileButton
+                  key={cloudFile.path}
+                  cloudFile={cloudFile}
+                  cloudFileRefs={cloudFileRefs}
+                  selectedFile={selectedFile}
+                  onClick={() => handleSelect(cloudFile)}
+                  disabled={disabled}
+                />
+              ))}
+          {files &&
+            files.items
+              .filter(
+                (c): c is CloudDirectory & WithDirectoryType =>
+                  c.type === "directory",
+              )
+              .map((cloudDirectory) => (
+                <CloudFolderButton
+                  key={cloudDirectory.path}
+                  cloudDirectory={cloudDirectory}
+                  onClick={() => handleNavForward(cloudDirectory)}
+                  loading={loading === cloudDirectory.path}
+                  disabled={disabled}
+                />
+              ))}
+          {files && files.hasMore && (
             <ListItemButton onClick={() => handleLoadMoreItems()}>
-              <ListItemText inset primary={t("Load more")} />
+              <ListItemDecorator /> {t("Load more")}
             </ListItemButton>
+          )}
+          {files && files.items.length === 0 && (
+            <ListItem>
+              <ListItemContent>
+                <Typography level="body-sm">
+                  {t("No todo.txt files found")}
+                </Typography>
+              </ListItemContent>
+            </ListItem>
           )}
         </List>
       )}
@@ -414,32 +372,44 @@ function CloudFileButton(props: CloudFileButtonProps) {
       onClick={onClick}
       selected={selectedFile && cloudFile.path === selectedFile.path}
     >
-      <ListItemIcon sx={{ minWidth: 40 }}>
-        <InsertDriveFileOutlinedIcon />
-      </ListItemIcon>
-      <ListItemText primary={cloudFile.name} secondary={cloudFile.path} />
-      {disableItem(cloudFile) && <SyncOutlinedIcon color="disabled" />}
+      <ListItemDecorator>
+        <InsertDriveFileIcon />
+      </ListItemDecorator>
+      <ListItemContent>
+        <Typography level="title-sm">{cloudFile.name}</Typography>
+        <Typography level="body-sm" noWrap>
+          {cloudFile.path}
+        </Typography>
+      </ListItemContent>
+      {disableItem(cloudFile) && (
+        <ListItemDecorator>
+          <SyncIcon color="disabled" fontSize="small" />
+        </ListItemDecorator>
+      )}
     </ListItemButton>
   );
 }
 
 function CloudFolderButton(props: CloudFolderButtonProps) {
   const { cloudDirectory, loading, disabled, onClick } = props;
-
   return (
     <ListItemButton onClick={onClick} disabled={disabled}>
-      <ListItemIcon sx={{ minWidth: 40 }}>
-        <FolderOutlinedIcon />
-      </ListItemIcon>
-      <ListItemText
-        primary={cloudDirectory.name}
-        secondary={cloudDirectory.path}
-      />
-      {loading ? (
-        <CircularProgress color="inherit" size={24} />
-      ) : (
-        <ArrowForwardIosOutlinedIcon color="disabled" />
-      )}
+      <ListItemDecorator>
+        <FolderIcon />
+      </ListItemDecorator>
+      <ListItemContent>
+        <Typography level="title-sm">{cloudDirectory.name}</Typography>
+        <Typography level="body-sm" noWrap>
+          {cloudDirectory.path}
+        </Typography>
+      </ListItemContent>
+      <ListItemDecorator>
+        {loading ? (
+          <CircularProgress size="sm" color="neutral" />
+        ) : (
+          <ArrowForwardIosIcon color="disabled" fontSize="small" />
+        )}
+      </ListItemDecorator>
     </ListItemButton>
   );
 }

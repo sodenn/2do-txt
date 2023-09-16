@@ -4,7 +4,7 @@ import { TaskListSubheader } from "@/components/TaskListSubheader";
 import { Task } from "@/utils/task";
 import { TaskGroup } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
-import { Box, List, Typography } from "@mui/material";
+import { List, ListItem, Typography } from "@mui/joy";
 import { isEqual } from "lodash";
 import { MutableRefObject, memo } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,12 +14,11 @@ interface TaskListProps {
   filePath: string;
   taskGroups: TaskGroup[];
   tasks: Task[];
-  focusedTaskId?: string;
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
   showHeader?: boolean;
-  onListItemClick: (task: Task) => void;
   onFocus: (index: number) => void;
   onBlur: () => void;
+  onClick: (task: Task) => void;
 }
 
 function propsAreEqual(prev: TaskListProps, next: TaskListProps) {
@@ -38,34 +37,27 @@ export const TaskList = memo((props: TaskListProps) => {
     filePath,
     taskGroups,
     tasks,
-    focusedTaskId,
     listItemsRef,
     showHeader = false,
     onFocus,
     onBlur,
-    onListItemClick,
+    onClick,
   } = props;
   const { t } = useTranslation();
   const { completeTask } = useTask();
   const hasItems = taskGroups.some((g) => g.items.length > 0);
 
   return (
-    <Box>
-      {showHeader && <TaskListHeader fileName={fileName} filePath={filePath} />}
-      {!hasItems && (
-        <Typography
-          sx={{ mt: 1, mx: 2, mb: 3, fontStyle: "italic" }}
-          color="text.disabled"
-        >
-          {t("No tasks")}
-        </Typography>
-      )}
-      {hasItems && (
-        <List aria-label="Task list" subheader={<li />}>
+    <>
+      {(hasItems || showHeader) && (
+        <List data-testid="task-list" sx={{ pl: { xs: 0.5, sm: 0 } }}>
+          {showHeader && (
+            <TaskListHeader fileName={fileName} filePath={filePath} />
+          )}
           {taskGroups.map((group) => (
-            <li key={group.label}>
-              <ul style={{ padding: 0 }}>
-                {group.label && <TaskListSubheader title={group.label} />}
+            <ListItem nested key={group.label}>
+              {group.label && <TaskListSubheader title={group.label} />}
+              <List>
                 {group.items.map((task) => {
                   const index = tasks.indexOf(task);
                   return (
@@ -77,19 +69,27 @@ export const TaskList = memo((props: TaskListProps) => {
                       }}
                       key={task._id}
                       task={task}
-                      focused={focusedTaskId === task._id}
-                      onClick={() => onListItemClick(task)}
+                      onButtonClick={() => onClick(task)}
                       onCheckboxClick={() => completeTask(task)}
                       onFocus={() => onFocus(index)}
                       onBlur={onBlur}
                     />
                   );
                 })}
-              </ul>
-            </li>
+              </List>
+            </ListItem>
           ))}
         </List>
       )}
-    </Box>
+      {!hasItems && (
+        <Typography
+          sx={{ pt: 1, px: 2, pb: 3 }}
+          level="body-md"
+          color="neutral"
+        >
+          {t("No tasks")}
+        </Typography>
+      )}
+    </>
   );
 }, propsAreEqual);

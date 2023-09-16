@@ -2,7 +2,7 @@ import { usePlatformStore } from "@/stores/platform-store";
 import { useTask } from "@/utils/useTask";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import ShareIcon from "@mui/icons-material/Share";
-import { IconButton, IconButtonProps } from "@mui/material";
+import { IconButton, IconButtonProps } from "@mui/joy";
 
 export function ShareButton(props: IconButtonProps) {
   const { downloadTodoFile, shareTodoFile } = useTask();
@@ -21,9 +21,7 @@ export function ShareButton(props: IconButtonProps) {
     <IconButton
       tabIndex={-1}
       aria-label="Share todo.txt"
-      size="large"
-      edge="end"
-      color="inherit"
+      variant="outlined"
       onClick={handleClick}
       {...props}
     >

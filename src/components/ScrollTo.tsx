@@ -1,7 +1,8 @@
+import { Fade } from "@/components/Fade";
 import { useIsInViewport } from "@/utils/useIsInViewport";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { Box, Fab, Fade, styled } from "@mui/material";
+import { Box, IconButton, styled } from "@mui/joy";
 
 interface ScrollTopProps {
   target: HTMLElement;
@@ -35,19 +36,13 @@ export function ScrollTo({ target }: ScrollTopProps) {
       <StyledBox
         onClick={handleClick}
         sx={{
-          bottom: { xs: 0, sm: 24 },
+          bottom: { xs: 0, sm: 20 },
           right: { xs: 4, sm: 32 },
         }}
       >
-        <Fab
-          tabIndex={-1}
-          color="primary"
-          size="small"
-          aria-label="Scroll to"
-          sx={{ boxShadow: "unset" }}
-        >
+        <IconButton tabIndex={-1} variant="soft" aria-label="Scroll to">
           {icon}
-        </Fab>
+        </IconButton>
       </StyledBox>
     </Fade>
   );

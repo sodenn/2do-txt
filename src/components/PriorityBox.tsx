@@ -1,58 +1,32 @@
-import { TagBox } from "@/components/TagBox";
-import { Box, BoxProps, styled } from "@mui/material";
+import { Typography } from "@mui/joy";
+import { PropsWithChildren } from "react";
 
-interface PriorityBoxProps extends BoxProps {
+interface PriorityBoxProps {
   completed: boolean;
-  chip: boolean;
+  outlined: boolean;
 }
-
-const SpanBox = (props: BoxProps) => <Box {...props} component="span" />;
-
-const PriorityBoxContent = styled(SpanBox)<{ completed: number }>(
-  ({ theme, completed }) => ({
-    boxShadow: `0 0 0 1pt ${
-      !completed ? theme.palette.secondary.main : "inherit"
-    }`,
-    borderRadius: theme.spacing(1),
-    color: !completed ? theme.palette.secondary.main : "inherit",
-    "&:before, &:after": {
-      content: '"\\00a0\\00a0"',
-    },
-  }),
-);
-
-const PriorityBoxRoot = styled(SpanBox)(() => ({
-  "&:after": {
-    content: '"\\00a0"',
-  },
-}));
 
 export function PriorityBox({
   children,
-  chip,
+  outlined,
   completed,
-  ...rest
-}: PriorityBoxProps) {
-  if (chip) {
-    return (
-      <TagBox
-        chip={true}
-        completed={false}
-        sx={{
-          fontWeight: "bold",
-          color: completed ? undefined : "secondary.contrastText",
-          bgcolor: completed ? undefined : "secondary.main",
-        }}
-      >
-        {children}
-      </TagBox>
-    );
-  }
+}: PropsWithChildren<PriorityBoxProps>) {
   return (
-    <PriorityBoxRoot>
-      <PriorityBoxContent completed={completed ? 1 : 0} {...rest}>
-        {children}
-      </PriorityBoxContent>
-    </PriorityBoxRoot>
+    <Typography
+      variant={completed ? "plain" : outlined ? "outlined" : "solid"}
+      color={completed ? "completed" : "priority"}
+      component="span"
+      sx={{
+        fontWeight: "bold",
+        display: "inline",
+        borderRadius: "sm",
+        py: 0, // prevent overlapping of tags in case of multiline text
+        ...(completed && {
+          p: 0,
+        }),
+      }}
+    >
+      {children}
+    </Typography>
   );
 }

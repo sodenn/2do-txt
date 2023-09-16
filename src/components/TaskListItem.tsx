@@ -1,28 +1,49 @@
 import { TaskBody } from "@/components/TaskBody";
 import { TaskListItemMenu } from "@/components/TaskListItemMenu";
 import { Task } from "@/utils/task";
-import { Checkbox, ListItemButton, Stack, styled } from "@mui/material";
-import { forwardRef, useRef } from "react";
+import {
+  Checkbox,
+  DropdownProps,
+  ListItem,
+  ListItemButton,
+  Stack,
+  styled,
+} from "@mui/joy";
+import { forwardRef, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const TaskItemButton = styled(ListItemButton)(({ theme }) => ({
-  [theme.breakpoints.up("sm")]: {
-    borderRadius: theme.shape.borderRadius,
-  },
-  ".MuiIconButton-root": {
-    visibility: "hidden",
+const StyledListItem = styled(ListItem, {
+  shouldForwardProp: (prop) => prop !== "menuOpen",
+})<{ menuOpen: boolean }>(({ menuOpen }) => ({
+  ".MuiMenuButton-root": {
+    visibility: menuOpen ? "visible" : "hidden",
+    backgroundColor: menuOpen
+      ? "var(--joy-palette-neutral-plainActiveBg)"
+      : undefined,
   },
   "@media (pointer: coarse)": {
-    ".MuiIconButton-root": {
+    ".MuiMenuButton-root": {
       visibility: "visible",
     },
   },
-  "&:hover": {
-    ".MuiIconButton-root": {
-      visibility: "visible",
-    },
+  "&:hover .MuiMenuButton-root": {
+    visibility: "visible",
   },
 }));
+
+const StyledListItemButton = styled(ListItemButton)({
+  "&:focus-visible": {
+    zIndex: "0",
+  },
+  "@media (pointer: coarse)": {
+    '&:not(.Mui-selected, [aria-selected="true"]):active': {
+      backgroundColor: "inherit",
+    },
+    ':not(.Mui-selected, [aria-selected="true"]):hover': {
+      backgroundColor: "inherit",
+    },
+  },
+});
 
 const DateContainer = styled("div")({
   opacity: 0.5,
@@ -31,101 +52,78 @@ const DateContainer = styled("div")({
 
 interface TaskListItemProps {
   task: Task;
-  focused: boolean;
   onCheckboxClick: () => void;
-  onClick: () => void;
+  onButtonClick: () => void;
   onFocus: () => void;
   onBlur: () => void;
 }
 
 export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
   (props, ref) => {
-    const { task, focused, onClick, onCheckboxClick, onBlur, onFocus } = props;
+    const { task, onButtonClick, onCheckboxClick, onBlur, onFocus } = props;
     const checkboxRef = useRef<HTMLButtonElement>(null);
-    const menuRef = useRef<HTMLUListElement>(null);
-    const menuButtonRef = useRef<HTMLButtonElement>(null);
     const { t } = useTranslation();
+    const [menuOpen, setMenuOpen] = useState(false);
 
-    const handleItemClick = (event: any) => {
-      const checkboxClick =
-        !!checkboxRef.current && checkboxRef.current.contains(event.target);
-
-      const contextMenuClick =
-        !!menuRef.current && menuRef.current.contains(event.target);
-
-      const contextMenuButtonClick =
-        !!menuButtonRef.current && menuButtonRef.current.contains(event.target);
-
+    const handleButtonClick = (event: any) => {
       if (event.code === "Space") {
         onCheckboxClick();
-      } else if (
-        (!checkboxClick && !contextMenuClick && !contextMenuButtonClick) ||
-        event.code === "Enter"
-      ) {
-        onClick();
+      } else {
+        onButtonClick();
       }
     };
 
+    const handleOpenChange: DropdownProps["onOpenChange"] = (_, open) => {
+      setMenuOpen(open);
+    };
+
     return (
-      <div data-testid="task">
-        <TaskItemButton
+      <StyledListItem
+        data-testid="task"
+        onFocus={onFocus}
+        onBlur={onBlur}
+        menuOpen={menuOpen}
+        startAction={
+          <Checkbox
+            ref={checkboxRef}
+            onClick={onCheckboxClick}
+            checked={task.completed}
+            slotProps={{
+              input: {
+                tabIndex: -1,
+                "aria-label": "Complete task",
+                "aria-checked": task.completed,
+              },
+            }}
+          />
+        }
+        endAction={
+          <TaskListItemMenu task={task} onOpenChange={handleOpenChange} />
+        }
+      >
+        <StyledListItemButton
           ref={ref}
+          sx={{
+            borderRadius: "sm",
+          }}
+          onClick={handleButtonClick}
           data-testid="task-button"
-          aria-current={focused}
-          onClick={handleItemClick}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          dense
         >
-          <Stack
-            px={{ xs: 0.5, sm: 0 }}
-            direction="row"
-            spacing={0.5}
-            sx={{ width: "100%" }}
-          >
-            <div>
-              <Checkbox
-                ref={checkboxRef}
-                inputProps={{
-                  "aria-label": "Complete task",
-                  "aria-checked": task.completed,
-                }}
-                onClick={onCheckboxClick}
-                edge="start"
-                checked={task.completed}
-                tabIndex={-1}
-              />
-            </div>
-            <Stack
-              direction="column"
-              style={{
-                paddingTop: 10,
-                paddingBottom: 10,
-                flex: "auto",
-              }}
-            >
-              <TaskBody task={task} />
-              {task.completionDate && (
-                <DateContainer>
-                  {t("Completed", { completionDate: task.completionDate })}
-                </DateContainer>
-              )}
-              {task.creationDate && !task.completed && (
-                <DateContainer>
-                  {t("Created", { creationDate: task.creationDate })}
-                </DateContainer>
-              )}
-            </Stack>
-            <div>
-              <TaskListItemMenu
-                task={task}
-                menuRef={menuRef}
-                menuButtonRef={menuButtonRef}
-              />
-            </div>
+          <Stack direction="column" sx={{ py: 1 }}>
+            <TaskBody task={task} />
+            {task.completionDate && (
+              <DateContainer>
+                {t("Completed", { completionDate: task.completionDate })}
+              </DateContainer>
+            )}
+            {task.creationDate && !task.completed && (
+              <DateContainer>
+                {t("Created", { creationDate: task.creationDate })}
+              </DateContainer>
+            )}
           </Stack>
-        </TaskItemButton>
-      </div>
+        </StyledListItemButton>
+      </StyledListItem>
     );
   },
 );

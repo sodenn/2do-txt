@@ -11,7 +11,7 @@ import {
 } from "@/utils/task-list";
 import { HotkeyListeners, useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
-import { Stack } from "@mui/material";
+import { Stack } from "@mui/joy";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -125,12 +125,11 @@ export function TaskView() {
                 filePath={i.filePath}
                 taskGroups={i.groups}
                 tasks={tasks}
-                focusedTaskId={focusedTaskId}
                 listItemsRef={listItemsRef}
                 showHeader={!activeTaskList}
                 onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
                 onBlur={() => setFocusedTaskId(undefined)}
-                onListItemClick={(task) => _openTaskDialog(task)}
+                onClick={(task) => _openTaskDialog(task)}
               />
             ))}
         </Stack>

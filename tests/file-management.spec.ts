@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   }
 });
 
-test.describe("Reorder Files", () => {
+test.describe("File Management", () => {
   // webkit: Selecting multiple files does not work in the test
   test.skip(({ browserName }) => browserName === "webkit");
 
@@ -38,15 +38,15 @@ test.describe("Reorder Files", () => {
     await page.getByRole("menuitem", { name: "Files…" }).click();
 
     // check current sort order
-    await expect(page.locator("h5")).toHaveCount(2);
-    await expect(page.locator("h5").nth(0)).toHaveText("todo1.txt");
-    await expect(page.locator("h5").nth(1)).toHaveText("todo2.txt");
+    await expect(page.getByRole("listitem")).toHaveCount(2);
+    await expect(page.getByRole("listitem").nth(0)).toHaveText("todo1.txt");
+    await expect(page.getByRole("listitem").nth(1)).toHaveText("todo2.txt");
 
     // swap order of the two files via drag & drop
-    const source = page.getByRole("listitem", {
+    const source = page.getByRole("button", {
       name: "Draggable file todo2.txt",
     });
-    const destination = page.getByRole("listitem", {
+    const destination = page.getByRole("button", {
       name: "Draggable file todo1.txt",
     });
     const destinationPosition = await destination.boundingBox();
@@ -60,8 +60,8 @@ test.describe("Reorder Files", () => {
     await page.mouse.up();
 
     // check new sort order
-    await expect(page.locator("h5").nth(0)).toHaveText("todo2.txt");
-    await expect(page.locator("h5").nth(1)).toHaveText("todo1.txt");
+    await expect(page.getByRole("listitem").nth(0)).toHaveText("todo2.txt");
+    await expect(page.getByRole("listitem").nth(1)).toHaveText("todo1.txt");
   });
 
   test("should allow me to close a file", async ({ page }) => {
@@ -70,7 +70,7 @@ test.describe("Reorder Files", () => {
     await page.getByRole("menuitem", { name: "Files…" }).click();
 
     // check current number of open files
-    await expect(page.getByTestId("draggable-file")).toHaveCount(2);
+    await expect(page.getByRole("listitem")).toHaveCount(2);
 
     // open the menu of the first file in the list
     await page.getByRole("button", { name: "File actions" }).nth(0).click();

@@ -1,17 +1,16 @@
 import { getRecValueMatch } from "@/utils/task";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
-import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import {
   FormControl,
+  FormLabel,
   IconButton,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
+  Input,
+  Option,
   Select,
   Stack,
   Tooltip,
-} from "@mui/material";
+} from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -71,54 +70,56 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
   };
 
   return (
-    <Stack direction="row" spacing={1}>
-      <FormControl fullWidth>
-        <InputLabel id="recurrence-select">{t("Recurrence")}</InputLabel>
+    <Stack direction="row" spacing={1} alignItems="end">
+      <FormControl sx={{ flex: 1 }}>
+        <FormLabel>{t("Recurrence")}</FormLabel>
         <Select
-          labelId="recurrence-select"
-          aria-label="Select unit"
-          displayEmpty
-          input={<OutlinedInput label={t("Recurrence")} role="combobox" />}
           value={unit}
-          onChange={(event) => handleChangeUnit(event.target.value)}
+          onChange={(_, value) => handleChangeUnit(value)}
+          slotProps={{
+            listbox: {
+              role: "combobox",
+              "aria-label": "Select unit",
+            },
+          }}
         >
-          <MenuItem value="-">{t("No recurrence")}</MenuItem>
-          <MenuItem value="d">{t("Days")}</MenuItem>
-          <MenuItem value="b">{t("Business days")}</MenuItem>
-          <MenuItem value="w">{t("Weeks")}</MenuItem>
-          <MenuItem value="m">{t("Months")}</MenuItem>
-          <MenuItem value="y">{t("Years")}</MenuItem>
+          <Option value="-">{t("No recurrence")}</Option>
+          <Option value="d">{t("Days")}</Option>
+          <Option value="b">{t("Business days")}</Option>
+          <Option value="w">{t("Weeks")}</Option>
+          <Option value="m">{t("Months")}</Option>
+          <Option value="y">{t("Years")}</Option>
         </Select>
       </FormControl>
       {unit !== "-" && (
-        <OutlinedInput
+        <Input
           type="number"
-          inputProps={{
-            role: "spinbutton",
-            min: "1",
-            step: "1",
-            pattern: "[1-9]*",
-            inputMode: "numeric",
-            "aria-label": "Amount",
-          }}
           value={amount}
-          endAdornment={
-            <InputAdornment position="end">
-              <Tooltip
-                disableTouchListener={false}
-                enterTouchDelay={200}
-                title={t("Strict recurrence")}
+          sx={{ maxWidth: 120 }}
+          slotProps={{
+            input: {
+              role: "spinbutton",
+              min: "1",
+              step: "1",
+              pattern: "[1-9]*",
+              inputMode: "numeric",
+              "aria-label": "Amount",
+            },
+          }}
+          endDecorator={
+            <Tooltip
+              disableTouchListener={false}
+              enterTouchDelay={200}
+              title={t("Strict recurrence")}
+            >
+              <IconButton
+                aria-label="Toggle strict mode"
+                onClick={() => handleChangeStrict(!strict)}
               >
-                <IconButton
-                  aria-label="Toggle strict mode"
-                  onClick={() => handleChangeStrict(!strict)}
-                  edge="end"
-                >
-                  {!strict && <AddCircleOutlineRoundedIcon />}
-                  {strict && <AddCircleOutlinedIcon />}
-                </IconButton>
-              </Tooltip>
-            </InputAdornment>
+                {!strict && <AddCircleOutlineRoundedIcon />}
+                {strict && <AddCircleIcon />}
+              </IconButton>
+            </Tooltip>
           }
           onChange={(event) => handleChangeAmount(event.target.value)}
         />

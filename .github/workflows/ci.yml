@@ -8,47 +8,79 @@ on:
 
 jobs:
   test:
+    name: 'Unit Tests'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
-      - run: npm ci
-      - run: npm test
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
   e2e:
-    name: 'e2e Tests - ${{ matrix.project }}'
+    name: 'E2E Tests - ${{ matrix.shard }}'
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        project: [ "chromium", "Mobile Safari" ]
+        shard: [1/4, 2/4, 3/4, 4/4]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
-      - run: npm ci
-      - if: matrix.project == 'chromium'
-        run: npx playwright install chromium --with-deps
-      - if: matrix.project == 'Mobile Safari'
-        run: npx playwright install webkit --with-deps
-      - run: npx playwright test --project="${{ matrix.project }}"
-      - uses: actions/upload-artifact@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Install browsers
+        run: npx playwright install --with-deps
+      - name: Run E2E tests
+        run: npx playwright test --shard ${{ matrix.shard }}
+      - name: Upload blob report to GitHub Actions Artifacts
         if: always()
+        uses: actions/upload-artifact@v3
         with:
-          name: playwright-report-${{ matrix.project }}
-          path: playwright-report/
-          retention-days: 3
-  hygiene:
+          name: all-blob-reports
+          path: blob-report
+          retention-days: 1
+  merge-reports:
+    name: 'Merge E2E test reports'
+    if: always()
+    needs: [ e2e ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
-      - run: npm ci
-      - run: npm run hygiene
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: all-blob-reports
+          path: all-blob-reports
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+          retention-days: 14
+  hygiene:
+    name: 'Hygiene'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint, format, and check for unused dependencies
+        run: npm run hygiene

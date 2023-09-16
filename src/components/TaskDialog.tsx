@@ -1,30 +1,33 @@
 import {
-  FullScreenDialog,
-  FullScreenDialogContent,
-  FullScreenDialogTitle,
-} from "@/components/FullScreenDialog";
+  ResponsiveDialog,
+  ResponsiveDialogActions,
+  ResponsiveDialogContent,
+  ResponsiveDialogTitle,
+} from "@/components/ResponsiveDialog";
 import { TaskForm } from "@/components/TaskForm";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { formatDate, todayDate } from "@/utils/date";
 import { Task } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
+import { useDialogButtonSize } from "@/utils/useDialogButtonSize";
 import { useTask } from "@/utils/useTask";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Button } from "@mui/joy";
+import { ModalProps } from "@mui/joy/Modal";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const rawText = (createCreationDate: boolean, task?: Task): string => {
+function rawText(createCreationDate: boolean, task?: Task) {
   return task ? task.raw : createCreationDate ? formatDate(todayDate()) : "";
-};
+}
+
+function isEmpty(createCreationDate: boolean, value?: string) {
+  if (createCreationDate && value) {
+    // filter out creation date
+    return value.trim().replace(/^\d{4}-\d{2}-\d{2}$/, "") === "";
+  }
+  return !value?.trim();
+}
 
 export function TaskDialog() {
   const { t } = useTranslation();
@@ -38,14 +41,13 @@ export function TaskDialog() {
     projects: commonProjects,
     tags: commonTags,
   } = useTask();
+  const buttonSize = useDialogButtonSize();
   const closeTaskDialog = useTaskDialogStore((state) => state.closeTaskDialog);
   const cleanupTaskDialog = useTaskDialogStore(
     (state) => state.cleanupTaskDialog,
   );
   const open = useTaskDialogStore((state) => state.open);
   const task = useTaskDialogStore((state) => state.task);
-  const theme = useTheme();
-  const fullScreenDialog = useMediaQuery(theme.breakpoints.down("sm"));
   const createCreationDate = useSettingsStore(
     (state) => state.createCreationDate,
   );
@@ -53,7 +55,9 @@ export function TaskDialog() {
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
-  const formDisabled = !value || (!activeTaskList && !selectedTaskList);
+  const formDisabled =
+    isEmpty(createCreationDate, value) ||
+    (!activeTaskList && !selectedTaskList);
   const contexts = useMemo(
     () =>
       Object.keys(activeTaskList ? activeTaskList.contexts : commonContexts),
@@ -71,7 +75,7 @@ export function TaskDialog() {
   );
 
   const handleSave = useCallback(() => {
-    if (formDisabled) {
+    if (formDisabled || !value) {
       return;
     }
     closeTaskDialog();
@@ -90,8 +94,8 @@ export function TaskDialog() {
     task,
   ]);
 
-  const handleClose = useCallback(
-    (event: any, reason: "backdropClick" | "escapeKeyDown") => {
+  const handleClose = useCallback<NonNullable<ModalProps["onClose"]>>(
+    (_, reason) => {
       return reason !== "backdropClick" ? closeTaskDialog() : undefined;
     },
     [closeTaskDialog],
@@ -108,78 +112,50 @@ export function TaskDialog() {
     });
   };
 
-  const handleExit = () => {
+  const handleExited = () => {
     cleanupTaskDialog();
     setValue(undefined);
     setSelectedTaskList(undefined);
   };
 
-  const TransitionProps = {
-    onEnter: handleEnter,
-    onExited: handleExit,
-  };
-
-  const taskForm = value ? (
-    <TaskForm
-      value={value}
-      newTask={!!task?._id}
-      contexts={contexts}
-      projects={projects}
-      tags={tags}
-      taskLists={taskLists}
-      onChange={setValue}
-      onFileSelect={setSelectedTaskList}
-      onEnterPress={handleSave}
-    />
-  ) : null;
-
-  if (fullScreenDialog) {
-    return (
-      <FullScreenDialog
-        data-testid="task-dialog"
-        open={open}
-        onClose={closeTaskDialog}
-        TransitionProps={TransitionProps}
-      >
-        <FullScreenDialogTitle
-          onClose={closeTaskDialog}
-          accept={{
-            text: t("Save"),
-            disabled: formDisabled,
-            onClick: handleSave,
-            "aria-label": "Save task",
-          }}
-        >
-          {task?._id ? t("Edit Task") : t("Create Task")}
-        </FullScreenDialogTitle>
-        <FullScreenDialogContent>{taskForm}</FullScreenDialogContent>
-      </FullScreenDialog>
-    );
-  }
-
   return (
-    <Dialog
+    <ResponsiveDialog
       data-testid="task-dialog"
-      maxWidth="sm"
       fullWidth
       open={open}
       onClose={handleClose}
-      TransitionProps={TransitionProps}
+      onEnter={handleEnter}
+      onExited={handleExited}
     >
-      <DialogTitle>{task?._id ? t("Edit Task") : t("Create Task")}</DialogTitle>
-      <DialogContent>{taskForm}</DialogContent>
-      <DialogActions>
-        <Button tabIndex={-1} onClick={closeTaskDialog}>
-          {t("Cancel")}
-        </Button>
+      <ResponsiveDialogTitle>
+        {task?._id ? t("Edit Task") : t("Create Task")}
+      </ResponsiveDialogTitle>
+      <ResponsiveDialogContent>
+        {value && (
+          <TaskForm
+            value={value}
+            newTask={!!task?._id}
+            contexts={contexts}
+            projects={projects}
+            tags={tags}
+            taskLists={taskLists}
+            onChange={setValue}
+            onFileSelect={setSelectedTaskList}
+            onEnterPress={handleSave}
+          />
+        )}
+      </ResponsiveDialogContent>
+      <ResponsiveDialogActions>
         <Button
+          size={buttonSize}
           aria-label="Save task"
+          aria-disabled={formDisabled}
           disabled={formDisabled}
           onClick={handleSave}
         >
           {t("Save")}
         </Button>
-      </DialogActions>
-    </Dialog>
+      </ResponsiveDialogActions>
+    </ResponsiveDialog>
   );
 }

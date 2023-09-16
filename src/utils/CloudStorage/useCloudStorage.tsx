@@ -1,4 +1,5 @@
 import { DropboxIcon } from "@/components/DropboxIcon";
+import { SnackbarActionButton, useSnackbar } from "@/components/Snackbar";
 import { fileExists, getFilename, writeFile } from "@/native-api/filesystem";
 import { oauth } from "@/native-api/oath";
 import {
@@ -15,8 +16,6 @@ import { usePlatformStore } from "@/stores/platform-store";
 import { useWebDAVDialogStore } from "@/stores/webdav-dialog-store";
 import { getDoneFilePath } from "@/utils/todo-files";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
-import { Alert, Button, CircularProgress } from "@mui/material";
-import { SnackbarKey, useSnackbar } from "notistack";
 import { ReactNode, useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -41,7 +40,7 @@ export function useCloudStorage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { openSnackbar, closeSnackbar } = useSnackbar();
   const platform = usePlatformStore((state) => state.platform);
   const addWebDAVStorage = useCloudStore((state) => state.addWebDAVStorage);
   const addDropboxStorage = useCloudStore((state) => state.addDropboxStorage);
@@ -91,8 +90,10 @@ export function useCloudStorage() {
 
   const showConnectionErrorSnackbar = useCallback(
     (error: any) => {
-      return enqueueSnackbar(
-        <span>
+      return openSnackbar({
+        color: "warning",
+        preventDuplicate: true,
+        message: (
           <Trans
             i18nKey="Error connecting with cloud storage"
             values={{
@@ -103,54 +104,50 @@ export function useCloudStorage() {
               code: <code style={{ marginLeft: 5 }} />,
             }}
           />
-        </span>,
-        { variant: "warning", preventDuplicate: true },
-      );
+        ),
+      });
     },
-    [enqueueSnackbar, t],
+    [openSnackbar, t],
   );
 
   const showSessionExpiredSnackbar = useCallback(
     (provider: Provider) => {
-      const handleLogin = async (key: SnackbarKey) => {
-        closeSnackbar(key);
-        await authenticate(provider);
-        setAuthError(false);
-      };
       // Don't annoy the user, so only show the message once
       if (!authError) {
         setAuthError(true);
-        return enqueueSnackbar(
-          t("Session has expired. Please login again", { provider }),
-          {
-            variant: "warning",
-            preventDuplicate: true,
-            action: (key) => (
-              <>
-                <Button color="inherit" onClick={() => closeSnackbar(key)}>
-                  {t("Close")}
-                </Button>
-                <Button color="inherit" onClick={() => handleLogin(key)}>
-                  {t("Login")}
-                </Button>
-              </>
-            ),
-          },
-        );
+        return openSnackbar({
+          color: "warning",
+          preventDuplicate: true,
+          message: t("Session has expired. Please login again", { provider }),
+          renderAction: (closeSnackbar) => (
+            <>
+              <SnackbarActionButton
+                onClick={async () => {
+                  closeSnackbar();
+                  await authenticate(provider);
+                  setAuthError(false);
+                }}
+              >
+                {t("Login")}
+              </SnackbarActionButton>
+            </>
+          ),
+        });
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [authError, closeSnackbar, enqueueSnackbar, setAuthError, t],
+    [authError, closeSnackbar, openSnackbar, setAuthError, t],
   );
 
   const showConnectedSnackbar = useCallback(
     (provider: Provider) => {
-      return enqueueSnackbar(t("Connected to cloud storage", { provider }), {
-        variant: "success",
+      return openSnackbar({
+        color: "success",
         preventDuplicate: true,
+        message: t("Connected to cloud storage", { provider }),
       });
     },
-    [enqueueSnackbar, t],
+    [openSnackbar, t],
   );
 
   const handleError = useCallback(
@@ -248,22 +245,18 @@ export function useCloudStorage() {
   );
 
   const showProgressSnackbar = useCallback(() => {
-    const syncMessage = t("Sync with cloud storage", {
-      provider: t("cloud storage"),
-    });
-    const snackbar = enqueueSnackbar("", {
-      variant: "info",
-      persist: true,
-      content: (
-        <Alert severity="info" icon={<CircularProgress size="1em" />}>
-          {syncMessage}
-        </Alert>
-      ),
+    const snackbar = openSnackbar({
+      color: "primary",
+      persistent: true,
+      loading: true,
+      message: t("Sync with cloud storage", {
+        provider: t("cloud storage"),
+      }),
     });
     return () => {
       closeSnackbar(snackbar);
     };
-  }, [closeSnackbar, enqueueSnackbar, t]);
+  }, [closeSnackbar, openSnackbar, t]);
 
   const downloadFile = useCallback(
     async (provider: Provider, localPath: string, remotePath: string) => {

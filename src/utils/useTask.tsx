@@ -1,3 +1,4 @@
+import { useSnackbar } from "@/components/Snackbar";
 import { promptForRating } from "@/native-api/app-rate";
 import {
   deleteFile,
@@ -40,7 +41,6 @@ import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { isEqual, omit } from "lodash";
-import { useSnackbar } from "notistack";
 import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -62,7 +62,7 @@ function areTaskListsEqual(a: TaskList[], b: TaskList[]) {
 
 export function useTask() {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
+  const { openSnackbar } = useSnackbar();
   const platform = usePlatformStore((state) => state.platform);
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog,
@@ -576,12 +576,13 @@ export function useTask() {
 
   const handleFileNotFound = useCallback(
     async (filePath: string) => {
-      enqueueSnackbar(t("File not found", { filePath }), {
-        variant: "error",
+      openSnackbar({
+        color: "danger",
+        message: t("File not found", { filePath }),
       });
       await closeTodoFile(filePath);
     },
-    [enqueueSnackbar, closeTodoFile, t],
+    [openSnackbar, closeTodoFile, t],
   );
 
   const loadTodoFilesFromDisk = useCallback(async () => {

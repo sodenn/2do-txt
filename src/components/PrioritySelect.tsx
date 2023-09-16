@@ -1,15 +1,5 @@
 import { hasTouchScreen } from "@/native-api/platform";
-import {
-  Autocomplete,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Paper,
-  PaperProps,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, FormControl, FormLabel, Option, Select } from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -44,23 +34,9 @@ const options = [
 
 const selectOptions = ["", ...options];
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 6 + ITEM_PADDING_TOP,
-    },
-  },
-};
-
 interface PrioritySelectProps {
   value?: string;
   onChange?: (priority: any) => void;
-}
-
-function PaperComponent(props: PaperProps) {
-  return <Paper {...props} elevation={8} />;
 }
 
 export function PrioritySelect(props: PrioritySelectProps) {
@@ -80,52 +56,42 @@ export function PrioritySelect(props: PrioritySelectProps) {
   };
 
   return (
-    <>
+    <FormControl>
+      <FormLabel>{t("Priority")}</FormLabel>
       {!touchScreen && (
         <Autocomplete
-          PaperComponent={PaperComponent}
+          placeholder={t("None")}
           autoSelect={autoSelect}
           autoHighlight={autoSelect}
           value={value}
           options={options}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={t("Priority")}
-              inputProps={{
-                ...params.inputProps,
-                "aria-label": "Select task priority",
-              }}
-            />
-          )}
+          slotProps={{
+            input: {
+              "aria-label": "Select task priority",
+            },
+          }}
           onChange={(_, val) => handleChange(val)}
           onInputChange={(_, val) => handleInputChange(val)}
         />
       )}
       {touchScreen && (
-        <FormControl fullWidth variant="outlined">
-          <InputLabel shrink>{t("Priority")}</InputLabel>
-          <Select
-            value={value ?? ""}
-            displayEmpty
-            MenuProps={MenuProps}
-            input={
-              <OutlinedInput
-                notched
-                label={t("Priority")}
-                inputProps={{ "aria-label": "Select task priority" }}
-              />
-            }
-            onChange={(event) => handleChange(event.target.value)}
-          >
-            {selectOptions.map((item) => (
-              <MenuItem key={item} value={item}>
-                {!item ? <em>{t("None")}</em> : item}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Select
+          value={value ?? ""}
+          placeholder={t("None")}
+          slotProps={{
+            button: {
+              "aria-label": "Select task priority",
+            },
+          }}
+          onChange={(_, value) => handleChange(value)}
+        >
+          {selectOptions.map((item) => (
+            <Option key={item} value={item}>
+              {!item ? t("None") : item}
+            </Option>
+          ))}
+        </Select>
       )}
-    </>
+    </FormControl>
   );
 }

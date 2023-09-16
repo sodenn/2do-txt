@@ -1,11 +1,6 @@
 import { StartEllipsis } from "@/components/StartEllipsis";
 import { TaskList } from "@/utils/task-list";
-import {
-  FormControl,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import { Option, Select, SelectProps } from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -19,27 +14,25 @@ export function FileSelect(props: FileSelectProps) {
   const { t } = useTranslation();
   const [filePath, setFilePath] = useState("");
 
-  const handleChange = (event: SelectChangeEvent) => {
-    const filePath = event.target.value;
+  const handleChange: SelectProps<string>["onChange"] = (_, value) => {
+    const filePath = value as string;
     const item = options.find((l) => l.filePath === filePath);
     onSelect(item);
     setFilePath(filePath);
   };
 
   return (
-    <FormControl fullWidth>
-      <Select required displayEmpty value={filePath} onChange={handleChange}>
-        <MenuItem disabled value="">
-          <em>{t("Select todo.txt")}</em>
-        </MenuItem>
-        {options.map((item) => (
-          <MenuItem key={item.filePath} value={item.filePath}>
-            <StartEllipsis sx={{ maxWidth: 300 }}>
-              {item.filePath}
-            </StartEllipsis>
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <Select
+      placeholder={t("Select todo.txt")}
+      required
+      value={filePath}
+      onChange={handleChange}
+    >
+      {options.map((item) => (
+        <Option key={item.filePath} value={item.filePath}>
+          <StartEllipsis sx={{ maxWidth: 300 }}>{item.filePath}</StartEllipsis>
+        </Option>
+      ))}
+    </Select>
   );
 }

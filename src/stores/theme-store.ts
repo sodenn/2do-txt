@@ -1,5 +1,4 @@
 import { getPreferencesItem } from "@/native-api/preferences";
-import { PaletteMode, useMediaQuery } from "@mui/material";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";
 
@@ -10,7 +9,7 @@ export interface ThemeStoreData {
 }
 
 interface ThemeStoreInterface extends ThemeStoreData {
-  setThemeMode: (mode: ThemeMode) => void;
+  setMode: (mode: ThemeMode) => void;
 }
 
 const getDefaultInitialState = (): ThemeStoreData => ({
@@ -28,22 +27,13 @@ export async function themeLoader(): Promise<ThemeStoreData> {
   return { mode: mode || "system" };
 }
 
-export function usePaletteMode(): PaletteMode {
-  let mode = useThemeStore((state) => state.mode);
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  if (mode === "system") {
-    mode = prefersDarkMode ? "dark" : "light";
-  }
-  return mode;
-}
-
 export function initializeThemeStore(
   preloadedState: Partial<ThemeStoreInterface> = {},
 ) {
   return createStore<ThemeStoreInterface>((set) => ({
     ...getDefaultInitialState(),
     ...preloadedState,
-    setThemeMode: (mode: ThemeMode) => {
+    setMode: (mode: ThemeMode) => {
       set({ mode });
     },
   }));

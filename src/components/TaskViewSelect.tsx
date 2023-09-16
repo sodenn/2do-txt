@@ -1,7 +1,7 @@
 import { NewBadge } from "@/components/NewBadge";
 import { useFilterStore } from "@/stores/filter-store";
 import { TaskView, useSettingsStore } from "@/stores/settings-store";
-import { MenuItem, Select } from "@mui/material";
+import { Option, Select, SelectProps } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function TaskViewSelect() {
@@ -10,29 +10,32 @@ export function TaskViewSelect() {
   const setTaskView = useSettingsStore((state) => state.setTaskView);
   const setSortBy = useFilterStore((state) => state.setSortBy);
 
-  const handleChange = (value: TaskView) => {
-    if (value === "timeline") {
+  const handleChange: SelectProps<TaskView>["onChange"] = (_, value) => {
+    const newValue = value || "list";
+    if (newValue === "timeline") {
       setSortBy("dueDate");
     }
-    setTaskView(value);
+    setTaskView(newValue);
   };
 
   return (
     <Select
-      fullWidth
-      size="small"
       value={taskView}
-      inputProps={{ "aria-label": "Select task view" }}
-      onChange={(event) => handleChange(event.target.value as TaskView)}
+      onChange={handleChange}
+      slotProps={{
+        button: {
+          "aria-label": "Select task view",
+        },
+      }}
     >
-      <MenuItem value="list" aria-label="List View">
+      <Option value="list" aria-label="List View">
         {t("List View")}
-      </MenuItem>
-      <MenuItem value="timeline" aria-label="Timeline View">
+      </Option>
+      <Option value="timeline" aria-label="Timeline View">
         <NewBadge till={new Date("2023-01-01T00:00:00.000Z")}>
           {t("Timeline View")}
         </NewBadge>
-      </MenuItem>
+      </Option>
     </Select>
   );
 }

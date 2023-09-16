@@ -10,7 +10,7 @@ import { useSettingsStore } from "@/stores/settings-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useCloudStorage } from "@/utils/CloudStorage";
 import { useNotification } from "@/utils/useNotification";
-import { Checkbox, FormControlLabel, Stack } from "@mui/material";
+import { Checkbox, Stack } from "@mui/joy";
 import { Trans, useTranslation } from "react-i18next";
 
 export function Settings() {
@@ -63,39 +63,27 @@ export function Settings() {
         <Heading gutterBottom>{t("Language")}</Heading>
         <LanguageSelect />
       </div>
-      <div>
+      <Stack spacing={1}>
         <Heading>{t("Dates")}</Heading>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={createCreationDate}
-              onChange={() => toggleCreateCreationDate()}
-            />
-          }
+        <Checkbox
+          checked={createCreationDate}
           label={t("Set creation date")}
+          onChange={() => toggleCreateCreationDate()}
         />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={createCompletionDate}
-              onChange={() => toggleCreateCompletionDate()}
-            />
-          }
+        <Checkbox
+          checked={createCompletionDate}
           label={t("Set completion date")}
+          onChange={() => toggleCreateCompletionDate()}
         />
-      </div>
-      <div>
+      </Stack>
+      <Stack spacing={1}>
         <Heading>{t("Notifications")}</Heading>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showNotifications}
-              onChange={() => handleShowNotifications()}
-            />
-          }
+        <Checkbox
+          checked={showNotifications}
           label={t("Due tasks")}
+          onChange={() => handleShowNotifications()}
         />
-      </div>
+      </Stack>
       <div>
         <Heading
           gutterBottom

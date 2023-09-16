@@ -1,5 +1,5 @@
 import { useTask } from "@/utils/useTask";
-import { Button } from "@mui/material";
+import { Button } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function ArchiveNowButton() {

@@ -41,6 +41,7 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 - WebDAV sync
 - Dark mode
 - Responsive Design
+- Two different views: list and timeline
 - Drag and drop support for todo.txt files
 
 ## Supported Platforms
