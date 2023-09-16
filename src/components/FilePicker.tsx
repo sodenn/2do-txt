@@ -29,9 +29,9 @@ const Overlay = styled("div")(({ theme }) => ({
   bottom: 0,
   left: 0,
   right: 0,
-  zIndex: theme.zIndex.modal + 1,
+  zIndex: theme.vars.zIndex.modal + 1,
   padding: theme.spacing(2),
-  background: theme.palette.background.body,
+  background: theme.vars.palette.background.body,
 }));
 
 const StyledCard = styled(Card)({

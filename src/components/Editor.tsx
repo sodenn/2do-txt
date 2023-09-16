@@ -197,11 +197,11 @@ const Textbox = styled(Box, {
   shouldForwardProp: (prop) => prop !== "focused",
 })<{ focused?: boolean }>(({ theme, focused }) => ({
   "--Input-focused": "0",
-  "--Input-focusedThickness": "var(--joy-focus-thickness)",
-  "--Input-focusedHighlight": "var(--joy-palette-primary-500)",
+  "--Input-focusedThickness": theme.vars.focus.thickness,
+  "--Input-focusedHighlight": theme.vars.palette.primary["500"],
   position: "relative",
-  borderRadius: theme.radius.sm,
-  border: `1px solid ${theme.palette.neutral.outlinedBorder}`,
+  borderRadius: theme.vars.radius.sm,
+  border: `1px solid ${theme.vars.palette.neutral.outlinedBorder}`,
   padding: `7px 12px`,
   "&.focused": {
     "--Input-focused": 1,
@@ -216,7 +216,7 @@ const Textbox = styled(Box, {
       inset: 0,
       zIndex: 1,
       margin: "calc(var(--variant-borderWidth, 0px) * -1)",
-      borderRadius: theme.radius.sm,
+      borderRadius: theme.vars.radius.sm,
       boxShadow:
         "var(--Input-focusedInset, inset) 0 0 0 calc(var(--Input-focused) * var(--Input-focusedThickness)) var(--Input-focusedHighlight)",
     },

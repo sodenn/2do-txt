@@ -414,16 +414,15 @@ function TaskCheckbox({
         {!completed && <RadioButtonUncheckedIcon />}
         {completed && <TaskAltIcon />}
       </IconButton>
-      {!flags.last && (
-        <TimelineConnector
-          sx={{
-            ...(flags.today &&
-              !flags.lastOfToday && {
-                borderColor: "primary.outlinedBorder",
-              }),
-          }}
-        />
-      )}
+      <TimelineConnector
+        sx={{
+          visibility: flags.last ? "hidden" : "visible",
+          ...(flags.today &&
+            !flags.lastOfToday && {
+              borderColor: "primary.outlinedBorder",
+            }),
+        }}
+      />
     </Box>
   );
 }

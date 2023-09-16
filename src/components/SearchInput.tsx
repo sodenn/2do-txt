@@ -1,3 +1,4 @@
+import { transitions } from "@/utils/transitions";
 import { useForwardRef } from "@/utils/useForwardRef";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
@@ -8,7 +9,7 @@ import { useTranslation } from "react-i18next";
 const Search = styled("div")(({ theme }) => {
   return {
     position: "relative",
-    borderRadius: theme.radius.md,
+    borderRadius: theme.vars.radius.md,
     marginLeft: 0,
     width: "100%",
     [theme.breakpoints.up("sm")]: {
@@ -21,7 +22,10 @@ const Search = styled("div")(({ theme }) => {
 const StyledInputBase = styled(Input)(({ theme }) => ({
   color: "inherit",
   "& .MuiInput-input": {
-    transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    transition: transitions.create(["width"], {
+      duration: 300,
+      easing: transitions.easing.easeInOut,
+    }),
     width: "100%",
     [theme.breakpoints.up("sm")]: {
       width: "12ch",

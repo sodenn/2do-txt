@@ -10,8 +10,8 @@ const StyledKbd = styled("kbd")(({ theme }) => ({
   textAlign: "center",
   fontWeight: 600,
   border: "none",
-  borderRadius: theme.radius.sm,
-  boxShadow: `0 0 0 1px ${theme.palette.text.primary}`,
+  borderRadius: theme.vars.radius.sm,
+  boxShadow: `0 0 0 1px ${theme.vars.palette.text.primary}`,
   lineHeight: "1em",
 }));
 
