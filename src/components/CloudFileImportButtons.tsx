@@ -39,6 +39,7 @@ export function CloudFileImportButtons() {
         onClick={() => openCloudFileDialog(provider)}
         startDecorator={cloudStorageIcons[provider]}
         variant="outlined"
+        color="neutral"
       >
         {t("Import from cloud storage", { provider })}
       </Button>
