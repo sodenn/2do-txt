@@ -25,7 +25,6 @@ import {
   IconButtonProps,
   ListItem,
   ListItemButton,
-  ListItemButtonProps,
   Typography,
   styled,
 } from "@mui/joy";
@@ -75,6 +74,20 @@ const locales = {
   de: "d. LLL.",
   en: "d LLL",
 };
+
+const Root = styled(Box)(({ theme }) => ({
+  paddingBottom: theme.spacing(4),
+  [theme.breakpoints.down("sm")]: {
+    "--IconButton-size": "2rem",
+    display: "block",
+    justifyContent: "unset",
+  },
+  [theme.breakpoints.up("sm")]: {
+    "--IconButton-size": "2.25rem",
+    display: "flex",
+    justifyContent: "center",
+  },
+}));
 
 export function TaskTimeline(props: TaskTimelineProps) {
   const {
@@ -132,13 +145,8 @@ export function TaskTimeline(props: TaskTimelineProps) {
   }
 
   return (
-    <Box
-      sx={{
-        display: { sx: "block", sm: "flex" },
-        justifyContent: { sx: "unset", sm: "center" },
-      }}
-    >
-      <Box sx={{ pb: 4 }} data-testid="task-list" ref={parent}>
+    <Root>
+      <Box data-testid="task-list" ref={parent}>
         {tasks.map((task, index) => (
           <div key={task._id}>
             {!task._timelineFlags.firstOfToday && (
@@ -169,7 +177,7 @@ export function TaskTimeline(props: TaskTimelineProps) {
         ))}
         {addButtonElem && <ScrollTo target={addButtonElem} />}
       </Box>
-    </Box>
+    </Root>
   );
 }
 
@@ -192,7 +200,6 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
         <Box
           sx={{
             display: "flex",
-            pt: 0.25,
             gap: 0.5,
             flexDirection: "column",
             alignItems: "center",
@@ -209,15 +216,18 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
           >
             <AddIcon />
           </IconButton>
-          <TimelineConnector sx={{ borderColor: "primary.outlinedBorder" }} />
+          <TimelineConnector
+            sx={{
+              ...(!flags.lastOfToday && {
+                borderColor: "primary.outlinedBorder",
+              }),
+            }}
+          />
         </Box>
         <TimelineContent
           tabIndex={-1}
           sx={{
-            height: {
-              xs: "var(--IconButton-size, 2rem)",
-              sm: "var(--IconButton-size, 2.5rem)",
-            },
+            height: "var(--IconButton-size)",
           }}
           onClick={handleClick}
         >
@@ -302,15 +312,6 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
           <Delete />
         </IconButton>
       }
-      sx={{
-        width: "100%",
-        gridArea: "content",
-        alignSelf: "flex-start",
-        ".MuiListItem-endAction": {
-          top: "4px",
-          right: "4px",
-        },
-      }}
     >
       <TimelineContent
         data-testid="task-button"
@@ -322,14 +323,8 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
         aria-current={focused}
         sx={{
           alignSelf: "auto",
-          minHeight: {
-            xs: "var(--IconButton-size, 2rem)",
-            sm: "var(--IconButton-size, 2.5rem)",
-          },
-          pr: {
-            xs: "var(--IconButton-size, 2rem)",
-            sm: "var(--IconButton-size, 2.5rem)",
-          },
+          minHeight: "var(--IconButton-size)",
+          pr: "calc(var(--IconButton-size) + 8px)",
         }}
       >
         <div>
@@ -397,7 +392,6 @@ function TaskCheckbox({
     <Box
       sx={{
         display: "flex",
-        pt: 0.25,
         gap: 0.5,
         flexDirection: "column",
         alignItems: "center",
@@ -432,7 +426,7 @@ function TaskCheckbox({
 
 function YearChip({ date }: YearChipProps) {
   return (
-    <Chip sx={{ gridArea: "chip" }} size="sm">
+    <Chip sx={{ gridArea: "chip", mt: 0.5 }} size="sm">
       {date}
     </Chip>
   );
@@ -464,7 +458,6 @@ function TaskDate({ task }: WithTimelineTask) {
 
 const TimelineDate = styled(Typography)(({ theme }) => ({
   width: 120,
-  height: "var(--IconButton-size, 2.5rem)",
   justifyContent: "right",
   alignItems: "center",
   gap: theme.spacing(1),
@@ -473,6 +466,7 @@ const TimelineDate = styled(Typography)(({ theme }) => ({
   },
   [theme.breakpoints.up("sm")]: {
     display: "inline-flex",
+    height: "var(--IconButton-size)",
   },
   gridArea: "date",
   fontSize: "0.9em",
@@ -492,7 +486,7 @@ function TimelineItem(props: TimelineItemProps) {
       sx={{
         display: "grid",
         justifyItems: "center",
-        gap: 0.6,
+        gap: 0.5,
         gridTemplateColumns: "auto 50px 1fr",
         gridTemplateAreas: gridTemplateAreas,
         mt: -1,
@@ -504,54 +498,45 @@ function TimelineItem(props: TimelineItemProps) {
   );
 }
 
-const TimelineContent = forwardRef<HTMLDivElement, ListItemButtonProps>(
-  (props, ref) => {
-    const { sx, ...other } = props;
-    return (
-      <ListItemButton
-        ref={ref}
-        variant="plain"
-        sx={{
-          width: "100%",
-          borderRadius: "sm",
-          gridArea: "content",
-          px: { xs: 0, sm: 1 },
-          py: { xs: "1px", sm: "7px" },
-          "@media (pointer: coarse)": {
-            '&:not(.Mui-selected, [aria-selected="true"]):active': {
-              backgroundColor: "inherit",
-            },
-            ':not(.Mui-selected, [aria-selected="true"]):hover': {
-              backgroundColor: "inherit",
-            },
-          },
-          ...sx,
-        }}
-        {...other}
-      />
-    );
+const TimelineContent = styled(ListItemButton)(({ theme }) => ({
+  width: "100%",
+  borderRadius: theme.vars.radius.sm,
+  gridArea: "content",
+  "@media (pointer: coarse)": {
+    '&:not(.Mui-selected, [aria-selected="true"]):active': {
+      backgroundColor: "inherit",
+    },
+    ':not(.Mui-selected, [aria-selected="true"]):hover': {
+      backgroundColor: "inherit",
+    },
   },
-);
+  [theme.breakpoints.down("sm")]: {
+    paddingTop: 1,
+    paddingBottom: 1,
+  },
+  [theme.breakpoints.up("sm")]: {
+    paddingTop: 5,
+    paddingBottom: 5,
+    paddingLeft: theme.spacing(2),
+  },
+}));
+TimelineContent.defaultProps = {
+  variant: "plain",
+};
 
-function TimelineConnector(props: BoxProps) {
-  const { sx, ...other } = props;
-  return (
-    <Box
-      sx={{
-        minHeight: 12,
-        borderWidth: "2px",
-        borderColor: "neutral.outlinedBorder",
-        borderStyle: "solid",
-        borderRadius: "sm",
-        flex: 1,
-        ...sx,
-      }}
-      {...other}
-    />
-  );
-}
+const TimelineConnector = styled(Box)(({ theme }) => ({
+  minHeight: 12,
+  borderWidth: 2,
+  borderColor: theme.vars.palette.neutral.outlinedBorder,
+  borderStyle: "solid",
+  borderRadius: theme.vars.radius.sm,
+  flex: 1,
+}));
 
-const StyledListItem = styled(ListItem)({
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  width: "100%",
+  gridArea: "content",
+  alignSelf: "flex-start",
   ".DeleteButton": {
     visibility: "hidden",
   },
@@ -563,4 +548,13 @@ const StyledListItem = styled(ListItem)({
   "&:hover .DeleteButton": {
     visibility: "visible",
   },
-});
+  ".MuiListItem-endAction": {
+    [theme.breakpoints.down("sm")]: {
+      top: 0,
+    },
+    [theme.breakpoints.up("sm")]: {
+      top: 2,
+    },
+    right: 8,
+  },
+}));

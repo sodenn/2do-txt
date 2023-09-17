@@ -78,7 +78,6 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
           onChange={(_, value) => handleChangeUnit(value)}
           slotProps={{
             listbox: {
-              role: "combobox",
               "aria-label": "Select unit",
             },
           }}

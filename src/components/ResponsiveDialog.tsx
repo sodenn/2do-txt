@@ -348,9 +348,9 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
                       ? {
                           top: "14px",
                           right: "unset",
-                          left: "var(--ModalClose-inset, 8px)",
+                          left: "8px",
                         }
-                      : undefined
+                      : { top: "16px" }
                   }
                 />
                 {fullScreen && (

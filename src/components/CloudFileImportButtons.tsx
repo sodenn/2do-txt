@@ -57,7 +57,10 @@ export function CloudFileImportButtons() {
       >
         {t("Import from cloud storage", { provider: t("cloud storage") })}
       </MenuButton>
-      <Menu placement="bottom-end">
+      <Menu
+        sx={{ zIndex: (theme) => theme.vars.zIndex.modal }}
+        placement="bottom-end"
+      >
         {cloudStorages.map(({ provider }) => (
           <MenuItem
             key={provider}
