@@ -199,6 +199,9 @@ const Textbox = styled(Box, {
   "--Input-focused": "0",
   "--Input-focusedThickness": theme.vars.focus.thickness,
   "--Input-focusedHighlight": theme.vars.palette.primary["500"],
+  p: {
+    margin: 0,
+  },
   position: "relative",
   borderRadius: theme.vars.radius.sm,
   border: `1px solid ${theme.vars.palette.neutral.outlinedBorder}`,
