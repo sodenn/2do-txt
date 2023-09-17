@@ -216,7 +216,13 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
           >
             <AddIcon />
           </IconButton>
-          <TimelineConnector sx={{ borderColor: "primary.outlinedBorder" }} />
+          <TimelineConnector
+            sx={{
+              ...(!flags.lastOfToday && {
+                borderColor: "primary.outlinedBorder",
+              }),
+            }}
+          />
         </Box>
         <TimelineContent
           tabIndex={-1}
