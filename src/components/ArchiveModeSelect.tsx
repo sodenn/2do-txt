@@ -49,7 +49,7 @@ export function ArchiveModeSelect() {
           value={archiveMode}
           onChange={handleChange}
           slotProps={{
-            button: {
+            root: {
               "aria-label": "Select archive mode",
             },
           }}

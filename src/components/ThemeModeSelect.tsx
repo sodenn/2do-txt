@@ -19,7 +19,7 @@ export function ThemeModeSelect() {
         value={mode}
         onChange={handleClick}
         slotProps={{
-          button: {
+          root: {
             "aria-label": "Select theme mode",
           },
         }}

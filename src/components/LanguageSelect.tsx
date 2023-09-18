@@ -13,7 +13,7 @@ export function LanguageSelect() {
         value={language}
         onChange={(_, value) => changeLanguage(value as Language)}
         slotProps={{
-          button: {
+          root: {
             "aria-label": "Select language",
           },
         }}

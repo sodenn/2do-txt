@@ -23,7 +23,7 @@ export function PriorityTransformationSelect() {
           setCompletedTaskPriority(value as PriorityTransformation)
         }
         slotProps={{
-          button: {
+          root: {
             "aria-label": "Select completed task priority handling",
           },
         }}

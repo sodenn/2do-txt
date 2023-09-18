@@ -12,7 +12,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByRole("tab", { name: "Settings" }).click();
     await page.getByLabel("Select task view").click();
-    await page.getByLabel("Timeline View").click();
+    await page.getByLabel("Timeline").click();
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page
       .getByRole("button", { name: "Toggle menu" })

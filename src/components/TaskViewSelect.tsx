@@ -25,7 +25,7 @@ export function TaskViewSelect() {
         value={taskView}
         onChange={handleChange}
         slotProps={{
-          button: {
+          root: {
             "aria-label": "Select task view",
           },
         }}
