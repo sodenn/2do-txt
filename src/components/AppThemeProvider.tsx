@@ -141,7 +141,13 @@ const theme = extendTheme({
   components: {
     JoyTooltip: {
       defaultProps: {
+        color: "primary",
         variant: "soft",
+      },
+      styleOverrides: {
+        root: {
+          maxWidth: 300,
+        },
       },
     },
     JoyInput: {

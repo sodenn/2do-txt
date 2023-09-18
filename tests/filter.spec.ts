@@ -168,6 +168,21 @@ test.describe("Filter", () => {
     await page.keyboard.press("x");
     await expect(page).toHaveURL("http://localhost:5173");
   });
+
+  test("should clear active filter by clicking on the clear button", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!!isMobile, "not relevant for mobile browser");
+    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await expect(page.getByText("Reset filters")).not.toBeVisible();
+    await page.getByLabel("Private", { exact: true }).click();
+    await page.getByLabel("CompanyA", { exact: true }).click();
+    await expect(page.getByText("Reset filters")).toBeVisible();
+    await page.getByText("Reset filters").click();
+    await expect(page.getByText("Reset filters")).not.toBeVisible();
+    await expect(page).toHaveURL("http://localhost:5173");
+  });
 });
 
 test.describe("Menu", () => {

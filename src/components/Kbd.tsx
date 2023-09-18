@@ -4,15 +4,18 @@ import { styled } from "@mui/joy";
 import { PropsWithChildren } from "react";
 
 const StyledKbd = styled("kbd")(({ theme }) => ({
-  padding: "0 0.4em",
-  marginLeft: "0.5em",
-  opacity: 0.5,
+  position: "relative",
+  top: -1,
+  padding: "3px 5px",
+  marginLeft: 4,
   textAlign: "center",
-  fontWeight: 600,
-  border: "none",
-  borderRadius: theme.vars.radius.sm,
-  boxShadow: `0 0 0 1px ${theme.vars.palette.text.primary}`,
+  backgroundColor: theme.vars.palette.background.surface,
+  border: `solid 1px ${theme.vars.palette.text.tertiary}`,
+  borderBottomColor: theme.vars.palette.text.tertiary,
+  borderRadius: 4,
+  boxShadow: `inset 0 -1px 0 ${theme.vars.palette.text.tertiary}`,
   lineHeight: "1em",
+  fontSize: "0.9em",
 }));
 
 export function Kbd({ children }: PropsWithChildren) {

@@ -1,7 +1,7 @@
 import { NewBadge } from "@/components/NewBadge";
 import { useFilterStore } from "@/stores/filter-store";
 import { TaskView, useSettingsStore } from "@/stores/settings-store";
-import { Option, Select, SelectProps } from "@mui/joy";
+import { FormControl, FormLabel, Option, Select, SelectProps } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function TaskViewSelect() {
@@ -19,23 +19,26 @@ export function TaskViewSelect() {
   };
 
   return (
-    <Select
-      value={taskView}
-      onChange={handleChange}
-      slotProps={{
-        button: {
-          "aria-label": "Select task view",
-        },
-      }}
-    >
-      <Option value="list" aria-label="List View">
-        {t("List View")}
-      </Option>
-      <Option value="timeline" aria-label="Timeline View">
-        <NewBadge till={new Date("2023-01-01T00:00:00.000Z")}>
-          {t("Timeline View")}
-        </NewBadge>
-      </Option>
-    </Select>
+    <FormControl>
+      <FormLabel>{t("Task view")}</FormLabel>
+      <Select
+        value={taskView}
+        onChange={handleChange}
+        slotProps={{
+          button: {
+            "aria-label": "Select task view",
+          },
+        }}
+      >
+        <Option value="list" aria-label="List View">
+          {t("List")}
+        </Option>
+        <Option value="timeline" aria-label="Timeline View">
+          <NewBadge till={new Date("2023-01-01T00:00:00.000Z")}>
+            {t("Timeline")}
+          </NewBadge>
+        </Option>
+      </Select>
+    </FormControl>
   );
 }
