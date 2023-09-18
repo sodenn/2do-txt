@@ -23,7 +23,7 @@ test.describe("Archiving", () => {
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
-  test.only("should allow me to restore archived tasks", async ({ page }) => {
+  test("should allow me to restore archived tasks", async ({ page }) => {
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive automatically").click();
     await expect(page.getByTestId("task")).toHaveCount(6);
