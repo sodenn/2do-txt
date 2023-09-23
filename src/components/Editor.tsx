@@ -320,6 +320,8 @@ export function Editor(props: EditorProps) {
                 resize: "none",
                 outline: "none",
               }}
+              // needed because the cursor keeps blinking in Safari when clicking outside the editor
+              onBlur={() => editor.blur()}
               {...contentEditableProps}
             />
           }
