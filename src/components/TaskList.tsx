@@ -50,7 +50,7 @@ export const TaskList = memo((props: TaskListProps) => {
   return (
     <>
       {(hasItems || showHeader) && (
-        <List data-testid="task-list" sx={{ pl: { xs: 0.5, sm: 0 } }}>
+        <List data-testid="task-list">
           {showHeader && (
             <TaskListHeader fileName={fileName} filePath={filePath} />
           )}

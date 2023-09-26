@@ -48,10 +48,6 @@ const Main = styled("main", {
 }>(({ theme, open }) => ({
   overflowY: "auto",
   flex: "auto",
-  [theme.breakpoints.up("sm")]: {
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-  },
   [theme.breakpoints.up("lg")]: {
     flexGrow: 1,
     transition: transitions.create(["margin"], {

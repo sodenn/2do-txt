@@ -146,7 +146,7 @@ export function TaskTimeline(props: TaskTimelineProps) {
 
   return (
     <Root>
-      <Box data-testid="task-list" ref={parent}>
+      <Box data-testid="task-list" ref={parent} sx={{ left: -2 }}>
         {tasks.map((task, index) => (
           <div key={task._id}>
             {!task._timelineFlags.firstOfToday && (

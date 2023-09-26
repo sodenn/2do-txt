@@ -21,6 +21,9 @@ const StyledListItem = styled(ListItem, {
       ? "var(--joy-palette-neutral-plainActiveBg)"
       : undefined,
   },
+  ".MuiListItem-startAction": {
+    left: theme.spacing(0.5),
+  },
   "@media (pointer: coarse)": {
     ".MuiMenuButton-root": {
       visibility: "visible",
