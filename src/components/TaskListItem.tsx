@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 
 const StyledListItem = styled(ListItem, {
   shouldForwardProp: (prop) => prop !== "menuOpen",
-})<{ menuOpen: boolean }>(({ menuOpen }) => ({
+})<{ menuOpen: boolean }>(({ menuOpen, theme }) => ({
   ".MuiMenuButton-root": {
     visibility: menuOpen ? "visible" : "hidden",
     backgroundColor: menuOpen
