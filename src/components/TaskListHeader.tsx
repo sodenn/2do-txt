@@ -25,6 +25,7 @@ export function TaskListHeader(props: TaskListHeaderProps) {
   return (
     <ListItemButton
       sx={{
+        py: 1,
         borderRadius: "sm",
       }}
       tabIndex={-1}

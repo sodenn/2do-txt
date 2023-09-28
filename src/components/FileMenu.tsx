@@ -61,6 +61,7 @@ export function FileMenu() {
   if (taskLists.length > 1) {
     menuItems.push(
       <MenuItem
+        key="All"
         selected={!activeTaskList}
         onClick={() => handleSetActiveList("")}
       >
