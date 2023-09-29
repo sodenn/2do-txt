@@ -13,9 +13,7 @@ test.describe("Appearance", () => {
     await checkInLocalStorage(page, "theme-mode", "system");
   });
 
-  test("should allow me to switch between light mode to dark mode", async ({
-    page,
-  }) => {
+  test("should switch between light mode to dark mode", async ({ page }) => {
     await page.getByLabel("Select theme mode").click();
     await page.getByLabel("Light").click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
@@ -35,7 +33,7 @@ test.describe("Appearance", () => {
 });
 
 test.describe("Language", () => {
-  test("should allow me to switch between english and german language", async ({
+  test("should switch between english and german language", async ({
     page,
   }) => {
     // select English

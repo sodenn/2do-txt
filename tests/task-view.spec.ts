@@ -32,9 +32,7 @@ test.describe("Task View", () => {
       }
     });
 
-    test(`${taskView}: should render a task list with items`, async ({
-      page,
-    }) => {
+    test(`${taskView}: should render a task list`, async ({ page }) => {
       await expect(page.getByTestId("task-list")).toBeVisible();
       await expect(page.getByTestId("task")).toHaveCount(8);
     });
@@ -117,7 +115,7 @@ test.describe("Task View", () => {
       await expect(page.getByTestId("task-dialog")).toBeVisible();
     });
 
-    test(`${taskView}: should hide completed task`, async ({
+    test(`${taskView}: should hide a completed task`, async ({
       page,
     }, testInfo) => {
       if (testInfo.title.startsWith("timeline:")) {

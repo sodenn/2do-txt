@@ -8,14 +8,14 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("Archiving", () => {
-  test("should allow me to archive tasks automatically", async ({ page }) => {
+  test("should archive tasks automatically", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive automatically").click();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
-  test("should allow me to archive tasks manually", async ({ page }) => {
+  test("should archive tasks manually", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive manually").click();
@@ -23,7 +23,7 @@ test.describe("Archiving", () => {
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
-  test("should allow me to restore archived tasks", async ({ page }) => {
+  test("should restore archived tasks", async ({ page }) => {
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive automatically").click();
     await expect(page.getByTestId("task")).toHaveCount(6);

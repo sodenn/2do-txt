@@ -26,9 +26,7 @@ test.describe("File Management", () => {
   // webkit: Selecting multiple files does not work in the test
   test.skip(({ browserName }) => browserName === "webkit");
 
-  test("should allow me to order task lists using drag and drop", async ({
-    page,
-  }) => {
+  test("should order task lists using drag and drop", async ({ page }) => {
     // show all task lists
     await page.getByRole("button", { name: "File menu" }).click();
     await page.getByRole("menuitem", { name: "All" }).click();
@@ -64,7 +62,7 @@ test.describe("File Management", () => {
     await expect(page.getByRole("listitem").nth(1)).toHaveText("todo1.txt");
   });
 
-  test("should allow me to close a file", async ({ page }) => {
+  test("should close a todo.txt file", async ({ page }) => {
     // open file management dialog
     await page.getByRole("button", { name: "File menu" }).click();
     await page.getByRole("menuitem", { name: "Files…" }).click();
@@ -89,7 +87,7 @@ test.describe("File Management", () => {
     await expect(page.getByTestId("draggable-file")).toHaveCount(1);
   });
 
-  test("should display an error notification if a file cannot be found", async ({
+  test("should display an error notification if a todo.txt file cannot be found", async ({
     page,
   }) => {
     await page.evaluate(() => {

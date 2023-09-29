@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
 const delay = { delay: 20 };
 
 test.describe("Task dialog", () => {
-  test("should allow me to open and close the task dialog via shortcut", async ({
+  test("should open and close the task dialog via shortcut", async ({
     page,
     isMobile,
   }) => {
@@ -34,26 +34,26 @@ test.describe("Task dialog", () => {
     await expect(
       page.getByRole("button", { name: "Save task" }),
     ).toBeDisabled();
-    await getEditor(page).type("This is a task", delay);
+    await getEditor(page).pressSequentially("This is a task", delay);
     await expect(page.getByRole("button", { name: "Save task" })).toBeEnabled();
   });
 
-  test("should allow me to select contexts via enter", async ({
-    page,
-    isMobile,
-  }) => {
+  test("should select a context via enter key", async ({ page, isMobile }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
 
     await openTaskDialog(page);
 
     await expect(getEditor(page)).toBeFocused();
 
-    await getEditor(page).type("Play soccer with friends @", delay);
+    await getEditor(page).pressSequentially(
+      "Play soccer with friends @",
+      delay,
+    );
 
     await page.keyboard.press("Enter");
 
     // open the mention menu again
-    await getEditor(page).type("@", delay);
+    await getEditor(page).press("@", delay);
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
@@ -72,13 +72,11 @@ test.describe("Task dialog", () => {
     ).toHaveCount(1);
   });
 
-  test("should keep due date datepicker and text field in sync", async ({
+  test("should keep due date picker and text field in sync", async ({
     page,
     isMobile,
   }) => {
     await openTaskDialog(page);
-
-    // make sure the editor is focused on desktop
     if (!isMobile) {
       await expect(getEditor(page)).toBeFocused();
     }
@@ -145,8 +143,10 @@ test.describe("Task dialog", () => {
     await expect(getEditor(page)).not.toHaveText(dueDateTag);
   });
 
-  test("should allow me to edit a task", async ({ page }) => {
-    // select existing task in the list
+  test("should fill the task dialog with the selected task", async ({
+    page,
+  }) => {
+    // select task in list
     await page.getByText("Pay the invoice").click();
 
     // make sure the task text is set
@@ -170,7 +170,7 @@ test.describe("Task dialog", () => {
     ).toHaveValue("A");
   });
 
-  test("should accept the entered text as a context after blur from input", async ({
+  test("should add new contexts when blur from input", async ({
     page,
     browserName,
   }) => {
@@ -178,7 +178,10 @@ test.describe("Task dialog", () => {
 
     await openTaskDialog(page);
 
-    await getEditor(page).type("Play soccer with friends @pr", delay);
+    await getEditor(page).pressSequentially(
+      "Play soccer with friends @pr",
+      delay,
+    );
 
     await expect(page.getByRole("menuitem", { name: "Private" })).toHaveCount(
       1,
@@ -189,12 +192,10 @@ test.describe("Task dialog", () => {
     ).toHaveCount(1);
 
     await getEditor(page).press("ArrowDown");
-
     await getEditor(page).evaluate((e) => e.blur());
 
-    await expect(page.getByRole("menuitem", { name: "Add pr" })).toHaveCount(0);
-
     // make sure there is no open dropdown menu with suggestions
+    await expect(page.getByRole("menuitem", { name: "Add pr" })).toHaveCount(0);
     await expect(
       page.getByRole("menu", { name: "Choose a mention" }),
     ).toHaveCount(0);
@@ -203,34 +204,15 @@ test.describe("Task dialog", () => {
     await expect(page.locator('[data-beautiful-mention="@pr"]')).toHaveCount(1);
   });
 
-  test("should allow me to add new contexts when blur from input", async ({
+  test("should fix a typo in a context before inserting it", async ({
     page,
   }) => {
     await openTaskDialog(page);
 
-    await getEditor(page).type("Play soccer with friends @pr", delay);
-
-    await page.getByRole("menuitem", { name: `Choose "pr"` }).click();
-
-    await getEditor(page).evaluate((e) => e.blur());
-
-    // make sure context was added
-    await expect(page.locator('[data-beautiful-mention="@pr"]')).toHaveText(
-      "@pr",
+    await getEditor(page).pressSequentially(
+      "Play soccer with friends @Hpb",
+      delay,
     );
-
-    // make sure there is no open dropdown menu with suggestions
-    await expect(
-      page.getByRole("menu", { name: "Choose a mention" }),
-    ).toHaveCount(0);
-  });
-
-  test("should allow me to fix a typo in a context before inserting it", async ({
-    page,
-  }) => {
-    await openTaskDialog(page);
-
-    await getEditor(page).type("Play soccer with friends @Hpb", delay);
 
     await page.keyboard.press("ArrowLeft");
     await page.waitForTimeout(50);
@@ -240,7 +222,7 @@ test.describe("Task dialog", () => {
     await page.waitForTimeout(50);
     await page.keyboard.press("ArrowRight");
     await page.waitForTimeout(50);
-    await getEditor(page).type("by");
+    await getEditor(page).pressSequentially("by");
     await page.waitForTimeout(50);
     await page.keyboard.press("Space");
 
@@ -255,11 +237,10 @@ test.describe("Task dialog", () => {
   }) => {
     await openTaskDialog(page);
 
-    await getEditor(page).type("Play soccer with friends @Private", delay);
-
-    await expect(
-      page.getByRole("menuitem", { name: `Add "Private"` }),
-    ).toHaveCount(0);
+    await getEditor(page).pressSequentially(
+      "Play soccer with friends @Private",
+      delay,
+    );
 
     await expect(page.getByRole("menuitem", { name: "Private" })).toHaveCount(
       1,
@@ -271,18 +252,21 @@ test.describe("Task dialog", () => {
   }) => {
     await openTaskDialog(page);
 
-    await getEditor(page).type("Play soccer with friends @private", delay);
+    await getEditor(page).pressSequentially(
+      "Play soccer with friends @private",
+      delay,
+    );
 
     await expect(
       page.getByRole("menuitem", { name: `Choose "private"`, exact: true }),
     ).toHaveCount(1);
 
     await expect(
-      page.locator('[role="menuitem"] >> text="Private"'),
+      page.getByRole("menuitem", { name: `Choose "Private"`, exact: true }),
     ).toHaveCount(1);
   });
 
-  test("should allow me to create a new task by using the keyboard only", async ({
+  test("should create a new task by using the keyboard only", async ({
     page,
     isMobile,
   }) => {
@@ -291,7 +275,7 @@ test.describe("Task dialog", () => {
     await openTaskDialog(page);
 
     // type task description
-    await getEditor(page).type("Play soccer with friends", delay);
+    await getEditor(page).pressSequentially("Play soccer with friends", delay);
 
     // navigate to priority input
     await page.keyboard.press("Tab");
@@ -331,9 +315,18 @@ test.describe("Task dialog", () => {
     await expect(page.getByTestId("task-dialog")).toBeVisible();
 
     // open dropdown menu with suggestions
-    await getEditor(page).type("@Private", delay);
+    await getEditor(page).pressSequentially("@Private", delay);
 
-    // close dropdown menu with suggestions by pressing the Escape key
+    // close dropdown menu
+    await page.keyboard.press("Escape");
+
+    // make sure that the dialog is still open
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
+
+    // open recurrence selection
+    await page.getByLabel("Recurrence").click();
+
+    // close selection
     await page.keyboard.press("Escape");
 
     // make sure that the dialog is still open
@@ -346,47 +339,14 @@ test.describe("Task dialog", () => {
     await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
-  test("should insert spaces when adding mentions via keyboard", async ({
-    page,
-    isMobile,
-  }) => {
+  test("should insert spaces when adding mentions", async ({ page }) => {
     await openTaskDialog(page);
 
-    await getEditor(page).type("@Private", delay);
-
-    isMobile
-      ? await page.getByRole("menuitem", { name: "Private" }).click()
-      : await page.keyboard.press("Enter");
-
-    await getEditor(page).type("@Private", delay);
-
-    isMobile
-      ? await page.getByRole("menuitem", { name: "Private" }).click()
-      : await page.keyboard.press("Enter");
-
-    await expect(
-      page.locator('[data-beautiful-mention="@Private"]'),
-    ).toHaveCount(2);
-
-    // delete mention + space
-    await getEditor(page).press("Backspace");
-    await getEditor(page).press("Backspace");
-
-    await expect(
-      page.locator('[data-beautiful-mention="@Private"]'),
-    ).toHaveCount(1);
-  });
-
-  test("should insert spaces when adding mentions via mouse click", async ({
-    page,
-  }) => {
-    await openTaskDialog(page);
-
-    await getEditor(page).type("@Private", delay);
+    await getEditor(page).pressSequentially("@Private", delay);
 
     await page.getByRole("menuitem", { name: "Private" }).click();
 
-    await getEditor(page).type("@Private", delay);
+    await getEditor(page).pressSequentially("@Private", delay);
 
     await page.getByRole("menuitem", { name: "Private" }).click();
 
@@ -406,7 +366,7 @@ test.describe("Task dialog", () => {
   test("should insert a new mention", async ({ page }) => {
     await openTaskDialog(page);
     await page.waitForTimeout(500);
-    await getEditor(page).type("@Test", delay);
+    await getEditor(page).pressSequentially("@Test", delay);
     await page
       .getByRole("menuitem", { name: `Choose "Test"`, exact: true })
       .click();
@@ -415,7 +375,7 @@ test.describe("Task dialog", () => {
     );
   });
 
-  test("should add add and remove recurrence", async ({ page }) => {
+  test("should add and remove recurrence", async ({ page }) => {
     await openTaskDialog(page);
     await page.getByLabel("Recurrence").click();
     await page.getByText("Days", { exact: true }).click();

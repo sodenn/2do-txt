@@ -12,7 +12,7 @@ test.describe("Onboarding", () => {
 });
 
 test.describe("New file", () => {
-  test("should allow me to create a new file", async ({ page, isMobile }) => {
+  test("should create a new todo.txt file", async ({ page, isMobile }) => {
     await page.getByLabel("Create task").click();
     await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor on desktop
@@ -38,7 +38,7 @@ test.describe("New file", () => {
 });
 
 test.describe("Example file", () => {
-  test("should allow me to create an example file", async ({ page }) => {
+  test("should create an example todo.txt file", async ({ page }) => {
     await page.getByRole("button", { name: "Create example file" }).click();
     await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     await expect(page.getByTestId("task")).toHaveCount(8);
@@ -49,7 +49,7 @@ test.describe("File import", () => {
   // webkit: Selecting multiple files does not work in the test
   test.skip(({ browserName }) => browserName === "webkit");
 
-  test("should allow me to import files", async ({ page }) => {
+  test("should import a todo.txt file", async ({ page }) => {
     const content = readFileSync("public/todo.txt");
     await expect(
       page.getByRole("button", { name: "Import todo.txt" }),
@@ -78,9 +78,7 @@ test.describe("File import", () => {
     await expect(page.getByTestId("task")).toHaveCount(16);
   });
 
-  test("should allow me to import files via drag and drop", async ({
-    page,
-  }) => {
+  test("should import a todo.txt file via drag and drop", async ({ page }) => {
     const content = readFileSync("public/todo.txt");
     const dataTransfer = await page.evaluateHandle((text) => {
       const dt = new DataTransfer();
