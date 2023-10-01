@@ -211,6 +211,7 @@ function FileManagementActions() {
   return (
     <Dropdown>
       <MenuButton
+        tabIndex={0}
         color="primary"
         variant="solid"
         size={buttonSize}
@@ -399,6 +400,7 @@ function FileListItem(props: FileListItemProps) {
           display: showClosePrompt || disableDrag ? "none" : "inline-flex",
         }}
         aria-label={`Draggable file ${filePath}`}
+        tabIndex={-1}
       >
         <DragIndicatorIcon />
       </ListItemDecorator>
@@ -584,6 +586,7 @@ function FileMenu(props: FileMenuProps) {
   return (
     <Dropdown>
       <MenuButton
+        tabIndex={0}
         aria-label="File actions"
         aria-haspopup="true"
         slots={{ root: IconButton }}

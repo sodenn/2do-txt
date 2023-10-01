@@ -38,7 +38,7 @@ test.describe("Search", () => {
     await expect(page.getByTestId("task")).toHaveCount(1);
   });
 
-  test("should start searching by using a shortcut", async ({
+  test("should start searching by using a keyboard shortcut", async ({
     page,
     isMobile,
   }) => {
@@ -61,7 +61,6 @@ test.describe("Search", () => {
     page,
     isMobile,
   }) => {
-    // test.skip(!!isMobile, "desktop only");
     if (isMobile) {
       await page.getByRole("button", { name: "Expand search bar" }).click();
     }
@@ -147,7 +146,10 @@ test.describe("Filter", () => {
     ).toHaveCount(1);
   });
 
-  test("should clear active filter by shortcut", async ({ page, isMobile }) => {
+  test("should clear active filter by using a keyboard shortcut", async ({
+    page,
+    isMobile,
+  }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByLabel("Private", { exact: true }).click();
@@ -173,10 +175,19 @@ test.describe("Filter", () => {
 });
 
 test.describe("Menu", () => {
-  test("should toggle the menu via shortcut", async ({ page }) => {
+  test("should toggle the side menu by using a keyboard shortcut", async ({
+    page,
+  }) => {
     await page.keyboard.press("m");
-    await expect(page.locator('[aria-label="Open menu"]')).toBeVisible();
+    await page.waitForTimeout(100);
+    await expect(page.getByLabel("Side Menu")).not.toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
     await page.keyboard.press("m");
-    await expect(page.locator('[aria-label="Closed menu"]')).toBeVisible();
+    await expect(page.getByLabel("Side Menu")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
   });
 });

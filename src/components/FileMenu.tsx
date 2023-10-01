@@ -130,6 +130,7 @@ export function FileMenu() {
   return (
     <Dropdown>
       <MenuButton
+        tabIndex={-1}
         sx={{ maxWidth: { xs: 170, md: 300 }, pl: 2 }}
         size="md"
         color="primary"

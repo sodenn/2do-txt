@@ -15,17 +15,20 @@ export const useHotkeys = (listeners: HotkeyListeners) => {
       const target = ev.target as any;
       const isInput = target.nodeName === "INPUT" || target.isContentEditable;
 
+      const menus = document.querySelectorAll<HTMLDivElement>(
+        '[role="listbox"]:not([style*="display: none"]),[role="menu"]',
+      );
+      const menuOpen = menus.length > 0;
+
       const presentations = document.querySelectorAll<HTMLDivElement>(
         '[role="presentation"]:not([aria-hidden="true"])',
       );
-      const isBackdropOpen = [...presentations].some((presentation) => {
-        return (
-          presentation.dataset.shortcutIgnore !== "true" &&
-          presentation.dataset.shortcut !== ev.key.toLowerCase()
-        );
+      const backdropOpen = [...presentations].some((presentation) => {
+        const keepEnabled = presentation.dataset.hotkeysKeepEnabled;
+        return keepEnabled !== "true" && keepEnabled !== ev.key.toLowerCase();
       });
 
-      if (!isBackdropOpen && !isInput && listener) {
+      if (!menuOpen && !backdropOpen && !isInput && listener) {
         ev.preventDefault();
         listener(ev);
       }

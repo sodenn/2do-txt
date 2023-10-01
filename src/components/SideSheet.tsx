@@ -104,7 +104,7 @@ export function SideSheet() {
   const { t } = useTranslation();
   const theme = useTheme();
   const { mode } = useColorScheme();
-  const matches = useMediaQuery(theme.breakpoints.up("lg"));
+  const persistent = useMediaQuery(theme.breakpoints.up("lg"));
   const platform = usePlatformStore((state) => state.platform);
   const {
     open: sideSheetOpen,
@@ -145,22 +145,24 @@ export function SideSheet() {
   return (
     <SwipeableDrawer
       disableSwipeToOpen={platform === "web"}
-      data-shortcut="m"
-      data-shortcut-ignore={!matches}
-      data-testid="Menu"
-      aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
+      data-hotkeys-keep-enabled={persistent ? "true" : "m"}
+      aria-label="Side Menu"
       anchor="left"
-      variant={matches ? "persistent" : undefined}
+      variant={persistent ? "persistent" : undefined}
       open={sideSheetOpen}
+      {...(persistent && {
+        role: "presentation",
+        "aria-hidden": sideSheetOpen ? "false" : "true",
+      })}
       sx={{
         "& .MuiDrawer-paper": {
           backgroundImage: "unset",
           boxSizing: "border-box",
-          ...(!matches && {
+          ...(!persistent && {
             width: drawerWidth,
           }),
         },
-        ...(matches && {
+        ...(persistent && {
           width: drawerWidth,
           flexShrink: 0,
           "& .MuiDrawer-paper": {

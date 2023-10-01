@@ -97,7 +97,7 @@ test.describe("Task View", () => {
       expect(await taskCheckbox.getAttribute("aria-checked")).toBe("true");
     });
 
-    test(`${taskView}: should edit a task by pressing the shortcut key`, async ({
+    test(`${taskView}: should edit a task by using a keyboard shortcut`, async ({
       page,
     }) => {
       await expect(page.getByTestId("task-list")).toBeVisible();

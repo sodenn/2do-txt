@@ -49,6 +49,7 @@ export function CloudFileImportButtons() {
   return (
     <Dropdown>
       <MenuButton
+        tabIndex={0}
         color="neutral"
         variant="outlined"
         aria-label="Import todo.txt from cloud storage"

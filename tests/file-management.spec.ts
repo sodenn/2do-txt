@@ -94,11 +94,18 @@ test.describe("File Management", () => {
       localStorage.setItem("CapacitorStorage.todo-txt-paths", '["todo.txt"]');
     });
     await page.reload();
-    await expect(page.getByRole("alert")).toHaveText(
-      "File not found: todo.txt",
-    );
     await page.evaluate(() => {
       return localStorage["CapacitorStorage.todo-txt-paths"] === "[]";
     });
+    await expect(page.getByRole("alert")).toHaveText(
+      "File not found: todo.txt",
+    );
+  });
+
+  test("should click the file menu button again to close the menu", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: "File menu" }).click();
+    await page.getByRole("button", { name: "File menu" }).click();
   });
 });

@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
 const delay = { delay: 20 };
 
 test.describe("Task dialog", () => {
-  test("should open and close the task dialog via shortcut", async ({
+  test("should open and close the task dialog by using keyboard shortcuts", async ({
     page,
     isMobile,
   }) => {

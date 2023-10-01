@@ -3,11 +3,27 @@ import { readFileSync } from "fs";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:5173");
+  await expect(page.getByText("Get Started")).toBeVisible();
 });
 
 test.describe("Onboarding", () => {
-  test("should display the onboarding header", async ({ page }) => {
-    await expect(page.locator("text=Get Started").first()).toBeVisible();
+  test("should tab through the onboarding buttons", async ({ page }) => {
+    await page.keyboard.press("Tab");
+    await expect(
+      page.getByRole("button", { name: "Create task" }),
+    ).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(
+      page.getByRole("button", { name: "Create example file" }),
+    ).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(
+      page.getByRole("button", { name: "Import todo.txt" }),
+    ).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(
+      page.getByRole("button", { name: "Connect to cloud storage" }),
+    ).toBeFocused();
   });
 });
 
