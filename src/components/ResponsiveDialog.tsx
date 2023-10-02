@@ -337,6 +337,7 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
               ...styles.dialogTransition[state],
               ...sx,
             }}
+            aria-hidden={state !== "entered"}
             {...other}
           >
             {renderModal && (

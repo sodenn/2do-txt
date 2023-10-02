@@ -98,6 +98,7 @@ export const ExpandableSearch = forwardRef<
               onExited={handleExitedButton}
             >
               <IconButton
+                tabIndex={-1}
                 size="md"
                 variant="outlined"
                 aria-label="Expand search bar"

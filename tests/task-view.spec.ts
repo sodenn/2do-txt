@@ -76,7 +76,10 @@ test.describe("Task View", () => {
       await page.waitForTimeout(300);
       expect(await taskCheckbox.getAttribute("aria-checked")).toBe("true");
       // make sure that the click does not open the task dialog
-      await expect(page.getByTestId("task-dialog")).not.toBeVisible();
+      await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
     });
 
     test(`${taskView}: should complete a task by pressing the space key`, async ({
@@ -93,7 +96,10 @@ test.describe("Task View", () => {
       await page.keyboard.press("Space");
       // make sure that the click does not open the task dialog
       await page.waitForTimeout(500);
-      await expect(page.getByTestId("task-dialog")).not.toBeVisible();
+      await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
       expect(await taskCheckbox.getAttribute("aria-checked")).toBe("true");
     });
 
@@ -103,7 +109,10 @@ test.describe("Task View", () => {
       await expect(page.getByTestId("task-list")).toBeVisible();
       await page.getByTestId("task-button").nth(0).focus();
       await page.keyboard.press("e");
-      await expect(page.getByTestId("task-dialog")).toBeVisible();
+      await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+        "aria-hidden",
+        "false",
+      );
     });
 
     test(`${taskView}: should open the task dialog by pressing enter`, async ({
@@ -112,7 +121,10 @@ test.describe("Task View", () => {
       await expect(page.getByTestId("task-list")).toBeVisible();
       await page.getByTestId("task-button").nth(0).focus();
       await page.keyboard.press("Enter");
-      await expect(page.getByTestId("task-dialog")).toBeVisible();
+      await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+        "aria-hidden",
+        "false",
+      );
     });
 
     test(`${taskView}: should hide a completed task`, async ({

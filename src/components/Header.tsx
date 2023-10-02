@@ -31,7 +31,7 @@ export function Header({ divider = false }: HeaderProps) {
     (activeTaskList || taskLists.length === 1);
 
   return (
-    <Box style={{ flex: "none", marginBottom: 2 }}>
+    <Box sx={{ flex: "none", mb: "2px", px: { xs: 0.5, lg: 0 } }}>
       <HeaderContainer open={sideSheetOpen}>
         <SafeAreaBox>
           <Stack direction="row" sx={{ p: 1 }} spacing={1}>

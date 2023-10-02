@@ -36,12 +36,7 @@ const StyledListItem = styled(ListItem, {
 }));
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
-  "&:focus-visible": {
-    zIndex: "0",
-  },
-  [theme.breakpoints.up("lg")]: {
-    borderRadius: theme.radius.sm,
-  },
+  borderRadius: theme.radius.sm,
   "@media (pointer: coarse)": {
     '&:not(.Mui-selected, [aria-selected="true"]):active': {
       backgroundColor: "inherit",

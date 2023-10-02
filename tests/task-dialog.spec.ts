@@ -20,9 +20,15 @@ test.describe("Task dialog", () => {
     test.skip(!!isMobile, "not relevant for mobile browser");
     await page.waitForTimeout(500);
     await page.keyboard.press("n");
-    await expect(page.getByTestId("task-dialog")).toBeVisible();
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "false",
+    );
     await page.keyboard.press("Escape");
-    await expect(page.getByTestId("task-dialog")).not.toBeVisible();
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
   });
 
   test("should disable the save button when the task description is empty", async ({
@@ -30,7 +36,10 @@ test.describe("Task dialog", () => {
   }) => {
     await page.waitForTimeout(500);
     await page.keyboard.press("n");
-    await expect(page.getByTestId("task-dialog")).toBeVisible();
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "false",
+    );
     await expect(
       page.getByRole("button", { name: "Save task" }),
     ).toBeDisabled();
@@ -312,7 +321,10 @@ test.describe("Task dialog", () => {
   test("should consider pressing the escape key", async ({ page }) => {
     await openTaskDialog(page);
 
-    await expect(page.getByTestId("task-dialog")).toBeVisible();
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "false",
+    );
 
     // open dropdown menu with suggestions
     await getEditor(page).pressSequentially("@Private", delay);
@@ -321,7 +333,10 @@ test.describe("Task dialog", () => {
     await page.keyboard.press("Escape");
 
     // make sure that the dialog is still open
-    await expect(page.getByTestId("task-dialog")).toBeVisible();
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "false",
+    );
 
     // open recurrence selection
     await page.getByLabel("Recurrence").click();
@@ -330,13 +345,19 @@ test.describe("Task dialog", () => {
     await page.keyboard.press("Escape");
 
     // make sure that the dialog is still open
-    await expect(page.getByTestId("task-dialog")).toBeVisible();
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "false",
+    );
 
     // close the dialog by pressing the Escape key
     await page.keyboard.press("Escape");
 
     // make sure that the dialog is closed
-    await expect(page.getByTestId("task-dialog")).not.toBeVisible();
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
   });
 
   test("should insert spaces when adding mentions", async ({ page }) => {
