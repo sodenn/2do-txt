@@ -17,7 +17,7 @@ Here is a quick guide to doing code contributions to this app.
 7. Ensure tests and build passes:
    ```sh
    npm test
-   npm run test:e2e
+   npm run e2e
    npm run build
    ```
 8. Push your branch.

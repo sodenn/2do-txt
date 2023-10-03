@@ -29,7 +29,6 @@ export const useHotkeys = (listeners: HotkeyListeners) => {
       });
 
       if (!menuOpen && !backdropOpen && !isInput && listener) {
-        ev.preventDefault();
         listener(ev);
       }
     };

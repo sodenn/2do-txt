@@ -52,6 +52,8 @@ test.describe("Task View", () => {
     test(`${taskView}: should navigate through task list by using the arrow keys`, async ({
       page,
     }) => {
+      await page.keyboard.press("f");
+      await page.keyboard.press("Escape");
       await expect(page.getByTestId("task-list")).toBeVisible();
       await page.keyboard.press("ArrowDown");
       await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
