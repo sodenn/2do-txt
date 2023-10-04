@@ -294,7 +294,7 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
     <>
       {!files && (
         <Box sx={{ textAlign: "center", my: 3 }}>
-          <CircularProgress size="md" />
+          <CircularProgress size="sm" color="neutral" />
         </Box>
       )}
       {((files && files.items.length > 0) || previousPaths.length > 0) && (
