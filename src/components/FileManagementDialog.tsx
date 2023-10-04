@@ -182,8 +182,11 @@ function FileManagementActions() {
   };
 
   const handleImportFromStorage = (provider: Provider) => {
-    openCloudFileDialog(provider);
+    // first, close the file management dialog to correctly set the aria-hidden attribute
     closeFileManagementDialog();
+    setTimeout(() => {
+      openCloudFileDialog(provider);
+    });
   };
 
   const renderCloudStorageIcon = (provider: Provider) => {

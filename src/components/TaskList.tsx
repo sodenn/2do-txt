@@ -32,8 +32,8 @@ function propsAreEqual(prev: TaskListProps, next: TaskListProps) {
 }
 
 const StyledList = styled(List)(({ theme }) => ({
-  paddingLeft: theme.spacing(1),
-  paddingRight: theme.spacing(1),
+  paddingLeft: theme.spacing(1.5),
+  paddingRight: theme.spacing(1.5),
   [theme.breakpoints.down("sm")]: {
     paddingLeft: theme.spacing(0.5),
     paddingRight: theme.spacing(0.5),
