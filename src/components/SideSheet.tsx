@@ -75,6 +75,13 @@ const SaveAreaContent = styled(Box)({
   paddingLeft: "env(safe-area-inset-left)",
 });
 
+const StyledTab = styled(Tab)(({ theme }) => ({
+  "&.Mui-selected": {
+    backgroundColor: "inherit",
+    color: theme.vars.palette.primary.plainColor,
+  },
+}));
+
 export function MainContainer({ children }: PropsWithChildren) {
   const ref = useRef<HTMLDivElement | null>(null);
   const sideSheetOpen = useSideSheetStore((state) => state.open);
@@ -187,13 +194,13 @@ export function SideSheet() {
             }}
           >
             {!hideFilter && (
-              <Tab value="filter" aria-label="Filter">
+              <StyledTab value="filter" aria-label="Filter">
                 {t("Filter")}
-              </Tab>
+              </StyledTab>
             )}
-            <Tab value="settings" aria-label="Settings">
+            <StyledTab value="settings" aria-label="Settings">
               {t("Settings")}
-            </Tab>
+            </StyledTab>
           </TabList>
         </SaveTabList>
         <SaveAreaContent sx={{ overflowY: "auto", flex: "auto" }}>

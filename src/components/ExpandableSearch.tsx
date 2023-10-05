@@ -100,7 +100,7 @@ export const ExpandableSearch = forwardRef<
               <IconButton
                 tabIndex={-1}
                 size="md"
-                variant="outlined"
+                variant="soft"
                 aria-label="Expand search bar"
                 onClick={() => setShowButton(false)}
               >
