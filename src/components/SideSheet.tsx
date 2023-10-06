@@ -26,6 +26,7 @@ const drawerWidth = 320;
 export const HeaderContainer = styled("div", {
   shouldForwardProp: (prop) => prop !== "open",
 })<{ open: boolean }>(({ theme, open }) => ({
+  flex: "none",
   [theme.breakpoints.up("lg")]: {
     transition: transitions.create(["margin", "width"], {
       easing: transitions.easing.sharp,
@@ -65,10 +66,17 @@ const Main = styled("main", {
   },
 }));
 
-const SaveTabList = styled(Box)({
+const SaveTabList = styled(TabList)(({ theme }) => ({
+  flex: "none",
   paddingTop: "env(safe-area-inset-top)",
   paddingLeft: "env(safe-area-inset-left)",
-});
+  ".MuiTab-root:first-of-type": {
+    marginLeft: theme.spacing(1),
+  },
+  ".MuiTab-root:last-of-type": {
+    marginRight: theme.spacing(1),
+  },
+}));
 
 const SaveAreaContent = styled(Box)({
   paddingBottom: "env(safe-area-inset-bottom)",
@@ -185,23 +193,21 @@ export function SideSheet() {
       onClose={closeSideSheet}
     >
       <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
-        <SaveTabList sx={{ flex: "none" }}>
-          <TabList
-            size="md"
-            sx={{
-              "--ListItem-minHeight": (theme) =>
-                `calc(2.25rem + ${theme.spacing(2)})`,
-            }}
-          >
-            {!hideFilter && (
-              <StyledTab value="filter" aria-label="Filter">
-                {t("Filter")}
-              </StyledTab>
-            )}
-            <StyledTab value="settings" aria-label="Settings">
-              {t("Settings")}
+        <SaveTabList
+          size="md"
+          sx={{
+            "--ListItem-minHeight": (theme) =>
+              `calc(2.25rem + ${theme.spacing(2)})`,
+          }}
+        >
+          {!hideFilter && (
+            <StyledTab value="filter" aria-label="Filter">
+              {t("Filter")}
             </StyledTab>
-          </TabList>
+          )}
+          <StyledTab value="settings" aria-label="Settings">
+            {t("Settings")}
+          </StyledTab>
         </SaveTabList>
         <SaveAreaContent sx={{ overflowY: "auto", flex: "auto" }}>
           <TabPanel value="filter">

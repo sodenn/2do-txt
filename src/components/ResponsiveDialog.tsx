@@ -60,18 +60,14 @@ interface DialogStyles {
 
 const SafeArea = styled("div", {
   shouldForwardProp: (prop) => prop !== "fullWidth" && prop !== "fullScreen",
-})<{ fullWidth?: boolean; fullScreen: boolean }>(
-  ({ fullWidth, fullScreen }) => ({
-    ...(fullScreen && {
-      paddingRight: "env(safe-area-inset-right)",
-      paddingLeft: "env(safe-area-inset-left)",
-      paddingBottom: "env(safe-area-inset-bottom)",
-      paddingTop: "env(safe-area-inset-top)",
-      overflow: "auto",
-      width: fullWidth ? "100%" : "unset",
-    }),
-  }),
-);
+})<{ fullWidth?: boolean }>(({ fullWidth }) => ({
+  paddingRight: "env(safe-area-inset-right)",
+  paddingLeft: "env(safe-area-inset-left)",
+  paddingBottom: "env(safe-area-inset-bottom)",
+  paddingTop: "env(safe-area-inset-top)",
+  overflow: "auto",
+  width: fullWidth ? "100%" : "unset",
+}));
 
 const SafeModalClose = styled(ModalClose, {
   shouldForwardProp: (prop) => prop !== "fullScreen",
@@ -349,7 +345,7 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
             {...other}
           >
             {renderModal && (
-              <SafeArea fullScreen={fullScreen} fullWidth={fullWidth}>
+              <>
                 <SafeModalClose
                   fullScreen={fullScreen}
                   aria-label="Close"
@@ -364,10 +360,12 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
                   }
                 />
                 {fullScreen && (
-                  <FullScreenLayout>{childrenClone}</FullScreenLayout>
+                  <SafeArea fullWidth={fullWidth}>
+                    <FullScreenLayout>{childrenClone}</FullScreenLayout>
+                  </SafeArea>
                 )}
                 {!fullScreen && <CenterLayout>{childrenClone}</CenterLayout>}
-              </SafeArea>
+              </>
             )}
           </ModalDialog>
         </Modal>
