@@ -1,4 +1,5 @@
 import { Kbd } from "@/components/Kbd";
+import { Menu } from "@/components/Menu";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { Task } from "@/utils/task";
@@ -9,7 +10,6 @@ import {
   Dropdown,
   DropdownProps,
   IconButton,
-  Menu,
   MenuButton,
   MenuItem,
   styled,
