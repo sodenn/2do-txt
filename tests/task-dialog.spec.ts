@@ -340,6 +340,7 @@ test.describe("Task dialog", () => {
 
     // open recurrence selection
     await page.getByLabel("Recurrence").click();
+    await page.waitForTimeout(200);
 
     // close selection
     await page.keyboard.press("Escape");
