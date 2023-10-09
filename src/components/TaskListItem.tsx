@@ -19,7 +19,7 @@ const StyledListItem = styled(ListItem, {
     right: 2,
     visibility: menuOpen ? "visible" : "hidden",
     backgroundColor: menuOpen
-      ? "var(--joy-palette-neutral-plainActiveBg)"
+      ? "var(--joy-palette-neutral-plainHoverBg)"
       : undefined,
   },
   ".MuiListItem-startAction": {
