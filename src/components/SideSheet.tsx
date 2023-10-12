@@ -26,6 +26,7 @@ const drawerWidth = 320;
 export const HeaderContainer = styled("div", {
   shouldForwardProp: (prop) => prop !== "open",
 })<{ open: boolean }>(({ theme, open }) => ({
+  flex: "none",
   [theme.breakpoints.up("lg")]: {
     transition: transitions.create(["margin", "width"], {
       easing: transitions.easing.sharp,
@@ -48,10 +49,6 @@ const Main = styled("main", {
 }>(({ theme, open }) => ({
   overflowY: "auto",
   flex: "auto",
-  [theme.breakpoints.up("sm")]: {
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-  },
   [theme.breakpoints.up("lg")]: {
     flexGrow: 1,
     transition: transitions.create(["margin"], {
@@ -69,15 +66,29 @@ const Main = styled("main", {
   },
 }));
 
-const SaveTabList = styled(Box)({
+const SaveTabList = styled(TabList)(({ theme }) => ({
+  flex: "none",
   paddingTop: "env(safe-area-inset-top)",
   paddingLeft: "env(safe-area-inset-left)",
-});
+  ".MuiTab-root:first-of-type": {
+    marginLeft: theme.spacing(1),
+  },
+  ".MuiTab-root:last-of-type": {
+    marginRight: theme.spacing(1),
+  },
+}));
 
 const SaveAreaContent = styled(Box)({
   paddingBottom: "env(safe-area-inset-bottom)",
   paddingLeft: "env(safe-area-inset-left)",
 });
+
+const StyledTab = styled(Tab)(({ theme }) => ({
+  "&.Mui-selected": {
+    backgroundColor: "inherit",
+    color: theme.vars.palette.primary.plainColor,
+  },
+}));
 
 export function MainContainer({ children }: PropsWithChildren) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -108,7 +119,7 @@ export function SideSheet() {
   const { t } = useTranslation();
   const theme = useTheme();
   const { mode } = useColorScheme();
-  const matches = useMediaQuery(theme.breakpoints.up("lg"));
+  const persistent = useMediaQuery(theme.breakpoints.up("lg"));
   const platform = usePlatformStore((state) => state.platform);
   const {
     open: sideSheetOpen,
@@ -149,22 +160,24 @@ export function SideSheet() {
   return (
     <SwipeableDrawer
       disableSwipeToOpen={platform === "web"}
-      data-shortcut="m"
-      data-shortcut-ignore={!matches}
-      data-testid="Menu"
-      aria-label={sideSheetOpen ? "Open menu" : "Closed menu"}
+      data-hotkeys-keep-enabled={persistent ? "true" : "m"}
+      aria-label="Side Menu"
       anchor="left"
-      variant={matches ? "persistent" : undefined}
+      variant={persistent ? "persistent" : undefined}
       open={sideSheetOpen}
+      {...(persistent && {
+        role: "presentation",
+        "aria-hidden": sideSheetOpen ? "false" : "true",
+      })}
       sx={{
         "& .MuiDrawer-paper": {
           backgroundImage: "unset",
           boxSizing: "border-box",
-          ...(!matches && {
+          ...(!persistent && {
             width: drawerWidth,
           }),
         },
-        ...(matches && {
+        ...(persistent && {
           width: drawerWidth,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
@@ -180,23 +193,21 @@ export function SideSheet() {
       onClose={closeSideSheet}
     >
       <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
-        <SaveTabList sx={{ flex: "none" }}>
-          <TabList
-            size="md"
-            sx={{
-              "--ListItem-minHeight": (theme) =>
-                `calc(2.25rem + ${theme.spacing(2)})`,
-            }}
-          >
-            {!hideFilter && (
-              <Tab value="filter" aria-label="Filter">
-                {t("Filter")}
-              </Tab>
-            )}
-            <Tab value="settings" aria-label="Settings">
-              {t("Settings")}
-            </Tab>
-          </TabList>
+        <SaveTabList
+          size="md"
+          sx={{
+            "--ListItem-minHeight": (theme) =>
+              `calc(2.25rem + ${theme.spacing(2)})`,
+          }}
+        >
+          {!hideFilter && (
+            <StyledTab value="filter" aria-label="Filter">
+              {t("Filter")}
+            </StyledTab>
+          )}
+          <StyledTab value="settings" aria-label="Settings">
+            {t("Settings")}
+          </StyledTab>
         </SaveTabList>
         <SaveAreaContent sx={{ overflowY: "auto", flex: "auto" }}>
           <TabPanel value="filter">

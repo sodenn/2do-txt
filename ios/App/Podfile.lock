@@ -1,10 +1,10 @@
 PODS:
-  - Capacitor (5.3.0):
+  - Capacitor (5.4.0):
     - CapacitorCordova
   - CapacitorApp (5.0.6):
     - Capacitor
-  - CapacitorCordova (5.3.0)
-  - CapacitorFilesystem (5.1.3):
+  - CapacitorCordova (5.4.0)
+  - CapacitorFilesystem (5.1.4):
     - Capacitor
   - CapacitorKeyboard (5.0.6):
     - Capacitor
@@ -22,7 +22,7 @@ PODS:
     - Capacitor
   - CapacitorStatusBar (5.0.6):
     - Capacitor
-  - CordovaPlugins (5.3.0):
+  - CordovaPlugins (5.4.0):
     - CapacitorCordova
 
 DEPENDENCIES:
@@ -69,10 +69,10 @@ EXTERNAL SOURCES:
     :path: "../capacitor-cordova-ios-plugins"
 
 SPEC CHECKSUMS:
-  Capacitor: 1ac9165943bc4f2137642d218c5ba05df811de69
+  Capacitor: a5cd803e02b471591c81165f400ace01f40b11d3
   CapacitorApp: 024e1b1bea5f883d79f6330d309bc441c88ad04a
-  CapacitorCordova: b9374d68e63ce29e96ab5db994cf14fbefd722c9
-  CapacitorFilesystem: 9b4641db3d6d62b6cc1bf0a6a09681ebaea696b7
+  CapacitorCordova: 66ce22f9976de30fd816f746e9e92e07d6befafd
+  CapacitorFilesystem: af704badfbc69f6f8623d9ed313e5490e3723dcb
   CapacitorKeyboard: b978154b024a5f65e044908e37d15b7de58b9d12
   CapacitorLocalNotifications: c2d8b14794064fd4814b1d6c4ddbac8029afa295
   CapacitorNetwork: d80b3e79bef6ec37640ee2806c19771f07ff2d0c
@@ -81,8 +81,8 @@ SPEC CHECKSUMS:
   CapacitorShare: cd41743331cb71d217c029de54b681cbd91e0fcc
   CapacitorSplashScreen: 5fa2ab5e46cf5cc530cf16a51c80c7a986579ccd
   CapacitorStatusBar: 565c0a1ebd79bb40d797606a8992b4a105885309
-  CordovaPlugins: 1b76bc043ff84f61e2a1a1d22da10ec2f7c596cd
+  CordovaPlugins: ceee91fcbbdab9939bcabb1526357712791863de
 
-PODFILE CHECKSUM: 58c46768e233286db6e3085a34a3f936fae38a73
+PODFILE CHECKSUM: 4671f817797f0cc76dd0f1fdb14c46d18133479b
 
 COCOAPODS: 1.12.1

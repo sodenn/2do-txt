@@ -12,6 +12,7 @@ export function NewFileButton() {
     <Button
       fullWidth
       variant="solid"
+      tabIndex={0}
       aria-label="Create task"
       onClick={() =>
         openFileCreateDialog({

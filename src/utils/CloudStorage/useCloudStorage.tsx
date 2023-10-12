@@ -249,6 +249,7 @@ export function useCloudStorage() {
       color: "primary",
       persistent: true,
       loading: true,
+      close: false,
       message: t("Sync with cloud storage", {
         provider: t("cloud storage"),
       }),

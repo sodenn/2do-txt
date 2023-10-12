@@ -15,6 +15,7 @@ export function ExampleFileButton() {
 
   return (
     <Button
+      tabIndex={0}
       color="neutral"
       variant="outlined"
       fullWidth

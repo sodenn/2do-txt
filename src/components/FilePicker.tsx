@@ -29,7 +29,7 @@ const Overlay = styled("div")(({ theme }) => ({
   bottom: 0,
   left: 0,
   right: 0,
-  zIndex: theme.vars.zIndex.modal + 1,
+  zIndex: `calc(${theme.vars.zIndex.modal} + 1)`,
   padding: theme.spacing(2),
   background: theme.vars.palette.background.body,
 }));
@@ -74,7 +74,7 @@ function WebFilePicker({ children }: PropsWithChildren) {
     noClick: true,
   });
 
-  const { onClick, onBlur, onKeyDown, onFocus, ...dropzoneProps } =
+  const { onClick, onBlur, onKeyDown, onFocus, tabIndex, ...dropzoneProps } =
     getRootProps();
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -154,7 +154,7 @@ function WebFilePicker({ children }: PropsWithChildren) {
         onChange={handleChange}
         onClick={handleClick}
       />
-      <Root data-testid="dropzone" {...dropzoneProps} data-shortcut-ignore>
+      <Root data-testid="dropzone" {...dropzoneProps} data-hotkeys-keep-enabled>
         <Fade in={isDragActive} unmountOnExit mountOnEnter>
           <Overlay>
             <StyledCard variant="soft">
@@ -194,7 +194,7 @@ function DesktopFilePicker({ children }: PropsWithChildren) {
   }, [openDesktopFile]);
 
   return (
-    <Root data-testid="dropzone" data-shortcut-ignore>
+    <Root data-testid="dropzone" data-hotkeys-keep-enabled>
       <Fade in={isDragActive} unmountOnExit mountOnEnter>
         <Overlay>
           <StyledCard variant="soft">

@@ -11,7 +11,7 @@ export function TaskListSubheader({ title }: TaskListSubheaderProps) {
     <ListSubheader
       sticky
       sx={{
-        px: 0,
+        px: 1,
         zIndex: 2, // prevent subheader from being covered by the task checkbox
       }}
     >

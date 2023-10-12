@@ -11,7 +11,7 @@ import {
   Stack,
   Tooltip,
 } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface RecurrenceSelectProps {
@@ -25,6 +25,7 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
   const [strict, setStrict] = useState(false);
   const [unit, setUnit] = useState("-");
   const [amount, setAmount] = useState("1");
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const match = getRecValueMatch(value);
@@ -38,6 +39,12 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
       setUnit("-");
     }
   }, [value]);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape" && isOpen) {
+      event.stopPropagation();
+    }
+  };
 
   const handleChangeUnit = (value: string | null) => {
     setUnit(value || "-");
@@ -74,9 +81,13 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
       <FormControl sx={{ flex: 1 }}>
         <FormLabel>{t("Recurrence")}</FormLabel>
         <Select
+          onListboxOpenChange={setIsOpen}
           value={unit}
           onChange={(_, value) => handleChangeUnit(value)}
           slotProps={{
+            root: {
+              onKeyDown: handleKeyDown,
+            },
             listbox: {
               "aria-label": "Select unit",
             },

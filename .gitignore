@@ -9,6 +9,7 @@
 /coverage
 test-results/
 playwright-report/
+*-darwin.png
 
 # production
 /build

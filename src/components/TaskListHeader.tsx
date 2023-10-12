@@ -17,16 +17,29 @@ const Container = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 
+const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+  [theme.breakpoints.up("lg")]: {
+    borderRadius: theme.radius.sm,
+  },
+  "@media (pointer: coarse)": {
+    '&:not(.Mui-selected, [aria-selected="true"]):active': {
+      backgroundColor: "inherit",
+    },
+    ':not(.Mui-selected, [aria-selected="true"]):hover': {
+      backgroundColor: "inherit",
+    },
+  },
+}));
+
 export function TaskListHeader(props: TaskListHeaderProps) {
   const { fileName, filePath } = props;
   const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath,
   );
   return (
-    <ListItemButton
-      sx={{
-        borderRadius: "sm",
-      }}
+    <StyledListItemButton
       tabIndex={-1}
       onClick={() => setActiveTaskListPath(filePath)}
     >
@@ -34,6 +47,6 @@ export function TaskListHeader(props: TaskListHeaderProps) {
         <StartEllipsis level="title-lg">{fileName}</StartEllipsis>
         <LaunchIcon />
       </Container>
-    </ListItemButton>
+    </StyledListItemButton>
   );
 }

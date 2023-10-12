@@ -27,7 +27,7 @@ interface TaskFormProps {
   projects: string[];
   contexts: string[];
   tags: Record<string, string[]>;
-  onChange: (value: string) => void;
+  onChange: (value: string, emptyBody: boolean) => void;
   onFileSelect: (value?: TaskList) => void;
   onEnterPress: () => void;
 }
@@ -152,7 +152,9 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   const handleChange = (data: Partial<Task>) => {
-    onChange(stringifyTask({ ...formModel, ...data }));
+    const task = { ...formModel, ...data };
+    const value = stringifyTask(task);
+    onChange(value, !!task.body);
   };
 
   return (

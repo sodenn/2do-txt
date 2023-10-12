@@ -31,23 +31,25 @@ export function Header({ divider = false }: HeaderProps) {
     (activeTaskList || taskLists.length === 1);
 
   return (
-    <Box style={{ flex: "none", marginBottom: 2 }}>
-      <HeaderContainer open={sideSheetOpen}>
-        <SafeAreaBox>
-          <Stack direction="row" sx={{ p: 1 }} spacing={1}>
-            <SideSheetButton />
-            <Fade in={!searchBarExpanded} unmountOnExit>
-              <div>{taskLists.length > 0 && <FileMenu />}</div>
-            </Fade>
-            {taskLists.length > 0 && (
-              <SearchBar onExpand={setSearchBarExpanded} />
-            )}
-            {showTodoFileDownloadButton && <ShareButton />}
-            {taskLists.length > 0 && <AddTaskButton />}
-          </Stack>
-        </SafeAreaBox>
-        {divider && <Divider />}
-      </HeaderContainer>
-    </Box>
+    <HeaderContainer open={sideSheetOpen}>
+      <SafeAreaBox>
+        <Stack
+          direction="row"
+          sx={{ py: 1, px: { xs: 1.5, sm: 2.5 } }}
+          spacing={1}
+        >
+          <SideSheetButton />
+          <Fade in={!searchBarExpanded} unmountOnExit>
+            <div>{taskLists.length > 0 && <FileMenu />}</div>
+          </Fade>
+          {taskLists.length > 0 && (
+            <SearchBar onExpand={setSearchBarExpanded} />
+          )}
+          {showTodoFileDownloadButton && <ShareButton />}
+          {taskLists.length > 0 && <AddTaskButton />}
+        </Stack>
+      </SafeAreaBox>
+      {divider && <Divider />}
+    </HeaderContainer>
   );
 }

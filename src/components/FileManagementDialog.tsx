@@ -182,8 +182,11 @@ function FileManagementActions() {
   };
 
   const handleImportFromStorage = (provider: Provider) => {
-    openCloudFileDialog(provider);
+    // first, close the file management dialog to correctly set the aria-hidden attribute
     closeFileManagementDialog();
+    setTimeout(() => {
+      openCloudFileDialog(provider);
+    });
   };
 
   const renderCloudStorageIcon = (provider: Provider) => {
@@ -211,6 +214,7 @@ function FileManagementActions() {
   return (
     <Dropdown>
       <MenuButton
+        tabIndex={0}
         color="primary"
         variant="solid"
         size={buttonSize}
@@ -399,6 +403,7 @@ function FileListItem(props: FileListItemProps) {
           display: showClosePrompt || disableDrag ? "none" : "inline-flex",
         }}
         aria-label={`Draggable file ${filePath}`}
+        tabIndex={-1}
       >
         <DragIndicatorIcon />
       </ListItemDecorator>
@@ -561,6 +566,11 @@ function FileMenu(props: FileMenuProps) {
     }
     return value;
   }, [cloudFileRef, cloudStorages]);
+  const showCloudSyncMenuItem = cloudFileRef && !touchScreen;
+  const showCopyToClipboardMenuItem =
+    platform === "desktop" || platform === "web";
+  const showDownloadMenuItem = platform === "web";
+  const showEnableCloudSyncMenuItem = providers.length > 0;
 
   const handleCloseFile = () => {
     onMarkedForClosing(filePath);
@@ -581,9 +591,24 @@ function FileMenu(props: FileMenuProps) {
       .finally();
   };
 
+  if (
+    !showCloudSyncMenuItem &&
+    !showCopyToClipboardMenuItem &&
+    !showDownloadMenuItem &&
+    !showEnableCloudSyncMenuItem
+  ) {
+    return (
+      <IconButton onClick={handleCloseFile} aria-label="Delete file">
+        {deleteFile && <DeleteForeverIcon />}
+        {!deleteFile && <CloseIcon />}
+      </IconButton>
+    );
+  }
+
   return (
     <Dropdown>
       <MenuButton
+        tabIndex={0}
         aria-label="File actions"
         aria-haspopup="true"
         slots={{ root: IconButton }}
@@ -596,7 +621,7 @@ function FileMenu(props: FileMenuProps) {
         sx={{ zIndex: (theme) => theme.vars.zIndex.modal }}
         placement="bottom-end"
       >
-        {cloudFileRef && !touchScreen && (
+        {showCloudSyncMenuItem && (
           <CloudSyncMenuItem
             identifier={cloudFileRef.identifier}
             provider={cloudFileRef.provider}
@@ -615,7 +640,7 @@ function FileMenu(props: FileMenuProps) {
             }
           />
         ))}
-        {(platform === "desktop" || platform === "web") && (
+        {showCopyToClipboardMenuItem && (
           <MenuItem onClick={handleCopyToClipboard}>
             <ListItemDecorator>
               <ContentCopyIcon />
@@ -623,7 +648,7 @@ function FileMenu(props: FileMenuProps) {
             {t("Copy to clipboard")}
           </MenuItem>
         )}
-        {platform === "web" && (
+        {showDownloadMenuItem && (
           <MenuItem aria-label="Download todo.txt" onClick={onDownloadClick}>
             <ListItemDecorator>
               <DownloadIcon />

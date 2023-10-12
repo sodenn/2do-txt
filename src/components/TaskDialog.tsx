@@ -21,14 +21,6 @@ function rawText(createCreationDate: boolean, task?: Task) {
   return task ? task.raw : createCreationDate ? formatDate(todayDate()) : "";
 }
 
-function isEmpty(createCreationDate: boolean, value?: string) {
-  if (createCreationDate && value) {
-    // filter out creation date
-    return value.trim().replace(/^\d{4}-\d{2}-\d{2}$/, "") === "";
-  }
-  return !value?.trim();
-}
-
 export function TaskDialog() {
   const { t } = useTranslation();
   const {
@@ -55,9 +47,7 @@ export function TaskDialog() {
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
-  const formDisabled =
-    isEmpty(createCreationDate, value) ||
-    (!activeTaskList && !selectedTaskList);
+  const [formDisabled, setFormDisabled] = useState(true);
   const contexts = useMemo(
     () =>
       Object.keys(activeTaskList ? activeTaskList.contexts : commonContexts),
@@ -94,6 +84,11 @@ export function TaskDialog() {
     task,
   ]);
 
+  const handleChanged = useCallback((value: string, emptyBody: boolean) => {
+    setValue(value);
+    setFormDisabled(!emptyBody);
+  }, []);
+
   const handleClose = useCallback<NonNullable<ModalProps["onClose"]>>(
     (_, reason) => {
       return reason !== "backdropClick" ? closeTaskDialog() : undefined;
@@ -114,6 +109,7 @@ export function TaskDialog() {
 
   const handleExited = () => {
     cleanupTaskDialog();
+    setFormDisabled(true);
     setValue(undefined);
     setSelectedTaskList(undefined);
   };
@@ -139,7 +135,7 @@ export function TaskDialog() {
             projects={projects}
             tags={tags}
             taskLists={taskLists}
-            onChange={setValue}
+            onChange={handleChanged}
             onFileSelect={setSelectedTaskList}
             onEnterPress={handleSave}
           />

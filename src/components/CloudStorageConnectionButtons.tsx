@@ -80,6 +80,7 @@ export function CloudStorageConnectionButtons({
   return (
     <Dropdown>
       <MenuButton
+        tabIndex={0}
         color="neutral"
         variant="outlined"
         aria-label="Connect to cloud storage"

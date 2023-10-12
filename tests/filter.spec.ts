@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 });
 
 test.describe("Search", () => {
-  test("should not show the search bar when no files are open", async ({
+  test("should not show the search field if no todo.txt files are open", async ({
     page,
   }) => {
     await expect(
@@ -18,7 +18,10 @@ test.describe("Search", () => {
     ).not.toBeVisible();
   });
 
-  test("should allow me to search for tasks", async ({ page, isMobile }) => {
+  test("should filter tasks by using the search", async ({
+    page,
+    isMobile,
+  }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     if (isMobile) {
       await page.getByRole("button", { name: "Expand search bar" }).click();
@@ -35,7 +38,7 @@ test.describe("Search", () => {
     await expect(page.getByTestId("task")).toHaveCount(1);
   });
 
-  test("should allow me to use a shortcut to start searching", async ({
+  test("should start searching by using a keyboard shortcut", async ({
     page,
     isMobile,
   }) => {
@@ -54,11 +57,13 @@ test.describe("Search", () => {
     ).not.toBeFocused();
   });
 
-  test("should allow me to clear the search input field", async ({
+  test("should clear the search when clicking on the clear button", async ({
     page,
     isMobile,
   }) => {
-    test.skip(!!isMobile, "desktop only");
+    if (isMobile) {
+      await page.getByRole("button", { name: "Expand search bar" }).click();
+    }
     await page
       .getByRole("search", { name: "Search for tasks" })
       .fill("invoice");
@@ -72,26 +77,7 @@ test.describe("Search", () => {
     await expect(page.getByTestId("task")).toHaveCount(8);
   });
 
-  test("mobile: should allow me to clear the search input field", async ({
-    page,
-    isMobile,
-  }) => {
-    test.skip(!isMobile, "mobile only");
-    await page.getByRole("button", { name: "Expand search bar" }).click();
-    await page
-      .getByRole("search", { name: "Search for tasks" })
-      .fill("invoice");
-    await expect(
-      page.getByRole("search", { name: "Search for tasks" }),
-    ).not.toBeEmpty();
-    await page.getByRole("button", { name: "Clear search term" }).click();
-    await expect(
-      page.getByRole("search", { name: "Search for tasks" }),
-    ).toBeEmpty();
-    await expect(page.getByTestId("task")).toHaveCount(8);
-  });
-
-  test("should show info text if no tasks was found", async ({
+  test("should display a message if no tasks was found", async ({
     page,
     isMobile,
   }) => {
@@ -106,7 +92,7 @@ test.describe("Search", () => {
 });
 
 test.describe("Filter", () => {
-  test("should allow me to filter tasks by priority", async ({ page }) => {
+  test("should filter tasks by priority", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByLabel("A", { exact: true }).click();
@@ -116,7 +102,7 @@ test.describe("Filter", () => {
     await expect(page).toHaveURL("http://localhost:5173");
   });
 
-  test("should allow me to filter tasks by project", async ({ page }) => {
+  test("should filter tasks by project", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByLabel("CompanyA", { exact: true }).click();
@@ -126,7 +112,7 @@ test.describe("Filter", () => {
     await expect(page).toHaveURL("http://localhost:5173");
   });
 
-  test("should allow me to filter tasks by context", async ({ page }) => {
+  test("should filter tasks by context", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByLabel("Private", { exact: true }).click();
@@ -136,7 +122,7 @@ test.describe("Filter", () => {
     await expect(page).toHaveURL("http://localhost:5173");
   });
 
-  test("should allow me to hide completed tasks", async ({ page }) => {
+  test("should hide completed tasks", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await expect(page.getByLabel("Holiday", { exact: true })).toBeVisible();
@@ -145,7 +131,7 @@ test.describe("Filter", () => {
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
-  test("should allow me to sort tasks by priority", async ({ page }) => {
+  test("should sort tasks by priority", async ({ page }) => {
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.locator('[aria-label="Sort tasks"]').click();
     await page.locator('text="Priority"').click();
@@ -160,7 +146,10 @@ test.describe("Filter", () => {
     ).toHaveCount(1);
   });
 
-  test("should clear active filter by shortcut", async ({ page, isMobile }) => {
+  test("should clear active filter by using a keyboard shortcut", async ({
+    page,
+    isMobile,
+  }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await page.getByLabel("Private", { exact: true }).click();
@@ -168,13 +157,37 @@ test.describe("Filter", () => {
     await page.keyboard.press("x");
     await expect(page).toHaveURL("http://localhost:5173");
   });
+
+  test("should clear active filter by clicking on the clear button", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!!isMobile, "not relevant for mobile browser");
+    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await expect(page.getByText("Reset filters")).not.toBeVisible();
+    await page.getByLabel("Private", { exact: true }).click();
+    await page.getByLabel("CompanyA", { exact: true }).click();
+    await expect(page.getByText("Reset filters")).toBeVisible();
+    await page.getByText("Reset filters").click();
+    await expect(page.getByText("Reset filters")).not.toBeVisible();
+    await expect(page).toHaveURL("http://localhost:5173");
+  });
 });
 
 test.describe("Menu", () => {
-  test("should allow me to toggle the menu via shortcut", async ({ page }) => {
+  test("should toggle the side menu by using a keyboard shortcut", async ({
+    page,
+  }) => {
     await page.keyboard.press("m");
-    await expect(page.locator('[aria-label="Open menu"]')).toBeVisible();
+    await page.waitForTimeout(100);
+    await expect(page.getByLabel("Side Menu")).not.toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
     await page.keyboard.press("m");
-    await expect(page.locator('[aria-label="Closed menu"]')).toBeVisible();
+    await expect(page.getByLabel("Side Menu")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
   });
 });

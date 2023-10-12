@@ -11,7 +11,6 @@ import {
 } from "@/utils/task-list";
 import { HotkeyListeners, useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
-import { Stack } from "@mui/joy";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -112,28 +111,25 @@ export function TaskView() {
 
   return (
     <>
-      {taskView === "list" && (
-        <Stack spacing={1}>
-          {taskGroups
-            .filter((i) =>
-              activeTaskList ? i.filePath === activeTaskList.filePath : i,
-            )
-            .map((i) => (
-              <TaskList
-                key={i.filePath}
-                fileName={i.fileName}
-                filePath={i.filePath}
-                taskGroups={i.groups}
-                tasks={tasks}
-                listItemsRef={listItemsRef}
-                showHeader={!activeTaskList}
-                onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
-                onBlur={() => setFocusedTaskId(undefined)}
-                onClick={(task) => _openTaskDialog(task)}
-              />
-            ))}
-        </Stack>
-      )}
+      {taskView === "list" &&
+        taskGroups
+          .filter((i) =>
+            activeTaskList ? i.filePath === activeTaskList.filePath : i,
+          )
+          .map((i) => (
+            <TaskList
+              key={i.filePath}
+              fileName={i.fileName}
+              filePath={i.filePath}
+              taskGroups={i.groups}
+              tasks={tasks}
+              listItemsRef={listItemsRef}
+              showHeader={!activeTaskList}
+              onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
+              onBlur={() => setFocusedTaskId(undefined)}
+              onClick={(task) => _openTaskDialog(task)}
+            />
+          ))}
       {taskView === "timeline" && (
         <TaskTimeline
           tasks={tasks as TimelineTask[]}

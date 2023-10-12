@@ -132,15 +132,15 @@
   "Keyboard Shortcuts": "Keyboard Shortcuts",
   "Key": "Key",
   "F": "Search tasks",
-  "X": "Delete active filters",
-  "M": "Open menu (filter + settings)",
+  "X": "Reset filters",
+  "M": "Open menu (Filter | Settings)",
   "N": "Create new task",
   "E": "Edit selected task",
   "D": "Delete selected task",
   "T": "Download todo.txt",
   "Task view": "Task view",
-  "List view": "List view",
-  "Timeline view": "Timeline view",
+  "List": "List",
+  "Timeline": "Timeline",
   "Disabled when timeline view is active": "Disabled when timeline view is active",
   "Add new task": "Add new task",
   "Today": "Today",
@@ -164,5 +164,6 @@
   "An error has occurred": "An error has occurred 🫤",
   "Pull to refresh": "Pull to refresh",
   "Release to refresh": "Release to refresh",
-  "Refreshing": "Refreshing"
+  "Refreshing": "Refreshing",
+  "Reset filters": "Reset filters"
 }

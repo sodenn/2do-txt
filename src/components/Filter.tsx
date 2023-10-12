@@ -1,18 +1,28 @@
 import { ChipList } from "@/components/ChipList";
-import { Heading } from "@/components/Heading";
 import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
-import { Box, Checkbox, Option, Select, Stack } from "@mui/joy";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import {
+  Checkbox,
+  FormControl,
+  FormLabel,
+  Link,
+  Option,
+  Select,
+  Stack,
+  Tooltip,
+} from "@mui/joy";
+import { useCallback, useMemo } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 export function Filter() {
   const { t } = useTranslation();
   const { taskLists, activeTaskList, ...rest } = useTask();
   const {
     sortBy,
+    searchTerm,
     filterType,
     activePriorities,
     activeProjects,
@@ -38,23 +48,35 @@ export function Filter() {
     ? attributes.incomplete
     : attributes;
   const showSortBy = taskLists.some((list) => list.items.length > 0);
+  const defaultFilter = useMemo(
+    () =>
+      searchTerm === "" &&
+      activeContexts.length === 0 &&
+      activeProjects.length === 0 &&
+      activeTags.length === 0 &&
+      activePriorities.length === 0,
+    [activeContexts, activePriorities, activeProjects, activeTags, searchTerm],
+  );
+
+  const resetFilters = useCallback(() => {
+    resetActiveProjects();
+    resetActiveContexts();
+    resetActiveTags();
+    resetActivePriorities();
+    setSearchTerm("");
+  }, [
+    resetActiveContexts,
+    resetActivePriorities,
+    resetActiveProjects,
+    resetActiveTags,
+    setSearchTerm,
+  ]);
+
   const hotkeys = useMemo(
     () => ({
-      x: () => {
-        resetActiveProjects();
-        resetActiveContexts();
-        resetActiveTags();
-        resetActivePriorities();
-        setSearchTerm("");
-      },
+      x: resetFilters,
     }),
-    [
-      resetActiveContexts,
-      resetActivePriorities,
-      resetActiveProjects,
-      resetActiveTags,
-      setSearchTerm,
-    ],
+    [resetFilters],
   );
 
   useHotkeys(hotkeys);
@@ -62,8 +84,8 @@ export function Filter() {
   return (
     <Stack spacing={2}>
       {Object.keys(priorities).length > 0 && (
-        <Box>
-          <Heading gutterBottom>{t("Priorities")}</Heading>
+        <FormControl>
+          <FormLabel component="div">{t("Priorities")}</FormLabel>
           <ChipList
             multiple={filterType === "OR"}
             items={priorities}
@@ -71,33 +93,33 @@ export function Filter() {
             onClick={togglePriority}
             color="priority"
           />
-        </Box>
+        </FormControl>
       )}
       {Object.keys(projects).length > 0 && (
-        <Box>
-          <Heading gutterBottom>{t("Projects")}</Heading>
+        <FormControl>
+          <FormLabel component="div">{t("Projects")}</FormLabel>
           <ChipList
             items={projects}
             activeItems={activeProjects}
             onClick={toggleProject}
             color="primary"
           />
-        </Box>
+        </FormControl>
       )}
       {Object.keys(contexts).length > 0 && (
-        <Box>
-          <Heading gutterBottom>{t("Contexts")}</Heading>
+        <FormControl>
+          <FormLabel component="div">{t("Contexts")}</FormLabel>
           <ChipList
             items={contexts}
             activeItems={activeContexts}
             onClick={toggleContext}
             color="success"
           />
-        </Box>
+        </FormControl>
       )}
       {Object.keys(tags).length > 0 && (
-        <Box>
-          <Heading gutterBottom>{t("Tags")}</Heading>
+        <FormControl>
+          <FormLabel component="div">{t("Tags")}</FormLabel>
           <ChipList
             items={Object.keys(tags).reduce<Record<string, number>>(
               (acc, key) => {
@@ -110,11 +132,18 @@ export function Filter() {
             onClick={toggleTag}
             color="warning"
           />
-        </Box>
+        </FormControl>
+      )}
+      {!defaultFilter && (
+        <Stack alignItems="flex-end">
+          <Link fontSize="small" onClick={resetFilters}>
+            {t("Reset filters")}
+          </Link>
+        </Stack>
       )}
       {showSortBy && (
-        <Box>
-          <Heading gutterBottom>{t("Filter type")}</Heading>
+        <FormControl>
+          <FormLabel>{t("Filter type")}</FormLabel>
           <Select
             defaultValue="strict"
             value={filterType}
@@ -128,21 +157,25 @@ export function Filter() {
             <Option value="AND">{t("AND")}</Option>
             <Option value="OR">{t("OR")}</Option>
           </Select>
-        </Box>
+        </FormControl>
       )}
       {showSortBy && (
-        <Box>
-          <Heading
-            gutterBottom
-            disabled={taskView === "timeline"}
-            helperText={
-              taskView === "timeline"
-                ? t("Disabled when timeline view is active")
-                : undefined
-            }
-          >
-            {t("Sort by")}
-          </Heading>
+        <FormControl disabled={taskView === "timeline"}>
+          <FormLabel>
+            {t("Sort by")}{" "}
+            {taskView === "timeline" && (
+              <Tooltip
+                disableTouchListener={false}
+                enterTouchDelay={0}
+                leaveTouchDelay={2000}
+                title={
+                  <Trans i18nKey="Disabled when timeline view is active" />
+                }
+              >
+                <HelpOutlineIcon fontSize="small" />
+              </Tooltip>
+            )}
+          </FormLabel>
           <Select
             disabled={taskView === "timeline"}
             defaultValue=""
@@ -161,12 +194,11 @@ export function Filter() {
             <Option value="project">{t("Project")}</Option>
             <Option value="tag">{t("Tag")}</Option>
           </Select>
-        </Box>
+        </FormControl>
       )}
-      <Box>
-        <Heading>{t("Status")}</Heading>
+      <FormControl>
+        <FormLabel>{t("Status")}</FormLabel>
         <Checkbox
-          sx={{ mt: 1 }}
           checked={hideCompletedTasks}
           onChange={(event) => setHideCompletedTasks(event.target.checked)}
           label={t("Hide completed tasks")}
@@ -176,7 +208,7 @@ export function Filter() {
             },
           }}
         />
-      </Box>
+      </FormControl>
     </Stack>
   );
 }

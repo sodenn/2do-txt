@@ -1,6 +1,6 @@
 import { ExpandableSearch } from "@/components/ExpandableSearch";
 import { useFilterStore } from "@/stores/filter-store";
-import { useHotkeys } from "@/utils/useHotkeys";
+import { HotkeyListeners, useHotkeys } from "@/utils/useHotkeys";
 import { Box } from "@mui/joy";
 import { ChangeEvent, useMemo, useRef } from "react";
 
@@ -24,7 +24,14 @@ export function SearchBar({ onExpand }: SearchBarProps) {
   };
 
   const hotkeys = useMemo(
-    () => ({ f: () => searchInputRef.current?.focus() }),
+    (): HotkeyListeners => ({
+      f: (event) => {
+        event.preventDefault();
+        setTimeout(() => {
+          searchInputRef.current?.focus();
+        });
+      },
+    }),
     [],
   );
 

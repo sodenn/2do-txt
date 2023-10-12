@@ -59,7 +59,7 @@ interface DialogStyles {
 }
 
 const SafeArea = styled("div", {
-  shouldForwardProp: (prop) => prop !== "fullWidth",
+  shouldForwardProp: (prop) => prop !== "fullWidth" && prop !== "fullScreen",
 })<{ fullWidth?: boolean }>(({ fullWidth }) => ({
   paddingRight: "env(safe-area-inset-right)",
   paddingLeft: "env(safe-area-inset-left)",
@@ -69,12 +69,16 @@ const SafeArea = styled("div", {
   width: fullWidth ? "100%" : "unset",
 }));
 
-const SafeModalClose = styled(ModalClose)({
-  marginRight: "env(safe-area-inset-right)",
-  marginLeft: "env(safe-area-inset-left)",
-  marginBottom: "env(safe-area-inset-bottom)",
-  marginTop: "env(safe-area-inset-top)",
-});
+const SafeModalClose = styled(ModalClose, {
+  shouldForwardProp: (prop) => prop !== "fullScreen",
+})<{ fullScreen: boolean }>(({ fullScreen }) => ({
+  ...(fullScreen && {
+    marginRight: "env(safe-area-inset-right)",
+    marginLeft: "env(safe-area-inset-left)",
+    marginBottom: "env(safe-area-inset-bottom)",
+    marginTop: "env(safe-area-inset-top)",
+  }),
+}));
 
 const dialogStyles: DialogStyles = {
   fade: {
@@ -337,11 +341,13 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
               ...styles.dialogTransition[state],
               ...sx,
             }}
+            aria-hidden={state !== "entered"}
             {...other}
           >
             {renderModal && (
-              <SafeArea fullWidth={fullWidth}>
+              <>
                 <SafeModalClose
+                  fullScreen={fullScreen}
                   aria-label="Close"
                   sx={
                     fullScreen
@@ -354,10 +360,12 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
                   }
                 />
                 {fullScreen && (
-                  <FullScreenLayout>{childrenClone}</FullScreenLayout>
+                  <SafeArea fullWidth={fullWidth}>
+                    <FullScreenLayout>{childrenClone}</FullScreenLayout>
+                  </SafeArea>
                 )}
                 {!fullScreen && <CenterLayout>{childrenClone}</CenterLayout>}
-              </SafeArea>
+              </>
             )}
           </ModalDialog>
         </Modal>

@@ -132,15 +132,15 @@
   "Keyboard Shortcuts": "Tastatürkürzel",
   "Key": "Taste",
   "F": "Aufgaben durchsuchen",
-  "X": "Aktive Filter löschen",
-  "M": "Menü öffnen (Filter + Einstellungen)",
+  "X": "Filter zurücksetzen",
+  "M": "Menü öffnen (Filter | Einstellungen)",
   "N": "Neue Aufgabe erstellen",
   "E": "Ausgewählte Aufgabe bearbeiten",
   "D": "Ausgewählte Aufgabe löschen",
   "T": "Download todo.txt",
   "Task view": "Aufgabenansicht",
-  "List view": "Listenansicht",
-  "Timeline view": "Timeline Ansicht",
+  "List": "Liste",
+  "Timeline": "Timeline",
   "Disabled when timeline view is active": "Deaktiviert wenn Timeline Ansicht aktiv ist",
   "Add new task": "Neue Aufgabe",
   "Today": "Heute",
@@ -164,5 +164,6 @@
   "An error has occurred": "Leider ist ein Problem aufgetreten 🫤",
   "Pull to refresh": "Ziehen zum Aktualisieren",
   "Release to refresh": "Loslassen zum Aktualisieren",
-  "Refreshing": "Aktualisiere"
+  "Refreshing": "Aktualisiere",
+  "Reset filters": "Filter zurücksetzen"
 }

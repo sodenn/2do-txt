@@ -35,13 +35,14 @@ export function ChipList(props: ChipListProps) {
           <Badge
             badgeContent={usages === 1 ? 0 : usages}
             color="primary"
+            badgeInset={2}
             anchorOrigin={{
               vertical: "bottom",
               horizontal: "right",
             }}
           >
             <Chip
-              sx={{ px: 2 }}
+              size="lg"
               disabled={
                 multiple
                   ? false

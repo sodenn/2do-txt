@@ -8,27 +8,27 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("Archiving", () => {
-  test("should allow me to archive tasks automatically", async ({ page }) => {
+  test("should archive tasks automatically", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
-    await page.getByRole("combobox", { name: "Select archive mode" }).click();
-    await page.getByRole("option", { name: "Archive automatically" }).click();
+    await page.getByLabel("Select archive mode").click();
+    await page.getByLabel("Archive automatically").click();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
-  test("should allow me to archive tasks manually", async ({ page }) => {
-    await page.getByRole("combobox", { name: "Select archive mode" }).click();
-    await page.getByRole("option", { name: "Archive manually" }).click();
+  test("should archive tasks manually", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
-    await page.getByRole("button", { name: "Archive now" }).click();
+    await page.getByLabel("Select archive mode").click();
+    await page.getByLabel("Archive manually").click();
+    await page.getByLabel("Archive now").click();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
-  test("should allow me to restore archived tasks", async ({ page }) => {
-    await page.getByRole("combobox", { name: "Select archive mode" }).click();
-    await page.getByRole("option", { name: "Archive automatically" }).click();
+  test("should restore archived tasks", async ({ page }) => {
+    await page.getByLabel("Select archive mode").click();
+    await page.getByLabel("Archive automatically").click();
     await expect(page.getByTestId("task")).toHaveCount(6);
-    await page.getByRole("combobox", { name: "Select archive mode" }).click();
-    await page.getByRole("option", { name: "No archiving" }).click();
+    await page.getByLabel("Select archive mode").click();
+    await page.getByLabel("No archiving").click();
     await expect(page.getByTestId("task")).toHaveCount(8);
   });
 });

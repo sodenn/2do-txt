@@ -13,10 +13,11 @@
     "url": "https://github.com/sodenn/2do-txt.git"
   },
   "scripts": {
-    "start": "vite",
+    "start": "vite --host",
     "build": "vite build",
     "test": "vitest run",
-    "test:e2e": "playwright test",
+    "e2e": "playwright test",
+    "e2e-update": "playwright test screenshots.spec.ts --update-snapshots",
     "lint": "eslint . --max-warnings=0 --ext .ts,.tsx",
     "fmt:check": "prettier --check ./src",
     "fmt": "prettier --write ./src",

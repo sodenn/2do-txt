@@ -14,12 +14,16 @@ import { useTranslation } from "react-i18next";
 
 const StyledListItem = styled(ListItem, {
   shouldForwardProp: (prop) => prop !== "menuOpen",
-})<{ menuOpen: boolean }>(({ menuOpen }) => ({
+})<{ menuOpen: boolean }>(({ menuOpen, theme }) => ({
   ".MuiMenuButton-root": {
+    right: 2,
     visibility: menuOpen ? "visible" : "hidden",
     backgroundColor: menuOpen
-      ? "var(--joy-palette-neutral-plainActiveBg)"
+      ? "var(--joy-palette-neutral-plainHoverBg)"
       : undefined,
+  },
+  ".MuiListItem-startAction": {
+    left: theme.spacing(0.5),
   },
   "@media (pointer: coarse)": {
     ".MuiMenuButton-root": {
@@ -31,10 +35,8 @@ const StyledListItem = styled(ListItem, {
   },
 }));
 
-const StyledListItemButton = styled(ListItemButton)({
-  "&:focus-visible": {
-    zIndex: "0",
-  },
+const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
+  borderRadius: theme.radius.sm,
   "@media (pointer: coarse)": {
     '&:not(.Mui-selected, [aria-selected="true"]):active': {
       backgroundColor: "inherit",
@@ -43,7 +45,7 @@ const StyledListItemButton = styled(ListItemButton)({
       backgroundColor: "inherit",
     },
   },
-});
+}));
 
 const DateContainer = styled("div")({
   opacity: 0.5,
@@ -103,9 +105,6 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
       >
         <StyledListItemButton
           ref={ref}
-          sx={{
-            borderRadius: "sm",
-          }}
           onClick={handleButtonClick}
           data-testid="task-button"
         >
