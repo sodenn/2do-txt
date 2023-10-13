@@ -14,6 +14,7 @@ import {
   Tabs,
   TabsProps,
   styled,
+  tabClasses,
   useTheme,
 } from "@mui/joy";
 import { useColorScheme } from "@mui/joy/styles/CssVarsProvider";
@@ -66,29 +67,10 @@ const Main = styled("main", {
   },
 }));
 
-const SaveTabList = styled(TabList)(({ theme }) => ({
-  flex: "none",
-  paddingTop: "env(safe-area-inset-top)",
-  paddingLeft: "env(safe-area-inset-left)",
-  ".MuiTab-root:first-of-type": {
-    marginLeft: theme.spacing(1),
-  },
-  ".MuiTab-root:last-of-type": {
-    marginRight: theme.spacing(1),
-  },
-}));
-
 const SaveAreaContent = styled(Box)({
   paddingBottom: "env(safe-area-inset-bottom)",
   paddingLeft: "env(safe-area-inset-left)",
 });
-
-const StyledTab = styled(Tab)(({ theme }) => ({
-  "&.Mui-selected": {
-    backgroundColor: "inherit",
-    color: theme.vars.palette.primary.plainColor,
-  },
-}));
 
 export function MainContainer({ children }: PropsWithChildren) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -193,22 +175,46 @@ export function SideSheet() {
       onClose={closeSideSheet}
     >
       <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
-        <SaveTabList
+        <TabList
           size="md"
           sx={{
             "--ListItem-minHeight": (theme) =>
               `calc(2.25rem + ${theme.spacing(2)})`,
+            flex: "initial",
+            paddingTop: "env(safe-area-inset-top)",
+            paddingLeft: "env(safe-area-inset-left)",
+            [`&& .${tabClasses.root}`]: {
+              bgcolor: "transparent",
+              "&:hover": {
+                bgcolor: "transparent",
+              },
+              ":first-of-type": {
+                ml: 1,
+              },
+              ":last-of-type": {
+                mr: 1,
+              },
+              [`&.${tabClasses.selected}`]: {
+                color: "primary.plainColor",
+                "&::after": {
+                  height: 2,
+                  borderTopLeftRadius: 3,
+                  borderTopRightRadius: 3,
+                  bgcolor: "primary.500",
+                },
+              },
+            },
           }}
         >
           {!hideFilter && (
-            <StyledTab value="filter" aria-label="Filter">
+            <Tab value="filter" aria-label="Filter">
               {t("Filter")}
-            </StyledTab>
+            </Tab>
           )}
-          <StyledTab value="settings" aria-label="Settings">
+          <Tab value="settings" aria-label="Settings">
             {t("Settings")}
-          </StyledTab>
-        </SaveTabList>
+          </Tab>
+        </TabList>
         <SaveAreaContent sx={{ overflowY: "auto", flex: "auto" }}>
           <TabPanel value="filter">
             <Filter />

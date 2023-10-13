@@ -87,7 +87,6 @@ export function Filter() {
         <FormControl>
           <FormLabel component="div">{t("Priorities")}</FormLabel>
           <ChipList
-            multiple={filterType === "OR"}
             items={priorities}
             activeItems={activePriorities}
             onClick={togglePriority}

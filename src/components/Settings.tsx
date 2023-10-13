@@ -9,6 +9,7 @@ import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useCloudStorage } from "@/utils/CloudStorage";
 import { useNotification } from "@/utils/useNotification";
 import { Checkbox, FormControl, FormLabel, Stack } from "@mui/joy";
+import { Box } from "@mui/system";
 import { useTranslation } from "react-i18next";
 
 export function Settings() {
@@ -51,8 +52,10 @@ export function Settings() {
       <ThemeModeSelect />
       <TaskViewSelect />
       <LanguageSelect />
-      <FormControl>
-        <FormLabel component="div">{t("Dates")}</FormLabel>
+      <Box>
+        <FormLabel sx={{ mb: "0.375rem" }} component="div">
+          {t("Dates")}
+        </FormLabel>
         <Stack spacing={1} id="dates">
           <Checkbox
             checked={createCreationDate}
@@ -65,7 +68,7 @@ export function Settings() {
             onChange={() => toggleCreateCompletionDate()}
           />
         </Stack>
-      </FormControl>
+      </Box>
       <FormControl>
         <FormLabel>{t("Notifications")}</FormLabel>
         <Checkbox

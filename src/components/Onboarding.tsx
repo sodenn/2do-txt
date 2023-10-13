@@ -30,7 +30,13 @@ export function Onboarding() {
     <StyledBox sx={{ display: taskLists.length === 0 ? "flex" : "none" }}>
       <Stack spacing={1}>
         <Box sx={{ py: 1, textAlign: "center" }}>
-          <img src={logo} alt="Logo" height={96} style={{ opacity: 0.2 }} />
+          <img
+            src={logo}
+            draggable={false}
+            alt="Logo"
+            height={96}
+            style={{ opacity: 0.2 }}
+          />
         </Box>
         <Typography
           sx={{ textAlign: "center" }}
