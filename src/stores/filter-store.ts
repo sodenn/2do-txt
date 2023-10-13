@@ -118,11 +118,21 @@ export function initializeFilterStore(
       setPreferencesItem("filter-type", filterType);
     },
     togglePriority: (priority: string) =>
-      set((state) => ({
-        activePriorities: state.activePriorities.includes(priority)
-          ? state.activePriorities.filter((i) => i !== priority)
-          : [...state.activePriorities, priority],
-      })),
+      set((state) => {
+        if (state.filterType === "AND" && state.activePriorities.length > 0) {
+          return {
+            activePriorities: state.activePriorities.includes(priority)
+              ? []
+              : [priority],
+          };
+        } else {
+          return {
+            activePriorities: state.activePriorities.includes(priority)
+              ? state.activePriorities.filter((i) => i !== priority)
+              : [...state.activePriorities, priority],
+          };
+        }
+      }),
     resetActivePriorities: () => set({ activePriorities: [] }),
     toggleProject: (project: string) =>
       set((state) => ({
