@@ -81,7 +81,7 @@ export function MainContainer({ children }: PropsWithChildren) {
     const element = ref.current;
     if (element) {
       const listener = () => {
-        setTop(element.scrollTop === 0);
+        setTop(element.scrollTop);
       };
       element.addEventListener("scroll", listener);
       return () => {

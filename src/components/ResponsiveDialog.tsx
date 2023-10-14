@@ -61,36 +61,6 @@ interface DialogStyles {
 type CloseButtonProps = Pick<ResponsiveDialogProps, "onClose"> &
   ResponsiveDialogChild;
 
-const SafeArea = styled("div", {
-  shouldForwardProp: (prop) => prop !== "fullWidth" && prop !== "fullScreen",
-})<{ fullWidth?: boolean }>(({ fullWidth }) => ({
-  paddingRight: "env(safe-area-inset-right)",
-  paddingLeft: "env(safe-area-inset-left)",
-  paddingBottom: "env(safe-area-inset-bottom)",
-  paddingTop: "env(safe-area-inset-top)",
-  overflow: "auto",
-  width: fullWidth ? "100%" : "unset",
-}));
-
-function CloseButton({ onClose, fullScreen }: CloseButtonProps) {
-  return (
-    <IconButton
-      size="sm"
-      variant="soft"
-      color="neutral"
-      onClick={(event) => onClose?.(event, "closeClick")}
-      aria-label="Close"
-      sx={{
-        gridArea: "close",
-        ...(fullScreen && { ml: 1 }),
-        ...(!fullScreen && { mr: 2, mt: 2 }),
-      }}
-    >
-      <CloseIcon />
-    </IconButton>
-  );
-}
-
 const dialogStyles: DialogStyles = {
   fade: {
     modal: {
@@ -144,6 +114,33 @@ const dialogStyles: DialogStyles = {
   },
 };
 
+const SafeArea = styled("div")({
+  paddingRight: "env(safe-area-inset-right)",
+  paddingLeft: "env(safe-area-inset-left)",
+  paddingBottom: "env(safe-area-inset-bottom)",
+  paddingTop: "env(safe-area-inset-top)",
+  overflow: "auto",
+});
+
+function CloseButton({ onClose, fullScreen }: CloseButtonProps) {
+  return (
+    <IconButton
+      size="sm"
+      variant="soft"
+      color="neutral"
+      onClick={(event) => onClose?.(event, "closeClick")}
+      aria-label="Close"
+      sx={{
+        gridArea: "close",
+        ...(fullScreen && { ml: 1.5, mb: 1 }),
+        ...(!fullScreen && { mr: 1.5, my: 1.5 }),
+      }}
+    >
+      <CloseIcon />
+    </IconButton>
+  );
+}
+
 export function ResponsiveDialogTitle({
   children,
   fullScreen,
@@ -153,8 +150,10 @@ export function ResponsiveDialogTitle({
       fontSize="lg"
       fontWeight="lg"
       sx={{
-        ...(!fullScreen && { ml: 2, mt: 2 }),
+        ...(!fullScreen && { ml: 1.5, my: 1.5 }),
+        ...(fullScreen && { mb: 1 }),
         gridArea: "title",
+        alignSelf: "center",
       }}
     >
       {children}
@@ -162,9 +161,13 @@ export function ResponsiveDialogTitle({
   );
 }
 
-export function ResponsiveDialogContent({ children }: ResponsiveDialogChild) {
+export function ResponsiveDialogContent({
+  children,
+  fullScreen,
+}: ResponsiveDialogChild) {
   const mobileScreen = useMobileScreen();
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
+  const [divider, setDivider] = useState(false);
 
   useEffect(() => {
     addKeyboardDidShowListener((info) => {
@@ -178,6 +181,27 @@ export function ResponsiveDialogContent({ children }: ResponsiveDialogChild) {
     };
   }, [root]);
 
+  useEffect(() => {
+    if (!root) {
+      return;
+    }
+    const callback = () => {
+      const hasScrollbar = root.scrollHeight > root.clientHeight;
+      setDivider(hasScrollbar);
+    };
+    const resizeObserver = new ResizeObserver(callback);
+    const mutationObserver = new MutationObserver(callback);
+    resizeObserver.observe(root);
+    mutationObserver.observe(root, {
+      childList: true,
+      subtree: true,
+    });
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, [root]);
+
   return (
     <Box
       ref={setRoot}
@@ -185,7 +209,15 @@ export function ResponsiveDialogContent({ children }: ResponsiveDialogChild) {
         overflowY: "auto",
         overflowX: "hidden",
         gridArea: "content",
-        px: { xs: 1, sm: 2 },
+        px: 1.5,
+        pb: 1,
+        borderTopStyle: "solid",
+        borderTopWidth: 1,
+        borderColor: divider ? "var(--joy-palette-divider)" : "transparent",
+        ...(!fullScreen && {
+          borderBottomStyle: "solid",
+          borderBottomWidth: 1,
+        }),
         ...(mobileScreen && {
           height: "100%",
         }),
@@ -207,13 +239,13 @@ export function ResponsiveDialogActions({
       sx={{
         gridArea: "actions",
         ...(!fullScreen && {
-          px: 2,
-          pb: 2,
-          pt: 1,
+          px: 1.5,
+          py: 1.5,
           justifyContent: "end",
         }),
         ...(fullScreen && {
-          mr: 1,
+          mr: 1.5,
+          mb: 1,
         }),
       }}
     >
@@ -236,7 +268,7 @@ function CenterLayout({ children }: PropsWithChildren) {
           "content content"
           "actions actions"
         `,
-        gap: 1,
+        columnGap: 1.5,
       }}
     >
       {children}
@@ -258,9 +290,8 @@ function FullScreenLayout({ children }: PropsWithChildren) {
         `,
         alignItems: "center",
         position: "relative",
-        gap: 1,
+        columnGap: 1.5,
         py: 1,
-        px: 0.5,
       }}
     >
       {children}
@@ -353,7 +384,7 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
             {renderModal && (
               <>
                 {fullScreen && (
-                  <SafeArea fullWidth={fullWidth}>
+                  <SafeArea>
                     <FullScreenLayout>
                       <CloseButton onClose={onClose} fullScreen />
                       {childrenClone}

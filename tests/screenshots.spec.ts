@@ -1,7 +1,7 @@
 import { Page, expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:5173/");
+  await page.goto("http://192.168.178.47:5173/");
 });
 
 test.describe("Screenshots", () => {

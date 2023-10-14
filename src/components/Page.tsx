@@ -25,7 +25,7 @@ export function Page() {
   const top = useScrollingStore((state) => state.top);
   return (
     <FilePicker>
-      <Header divider={!top} />
+      <Header divider={top > 10} />
       <Box
         data-testid="page"
         sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
