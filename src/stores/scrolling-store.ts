@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
 interface ScrollingStoreInterface {
-  top: boolean;
-  setTop: (scrollTop: boolean) => void;
+  top: number;
+  setTop: (scrollTop: number) => void;
 }
 
 export const useScrollingStore = create<ScrollingStoreInterface>((set) => ({
-  top: true,
-  setTop: (top: boolean) => set({ top }),
+  top: 0,
+  setTop: (top: number) => set({ top }),
 }));

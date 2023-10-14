@@ -49,7 +49,7 @@ export function Header({ divider = false }: HeaderProps) {
           {taskLists.length > 0 && <AddTaskButton />}
         </Stack>
       </SafeAreaBox>
-      {divider && <Divider />}
+      <Divider sx={{ visibility: divider ? "visible" : "hidden" }} />
     </HeaderContainer>
   );
 }

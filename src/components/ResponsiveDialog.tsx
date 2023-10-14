@@ -4,9 +4,9 @@ import {
   removeAllKeyboardListeners,
 } from "@/native-api/keyboard";
 import { useMobileScreen } from "@/utils/useMobileScreen";
-import { Box, ModalDialogProps, Stack, styled } from "@mui/joy";
+import CloseIcon from "@mui/icons-material/Close";
+import { Box, IconButton, ModalDialogProps, Stack, styled } from "@mui/joy";
 import Modal, { ModalProps } from "@mui/joy/Modal";
-import ModalClose from "@mui/joy/ModalClose";
 import ModalDialog from "@mui/joy/ModalDialog";
 import Typography from "@mui/joy/Typography";
 import {
@@ -58,27 +58,8 @@ interface DialogStyles {
   slide: Styles;
 }
 
-const SafeArea = styled("div", {
-  shouldForwardProp: (prop) => prop !== "fullWidth" && prop !== "fullScreen",
-})<{ fullWidth?: boolean }>(({ fullWidth }) => ({
-  paddingRight: "env(safe-area-inset-right)",
-  paddingLeft: "env(safe-area-inset-left)",
-  paddingBottom: "env(safe-area-inset-bottom)",
-  paddingTop: "env(safe-area-inset-top)",
-  overflow: "auto",
-  width: fullWidth ? "100%" : "unset",
-}));
-
-const SafeModalClose = styled(ModalClose, {
-  shouldForwardProp: (prop) => prop !== "fullScreen",
-})<{ fullScreen: boolean }>(({ fullScreen }) => ({
-  ...(fullScreen && {
-    marginRight: "env(safe-area-inset-right)",
-    marginLeft: "env(safe-area-inset-left)",
-    marginBottom: "env(safe-area-inset-bottom)",
-    marginTop: "env(safe-area-inset-top)",
-  }),
-}));
+type CloseButtonProps = Pick<ResponsiveDialogProps, "onClose"> &
+  ResponsiveDialogChild;
 
 const dialogStyles: DialogStyles = {
   fade: {
@@ -133,6 +114,33 @@ const dialogStyles: DialogStyles = {
   },
 };
 
+const SafeArea = styled("div")({
+  paddingRight: "env(safe-area-inset-right)",
+  paddingLeft: "env(safe-area-inset-left)",
+  paddingBottom: "env(safe-area-inset-bottom)",
+  paddingTop: "env(safe-area-inset-top)",
+  overflow: "auto",
+});
+
+function CloseButton({ onClose, fullScreen }: CloseButtonProps) {
+  return (
+    <IconButton
+      size="sm"
+      variant="soft"
+      color="neutral"
+      onClick={(event) => onClose?.(event, "closeClick")}
+      aria-label="Close"
+      sx={{
+        gridArea: "close",
+        ...(fullScreen && { ml: 1.5, mb: 1 }),
+        ...(!fullScreen && { mr: 1.5, my: 1.5 }),
+      }}
+    >
+      <CloseIcon />
+    </IconButton>
+  );
+}
+
 export function ResponsiveDialogTitle({
   children,
   fullScreen,
@@ -142,11 +150,10 @@ export function ResponsiveDialogTitle({
       fontSize="lg"
       fontWeight="lg"
       sx={{
-        flex: 1,
-        pt: "20px",
-        pl: fullScreen ? "52px" : "20px",
-        pr: !fullScreen ? "55px" : undefined,
+        ...(!fullScreen && { ml: 1.5, my: 1.5 }),
+        ...(fullScreen && { mb: 1 }),
         gridArea: "title",
+        alignSelf: "center",
       }}
     >
       {children}
@@ -154,9 +161,13 @@ export function ResponsiveDialogTitle({
   );
 }
 
-export function ResponsiveDialogContent({ children }: ResponsiveDialogChild) {
+export function ResponsiveDialogContent({
+  children,
+  fullScreen,
+}: ResponsiveDialogChild) {
   const mobileScreen = useMobileScreen();
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
+  const [divider, setDivider] = useState(false);
 
   useEffect(() => {
     addKeyboardDidShowListener((info) => {
@@ -170,6 +181,27 @@ export function ResponsiveDialogContent({ children }: ResponsiveDialogChild) {
     };
   }, [root]);
 
+  useEffect(() => {
+    if (!root) {
+      return;
+    }
+    const callback = () => {
+      const hasScrollbar = root.scrollHeight > root.clientHeight;
+      setDivider(hasScrollbar);
+    };
+    const resizeObserver = new ResizeObserver(callback);
+    const mutationObserver = new MutationObserver(callback);
+    resizeObserver.observe(root);
+    mutationObserver.observe(root, {
+      childList: true,
+      subtree: true,
+    });
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, [root]);
+
   return (
     <Box
       ref={setRoot}
@@ -177,7 +209,15 @@ export function ResponsiveDialogContent({ children }: ResponsiveDialogChild) {
         overflowY: "auto",
         overflowX: "hidden",
         gridArea: "content",
-        px: "20px",
+        px: 1.5,
+        pb: 1,
+        borderTopStyle: "solid",
+        borderTopWidth: 1,
+        borderColor: divider ? "var(--joy-palette-divider)" : "transparent",
+        ...(!fullScreen && {
+          borderBottomStyle: "solid",
+          borderBottomWidth: 1,
+        }),
         ...(mobileScreen && {
           height: "100%",
         }),
@@ -196,18 +236,16 @@ export function ResponsiveDialogActions({
     <Stack
       direction="row"
       spacing={1}
-      justifyContent="end"
       sx={{
         gridArea: "actions",
         ...(!fullScreen && {
-          px: "20px",
-          pb: "20px",
+          px: 1.5,
+          py: 1.5,
+          justifyContent: "end",
         }),
         ...(fullScreen && {
-          position: "relative",
-          top: "-3px", // align with modal close button
-          pt: "20px",
-          pr: "20px",
+          mr: 1.5,
+          mb: 1,
         }),
       }}
     >
@@ -223,14 +261,14 @@ function CenterLayout({ children }: PropsWithChildren) {
         height: "100%",
         overflow: "hidden",
         display: "grid",
-        gridTemplateColumns: "1fr",
+        gridTemplateColumns: "1fr auto",
         gridTemplateRows: "auto 1fr auto",
         gridTemplateAreas: `
-          "title"
-          "content"
-          "actions"
+          "title close"
+          "content content"
+          "actions actions"
         `,
-        gap: 2,
+        columnGap: 1.5,
       }}
     >
       {children}
@@ -244,16 +282,16 @@ function FullScreenLayout({ children }: PropsWithChildren) {
       sx={{
         height: "100%",
         display: "grid",
-        gridTemplateColumns: "1fr auto",
+        gridTemplateColumns: "auto 1fr auto",
         gridTemplateRows: "auto 1fr",
         gridTemplateAreas: `
-          "title actions"
-          "content content"
+          "close title actions"
+          "content content content"
         `,
-        alignItems: "start",
+        alignItems: "center",
         position: "relative",
-        top: "-4px", // align with modal close button
-        gap: 1,
+        columnGap: 1.5,
+        py: 1,
       }}
     >
       {children}
@@ -331,7 +369,6 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
             layout={fullScreen ? "fullscreen" : "center"}
             sx={{
               p: 0, // define padding on title, content and action instead
-              // @ts-ignore
               ...(!fullScreen && {
                 width: (theme) =>
                   fullWidth ? `calc(100% - 2 * ${theme.spacing(2)})` : "unset",
@@ -346,25 +383,20 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
           >
             {renderModal && (
               <>
-                <SafeModalClose
-                  fullScreen={fullScreen}
-                  aria-label="Close"
-                  sx={
-                    fullScreen
-                      ? {
-                          top: "14px",
-                          right: "unset",
-                          left: "8px",
-                        }
-                      : { top: "16px" }
-                  }
-                />
                 {fullScreen && (
-                  <SafeArea fullWidth={fullWidth}>
-                    <FullScreenLayout>{childrenClone}</FullScreenLayout>
+                  <SafeArea>
+                    <FullScreenLayout>
+                      <CloseButton onClose={onClose} fullScreen />
+                      {childrenClone}
+                    </FullScreenLayout>
                   </SafeArea>
                 )}
-                {!fullScreen && <CenterLayout>{childrenClone}</CenterLayout>}
+                {!fullScreen && (
+                  <CenterLayout>
+                    <CloseButton onClose={onClose} fullScreen={false} />
+                    {childrenClone}
+                  </CenterLayout>
+                )}
               </>
             )}
           </ModalDialog>

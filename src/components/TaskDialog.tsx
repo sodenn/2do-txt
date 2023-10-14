@@ -97,7 +97,9 @@ export function TaskDialog() {
   );
 
   const handleEnter = () => {
-    setValue(rawText(createCreationDate, task));
+    const value = rawText(createCreationDate, task);
+    setValue(value);
+    setFormDisabled(!task?.body);
     setSelectedTaskList(() => {
       if (task) {
         return findTaskListByTaskId(task._id);
