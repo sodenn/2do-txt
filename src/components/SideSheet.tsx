@@ -17,7 +17,6 @@ import {
   tabClasses,
   useTheme,
 } from "@mui/joy";
-import { useColorScheme } from "@mui/joy/styles/CssVarsProvider";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -100,7 +99,6 @@ export function MainContainer({ children }: PropsWithChildren) {
 export function SideSheet() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { mode } = useColorScheme();
   const persistent = useMediaQuery(theme.breakpoints.up("lg"));
   const platform = usePlatformStore((state) => state.platform);
   const {
@@ -164,10 +162,7 @@ export function SideSheet() {
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-            borderRight:
-              mode === "light"
-                ? "1px solid var(--joy-palette-neutral-300)"
-                : "1px solid var(--joy-palette-neutral-700)",
+            borderRight: "1px solid var(--joy-palette-divider)",
           },
         }),
       }}
