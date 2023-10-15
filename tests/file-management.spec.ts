@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "fs";
 
 const withoutFile = [
-  "should display an error notification if a file cannot be found",
+  "should display an error notification if a todo.txt file cannot be found",
 ];
 
 test.beforeEach(async ({ page }, testInfo) => {
