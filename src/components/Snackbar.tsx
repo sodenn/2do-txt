@@ -35,7 +35,10 @@ interface SnackbarOptions {
   renderAction?: (closeSnackbar: () => void) => ReactNode;
 }
 
-type SnackbarItem = Pick<SnackbarOptions, "title" | "message">;
+interface SnackbarItem
+  extends Pick<SnackbarOptions, "title" | "message" | "loading" | "close"> {
+  id: string | number;
+}
 
 const icons = {
   primary: <InfoIcon />,
@@ -91,14 +94,13 @@ export function SnackbarProvider({ children }: PropsWithChildren) {
         return -1;
       }
       const icon = icons[color as keyof typeof icons];
-      const newItem = { title, message };
+      const newItem: SnackbarItem = { title, message, loading, close, id: -1 };
       items.current.push(newItem);
-      let id: string | number = -1;
       toast.custom(
         (t) => {
-          id = t;
+          newItem.id = t;
           const handleDismiss = () => {
-            toast.dismiss(t);
+            toast.dismiss(newItem.id);
             items.current = items.current.filter((item) => item !== newItem);
           };
           return (
@@ -153,13 +155,21 @@ export function SnackbarProvider({ children }: PropsWithChildren) {
           },
         },
       );
-      return id;
+      return newItem.id;
     },
     [items, mobileScreen],
   );
 
   const closeSnackbar = useCallback((id: string | number) => {
-    toast.dismiss(id);
+    const item = items.current.find((item) => item.id === id);
+    items.current = items.current.filter((item) => item.id !== id);
+    const dismissTimeout = item?.loading && !item?.close;
+    setTimeout(
+      () => {
+        toast.dismiss(id);
+      },
+      dismissTimeout ? 500 : 0,
+    );
   }, []);
 
   const value = useMemo(

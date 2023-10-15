@@ -164,10 +164,7 @@ export function SideSheet() {
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-            borderRight:
-              mode === "light"
-                ? "1px solid var(--joy-palette-neutral-300)"
-                : "1px solid var(--joy-palette-neutral-700)",
+            borderRight: "1px solid var(--joy-palette-divider)",
           },
         }),
       }}
