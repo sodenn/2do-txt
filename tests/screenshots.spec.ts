@@ -16,9 +16,22 @@ test.describe("Screenshots", () => {
     await expect(page).toHaveScreenshot();
   });
 
+  test("should take a screenshot of a empty task list", async ({ page }) => {
+    await createEmptyFile(page);
+    await expect(page).toHaveScreenshot();
+  });
+
   test("should take a screenshot of the task timeline", async ({ page }) => {
     await changeToTimelineView(page);
     await selectFile(page);
+    await expect(page).toHaveScreenshot();
+  });
+
+  test("should take a screenshot of a empty task timeline", async ({
+    page,
+  }) => {
+    await changeToTimelineView(page);
+    await createEmptyFile(page);
     await expect(page).toHaveScreenshot();
   });
 
@@ -36,6 +49,11 @@ test.describe("Screenshots", () => {
 async function selectFile(page: Page) {
   await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
   await expect(page.getByTestId("task-list")).toBeVisible();
+}
+
+async function createEmptyFile(page: Page) {
+  await page.getByLabel("Create task").click();
+  await page.getByTestId("task-dialog").getByLabel("Close").click();
 }
 
 async function changeToTimelineView(page: Page) {

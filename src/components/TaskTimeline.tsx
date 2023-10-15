@@ -237,6 +237,7 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
           tabIndex={-1}
           sx={{
             height: "var(--IconButton-size)",
+            pr: 2,
           }}
           onClick={handleClick}
         >
