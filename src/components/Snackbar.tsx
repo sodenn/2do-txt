@@ -165,7 +165,7 @@ export function SnackbarProvider({ children }: PropsWithChildren) {
       );
       return newItem.id;
     },
-    [items, mobileScreen],
+    [mobileScreen],
   );
 
   const closeSnackbar = useCallback((id: string | number) => {
