@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-const withoutFile = ["should not show the search bar when no files are open"];
+const withoutFile = [
+  "should not show the search bar when no files are open",
+  "should not show the search field if no todo.txt files are open",
+];
 
 test.beforeEach(async ({ page }, testInfo) => {
   await page.goto("http://localhost:5173");
