@@ -49,6 +49,7 @@ export function ConfirmationDialog() {
         {buttons?.map((button) => (
           <Button
             key={button.text}
+            color={button.color}
             onClick={() => handleClick(button.handler)}
             aria-label={button.text}
           >

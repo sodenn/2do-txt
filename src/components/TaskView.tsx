@@ -76,10 +76,8 @@ export function TaskView() {
           content: t("Are you sure you want to delete this task?"),
           buttons: [
             {
-              text: t("Cancel"),
-            },
-            {
-              text: t("Delete task"),
+              text: t("Delete"),
+              color: "danger",
               handler: () => {
                 deleteTask(task);
               },

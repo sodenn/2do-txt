@@ -165,5 +165,6 @@
   "Pull to refresh": "Ziehen zum Aktualisieren",
   "Release to refresh": "Loslassen zum Aktualisieren",
   "Refreshing": "Aktualisiere",
-  "Reset filters": "Filter zurücksetzen"
+  "Reset filters": "Filter zurücksetzen",
+  "File already exists": "Datei existiert bereits"
 }

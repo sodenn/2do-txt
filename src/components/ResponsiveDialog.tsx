@@ -133,7 +133,7 @@ function CloseButton({ onClose, fullScreen }: CloseButtonProps) {
       sx={{
         gridArea: "close",
         ...(fullScreen && { ml: 1.5, mb: 1 }),
-        ...(!fullScreen && { mr: 1.5, my: 1.5 }),
+        ...(!fullScreen && { mr: 2, my: 2 }),
       }}
     >
       <CloseIcon />
@@ -150,7 +150,7 @@ export function ResponsiveDialogTitle({
       fontSize="lg"
       fontWeight="lg"
       sx={{
-        ...(!fullScreen && { ml: 1.5, my: 1.5 }),
+        ...(!fullScreen && { ml: 2, my: 2 }),
         ...(fullScreen && { mb: 1 }),
         gridArea: "title",
         alignSelf: "center",
@@ -209,14 +209,17 @@ export function ResponsiveDialogContent({
         overflowY: "auto",
         overflowX: "hidden",
         gridArea: "content",
-        px: 1.5,
         pb: 1,
         borderTopStyle: "solid",
         borderTopWidth: 1,
         borderColor: divider ? "var(--joy-palette-divider)" : "transparent",
         ...(!fullScreen && {
+          px: 2,
           borderBottomStyle: "solid",
           borderBottomWidth: 1,
+        }),
+        ...(fullScreen && {
+          px: 1.5,
         }),
         ...(mobileScreen && {
           height: "100%",
@@ -239,8 +242,8 @@ export function ResponsiveDialogActions({
       sx={{
         gridArea: "actions",
         ...(!fullScreen && {
-          px: 1.5,
-          py: 1.5,
+          px: 2,
+          py: 2,
           justifyContent: "end",
         }),
         ...(fullScreen && {

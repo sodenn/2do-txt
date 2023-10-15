@@ -494,6 +494,7 @@ export function useTask() {
           try {
             openConfirmationDialog({
               onClose: () => resolve(undefined),
+              title: t("File already exists"),
               content: (
                 <Trans
                   i18nKey="todo.txt already exists. Do you want to replace it"
@@ -501,12 +502,6 @@ export function useTask() {
                 />
               ),
               buttons: [
-                {
-                  text: t("Cancel"),
-                  handler: () => {
-                    resolve(undefined);
-                  },
-                },
                 {
                   text: t("Replace"),
                   handler: async () => {
