@@ -89,6 +89,17 @@ const Root = styled(Box)(({ theme }) => ({
   },
 }));
 
+const dateColumnWidth = 120;
+
+const TaskContainer = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    left: -2, // align with menu button on mobile
+  },
+  [theme.breakpoints.up("sm")]: {
+    left: -(dateColumnWidth / 2), // ignore date column when centering the timeline
+  },
+}));
+
 export function TaskTimeline(props: TaskTimelineProps) {
   const {
     tasks,
@@ -144,7 +155,7 @@ export function TaskTimeline(props: TaskTimelineProps) {
 
   return (
     <Root>
-      <Box data-testid="task-list" ref={parent} sx={{ left: -2 }}>
+      <TaskContainer data-testid="task-list" ref={parent}>
         {tasks.map((task, index) => (
           <div key={task._id}>
             {!task._timelineFlags.firstOfToday && (
@@ -174,7 +185,7 @@ export function TaskTimeline(props: TaskTimelineProps) {
           </div>
         ))}
         {addButtonElem && <ScrollTo target={addButtonElem} />}
-      </Box>
+      </TaskContainer>
     </Root>
   );
 }
@@ -455,7 +466,7 @@ function TaskDate({ task }: WithTimelineTask) {
 }
 
 const TimelineDate = styled(Typography)(({ theme }) => ({
-  width: 120,
+  width: dateColumnWidth,
   justifyContent: "right",
   alignItems: "center",
   gap: theme.spacing(1),
