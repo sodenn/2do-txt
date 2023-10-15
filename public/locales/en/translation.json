@@ -165,5 +165,6 @@
   "Pull to refresh": "Pull to refresh",
   "Release to refresh": "Release to refresh",
   "Refreshing": "Refreshing",
-  "Reset filters": "Reset filters"
+  "Reset filters": "Reset filters",
+  "File already exists": "File already exists"
 }

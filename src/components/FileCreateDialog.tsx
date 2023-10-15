@@ -176,6 +176,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     const exists = await fileExists(fileName);
     if (exists) {
       openConfirmationDialog({
+        title: t("File already exists"),
         content: (
           <Trans
             i18nKey="todo.txt already exists. Do you want to replace it"
@@ -183,9 +184,6 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
           />
         ),
         buttons: [
-          {
-            text: t("Cancel"),
-          },
           {
             text: t("Replace"),
             handler: () => createTodoFileAndSync(fileName),

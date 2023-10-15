@@ -1,8 +1,10 @@
+import { ButtonProps } from "@mui/joy";
 import { ReactNode } from "react";
 import { create } from "zustand";
 
 interface ConfirmationButtonOptions {
   text: string;
+  color?: ButtonProps["color"];
   handler?: () => void;
 }
 

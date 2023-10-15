@@ -177,6 +177,7 @@ function TaskGrid(props: TaskGridProps) {
           <Stack spacing={1} direction="row">
             <Button
               fullWidth
+              size="sm"
               variant="outlined"
               color="primary"
               onClick={() => openMentionMenu({ trigger: "@" })}
@@ -185,6 +186,7 @@ function TaskGrid(props: TaskGridProps) {
             </Button>
             <Button
               fullWidth
+              size="sm"
               variant="outlined"
               color="primary"
               onClick={() => openMentionMenu({ trigger: "+" })}
