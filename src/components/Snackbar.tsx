@@ -36,8 +36,9 @@ interface SnackbarOptions {
 }
 
 interface SnackbarItem
-  extends Pick<SnackbarOptions, "title" | "message" | "loading" | "close"> {
+  extends Pick<SnackbarOptions, "title" | "message" | "close" | "loading"> {
   id: string | number;
+  createdAt: number;
 }
 
 const icons = {
@@ -94,7 +95,14 @@ export function SnackbarProvider({ children }: PropsWithChildren) {
         return -1;
       }
       const icon = icons[color as keyof typeof icons];
-      const newItem: SnackbarItem = { title, message, loading, close, id: -1 };
+      const newItem: SnackbarItem = {
+        title,
+        message,
+        close,
+        loading,
+        createdAt: new Date().getTime(),
+        id: -1,
+      };
       items.current.push(newItem);
       toast.custom(
         (t) => {
@@ -163,13 +171,15 @@ export function SnackbarProvider({ children }: PropsWithChildren) {
   const closeSnackbar = useCallback((id: string | number) => {
     const item = items.current.find((item) => item.id === id);
     items.current = items.current.filter((item) => item.id !== id);
-    const dismissTimeout = item?.loading && !item?.close;
-    setTimeout(
-      () => {
-        toast.dismiss(id);
-      },
-      dismissTimeout ? 500 : 0,
-    );
+    let dismissTimeout = 0;
+    // make sure the minimum time of the snackbar is 500ms
+    if (item?.loading && !item.close) {
+      const ms = new Date().getTime() - item.createdAt;
+      dismissTimeout = Math.max(0, 500 - ms);
+    }
+    setTimeout(() => {
+      toast.dismiss(id);
+    }, dismissTimeout);
   }, []);
 
   const value = useMemo(
