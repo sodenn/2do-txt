@@ -2,6 +2,7 @@ import { getRecValueMatch } from "@/utils/task";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
 import {
+  Divider,
   FormControl,
   FormLabel,
   IconButton,
@@ -84,6 +85,7 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
           onListboxOpenChange={setIsOpen}
           value={unit}
           onChange={(_, value) => handleChangeUnit(value)}
+          sx={{ py: 0 }}
           slotProps={{
             root: {
               onKeyDown: handleKeyDown,
@@ -92,6 +94,58 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
               "aria-label": "Select unit",
             },
           }}
+          endDecorator={
+            unit !== "-" && (
+              <>
+                <Divider orientation="vertical" />
+                <Input
+                  variant="plain"
+                  type="number"
+                  value={amount}
+                  size="sm"
+                  sx={{
+                    "--Input-minHeight": "1.8rem",
+                    ml: 1,
+                  }}
+                  slotProps={{
+                    input: {
+                      role: "spinbutton",
+                      min: "1",
+                      step: "1",
+                      pattern: "[1-9]*",
+                      inputMode: "numeric",
+                      "aria-label": "Amount",
+                      sx: {
+                        maxWidth: "32px",
+                        "::-webkit-outer-spin-button,::-webkit-inner-spin-button":
+                          {
+                            "-webkit-appearance": "none",
+                            margin: 0,
+                          },
+                        "-moz-appearance": "textfield",
+                      },
+                    },
+                  }}
+                  endDecorator={
+                    <Tooltip
+                      disableTouchListener={false}
+                      enterTouchDelay={200}
+                      title={t("Strict recurrence")}
+                    >
+                      <IconButton
+                        aria-label="Toggle strict mode"
+                        onClick={() => handleChangeStrict(!strict)}
+                      >
+                        {!strict && <AddCircleOutlineRoundedIcon />}
+                        {strict && <AddCircleIcon />}
+                      </IconButton>
+                    </Tooltip>
+                  }
+                  onChange={(event) => handleChangeAmount(event.target.value)}
+                />
+              </>
+            )
+          }
         >
           <Option value="-">{t("No recurrence")}</Option>
           <Option value="d">{t("Days")}</Option>
@@ -101,39 +155,6 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
           <Option value="y">{t("Years")}</Option>
         </Select>
       </FormControl>
-      {unit !== "-" && (
-        <Input
-          type="number"
-          value={amount}
-          sx={{ maxWidth: 120 }}
-          slotProps={{
-            input: {
-              role: "spinbutton",
-              min: "1",
-              step: "1",
-              pattern: "[1-9]*",
-              inputMode: "numeric",
-              "aria-label": "Amount",
-            },
-          }}
-          endDecorator={
-            <Tooltip
-              disableTouchListener={false}
-              enterTouchDelay={200}
-              title={t("Strict recurrence")}
-            >
-              <IconButton
-                aria-label="Toggle strict mode"
-                onClick={() => handleChangeStrict(!strict)}
-              >
-                {!strict && <AddCircleOutlineRoundedIcon />}
-                {strict && <AddCircleIcon />}
-              </IconButton>
-            </Tooltip>
-          }
-          onChange={(event) => handleChangeAmount(event.target.value)}
-        />
-      )}
     </Stack>
   );
 }

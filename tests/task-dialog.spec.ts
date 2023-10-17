@@ -146,7 +146,7 @@ test.describe("Task dialog", () => {
     await page.getByTestId(pickerButton).click();
 
     // clear date selection
-    await page.getByRole("button", { name: "Clear" }).click();
+    await page.getByRole("button", { name: "Clear", exact: true }).click();
 
     // make sure the text field doesn't contain the due date
     await expect(getEditor(page)).not.toHaveText(dueDateTag);

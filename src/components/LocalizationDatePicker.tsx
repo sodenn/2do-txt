@@ -20,14 +20,19 @@ import {
   PickersActionBarProps,
   UseDateFieldProps,
   deDE,
+  useClearableField,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import {
+  DateFieldSlotsComponent,
+  DateFieldSlotsComponentsProps,
+} from "@mui/x-date-pickers/DateField/DateField.types";
 import { useDateField } from "@mui/x-date-pickers/DateField/useDateField";
 import { useLocaleText } from "@mui/x-date-pickers/internals";
 import { Locale, isAfter, isBefore, isValid } from "date-fns";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
-import { KeyboardEvent, MouseEvent, forwardRef, useState } from "react";
+import { KeyboardEvent, MouseEvent, Ref, forwardRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const localeMap: Record<string, Locale> = {
@@ -70,18 +75,21 @@ type JoyFieldComponent = ((
   props: JoyFieldProps & React.RefAttributes<HTMLDivElement>,
 ) => React.JSX.Element) & { propTypes?: any };
 
-const JoyField = forwardRef<HTMLInputElement, JoyFieldProps>(
-  (props, inputRef) => {
+const JoyField = forwardRef(
+  (props: JoyFieldProps, ref: React.Ref<HTMLDivElement>) => {
     const {
       disabled,
       id,
       label,
       inputProps,
-      // @ts-ignore
       InputProps: { ref: containerRef, startAdornment, endAdornment } = {},
       formControlSx,
+      endDecorator,
+      startDecorator,
+      slotProps,
       ...other
     } = props;
+
     return (
       <FormControl
         disabled={disabled}
@@ -92,14 +100,23 @@ const JoyField = forwardRef<HTMLInputElement, JoyFieldProps>(
           },
           ...(Array.isArray(formControlSx) ? formControlSx : [formControlSx]),
         ]}
-        ref={containerRef}
+        ref={ref}
       >
         <FormLabel>{label}</FormLabel>
         <Input
+          ref={ref}
           disabled={disabled}
-          slotProps={{ input: { ref: inputRef, ...inputProps } }}
-          startDecorator={startAdornment}
-          endDecorator={endAdornment}
+          endDecorator={
+            <>
+              {endAdornment}
+              {endDecorator}
+            </>
+          }
+          slotProps={{
+            ...slotProps,
+            input: { ref, ...inputProps },
+            root: { ...slotProps?.root, ref: containerRef },
+          }}
           {...other}
         />
       </FormControl>
@@ -107,21 +124,62 @@ const JoyField = forwardRef<HTMLInputElement, JoyFieldProps>(
   },
 ) as JoyFieldComponent;
 
-function JoyDateField(props: JoyDateFieldProps) {
-  const {
-    inputRef: externalInputRef,
-    slots,
-    slotProps,
-    ...textFieldProps
-  } = props;
+const JoyDateField = forwardRef(
+  (props: JoyDateFieldProps, ref: Ref<HTMLDivElement>) => {
+    const {
+      inputRef: externalInputRef,
+      slots,
+      slotProps,
+      ...textFieldProps
+    } = props;
 
-  const response = useDateField({
-    props: textFieldProps,
-    inputRef: externalInputRef,
-  });
+    const {
+      onClear,
+      clearable,
+      ref: inputRef,
+      ...fieldProps
+    } = useDateField<Date, typeof textFieldProps>({
+      props: textFieldProps,
+      inputRef: externalInputRef,
+    });
 
-  return <JoyField {...response} />;
+    /* If you don't need a clear button, you can skip the use of this hook */
+    const { InputProps: ProcessedInputProps, fieldProps: processedFieldProps } =
+      useClearableField<
+        {}, // eslint-disable-line @typescript-eslint/ban-types
+        typeof textFieldProps.InputProps,
+        DateFieldSlotsComponent,
+        DateFieldSlotsComponentsProps<Date>
+      >({
+        onClear,
+        clearable,
+        fieldProps,
+        InputProps: fieldProps.InputProps,
+        slots,
+        slotProps,
+      });
+
+    return (
+      <JoyField
+        ref={ref}
+        slotProps={{
+          input: {
+            ref: inputRef,
+          },
+        }}
+        {...processedFieldProps}
+        InputProps={ProcessedInputProps}
+      />
+    );
+  },
+);
+
+function JoyClearButton(props: IconButtonProps) {
+  return (
+    <IconButton {...props} sx={{ mr: "4px" }} variant="plain" color="neutral" />
+  );
 }
+
 function JoyOpenPickerButton(props: IconButtonProps) {
   return <IconButton {...props} variant="plain" color="neutral" />;
 }
@@ -222,6 +280,7 @@ export const LocalizationDatePicker = forwardRef<
         onChange={handleChange}
         slots={{
           field: JoyDateField,
+          clearButton: JoyClearButton,
           // @ts-ignore
           openPickerButton: JoyOpenPickerButton,
           actionBar: JoyActionBar,
@@ -242,6 +301,7 @@ export const LocalizationDatePicker = forwardRef<
             onKeyDown: handleKeyDown,
           }),
           field: () => ({
+            clearable: true,
             inputProps: {
               // @ts-ignore
               "data-testid": `${ariaLabel} textfield`,
