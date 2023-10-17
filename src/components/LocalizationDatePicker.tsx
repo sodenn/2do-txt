@@ -82,7 +82,7 @@ const JoyField = forwardRef(
       id,
       label,
       inputProps,
-      InputProps: { ref: containerRef, startAdornment, endAdornment } = {},
+      InputProps: { ref: containerRef, endAdornment } = {},
       formControlSx,
       endDecorator,
       startDecorator,
