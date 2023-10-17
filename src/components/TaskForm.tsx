@@ -14,7 +14,7 @@ import {
   stringifyTask,
 } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
-import { Button, Grid, Stack } from "@mui/joy";
+import { Button, Grid } from "@mui/joy";
 import { isValid } from "date-fns";
 import { useBeautifulMentions } from "lexical-beautiful-mentions";
 import { useMemo } from "react";
@@ -93,11 +93,12 @@ function TaskGrid(props: TaskGridProps) {
   const dueDate = getDueDateValue(formModel.body);
   const showCreationDate = isNewTask;
   const showCompletionDate = isNewTask && formModel.completed;
-  const mdGridItems =
-    (showCreationDate || showCompletionDate) &&
-    !(showCreationDate && showCompletionDate)
-      ? 4
-      : 6;
+  const showTaskList = taskLists.length > 0;
+  const trueCount = [showCreationDate, showCompletionDate, showTaskList].filter(
+    Boolean,
+  ).length;
+  const recurrenceSelectGridNumber = trueCount % 2 === 0 ? 12 : 6;
+
   const {
     openMentionMenu,
     removeMentions,
@@ -158,7 +159,7 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   return (
-    <Grid spacing={touchScreen ? 1 : 2} container sx={{ my: 0 }}>
+    <Grid spacing={touchScreen ? 1 : 2} container>
       <Grid xs={12}>
         <Editor
           label={t("Description")}
@@ -173,8 +174,8 @@ function TaskGrid(props: TaskGridProps) {
         />
       </Grid>
       {(touchScreen || platform === "ios" || platform === "android") && (
-        <Grid xs={12}>
-          <Stack spacing={1} direction="row">
+        <>
+          <Grid xs={6}>
             <Button
               fullWidth
               size="sm"
@@ -184,6 +185,8 @@ function TaskGrid(props: TaskGridProps) {
             >
               {t("@Context")}
             </Button>
+          </Grid>
+          <Grid xs={6}>
             <Button
               fullWidth
               size="sm"
@@ -193,26 +196,22 @@ function TaskGrid(props: TaskGridProps) {
             >
               {t("+Project")}
             </Button>
-          </Stack>
-        </Grid>
+          </Grid>
+        </>
       )}
-      {taskLists.length > 0 && (
-        <Grid xs={12}>
+      {showTaskList && (
+        <Grid xs={12} sm={6}>
           <FileSelect options={taskLists} onSelect={onFileSelect} />
         </Grid>
       )}
-      <Grid
-        xs={12}
-        sm={showCreationDate && !showCompletionDate ? 12 : 6}
-        md={mdGridItems}
-      >
+      <Grid xs={12} sm={6}>
         <PrioritySelect
           value={formModel.priority}
           onChange={(priority) => handleChange({ priority })}
         />
       </Grid>
       {showCreationDate && (
-        <Grid xs={12} sm={6} md={mdGridItems}>
+        <Grid xs={12} sm={6}>
           <LocalizationDatePicker
             ariaLabel="Creation date"
             label={t("Creation Date")}
@@ -224,7 +223,7 @@ function TaskGrid(props: TaskGridProps) {
         </Grid>
       )}
       {showCompletionDate && (
-        <Grid xs={12} sm={6} md={mdGridItems}>
+        <Grid xs={12} sm={6}>
           <LocalizationDatePicker
             ariaLabel="Completion date"
             label={t("Completion Date")}
@@ -235,7 +234,7 @@ function TaskGrid(props: TaskGridProps) {
           />
         </Grid>
       )}
-      <Grid xs={12} sm={6} md={mdGridItems}>
+      <Grid xs={12} sm={6}>
         <LocalizationDatePicker
           ariaLabel="Due date"
           label={t("Due Date")}
@@ -243,7 +242,7 @@ function TaskGrid(props: TaskGridProps) {
           onChange={handleDueDateChange}
         />
       </Grid>
-      <Grid xs={12}>
+      <Grid xs={12} sm={recurrenceSelectGridNumber}>
         <RecurrenceSelect value={rec} onChange={handleRecChange} />
       </Grid>
     </Grid>
