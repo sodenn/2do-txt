@@ -4,10 +4,9 @@ import { setPreferencesItem } from "@/native-api/preferences";
 import { hideSplashScreen } from "@/native-api/splash-screen";
 import { setStatusBarStyling } from "@/native-api/status-bar";
 import { useThemeStore } from "@/stores/theme-store";
-import { CssBaseline, extendTheme } from "@mui/joy";
+import { CssBaseline, extendTheme, useColorScheme } from "@mui/joy";
 import type { PaletteRange } from "@mui/joy/styles";
 import { CssVarsProvider } from "@mui/joy/styles";
-import { useColorScheme } from "@mui/joy/styles/CssVarsProvider";
 import { useColorScheme as useMaterialColorScheme } from "@mui/material/styles/CssVarsProvider";
 import { PropsWithChildren, useEffect, useState } from "react";
 
