@@ -100,7 +100,6 @@ const JoyField = forwardRef(
           },
           ...(Array.isArray(formControlSx) ? formControlSx : [formControlSx]),
         ]}
-        ref={ref}
       >
         <FormLabel>{label}</FormLabel>
         <Input
@@ -114,7 +113,7 @@ const JoyField = forwardRef(
           }
           slotProps={{
             ...slotProps,
-            input: { ref, ...inputProps },
+            input: { ...slotProps?.input, ...inputProps },
             root: { ...slotProps?.root, ref: containerRef },
           }}
           {...other}
