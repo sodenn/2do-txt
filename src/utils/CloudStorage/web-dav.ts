@@ -11,7 +11,7 @@ export function createWebDAVStorage({
 }: WebDAVClientOptions) {
   return createCloudStorage({
     client: createWebDAVClient({
-      fetch: request,
+      fetch: request as typeof fetch,
       baseUrl,
       basicAuth: {
         username,
