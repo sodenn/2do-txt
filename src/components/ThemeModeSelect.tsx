@@ -7,7 +7,7 @@ export function ThemeModeSelect() {
   const mode = useThemeStore((state) => state.mode);
   const setMode = useThemeStore((state) => state.setMode);
 
-  const handleClick: SelectProps<ThemeMode>["onChange"] = (_, value) => {
+  const handleClick: SelectProps<ThemeMode, false>["onChange"] = (_, value) => {
     const newValue = value || "system";
     setMode(newValue);
   };
