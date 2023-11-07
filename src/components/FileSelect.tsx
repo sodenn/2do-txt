@@ -14,7 +14,7 @@ export function FileSelect(props: FileSelectProps) {
   const { t } = useTranslation();
   const [filePath, setFilePath] = useState("");
 
-  const handleChange: SelectProps<string>["onChange"] = (_, value) => {
+  const handleChange: SelectProps<string, false>["onChange"] = (_, value) => {
     const filePath = value as string;
     const item = options.find((l) => l.filePath === filePath);
     onSelect(item);

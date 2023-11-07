@@ -10,7 +10,7 @@ export function TaskViewSelect() {
   const setTaskView = useSettingsStore((state) => state.setTaskView);
   const setSortBy = useFilterStore((state) => state.setSortBy);
 
-  const handleChange: SelectProps<TaskView>["onChange"] = (_, value) => {
+  const handleChange: SelectProps<TaskView, false>["onChange"] = (_, value) => {
     const newValue = value || "list";
     if (newValue === "timeline") {
       setSortBy("dueDate");

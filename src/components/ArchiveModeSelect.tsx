@@ -19,7 +19,10 @@ export function ArchiveModeSelect() {
   const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
   const { archiveTasks, restoreArchivedTasks } = useTask();
 
-  const handleChange: SelectProps<ArchiveMode>["onChange"] = (_, value) => {
+  const handleChange: SelectProps<ArchiveMode, false>["onChange"] = (
+    _,
+    value,
+  ) => {
     const newValue = value || "no-archiving";
     setArchiveMode(newValue);
     if (newValue === "automatic") {
