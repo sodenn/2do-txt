@@ -222,9 +222,11 @@ export function TaskDialog() {
           {t("Save")}
         </Button>
       </ResponsiveDialogActions>
-      <ResponsiveDialogSecondaryActions>
-        <DeleteTaskButton />
-      </ResponsiveDialogSecondaryActions>
+      {isNewTask && (
+        <ResponsiveDialogSecondaryActions>
+          <DeleteTaskButton />
+        </ResponsiveDialogSecondaryActions>
+      )}
     </ResponsiveDialog>
   );
 }
