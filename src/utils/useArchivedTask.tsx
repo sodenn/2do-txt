@@ -193,7 +193,7 @@ export function useArchivedTask() {
         ...taskList,
         items: newItems.map((i, index) => ({
           ...i,
-          _order: index,
+          order: index,
         })),
       };
 
@@ -258,7 +258,7 @@ export function useArchivedTask() {
               .filter((i) => !i.completed)
               .map((i, index) => ({
                 ...i,
-                _order: index,
+                order: index,
               })),
           };
 
@@ -316,7 +316,7 @@ export function useArchivedTask() {
             items: [...taskList.items, ...completedTaskList.items].map(
               (i, index) => ({
                 ...i,
-                _order: index,
+                order: index,
               }),
             ),
           };

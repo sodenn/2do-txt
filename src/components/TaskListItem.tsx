@@ -1,37 +1,14 @@
 import { TaskBody } from "@/components/TaskBody";
-import { TaskListItemMenu } from "@/components/TaskListItemMenu";
 import { Task } from "@/utils/task";
-import {
-  Checkbox,
-  DropdownProps,
-  ListItem,
-  ListItemButton,
-  Stack,
-  styled,
-} from "@mui/joy";
-import { forwardRef, useRef, useState } from "react";
+import { Checkbox, ListItem, ListItemButton, Stack, styled } from "@mui/joy";
+import { forwardRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 const StyledListItem = styled(ListItem, {
   shouldForwardProp: (prop) => prop !== "menuOpen",
-})<{ menuOpen: boolean }>(({ menuOpen, theme }) => ({
-  ".MuiMenuButton-root": {
-    right: 2,
-    visibility: menuOpen ? "visible" : "hidden",
-    backgroundColor: menuOpen
-      ? "var(--joy-palette-neutral-plainHoverBg)"
-      : undefined,
-  },
+})(({ theme }) => ({
   ".MuiListItem-startAction": {
     left: theme.spacing(0.5),
-  },
-  "@media (pointer: coarse)": {
-    ".MuiMenuButton-root": {
-      visibility: "visible",
-    },
-  },
-  "&:hover .MuiMenuButton-root": {
-    visibility: "visible",
   },
 }));
 
@@ -65,7 +42,6 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
     const { task, onButtonClick, onCheckboxClick, onBlur, onFocus } = props;
     const checkboxRef = useRef<HTMLButtonElement>(null);
     const { t } = useTranslation();
-    const [menuOpen, setMenuOpen] = useState(false);
 
     const handleButtonClick = (event: any) => {
       if (event.code === "Space") {
@@ -75,16 +51,11 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
       }
     };
 
-    const handleOpenChange: DropdownProps["onOpenChange"] = (_, open) => {
-      setMenuOpen(open);
-    };
-
     return (
       <StyledListItem
         data-testid="task"
         onFocus={onFocus}
         onBlur={onBlur}
-        menuOpen={menuOpen}
         startAction={
           <Checkbox
             ref={checkboxRef}
@@ -98,9 +69,6 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
               },
             }}
           />
-        }
-        endAction={
-          <TaskListItemMenu task={task} onOpenChange={handleOpenChange} />
         }
       >
         <StyledListItemButton

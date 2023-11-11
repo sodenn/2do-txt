@@ -1,24 +1,32 @@
 import { todayDate } from "@/utils/date";
-import { Badge } from "@mui/joy";
+import { Badge, BadgeProps } from "@mui/joy";
 import { isAfter } from "date-fns";
-import { PropsWithChildren } from "react";
+import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 
-interface NewBadgeProps extends PropsWithChildren {
+interface NewBadgeProps extends BadgeProps {
   till: Date;
 }
 
-export function NewBadge({ till, children }: NewBadgeProps) {
-  const today = todayDate();
-  const { t } = useTranslation();
+export const NewBadge = forwardRef<HTMLDivElement, NewBadgeProps>(
+  ({ till, children, ...other }, ref) => {
+    const today = todayDate();
+    const { t } = useTranslation();
 
-  if (isAfter(today, till)) {
-    return <>{children}</>;
-  }
+    if (isAfter(today, till)) {
+      return <>{children}</>;
+    }
 
-  return (
-    <Badge size="sm" color="primary" badgeContent={t("New")}>
-      {children}
-    </Badge>
-  );
-}
+    return (
+      <Badge
+        ref={ref}
+        size="sm"
+        color="primary"
+        badgeContent={t("New")}
+        {...other}
+      >
+        {children}
+      </Badge>
+    );
+  },
+);

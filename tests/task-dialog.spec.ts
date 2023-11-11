@@ -419,6 +419,24 @@ test.describe("Task dialog", () => {
       0,
     );
   });
+
+  test("should delete a task", async ({ page }) => {
+    await expect(page.getByTestId("task")).toHaveCount(8);
+    await page.getByTestId("task-button").nth(0).click();
+    // make sure that the dialog is open
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "false",
+    );
+    await page.getByRole("button", { name: "Delete task" }).click();
+    await page.getByRole("button", { name: "Confirm delete" }).click();
+    // make sure that the dialog is closed
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+    await expect(page.getByTestId("task")).toHaveCount(7);
+  });
 });
 
 async function openTaskDialog(page: Page) {

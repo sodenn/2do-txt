@@ -26,23 +26,18 @@ import { useTranslation } from "react-i18next";
 type Priority = "A" | "B" | "C" | "D" | string;
 
 export interface Task {
+  readonly projects: string[];
+  readonly contexts: string[];
+  readonly tags: Record<string, string[]>;
+  readonly dueDate?: Date;
+  readonly id: string;
+  readonly raw: string;
   completed: boolean;
-  projects: string[];
-  contexts: string[];
   completionDate?: Date;
   creationDate?: Date;
   priority?: Priority;
-  tags: Record<string, string[]>;
-  dueDate?: Date;
   body: string;
-  raw: string;
-  _id: string;
-  _order: number;
-}
-
-export interface TaskFormData {
-  raw: string;
-  _id?: string;
+  order: number;
 }
 
 export const createDueDateRegex = () =>
@@ -51,46 +46,46 @@ export const createDueDateRegex = () =>
 const createDueDateValueRegex = () =>
   /\b\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])(\s|$)/g;
 
-export const getDueDateValue = (text: string) => {
+const createRecRegex = () => /\brec:(\+?)([1-9][0-9]*)([dbwmy])(\s|$)/g;
+
+const createRecValueRegex = () => /\b(\+?)([1-9][0-9]*)([dbwmy])(\s|$)/g;
+
+export function getDueDateValue(text: string) {
   const match = text.matchAll(createDueDateValueRegex());
   const lastMatch = Array.from(match).pop();
   if (lastMatch) {
     return parseDate(lastMatch[0]);
   }
-};
+}
 
-const createRecRegex = () => /\brec:(\+?)([1-9][0-9]*)([dbwmy])(\s|$)/g;
-
-const createRecValueRegex = () => /\b(\+?)([1-9][0-9]*)([dbwmy])(\s|$)/g;
-
-const getRecMatch = (text?: string) => {
+function getRecMatch(text?: string) {
   if (!text) {
     return;
   }
   const match = text.matchAll(createRecRegex());
   return Array.from(match).pop();
-};
+}
 
-export const getRecValueMatch = (text?: string) => {
+export function getRecValueMatch(text?: string) {
   if (!text) {
     return;
   }
   const match = text.matchAll(createRecValueRegex());
   return Array.from(match).pop();
-};
+}
 
-export const getRecValue = (text: string) => {
+export function getRecValue(text: string) {
   const match = getRecValueMatch(text);
   if (match) {
     return match[0];
   }
-};
+}
 
-export function parseTask(text: string, order = -1) {
+export function parseTask(text: string) {
   const line = text.trim();
   const tokens = line.split(/\s+/).map((s) => s.trim());
 
-  const _id = generateId();
+  const id = generateId();
 
   let completed = false;
   if (tokens[0] === "x") {
@@ -124,8 +119,8 @@ export function parseTask(text: string, order = -1) {
     completed,
     body,
     raw: line,
-    _id,
-    _order: order,
+    id,
+    order: -1,
     ...parseTaskBody(body),
   };
 
@@ -255,7 +250,7 @@ export function useFormatBody() {
         <PriorityBox
           outlined={outlined}
           completed={task.completed}
-          key={task._id}
+          key={task.id}
         >
           {task.priority}
         </PriorityBox>
@@ -315,7 +310,7 @@ export function createNextRecurringTask(
     unit,
   );
 
-  const recurringTask = parseTask(stringifyTask(task));
+  const recurringTask = { ...task };
 
   if (createCreationDate) {
     recurringTask.creationDate = oldCompletionDate;
@@ -331,7 +326,9 @@ export function createNextRecurringTask(
       )
     : `${recurringTask.body} due:${newDueDateString}`;
 
-  return parseTask(stringifyTask(recurringTask), task._order);
+  const raw = stringifyTask(recurringTask);
+
+  return { ...parseTask(raw), order: task.order };
 }
 
 function addToDate(date: Date, amount: number, unit: string) {
@@ -350,27 +347,43 @@ function addToDate(date: Date, amount: number, unit: string) {
   }
 }
 
+export function removeContext(text: string, context: string) {
+  const pattern = `(\\s+|^)@${context}(\\s+|$)`;
+  return text.replace(new RegExp(pattern, "g"), (match, p1, p2) => p1 + p2);
+}
+
+export function addContext(text: string, context: string) {
+  const pattern = `(\\s+|^)@${context}(\\s+|$)`;
+  if (!new RegExp(pattern, "g").test(text)) {
+    return `${text} @${context}`;
+  } else {
+    return text;
+  }
+}
+
 export function transformPriority(
   task: Task,
   transformation: PriorityTransformation,
 ) {
-  if (task.completed) {
+  const updatedTask = { ...task };
+  if (updatedTask.completed) {
     if (transformation === "remove") {
-      delete task.priority;
-    } else if (transformation === "archive" && task.priority) {
-      task.body = removePriTag(task.body);
-      task.body += ` pri:${task.priority}`;
-      task.tags["pri"] = [task.priority];
-      delete task.priority;
+      delete updatedTask.priority;
+    } else if (transformation === "archive" && updatedTask.priority) {
+      updatedTask.body = removePriTag(updatedTask.body);
+      updatedTask.body += ` pri:${updatedTask.priority}`;
+      updatedTask.tags["pri"] = [updatedTask.priority];
+      delete updatedTask.priority;
     }
   } else if (transformation === "archive") {
     const priRegex = getPriRegex();
-    const match = task.body.match(priRegex);
+    const match = updatedTask.body.match(priRegex);
     if (match && match.length > 0) {
-      task.priority = match[0].trim().slice(-1);
-      task.body = removePriTag(task.body);
+      updatedTask.priority = match[0].trim().slice(-1);
+      updatedTask.body = removePriTag(updatedTask.body);
     }
   }
+  return { ...updatedTask, raw: stringifyTask(updatedTask) };
 }
 
 function removePriTag(text: string) {

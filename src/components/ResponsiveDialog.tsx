@@ -25,9 +25,9 @@ import {
 
 interface ResponsiveDialogProps
   extends Pick<
-      TransitionProps,
-      "onExited" | "onEnter" | "onEntered" | "onExit"
-    >,
+    TransitionProps,
+    "onExited" | "onEnter" | "onEntered" | "onExit"
+  >,
     Pick<ModalProps, "onClose">,
     ModalDialogProps {
   open?: boolean;
@@ -124,34 +124,35 @@ const SafeArea = styled("div")({
 
 function CloseButton({ onClose, fullScreen }: CloseButtonProps) {
   return (
-    <IconButton
-      size="sm"
-      variant="soft"
-      color="neutral"
-      onClick={(event) => onClose?.(event, "closeClick")}
-      aria-label="Close"
-      sx={{
-        gridArea: "close",
-        ...(fullScreen && { ml: 1.5, mb: 1 }),
-        ...(!fullScreen && { mr: 2, my: 2 }),
-      }}
-    >
-      <CloseIcon />
-    </IconButton>
+    <div style={{ gridArea: "close", justifySelf: "end" }}>
+      <IconButton
+        size="sm"
+        variant="soft"
+        color="neutral"
+        onClick={(event) => onClose?.(event, "closeClick")}
+        aria-label="Close"
+        sx={{
+          ...(fullScreen && { ml: 1.5, mb: 1 }),
+          ...(!fullScreen && { mr: 2, my: 2 }),
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
+    </div>
   );
 }
 
 export function ResponsiveDialogTitle({
-  children,
-  fullScreen,
-}: ResponsiveDialogChild) {
+                                        children,
+                                        fullScreen,
+                                      }: ResponsiveDialogChild) {
   return (
     <Typography
-      fontSize="lg"
+      fontSize={fullScreen ? "md" : "lg"}
       fontWeight="lg"
       sx={{
         ...(!fullScreen && { ml: 2, my: 2 }),
-        ...(fullScreen && { mb: 1 }),
+        ...(fullScreen && { mb: 1, justifySelf: "center" }),
         gridArea: "title",
         alignSelf: "center",
       }}
@@ -162,9 +163,9 @@ export function ResponsiveDialogTitle({
 }
 
 export function ResponsiveDialogContent({
-  children,
-  fullScreen,
-}: ResponsiveDialogChild) {
+                                          children,
+                                          fullScreen,
+                                        }: ResponsiveDialogChild) {
   const mobileScreen = useMobileScreen();
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
   const [divider, setDivider] = useState(false);
@@ -232,9 +233,9 @@ export function ResponsiveDialogContent({
 }
 
 export function ResponsiveDialogActions({
-  children,
-  fullScreen,
-}: ResponsiveDialogChild) {
+                                          children,
+                                          fullScreen,
+                                        }: ResponsiveDialogChild) {
   return (
     <Stack
       direction="row"
@@ -257,6 +258,32 @@ export function ResponsiveDialogActions({
   );
 }
 
+export function ResponsiveDialogSecondaryActions({
+                                                   children,
+                                                   fullScreen,
+                                                 }: ResponsiveDialogChild) {
+  return (
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        gridArea: "secondaryactions",
+        ...(!fullScreen && {
+          px: 2,
+          py: 2,
+          justifyContent: "start",
+        }),
+        ...(fullScreen && {
+          pt: 2,
+          justifyContent: "center",
+        }),
+      }}
+    >
+      {children}
+    </Stack>
+  );
+}
+
 function CenterLayout({ children }: PropsWithChildren) {
   return (
     <Box
@@ -269,7 +296,7 @@ function CenterLayout({ children }: PropsWithChildren) {
         gridTemplateAreas: `
           "title close"
           "content content"
-          "actions actions"
+          "secondaryactions actions"
         `,
         columnGap: 1.5,
       }}
@@ -290,6 +317,7 @@ function FullScreenLayout({ children }: PropsWithChildren) {
         gridTemplateAreas: `
           "close title actions"
           "content content content"
+          "secondaryactions secondaryactions secondaryactions"
         `,
         alignItems: "center",
         position: "relative",

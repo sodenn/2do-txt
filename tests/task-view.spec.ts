@@ -158,16 +158,17 @@ test.describe("Task View", () => {
       );
     });
 
-    test(`${taskView}: should delete a task via the task menu`, async ({
+    test.only(`${taskView}: should delete a task via shortcut`, async ({
       page,
-    }, testInfo) => {
-      if (testInfo.title.startsWith("list:")) {
-        test.skip();
-      }
+    }) => {
       await expect(page.getByTestId("task")).toHaveCount(8);
-      const taskItem = page.getByTestId("task").nth(1);
-      await taskItem.hover();
-      await taskItem.getByLabel("Delete task").click();
+      await page.getByTestId("task-button").nth(0).focus();
+      await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
+      await page.keyboard.press("d");
+      await expect(page.getByTestId("confirmation-dialog")).toHaveAttribute(
+        "aria-hidden",
+        "false",
+      );
       await page.getByRole("button", { name: "Delete" }).click();
       await expect(page.getByTestId("task")).toHaveCount(7);
     });

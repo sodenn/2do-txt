@@ -66,12 +66,21 @@ export interface TimelineTask extends Task {
 }
 
 export function updateTaskListAttributes(taskList: TaskList): TaskList {
-  const attributes = getTaskListAttributes(taskList.items, false);
-  const incomplete = getTaskListAttributes(taskList.items, true);
+  const items = taskList.items.map((item) => {
+    const parsed = parseTask(item.raw);
+    return {
+      ...parsed,
+      order: item.order,
+      id: item.id,
+    };
+  });
+  const attributes = getTaskListAttributes(items, false);
+  const incomplete = getTaskListAttributes(items, true);
   return {
     ...taskList,
     ...attributes,
     incomplete,
+    items,
   };
 }
 
@@ -83,7 +92,7 @@ export function parseTaskList(text?: string): TaskListParseResult {
       .split("\n")
       .map((t) => t.trim())
       .filter((t) => t.length > 0)
-      .map((t, o) => parseTask(t, o));
+      .map((t, o) => ({ ...parseTask(t), order: o }));
 
     const attributes = getTaskListAttributes(items, false);
 
@@ -115,7 +124,7 @@ export function parseTaskList(text?: string): TaskListParseResult {
 
 export function stringifyTaskList(taskList: Task[], lineEnding: string) {
   return [...taskList]
-    .sort((t1, t2) => t1._order - t2._order)
+    .sort((t1, t2) => t1.order - t2.order)
     .map((t) => stringifyTask(t))
     .join(lineEnding);
 }
@@ -181,8 +190,8 @@ export function useTimelineTasks(
 
   // +Button
   filteredTasks.unshift({
-    _id: "-1",
-    _order: 0,
+    id: "-1",
+    order: 0,
     body: "+",
     completed: false,
     creationDate: today,
@@ -246,14 +255,14 @@ export function useTimelineTasks(
         ...t._timelineFlags,
         firstOfDay:
           !t._timelineFlags.today &&
-          a.find((j) => isSameDay(j._timelineDate!, t._timelineDate!))?._id ===
-            t._id,
+          a.find((j) => isSameDay(j._timelineDate!, t._timelineDate!))?.id ===
+            t.id,
         firstOfYear:
           (!t._timelineFlags.today || t._timelineFlags.firstOfToday) &&
-          a.find((j) => isSameYear(j._timelineDate!, t._timelineDate!))?._id ===
-            t._id,
+          a.find((j) => isSameYear(j._timelineDate!, t._timelineDate!))?.id ===
+            t.id,
         firstWithoutDate:
-          !t._timelineDate && a.find((j) => !j._timelineDate)?._id === t._id,
+          !t._timelineDate && a.find((j) => !j._timelineDate)?.id === t.id,
         first: i === 0,
         last: a.length === i + 1,
       },
@@ -449,10 +458,10 @@ export function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
 }
 
 function getTaskListAttributes(
-  taskList: Task[],
+  tasks: Task[],
   incompleteTasksOnly: boolean,
 ): TaskListAttributes {
-  const priorities = taskList
+  const priorities = tasks
     .filter((i) => !incompleteTasksOnly || !i.completed)
     .map((task) => task.priority)
     .filter((priority): priority is string => !!priority)
@@ -461,7 +470,7 @@ function getTaskListAttributes(
       return prev;
     }, {});
 
-  const projects = taskList
+  const projects = tasks
     .filter((i) => !incompleteTasksOnly || !i.completed)
     .flatMap((i) => i.projects)
     .reduce<Record<string, number>>((prev, cur) => {
@@ -469,7 +478,7 @@ function getTaskListAttributes(
       return prev;
     }, {});
 
-  const contexts = taskList
+  const contexts = tasks
     .filter((i) => !incompleteTasksOnly || !i.completed)
     .flatMap((i) => i.contexts)
     .reduce<Record<string, number>>((prev, cur) => {
@@ -478,7 +487,7 @@ function getTaskListAttributes(
     }, {});
 
   const tags: Record<string, string[]> = {};
-  taskList
+  tasks
     .filter((i) => !incompleteTasksOnly || !i.completed)
     .forEach((i) => {
       Object.entries(i.tags).forEach(([key, value]) => {
@@ -532,9 +541,9 @@ export function getCommonTaskListAttributes(taskLists: TaskList[]) {
 }
 
 export function sortByOriginalOrder(a: Task, b: Task) {
-  if (a._order < b._order) {
+  if (a.order < b.order) {
     return -1;
-  } else if (a._order > b._order) {
+  } else if (a.order > b.order) {
     return 1;
   } else {
     return 0;

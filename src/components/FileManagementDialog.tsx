@@ -50,7 +50,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import CancelIcon from "@mui/icons-material/Cancel";
 import CloseIcon from "@mui/icons-material/Close";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -193,8 +192,8 @@ function FileManagementActions() {
     const icon = cloudStorageIcons[provider];
     return React.isValidElement<{ fontSize?: string }>(icon)
       ? React.cloneElement(icon, {
-          fontSize: "small",
-        })
+        fontSize: "small",
+      })
       : icon;
   };
 
@@ -369,14 +368,19 @@ function FileListItem(props: FileListItemProps) {
           <Stack spacing={1} direction="row">
             <Tooltip title={t("Cancel")}>
               <IconButton
+                size="sm"
                 color="neutral"
                 onClick={() => onMarkedForClosing(undefined)}
               >
-                <CancelIcon />
+                <CloseIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title={deleteFile ? t("Delete") : t("Close")}>
-              <IconButton color="danger" onClick={() => onClose(filePath)}>
+              <IconButton
+                size="sm"
+                color="danger"
+                onClick={() => onClose(filePath)}
+              >
                 {deleteFile && <DeleteForeverIcon />}
                 {!deleteFile && <CloseIcon />}
               </IconButton>
@@ -444,12 +448,12 @@ function CloudSyncMenuItem(opt: CloudSyncMenuItemProps) {
   const { onChange, identifier, provider } = opt;
   const { t } = useTranslation();
   const { syncFile, getCloudFileRef } = useCloudStorage();
-  const { loadTodoFile } = useTask();
+  const { parseTaskList } = useTask();
 
   const handleClick = async () => {
     const content = await syncFile(identifier);
     if (content) {
-      loadTodoFile(identifier, content);
+      parseTaskList(identifier, content);
     }
     getCloudFileRef(identifier).then(onChange);
   };
@@ -526,11 +530,11 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
 
   const buttonText = cloudFileRef
     ? t("Disable cloud storage sync", {
-        provider,
-      })
+      provider,
+    })
     : t("Enable cloud storage sync", {
-        provider,
-      });
+      provider,
+    });
 
   return (
     <MenuItem onClick={enableCloudSync} disabled={loading}>
@@ -612,7 +616,7 @@ function FileMenu(props: FileMenuProps) {
         aria-label="File actions"
         aria-haspopup="true"
         slots={{ root: IconButton }}
-        slotProps={{ root: { variant: "plain", color: "neutral" } }}
+        slotProps={{ root: { variant: "plain", color: "neutral", size: "sm" } }}
       >
         {!cloudSyncLoading && <MoreVertIcon />}
         {cloudSyncLoading && <CircularProgress size="sm" />}

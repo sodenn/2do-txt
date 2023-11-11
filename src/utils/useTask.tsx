@@ -20,10 +20,10 @@ import { hashCode } from "@/utils/hashcode";
 import { addTodoFilePath, removeTodoFilePath } from "@/utils/settings";
 import {
   Task,
-  TaskFormData,
   createDueDateRegex,
   createNextRecurringTask,
   parseTask,
+  stringifyTask,
   transformPriority,
 } from "@/utils/task";
 import {
@@ -36,7 +36,6 @@ import {
 import { getDoneFilePath } from "@/utils/todo-files";
 import { useArchivedTask } from "@/utils/useArchivedTask";
 import { useNotification } from "@/utils/useNotification";
-import { generateId } from "@/utils/uuid";
 import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
@@ -49,10 +48,29 @@ type SaveTodoFile = {
   (taskList: TaskList): Promise<TaskList>;
 };
 
+export interface Order {
+  id: any;
+  order: number;
+}
+
+interface EditTaskOptions {
+  id: string;
+  text: string;
+  order?: number | Order[];
+  completed?: boolean;
+}
+
+interface ProcessTaskCompletion {
+  task: Task;
+  completed: boolean;
+  taskList: TaskList;
+  notificationId: number;
+}
+
 function taskListsWithoutId(taskLists: TaskList[]) {
   return taskLists.map((list) => ({
     ...list,
-    items: list.items.map((item) => omit(item, "_id")),
+    items: list.items.map((item) => omit(item, "id")),
   }));
 }
 
@@ -118,56 +136,59 @@ export function useTask() {
       if (!taskId) {
         return;
       }
-      return taskLists.find((list) => list.items.some((i) => i._id === taskId));
+      return taskLists.find((list) => list.items.some((i) => i.id === taskId));
     },
     [taskLists],
   );
 
-  const parseTaskList = useCallback((filePath: string, text: string) => {
-    const parseResult = _parseTaskList(text);
-    const fileName = getFilename(filePath);
-    const taskList: TaskList = {
-      ...parseResult,
-      filePath,
-      fileName,
-    };
-    return taskList;
-  }, []);
-
-  const loadTodoFile = useCallback(
+  const parseTaskList = useCallback(
     async (filePath: string, text: string) => {
-      const taskList = parseTaskList(filePath, text);
+      const result = _parseTaskList(text);
+      const fileName = getFilename(filePath);
+      const taskList: TaskList = {
+        ...result,
+        filePath,
+        fileName,
+      };
       addTaskList(taskList);
       return taskList;
     },
-    [addTaskList, parseTaskList],
+    [addTaskList],
   );
 
   const saveTodoFile = useCallback<SaveTodoFile>(
-    async (listOrPath: string | TaskList, text?: string) => {
-      text =
-        typeof listOrPath === "string"
-          ? text || ""
-          : stringifyTaskList(listOrPath.items, listOrPath.lineEnding);
-      const filePath =
-        typeof listOrPath === "string" ? listOrPath : listOrPath.filePath;
+    async (listOrPath: TaskList | string, text?: string) => {
+      let filePath: string;
+      let fileContent: string;
+
+      if (typeof listOrPath === "string") {
+        filePath = listOrPath;
+        fileContent = text || "";
+      } else {
+        filePath = listOrPath.filePath;
+        fileContent = stringifyTaskList(
+          listOrPath.items,
+          listOrPath.lineEnding,
+        );
+      }
 
       await writeFile({
         path: filePath,
-        data: text,
+        data: fileContent,
       });
 
       promptForRating().catch((e) => void e);
 
       if (typeof listOrPath === "string") {
-        return loadTodoFile(filePath, text);
+        return parseTaskList(filePath, fileContent);
       } else {
+        // Update the existing task list to not lose the generated task IDs
         const updatedTaskList = updateTaskListAttributes(listOrPath);
         addTaskList(updatedTaskList);
         return listOrPath;
       }
     },
-    [addTaskList, loadTodoFile],
+    [addTaskList, parseTaskList],
   );
 
   const scheduleDueTaskNotification = useCallback(
@@ -187,7 +208,7 @@ export function useTask() {
 
       scheduleNotifications([
         {
-          body: task.body.replace(createDueDateRegex(), "").trim(),
+          body: task.body.replace(createDueDateRegex(), "").trim(), // remove due date from notification text
           id: hashCode(task.raw),
           scheduleAt: scheduleAt,
         },
@@ -197,147 +218,144 @@ export function useTask() {
   );
 
   const addTask = useCallback(
-    (data: TaskFormData, taskList: TaskList) => {
+    async (text: string, taskList: TaskList) => {
       const { items } = taskList;
-      const {
-        priority,
-        completionDate,
-        creationDate,
-        dueDate,
-        projects,
-        contexts,
-        tags,
-        raw,
-        ...rest
-      } = parseTask(data.raw);
       const newTask: Task = {
-        ...rest,
-        projects,
-        contexts,
-        tags,
-        completed: false,
-        raw: raw,
-        _id: generateId(),
-        _order: items.length,
+        ...parseTask(text),
+        order: items.length,
       };
-
-      if (priority) {
-        newTask.priority = priority;
-      }
-      if (completionDate) {
-        newTask.completionDate = completionDate;
-      }
-      if (creationDate) {
-        newTask.creationDate = creationDate;
-      }
-      if (dueDate) {
-        newTask.dueDate = dueDate;
-      }
-
       scheduleDueTaskNotification(newTask);
-
-      return saveTodoFile({ ...taskList, items: [...items, newTask] });
+      await saveTodoFile({ ...taskList, items: [...items, newTask] });
     },
     [saveTodoFile, scheduleDueTaskNotification],
   );
 
+  const processTaskCompletion = useCallback(
+    ({ task, completed, notificationId, taskList }: ProcessTaskCompletion) => {
+      let updatedTask = { ...task, completed };
+
+      if (updatedTask.completed) {
+        if (createCompletionDate) {
+          updatedTask.completionDate = todayDate();
+        }
+        const nextTask = createNextRecurringTask(task, createCreationDate);
+        if (nextTask) {
+          scheduleDueTaskNotification(nextTask);
+          const index = taskList.items.findIndex((i) => i.id === task.id);
+          taskList.items.splice(index, 0, nextTask);
+        }
+        cancelNotifications([notificationId]);
+      } else {
+        delete updatedTask.completionDate;
+      }
+
+      updatedTask = transformPriority(updatedTask, priorityTransformation);
+
+      taskList.items =
+        archiveMode === "automatic"
+          ? taskList.items.filter((i) => i.id !== task.id)
+          : taskList.items.map((i) => (i.id === task.id ? updatedTask : i));
+
+      if (archiveMode === "automatic") {
+        archiveTask({
+          taskList,
+          task: updatedTask,
+        });
+      }
+
+      return {
+        ...updatedTask,
+        raw: stringifyTask(updatedTask),
+      };
+    },
+    [
+      archiveMode,
+      archiveTask,
+      cancelNotifications,
+      createCompletionDate,
+      createCreationDate,
+      priorityTransformation,
+      scheduleDueTaskNotification,
+    ],
+  );
+
   const editTask = useCallback(
-    ({ raw, _id }: TaskFormData) => {
-      const taskList = findTaskListByTaskId(_id);
+    async ({ text, id, order, completed }: EditTaskOptions) => {
+      const taskList = findTaskListByTaskId(id);
       if (!taskList) {
         return;
       }
-      const items = taskList.items.map((t) => {
-        if (t._id === _id) {
-          cancelNotifications([hashCode(t.raw)]);
-          const updatedTask: Task = {
-            ...parseTask(raw),
-            _id,
-            _order: t._order,
-          };
-          scheduleDueTaskNotification(updatedTask);
-          return updatedTask;
-        } else {
-          return t;
+      const items = taskList.items.map((task) => {
+        if (task.id !== id) {
+          return task;
         }
+        let updatedTask: Task = {
+          ...parseTask(text),
+          id: id,
+        };
+        if (typeof completed === "boolean") {
+          updatedTask = processTaskCompletion({
+            task: updatedTask,
+            completed,
+            notificationId: hashCode(task.raw),
+            taskList,
+          });
+        }
+        scheduleDueTaskNotification(updatedTask);
+        return updatedTask;
       });
-      return saveTodoFile({ ...taskList, items });
+      if (order) {
+        const orderList: Order[] = Array.isArray(order)
+          ? order
+          : [{ id, order }];
+        orderList.forEach((o) => {
+          const task = items.find((t) => t.id === o.id);
+          if (task) {
+            task.order = o.order;
+          }
+        });
+      }
+      await saveTodoFile({ ...taskList, items });
     },
     [
-      cancelNotifications,
       findTaskListByTaskId,
+      processTaskCompletion,
       saveTodoFile,
       scheduleDueTaskNotification,
     ],
   );
 
   const deleteTask = useCallback(
-    (task: Task) => {
-      const taskList = findTaskListByTaskId(task._id);
+    async (task: Task) => {
+      const taskList = findTaskListByTaskId(task.id);
       if (!taskList) {
         return;
       }
       cancelNotifications([hashCode(task.raw)]);
-      const items = taskList.items.filter((t) => t._id !== task._id);
-      items.filter((t) => t._order > task._order).forEach((t) => t._order--);
-      return saveTodoFile({ ...taskList, items });
+      const items = taskList.items.filter((t) => t.id !== task.id);
+      items.filter((t) => t.order > task.order).forEach((t) => t.order--);
+      await saveTodoFile({ ...taskList, items });
     },
     [cancelNotifications, findTaskListByTaskId, saveTodoFile],
   );
 
-  const completeTask = useCallback(
+  const toggleCompleteTask = useCallback(
     async (task: Task) => {
-      const taskList = findTaskListByTaskId(task._id);
+      const taskList = findTaskListByTaskId(task.id);
       if (!taskList) {
         return;
       }
 
-      const updatedTask = { ...task, completed: !task.completed };
+      processTaskCompletion({
+        task,
+        completed: !task.completed,
+        taskList,
+        notificationId: hashCode(task.raw),
+      });
 
-      if (updatedTask.completed) {
-        if (createCompletionDate) {
-          updatedTask.completionDate = todayDate();
-        }
-        const recurringTasks = createNextRecurringTask(
-          task,
-          createCreationDate,
-        );
-        if (recurringTasks) {
-          const index = taskList.items.findIndex((i) => i._id === task._id);
-          taskList.items.splice(index, 0, recurringTasks);
-        }
-        cancelNotifications([hashCode(task.raw)]);
-      } else {
-        delete updatedTask.completionDate;
-      }
-
-      transformPriority(updatedTask, priorityTransformation);
-
-      const newItems =
-        archiveMode === "automatic"
-          ? taskList.items.filter((i) => i._id !== task._id)
-          : taskList.items.map((i) => (i._id === task._id ? updatedTask : i));
-
-      const newTaskList: TaskList = { ...taskList, items: newItems };
-      await saveTodoFile(newTaskList);
-
-      if (archiveMode === "automatic") {
-        await archiveTask({
-          taskList: newTaskList,
-          task: updatedTask,
-        });
-      }
+      await saveTodoFile(taskList);
     },
-    [
-      findTaskListByTaskId,
-      priorityTransformation,
-      archiveMode,
-      saveTodoFile,
-      createCompletionDate,
-      createCreationDate,
-      cancelNotifications,
-      archiveTask,
-    ],
+    [findTaskListByTaskId, saveTodoFile, processTaskCompletion],
   );
 
   const deleteTodoFile = useCallback(async (filePath: string) => {
@@ -425,9 +443,7 @@ export function useTask() {
     async (taskList = activeTaskList) => {
       if (taskList) {
         const { items, lineEnding, fileName } = taskList;
-
         const zip = await generateZipFile(taskList);
-
         if (zip) {
           FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
         } else {
@@ -445,7 +461,6 @@ export function useTask() {
   const shareTodoFile = useCallback(async () => {
     if (activeTaskList) {
       const zip = await generateZipFile(activeTaskList, "base64");
-
       if (zip) {
         const uri = await writeFile({
           data: zip.zipContent as string,
@@ -523,16 +538,14 @@ export function useTask() {
   );
 
   const restoreTask = useCallback(
-    async (filePathOrTaskList: string | TaskList, task: Task) => {
+    async (listOrPath: string | TaskList, task: Task) => {
       const taskList =
-        typeof filePathOrTaskList === "string"
-          ? taskLists.find((t) => t.filePath === filePathOrTaskList)
-          : filePathOrTaskList;
+        typeof listOrPath === "string"
+          ? taskLists.find((t) => t.filePath === listOrPath)
+          : listOrPath;
 
       if (!taskList) {
-        throw new Error(
-          `Cannot find task list by path "${filePathOrTaskList}"`,
-        );
+        throw new Error(`Cannot find task list by path "${listOrPath}"`);
       }
 
       const newTaskList = await _restoreTask({
@@ -618,11 +631,11 @@ export function useTask() {
     downloadTodoFile,
     shareTodoFile,
     closeTodoFile,
-    loadTodoFile,
+    parseTaskList,
     addTask,
     editTask,
     deleteTask,
-    completeTask,
+    toggleCompleteTask,
     archiveTasks,
     restoreArchivedTasks,
     restoreTask,
