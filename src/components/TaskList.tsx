@@ -91,7 +91,7 @@ export const TaskList = memo((props: TaskListProps) => {
         </StyledList>
       )}
       {!hasItems && (
-        <Typography sx={{ px: 2, pb: 3 }} level="body-md" color="neutral">
+        <Typography sx={{ px: 3, pb: 3 }} level="body-md" color="neutral">
           {t("No tasks")}
         </Typography>
       )}
