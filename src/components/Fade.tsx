@@ -1,15 +1,9 @@
-import { PropsWithChildren, cloneElement } from "react";
+import { PropsWithChildren, cloneElement, useMemo } from "react";
 import { Transition } from "react-transition-group";
 import {
   TransitionProps,
   TransitionStatus,
 } from "react-transition-group/Transition";
-
-const duration = 250;
-
-const defaultStyle = {
-  transition: `opacity ${duration}ms ease-in-out`,
-};
 
 const transitionStyles: Partial<Record<TransitionStatus, Record<string, any>>> =
   {
@@ -22,9 +16,20 @@ const transitionStyles: Partial<Record<TransitionStatus, Record<string, any>>> =
 type FadeProps = Omit<
   PropsWithChildren<TransitionProps<HTMLDivElement>>,
   "addEndListener"
->;
+> & { duration?: number };
 
-export function Fade({ in: inProp, children, ...other }: FadeProps) {
+export function Fade({
+  in: inProp,
+  duration = 250,
+  children,
+  ...other
+}: FadeProps) {
+  const defaultStyle = useMemo(
+    () => ({
+      transition: `opacity ${duration}ms ease-in-out`,
+    }),
+    [duration],
+  );
   return (
     <Transition in={inProp} timeout={duration} {...other}>
       {(state) =>

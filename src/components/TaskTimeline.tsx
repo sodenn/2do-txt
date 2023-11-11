@@ -1,6 +1,5 @@
 import { ScrollTo } from "@/components/ScrollTo";
 import { TaskBody } from "@/components/TaskBody";
-import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
@@ -10,7 +9,6 @@ import { TimelineTask } from "@/utils/task-list";
 import { useMobileScreen } from "@/utils/useMobileScreen";
 import { useTask } from "@/utils/useTask";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { Delete } from "@mui/icons-material";
 import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AddIcon from "@mui/icons-material/Add";
@@ -61,7 +59,6 @@ interface TaskItemProps extends WithTimelineTask {
   focused: boolean;
   onClick: () => void;
   onCheckboxClick: () => void;
-  onDelete: () => void;
   onFocus: () => void;
   onBlur: () => void;
 }
@@ -110,31 +107,12 @@ export function TaskTimeline(props: TaskTimelineProps) {
     onListItemClick,
   } = props;
   const { t } = useTranslation();
-  const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog,
-  );
-  const { deleteTask, completeTask } = useTask();
+  const { toggleCompleteTask } = useTask();
   const searchTerm = useFilterStore((state) => state.searchTerm);
   const [parent] = useAutoAnimate<HTMLDivElement>();
   const [addButtonElem, setAddButtonElem] = useState<HTMLButtonElement | null>(
     null,
   );
-
-  const handleDelete = (task: Task) => {
-    openConfirmationDialog({
-      title: t("Delete task"),
-      content: t("Are you sure you want to delete this task?"),
-      buttons: [
-        {
-          text: t("Delete"),
-          color: "danger",
-          handler: () => {
-            deleteTask(task);
-          },
-        },
-      ],
-    });
-  };
 
   useEffect(() => {
     addButtonElem?.scrollIntoView({
@@ -157,7 +135,7 @@ export function TaskTimeline(props: TaskTimelineProps) {
     <Root>
       <TaskContainer data-testid="task-list" ref={parent}>
         {tasks.map((task, index) => (
-          <div key={task._id}>
+          <div key={task.id}>
             {!task._timelineFlags.firstOfToday && (
               <TaskItem
                 ref={(el) => {
@@ -172,9 +150,8 @@ export function TaskTimeline(props: TaskTimelineProps) {
                 }}
                 task={task}
                 onClick={() => onListItemClick(task)}
-                onCheckboxClick={() => completeTask(task)}
-                onDelete={() => handleDelete(task)}
-                focused={focusedTaskId === task._id}
+                onCheckboxClick={() => toggleCompleteTask(task)}
+                focused={focusedTaskId === task.id}
                 onFocus={() => onFocus(index)}
                 onBlur={onBlur}
               />
@@ -283,14 +260,8 @@ const TaskItem = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
 });
 
 const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
-  const { task, focused, onClick, onDelete, onCheckboxClick, onFocus, onBlur } =
-    props;
+  const { task, focused, onClick, onCheckboxClick, onFocus, onBlur } = props;
   const { language } = useSettingsStore();
-
-  const handleDeleteClick: IconButtonProps["onClick"] = (e) => {
-    e.stopPropagation();
-    onDelete();
-  };
 
   const handleKeyUp = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.code === "Space") {
@@ -309,20 +280,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
   };
 
   return (
-    <StyledListItem
-      endAction={
-        <IconButton
-          tabIndex={-1}
-          role="button"
-          aria-label="Delete task"
-          size="sm"
-          className="DeleteButton"
-          onClick={handleDeleteClick}
-        >
-          <Delete />
-        </IconButton>
-      }
-    >
+    <StyledListItem>
       <TimelineContent
         data-testid="task-button"
         ref={ref}
@@ -543,28 +501,8 @@ const TimelineConnector = styled(Box)(({ theme }) => ({
   flex: 1,
 }));
 
-const StyledListItem = styled(ListItem)(({ theme }) => ({
+const StyledListItem = styled(ListItem)({
   width: "100%",
   gridArea: "content",
   alignSelf: "flex-start",
-  ".DeleteButton": {
-    visibility: "hidden",
-  },
-  "@media (pointer: coarse)": {
-    ".DeleteButton": {
-      visibility: "visible",
-    },
-  },
-  "&:hover .DeleteButton": {
-    visibility: "visible",
-  },
-  ".MuiListItem-endAction": {
-    [theme.breakpoints.down("sm")]: {
-      top: 0,
-    },
-    [theme.breakpoints.up("sm")]: {
-      top: 2,
-    },
-    right: 8,
-  },
-}));
+});

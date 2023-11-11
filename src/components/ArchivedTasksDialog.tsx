@@ -60,7 +60,7 @@ export function ArchivedTasksDialog() {
         <List size="sm">
           {tasks.map((task) => (
             <ListItem
-              key={task._id}
+              key={task.id}
               endAction={
                 <Tooltip title={t("Restore task")}>
                   <IconButton

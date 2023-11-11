@@ -32,15 +32,15 @@ export function useCloudStorageEffect() {
     cloudStorages,
   } = useCloudStorage();
   const { syncDoneFiles } = useArchivedTask();
-  const { loadTodoFile } = useTask();
+  const { parseTaskList } = useTask();
 
   const reloadTodoFile = useCallback(
     async (path: string, content?: string) => {
       if (content) {
-        return loadTodoFile(path, content);
+        return parseTaskList(path, content);
       }
     },
-    [loadTodoFile],
+    [parseTaskList],
   );
 
   const handleCreateFile = useCallback(

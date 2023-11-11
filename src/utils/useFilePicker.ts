@@ -9,7 +9,7 @@ export function useFilePicker() {
   const platform = usePlatformStore((state) => state.platform);
   const fileInput = useFilePickerStore((state) => state.fileInput);
   const setFileInput = useFilePickerStore((state) => state.setFileInput);
-  const { loadTodoFile, scheduleDueTaskNotifications } = useTask();
+  const { parseTaskList, scheduleDueTaskNotifications } = useTask();
 
   const openDesktopFile = useCallback(
     async (paths?: string[]) => {
@@ -18,11 +18,11 @@ export function useFilePicker() {
       }
       const path = paths[0];
       const data = await readFile(path);
-      const taskList = await loadTodoFile(path, data);
+      const taskList = await parseTaskList(path, data);
       await addTodoFilePath(path);
       scheduleDueTaskNotifications(taskList.items);
     },
-    [loadTodoFile, scheduleDueTaskNotifications],
+    [parseTaskList, scheduleDueTaskNotifications],
   );
 
   const openFileDialog = useCallback(async () => {

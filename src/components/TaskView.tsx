@@ -37,11 +37,11 @@ export function TaskView() {
     (direction: "up" | "down") => {
       let index = 0;
       let length = tasks.length;
-      const task = tasks.find((t) => t._id === focusedTaskId);
+      const task = tasks.find((t) => t.id === focusedTaskId);
       if (task) {
         index = tasks.indexOf(task);
         const notFocusablePredecessor = tasks.some(
-          (t, idx) => t._id === "-1" && idx < index,
+          (t, idx) => t.id === "-1" && idx < index,
         );
         if (notFocusablePredecessor) {
           index = index - 1;
@@ -60,7 +60,7 @@ export function TaskView() {
 
   const openTaskDialog = useCallback(() => {
     if (focusedTaskId) {
-      const task = tasks.find((t) => t._id === focusedTaskId);
+      const task = tasks.find((t) => t.id === focusedTaskId);
       if (task) {
         _openTaskDialog(task);
       }
@@ -69,7 +69,7 @@ export function TaskView() {
 
   const openDeleteTaskDialog = useCallback(() => {
     if (focusedTaskId) {
-      const task = tasks.find((t) => t._id === focusedTaskId);
+      const task = tasks.find((t) => t.id === focusedTaskId);
       if (task) {
         openConfirmationDialog({
           title: t("Delete task"),
@@ -123,7 +123,7 @@ export function TaskView() {
               tasks={tasks}
               listItemsRef={listItemsRef}
               showHeader={!activeTaskList}
-              onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
+              onFocus={(index) => setFocusedTaskId(tasks[index].id)}
               onBlur={() => setFocusedTaskId(undefined)}
               onClick={(task) => _openTaskDialog(task)}
             />
@@ -133,7 +133,7 @@ export function TaskView() {
           tasks={tasks as TimelineTask[]}
           focusedTaskId={focusedTaskId}
           listItemsRef={listItemsRef}
-          onFocus={(index) => setFocusedTaskId(tasks[index]._id)}
+          onFocus={(index) => setFocusedTaskId(tasks[index].id)}
           onBlur={() => setFocusedTaskId(undefined)}
           onListItemClick={(task) => _openTaskDialog(task)}
         />

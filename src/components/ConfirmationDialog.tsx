@@ -34,6 +34,7 @@ export function ConfirmationDialog() {
 
   return (
     <ResponsiveDialog
+      data-testid="confirmation-dialog"
       fullScreen={false}
       open={open}
       onClose={handleClose}

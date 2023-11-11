@@ -53,7 +53,7 @@ export const TaskList = memo((props: TaskListProps) => {
     onClick,
   } = props;
   const { t } = useTranslation();
-  const { completeTask } = useTask();
+  const { toggleCompleteTask } = useTask();
   const hasItems = taskGroups.some((g) => g.items.length > 0);
 
   return (
@@ -76,10 +76,10 @@ export const TaskList = memo((props: TaskListProps) => {
                           listItemsRef.current[index] = el;
                         }
                       }}
-                      key={task._id}
+                      key={task.id}
                       task={task}
                       onButtonClick={() => onClick(task)}
-                      onCheckboxClick={() => completeTask(task)}
+                      onCheckboxClick={() => toggleCompleteTask(task)}
                       onFocus={() => onFocus(index)}
                       onBlur={onBlur}
                     />
@@ -91,7 +91,11 @@ export const TaskList = memo((props: TaskListProps) => {
         </StyledList>
       )}
       {!hasItems && (
-        <Typography sx={{ px: 2, pb: 3 }} level="body-md" color="neutral">
+        <Typography
+          sx={{ px: { xs: 2, sm: 3 }, pb: 3 }}
+          level="body-md"
+          color="neutral"
+        >
           {t("No tasks")}
         </Typography>
       )}

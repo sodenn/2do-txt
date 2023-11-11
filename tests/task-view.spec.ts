@@ -52,9 +52,8 @@ test.describe("Task View", () => {
     test(`${taskView}: should navigate through task list by using the arrow keys`, async ({
       page,
     }) => {
-      await page.keyboard.press("f");
-      await page.keyboard.press("Escape");
       await expect(page.getByTestId("task-list")).toBeVisible();
+      await expect(page.getByTestId("task")).toHaveCount(8);
       await page.keyboard.press("ArrowDown");
       await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
       await page.keyboard.press("ArrowDown");
@@ -158,16 +157,15 @@ test.describe("Task View", () => {
       );
     });
 
-    test(`${taskView}: should delete a task via the task menu`, async ({
-      page,
-    }, testInfo) => {
-      if (testInfo.title.startsWith("list:")) {
-        test.skip();
-      }
+    test(`${taskView}: should delete a task via shortcut`, async ({ page }) => {
       await expect(page.getByTestId("task")).toHaveCount(8);
-      const taskItem = page.getByTestId("task").nth(1);
-      await taskItem.hover();
-      await taskItem.getByLabel("Delete task").click();
+      await page.getByTestId("task-button").nth(0).focus();
+      await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
+      await page.keyboard.press("d");
+      await expect(page.getByTestId("confirmation-dialog")).toHaveAttribute(
+        "aria-hidden",
+        "false",
+      );
       await page.getByRole("button", { name: "Delete" }).click();
       await expect(page.getByTestId("task")).toHaveCount(7);
     });

@@ -1,6 +1,6 @@
 import { StartEllipsis } from "@/components/StartEllipsis";
 import { TaskList } from "@/utils/task-list";
-import { Option, Select, SelectProps } from "@mui/joy";
+import { FormControl, FormLabel, Option, Select, SelectProps } from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -22,17 +22,22 @@ export function FileSelect(props: FileSelectProps) {
   };
 
   return (
-    <Select
-      placeholder={t("Select todo.txt")}
-      required
-      value={filePath}
-      onChange={handleChange}
-    >
-      {options.map((item) => (
-        <Option key={item.filePath} value={item.filePath}>
-          <StartEllipsis sx={{ maxWidth: 300 }}>{item.filePath}</StartEllipsis>
-        </Option>
-      ))}
-    </Select>
+    <FormControl>
+      <FormLabel required>{t("File")}</FormLabel>
+      <Select
+        placeholder={t("Select todo.txt")}
+        required
+        value={filePath}
+        onChange={handleChange}
+      >
+        {options.map((item) => (
+          <Option key={item.filePath} value={item.filePath}>
+            <StartEllipsis sx={{ maxWidth: 300 }}>
+              {item.filePath}
+            </StartEllipsis>
+          </Option>
+        ))}
+      </Select>
+    </FormControl>
   );
 }

@@ -21,7 +21,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 interface TaskFormProps {
-  value: string;
+  value?: string;
   newTask: boolean;
   taskLists: TaskList[];
   projects: string[];
@@ -39,7 +39,7 @@ interface TaskGridProps
 }
 
 export function TaskForm(props: TaskFormProps) {
-  const { value, projects, contexts, tags, ...other } = props;
+  const { value = "", projects, contexts, tags, ...other } = props;
 
   const _tags = useMemo(() => {
     const tags = Object.keys(props.tags).reduce(

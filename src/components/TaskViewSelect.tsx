@@ -1,7 +1,7 @@
-import { NewBadge } from "@/components/NewBadge";
 import { useFilterStore } from "@/stores/filter-store";
 import { TaskView, useSettingsStore } from "@/stores/settings-store";
 import { FormControl, FormLabel, Option, Select, SelectProps } from "@mui/joy";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export function TaskViewSelect() {
@@ -9,6 +9,15 @@ export function TaskViewSelect() {
   const taskView = useSettingsStore((state) => state.taskView);
   const setTaskView = useSettingsStore((state) => state.setTaskView);
   const setSortBy = useFilterStore((state) => state.setSortBy);
+
+  const labels = useMemo(
+    () =>
+      ({
+        list: t("List"),
+        timeline: t("Timeline"),
+      }) as const,
+    [t],
+  );
 
   const handleChange: SelectProps<TaskView, false>["onChange"] = (_, value) => {
     const newValue = value || "list";
@@ -24,6 +33,7 @@ export function TaskViewSelect() {
       <Select
         value={taskView}
         onChange={handleChange}
+        renderValue={(opt) => (opt ? labels[opt.value] : null)}
         slotProps={{
           root: {
             "aria-label": "Select task view",
@@ -31,12 +41,10 @@ export function TaskViewSelect() {
         }}
       >
         <Option value="list" aria-label="List View">
-          {t("List")}
+          {labels.list}
         </Option>
         <Option value="timeline" aria-label="Timeline View">
-          <NewBadge till={new Date("2023-01-01T00:00:00.000Z")}>
-            {t("Timeline")}
-          </NewBadge>
+          {labels.timeline}
         </Option>
       </Select>
     </FormControl>

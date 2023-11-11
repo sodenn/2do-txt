@@ -1,7 +1,9 @@
+import { Fade } from "@/components/Fade";
 import {
   ResponsiveDialog,
   ResponsiveDialogActions,
   ResponsiveDialogContent,
+  ResponsiveDialogSecondaryActions,
   ResponsiveDialogTitle,
 } from "@/components/ResponsiveDialog";
 import { TaskForm } from "@/components/TaskForm";
@@ -12,13 +14,76 @@ import { Task } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
 import { useDialogButtonSize } from "@/utils/useDialogButtonSize";
 import { useTask } from "@/utils/useTask";
-import { Button } from "@mui/joy";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { Button, Stack } from "@mui/joy";
 import { ModalProps } from "@mui/joy/Modal";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-function rawText(createCreationDate: boolean, task?: Task) {
+function getValue(createCreationDate: boolean, task?: Task) {
   return task ? task.raw : createCreationDate ? formatDate(todayDate()) : "";
+}
+
+function DeleteTaskButton() {
+  const { t } = useTranslation();
+  const [showDeleteButton, setShowDeleteButton] = useState(true);
+  const [showDeleteConfirmButton, setShowDeleteConfirmButton] = useState(false);
+  const closeTaskDialog = useTaskDialogStore((state) => state.closeTaskDialog);
+  const task = useTaskDialogStore((state) => state.task);
+  const { deleteTask } = useTask();
+
+  const handleDelete = useCallback(() => {
+    if (task) {
+      deleteTask(task);
+    }
+    closeTaskDialog();
+  }, [closeTaskDialog, deleteTask, task]);
+
+  return (
+    <>
+      <Fade
+        duration={150}
+        in={showDeleteConfirmButton}
+        unmountOnExit
+        onExited={() => setShowDeleteButton(true)}
+      >
+        <Stack spacing={1} direction="row">
+          <Button
+            variant="soft"
+            color="neutral"
+            aria-label="Cancel delete task"
+            onClick={() => setShowDeleteConfirmButton(false)}
+          >
+            {t("Cancel")}
+          </Button>
+          <Button
+            variant="soft"
+            color="danger"
+            startDecorator={<DeleteForeverIcon />}
+            aria-label="Confirm delete"
+            onClick={handleDelete}
+          >
+            {t("Confirm")}
+          </Button>
+        </Stack>
+      </Fade>
+      <Fade
+        duration={150}
+        in={showDeleteButton}
+        unmountOnExit
+        onExited={() => setShowDeleteConfirmButton(true)}
+      >
+        <Button
+          variant="soft"
+          color="danger"
+          aria-label="Delete task"
+          onClick={() => setShowDeleteButton(false)}
+        >
+          {t("Delete")}
+        </Button>
+      </Fade>
+    </>
+  );
 }
 
 export function TaskDialog() {
@@ -47,7 +112,7 @@ export function TaskDialog() {
   const [selectedTaskList, setSelectedTaskList] = useState<
     TaskList | undefined
   >();
-  const [formDisabled, setFormDisabled] = useState(true);
+  const [emptyBody, setEmptyBody] = useState(true);
   const contexts = useMemo(
     () =>
       Object.keys(activeTaskList ? activeTaskList.contexts : commonContexts),
@@ -63,6 +128,11 @@ export function TaskDialog() {
     () => (activeTaskList || task ? [] : _taskLists),
     [_taskLists, activeTaskList, task],
   );
+  const formDisabled = useMemo(
+    () => (!task && !selectedTaskList) || !emptyBody,
+    [task, selectedTaskList, emptyBody],
+  );
+  const isNewTask = !!task?.id;
 
   const handleSave = useCallback(() => {
     if (formDisabled || !value) {
@@ -70,9 +140,9 @@ export function TaskDialog() {
     }
     closeTaskDialog();
     if (task) {
-      editTask({ raw: value, _id: task._id });
+      editTask({ text: value, id: task.id });
     } else if (selectedTaskList) {
-      addTask({ raw: value }, selectedTaskList);
+      addTask(value, selectedTaskList);
     }
   }, [
     addTask,
@@ -86,7 +156,7 @@ export function TaskDialog() {
 
   const handleChanged = useCallback((value: string, emptyBody: boolean) => {
     setValue(value);
-    setFormDisabled(!emptyBody);
+    setEmptyBody(emptyBody);
   }, []);
 
   const handleClose = useCallback<NonNullable<ModalProps["onClose"]>>(
@@ -97,12 +167,12 @@ export function TaskDialog() {
   );
 
   const handleEnter = () => {
-    const value = rawText(createCreationDate, task);
+    const value = getValue(createCreationDate, task);
     setValue(value);
-    setFormDisabled(!task?.body);
+    setEmptyBody(!!task && !!task.body);
     setSelectedTaskList(() => {
       if (task) {
-        return findTaskListByTaskId(task._id);
+        return findTaskListByTaskId(task.id);
       } else if (activeTaskList) {
         return activeTaskList;
       }
@@ -111,8 +181,8 @@ export function TaskDialog() {
 
   const handleExited = () => {
     cleanupTaskDialog();
-    setFormDisabled(true);
     setValue(undefined);
+    setEmptyBody(true);
     setSelectedTaskList(undefined);
   };
 
@@ -126,22 +196,20 @@ export function TaskDialog() {
       onExited={handleExited}
     >
       <ResponsiveDialogTitle>
-        {task?._id ? t("Edit Task") : t("Create Task")}
+        {task?.id ? t("Edit Task") : t("Create Task")}
       </ResponsiveDialogTitle>
       <ResponsiveDialogContent>
-        {value && (
-          <TaskForm
-            value={value}
-            newTask={!!task?._id}
-            contexts={contexts}
-            projects={projects}
-            tags={tags}
-            taskLists={taskLists}
-            onChange={handleChanged}
-            onFileSelect={setSelectedTaskList}
-            onEnterPress={handleSave}
-          />
-        )}
+        <TaskForm
+          value={value}
+          newTask={isNewTask}
+          contexts={contexts}
+          projects={projects}
+          tags={tags}
+          taskLists={taskLists}
+          onChange={handleChanged}
+          onFileSelect={setSelectedTaskList}
+          onEnterPress={handleSave}
+        />
       </ResponsiveDialogContent>
       <ResponsiveDialogActions>
         <Button
@@ -154,6 +222,11 @@ export function TaskDialog() {
           {t("Save")}
         </Button>
       </ResponsiveDialogActions>
+      {isNewTask && (
+        <ResponsiveDialogSecondaryActions>
+          <DeleteTaskButton />
+        </ResponsiveDialogSecondaryActions>
+      )}
     </ResponsiveDialog>
   );
 }
