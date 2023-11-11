@@ -158,9 +158,7 @@ test.describe("Task View", () => {
       );
     });
 
-    test.only(`${taskView}: should delete a task via shortcut`, async ({
-      page,
-    }) => {
+    test(`${taskView}: should delete a task via shortcut`, async ({ page }) => {
       await expect(page.getByTestId("task")).toHaveCount(8);
       await page.getByTestId("task-button").nth(0).focus();
       await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
