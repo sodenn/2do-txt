@@ -347,20 +347,6 @@ function addToDate(date: Date, amount: number, unit: string) {
   }
 }
 
-export function removeContext(text: string, context: string) {
-  const pattern = `(\\s+|^)@${context}(\\s+|$)`;
-  return text.replace(new RegExp(pattern, "g"), (match, p1, p2) => p1 + p2);
-}
-
-export function addContext(text: string, context: string) {
-  const pattern = `(\\s+|^)@${context}(\\s+|$)`;
-  if (!new RegExp(pattern, "g").test(text)) {
-    return `${text} @${context}`;
-  } else {
-    return text;
-  }
-}
-
 export function transformPriority(
   task: Task,
   transformation: PriorityTransformation,

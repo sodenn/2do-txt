@@ -48,7 +48,7 @@ type SaveTodoFile = {
   (taskList: TaskList): Promise<TaskList>;
 };
 
-export interface Order {
+interface Order {
   id: any;
   order: number;
 }
