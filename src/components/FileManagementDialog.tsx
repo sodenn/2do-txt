@@ -192,8 +192,8 @@ function FileManagementActions() {
     const icon = cloudStorageIcons[provider];
     return React.isValidElement<{ fontSize?: string }>(icon)
       ? React.cloneElement(icon, {
-        fontSize: "small",
-      })
+          fontSize: "small",
+        })
       : icon;
   };
 
@@ -530,11 +530,11 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
 
   const buttonText = cloudFileRef
     ? t("Disable cloud storage sync", {
-      provider,
-    })
+        provider,
+      })
     : t("Enable cloud storage sync", {
-      provider,
-    });
+        provider,
+      });
 
   return (
     <MenuItem onClick={enableCloudSync} disabled={loading}>

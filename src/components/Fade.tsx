@@ -19,11 +19,11 @@ type FadeProps = Omit<
 > & { duration?: number };
 
 export function Fade({
-                       in: inProp,
-                       duration = 250,
-                       children,
-                       ...other
-                     }: FadeProps) {
+  in: inProp,
+  duration = 250,
+  children,
+  ...other
+}: FadeProps) {
   const defaultStyle = useMemo(
     () => ({
       transition: `opacity ${duration}ms ease-in-out`,

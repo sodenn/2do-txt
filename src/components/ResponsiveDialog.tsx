@@ -25,9 +25,9 @@ import {
 
 interface ResponsiveDialogProps
   extends Pick<
-    TransitionProps,
-    "onExited" | "onEnter" | "onEntered" | "onExit"
-  >,
+      TransitionProps,
+      "onExited" | "onEnter" | "onEntered" | "onExit"
+    >,
     Pick<ModalProps, "onClose">,
     ModalDialogProps {
   open?: boolean;
@@ -143,9 +143,9 @@ function CloseButton({ onClose, fullScreen }: CloseButtonProps) {
 }
 
 export function ResponsiveDialogTitle({
-                                        children,
-                                        fullScreen,
-                                      }: ResponsiveDialogChild) {
+  children,
+  fullScreen,
+}: ResponsiveDialogChild) {
   return (
     <Typography
       fontSize={fullScreen ? "md" : "lg"}
@@ -163,9 +163,9 @@ export function ResponsiveDialogTitle({
 }
 
 export function ResponsiveDialogContent({
-                                          children,
-                                          fullScreen,
-                                        }: ResponsiveDialogChild) {
+  children,
+  fullScreen,
+}: ResponsiveDialogChild) {
   const mobileScreen = useMobileScreen();
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
   const [divider, setDivider] = useState(false);
@@ -233,9 +233,9 @@ export function ResponsiveDialogContent({
 }
 
 export function ResponsiveDialogActions({
-                                          children,
-                                          fullScreen,
-                                        }: ResponsiveDialogChild) {
+  children,
+  fullScreen,
+}: ResponsiveDialogChild) {
   return (
     <Stack
       direction="row"
@@ -259,9 +259,9 @@ export function ResponsiveDialogActions({
 }
 
 export function ResponsiveDialogSecondaryActions({
-                                                   children,
-                                                   fullScreen,
-                                                 }: ResponsiveDialogChild) {
+  children,
+  fullScreen,
+}: ResponsiveDialogChild) {
   return (
     <Stack
       direction="row"

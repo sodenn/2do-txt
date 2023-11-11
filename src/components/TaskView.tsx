@@ -30,8 +30,8 @@ export function TaskView() {
     taskView === "timeline"
       ? timelineTasks
       : taskGroups.flatMap((i) =>
-        i.groups.reduce<Task[]>((prev, curr) => [...prev, ...curr.items], []),
-      );
+          i.groups.reduce<Task[]>((prev, curr) => [...prev, ...curr.items], []),
+        );
 
   const focusNextListItem = useCallback(
     (direction: "up" | "down") => {
@@ -93,11 +93,11 @@ export function TaskView() {
       taskLists.length === 0
         ? {}
         : {
-          ArrowUp: () => focusNextListItem("up"),
-          ArrowDown: () => focusNextListItem("down"),
-          e: openTaskDialog,
-          d: openDeleteTaskDialog,
-        },
+            ArrowUp: () => focusNextListItem("up"),
+            ArrowDown: () => focusNextListItem("down"),
+            e: openTaskDialog,
+            d: openDeleteTaskDialog,
+          },
     [focusNextListItem, openDeleteTaskDialog, openTaskDialog, taskLists.length],
   );
 
