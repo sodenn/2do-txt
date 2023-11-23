@@ -70,8 +70,8 @@ export async function getSecureStorageItem(
   return platform === "ios"
     ? iosSecureStorage.getSecureStorageItem(key)
     : platform === "desktop"
-    ? desktopSecureStorage.getSecureStorageItem(key)
-    : webSecureStorage.getSecureStorageItem(key);
+      ? desktopSecureStorage.getSecureStorageItem(key)
+      : webSecureStorage.getSecureStorageItem(key);
 }
 
 export async function setSecureStorageItem(
@@ -82,8 +82,8 @@ export async function setSecureStorageItem(
   return platform === "ios"
     ? iosSecureStorage.setSecureStorageItem(key, value)
     : platform === "desktop"
-    ? desktopSecureStorage.setSecureStorageItem(key, value)
-    : webSecureStorage.setSecureStorageItem(key, value);
+      ? desktopSecureStorage.setSecureStorageItem(key, value)
+      : webSecureStorage.setSecureStorageItem(key, value);
 }
 
 export async function removeSecureStorageItem(key: SecureStorageKeys) {
@@ -91,6 +91,6 @@ export async function removeSecureStorageItem(key: SecureStorageKeys) {
   return platform === "ios"
     ? iosSecureStorage.removeSecureStorageItem(key)
     : platform === "desktop"
-    ? desktopSecureStorage.removeSecureStorageItem(key)
-    : webSecureStorage.removeSecureStorageItem(key);
+      ? desktopSecureStorage.removeSecureStorageItem(key)
+      : webSecureStorage.removeSecureStorageItem(key);
 }

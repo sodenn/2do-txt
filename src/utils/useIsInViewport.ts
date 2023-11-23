@@ -20,8 +20,8 @@ export function useIsInViewport(elem: Element) {
           currentY > previousY && currentRatio < previousRatio
             ? "above"
             : currentY < previousY
-            ? "below"
-            : undefined;
+              ? "below"
+              : undefined;
         setValue((curr) => ({
           visible: isIntersecting,
           ...(isIntersecting

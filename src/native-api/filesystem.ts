@@ -188,8 +188,8 @@ const desktopFilesystem: Filesystem = {
     return Array.isArray(filePath) && filePath.length > 0
       ? filePath[0]
       : typeof filePath === "string"
-      ? filePath
-      : undefined;
+        ? filePath
+        : undefined;
   },
   async saveFile(filePath: string) {
     const docDir = await documentDir();

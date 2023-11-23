@@ -128,8 +128,8 @@ export function useTask() {
   const activeTaskList = activeTaskListPath
     ? taskLists.find((list) => list.filePath === activeTaskListPath)
     : taskLists.length === 1
-    ? taskLists[0]
-    : undefined;
+      ? taskLists[0]
+      : undefined;
 
   const findTaskListByTaskId = useCallback(
     (taskId?: string) => {

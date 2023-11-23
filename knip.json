@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@2/schema.json",
-  "ignore": ["**/lib/**", "tools/**", "src/components/NewBadge.tsx"],
+  "ignore": ["**/lib/**", "tools/**", "src/components/NewBadge.tsx", "release.config.js"],
   "ignoreDependencies": [
     "@capacitor/ios",
     "fast-xml-parser",

@@ -93,8 +93,8 @@ export function createCloudStorage({
       result.operation === "download"
         ? await createChecksum(await result.response.clone().arrayBuffer())
         : options.content
-        ? await createChecksum(options.content)
-        : options.ref.checksum;
+          ? await createChecksum(options.content)
+          : options.ref.checksum;
 
     const ref = {
       ...options.ref,
