@@ -1,6 +1,7 @@
 {
   "name": "2do-txt",
   "version": "1.18.0",
+  "type": "module",
   "description": "todo.txt-compatible task manager",
   "license": "GPL-3.0",
   "private": true,
@@ -128,7 +129,6 @@
     "semantic-release": "22.0.7",
     "typescript": "5.2.2",
     "vite": "5.0.2",
-    "vite-plugin-eslint": "1.8.1",
     "vitest": "0.34.6"
   }
 }

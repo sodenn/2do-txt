@@ -1,13 +1,6 @@
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { defineConfig } from "vite";
-import eslintPlugin from "vite-plugin-eslint";
-
-const eslintOptions: any = {
-  cache: false,
-  emitWarning: true,
-  emitError: true,
-};
 
 const resolve = {
   alias: ["components", "images", "native-api", "stores", "utils"].map(
@@ -18,20 +11,19 @@ const resolve = {
   ),
 };
 
-const plugins =
-  process.env.NODE_ENV === "test"
-    ? [react()]
-    : [eslintPlugin(eslintOptions), react()];
-
 export default defineConfig({
   build: {
     outDir: "./build",
-    sourcemap: true,
+    sourcemap: false,
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      external: ["crypto"],
+    },
   },
   resolve,
   test: {
     environment: "happy-dom",
     include: ["src/**/*.test.{ts,tsx}"],
   },
-  plugins,
+  plugins: [react()],
 });
