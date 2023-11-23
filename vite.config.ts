@@ -22,6 +22,7 @@ export default defineConfig({
   },
   resolve,
   test: {
+    globals: true,
     environment: "happy-dom",
     include: ["src/**/*.test.{ts,tsx}"],
   },
