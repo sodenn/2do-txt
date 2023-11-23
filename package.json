@@ -115,7 +115,7 @@
     "@types/react-transition-group": "4.4.9",
     "@typescript-eslint/eslint-plugin": "6.10.0",
     "@typescript-eslint/parser": "6.10.0",
-    "@vitejs/plugin-react-swc": "3.4.1",
+    "@vitejs/plugin-react-swc": "3.5.0",
     "cordova-res": "0.15.4",
     "eslint": "8.53.0",
     "eslint-config-prettier": "9.0.0",
