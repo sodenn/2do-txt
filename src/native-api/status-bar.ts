@@ -7,7 +7,7 @@ export function setStatusBarStyling(mode: ThemeMode) {
       mode === "light"
         ? Style.Light
         : mode === "dark"
-        ? Style.Dark
-        : Style.Default,
+          ? Style.Dark
+          : Style.Default,
   }).catch((error) => void error);
 }

@@ -4,8 +4,8 @@ export async function createChecksum(content: string | ArrayBuffer) {
     content instanceof Uint8Array
       ? content.buffer
       : content instanceof ArrayBuffer
-      ? content
-      : encoder.encode(content);
+        ? content
+        : encoder.encode(content);
   const subtle = await getSubtle();
   const checksum = await subtle.digest("SHA-1", data);
   return bufferToHex(checksum);

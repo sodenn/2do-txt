@@ -40,8 +40,8 @@ export function CloudStorageConnectionButtons({
     return typeof status === "undefined"
       ? true
       : status === "connect"
-      ? !connected
-      : connected;
+        ? !connected
+        : connected;
   });
 
   const handleItemClick = async (provider: Provider) => {
