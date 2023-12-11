@@ -21,21 +21,25 @@ import {
 import {
   $createParagraphNode,
   $getRoot,
+  $isElementNode,
   BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
   COMMAND_PRIORITY_NORMAL,
   EditorState,
   FOCUS_COMMAND,
   KEY_ENTER_COMMAND,
+  LexicalNode,
   LineBreakNode,
 } from "lexical";
 import {
   $convertToMentionNodes,
+  $isZeroWidthNode,
   BeautifulMentionNode,
   BeautifulMentionsItemsProps,
   BeautifulMentionsMenuItemProps,
   BeautifulMentionsMenuProps,
   BeautifulMentionsPlugin,
+  ZERO_WIDTH_CHARACTER,
   ZeroWidthNode,
   ZeroWidthPlugin,
 } from "lexical-beautiful-mentions";
@@ -270,6 +274,19 @@ export function EditorContext({
   );
 }
 
+function getTextContent(node: LexicalNode): string {
+  let result = "";
+  if ($isElementNode(node)) {
+    const children = node.getChildren();
+    for (const child of children) {
+      result += getTextContent(child);
+    }
+  } else if (!$isZeroWidthNode(node)) {
+    result += node.getTextContent();
+  }
+  return result;
+}
+
 export function Editor(props: EditorProps) {
   const {
     label,
@@ -289,7 +306,8 @@ export function Editor(props: EditorProps) {
     (editorState: EditorState) => {
       editorState.read(() => {
         const root = $getRoot();
-        onChange(root.getTextContent());
+        const text = getTextContent(root);
+        onChange(text);
       });
     },
     [onChange],
@@ -333,7 +351,7 @@ export function Editor(props: EditorProps) {
         {!(touchScreen && platform === "web") && (
           <AutoFocusPlugin defaultSelection="rootEnd" />
         )}
-        <ZeroWidthPlugin />
+        <ZeroWidthPlugin textContent={ZERO_WIDTH_CHARACTER} />
         <SingleLinePlugin onEnter={onEnter} mentionMenuOpen={mentionMenuOpen} />
         <BeautifulMentionsPlugin
           items={items}
