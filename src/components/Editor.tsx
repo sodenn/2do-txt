@@ -274,7 +274,7 @@ export function EditorContext({
   );
 }
 
-export function getTextContent(node: LexicalNode): string {
+function getTextContent(node: LexicalNode): string {
   let result = "";
   if ($isElementNode(node)) {
     const children = node.getChildren();
