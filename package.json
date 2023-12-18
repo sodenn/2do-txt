@@ -76,7 +76,7 @@
     "@tauri-apps/api": "1.5.2",
     "@types/pulltorefreshjs": "0.1.7",
     "capacitor-rate-app": "4.0.3",
-    "cordova-plugin-inappbrowser": "5.0.0",
+    "cordova-plugin-inappbrowser": "6.0.0",
     "cordova-plugin-ios-keychain": "https://github.com/ionic-team/cordova-plugin-ios-keychain.git#adb566bc0acac5c2500496d5507a5eb74689980f",
     "date-fns": "2.30.0",
     "dropbox": "10.34.0",
