@@ -1,28 +1,17 @@
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Page } from "@/components/Page";
-import { ProviderBundle } from "@/components/ProviderBundle";
 import { loader } from "@/components/StoreProvider";
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <ProviderBundle>
-        <Outlet />
-      </ProviderBundle>
-    ),
+    lazy: () => import("@/components/ProviderBundle"),
     loader,
-    shouldRevalidate: () => false,
-    errorElement: <ErrorBoundary />,
     children: [
       {
-        path: "/",
-        element: <Page />,
-      },
-      {
-        path: "/dropbox",
-        element: <Page />,
+        // the provider parameter is optional and is used for mapping an
+        // OAuth redirect URI after logging in to cloud storage
+        path: "/:provider?",
+        lazy: () => import("@/components/Page"),
       },
     ],
   },

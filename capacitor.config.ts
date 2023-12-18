@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: "dev.sodenn.todotxt",
   appName: "2do.txt",
   webDir: "build",
-  bundledWebRuntime: false,
   plugins: {
     CapacitorHttp: {
       enabled: true,

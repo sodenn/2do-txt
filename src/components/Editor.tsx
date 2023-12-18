@@ -146,13 +146,7 @@ function useIsFocused() {
   return hasFocus;
 }
 
-function SingleLinePlugin({
-  onEnter,
-  mentionMenuOpen,
-}: {
-  onEnter?: () => void;
-  mentionMenuOpen: boolean;
-}) {
+function SingleLinePlugin({ onEnter }: { onEnter?: () => void }) {
   const [editor] = useLexicalComposerContext();
   useEffect(
     () =>
@@ -162,7 +156,6 @@ function SingleLinePlugin({
           if (
             event &&
             onEnter &&
-            !mentionMenuOpen &&
             !event.shiftKey &&
             !event.ctrlKey &&
             !event.metaKey
@@ -174,7 +167,7 @@ function SingleLinePlugin({
         },
         COMMAND_PRIORITY_LOW,
       ),
-    [editor, mentionMenuOpen, onEnter],
+    [editor, onEnter],
   );
   useEffect(
     () =>
@@ -298,7 +291,6 @@ export function Editor(props: EditorProps) {
   } = props;
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
-  const [mentionMenuOpen, setMentionMenuOpen] = useState(false);
   const touchScreen = hasTouchScreen();
   const platform = usePlatformStore((state) => state.platform);
 
@@ -316,14 +308,6 @@ export function Editor(props: EditorProps) {
   const handleClick = useCallback(() => {
     editor.focus();
   }, [editor]);
-
-  const handleMentionsMenuOpen = useCallback(() => {
-    setMentionMenuOpen(true);
-  }, []);
-
-  const handleMentionsMenuClose = useCallback(() => {
-    setMentionMenuOpen(false);
-  }, []);
 
   return (
     <FormControl>
@@ -352,7 +336,7 @@ export function Editor(props: EditorProps) {
           <AutoFocusPlugin defaultSelection="rootEnd" />
         )}
         <ZeroWidthPlugin textContent={ZERO_WIDTH_CHARACTER} />
-        <SingleLinePlugin onEnter={onEnter} mentionMenuOpen={mentionMenuOpen} />
+        <SingleLinePlugin onEnter={onEnter} />
         <BeautifulMentionsPlugin
           items={items}
           menuComponent={MenuComponent}
@@ -361,8 +345,6 @@ export function Editor(props: EditorProps) {
           insertOnBlur
           allowSpaces={false}
           menuAnchorClassName="Editor-mention-anchor"
-          onMenuOpen={handleMentionsMenuOpen}
-          onMenuClose={handleMentionsMenuClose}
         />
       </Textbox>
     </FormControl>
