@@ -1,10 +1,11 @@
 import { AppThemeProvider } from "@/components/AppThemeProvider";
 import { SnackbarProvider } from "@/components/Snackbar";
 import { LoaderData, StoreProvider } from "@/components/StoreProvider";
-import { PropsWithChildren } from "react";
-import { useLoaderData } from "react-router-dom";
+import { NonIndexRouteObject, Outlet, useLoaderData } from "react-router-dom";
 
-export function ProviderBundle({ children }: PropsWithChildren) {
+export { ErrorBoundary } from "@/components/ErrorBoundary";
+
+export function Component() {
   const loaderData = useLoaderData() as LoaderData;
   return (
     <StoreProvider
@@ -17,8 +18,18 @@ export function ProviderBundle({ children }: PropsWithChildren) {
       network={loaderData.network}
     >
       <AppThemeProvider>
-        <SnackbarProvider>{children}</SnackbarProvider>
+        <SnackbarProvider>
+          <Outlet />
+        </SnackbarProvider>
       </AppThemeProvider>
     </StoreProvider>
   );
 }
+
+export const shouldRevalidate: NonIndexRouteObject["shouldRevalidate"] = ({
+  currentUrl,
+  nextUrl,
+}) => {
+  // disable revalidation when the search params change
+  return currentUrl.search === nextUrl.search;
+};

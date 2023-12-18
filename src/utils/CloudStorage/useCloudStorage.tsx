@@ -18,7 +18,7 @@ import { getDoneFilePath } from "@/utils/todo-files";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import { ReactNode, useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { shouldUseInAppBrowser } from "./auth";
 import { getDropboxOathOptions, requestDropboxRefreshToken } from "./dropbox";
 import {
@@ -38,6 +38,7 @@ export const cloudStorageIcons: Record<Provider, ReactNode> = {
 
 export function useCloudStorage() {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { openSnackbar, closeSnackbar } = useSnackbar();
@@ -383,7 +384,7 @@ export function useCloudStorage() {
       const refreshToken = await requestDropboxRefreshToken(codeVerifier, code);
       await createDropboxStorage(refreshToken);
     }
-  }, [searchParams, navigate, createDropboxStorage]);
+  }, [searchParams, navigate, createDropboxStorage, location.pathname]);
 
   return {
     authenticate,

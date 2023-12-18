@@ -14,7 +14,7 @@
     "url": "https://github.com/sodenn/2do-txt.git"
   },
   "scripts": {
-    "start": "vite --host",
+    "dev": "vite --host",
     "build": "vite build",
     "test": "vitest run",
     "e2e": "playwright test",
@@ -28,10 +28,10 @@
     "cap:sync": "npx cap sync",
     "ios:sync": "npx cap sync ios",
     "ios:open": "npx cap open ios",
-    "ios:start": "run-s build ios:sync ios:open",
+    "ios:dev": "run-s build ios:sync ios:open",
     "ios:res": "cordova-res ios --skip-config --copy",
     "tauri": "tauri",
-    "tauri:start": "RUST_BACKTRACE=full npm run tauri dev",
+    "tauri:dev": "RUST_BACKTRACE=full npm run tauri dev",
     "semantic-release": "semantic-release"
   },
   "browserslist": {

@@ -11,7 +11,7 @@ Here is a quick guide to doing code contributions to this app.
 4. Create a new branch following the convention `[type/scope]`. Type can be either `fix`, `feat`, or any other conventional commit type. Scope is a short describes of the work.
 5. Start the app:
    ```sh
-   npm start
+   npm run dev
    ```
 6. Make and commit your changes following the [commit convention](https://www.conventionalcommits.org/en/v1.0.0/).
 7. Ensure tests and build passes:
@@ -27,12 +27,12 @@ Here is a quick guide to doing code contributions to this app.
 ### Tauri (Desktop App)
 If you want to start the Desktop App, run the following command:
 ```sh
-npm run tauri:start
+npm run tauri:dev
 ```
 
 ### iOS
 If you want to start the iOS App, run the following commands (⚠️ Hot Reload is not supported):
 ```sh
 npm run build # Always necessary after code changes have been made
-npm run ios:start
+npm run ios:dev
 ```

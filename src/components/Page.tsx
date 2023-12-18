@@ -21,7 +21,7 @@ const SafeAreaContainer = styled(Container)({
   paddingBottom: "env(safe-area-inset-bottom)",
 });
 
-export function Page() {
+export function Component() {
   const top = useScrollingStore((state) => state.top);
   return (
     <FilePicker>
