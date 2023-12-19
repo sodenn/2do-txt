@@ -8,6 +8,7 @@ test.describe("Screenshots", () => {
   test("should take a screenshot of the onboarding screen", async ({
     page,
   }) => {
+    await expect(page.getByText("Get Started")).toBeVisible();
     await expect(page).toHaveScreenshot();
   });
 

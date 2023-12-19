@@ -170,7 +170,6 @@ export function SnackbarProvider({ children }: PropsWithChildren) {
 
   const closeSnackbar = useCallback((id: string | number) => {
     const item = items.current.find((item) => item.id === id);
-    items.current = items.current.filter((item) => item.id !== id);
     let dismissTimeout = 0;
     // make sure the minimum time of the snackbar is 500ms
     if (item?.loading && !item.close) {
@@ -178,6 +177,7 @@ export function SnackbarProvider({ children }: PropsWithChildren) {
       dismissTimeout = Math.max(0, 500 - ms);
     }
     setTimeout(() => {
+      items.current = items.current.filter((item) => item.id !== id);
       toast.dismiss(id);
     }, dismissTimeout);
   }, []);
