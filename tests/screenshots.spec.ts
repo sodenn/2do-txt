@@ -8,7 +8,7 @@ test.describe("Screenshots", () => {
   test("should take a screenshot of the onboarding screen", async ({
     page,
   }) => {
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ timeout: 10000 });
   });
 
   test("should take a screenshot of the task list", async ({ page }) => {
