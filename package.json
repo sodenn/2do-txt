@@ -122,13 +122,13 @@
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "happy-dom": "12.10.3",
-    "knip": "3.8.2",
+    "knip": "3.8.3",
     "npm-run-all": "4.1.5",
     "prettier": "3.1.1",
     "prettier-plugin-organize-imports": "3.2.4",
     "semantic-release": "22.0.12",
     "typescript": "5.3.3",
     "vite": "5.0.10",
-    "vitest": "1.0.4"
+    "vitest": "1.1.0"
   }
 }
