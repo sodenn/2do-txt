@@ -7,8 +7,12 @@ test.beforeEach(async ({ page }) => {
 test.describe("Screenshots", () => {
   test("should take a screenshot of the onboarding screen", async ({
     page,
+    isMobile,
   }) => {
-    await expect(page).toHaveScreenshot({ timeout: 10000 });
+    if (isMobile) {
+      await page.waitForTimeout(2000);
+    }
+    await expect(page).toHaveScreenshot();
   });
 
   test("should take a screenshot of the task list", async ({ page }) => {
