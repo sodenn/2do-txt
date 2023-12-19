@@ -8,6 +8,7 @@ if [[ $VERCEL_GIT_COMMIT_REF == main ]] || \
    [[ $VERCEL_GIT_COMMIT_REF == style* ]] || \
    [[ $VERCEL_GIT_COMMIT_REF == test* ]] || \
    [[ $VERCEL_GIT_COMMIT_REF == chore* ]] || \
+   [[ $VERCEL_GIT_COMMIT_REF == perf* ]] || \
    [[ $VERCEL_GIT_COMMIT_REF == fix* ]] || \
    [[ $VERCEL_GIT_COMMIT_REF == refactor* ]] || \
    [[ $VERCEL_GIT_COMMIT_REF == renovate* ]] || \
