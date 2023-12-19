@@ -47,6 +47,7 @@ import {
   initializeThemeStore,
   themeLoader,
 } from "@/stores/theme-store";
+import { preloadImages } from "@/utils/images";
 import { migrate } from "@/utils/migrations";
 import { useRef, type PropsWithChildren } from "react";
 
@@ -71,6 +72,7 @@ export async function loader(): Promise<LoaderData> {
       taskLoader(),
       cloudLoader(),
       networkLoader(),
+      preloadImages([new URL("@/images/logo.png", import.meta.url)]),
     ]);
   return { filter, settings, platform, theme, task, cloud, network };
 }
