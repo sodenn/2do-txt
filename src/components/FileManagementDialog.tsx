@@ -67,6 +67,7 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemContent,
   ListItemDecorator,
   Menu,
   MenuButton,
@@ -363,8 +364,54 @@ function FileListItem(props: FileListItemProps) {
     <ListItem
       ref={setNodeRef}
       style={style}
-      endAction={
-        showClosePrompt ? (
+      role="listitem"
+      data-testid="draggable-file"
+    >
+      <ListItemDecorator
+        {...listeners}
+        {...attributes}
+        sx={{
+          cursor: "pointer",
+          display: showClosePrompt || disableDrag ? "none" : "inline-flex",
+        }}
+        aria-label={`Draggable file ${filePath}`}
+        tabIndex={-1}
+      >
+        <DragIndicatorIcon />
+      </ListItemDecorator>
+      <ListItemContent>
+        {!showClosePrompt && (
+          <Box sx={{ overflow: "hidden" }}>
+            <StartEllipsis>{filePath}</StartEllipsis>
+            {cloudFileRef && (
+              <Stack spacing={1} direction="row" alignItems="center">
+                <SyncIcon fontSize="inherit" />
+                <Typography level="body-sm">
+                  {cloudFileLastModified &&
+                    formatLocalDateTime(cloudFileLastModified, language)}
+                </Typography>
+              </Stack>
+            )}
+          </Box>
+        )}
+        {showClosePrompt && (
+          <Typography noWrap>
+            {deleteFile ? (
+              <Trans
+                i18nKey="Delete file"
+                values={{ fileName: getFilename(filePath) }}
+              />
+            ) : (
+              <Trans
+                i18nKey="Close file"
+                values={{ fileName: getFilename(filePath) }}
+              />
+            )}
+          </Typography>
+        )}
+      </ListItemContent>
+      <ListItemDecorator>
+        {showClosePrompt ? (
           <Stack spacing={1} direction="row">
             <Tooltip title={t("Cancel")}>
               <IconButton
@@ -394,52 +441,8 @@ function FileListItem(props: FileListItemProps) {
             onMarkedForClosing={onMarkedForClosing}
             onDownloadClick={() => onDownload(filePath)}
           />
-        )
-      }
-      role="listitem"
-      data-testid="draggable-file"
-    >
-      <ListItemDecorator
-        {...listeners}
-        {...attributes}
-        sx={{
-          cursor: "pointer",
-          display: showClosePrompt || disableDrag ? "none" : "inline-flex",
-        }}
-        aria-label={`Draggable file ${filePath}`}
-        tabIndex={-1}
-      >
-        <DragIndicatorIcon />
+        )}
       </ListItemDecorator>
-      {!showClosePrompt && (
-        <Box sx={{ overflow: "hidden" }}>
-          <StartEllipsis>{filePath}</StartEllipsis>
-          {cloudFileRef && (
-            <Stack spacing={1} direction="row" alignItems="center">
-              <SyncIcon fontSize="inherit" />
-              <Typography level="body-sm">
-                {cloudFileLastModified &&
-                  formatLocalDateTime(cloudFileLastModified, language)}
-              </Typography>
-            </Stack>
-          )}
-        </Box>
-      )}
-      {showClosePrompt && (
-        <Typography>
-          {deleteFile ? (
-            <Trans
-              i18nKey="Delete file"
-              values={{ fileName: getFilename(filePath) }}
-            />
-          ) : (
-            <Trans
-              i18nKey="Close file"
-              values={{ fileName: getFilename(filePath) }}
-            />
-          )}
-        </Typography>
-      )}
     </ListItem>
   );
 }

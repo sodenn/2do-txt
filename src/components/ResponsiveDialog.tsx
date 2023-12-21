@@ -342,6 +342,7 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
     onEnter,
     fullScreen: fullScreenProp,
     sx,
+    maxWidth = "sm",
     ...other
   } = props;
   const mobileScreen = useMobileScreen();
@@ -403,13 +404,13 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
               ...(!fullScreen && {
                 width: (theme) =>
                   fullWidth ? `calc(100% - 2 * ${theme.spacing(2)})` : "unset",
-                maxWidth: "600px",
               }),
               ...styles.dialog,
               ...styles.dialogTransition[state],
               ...sx,
             }}
             aria-hidden={state !== "entered"}
+            {...(!fullScreen && { maxWidth })}
             {...other}
           >
             {renderModal && (
