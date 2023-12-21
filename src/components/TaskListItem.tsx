@@ -9,6 +9,7 @@ const StyledListItem = styled(ListItem, {
 })(({ theme }) => ({
   ".MuiListItem-startAction": {
     left: theme.spacing(0.5),
+    zIndex: 2,
   },
 }));
 
