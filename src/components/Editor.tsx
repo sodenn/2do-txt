@@ -7,7 +7,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
   Box,
@@ -313,7 +313,7 @@ export function Editor(props: EditorProps) {
     <FormControl>
       {label && <FormLabel onClick={handleClick}>{label}</FormLabel>}
       <Textbox focused={focused} className={focused ? "focused" : undefined}>
-        <PlainTextPlugin
+        <RichTextPlugin
           contentEditable={
             <ContentEditable
               style={{
