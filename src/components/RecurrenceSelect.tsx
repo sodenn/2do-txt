@@ -41,7 +41,7 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
     }
   }, [value]);
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLUListElement>) => {
     if (event.key === "Escape" && isOpen) {
       event.stopPropagation();
     }
@@ -87,10 +87,8 @@ export function RecurrenceSelect(props: RecurrenceSelectProps) {
           onChange={(_, value) => handleChangeUnit(value)}
           sx={{ py: 0 }}
           slotProps={{
-            root: {
-              onKeyDown: handleKeyDown,
-            },
             listbox: {
+              onKeyDown: handleKeyDown,
               "aria-label": "Select unit",
             },
           }}
