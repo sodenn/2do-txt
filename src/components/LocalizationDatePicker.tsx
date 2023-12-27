@@ -1,3 +1,4 @@
+import { useMediaQuery } from "@/utils/useMediaQuery";
 import {
   Button,
   FormControl,
@@ -227,6 +228,7 @@ export const LocalizationDatePicker = forwardRef<
   LocalizationDatePickerProps
 >((props, ref) => {
   const { value = null, ariaLabel, onChange, ...rest } = props;
+  const desktop = useMediaQuery("@media (pointer: fine)");
   const [selectedSections, setSelectedSections] =
     useState<FieldSelectedSections>(null);
 
@@ -285,6 +287,9 @@ export const LocalizationDatePicker = forwardRef<
           openPickerButton: {
             // @ts-ignore
             "data-testid": `${ariaLabel} pickerbutton`,
+          },
+          actionBar: {
+            actions: desktop ? ["clear"] : ["clear", "accept"],
           },
           popper: {
             modifiers: [
