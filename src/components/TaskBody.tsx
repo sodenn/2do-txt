@@ -5,10 +5,12 @@ interface TaskBodyProps {
   task: Task;
 }
 
-const TextContainer = styled("span")({
-  fontSize: "0.9em",
+const TextContainer = styled("span")(({ theme }) => ({
+  [theme.breakpoints.only("xs")]: {
+    fontSize: "0.9em",
+  },
   hyphens: "auto",
-});
+}));
 
 export function TaskBody({ task }: TaskBodyProps) {
   const formatBody = useFormatBody();

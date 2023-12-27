@@ -35,7 +35,7 @@ export function ConfirmationDialog() {
   return (
     <ResponsiveDialog
       data-testid="confirmation-dialog"
-      fullScreen={false}
+      disableFullscreen
       open={open}
       onClose={handleClose}
       onExited={cleanupConfirmationDialog}

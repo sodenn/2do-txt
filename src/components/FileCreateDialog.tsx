@@ -1,6 +1,7 @@
 import {
   ResponsiveDialog,
   ResponsiveDialogActions,
+  ResponsiveDialogButton,
   ResponsiveDialogContent,
   ResponsiveDialogTitle,
 } from "@/components/ResponsiveDialog";
@@ -17,10 +18,8 @@ import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { Provider, useCloudStorage } from "@/utils/CloudStorage";
 import { addTodoFilePath } from "@/utils/settings";
 import { defaultTodoFilePath } from "@/utils/todo-files";
-import { useDialogButtonSize } from "@/utils/useDialogButtonSize";
 import { useTask } from "@/utils/useTask";
 import {
-  Button,
   FormControl,
   FormLabel,
   Input,
@@ -134,7 +133,6 @@ function DesktopFileCreateDialog(props: FileCreateDialogProps) {
 const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   const { onCreateFile, onClose, open } = props;
   const { t } = useTranslation();
-  const buttonSize = useDialogButtonSize();
   const [fileName, setFileName] = useState("");
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog,
@@ -255,6 +253,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
           <FormControl>
             <FormLabel>{t("File Name")}</FormLabel>
             <Input
+              autoFocus
               value={fileName}
               onChange={(event) => setFileName(event.target.value)}
               fullWidth
@@ -289,14 +288,13 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
         </Stack>
       </ResponsiveDialogContent>
       <ResponsiveDialogActions>
-        <Button
-          size={buttonSize}
+        <ResponsiveDialogButton
           aria-label="Create file"
           disabled={!fileName}
           onClick={handleSave}
         >
           {t("Create")}
-        </Button>
+        </ResponsiveDialogButton>
       </ResponsiveDialogActions>
     </ResponsiveDialog>
   );

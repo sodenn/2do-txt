@@ -15,11 +15,17 @@ import { WebDAVDialog } from "@/components/WebDAVDialog";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { Box, Container, styled } from "@mui/joy";
 
-const SafeAreaContainer = styled(Container)({
+const SafeAreaContainer = styled(Container)(({ theme }) => ({
   paddingRight: "env(safe-area-inset-right)",
   paddingLeft: "env(safe-area-inset-left)",
   paddingBottom: "env(safe-area-inset-bottom)",
-});
+  [theme.breakpoints.up("sm")]: {
+    paddingTop: theme.spacing(1),
+  },
+  [theme.breakpoints.up("lg")]: {
+    paddingTop: theme.spacing(2),
+  },
+}));
 
 export function Component() {
   const top = useScrollingStore((state) => state.top);

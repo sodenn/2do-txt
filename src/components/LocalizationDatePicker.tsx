@@ -32,7 +32,7 @@ import { useLocaleText } from "@mui/x-date-pickers/internals";
 import { Locale, isAfter, isBefore, isValid } from "date-fns";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
-import { KeyboardEvent, MouseEvent, Ref, forwardRef, useState } from "react";
+import { Ref, forwardRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const localeMap: Record<string, Locale> = {
@@ -232,26 +232,6 @@ export const LocalizationDatePicker = forwardRef<
   const [selectedSections, setSelectedSections] =
     useState<FieldSelectedSections>(null);
 
-  const handleDoubleClick = (event: MouseEvent) => {
-    if (!desktop) {
-      return;
-    }
-    (event.target as any)?.focus();
-    setSelectedSections("all");
-  };
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (!desktop) {
-      return;
-    }
-    if (event.key === "Backspace" && selectedSections === "all") {
-      setSelectedSections(0);
-    }
-    if (event.key === "Backspace" && typeof selectedSections === "number") {
-      setSelectedSections(Math.max(selectedSections - 1, 0));
-    }
-  };
-
   const {
     i18n: { language },
   } = useTranslation();
@@ -296,13 +276,10 @@ export const LocalizationDatePicker = forwardRef<
               "data-testid": `${ariaLabel} textfield`,
               "aria-label": ariaLabel,
             },
-            onDoubleClick: handleDoubleClick,
-            onKeyDown: handleKeyDown,
           }),
           field: () => ({
             clearable: true,
             inputProps: {
-              // @ts-ignore
               "data-testid": `${ariaLabel} textfield`,
               "aria-label": ariaLabel,
             },

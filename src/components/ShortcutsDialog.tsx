@@ -15,7 +15,7 @@ export function ShortcutsDialog() {
   return (
     <ResponsiveDialog
       fullWidth
-      fullScreen={false}
+      disableFullscreen
       open={shortcutsDialogOpen}
       onClose={closeShortcutsDialog}
     >

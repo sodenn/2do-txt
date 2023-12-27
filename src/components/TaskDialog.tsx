@@ -2,6 +2,7 @@ import { Fade } from "@/components/Fade";
 import {
   ResponsiveDialog,
   ResponsiveDialogActions,
+  ResponsiveDialogButton,
   ResponsiveDialogContent,
   ResponsiveDialogSecondaryActions,
   ResponsiveDialogTitle,
@@ -12,7 +13,6 @@ import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { formatDate, todayDate } from "@/utils/date";
 import { Task } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
-import { useDialogButtonSize } from "@/utils/useDialogButtonSize";
 import { useTask } from "@/utils/useTask";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Button, Stack } from "@mui/joy";
@@ -98,7 +98,6 @@ export function TaskDialog() {
     projects: commonProjects,
     tags: commonTags,
   } = useTask();
-  const buttonSize = useDialogButtonSize();
   const closeTaskDialog = useTaskDialogStore((state) => state.closeTaskDialog);
   const cleanupTaskDialog = useTaskDialogStore(
     (state) => state.cleanupTaskDialog,
@@ -212,15 +211,14 @@ export function TaskDialog() {
         />
       </ResponsiveDialogContent>
       <ResponsiveDialogActions>
-        <Button
-          size={buttonSize}
+        <ResponsiveDialogButton
           aria-label="Save task"
           aria-disabled={formDisabled}
           disabled={formDisabled}
           onClick={handleSave}
         >
           {t("Save")}
-        </Button>
+        </ResponsiveDialogButton>
       </ResponsiveDialogActions>
       {isNewTask && (
         <ResponsiveDialogSecondaryActions>
