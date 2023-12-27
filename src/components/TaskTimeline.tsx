@@ -89,11 +89,8 @@ const Root = styled(Box)(({ theme }) => ({
 const dateColumnWidth = 120;
 
 const TaskContainer = styled(Box)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    left: -2, // align with menu button on mobile
-  },
-  [theme.breakpoints.up("sm")]: {
-    left: -(dateColumnWidth / 2), // ignore date column when centering the timeline
+  [theme.breakpoints.up("md")]: {
+    left: -(dateColumnWidth / 3),
   },
 }));
 
@@ -483,7 +480,7 @@ const TimelineContent = styled(ListItemButton)(({ theme }) => ({
     paddingBottom: 1,
   },
   [theme.breakpoints.up("sm")]: {
-    paddingTop: 5,
+    paddingTop: 4,
     paddingBottom: 5,
     paddingLeft: theme.spacing(2),
   },

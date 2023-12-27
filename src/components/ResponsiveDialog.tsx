@@ -5,7 +5,15 @@ import {
 } from "@/native-api/keyboard";
 import { useMobileScreen } from "@/utils/useMobileScreen";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, IconButton, ModalDialogProps, Stack, styled } from "@mui/joy";
+import {
+  Box,
+  Button,
+  ButtonProps,
+  IconButton,
+  ModalDialogProps,
+  Stack,
+  styled,
+} from "@mui/joy";
 import Modal, { ModalProps } from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
 import Typography from "@mui/joy/Typography";
@@ -13,6 +21,7 @@ import {
   Children,
   PropsWithChildren,
   cloneElement,
+  forwardRef,
   isValidElement,
   useEffect,
   useState,
@@ -32,7 +41,7 @@ interface ResponsiveDialogProps
     ModalDialogProps {
   open?: boolean;
   fullWidth?: boolean;
-  fullScreen?: boolean;
+  disableFullscreen?: boolean;
 }
 
 interface ResponsiveDialogChild extends PropsWithChildren {
@@ -166,7 +175,6 @@ export function ResponsiveDialogContent({
   children,
   fullScreen,
 }: ResponsiveDialogChild) {
-  const mobileScreen = useMobileScreen();
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
   const [divider, setDivider] = useState(false);
 
@@ -206,7 +214,7 @@ export function ResponsiveDialogContent({
   return (
     <Box
       ref={setRoot}
-      sx={{
+      sx={(theme) => ({
         overflowY: "auto",
         overflowX: "hidden",
         gridArea: "content",
@@ -222,10 +230,10 @@ export function ResponsiveDialogContent({
         ...(fullScreen && {
           px: 1.5,
         }),
-        ...(mobileScreen && {
+        [theme.breakpoints.only("xs")]: {
           height: "100%",
-        }),
-      }}
+        },
+      })}
     >
       {children}
     </Box>
@@ -284,6 +292,14 @@ export function ResponsiveDialogSecondaryActions({
   );
 }
 
+export const ResponsiveDialogButton = forwardRef<
+  HTMLButtonElement,
+  ButtonProps
+>((props, ref) => {
+  const isMobileScreen = useMobileScreen();
+  return <Button {...props} size={isMobileScreen ? "sm" : "md"} ref={ref} />;
+});
+
 function CenterLayout({ children }: PropsWithChildren) {
   return (
     <Box
@@ -340,16 +356,14 @@ export function ResponsiveDialog(props: ResponsiveDialogProps) {
     onExit,
     onEntered,
     onEnter,
-    fullScreen: fullScreenProp,
+    disableFullscreen,
     sx,
     maxWidth = "sm",
     ...other
   } = props;
-  const mobileScreen = useMobileScreen();
-  const fullScreen =
-    typeof fullScreenProp === "boolean" ? fullScreenProp : mobileScreen;
+  const isMobileScreen = useMobileScreen();
+  const fullScreen = disableFullscreen ? false : isMobileScreen;
   const [renderModal, setRenderModal] = useState(false);
-
   const styles = fullScreen ? dialogStyles.slide : dialogStyles.fade;
 
   const handleExited = (node: HTMLElement) => {

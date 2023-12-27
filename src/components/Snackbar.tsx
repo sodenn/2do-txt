@@ -1,4 +1,3 @@
-import { useMobileScreen } from "@/utils/useMobileScreen";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import InfoIcon from "@mui/icons-material/Info";
@@ -71,102 +70,98 @@ export function SnackbarActionButton(props: IconButtonProps) {
 }
 
 export function SnackbarProvider({ children }: PropsWithChildren) {
-  const mobileScreen = useMobileScreen();
   const items = useRef<SnackbarItem[]>([]);
 
-  const openSnackbar = useCallback(
-    (options: SnackbarOptions = {}) => {
-      const {
-        title,
-        message,
-        renderAction,
-        color = "neutral",
-        close = true,
-        loading = false,
-        preventDuplicate = true,
-        persistent = false,
-      } = options;
-      if (
-        preventDuplicate &&
-        items.current.some(
-          (item) => item.title === title && item.message === message,
-        )
-      ) {
-        return -1;
-      }
-      const icon = icons[color as keyof typeof icons];
-      const newItem: SnackbarItem = {
-        title,
-        message,
-        close,
-        loading,
-        createdAt: new Date().getTime(),
-        id: -1,
-      };
-      items.current.push(newItem);
-      toast.custom(
-        (t) => {
-          newItem.id = t;
-          const handleDismiss = () => {
-            toast.dismiss(newItem.id);
-            items.current = items.current.filter((item) => item !== newItem);
-          };
-          return (
-            <Alert
-              variant="solid"
-              color={color}
-              invertedColors
-              sx={{
-                overflow: "hidden",
-                minWidth: mobileScreen ? "100%" : 300,
-              }}
-              startDecorator={icon}
-              endDecorator={
-                <>
-                  {renderAction && (
-                    <Box sx={close ? { mr: 1 } : undefined}>
-                      {renderAction(handleDismiss)}
-                    </Box>
-                  )}
-                  {close && (
-                    <SnackbarActionButton onClick={handleDismiss}>
-                      <CloseRoundedIcon />
-                    </SnackbarActionButton>
-                  )}
-                </>
-              }
-            >
-              <div>
-                {title && <Typography level="title-md">{title}</Typography>}
-                {message && <Typography level="body-sm">{message}</Typography>}
-                {loading && (
-                  <LinearProgress
-                    variant="soft"
-                    sx={(theme) => ({
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      color: `rgb(${theme.vars.palette[color].lightChannel} / 0.72)`,
-                      "--LinearProgress-radius": "0px",
-                    })}
-                  />
+  const openSnackbar = useCallback((options: SnackbarOptions = {}) => {
+    const {
+      title,
+      message,
+      renderAction,
+      color = "neutral",
+      close = true,
+      loading = false,
+      preventDuplicate = true,
+      persistent = false,
+    } = options;
+    if (
+      preventDuplicate &&
+      items.current.some(
+        (item) => item.title === title && item.message === message,
+      )
+    ) {
+      return -1;
+    }
+    const icon = icons[color as keyof typeof icons];
+    const newItem: SnackbarItem = {
+      title,
+      message,
+      close,
+      loading,
+      createdAt: new Date().getTime(),
+      id: -1,
+    };
+    items.current.push(newItem);
+    toast.custom(
+      (t) => {
+        newItem.id = t;
+        const handleDismiss = () => {
+          toast.dismiss(newItem.id);
+          items.current = items.current.filter((item) => item !== newItem);
+        };
+        return (
+          <Alert
+            variant="solid"
+            color={color}
+            invertedColors
+            sx={{
+              overflow: "hidden",
+              minWidth: { xs: "100%", sm: 300 },
+            }}
+            startDecorator={icon}
+            endDecorator={
+              <>
+                {renderAction && (
+                  <Box sx={close ? { mr: 1 } : undefined}>
+                    {renderAction(handleDismiss)}
+                  </Box>
                 )}
-              </div>
-            </Alert>
-          );
+                {close && (
+                  <SnackbarActionButton onClick={handleDismiss}>
+                    <CloseRoundedIcon />
+                  </SnackbarActionButton>
+                )}
+              </>
+            }
+          >
+            <div>
+              {title && <Typography level="title-md">{title}</Typography>}
+              {message && <Typography level="body-sm">{message}</Typography>}
+              {loading && (
+                <LinearProgress
+                  variant="soft"
+                  sx={(theme) => ({
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    color: `rgb(${theme.vars.palette[color].lightChannel} / 0.72)`,
+                    "--LinearProgress-radius": "0px",
+                  })}
+                />
+              )}
+            </div>
+          </Alert>
+        );
+      },
+      {
+        ...(persistent && { duration: Infinity }),
+        onAutoClose: () => {
+          items.current = items.current.filter((item) => item !== newItem);
         },
-        {
-          ...(persistent && { duration: Infinity }),
-          onAutoClose: () => {
-            items.current = items.current.filter((item) => item !== newItem);
-          },
-        },
-      );
-      return newItem.id;
-    },
-    [mobileScreen],
-  );
+      },
+    );
+    return newItem.id;
+  }, []);
 
   const closeSnackbar = useCallback((id: string | number) => {
     const item = items.current.find((item) => item.id === id);

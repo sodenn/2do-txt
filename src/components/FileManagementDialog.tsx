@@ -24,7 +24,6 @@ import {
 } from "@/utils/CloudStorage";
 import { formatLocalDateTime, parseDate } from "@/utils/date";
 import { getDoneFilePath } from "@/utils/todo-files";
-import { useDialogButtonSize } from "@/utils/useDialogButtonSize";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
 import {
@@ -140,7 +139,7 @@ export function FileManagementDialog() {
   return (
     <ResponsiveDialog
       fullWidth
-      fullScreen={false}
+      disableFullscreen
       open={fileManagementDialogOpen}
       onClose={closeFileManagementDialog}
     >
@@ -169,7 +168,6 @@ function FileManagementActions() {
   const openCloudFileDialog = useCloudFileDialogStore(
     (state) => state.openCloudFileDialog,
   );
-  const buttonSize = useDialogButtonSize();
 
   const handleCreateFile = () => {
     openFileCreateDialog();
@@ -201,12 +199,10 @@ function FileManagementActions() {
   if (cloudStorages.length === 0) {
     return (
       <>
-        <Button size={buttonSize} onClick={handleOpenFile}>
+        <Button onClick={handleOpenFile}>
           {platform === "desktop" ? t("Open") : t("Import")}
         </Button>
-        <Button size={buttonSize} onClick={handleCreateFile}>
-          {t("Create")}
-        </Button>
+        <Button onClick={handleCreateFile}>{t("Create")}</Button>
       </>
     );
   }
@@ -217,7 +213,6 @@ function FileManagementActions() {
         tabIndex={0}
         color="primary"
         variant="solid"
-        size={buttonSize}
         aria-label="Choose action"
         endDecorator={<ArrowDropDownIcon />}
       >

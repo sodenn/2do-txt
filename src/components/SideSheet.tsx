@@ -149,23 +149,23 @@ export function SideSheet() {
         role: "presentation",
         "aria-hidden": sideSheetOpen ? "false" : "true",
       })}
-      sx={{
+      sx={(theme) => ({
         "& .MuiDrawer-paper": {
           backgroundImage: "unset",
           boxSizing: "border-box",
-          ...(!persistent && {
+          [theme.breakpoints.down("lg")]: {
             width: drawerWidth,
-          }),
+          },
         },
-        ...(persistent && {
+        [theme.breakpoints.up("lg")]: {
           width: drawerWidth,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             borderRight: "1px solid var(--joy-palette-divider)",
           },
-        }),
-      }}
+        },
+      })}
       onOpen={openSideSheet}
       onClose={closeSideSheet}
     >

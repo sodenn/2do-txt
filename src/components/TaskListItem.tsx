@@ -8,8 +8,8 @@ const StyledListItem = styled(ListItem, {
   shouldForwardProp: (prop) => prop !== "menuOpen",
 })(({ theme }) => ({
   ".MuiListItem-startAction": {
-    left: theme.spacing(0.5),
-    zIndex: 2,
+    left: theme.spacing(0.5), // align checkbox with list
+    zIndex: 2, // prevent checkbox from being covered by the button
   },
 }));
 
@@ -62,6 +62,11 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
             ref={checkboxRef}
             onClick={onCheckboxClick}
             checked={task.completed}
+            sx={(theme) => ({
+              [theme.breakpoints.only("xs")]: {
+                "--Checkbox-size": "1.4rem", // increase size for mobile for easier tapping
+              },
+            })}
             slotProps={{
               input: {
                 tabIndex: -1,
