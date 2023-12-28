@@ -72,14 +72,9 @@ export function Filter() {
     setSearchTerm,
   ]);
 
-  const hotkeys = useMemo(
-    () => ({
-      x: resetFilters,
-    }),
-    [resetFilters],
-  );
-
-  useHotkeys(hotkeys);
+  useHotkeys({
+    x: resetFilters,
+  });
 
   return (
     <Stack spacing={2}>

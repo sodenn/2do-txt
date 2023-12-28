@@ -9,9 +9,9 @@ import {
   useTaskGroups,
   useTimelineTasks,
 } from "@/utils/task-list";
-import { HotkeyListeners, useHotkeys } from "@/utils/useHotkeys";
+import { useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export function TaskView() {
@@ -88,20 +88,16 @@ export function TaskView() {
     }
   }, [deleteTask, focusedTaskId, openConfirmationDialog, t, tasks]);
 
-  const hotkeys = useMemo(
-    (): HotkeyListeners =>
-      taskLists.length === 0
-        ? {}
-        : {
-            ArrowUp: () => focusNextListItem("up"),
-            ArrowDown: () => focusNextListItem("down"),
-            e: openTaskDialog,
-            d: openDeleteTaskDialog,
-          },
-    [focusNextListItem, openDeleteTaskDialog, openTaskDialog, taskLists.length],
+  useHotkeys(
+    taskLists.length === 0
+      ? {}
+      : {
+          ArrowUp: () => focusNextListItem("up"),
+          ArrowDown: () => focusNextListItem("down"),
+          e: openTaskDialog,
+          d: openDeleteTaskDialog,
+        },
   );
-
-  useHotkeys(hotkeys);
 
   if (taskLists.length === 0) {
     return null;

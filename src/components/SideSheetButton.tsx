@@ -3,15 +3,12 @@ import { useHotkeys } from "@/utils/useHotkeys";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IconButton } from "@mui/joy";
-import { useMemo } from "react";
 
 export function SideSheetButton() {
   const sideSheetOpen = useSideSheetStore((state) => state.open);
   const toggleSideSheet = useSideSheetStore((state) => state.toggleSideSheet);
 
-  const hotkeys = useMemo(() => ({ m: toggleSideSheet }), [toggleSideSheet]);
-
-  useHotkeys(hotkeys);
+  useHotkeys({ m: toggleSideSheet });
 
   return (
     <IconButton
