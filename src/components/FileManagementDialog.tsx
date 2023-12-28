@@ -49,6 +49,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -407,7 +408,7 @@ function FileListItem(props: FileListItemProps) {
       </ListItemContent>
       <ListItemDecorator>
         {showClosePrompt ? (
-          <Stack spacing={1} direction="row">
+          <Stack spacing={1} direction="row" sx={{ pr: 1 }}>
             <Tooltip title={t("Cancel")}>
               <IconButton
                 size="sm"
@@ -424,7 +425,7 @@ function FileListItem(props: FileListItemProps) {
                 onClick={() => onClose(filePath)}
               >
                 {deleteFile && <DeleteForeverIcon />}
-                {!deleteFile && <CloseIcon />}
+                {!deleteFile && <CheckIcon />}
               </IconButton>
             </Tooltip>
           </Stack>
