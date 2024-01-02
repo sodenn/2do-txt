@@ -78,6 +78,7 @@ const Root = styled(Box)(({ theme }) => ({
     "--IconButton-size": "2rem",
     display: "block",
     justifyContent: "unset",
+    paddingRight: theme.spacing(1.5),
   },
   [theme.breakpoints.up("sm")]: {
     "--IconButton-size": "2.25rem",
@@ -211,11 +212,10 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
           tabIndex={-1}
           sx={{
             height: "var(--IconButton-size)",
-            pr: 2,
           }}
           onClick={handleClick}
         >
-          <Typography color="primary" level="title-md">
+          <Typography color="primary" component="span" variant="plain">
             {t("Add new task")}
           </Typography>
         </TimelineContent>
@@ -289,7 +289,6 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
         sx={{
           alignSelf: "auto",
           minHeight: "var(--IconButton-size)",
-          pr: "calc(var(--IconButton-size) + 8px)",
         }}
       >
         <div>
@@ -468,6 +467,8 @@ const TimelineContent = styled(ListItemButton)(({ theme }) => ({
   borderRadius: theme.vars.radius.sm,
   gridArea: "content",
   "@media (pointer: coarse)": {
+    paddingLeft: 0,
+    paddingRight: 0,
     '&:not(.Mui-selected, [aria-selected="true"]):active': {
       backgroundColor: "inherit",
     },
@@ -476,13 +477,16 @@ const TimelineContent = styled(ListItemButton)(({ theme }) => ({
     },
   },
   [theme.breakpoints.down("sm")]: {
-    paddingTop: 1,
-    paddingBottom: 1,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    paddingTop: 2,
+    paddingBottom: 2,
   },
   [theme.breakpoints.up("sm")]: {
-    paddingTop: 4,
-    paddingBottom: 5,
     paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    paddingTop: 4,
+    paddingBottom: 4,
   },
 }));
 TimelineContent.defaultProps = {

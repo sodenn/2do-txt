@@ -1,41 +1,59 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-export interface HotkeyListeners {
+interface HotkeyListeners {
   [key: string]: (ev: KeyboardEvent) => unknown;
 }
 
+const isInputTarget = (target: any) =>
+  !!target && (target.nodeName === "INPUT" || target.isContentEditable);
+
+const isMenuOpen = () => {
+  const menus = document.querySelectorAll<HTMLDivElement>(
+    '[role="listbox"]:not([style*="display: none"]),[role="menu"]',
+  );
+  return menus.length > 0;
+};
+
+const isBackdropOpen = (ev: KeyboardEvent) => {
+  const presentations = document.querySelectorAll<HTMLDivElement>(
+    '[role="presentation"]:not([aria-hidden="true"])',
+  );
+  return [...presentations].some((presentation) => {
+    const keepEnabled = presentation.dataset.hotkeysKeepEnabled;
+    return keepEnabled !== "true" && keepEnabled !== ev.key.toLowerCase();
+  });
+};
+
 export const useHotkeys = (listeners: HotkeyListeners) => {
+  const listenersRef = useRef(listeners);
+
+  // update listenersRef when listeners change
+  useEffect(() => {
+    listenersRef.current = listeners;
+  }, [listeners]);
+
   useEffect(() => {
     const handler = (ev: KeyboardEvent) => {
-      const listener = listeners[ev.key];
+      const listener = listenersRef.current[ev.key];
       if (!listener) {
         return;
       }
 
-      const target = ev.target as any;
-      const isInput = target.nodeName === "INPUT" || target.isContentEditable;
+      const target = ev.target;
 
-      const menus = document.querySelectorAll<HTMLDivElement>(
-        '[role="listbox"]:not([style*="display: none"]),[role="menu"]',
-      );
-      const menuOpen = menus.length > 0;
-
-      const presentations = document.querySelectorAll<HTMLDivElement>(
-        '[role="presentation"]:not([aria-hidden="true"])',
-      );
-      const backdropOpen = [...presentations].some((presentation) => {
-        const keepEnabled = presentation.dataset.hotkeysKeepEnabled;
-        return keepEnabled !== "true" && keepEnabled !== ev.key.toLowerCase();
-      });
-
-      if (!menuOpen && !backdropOpen && !isInput && listener) {
+      if (
+        !isMenuOpen() &&
+        !isBackdropOpen(ev) &&
+        !isInputTarget(target) &&
+        listener
+      ) {
         listener(ev);
       }
     };
 
-    document.addEventListener("keydown", handler);
+    window.addEventListener("keydown", handler);
     return () => {
-      document.removeEventListener("keydown", handler);
+      window.removeEventListener("keydown", handler);
     };
-  }, [listeners]);
+  }, []);
 };

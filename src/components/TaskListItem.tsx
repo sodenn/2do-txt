@@ -9,7 +9,6 @@ const StyledListItem = styled(ListItem, {
 })(({ theme }) => ({
   ".MuiListItem-startAction": {
     left: theme.spacing(0.5), // align checkbox with list
-    zIndex: 2, // prevent checkbox from being covered by the button
   },
 }));
 

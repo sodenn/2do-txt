@@ -3,24 +3,17 @@ import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import AddIcon from "@mui/icons-material/Add";
 import { IconButton, IconButtonProps, Tooltip } from "@mui/joy";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export function AddTaskButton(props: IconButtonProps) {
   const { t } = useTranslation();
   const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 
-  const handleClick: IconButtonProps["onClick"] = (event) => {
-    event.currentTarget.blur();
+  const handleClick: IconButtonProps["onClick"] = () => {
     openTaskDialog();
   };
 
-  const hotkeys = useMemo(
-    () => ({ n: () => openTaskDialog() }),
-    [openTaskDialog],
-  );
-
-  useHotkeys(hotkeys);
+  useHotkeys({ n: () => openTaskDialog() });
 
   return (
     <Tooltip

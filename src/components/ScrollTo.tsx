@@ -37,13 +37,14 @@ export function ScrollTo({ target }: ScrollTopProps) {
         onClick={handleClick}
         sx={{
           bottom: 16,
-          right: { xs: 8, sm: 32 },
+          right: { xs: 16, sm: 32 },
         }}
       >
         <IconButton
           tabIndex={-1}
           variant="soft"
           color="primary"
+          size="md"
           aria-label="Scroll to"
         >
           {icon}
