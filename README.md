@@ -46,5 +46,5 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 
 ## Supported Platforms
 - [Webbrowser](https://2do-txt-sodenn.vercel.app/)
-- iOS
+- [iOS](https://apps.apple.com/in/app/2do-txt/id1597652888)
 - Desktop: macOS, Windows, Linux
