@@ -87,7 +87,7 @@
     "i18next-http-backend": "2.4.2",
     "jszip": "3.10.1",
     "lexical": "0.12.5",
-    "lexical-beautiful-mentions": "0.1.26",
+    "lexical-beautiful-mentions": "0.1.27",
     "lodash": "4.17.21",
     "pulltorefreshjs": "0.1.22",
     "react": "18.2.0",
