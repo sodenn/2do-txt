@@ -8,14 +8,13 @@ FROM mcr.microsoft.com/playwright:v1.41.1-jammy
 COPY package.json ./package.json
 COPY package-lock.json ./package-lock.json
 COPY playwright.config.ts ./playwright.config.ts
+COPY public/todo.txt ./public/todo.txt
+# Remove webServer config from playwright config
+RUN sed -i '99,107d' ./playwright.config.ts
 
 RUN npm install
 RUN npx playwright install
 
 ENV HOST=host.docker.internal
-
-# Remove webServer config from playwright config
-RUN sed -i '99,107d' ./playwright.config.ts
-COPY public/todo.txt ./public/todo.txt
 
 CMD ["npx", "playwright", "test", "screenshots.spec.ts", "--reporter=line", "--update-snapshots"]
