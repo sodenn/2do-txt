@@ -1,7 +1,8 @@
 import { Page, expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:5173/");
+  const host = process.env.HOST || "localhost";
+  await page.goto(`http://${host}:5173/`);
 });
 
 test.describe("Screenshots", () => {
