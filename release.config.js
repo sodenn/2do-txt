@@ -67,4 +67,4 @@ if (branches.some((name) => branch.startsWith(`${name}/`))) {
   ];
 }
 
-module.exports = config;
+export default config;
