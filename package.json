@@ -94,10 +94,10 @@
     "react-dom": "18.2.0",
     "react-dropzone": "14.2.3",
     "react-i18next": "14.0.5",
-    "react-router-dom": "6.22.0",
+    "react-router-dom": "6.22.1",
     "react-transition-group": "4.4.5",
     "sonner": "1.4.0",
-    "zustand": "4.5.0"
+    "zustand": "4.5.1"
   },
   "devDependencies": {
     "@capacitor/cli": "5.7.0",
