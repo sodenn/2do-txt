@@ -1,4 +1,4 @@
-import { Page, expect, test } from "@playwright/test";
+import { expect, Page, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   const host = process.env.HOST || "localhost";
@@ -44,6 +44,17 @@ test.describe("Screenshots", () => {
       "aria-hidden",
       "false",
     );
+    await expect(page).toHaveScreenshot();
+  });
+
+  test("should take a screenshot of the mention menu", async ({ page }) => {
+    await selectFile(page);
+    await page.getByTestId("task-button").first().click();
+    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
+      "aria-hidden",
+      "false",
+    );
+    await page.keyboard.press("@");
     await expect(page).toHaveScreenshot();
   });
 });
