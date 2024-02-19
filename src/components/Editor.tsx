@@ -15,8 +15,8 @@ import {
   FormLabel,
   MenuItem,
   MenuList,
-  Typography,
   styled,
+  Typography,
 } from "@mui/joy";
 import {
   $createParagraphNode,
@@ -45,8 +45,8 @@ import {
 } from "lexical-beautiful-mentions";
 import React, {
   ComponentProps,
-  ReactNode,
   forwardRef,
+  ReactNode,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -242,7 +242,18 @@ const MenuComponent = forwardRef<HTMLUListElement, BeautifulMentionsMenuProps>(
   (props, ref) => {
     const { loading, children, ...other } = props;
     return (
-      <MenuList sx={{ mt: "24px" }} ref={ref} variant="outlined" {...other}>
+      <MenuList
+        sx={{
+          position: "absolute",
+          top: 2,
+          m: 0,
+          minWidth: "7rem",
+          overflow: "hidden",
+        }}
+        ref={ref}
+        variant="outlined"
+        {...other}
+      >
         {children}
       </MenuList>
     );
