@@ -72,7 +72,7 @@
     "@mui/joy": "5.0.0-beta.28",
     "@mui/material": "5.15.10",
     "@mui/system": "5.15.9",
-    "@mui/x-date-pickers": "6.19.4",
+    "@mui/x-date-pickers": "6.19.5",
     "@tauri-apps/api": "1.5.3",
     "@types/pulltorefreshjs": "0.1.7",
     "capacitor-rate-app": "4.0.3",
@@ -84,7 +84,7 @@
     "file-saver": "2.0.5",
     "i18next": "23.9.0",
     "i18next-browser-languagedetector": "7.2.0",
-    "i18next-http-backend": "2.4.3",
+    "i18next-http-backend": "2.5.0",
     "jszip": "3.10.1",
     "lexical": "0.13.1",
     "lexical-beautiful-mentions": "0.1.30",
@@ -96,7 +96,7 @@
     "react-i18next": "14.0.5",
     "react-router-dom": "6.22.1",
     "react-transition-group": "4.4.5",
-    "sonner": "1.4.0",
+    "sonner": "1.4.1",
     "zustand": "4.5.1"
   },
   "devDependencies": {
