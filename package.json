@@ -48,9 +48,9 @@
   },
   "dependencies": {
     "@capacitor/app": "5.0.7",
-    "@capacitor/core": "5.7.0",
+    "@capacitor/core": "5.7.1",
     "@capacitor/filesystem": "5.2.1",
-    "@capacitor/ios": "5.7.0",
+    "@capacitor/ios": "5.7.1",
     "@capacitor/keyboard": "5.0.8",
     "@capacitor/local-notifications": "5.0.7",
     "@capacitor/network": "5.0.7",
@@ -72,7 +72,7 @@
     "@mui/joy": "5.0.0-beta.29",
     "@mui/material": "5.15.11",
     "@mui/system": "5.15.11",
-    "@mui/x-date-pickers": "6.19.5",
+    "@mui/x-date-pickers": "6.19.6",
     "@tauri-apps/api": "1.5.3",
     "@types/pulltorefreshjs": "0.1.7",
     "capacitor-rate-app": "4.0.3",
@@ -94,10 +94,10 @@
     "react-dom": "18.2.0",
     "react-dropzone": "14.2.3",
     "react-i18next": "14.0.5",
-    "react-router-dom": "6.22.1",
+    "react-router-dom": "6.22.2",
     "react-transition-group": "4.4.5",
-    "sonner": "1.4.2",
-    "zustand": "4.5.1"
+    "sonner": "1.4.3",
+    "zustand": "4.5.2"
   },
   "devDependencies": {
     "@capacitor/cli": "5.7.0",
