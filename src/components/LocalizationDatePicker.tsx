@@ -258,6 +258,7 @@ export const LocalizationDatePicker = forwardRef<
         maxDate={maxDate}
         onChange={handleChange}
         slots={{
+          // @ts-ignore
           field: JoyDateField,
           clearButton: JoyClearButton,
           // @ts-ignore
