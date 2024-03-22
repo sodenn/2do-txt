@@ -72,7 +72,7 @@
     "@mui/joy": "5.0.0-beta.32",
     "@mui/material": "5.15.14",
     "@mui/system": "5.15.14",
-    "@mui/x-date-pickers": "6.19.8",
+    "@mui/x-date-pickers": "7.0.0",
     "@tauri-apps/api": "1.5.3",
     "@types/pulltorefreshjs": "0.1.7",
     "capacitor-rate-app": "4.0.3",
