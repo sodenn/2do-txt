@@ -66,6 +66,10 @@ interface JoyFieldProps extends InputProps {
     endAdornment?: ReactNode;
     startAdornment?: ReactNode;
   };
+  inputProps?: {
+    "aria-label"?: string;
+    "data-testid"?: string;
+  };
   formControlSx?: InputProps["sx"];
 }
 
@@ -74,7 +78,7 @@ type JoyFieldComponent = ((
 ) => JSX.Element) & { propTypes?: any };
 
 const JoyField = forwardRef(
-  (props: JoyFieldProps, ref: React.Ref<HTMLDivElement>) => {
+  (props: JoyFieldProps, ref: Ref<HTMLDivElement>) => {
     const {
       // Should be ignored
       enableAccessibleFieldDOMStructure,
@@ -88,6 +92,7 @@ const JoyField = forwardRef(
       startDecorator,
       slotProps,
       inputRef,
+      inputProps,
       ...other
     } = props;
 
@@ -113,7 +118,7 @@ const JoyField = forwardRef(
           slotProps={{
             ...slotProps,
             root: { ...slotProps?.root, ref: containerRef },
-            input: { ...slotProps?.input, ref: inputRef },
+            input: { ...slotProps?.input, ...inputProps, ref: inputRef },
           }}
           {...other}
         />
