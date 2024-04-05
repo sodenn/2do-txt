@@ -19,25 +19,21 @@ import {
   LocalizationProvider,
   PickersActionBarProps,
   UseDateFieldProps,
-  deDE,
   useClearableField,
 } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import {
-  DateFieldSlotsComponent,
-  DateFieldSlotsComponentsProps,
-} from "@mui/x-date-pickers/DateField/DateField.types";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { useDateField } from "@mui/x-date-pickers/DateField/useDateField";
 import { useLocaleText } from "@mui/x-date-pickers/internals";
+import { deDE } from "@mui/x-date-pickers/locales";
 import { Locale, isAfter, isBefore, isValid } from "date-fns";
-import deLocale from "date-fns/locale/de";
-import enLocale from "date-fns/locale/en-US";
-import { Ref, forwardRef, useState } from "react";
+import { de } from "date-fns/locale/de";
+import { enUS } from "date-fns/locale/en-US";
+import { ReactNode, Ref, RefAttributes, forwardRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const localeMap: Record<string, Locale> = {
-  en: enLocale,
-  de: deLocale,
+  en: enUS,
+  de,
 };
 
 type LocalizationDatePickerProps = DatePickerProps<Date> & {
@@ -52,41 +48,51 @@ function isValidDate(date: Date) {
 }
 
 interface JoyDateFieldProps
-  extends UseDateFieldProps<Date>,
+  extends UseDateFieldProps<Date, false>,
     BaseSingleInputFieldProps<
       Date | null,
       Date,
       FieldSection,
+      false,
       DateValidationError
     > {}
 
 interface JoyFieldProps extends InputProps {
-  label?: React.ReactNode;
+  label?: ReactNode;
+  inputRef?: Ref<HTMLInputElement>;
+  enableAccessibleFieldDOMStructure?: boolean;
   InputProps?: {
-    ref?: React.Ref<any>;
-    endAdornment?: React.ReactNode;
-    startAdornment?: React.ReactNode;
+    ref?: Ref<any>;
+    endAdornment?: ReactNode;
+    startAdornment?: ReactNode;
+  };
+  inputProps?: {
+    "aria-label"?: string;
+    "data-testid"?: string;
   };
   formControlSx?: InputProps["sx"];
-  inputProps?: any;
 }
 
 type JoyFieldComponent = ((
-  props: JoyFieldProps & React.RefAttributes<HTMLDivElement>,
-) => React.JSX.Element) & { propTypes?: any };
+  props: JoyFieldProps & RefAttributes<HTMLDivElement>,
+) => JSX.Element) & { propTypes?: any };
 
 const JoyField = forwardRef(
-  (props: JoyFieldProps, ref: React.Ref<HTMLDivElement>) => {
+  (props: JoyFieldProps, ref: Ref<HTMLDivElement>) => {
     const {
+      // Should be ignored
+      enableAccessibleFieldDOMStructure,
+
       disabled,
       id,
       label,
-      inputProps,
       InputProps: { ref: containerRef, endAdornment } = {},
       formControlSx,
       endDecorator,
       startDecorator,
       slotProps,
+      inputRef,
+      inputProps,
       ...other
     } = props;
 
@@ -95,11 +101,9 @@ const JoyField = forwardRef(
         disabled={disabled}
         id={id}
         sx={[
-          {
-            flexGrow: 1,
-          },
           ...(Array.isArray(formControlSx) ? formControlSx : [formControlSx]),
         ]}
+        ref={ref}
       >
         <FormLabel>{label}</FormLabel>
         <Input
@@ -113,8 +117,8 @@ const JoyField = forwardRef(
           }
           slotProps={{
             ...slotProps,
-            input: { ...slotProps?.input, ...inputProps },
             root: { ...slotProps?.root, ref: containerRef },
+            input: { ...slotProps?.input, ...inputProps, ref: inputRef },
           }}
           {...other}
         />
@@ -125,51 +129,21 @@ const JoyField = forwardRef(
 
 const JoyDateField = forwardRef(
   (props: JoyDateFieldProps, ref: Ref<HTMLDivElement>) => {
-    const {
-      inputRef: externalInputRef,
-      slots,
-      slotProps,
-      ...textFieldProps
-    } = props;
+    const { slots, slotProps, ...textFieldProps } = props;
 
-    const {
-      onClear,
-      clearable,
-      ref: inputRef,
-      ...fieldProps
-    } = useDateField<Date, typeof textFieldProps>({
-      props: textFieldProps,
-      inputRef: externalInputRef,
+    const fieldResponse = useDateField<Date, false, typeof textFieldProps>({
+      ...textFieldProps,
+      enableAccessibleFieldDOMStructure: false,
     });
 
     /* If you don't need a clear button, you can skip the use of this hook */
-    const { InputProps: ProcessedInputProps, fieldProps: processedFieldProps } =
-      useClearableField<
-        {}, // eslint-disable-line @typescript-eslint/ban-types
-        typeof textFieldProps.InputProps,
-        DateFieldSlotsComponent,
-        DateFieldSlotsComponentsProps<Date>
-      >({
-        onClear,
-        clearable,
-        fieldProps,
-        InputProps: fieldProps.InputProps,
-        slots,
-        slotProps,
-      });
+    const processedFieldProps = useClearableField({
+      ...fieldResponse,
+      slots,
+      slotProps,
+    });
 
-    return (
-      <JoyField
-        ref={ref}
-        slotProps={{
-          input: {
-            ref: inputRef,
-          },
-        }}
-        {...processedFieldProps}
-        InputProps={ProcessedInputProps}
-      />
-    );
+    return <JoyField ref={ref} {...processedFieldProps} />;
   },
 );
 
