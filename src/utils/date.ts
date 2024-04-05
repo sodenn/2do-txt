@@ -23,7 +23,10 @@ export function formatDate(date: Date): string {
   return format(date, "yyyy-MM-dd");
 }
 
-export function parseDate(str: string): Date | undefined {
+export function parseDate(str: any): Date | undefined {
+  if (typeof str !== "string") {
+    return undefined;
+  }
   const result = parseISO(str);
   if (result.toString() !== "Invalid Date") {
     return result;
