@@ -263,13 +263,13 @@ const MenuComponent = forwardRef<HTMLUListElement, BeautifulMentionsMenuProps>(
 const MenuItemComponent = forwardRef<
   HTMLDivElement,
   BeautifulMentionsMenuItemProps
->(({ item, ...other }, ref) => {
+>(({ item: { value }, itemValue, ...other }, ref) => {
   return (
     <MenuItem
       sx={{ whiteSpace: "nowrap" }}
       ref={ref}
       {...other}
-      aria-label={`Choose "${item}"`}
+      aria-label={`Choose "${value}"`}
     />
   );
 });
