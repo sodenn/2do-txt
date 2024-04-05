@@ -3,7 +3,7 @@
 # 2. Start the dev server on host machine
 # 3. Update playwright snapshots by running:
 # docker run -it --rm -v "$(pwd)/tests:/tests" playwright-2dotxt:latest
-FROM mcr.microsoft.com/playwright:v1.42.1-jammy
+FROM mcr.microsoft.com/playwright:v1.43.0-jammy
 
 COPY package.json ./package.json
 COPY package-lock.json ./package-lock.json
