@@ -106,7 +106,7 @@
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
     "@tauri-apps/cli": "1.5.11",
-    "@testing-library/react": "14.2.2",
+    "@testing-library/react": "15.0.1",
     "@types/file-saver": "2.0.7",
     "@types/lodash": "4.17.0",
     "@types/node": "20.12.4",
