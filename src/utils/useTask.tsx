@@ -1,10 +1,9 @@
 import { useSnackbar } from "@/components/Snackbar";
-import { promptForRating } from "@/native-api/app-rate";
 import {
   deleteFile,
   fileExists,
-  getFileNameWithoutExt,
   getFilename,
+  getFileNameWithoutExt,
   getUri,
   writeFile,
 } from "@/native-api/filesystem";
@@ -19,18 +18,18 @@ import { todayDate } from "@/utils/date";
 import { hashCode } from "@/utils/hashcode";
 import { addTodoFilePath, removeTodoFilePath } from "@/utils/settings";
 import {
-  Task,
   createDueDateRegex,
   createNextRecurringTask,
   parseTask,
   stringifyTask,
+  Task,
   transformPriority,
 } from "@/utils/task";
 import {
-  TaskList,
   parseTaskList as _parseTaskList,
   getCommonTaskListAttributes,
   stringifyTaskList,
+  TaskList,
   updateTaskListAttributes,
 } from "@/utils/task-list";
 import { getDoneFilePath } from "@/utils/todo-files";
@@ -176,8 +175,6 @@ export function useTask() {
         path: filePath,
         data: fileContent,
       });
-
-      promptForRating().catch((e) => void e);
 
       if (typeof listOrPath === "string") {
         return parseTaskList(filePath, fileContent);
