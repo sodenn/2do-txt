@@ -52,7 +52,7 @@
     "@capacitor/filesystem": "^5.0.0",
     "@capacitor/ios": "^5.0.0",
     "@capacitor/keyboard": "^5.0.0",
-    "@capacitor/local-notifications": "^5.0.0",
+    "@capacitor/local-notifications": "^6.0.0",
     "@capacitor/network": "^5.0.0",
     "@capacitor/preferences": "^5.0.0",
     "@capacitor/share": "^5.0.0",
