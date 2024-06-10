@@ -5,13 +5,13 @@
     "**/target/**",
     "ios/**",
     "tools/**",
+    "src/components/ErrorBoundary.tsx",
     "src/components/NewBadge.tsx",
     "src/components/Page.tsx",
     "src/components/ProviderBundle.tsx",
     "release.config.js"
   ],
   "ignoreDependencies": [
-    "@capacitor/ios",
     "cordova-plugin-inappbrowser",
     "cordova-plugin-ios-keychain",
     "@semantic-release/changelog",
