@@ -32,8 +32,8 @@ import {
 import { cloudStoragePreferences } from "./preferences";
 
 export const cloudStorageIcons: Record<Provider, ReactNode> = {
-  Dropbox: <DropboxIcon />,
-  WebDAV: <StorageOutlinedIcon />,
+  Dropbox: <DropboxIcon className="mr-2 h-4 w-4" />,
+  WebDAV: <StorageOutlinedIcon className="mr-2 h-4 w-4" />,
 };
 
 export function useCloudStorage() {

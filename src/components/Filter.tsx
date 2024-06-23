@@ -155,7 +155,7 @@ export function Filter() {
             aria-label="Filter type"
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a fruit" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="AND">{t("AND")}</SelectItem>
@@ -166,7 +166,7 @@ export function Filter() {
       )}
       {showSortBy && (
         <div className="space-y-2">
-          <div className="font-semibold space-x-1">
+          <div className="font-semibold flex gap-1 items-center">
             {t("Sort by")}
             {taskView === "timeline" && (
               <Tooltip delayDuration={0}>
@@ -187,7 +187,7 @@ export function Filter() {
             aria-label="Sort tasks"
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a fruit" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="unsorted">{t("No sorting")}</SelectItem>

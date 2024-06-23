@@ -1,18 +1,17 @@
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Provider,
   cloudStorageIcons,
   useCloudStorage,
 } from "@/utils/CloudStorage";
-import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import CloudIcon from "@mui/icons-material/Cloud";
-import {
-  Button,
-  Dropdown,
-  ListItemDecorator,
-  Menu,
-  MenuButton,
-  MenuItem,
-} from "@mui/joy";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -66,10 +65,10 @@ export function CloudStorageConnectionButtons({
         aria-label="Connect to cloud storage"
         loading={loading}
         color="neutral"
-        variant="outlined"
-        startDecorator={cloudStorageIcons[provider]}
+        variant="outline"
         onClick={() => handleItemClick(provider)}
       >
+        {cloudStorageIcons[provider]}
         {cloudStorages.some((s) => s.provider === provider)
           ? t("Disconnect from cloud storage", { provider })
           : t("Connect to cloud storage", { provider })}
@@ -78,29 +77,35 @@ export function CloudStorageConnectionButtons({
   }
 
   return (
-    <Dropdown>
-      <MenuButton
-        tabIndex={0}
-        color="neutral"
-        variant="outlined"
-        aria-label="Connect to cloud storage"
-        startDecorator={<CloudIcon />}
-        endDecorator={<ArrowDropDown />}
-      >
-        {status === "connect"
-          ? t("Connect to cloud storage", { provider: t("cloud storage") })
-          : t("Connection")}
-      </MenuButton>
-      <Menu disablePortal sx={{ mt: 0.5 }} placement="bottom-end">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          tabIndex={0}
+          variant="outline"
+          className="w-full justify-start"
+          aria-label="Connect to cloud storage"
+        >
+          <CloudIcon className="mr-2 h-4 w-4" />
+          {status === "connect"
+            ? t("Connect to cloud storage", { provider: t("cloud storage") })
+            : t("Connection")}
+          <div className="flex-1" />
+          <CaretSortIcon className="ml-2 h-4 w-4 opacity-50" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
         {filteredProviders.map((provider) => (
-          <MenuItem key={provider} onClick={() => handleItemClick(provider)}>
-            <ListItemDecorator>{cloudStorageIcons[provider]}</ListItemDecorator>
+          <DropdownMenuItem
+            key={provider}
+            onClick={() => handleItemClick(provider)}
+          >
+            {cloudStorageIcons[provider]}
             {cloudStorages.some((s) => s.provider === provider)
               ? t("Disconnect from cloud storage", { provider })
               : t("Connect to cloud storage", { provider })}
-          </MenuItem>
+          </DropdownMenuItem>
         ))}
-      </Menu>
-    </Dropdown>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

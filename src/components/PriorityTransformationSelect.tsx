@@ -1,8 +1,14 @@
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   PriorityTransformation,
   useSettingsStore,
 } from "@/stores/settings-store";
-import { FormControl, FormLabel, Option, Select } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function PriorityTransformationSelect() {
@@ -15,23 +21,24 @@ export function PriorityTransformationSelect() {
   );
 
   return (
-    <FormControl>
-      <FormLabel>{t("Completed tasks")}</FormLabel>
+    <div className="space-y-2">
+      <div className="font-semibold">{t("Completed tasks")}</div>
       <Select
         value={priorityTransformation}
-        onChange={(_, value) =>
+        onValueChange={(value) =>
           setCompletedTaskPriority(value as PriorityTransformation)
         }
-        slotProps={{
-          root: {
-            "aria-label": "Select completed task priority handling",
-          },
-        }}
+        aria-label="Select completed task priority handling"
       >
-        <Option value="keep">{t("Keep priority")}</Option>
-        <Option value="remove">{t("Remove priority")}</Option>
-        <Option value="archive">{t("Archive priority")}</Option>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="keep">{t("Keep priority")}</SelectItem>
+          <SelectItem value="remove">{t("Remove priority")}</SelectItem>
+          <SelectItem value="archive">{t("Archive priority")}</SelectItem>
+        </SelectContent>
       </Select>
-    </FormControl>
+    </div>
   );
 }

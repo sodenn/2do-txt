@@ -1,5 +1,11 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Language, useSettingsStore } from "@/stores/settings-store";
-import { FormControl, FormLabel, Option, Select } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function LanguageSelect() {
@@ -7,24 +13,25 @@ export function LanguageSelect() {
   const language = useSettingsStore((state) => state.language);
   const changeLanguage = useSettingsStore((state) => state.changeLanguage);
   return (
-    <FormControl>
-      <FormLabel>{t("Language")}</FormLabel>
+    <div className="space-y-2">
+      <div className="font-semibold">{t("Language")}</div>
       <Select
         value={language}
-        onChange={(_, value) => changeLanguage(value as Language)}
-        slotProps={{
-          root: {
-            "aria-label": "Select language",
-          },
-        }}
+        onValueChange={(value) => changeLanguage(value as Language)}
+        aria-label="Select language"
       >
-        <Option value="en" aria-label="English">
-          {t("English")}
-        </Option>
-        <Option value="de" aria-label="German">
-          {t("German")}
-        </Option>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="en" aria-label="English">
+            {t("English")}
+          </SelectItem>
+          <SelectItem value="de" aria-label="German">
+            {t("German")}
+          </SelectItem>
+        </SelectContent>
       </Select>
-    </FormControl>
+    </div>
   );
 }
