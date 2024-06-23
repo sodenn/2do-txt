@@ -1,6 +1,7 @@
 import { AppThemeProvider } from "@/components/AppThemeProvider";
 import { SnackbarProvider } from "@/components/Snackbar";
 import { LoaderData, StoreProvider } from "@/components/StoreProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { NonIndexRouteObject, Outlet, useLoaderData } from "react-router-dom";
 
 export { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -18,9 +19,11 @@ export function Component() {
       network={loaderData.network}
     >
       <AppThemeProvider>
-        <SnackbarProvider>
-          <Outlet />
-        </SnackbarProvider>
+        <TooltipProvider delayDuration={500}>
+          <SnackbarProvider>
+            <Outlet />
+          </SnackbarProvider>
+        </TooltipProvider>
       </AppThemeProvider>
     </StoreProvider>
   );
