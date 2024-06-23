@@ -1,19 +1,24 @@
 import { ChipList } from "@/components/ChipList";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import {
-  Checkbox,
-  FormControl,
-  FormLabel,
-  Link,
-  Option,
-  Select,
-  Stack,
-  Tooltip,
-} from "@mui/joy";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import { useCallback, useMemo } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -77,43 +82,43 @@ export function Filter() {
   });
 
   return (
-    <Stack spacing={2}>
+    <div className="space-y-3">
       {Object.keys(priorities).length > 0 && (
-        <FormControl>
-          <FormLabel component="div">{t("Priorities")}</FormLabel>
+        <div className="space-y-2">
+          <div className="font-semibold">{t("Priorities")}</div>
           <ChipList
             items={priorities}
             activeItems={activePriorities}
             onClick={togglePriority}
-            color="priority"
+            color="danger"
           />
-        </FormControl>
+        </div>
       )}
       {Object.keys(projects).length > 0 && (
-        <FormControl>
-          <FormLabel component="div">{t("Projects")}</FormLabel>
+        <div className="space-y-2">
+          <div className="font-semibold">{t("Projects")}</div>
           <ChipList
             items={projects}
             activeItems={activeProjects}
             onClick={toggleProject}
-            color="primary"
+            color="info"
           />
-        </FormControl>
+        </div>
       )}
       {Object.keys(contexts).length > 0 && (
-        <FormControl>
-          <FormLabel component="div">{t("Contexts")}</FormLabel>
+        <div className="space-y-2">
+          <div className="font-semibold">{t("Contexts")}</div>
           <ChipList
             items={contexts}
             activeItems={activeContexts}
             onClick={toggleContext}
             color="success"
           />
-        </FormControl>
+        </div>
       )}
       {Object.keys(tags).length > 0 && (
-        <FormControl>
-          <FormLabel component="div">{t("Tags")}</FormLabel>
+        <div className="space-y-2">
+          <div className="font-semibold">{t("Tags")}</div>
           <ChipList
             items={Object.keys(tags).reduce<Record<string, number>>(
               (acc, key) => {
@@ -126,83 +131,89 @@ export function Filter() {
             onClick={toggleTag}
             color="warning"
           />
-        </FormControl>
+        </div>
       )}
       {!defaultFilter && (
-        <Stack alignItems="flex-end">
-          <Link fontSize="small" onClick={resetFilters}>
-            {t("Reset filters")}
-          </Link>
-        </Stack>
-      )}
-      {showSortBy && (
-        <FormControl>
-          <FormLabel>{t("Filter type")}</FormLabel>
-          <Select
-            defaultValue="strict"
-            value={filterType}
-            onChange={(_, value) => setFilterType(value as FilterType)}
-            slotProps={{
-              button: {
-                "aria-label": "Filter type",
-              },
-            }}
+        <div className="flex justify-end">
+          <Button
+            className="px-0"
+            variant="link"
+            size="sm"
+            onClick={resetFilters}
           >
-            <Option value="AND">{t("AND")}</Option>
-            <Option value="OR">{t("OR")}</Option>
-          </Select>
-        </FormControl>
+            {t("Reset filters")}
+          </Button>
+        </div>
       )}
       {showSortBy && (
-        <FormControl disabled={taskView === "timeline"}>
-          <FormLabel>
-            {t("Sort by")}{" "}
+        <div className="space-y-2">
+          <div className="font-semibold">{t("Filter type")}</div>
+          <Select
+            defaultValue="AND"
+            value={filterType}
+            onValueChange={(value) => setFilterType(value as FilterType)}
+            aria-label="Filter type"
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a fruit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="AND">{t("AND")}</SelectItem>
+              <SelectItem value="OR">{t("OR")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+      {showSortBy && (
+        <div className="space-y-2">
+          <div className="font-semibold space-x-1">
+            {t("Sort by")}
             {taskView === "timeline" && (
-              <Tooltip
-                disableTouchListener={false}
-                enterTouchDelay={0}
-                leaveTouchDelay={2000}
-                title={
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <QuestionMarkCircledIcon fontSize="small" />
+                </TooltipTrigger>
+                <TooltipContent asChild>
                   <Trans i18nKey="Disabled when timeline view is active" />
-                }
-              >
-                <HelpOutlineIcon fontSize="small" />
+                </TooltipContent>
               </Tooltip>
             )}
-          </FormLabel>
+          </div>
           <Select
             disabled={taskView === "timeline"}
-            defaultValue=""
+            defaultValue="unsorted"
             value={sortBy}
-            onChange={(_, value) => setSortBy(value as SortKey)}
-            slotProps={{
-              button: {
-                "aria-label": "Sort tasks",
-              },
-            }}
+            onValueChange={(value) => setSortBy(value as SortKey)}
+            aria-label="Sort tasks"
           >
-            <Option value="">{t("No sorting")}</Option>
-            <Option value="priority">{t("Priority")}</Option>
-            <Option value="dueDate">{t("Due Date")}</Option>
-            <Option value="context">{t("Context")}</Option>
-            <Option value="project">{t("Project")}</Option>
-            <Option value="tag">{t("Tag")}</Option>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a fruit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="unsorted">{t("No sorting")}</SelectItem>
+              <SelectItem value="priority">{t("Priority")}</SelectItem>
+              <SelectItem value="dueDate">{t("Due Date")}</SelectItem>
+              <SelectItem value="context">{t("Context")}</SelectItem>
+              <SelectItem value="project">{t("Project")}</SelectItem>
+              <SelectItem value="tag">{t("Tag")}</SelectItem>
+            </SelectContent>
           </Select>
-        </FormControl>
+        </div>
       )}
-      <FormControl>
-        <FormLabel>{t("Status")}</FormLabel>
-        <Checkbox
-          checked={hideCompletedTasks}
-          onChange={(event) => setHideCompletedTasks(event.target.checked)}
-          label={t("Hide completed tasks")}
-          slotProps={{
-            input: {
-              "aria-label": "Hide completed tasks",
-            },
-          }}
-        />
-      </FormControl>
-    </Stack>
+      <div className="space-y-2">
+        <div className="font-semibold">{t("Status")}</div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="hideCompletedTasks"
+            checked={hideCompletedTasks}
+            onCheckedChange={(event) => setHideCompletedTasks(event === true)}
+            aria-label="Hide completed tasks"
+          />
+          <Label htmlFor="hideCompletedTasks">
+            {t("Hide completed tasks")}
+          </Label>
+        </div>
+      </div>
+    </div>
   );
 }
