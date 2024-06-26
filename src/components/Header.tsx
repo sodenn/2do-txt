@@ -3,8 +3,8 @@ import { Fade } from "@/components/Fade";
 import { FileMenu } from "@/components/FileMenu";
 import { SearchBar } from "@/components/SearchBar";
 import { ShareButton } from "@/components/ShareButton";
-import { HeaderContainer } from "@/components/SideSheet";
 import { SideSheetButton } from "@/components/SideSheetButton";
+import { LayoutHeader } from "@/components/SideSheetLayout";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useTask } from "@/utils/useTask";
@@ -31,7 +31,7 @@ export function Header({ divider = false }: HeaderProps) {
     (activeTaskList || taskLists.length === 1);
 
   return (
-    <HeaderContainer open={sideSheetOpen}>
+    <LayoutHeader open={sideSheetOpen}>
       <SafeAreaBox>
         <Stack
           direction="row"
@@ -50,6 +50,6 @@ export function Header({ divider = false }: HeaderProps) {
         </Stack>
       </SafeAreaBox>
       <Divider sx={{ visibility: divider ? "visible" : "hidden" }} />
-    </HeaderContainer>
+    </LayoutHeader>
   );
 }

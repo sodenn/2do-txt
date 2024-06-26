@@ -1,20 +1,19 @@
 import { Filter } from "@/components/Filter";
+import { SafeArea } from "@/components/SafeArea";
 import { Settings } from "@/components/Settings";
+import { LayoutContent } from "@/components/SideSheetLayout";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
-import { transitions } from "@/utils/transitions";
 import { useMediaQuery } from "@/utils/useMediaQuery";
 import { useTask } from "@/utils/useTask";
 import {
-  Box,
   Tab,
+  tabClasses,
   TabList,
   TabPanel,
   Tabs,
   TabsProps,
-  styled,
-  tabClasses,
   useTheme,
 } from "@mui/joy";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
@@ -22,54 +21,6 @@ import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const drawerWidth = 320;
-
-export const HeaderContainer = styled("div", {
-  shouldForwardProp: (prop) => prop !== "open",
-})<{ open: boolean }>(({ theme, open }) => ({
-  flex: "none",
-  [theme.breakpoints.up("lg")]: {
-    transition: transitions.create(["margin", "width"], {
-      easing: transitions.easing.sharp,
-      duration: transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-      marginLeft: `${drawerWidth}px`,
-      transition: transitions.create(["margin", "width"], {
-        easing: transitions.easing.easeOut,
-        duration: transitions.duration.enteringScreen,
-      }),
-    }),
-  },
-}));
-
-const Main = styled("main", {
-  shouldForwardProp: (prop) => prop !== "open",
-})<{
-  open: boolean;
-}>(({ theme, open }) => ({
-  overflowY: "auto",
-  flex: "auto",
-  [theme.breakpoints.up("lg")]: {
-    flexGrow: 1,
-    transition: transitions.create(["margin"], {
-      easing: transitions.easing.sharp,
-      duration: transitions.duration.leavingScreen,
-    }),
-    marginLeft: `-${drawerWidth}px`,
-    ...(open && {
-      transition: transitions.create(["margin"], {
-        easing: transitions.easing.easeOut,
-        duration: transitions.duration.enteringScreen,
-      }),
-      marginLeft: 0,
-    }),
-  },
-}));
-
-const SaveAreaContent = styled(Box)({
-  paddingBottom: "env(safe-area-inset-bottom)",
-  paddingLeft: "env(safe-area-inset-left)",
-});
 
 export function MainContainer({ children }: PropsWithChildren) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -90,9 +41,9 @@ export function MainContainer({ children }: PropsWithChildren) {
   }, [setTop]);
 
   return (
-    <Main ref={ref} open={sideSheetOpen} id="scroll-container">
+    <LayoutContent ref={ref} open={sideSheetOpen} id="scroll-container">
       {children}
-    </Main>
+    </LayoutContent>
   );
 }
 
@@ -139,7 +90,7 @@ export function SideSheet() {
 
   return (
     <SwipeableDrawer
-      disableSwipeToOpen={platform === "web"}
+      // disableSwipeToOpen={platform === "web"}
       data-hotkeys-keep-enabled={persistent ? "true" : "m"}
       aria-label="Side Menu"
       anchor="left"
@@ -210,14 +161,14 @@ export function SideSheet() {
             {t("Settings")}
           </Tab>
         </TabList>
-        <SaveAreaContent sx={{ overflowY: "auto", flex: "auto" }}>
+        <SafeArea className="overflow-y-auto flex-auto" bottom left>
           <TabPanel value="filter">
             <Filter />
           </TabPanel>
           <TabPanel value="settings">
             <Settings />
           </TabPanel>
-        </SaveAreaContent>
+        </SafeArea>
       </Tabs>
     </SwipeableDrawer>
   );
