@@ -1,7 +1,8 @@
 import { Filter } from "@/components/Filter";
 import { SafeArea } from "@/components/SafeArea";
 import { Settings } from "@/components/Settings";
-import { LayoutContent } from "@/components/SideSheetLayout";
+import { LayoutContent, LayoutSidebar } from "@/components/SideSheetLayout";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useScrollingStore } from "@/stores/scrolling-store";
@@ -9,7 +10,6 @@ import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useMediaQuery } from "@/utils/useMediaQuery";
 import { useTask } from "@/utils/useTask";
 import { useTheme } from "@mui/joy";
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -78,37 +78,38 @@ export function SideSheet() {
   }, [hideFilter]);
 
   return (
-    <SwipeableDrawer
-      // disableSwipeToOpen={platform === "web"}
-      data-hotkeys-keep-enabled={persistent ? "true" : "m"}
-      aria-label="Side Menu"
-      anchor="left"
-      variant={persistent ? "persistent" : undefined}
-      open={sideSheetOpen}
-      {...(persistent && {
-        role: "presentation",
-        "aria-hidden": sideSheetOpen ? "false" : "true",
-      })}
-      sx={(theme) => ({
-        "& .MuiDrawer-paper": {
-          backgroundImage: "unset",
-          boxSizing: "border-box",
-          [theme.breakpoints.down("lg")]: {
-            width: drawerWidth,
-          },
-        },
-        [theme.breakpoints.up("lg")]: {
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            borderRight: "1px solid var(--joy-palette-divider)",
-          },
-        },
-      })}
-      onOpen={openSideSheet}
-      onClose={closeSideSheet}
-    >
+    // <SwipeableDrawer
+    //   // disableSwipeToOpen={platform === "web"}
+    //   data-hotkeys-keep-enabled={persistent ? "true" : "m"}
+    //   aria-label="Side Menu"
+    //   anchor="left"
+    //   variant={persistent ? "persistent" : undefined}
+    //   open={sideSheetOpen}
+    //   {...(persistent && {
+    //     role: "presentation",
+    //     "aria-hidden": sideSheetOpen ? "false" : "true",
+    //   })}
+    //   sx={(theme) => ({
+    //     "& .MuiDrawer-paper": {
+    //       backgroundImage: "unset",
+    //       boxSizing: "border-box",
+    //       [theme.breakpoints.down("lg")]: {
+    //         width: drawerWidth,
+    //       },
+    //     },
+    //     [theme.breakpoints.up("lg")]: {
+    //       width: drawerWidth,
+    //       flexShrink: 0,
+    //       "& .MuiDrawer-paper": {
+    //         width: drawerWidth,
+    //         borderRight: "1px solid var(--joy-palette-divider)",
+    //       },
+    //     },
+    //   })}
+    //   onOpen={openSideSheet}
+    //   onClose={closeSideSheet}
+    // >
+    <LayoutSidebar open={sideSheetOpen}>
       <Tabs value={tab} onValueChange={setTab} className="h-full flex flex-col">
         <SafeArea top left asChild>
           <TabsList className="grid w-full grid-cols-2">
@@ -122,15 +123,18 @@ export function SideSheet() {
             </TabsTrigger>
           </TabsList>
         </SafeArea>
-        <SafeArea className="overflow-y-auto flex-auto" bottom left>
-          <TabsContent value="filter">
-            <Filter />
-          </TabsContent>
-          <TabsContent value="settings">
-            <Settings />
-          </TabsContent>
+        <SafeArea asChild bottom left>
+          <ScrollArea>
+            <TabsContent value="filter">
+              <Filter />
+            </TabsContent>
+            <TabsContent value="settings">
+              <Settings />
+            </TabsContent>
+          </ScrollArea>
         </SafeArea>
       </Tabs>
-    </SwipeableDrawer>
+    </LayoutSidebar>
+    // </SwipeableDrawer>
   );
 }

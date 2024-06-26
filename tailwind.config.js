@@ -21,6 +21,9 @@ module.exports = {
         195: "195ms",
         225: "225ms",
       },
+      translate: {
+        320: "320px",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
