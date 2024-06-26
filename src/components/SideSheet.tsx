@@ -2,20 +2,13 @@ import { Filter } from "@/components/Filter";
 import { SafeArea } from "@/components/SafeArea";
 import { Settings } from "@/components/Settings";
 import { LayoutContent } from "@/components/SideSheetLayout";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useMediaQuery } from "@/utils/useMediaQuery";
 import { useTask } from "@/utils/useTask";
-import {
-  Tab,
-  tabClasses,
-  TabList,
-  TabPanel,
-  Tabs,
-  TabsProps,
-  useTheme,
-} from "@mui/joy";
+import { useTheme } from "@mui/joy";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -76,10 +69,6 @@ export function SideSheet() {
 
   const [tab, setTab] = useState<string>(hideFilter ? "settings" : "filter");
 
-  const handleChange: TabsProps["onChange"] = (event, newValue) => {
-    setTab(newValue as string);
-  };
-
   useEffect(() => {
     if (hideFilter) {
       setTab("settings");
@@ -120,54 +109,26 @@ export function SideSheet() {
       onOpen={openSideSheet}
       onClose={closeSideSheet}
     >
-      <Tabs value={tab} onChange={handleChange} sx={{ height: "100%" }}>
-        <TabList
-          size="md"
-          sx={{
-            "--ListItem-minHeight": (theme) =>
-              `calc(2.25rem + ${theme.spacing(2)})`,
-            flex: "initial",
-            paddingTop: "env(safe-area-inset-top)",
-            paddingLeft: "env(safe-area-inset-left)",
-            [`&& .${tabClasses.root}`]: {
-              bgcolor: "transparent",
-              "&:hover": {
-                bgcolor: "transparent",
-              },
-              ":first-of-type": {
-                ml: 1,
-              },
-              ":last-of-type": {
-                mr: 1,
-              },
-              [`&.${tabClasses.selected}`]: {
-                color: "primary.plainColor",
-                "&::after": {
-                  height: 2,
-                  borderTopLeftRadius: 3,
-                  borderTopRightRadius: 3,
-                  bgcolor: "primary.500",
-                },
-              },
-            },
-          }}
-        >
-          {!hideFilter && (
-            <Tab value="filter" aria-label="Filter">
-              {t("Filter")}
-            </Tab>
-          )}
-          <Tab value="settings" aria-label="Settings">
-            {t("Settings")}
-          </Tab>
-        </TabList>
+      <Tabs value={tab} onValueChange={setTab} className="h-full flex flex-col">
+        <SafeArea top left asChild>
+          <TabsList className="grid w-full grid-cols-2">
+            {!hideFilter && (
+              <TabsTrigger value="filter" aria-label="Filter">
+                {t("Filter")}
+              </TabsTrigger>
+            )}
+            <TabsTrigger value="settings" aria-label="Settings">
+              {t("Settings")}
+            </TabsTrigger>
+          </TabsList>
+        </SafeArea>
         <SafeArea className="overflow-y-auto flex-auto" bottom left>
-          <TabPanel value="filter">
+          <TabsContent value="filter">
             <Filter />
-          </TabPanel>
-          <TabPanel value="settings">
+          </TabsContent>
+          <TabsContent value="settings">
             <Settings />
-          </TabPanel>
+          </TabsContent>
         </SafeArea>
       </Tabs>
     </SwipeableDrawer>
