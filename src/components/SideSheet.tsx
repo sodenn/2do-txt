@@ -1,7 +1,7 @@
 import { Filter } from "@/components/Filter";
+import { LayoutContent, LayoutSidebar } from "@/components/Layout";
 import { SafeArea } from "@/components/SafeArea";
 import { Settings } from "@/components/Settings";
-import { LayoutContent, LayoutSidebar } from "@/components/SideSheetLayout";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePlatformStore } from "@/stores/platform-store";
@@ -111,24 +111,26 @@ export function SideSheet() {
     // >
     <LayoutSidebar open={sideSheetOpen}>
       <Tabs value={tab} onValueChange={setTab} className="h-full flex flex-col">
-        <SafeArea top left asChild>
-          <TabsList className="grid w-full grid-cols-2">
-            {!hideFilter && (
-              <TabsTrigger value="filter" aria-label="Filter">
-                {t("Filter")}
+        <div className="pt-2 px-2">
+          <SafeArea top left asChild>
+            <TabsList className="grid w-full grid-cols-2">
+              {!hideFilter && (
+                <TabsTrigger value="filter" aria-label="Filter">
+                  {t("Filter")}
+                </TabsTrigger>
+              )}
+              <TabsTrigger value="settings" aria-label="Settings">
+                {t("Settings")}
               </TabsTrigger>
-            )}
-            <TabsTrigger value="settings" aria-label="Settings">
-              {t("Settings")}
-            </TabsTrigger>
-          </TabsList>
-        </SafeArea>
+            </TabsList>
+          </SafeArea>
+        </div>
         <SafeArea asChild bottom left>
           <ScrollArea>
-            <TabsContent value="filter">
+            <TabsContent className="px-2 pb-2" value="filter">
               <Filter />
             </TabsContent>
-            <TabsContent value="settings">
+            <TabsContent className="px-2 pb-2" value="settings">
               <Settings />
             </TabsContent>
           </ScrollArea>

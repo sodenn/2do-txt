@@ -24,13 +24,18 @@ export function LayoutHeader({ open, children }: HeaderContainerProps) {
   );
 }
 
-export function LayoutSidebar({ open, children }: HeaderContainerProps) {
+export function LayoutSidebar({
+  open,
+  className,
+  children,
+}: LayoutContentProps) {
   return (
     <div
       className={clsx(
-        "fixed xl:overflow-y-auto xl:overflow-x-hidden xl:transition-all xl:duration-225 xl:ease-out",
+        "fixed top-0 bottom-0 left-0 xl:overflow-y-auto xl:overflow-x-hidden xl:transition-all xl:duration-225 xl:ease-out xl:w-[320px] border-r bg-background",
         open && "xl:translate-x-0",
         !open && "xl:-translate-x-320",
+        className,
       )}
     >
       {children}
@@ -44,9 +49,9 @@ export const LayoutContent = forwardRef<HTMLDivElement, LayoutContentProps>(
       <div
         ref={ref}
         className={clsx(
-          "overflow-y-auto flex-auto xl:flex-grow xl:-ml-[320px]",
-          open && `xl:ml-0 xl:duration-225 xl:ease-out`,
-          !open && "xl:duration-195 xl:ease-in",
+          "overflow-y-auto flex-auto xl:flex-grow",
+          open && `xl:ml-[320px] xl:duration-225 xl:ease-out`,
+          !open && "xl:ml-0 xl:duration-195 xl:ease-in",
         )}
       >
         {children}

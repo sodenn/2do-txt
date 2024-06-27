@@ -41,8 +41,10 @@ export function ArchiveModeSelect() {
             <TooltipTrigger asChild>
               <QuestionMarkCircledIcon fontSize="small" />
             </TooltipTrigger>
-            <TooltipContent asChild>
-              <Trans i18nKey="Completed tasks are archived in a second file called done.txt" />
+            <TooltipContent className="max-w-[250px]" asChild>
+              <div>
+                <Trans i18nKey="Completed tasks are archived in a second file called done.txt" />
+              </div>
             </TooltipContent>
           </Tooltip>
         </div>

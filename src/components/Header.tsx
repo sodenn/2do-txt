@@ -1,10 +1,10 @@
 import { AddTaskButton } from "@/components/AddTaskButton";
 import { Fade } from "@/components/Fade";
 import { FileMenu } from "@/components/FileMenu";
+import { LayoutHeader } from "@/components/Layout";
 import { SearchBar } from "@/components/SearchBar";
 import { ShareButton } from "@/components/ShareButton";
 import { SideSheetButton } from "@/components/SideSheetButton";
-import { LayoutHeader } from "@/components/SideSheetLayout";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useTask } from "@/utils/useTask";
