@@ -1,7 +1,6 @@
-import * as React from "react";
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
   label?: ReactNode;
 }
 

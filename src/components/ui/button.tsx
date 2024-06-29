@@ -1,7 +1,7 @@
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
+import { ButtonHTMLAttributes, forwardRef } from "react";
 
 import { cn } from "@/utils/tw-utils";
 
@@ -36,13 +36,13 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { className, variant, size, asChild = false, loading, children, ...props },
     ref,

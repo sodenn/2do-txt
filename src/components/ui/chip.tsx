@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
+import { HTMLAttributes } from "react";
 
 import { cn } from "@/utils/tw-utils";
 
@@ -88,7 +88,7 @@ const chipVariants = cva(
 );
 
 export interface ChipProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "color">,
+  extends Omit<HTMLAttributes<HTMLDivElement>, "color">,
     VariantProps<typeof chipVariants> {}
 
 function Chip({ className, color, variant, ...props }: ChipProps) {

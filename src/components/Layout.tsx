@@ -1,11 +1,5 @@
 import { useBreakpoint } from "@/components/Breakpoint";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import clsx from "clsx";
 import { HTMLAttributes, ReactNode, forwardRef } from "react";
 
@@ -78,15 +72,7 @@ export function LayoutSidebar({
       open={open}
       onOpenChange={handleOpenChange}
     >
-      <SheetContent side="left">
-        <SheetHeader>
-          <SheetTitle>Are you absolutely sure?</SheetTitle>
-          <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </SheetDescription>
-        </SheetHeader>
-      </SheetContent>
+      <SheetContent side="left">{children}</SheetContent>
     </Sheet>
   );
 }
