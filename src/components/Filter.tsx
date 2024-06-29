@@ -18,7 +18,7 @@ import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
-import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { HelpCircleIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -171,7 +171,7 @@ export function Filter() {
             {taskView === "timeline" && (
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
-                  <QuestionMarkCircledIcon fontSize="small" />
+                  <HelpCircleIcon fontSize="small" />
                 </TooltipTrigger>
                 <TooltipContent asChild>
                   <Trans i18nKey="Disabled when timeline view is active" />

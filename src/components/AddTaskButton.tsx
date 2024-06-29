@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { useHotkeys } from "@/utils/useHotkeys";
-import { PlusIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function AddTaskButton() {
@@ -30,7 +30,7 @@ export function AddTaskButton() {
           size="icon"
           onClick={handleClick}
         >
-          <PlusIcon />
+          <PlusIcon className="h-4 w-4" />
         </Button>
       </TooltipTrigger>
       <TooltipContent collisionPadding={15}>

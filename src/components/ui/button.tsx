@@ -1,9 +1,9 @@
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 import { cn } from "@/utils/tw-utils";
+import { LoaderCircleIcon } from "lucide-react";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
@@ -56,7 +56,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading && (
           <div className={cn("absolute flex justify-center")}>
-            <ReloadIcon className="h-7 w-7 shrink-0 animate-spin opacity-30" />
+            <LoaderCircleIcon className="h-7 w-7 shrink-0 animate-spin opacity-30" />
           </div>
         )}
         {children}

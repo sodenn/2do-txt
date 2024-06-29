@@ -10,8 +10,7 @@ import {
   cloudStorageIcons,
   useCloudStorage,
 } from "@/utils/CloudStorage";
-import CloudIcon from "@mui/icons-material/Cloud";
-import { CaretSortIcon } from "@radix-ui/react-icons";
+import { ChevronsUpDownIcon, CloudIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -90,7 +89,7 @@ export function CloudStorageConnectionButtons({
             ? t("Connect to cloud storage", { provider: t("cloud storage") })
             : t("Connection")}
           <div className="flex-1" />
-          <CaretSortIcon className="ml-2 h-4 w-4 opacity-50" />
+          <ChevronsUpDownIcon className="ml-2 h-4 w-4 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

@@ -2,24 +2,19 @@ import { AddTaskButton } from "@/components/AddTaskButton";
 import { Fade } from "@/components/Fade";
 import { FileMenu } from "@/components/FileMenu";
 import { LayoutHeader } from "@/components/Layout";
+import { SafeArea } from "@/components/SafeArea";
 import { SearchBar } from "@/components/SearchBar";
 import { ShareButton } from "@/components/ShareButton";
 import { SideSheetButton } from "@/components/SideSheetButton";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
+import { cn } from "@/utils/tw-utils";
 import { useTask } from "@/utils/useTask";
-import { Box, Divider, Stack, styled } from "@mui/joy";
 import { useState } from "react";
 
 interface HeaderProps {
   divider?: boolean;
 }
-
-const SafeAreaBox = styled(Box)({
-  paddingTop: "env(safe-area-inset-top)",
-  paddingLeft: "env(safe-area-inset-left)",
-  paddingRight: "env(safe-area-inset-right)",
-});
 
 export function Header({ divider = false }: HeaderProps) {
   const platform = usePlatformStore((state) => state.platform);
@@ -32,11 +27,12 @@ export function Header({ divider = false }: HeaderProps) {
 
   return (
     <LayoutHeader open={sideSheetOpen}>
-      <SafeAreaBox>
-        <Stack
-          direction="row"
-          sx={{ py: 1, px: { xs: 1.5, sm: 2.5 } }}
-          spacing={1}
+      <SafeArea top left right>
+        <div
+          className={cn(
+            "flex p-2 sm:p-3 gap-1 sm:gap-2",
+            divider && "bottom-b",
+          )}
         >
           <SideSheetButton />
           <Fade in={!searchBarExpanded} unmountOnExit>
@@ -47,9 +43,8 @@ export function Header({ divider = false }: HeaderProps) {
           )}
           {showTodoFileDownloadButton && <ShareButton />}
           {taskLists.length > 0 && <AddTaskButton />}
-        </Stack>
-      </SafeAreaBox>
-      <Divider sx={{ visibility: divider ? "visible" : "hidden" }} />
+        </div>
+      </SafeArea>
     </LayoutHeader>
   );
 }

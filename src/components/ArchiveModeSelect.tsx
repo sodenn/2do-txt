@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ArchiveMode, useSettingsStore } from "@/stores/settings-store";
 import { useTask } from "@/utils/useTask";
-import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { CircleHelpIcon } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 
 export function ArchiveModeSelect() {
@@ -39,7 +39,7 @@ export function ArchiveModeSelect() {
           {t("Archiving")}
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <QuestionMarkCircledIcon fontSize="small" />
+              <CircleHelpIcon className="h-4 w-4" />
             </TooltipTrigger>
             <TooltipContent className="max-w-[250px]" asChild>
               <div>
