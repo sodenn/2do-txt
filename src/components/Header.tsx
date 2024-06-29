@@ -7,16 +7,14 @@ import { SearchBar } from "@/components/SearchBar";
 import { ShareButton } from "@/components/ShareButton";
 import { SideSheetButton } from "@/components/SideSheetButton";
 import { usePlatformStore } from "@/stores/platform-store";
+import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { cn } from "@/utils/tw-utils";
 import { useTask } from "@/utils/useTask";
 import { useState } from "react";
 
-interface HeaderProps {
-  divider?: boolean;
-}
-
-export function Header({ divider = false }: HeaderProps) {
+export function Header() {
+  const divider = useScrollingStore((state) => state.divider);
   const platform = usePlatformStore((state) => state.platform);
   const { activeTaskList, taskLists } = useTask();
   const sideSheetOpen = useSideSheetStore((state) => state.open);
@@ -31,7 +29,7 @@ export function Header({ divider = false }: HeaderProps) {
         <div
           className={cn(
             "flex p-2 sm:p-3 gap-1 sm:gap-2",
-            divider && "bottom-b",
+            divider && "border-b",
           )}
         >
           <SideSheetButton />

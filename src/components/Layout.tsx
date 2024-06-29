@@ -1,14 +1,18 @@
 import { useBreakpoint } from "@/components/Breakpoint";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useScrollingStore } from "@/stores/scrolling-store";
+import { useSideSheetStore } from "@/stores/side-sheet-store";
+import { ScrollAreaProps } from "@radix-ui/react-scroll-area";
 import clsx from "clsx";
-import { HTMLAttributes, ReactNode, forwardRef } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 
 interface HeaderContainerProps {
   open: boolean;
   children: ReactNode;
 }
 
-export interface LayoutContentProps extends HTMLAttributes<HTMLDivElement> {
+export interface LayoutSidebarProps extends HTMLAttributes<HTMLDivElement> {
   open: boolean;
   onClose?: () => void;
 }
@@ -22,7 +26,7 @@ export function LayoutHeader({ open, children }: HeaderContainerProps) {
   return (
     <div
       className={clsx(
-        "flex-none xl:transition-all",
+        "flex-grow-0 flex-shrink-0 basis-auto xl:transition-all",
         open && `xl:ml-[320px] xl:duration-225 xl:ease-out`,
         !open && "xl:duration-195 xl:ease-in",
       )}
@@ -37,7 +41,7 @@ export function LayoutSidebar({
   onClose,
   className,
   children,
-}: LayoutContentProps) {
+}: LayoutSidebarProps) {
   const persistent = usePersistentSidebar();
 
   const handleOpenChange = (open: boolean) => {
@@ -77,19 +81,26 @@ export function LayoutSidebar({
   );
 }
 
-export const LayoutContent = forwardRef<HTMLDivElement, LayoutContentProps>(
-  ({ open, children }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={clsx(
-          "overflow-y-auto flex-auto xl:flex-grow",
-          open && `xl:ml-[320px] xl:duration-225 xl:ease-out`,
-          !open && "xl:ml-0 xl:duration-195 xl:ease-in",
-        )}
-      >
-        {children}
-      </div>
-    );
-  },
-);
+export function LayoutContent(props: ScrollAreaProps) {
+  const setDivider = useScrollingStore((state) => state.setDivider);
+  const sideSheetOpen = useSideSheetStore((state) => state.open);
+
+  const handleScroll: ScrollAreaProps["onScroll"] = (event) => {
+    const element = event.target as HTMLDivElement;
+    setDivider(element.scrollTop > 10);
+  };
+
+  return (
+    <ScrollArea
+      onScroll={handleScroll}
+      data-testid="page"
+      id="scroll-container"
+      className={clsx(
+        "overflow-y-auto flex-auto xl:flex-grow",
+        sideSheetOpen && `xl:ml-[320px] xl:duration-225 xl:ease-out`,
+        !sideSheetOpen && "xl:ml-0 xl:duration-195 xl:ease-in",
+      )}
+      {...props}
+    />
+  );
+}

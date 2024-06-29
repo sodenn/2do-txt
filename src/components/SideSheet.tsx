@@ -1,39 +1,13 @@
 import { Filter } from "@/components/Filter";
-import { LayoutContent, LayoutSidebar } from "@/components/Layout";
+import { LayoutSidebar } from "@/components/Layout";
 import { SafeArea } from "@/components/SafeArea";
 import { Settings } from "@/components/Settings";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useTask } from "@/utils/useTask";
-import { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-export function MainContainer({ children }: PropsWithChildren) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const sideSheetOpen = useSideSheetStore((state) => state.open);
-  const setTop = useScrollingStore((state) => state.setTop);
-
-  useEffect(() => {
-    const element = ref.current;
-    if (element) {
-      const listener = () => {
-        setTop(element.scrollTop);
-      };
-      element.addEventListener("scroll", listener);
-      return () => {
-        element.removeEventListener("scroll", listener);
-      };
-    }
-  }, [setTop]);
-
-  return (
-    <LayoutContent ref={ref} open={sideSheetOpen} id="scroll-container">
-      {children}
-    </LayoutContent>
-  );
-}
 
 export function SideSheet() {
   const { t } = useTranslation();

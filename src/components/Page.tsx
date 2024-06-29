@@ -5,15 +5,15 @@ import { FileCreateDialog } from "@/components/FileCreateDialog";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
 import { FilePicker } from "@/components/FilePicker";
 import { Header } from "@/components/Header";
+import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
 import { PageEffect } from "@/components/PageEffect";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
-import { MainContainer, SideSheet } from "@/components/SideSheet";
+import { SideSheet } from "@/components/SideSheet";
 import { TaskDialog } from "@/components/TaskDialog";
 import { TaskView } from "@/components/TaskView";
 import { WebDAVDialog } from "@/components/WebDAVDialog";
-import { useScrollingStore } from "@/stores/scrolling-store";
-import { Box, Container, styled } from "@mui/joy";
+import { Container, styled } from "@mui/joy";
 
 const SafeAreaContainer = styled(Container)(({ theme }) => ({
   paddingRight: "env(safe-area-inset-right)",
@@ -28,22 +28,16 @@ const SafeAreaContainer = styled(Container)(({ theme }) => ({
 }));
 
 export function Component() {
-  const top = useScrollingStore((state) => state.top);
   return (
     <FilePicker>
-      <Header divider={top > 10} />
-      <Box
-        data-testid="page"
-        sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
-      >
-        <SideSheet />
-        <MainContainer>
-          <SafeAreaContainer disableGutters id="ptr-container">
-            <TaskView />
-            <Onboarding />
-          </SafeAreaContainer>
-        </MainContainer>
-      </Box>
+      <Header />
+      <SideSheet />
+      <LayoutContent>
+        <SafeAreaContainer disableGutters id="ptr-container">
+          <TaskView />
+          <Onboarding />
+        </SafeAreaContainer>
+      </LayoutContent>
       <TaskDialog />
       <FileCreateDialog />
       <CloudFileDialog />
