@@ -1,5 +1,13 @@
+import { useBreakpoint } from "@/components/Breakpoint";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import clsx from "clsx";
-import { forwardRef, HTMLAttributes, ReactNode } from "react";
+import { HTMLAttributes, ReactNode, forwardRef } from "react";
 
 interface HeaderContainerProps {
   open: boolean;
@@ -8,6 +16,12 @@ interface HeaderContainerProps {
 
 export interface LayoutContentProps extends HTMLAttributes<HTMLDivElement> {
   open: boolean;
+  onClose?: () => void;
+}
+
+function usePersistentSidebar() {
+  const { isBreakpointActive } = useBreakpoint();
+  return isBreakpointActive("xl");
 }
 
 export function LayoutHeader({ open, children }: HeaderContainerProps) {
@@ -26,20 +40,54 @@ export function LayoutHeader({ open, children }: HeaderContainerProps) {
 
 export function LayoutSidebar({
   open,
+  onClose,
   className,
   children,
 }: LayoutContentProps) {
+  const persistent = usePersistentSidebar();
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open && onClose) {
+      onClose();
+    }
+  };
+
+  if (persistent) {
+    return (
+      <div
+        aria-label="Side Menu"
+        role="presentation"
+        aria-hidden={open ? "false" : "true"}
+        data-hotkeys-keep-enabled={persistent ? "true" : "m"}
+        className={clsx(
+          "fixed top-0 bottom-0 left-0 hidden xl:block overflow-y-auto overflow-x-hidden transition-all duration-225 ease-out w-[320px] border-r bg-background",
+          open && "translate-x-0",
+          !open && "-translate-x-320",
+          className,
+        )}
+      >
+        {children}
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={clsx(
-        "fixed top-0 bottom-0 left-0 xl:overflow-y-auto xl:overflow-x-hidden xl:transition-all xl:duration-225 xl:ease-out xl:w-[320px] border-r bg-background",
-        open && "xl:translate-x-0",
-        !open && "xl:-translate-x-320",
-        className,
-      )}
+    <Sheet
+      aria-label="Side Menu"
+      data-hotkeys-keep-enabled={persistent ? "true" : "m"}
+      open={open}
+      onOpenChange={handleOpenChange}
     >
-      {children}
-    </div>
+      <SheetContent side="left">
+        <SheetHeader>
+          <SheetTitle>Are you absolutely sure?</SheetTitle>
+          <SheetDescription>
+            This action cannot be undone. This will permanently delete your
+            account and remove your data from our servers.
+          </SheetDescription>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
   );
 }
 

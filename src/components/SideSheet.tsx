@@ -4,16 +4,11 @@ import { SafeArea } from "@/components/SafeArea";
 import { Settings } from "@/components/Settings";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePlatformStore } from "@/stores/platform-store";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
-import { useMediaQuery } from "@/utils/useMediaQuery";
 import { useTask } from "@/utils/useTask";
-import { useTheme } from "@mui/joy";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-const drawerWidth = 320;
 
 export function MainContainer({ children }: PropsWithChildren) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -42,14 +37,7 @@ export function MainContainer({ children }: PropsWithChildren) {
 
 export function SideSheet() {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const persistent = useMediaQuery(theme.breakpoints.up("lg"));
-  const platform = usePlatformStore((state) => state.platform);
-  const {
-    open: sideSheetOpen,
-    openSideSheet,
-    closeSideSheet,
-  } = useSideSheetStore();
+  const { open: sideSheetOpen, closeSideSheet } = useSideSheetStore();
   const { taskLists, activeTaskList, ...rest } = useTask();
 
   const { priorities, projects, contexts, tags } = activeTaskList
@@ -78,40 +66,9 @@ export function SideSheet() {
   }, [hideFilter]);
 
   return (
-    // <SwipeableDrawer
-    //   // disableSwipeToOpen={platform === "web"}
-    //   data-hotkeys-keep-enabled={persistent ? "true" : "m"}
-    //   aria-label="Side Menu"
-    //   anchor="left"
-    //   variant={persistent ? "persistent" : undefined}
-    //   open={sideSheetOpen}
-    //   {...(persistent && {
-    //     role: "presentation",
-    //     "aria-hidden": sideSheetOpen ? "false" : "true",
-    //   })}
-    //   sx={(theme) => ({
-    //     "& .MuiDrawer-paper": {
-    //       backgroundImage: "unset",
-    //       boxSizing: "border-box",
-    //       [theme.breakpoints.down("lg")]: {
-    //         width: drawerWidth,
-    //       },
-    //     },
-    //     [theme.breakpoints.up("lg")]: {
-    //       width: drawerWidth,
-    //       flexShrink: 0,
-    //       "& .MuiDrawer-paper": {
-    //         width: drawerWidth,
-    //         borderRight: "1px solid var(--joy-palette-divider)",
-    //       },
-    //     },
-    //   })}
-    //   onOpen={openSideSheet}
-    //   onClose={closeSideSheet}
-    // >
-    <LayoutSidebar open={sideSheetOpen}>
+    <LayoutSidebar open={sideSheetOpen} onClose={closeSideSheet}>
       <Tabs value={tab} onValueChange={setTab} className="h-full flex flex-col">
-        <div className="pt-2 px-2">
+        <div className="pt-3 px-3">
           <SafeArea top left asChild>
             <TabsList className="grid w-full grid-cols-2">
               {!hideFilter && (
@@ -127,16 +84,15 @@ export function SideSheet() {
         </div>
         <SafeArea asChild bottom left>
           <ScrollArea>
-            <TabsContent className="px-2 pb-2" value="filter">
+            <TabsContent className="px-3 pb-3" value="filter">
               <Filter />
             </TabsContent>
-            <TabsContent className="px-2 pb-2" value="settings">
+            <TabsContent className="px-3 pb-3" value="settings">
               <Settings />
             </TabsContent>
           </ScrollArea>
         </SafeArea>
       </Tabs>
     </LayoutSidebar>
-    // </SwipeableDrawer>
   );
 }

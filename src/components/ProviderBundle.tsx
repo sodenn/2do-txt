@@ -1,4 +1,5 @@
 import { AppThemeProvider } from "@/components/AppThemeProvider";
+import { BreakpointProvider } from "@/components/Breakpoint";
 import { SnackbarProvider } from "@/components/Snackbar";
 import { LoaderData, StoreProvider } from "@/components/StoreProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,13 +19,15 @@ export function Component() {
       cloud={loaderData.cloud}
       network={loaderData.network}
     >
-      <AppThemeProvider>
-        <TooltipProvider delayDuration={500}>
-          <SnackbarProvider>
-            <Outlet />
-          </SnackbarProvider>
-        </TooltipProvider>
-      </AppThemeProvider>
+      <BreakpointProvider>
+        <AppThemeProvider>
+          <TooltipProvider delayDuration={500}>
+            <SnackbarProvider>
+              <Outlet />
+            </SnackbarProvider>
+          </TooltipProvider>
+        </AppThemeProvider>
+      </BreakpointProvider>
     </StoreProvider>
   );
 }
