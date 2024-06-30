@@ -1,11 +1,14 @@
+import { ResponsiveDialogTitle } from "@/components/ResponsiveDialog";
 import {
-  ResponsiveDialog,
-  ResponsiveDialogActions,
-  ResponsiveDialogContent,
-  ResponsiveDialogTitle,
-} from "@/components/ResponsiveDialog";
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
-import { Box, Button } from "@mui/joy";
+import { cn } from "@/utils/tw-utils";
 
 export function ConfirmationDialog() {
   const open = useConfirmationDialogStore((state) => state.open);
@@ -16,48 +19,45 @@ export function ConfirmationDialog() {
   const closeConfirmationDialog = useConfirmationDialogStore(
     (state) => state.closeConfirmationDialog,
   );
-  const cleanupConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.cleanupConfirmationDialog,
-  );
 
   const handleClick = (handler?: () => void) => {
     handler?.();
     closeConfirmationDialog();
   };
 
-  const handleClose = () => {
-    if (onClose) {
-      onClose();
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      onClose?.();
+      closeConfirmationDialog();
     }
-    closeConfirmationDialog();
   };
 
   return (
-    <ResponsiveDialog
+    <AlertDialog
       data-testid="confirmation-dialog"
-      disableFullscreen
       open={open}
-      onClose={handleClose}
-      onExited={cleanupConfirmationDialog}
+      onOpenChange={handleOpenChange}
     >
-      {title && <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>}
-      <ResponsiveDialogContent>
-        <Box sx={{ overflow: "hidden", wordBreak: "break-word" }}>
-          {content}
-        </Box>
-      </ResponsiveDialogContent>
-      <ResponsiveDialogActions>
-        {buttons?.map((button) => (
-          <Button
-            key={button.text}
-            color={button.color}
-            onClick={() => handleClick(button.handler)}
-            aria-label={button.text}
-          >
-            {button.text}
-          </Button>
-        ))}
-      </ResponsiveDialogActions>
-    </ResponsiveDialog>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          {title && <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>}
+          <AlertDialogDescription>{content}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          {buttons?.map((button) => (
+            <Button
+              key={button.text}
+              color={button.color}
+              onClick={() => handleClick(button.handler)}
+              variant={button.cancel ? "outline" : undefined}
+              className={cn(button.cancel && "mt-2 sm:mt-0")}
+              aria-label={button.text}
+            >
+              {button.text}
+            </Button>
+          ))}
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

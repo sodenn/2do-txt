@@ -1,5 +1,5 @@
 import { Kbd } from "@/components/Kbd";
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -14,9 +14,7 @@ export function AddTaskButton() {
   const { t } = useTranslation();
   const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
 
-  const handleClick: ButtonProps["onClick"] = () => {
-    openTaskDialog();
-  };
+  const handleClick = () => openTaskDialog();
 
   useHotkeys({ n: () => openTaskDialog() });
 

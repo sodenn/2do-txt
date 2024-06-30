@@ -1,19 +1,17 @@
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useCloudFileDialogStore } from "@/stores/cloud-file-dialog-store";
 import {
   Provider,
   cloudStorageIcons,
   useCloudStorage,
 } from "@/utils/CloudStorage";
-import CloudIcon from "@mui/icons-material/Cloud";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import {
-  Button,
-  Dropdown,
-  ListItemDecorator,
-  Menu,
-  MenuButton,
-  MenuItem,
-} from "@mui/joy";
+import { ChevronsUpDownIcon, CloudIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function CloudFileImportButtons() {
@@ -37,41 +35,38 @@ export function CloudFileImportButtons() {
       <Button
         aria-label={`Import todo.txt from ${provider}`}
         onClick={() => openCloudFileDialog(provider)}
-        startDecorator={cloudStorageIcons[provider]}
-        variant="outlined"
-        color="neutral"
+        variant="outline"
       >
+        {cloudStorageIcons[provider]}
         {t("Import from cloud storage", { provider })}
       </Button>
     );
   }
 
   return (
-    <Dropdown>
-      <MenuButton
-        tabIndex={0}
-        color="neutral"
-        variant="outlined"
-        aria-label="Import todo.txt from cloud storage"
-        startDecorator={<CloudIcon />}
-        endDecorator={<KeyboardArrowDownIcon />}
-      >
-        {t("Import from cloud storage", { provider: t("cloud storage") })}
-      </MenuButton>
-      <Menu
-        sx={{ zIndex: (theme) => theme.vars.zIndex.modal }}
-        placement="bottom-end"
-      >
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          tabIndex={0}
+          variant="outline"
+          aria-label="Import todo.txt from cloud storage"
+        >
+          <CloudIcon className="h-4 w-4 mr-2" />
+          {t("Import from cloud storage", { provider: t("cloud storage") })}
+          <ChevronsUpDownIcon className="ml-2 h-4 w-4 opacity-50" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
         {cloudStorages.map(({ provider }) => (
-          <MenuItem
+          <DropdownMenuItem
             key={provider}
             onClick={() => handleMenuItemClick(provider)}
           >
-            <ListItemDecorator>{cloudStorageIcons[provider]}</ListItemDecorator>{" "}
+            {cloudStorageIcons[provider]}
             {t("Import from cloud storage", { provider })}
-          </MenuItem>
+          </DropdownMenuItem>
         ))}
-      </Menu>
-    </Dropdown>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
