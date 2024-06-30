@@ -2,8 +2,8 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { ComponentPropsWithoutRef, ElementRef, forwardRef } from "react";
 
 import { cn } from "@/utils/tw-utils";
-import CheckIcon from "@mui/icons-material/Check";
 import {
+  CheckIcon,
   ChevronDownIcon,
   ChevronsUpDownIcon,
   ChevronUpIcon,

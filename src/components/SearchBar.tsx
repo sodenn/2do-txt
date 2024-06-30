@@ -1,8 +1,10 @@
-import { ExpandableSearch } from "@/components/ExpandableSearch";
+import {
+  ExpandableSearch,
+  ExpandableSearchProps,
+} from "@/components/ExpandableSearch";
 import { useFilterStore } from "@/stores/filter-store";
 import { useHotkeys } from "@/utils/useHotkeys";
-import { Box } from "@mui/joy";
-import { ChangeEvent, useRef } from "react";
+import { useRef } from "react";
 
 interface SearchBarProps {
   onExpand?: (expanded: boolean) => void;
@@ -19,7 +21,7 @@ export function SearchBar({ onExpand }: SearchBarProps) {
     }
   };
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange: ExpandableSearchProps["onChange"] = (event) => {
     setSearchTerm(event.target.value);
   };
 
@@ -33,7 +35,7 @@ export function SearchBar({ onExpand }: SearchBarProps) {
   });
 
   return (
-    <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+    <div className="flex flex-1 justify-end">
       <ExpandableSearch
         onExpand={onExpand}
         onChange={handleChange}
@@ -41,6 +43,6 @@ export function SearchBar({ onExpand }: SearchBarProps) {
         value={searchTerm}
         ref={searchInputRef}
       />
-    </Box>
+    </div>
   );
 }

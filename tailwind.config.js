@@ -26,6 +26,9 @@ export default {
       translate: {
         320: "320px",
       },
+      transitionProperty: {
+        width: "width",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
