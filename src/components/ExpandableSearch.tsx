@@ -68,10 +68,7 @@ export const ExpandableSearch = forwardRef<
   return (
     <>
       <div className="hidden sm:flex">{input}</div>
-      <div
-        className="flex-1 flex sm:hidden overflow-hidden items-center"
-        ref={containerRef}
-      >
+      <div className="flex-1 flex sm:hidden items-center" ref={containerRef}>
         <div className="flex-1">
           <Fade
             in={showInput}

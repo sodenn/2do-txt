@@ -129,8 +129,7 @@ export function FileMenu() {
         <Button
           tabIndex={-1}
           className="max-w-[170px] lg:max-w-[300px]"
-          color="primary"
-          variant="secondary"
+          variant="outline"
           aria-label="File menu"
         >
           <img src={logo} className="h-6 w-6 mr-2" alt="Logo" height={22} />

@@ -1,10 +1,10 @@
+import { Button, ButtonProps } from "@/components/ui/button";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useTask } from "@/utils/useTask";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import ShareIcon from "@mui/icons-material/Share";
-import { IconButton, IconButtonProps } from "@mui/joy";
 
-export function ShareButton(props: IconButtonProps) {
+export function ShareButton(props: ButtonProps) {
   const { downloadTodoFile, shareTodoFile } = useTask();
   const platform = usePlatformStore((state) => state.platform);
 
@@ -18,15 +18,15 @@ export function ShareButton(props: IconButtonProps) {
   };
 
   return (
-    <IconButton
+    <Button
       tabIndex={-1}
       aria-label="Share todo.txt"
-      variant="soft"
+      variant="outline"
       onClick={handleClick}
       {...props}
     >
       {platform === "ios" && <IosShareIcon />}
       {platform === "android" && <ShareIcon />}
-    </IconButton>
+    </Button>
   );
 }

@@ -1,4 +1,3 @@
-import { PriorityBox } from "@/components/PriorityBox";
 import { TagBox } from "@/components/TagBox";
 import { useFilterStore } from "@/stores/filter-store";
 import {
@@ -178,7 +177,7 @@ function parseTaskBody(
 
 export function useFormatBody() {
   const taskView = useSettingsStore((state) => state.taskView);
-  const outlined = taskView === "list";
+  const outline = taskView === "list";
   const dueDate = taskView === "list";
   const {
     t,
@@ -196,9 +195,8 @@ export function useFormatBody() {
         if (/^@\S+/.test(token)) {
           return (
             <TagBox
-              outlined={outlined}
-              completed={task.completed}
-              type="context"
+              variant={outline && !task.completed ? "outline" : undefined}
+              color={task.completed ? "completed" : "success"}
               key={index}
             >
               {token}
@@ -207,9 +205,8 @@ export function useFormatBody() {
         } else if (/^\+\S+/.test(token)) {
           return (
             <TagBox
-              outlined={outlined}
-              completed={task.completed}
-              type="project"
+              variant={outline && !task.completed ? "outline" : undefined}
+              color={task.completed ? "completed" : "info"}
               key={index}
             >
               {token}
@@ -231,10 +228,14 @@ export function useFormatBody() {
           return (
             <TagBox
               key={index}
-              outlined={outlined}
-              completed={task.completed}
-              type="tag"
-              tagKey={key}
+              variant={outline && !task.completed ? "outline" : undefined}
+              color={
+                key === "due"
+                  ? "warning"
+                  : key === "pri"
+                    ? "priority"
+                    : undefined
+              }
             >
               {text}
             </TagBox>
@@ -247,13 +248,13 @@ export function useFormatBody() {
 
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (
-        <PriorityBox
-          outlined={outlined}
-          completed={task.completed}
+        <TagBox
+          variant={outline && !task.completed ? "outline" : undefined}
+          color={!task.completed ? "priority" : undefined}
           key={task.id}
         >
           {task.priority}
-        </PriorityBox>
+        </TagBox>
       );
       elements.unshift(priorityElement);
     }

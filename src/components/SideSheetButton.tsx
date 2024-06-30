@@ -14,7 +14,7 @@ export function SideSheetButton() {
     <Button
       tabIndex={-1}
       onClick={toggleSideSheet}
-      variant="secondary"
+      variant="outline"
       size="icon"
       aria-label="Toggle menu"
     >
@@ -33,4 +33,3 @@ export function SideSheetButton() {
     </Button>
   );
 }
-// sx={{ display: {xs: "inline-block", lg: "none"} }}
