@@ -15,7 +15,7 @@ import { useCloudStore } from "@/stores/cloud-store";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useWebDAVDialogStore } from "@/stores/webdav-dialog-store";
 import { getDoneFilePath } from "@/utils/todo-files";
-import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
+import { ServerIcon } from "lucide-react";
 import { ReactNode, useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -33,7 +33,7 @@ import { cloudStoragePreferences } from "./preferences";
 
 export const cloudStorageIcons: Record<Provider, ReactNode> = {
   Dropbox: <DropboxIcon className="mr-2 h-4 w-4" />,
-  WebDAV: <StorageOutlinedIcon className="mr-2 h-4 w-4" />,
+  WebDAV: <ServerIcon className="mr-2 h-4 w-4" />,
 };
 
 export function useCloudStorage() {
