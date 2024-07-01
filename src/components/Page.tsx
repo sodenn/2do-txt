@@ -1,5 +1,6 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
 import { CloudFileDialog } from "@/components/CloudFileDialog";
+import { ComboboxDemo } from "@/components/ComboboxDemo";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import { FileCreateDialog } from "@/components/FileCreateDialog";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
@@ -34,6 +35,7 @@ export function Component() {
       <SideSheet />
       <LayoutContent>
         <SafeAreaContainer disableGutters id="ptr-container">
+          <ComboboxDemo />
           <TaskView />
           <Onboarding />
         </SafeAreaContainer>
