@@ -1,6 +1,5 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
 import { CloudFileDialog } from "@/components/CloudFileDialog";
-import { ComboboxDemo } from "@/components/ComboboxDemo";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import { FileCreateDialog } from "@/components/FileCreateDialog";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
@@ -9,6 +8,8 @@ import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
 import { PageEffect } from "@/components/PageEffect";
+import { PriorityPicker } from "@/components/PriorityPicker";
+import { RecurrencePicker } from "@/components/RecurrencePicker";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { SideSheet } from "@/components/SideSheet";
 import { TaskDialog } from "@/components/TaskDialog";
@@ -35,7 +36,8 @@ export function Component() {
       <SideSheet />
       <LayoutContent>
         <SafeAreaContainer disableGutters id="ptr-container">
-          <ComboboxDemo />
+          <PriorityPicker />
+          <RecurrencePicker />
           <TaskView />
           <Onboarding />
         </SafeAreaContainer>

@@ -29,6 +29,8 @@
   "Description": "Description",
   "Priority": "Priority",
   "None": "None",
+  "Select priority": "Select priority",
+  "No priority found": "No priority found",
   "Priorities": "Priorities",
   "Status": "Task status",
   "Hide completed tasks": "Hide completed",

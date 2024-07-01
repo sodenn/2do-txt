@@ -29,6 +29,8 @@
   "Description": "Beschreibung",
   "Priority": "Priorität",
   "None": "Keine",
+  "Select priority": "Priorität wählen",
+  "No priority found": "Keine Priorität gefunden",
   "Priorities": "Prioritäten",
   "Status": "Aufgabenstatus",
   "Hide completed tasks": "Erledigte ausblenden",
