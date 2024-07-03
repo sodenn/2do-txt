@@ -41,7 +41,11 @@ export function ArchiveModeSelect() {
             <TooltipTrigger asChild>
               <CircleHelpIcon className="h-4 w-4" />
             </TooltipTrigger>
-            <TooltipContent className="max-w-[250px]" asChild>
+            <TooltipContent
+              collisionPadding={10}
+              className="max-w-[250px]"
+              asChild
+            >
               <div>
                 <Trans i18nKey="Completed tasks are archived in a second file called done.txt" />
               </div>
