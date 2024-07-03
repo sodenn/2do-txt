@@ -13,6 +13,7 @@
   "Completed": "Completed: {{completionDate, date}}",
   "Creation Date": "Creation Date",
   "Completion Date": "Completion Date",
+  "Confirm": "Confirm",
   "Dates": "Dates",
   "Set completion date": "Set completion date",
   "Set creation date": "Set creation date",

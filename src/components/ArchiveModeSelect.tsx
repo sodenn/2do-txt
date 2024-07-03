@@ -35,7 +35,7 @@ export function ArchiveModeSelect() {
   return (
     <div className="space-y-1">
       <div className="space-y-2">
-        <div className="font-semibold flex gap-1 items-center">
+        <div className="flex items-center gap-1 font-semibold">
           {t("Archiving")}
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>

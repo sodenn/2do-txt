@@ -13,6 +13,7 @@
   "Completed": "Erledigt: {{completionDate, date}}",
   "Creation Date": "Erstelldatum",
   "Completion Date": "Fertigstelldatum",
+  "Confirm": "Bestätigen",
   "Dates": "Datumsangaben",
   "Set completion date": "Fertigstelldatum setzen",
   "Set creation date": "Erstelldatum setzen",

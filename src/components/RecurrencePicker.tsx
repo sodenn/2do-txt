@@ -185,7 +185,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
           </Command>
         )}
         {unitSelected && unitLabel && unitLabel !== "No recurrence" && (
-          <div className="p-3 flex flex-col gap-3">
+          <div className="flex flex-col gap-3 p-3">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="unit">{t(`Number of ${unitLabel}`)}</Label>
               <Input
@@ -205,7 +205,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               />
               <label
                 htmlFor="strict"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex gap-1 items-center"
+                className="flex items-center gap-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 {t("Strict recurrence")}
                 <Tooltip delayDuration={0}>
