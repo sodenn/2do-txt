@@ -1,5 +1,4 @@
 import { cn } from "@/utils/tw-utils";
-import { CalendarIcon } from "lucide-react";
 import {
   forwardRef,
   HTMLAttributes,
@@ -29,12 +28,15 @@ export interface DateInput extends HTMLAttributes<HTMLDivElement> {
   onValueChange?: (date?: Date) => void;
   locale?: string;
   placeholders?: Placeholders;
+  icon?: ReactNode;
 }
 
 interface DateSegmentProps
   extends DateSegmentOptions,
     Omit<HTMLAttributes<HTMLDivElement>, "id"> {
   placeholder?: ReactNode;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 type Placeholders = Record<Partial<Exclude<Unit, "literal">>, string>;
@@ -59,7 +61,16 @@ function getDefaultPlaceholders(locale: string) {
 }
 
 export const DateInput = forwardRef<HTMLDivElement, DateInput>(
-  ({ children, onValueChange, locale = navigator.language, ...props }, ref) => {
+  (
+    {
+      children,
+      icon: Icon,
+      onValueChange,
+      locale = navigator.language,
+      ...props
+    },
+    ref,
+  ) => {
     const [date, setDate] = useState(props.value);
     const [value, setValue] = useState<
       Record<Exclude<Unit, "literal">, number | undefined>
@@ -71,6 +82,15 @@ export const DateInput = forwardRef<HTMLDivElement, DateInput>(
     const id = useId();
     const segments = useMemo(() => getSegments(locale, date), [locale, date]);
     const placeholders = props.placeholders || getDefaultPlaceholders(locale);
+    const [focus, setFocus] = useState(false);
+
+    const handleFocus = () => {
+      setFocus(true);
+    };
+
+    const handleBlur = () => {
+      setFocus(false);
+    };
 
     const handleValueChange = (unit: string, value?: number) => {
       setValue((prevState) => ({
@@ -119,12 +139,11 @@ export const DateInput = forwardRef<HTMLDivElement, DateInput>(
         ref={ref}
         className={cn(
           "inline-flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          focus && "ring-1 ring-ring",
         )}
         {...props}
       >
-        <div className="mr-2 flex items-center">
-          <CalendarIcon className="h-4 w-4" />
-        </div>
+        {Icon && <div className="mr-2 flex items-center">{Icon}</div>}
         {segments.map(({ initialValue, min, max, value, unit, key }) =>
           unit === "literal" ? (
             <Literal value={value as string} key={key} />
@@ -139,6 +158,8 @@ export const DateInput = forwardRef<HTMLDivElement, DateInput>(
               max={max}
               id={id}
               onValueChange={handleValueChange}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             />
           ),
         )}
@@ -156,12 +177,14 @@ function Literal({ value }: { value: string }) {
 }
 
 const DateSegment = forwardRef<HTMLDivElement, DateSegmentProps>(
-  ({ placeholder, id, ...props }, ref) => {
+  ({ placeholder, id, onFocus, onBlur, ...props }, ref) => {
     const { value, ...divProps } = useDateSegment({ ...props, id });
     return (
       <div ref={ref} className="flex flex-col justify-center">
         <div
           {...divProps}
+          onFocus={onFocus}
+          onBlur={onBlur}
           className={cn(
             "rounded px-0.5 text-end tabular-nums focus:bg-primary focus:text-primary-foreground focus:caret-transparent focus:outline-none",
             !value && "text-muted-foreground",

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 import { getRecValueMatch } from "@/utils/task";
 import { cn } from "@/utils/tw-utils";
-import { CalendarClockIcon, CheckIcon, CircleHelpIcon } from "lucide-react";
+import { CalendarCogIcon, CheckIcon, CircleHelpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -151,7 +151,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               aria-expanded={open}
               className={cn(value && "justify-between gap-2")}
             >
-              <CalendarClockIcon className="h-4 w-4" />
+              <CalendarCogIcon className="h-4 w-4" />
               {unitLabel &&
                 unitLabel !== "No recurrence" &&
                 t(`Every ${unitLabel}`, { count: amount })}

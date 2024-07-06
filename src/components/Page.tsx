@@ -17,6 +17,7 @@ import { TaskDialog } from "@/components/TaskDialog";
 import { TaskView } from "@/components/TaskView";
 import { WebDAVDialog } from "@/components/WebDAVDialog";
 import { Container, styled } from "@mui/joy";
+import { CalendarClockIcon, CalendarPlusIcon } from "lucide-react";
 
 const SafeAreaContainer = styled(Container)(({ theme }) => ({
   paddingRight: "env(safe-area-inset-right)",
@@ -37,9 +38,12 @@ export function Component() {
       <SideSheet />
       <LayoutContent>
         <SafeAreaContainer disableGutters id="ptr-container">
-          <PriorityPicker />
-          <RecurrencePicker />
-          <DatePicker />
+          <div className="flex gap-2">
+            <PriorityPicker />
+            <RecurrencePicker />
+            <DatePicker icon={<CalendarPlusIcon className="h-4 w-4" />} />
+            <DatePicker icon={<CalendarClockIcon className="h-4 w-4" />} />
+          </div>
           <TaskView />
           <Onboarding />
         </SafeAreaContainer>

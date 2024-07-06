@@ -5,13 +5,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { DayPickerSingleProps } from "react-day-picker";
 
-export function DatePicker() {
+interface DatePickerProps {
+  value?: Date;
+  onChange?: (date?: Date) => void;
+  icon?: ReactNode;
+}
+
+export function DatePicker(props: DatePickerProps) {
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState<Date>(new Date());
-  const [month, setMonth] = useState<Date>(date);
+  const [value, setValue] = useState(props.value);
+  const [month, setMonth] = useState(value);
 
   const handleClick: DateInput["onClick"] = (event) => {
     event.preventDefault();
@@ -20,17 +26,24 @@ export function DatePicker() {
 
   const handleChange: DateInput["onValueChange"] = (newDate) => {
     if (newDate) {
-      setDate(newDate);
+      setValue(newDate);
+      props.onChange?.(newDate);
       setMonth(newDate);
     }
   };
 
-  const handleSelect: DayPickerSingleProps["onSelect"] = (date) => {
-    if (date) {
-      setDate(date);
+  const handleSelect: DayPickerSingleProps["onSelect"] = (newDate) => {
+    if (newDate) {
+      setValue(newDate);
+      props.onChange?.(newDate);
     }
     setOpen(false);
   };
+
+  useEffect(() => {
+    setValue(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value?.toLocaleDateString("en-US")]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -38,7 +51,8 @@ export function DatePicker() {
         <DateInput
           onClick={handleClick}
           onValueChange={handleChange}
-          value={date}
+          value={value}
+          icon={props.icon}
         />
       </PopoverTrigger>
       <PopoverContent
@@ -50,7 +64,7 @@ export function DatePicker() {
           month={month}
           onMonthChange={setMonth}
           mode="single"
-          selected={date}
+          selected={value}
           onSelect={handleSelect}
         />
       </PopoverContent>
