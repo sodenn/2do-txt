@@ -218,6 +218,7 @@ export function useFormatBody() {
           if (key === "due" && !dueDate) {
             return undefined;
           }
+          // @ts-expect-error
           const translatedKey = t(key);
           const keySuffix = translatedKey !== key ? ": " : ":";
           const value = substrings[1];

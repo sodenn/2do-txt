@@ -25,6 +25,7 @@ module.exports = {
     ],
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/await-thenable": "warn",
+    "react/prop-types": "off"
   },
   settings: {
     react: {

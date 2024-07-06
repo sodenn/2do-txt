@@ -1,6 +1,7 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
 import { CloudFileDialog } from "@/components/CloudFileDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
+import { DatePicker } from "@/components/DatePicker";
 import { FileCreateDialog } from "@/components/FileCreateDialog";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
 import { FilePicker } from "@/components/FilePicker";
@@ -38,6 +39,7 @@ export function Component() {
         <SafeAreaContainer disableGutters id="ptr-container">
           <PriorityPicker />
           <RecurrencePicker />
+          <DatePicker />
           <TaskView />
           <Onboarding />
         </SafeAreaContainer>

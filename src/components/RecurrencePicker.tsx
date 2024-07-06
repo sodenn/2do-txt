@@ -195,6 +195,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
                 min={1}
                 value={amount}
                 onChange={handleChangeAmount}
+                className="w-full"
               />
             </div>
             <div className="flex items-center gap-2">
