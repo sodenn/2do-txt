@@ -1,11 +1,10 @@
 import { Calendar } from "@/components/ui/calendar";
-import { Input, InputProps } from "@/components/ui/input";
+import { DateInput } from "@/components/ui/date-input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatDate, parseDate } from "@/utils/date";
 import { useState } from "react";
 import { DayPickerSingleProps } from "react-day-picker";
 
@@ -14,14 +13,12 @@ export function DatePicker() {
   const [date, setDate] = useState<Date>(new Date());
   const [month, setMonth] = useState<Date>(date);
 
-  const handleClick: InputProps["onClick"] = (event) => {
+  const handleClick: DateInput["onClick"] = (event) => {
     event.preventDefault();
     setOpen(true);
   };
 
-  const handleChange: InputProps["onChange"] = (event) => {
-    const value = event.target.value;
-    const newDate = parseDate(value);
+  const handleChange: DateInput["onValueChange"] = (newDate) => {
     if (newDate) {
       setDate(newDate);
       setMonth(newDate);
@@ -38,11 +35,10 @@ export function DatePicker() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Input
-          type="date"
+        <DateInput
           onClick={handleClick}
-          onChange={handleChange}
-          value={date ? formatDate(date) : undefined}
+          onValueChange={handleChange}
+          value={date}
         />
       </PopoverTrigger>
       <PopoverContent

@@ -25,6 +25,7 @@ module.exports = {
     ],
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/await-thenable": "warn",
+    "react/no-unknown-property": ['error', { ignore: ['enterkeyhint'] }],
     "react/prop-types": "off"
   },
   settings: {
