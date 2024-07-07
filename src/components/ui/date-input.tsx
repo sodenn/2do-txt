@@ -100,9 +100,10 @@ export const DateInput = forwardRef<HTMLDivElement, DateInput>(
     };
 
     useEffect(() => {
+      const month = props.value?.getMonth();
       setValue({
         year: props.value?.getFullYear(),
-        month: props.value?.getMonth(),
+        month: typeof month === "number" ? month + 1 : undefined,
         day: props.value?.getDate(),
       });
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,7 +116,7 @@ export const DateInput = forwardRef<HTMLDivElement, DateInput>(
         typeof value.day === "number"
       ) {
         const year = value.year.toString().padStart(4, "0");
-        const month = (value.month + 1).toString().padStart(2, "0");
+        const month = value.month.toString().padStart(2, "0");
         const day = value.day.toString().padStart(2, "0");
         const newDate = new Date(`${year}-${month}-${day}`);
         // @ts-ignore
@@ -251,9 +252,7 @@ function getSegments(locale: string, date?: Date) {
 }
 
 export function useDateSegment(opt: DateSegmentOptions & { id: string }) {
-  const [value, setValue] = useState(
-    typeof opt.value === "number" ? opt.value : undefined,
-  );
+  const [value, setValue] = useState(opt.value);
   const [dirty, setDirty] = useState(false);
   const isEditable = !opt.disabled;
 
@@ -365,8 +364,11 @@ export function useDateSegment(opt: DateSegmentOptions & { id: string }) {
   };
 
   const onKeyDown: DateSegmentProps["onKeyDown"] = (event) => {
-    event.preventDefault();
     const key = event.key;
+    if (key === "Tab") {
+      return;
+    }
+    event.preventDefault();
     let newValue = value;
     if (key === "ArrowUp") {
       newValue = handleIncrement();
@@ -412,7 +414,7 @@ export function useDateSegment(opt: DateSegmentOptions & { id: string }) {
     "aria-valuemin": opt.min,
     "aria-valuemax": opt.max,
     "aria-label": opt.unit,
-    tabIndex: !isEditable ? undefined : 1,
+    tabIndex: 0,
     contentEditable: isEditable,
     suppressContentEditableWarning: isEditable,
     spellCheck: isEditable ? "false" : undefined,
