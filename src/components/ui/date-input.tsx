@@ -41,6 +41,12 @@ interface DateSegmentProps
 
 type Placeholders = Record<Partial<Exclude<Unit, "literal">>, string>;
 
+interface Value {
+  year?: number;
+  month?: number;
+  day?: number;
+}
+
 const placeholdersEn: Placeholders = {
   year: "yyyy",
   month: "mm",
@@ -60,6 +66,35 @@ function getDefaultPlaceholders(locale: string) {
   return placeholdersEn;
 }
 
+// returns a date (valid or invalid)
+function convertValueToDate(value: Value) {
+  // If the year is missing, we use a very small value to force an invalid date.
+  // Otherwise, Chrome uses the default value 2001.
+  const year =
+    value.year?.toString().padStart(4, "0") || Number.MIN_SAFE_INTEGER;
+  const month = value.month?.toString().padStart(2, "0");
+  const day = value.day?.toString().padStart(2, "0");
+  return new Date(`${year}-${month}-${day}`);
+}
+
+function convertDateToValue(date?: Date): Value {
+  const month = date?.getMonth();
+  return {
+    year: date?.getFullYear(),
+    month: typeof month === "number" ? month + 1 : undefined,
+    day: date?.getDate(),
+  };
+}
+
+function isValidDate(date: Date) {
+  // @ts-ignore
+  return !isNaN(date);
+}
+
+function toDateString(date?: Date) {
+  return date?.toLocaleDateString("en-US");
+}
+
 export const DateInput = forwardRef<HTMLDivElement, DateInput>(
   (
     {
@@ -71,16 +106,9 @@ export const DateInput = forwardRef<HTMLDivElement, DateInput>(
     },
     ref,
   ) => {
-    const [date, setDate] = useState(props.value);
-    const [value, setValue] = useState<
-      Record<Exclude<Unit, "literal">, number | undefined>
-    >({
-      year: date?.getFullYear(),
-      month: date?.getMonth(),
-      day: date?.getDate(),
-    });
     const id = useId();
-    const segments = useMemo(() => getSegments(locale, date), [locale, date]);
+    const [value, setValue] = useState(() => convertDateToValue(props.value));
+    const segments = useMemo(() => getSegments(locale, value), [locale, value]);
     const placeholders = props.placeholders || getDefaultPlaceholders(locale);
     const [focus, setFocus] = useState(false);
 
@@ -100,40 +128,25 @@ export const DateInput = forwardRef<HTMLDivElement, DateInput>(
     };
 
     useEffect(() => {
-      const month = props.value?.getMonth();
-      setValue({
-        year: props.value?.getFullYear(),
-        month: typeof month === "number" ? month + 1 : undefined,
-        day: props.value?.getDate(),
-      });
+      setValue(convertDateToValue(props.value));
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.value?.toLocaleDateString("en-US")]);
+    }, [toDateString(props.value)]);
 
     useEffect(() => {
-      if (
-        typeof value.year === "number" &&
-        typeof value.month === "number" &&
-        typeof value.day === "number"
-      ) {
-        const year = value.year.toString().padStart(4, "0");
-        const month = value.month.toString().padStart(2, "0");
-        const day = value.day.toString().padStart(2, "0");
-        const newDate = new Date(`${year}-${month}-${day}`);
-        // @ts-ignore
-        if (!isNaN(newDate)) {
-          setDate(newDate);
-          onValueChange?.(newDate);
-        }
-      }
       if (
         typeof value.year === "undefined" &&
         typeof value.month === "undefined" &&
         typeof value.day === "undefined"
       ) {
         onValueChange?.(undefined);
+      } else {
+        const newDate = convertValueToDate(value);
+        if (isValidDate(newDate)) {
+          onValueChange?.(newDate);
+        }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [JSON.stringify(value)]);
+    }, [value.year, value.month, value.day]);
 
     return (
       <div
@@ -200,28 +213,30 @@ const DateSegment = forwardRef<HTMLDivElement, DateSegmentProps>(
   },
 );
 
-function getSegments(locale: string, date?: Date) {
+function getSegments(locale: string, value: Value) {
   const now = new Date();
+  const date = convertValueToDate(value);
+  const isValid = isValidDate(date);
 
   const year = {
-    value: date?.getFullYear(),
+    value: value.year,
     initialValue: now.getFullYear(),
     max: 9999,
     min: 1,
   } as const;
 
   const month = {
-    value: date ? date.getMonth() + 1 : undefined, // getMonth() returns 0-based month, so we add 1
+    value: value.month, // getMonth() returns 0-based month, so we add 1
     initialValue: now.getMonth() + 1,
     max: 12,
     min: 1,
   } as const;
 
   const day = {
-    value: date?.getDate(),
+    value: value.day,
     initialValue: now.getDate(),
     max:
-      year.value && month.value
+      isValid && year.value && month.value
         ? new Date(year.value, month.value, 0).getDate() // Get the number of days in the current month
         : 31,
     min: 1,

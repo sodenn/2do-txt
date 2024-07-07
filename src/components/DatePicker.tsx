@@ -25,7 +25,11 @@ export function DatePicker(props: DatePickerProps) {
   };
 
   const handleChange: DateInput["onValueChange"] = (newDate) => {
-    if (newDate) {
+    // @ts-ignore
+    if (isNaN(newDate)) {
+      setValue(undefined);
+      setMonth(new Date());
+    } else {
       setValue(newDate);
       props.onChange?.(newDate);
       setMonth(newDate);
@@ -33,10 +37,8 @@ export function DatePicker(props: DatePickerProps) {
   };
 
   const handleSelect: DayPickerSingleProps["onSelect"] = (newDate) => {
-    if (newDate) {
-      setValue(newDate);
-      props.onChange?.(newDate);
-    }
+    setValue(newDate);
+    props.onChange?.(newDate);
     setOpen(false);
   };
 
