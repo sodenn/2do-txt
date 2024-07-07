@@ -59,95 +59,10 @@ const placeholdersDe: Placeholders = {
   day: "TT",
 };
 
-function getDefaultPlaceholders(locale: string) {
-  if (locale.startsWith("de")) {
-    return placeholdersDe;
-  }
-  return placeholdersEn;
-}
-
-// returns a date (valid or invalid)
-function convertValueToDate(value: Value) {
-  // If the year is missing, we use a very small value to force an invalid date.
-  // Otherwise, Chrome uses the default value 2001.
-  const year =
-    value.year?.toString().padStart(4, "0") || Number.MIN_SAFE_INTEGER;
-  const month = value.month?.toString().padStart(2, "0");
-  const day = value.day?.toString().padStart(2, "0");
-  return new Date(`${year}-${month}-${day}`);
-}
-
-function convertDateToValue(date?: Date): Value {
-  const month = date?.getMonth();
-  return {
-    year: date?.getFullYear(),
-    month: typeof month === "number" ? month + 1 : undefined,
-    day: date?.getDate(),
-  };
-}
-
-function isValidDate(date: Date) {
-  // @ts-ignore
-  return !isNaN(date);
-}
-
-function toDateString(date?: Date) {
-  return date?.toLocaleDateString("en-US");
-}
-
 export const DateInput = forwardRef<HTMLDivElement, DateInput>(
-  (
-    {
-      children,
-      icon: Icon,
-      onValueChange,
-      locale = navigator.language,
-      ...props
-    },
-    ref,
-  ) => {
-    const id = useId();
-    const [value, setValue] = useState(() => convertDateToValue(props.value));
-    const segments = useMemo(() => getSegments(locale, value), [locale, value]);
-    const placeholders = props.placeholders || getDefaultPlaceholders(locale);
-    const [focus, setFocus] = useState(false);
-
-    const handleFocus = () => {
-      setFocus(true);
-    };
-
-    const handleBlur = () => {
-      setFocus(false);
-    };
-
-    const handleValueChange = (unit: string, value?: number) => {
-      setValue((prevState) => ({
-        ...prevState,
-        [unit]: value,
-      }));
-    };
-
-    useEffect(() => {
-      setValue(convertDateToValue(props.value));
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [toDateString(props.value)]);
-
-    useEffect(() => {
-      if (
-        typeof value.year === "undefined" &&
-        typeof value.month === "undefined" &&
-        typeof value.day === "undefined"
-      ) {
-        onValueChange?.(undefined);
-      } else {
-        const newDate = convertValueToDate(value);
-        if (isValidDate(newDate)) {
-          onValueChange?.(newDate);
-        }
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value.year, value.month, value.day]);
-
+  ({ children, icon: Icon, ...props }, ref) => {
+    const { segments, placeholders, focus, ...dateSegmentProps } =
+      useDateInput(props);
     return (
       <div
         ref={ref}
@@ -170,10 +85,7 @@ export const DateInput = forwardRef<HTMLDivElement, DateInput>(
               initialValue={initialValue}
               min={min}
               max={max}
-              id={id}
-              onValueChange={handleValueChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
+              {...dateSegmentProps}
             />
           ),
         )}
@@ -190,83 +102,88 @@ function Literal({ value }: { value: string }) {
   );
 }
 
-const DateSegment = forwardRef<HTMLDivElement, DateSegmentProps>(
-  ({ placeholder, id, onFocus, onBlur, ...props }, ref) => {
-    const { value, ...divProps } = useDateSegment({ ...props, id });
-    return (
-      <div ref={ref} className="flex flex-col justify-center">
-        <div
-          {...divProps}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          className={cn(
-            "rounded px-0.5 text-end tabular-nums focus:bg-primary focus:text-primary-foreground focus:caret-transparent focus:outline-none",
-            !value && "text-muted-foreground",
-          )}
-          data-dateinput={id}
-        >
-          {value}
-          {typeof value === "undefined" && placeholder && placeholder}
-        </div>
+function DateSegment({
+  placeholder,
+  id,
+  onFocus,
+  onBlur,
+  ...props
+}: DateSegmentProps) {
+  const { value, ...divProps } = useDateSegment({ ...props, id });
+  return (
+    <div className="flex flex-col justify-center">
+      <div
+        {...divProps}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        className={cn(
+          "rounded px-0.5 text-end tabular-nums focus:bg-primary focus:text-primary-foreground focus:caret-transparent focus:outline-none",
+          !value && "text-muted-foreground",
+        )}
+        data-dateinput={id}
+      >
+        {value}
+        {typeof value === "undefined" && placeholder && placeholder}
       </div>
-    );
-  },
-);
-
-function getSegments(locale: string, value: Value) {
-  const now = new Date();
-  const date = convertValueToDate(value);
-  const isValid = isValidDate(date);
-
-  const year = {
-    value: value.year,
-    initialValue: now.getFullYear(),
-    max: 9999,
-    min: 1,
-  } as const;
-
-  const month = {
-    value: value.month, // getMonth() returns 0-based month, so we add 1
-    initialValue: now.getMonth() + 1,
-    max: 12,
-    min: 1,
-  } as const;
-
-  const day = {
-    value: value.day,
-    initialValue: now.getDate(),
-    max:
-      isValid && year.value && month.value
-        ? new Date(year.value, month.value, 0).getDate() // Get the number of days in the current month
-        : 31,
-    min: 1,
-  } as const;
-
-  const literal = {
-    initialValue: undefined,
-    max: undefined,
-    min: undefined,
-  } as const;
-
-  const props = {
-    year,
-    month,
-    day,
-    literal,
-  } as const;
-
-  const dtf = new Intl.DateTimeFormat(locale);
-  const parts = dtf.formatToParts(new Date());
-
-  return parts.map((p, idx) => ({
-    unit: p.type as Unit,
-    key: idx,
-    value: p.value,
-    ...props[p.type as Unit],
-  }));
+    </div>
+  );
 }
 
-export function useDateSegment(opt: DateSegmentOptions & { id: string }) {
+function useDateInput({ locale = navigator.language, ...props }: DateInput) {
+  const id = useId();
+  const [value, setValue] = useState(() => convertDateToValue(props.value));
+  const segments = useMemo(() => getSegments(locale, value), [locale, value]);
+  const placeholders = props.placeholders || getDefaultPlaceholders(locale);
+  const [focus, setFocus] = useState(false);
+
+  const onFocus = () => {
+    setFocus(true);
+  };
+
+  const onBlur = () => {
+    setFocus(false);
+  };
+
+  const onValueChange = (unit: string, value?: number) => {
+    setValue((prevState) => ({
+      ...prevState,
+      [unit]: value,
+    }));
+  };
+
+  useEffect(() => {
+    setValue(convertDateToValue(props.value));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toDateString(props.value)]);
+
+  useEffect(() => {
+    if (
+      typeof value.year === "undefined" &&
+      typeof value.month === "undefined" &&
+      typeof value.day === "undefined"
+    ) {
+      props.onValueChange?.(undefined);
+    } else {
+      const newDate = convertValueToDate(value);
+      if (isValidDate(newDate)) {
+        props.onValueChange?.(newDate);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value.year, value.month, value.day, props.onValueChange]);
+
+  return {
+    id,
+    segments,
+    placeholders,
+    focus,
+    onFocus,
+    onBlur,
+    onValueChange,
+  };
+}
+
+function useDateSegment(opt: DateSegmentOptions & { id: string }) {
   const [value, setValue] = useState(opt.value);
   const [dirty, setDirty] = useState(false);
   const isEditable = !opt.disabled;
@@ -445,4 +362,93 @@ export function useDateSegment(opt: DateSegmentOptions & { id: string }) {
       e.stopPropagation();
     },
   } as const;
+}
+
+function getDefaultPlaceholders(locale: string) {
+  if (locale.startsWith("de")) {
+    return placeholdersDe;
+  }
+  return placeholdersEn;
+}
+
+// returns a date (valid or invalid)
+function convertValueToDate(value: Value) {
+  // If the year is missing, we use a very small value to force an invalid date.
+  // Otherwise, Chrome uses the default value 2001.
+  const year =
+    value.year?.toString().padStart(4, "0") || Number.MIN_SAFE_INTEGER;
+  const month = value.month?.toString().padStart(2, "0");
+  const day = value.day?.toString().padStart(2, "0");
+  return new Date(`${year}-${month}-${day}`);
+}
+
+function convertDateToValue(date?: Date): Value {
+  const month = date?.getMonth();
+  return {
+    year: date?.getFullYear(),
+    month: typeof month === "number" ? month + 1 : undefined,
+    day: date?.getDate(),
+  };
+}
+
+function isValidDate(date: Date) {
+  // @ts-ignore
+  return !isNaN(date);
+}
+
+function toDateString(date?: Date) {
+  return date?.toLocaleDateString("en-US");
+}
+
+function getSegments(locale: string, value: Value) {
+  const now = new Date();
+  const date = convertValueToDate(value);
+  const isValid = isValidDate(date);
+
+  const year = {
+    value: value.year,
+    initialValue: now.getFullYear(),
+    max: 9999,
+    min: 1,
+  } as const;
+
+  const month = {
+    value: value.month, // getMonth() returns 0-based month, so we add 1
+    initialValue: now.getMonth() + 1,
+    max: 12,
+    min: 1,
+  } as const;
+
+  const day = {
+    value: value.day,
+    initialValue: now.getDate(),
+    max:
+      isValid && year.value && month.value
+        ? new Date(year.value, month.value, 0).getDate() // Get the number of days in the current month
+        : 31,
+    min: 1,
+  } as const;
+
+  const literal = {
+    initialValue: undefined,
+    max: undefined,
+    min: undefined,
+  } as const;
+
+  const props = {
+    year,
+    month,
+    day,
+    literal,
+  } as const;
+
+  const dtf = new Intl.DateTimeFormat(locale);
+  const parts = dtf.formatToParts(new Date());
+
+  return parts.map((p, idx) => ({
+    unit: p.type as Unit,
+    key: idx,
+    value: p.value,
+    ...props[p.type as Unit],
+  }));
 }
