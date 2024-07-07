@@ -26,7 +26,7 @@ export function LayoutHeader({ open, children }: HeaderContainerProps) {
   return (
     <div
       className={clsx(
-        "flex-grow-0 flex-shrink-0 basis-auto xl:transition-all",
+        "flex-shrink-0 flex-grow-0 basis-auto xl:transition-all",
         open && `xl:ml-[320px] xl:duration-225 xl:ease-out`,
         !open && "xl:duration-195 xl:ease-in",
       )}
@@ -58,7 +58,7 @@ export function LayoutSidebar({
         aria-hidden={open ? "false" : "true"}
         data-hotkeys-keep-enabled={persistent ? "true" : "m"}
         className={clsx(
-          "fixed top-0 bottom-0 left-0 hidden xl:block overflow-y-auto overflow-x-hidden transition-all duration-225 ease-out w-[320px] border-r bg-background",
+          "fixed bottom-0 left-0 top-0 hidden w-[320px] overflow-y-auto overflow-x-hidden border-r bg-background transition-all duration-225 ease-out xl:block",
           open && "translate-x-0",
           !open && "-translate-x-320",
           className,
@@ -96,7 +96,7 @@ export function LayoutContent(props: ScrollAreaProps) {
       data-testid="page"
       id="scroll-container"
       className={clsx(
-        "overflow-y-auto flex-auto xl:flex-grow",
+        "flex-auto overflow-y-auto xl:flex-grow",
         sideSheetOpen && `xl:ml-[320px] xl:duration-225 xl:ease-out`,
         !sideSheetOpen && "xl:ml-0 xl:duration-195 xl:ease-in",
       )}
