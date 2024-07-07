@@ -17,7 +17,7 @@ import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 
 const Root = styled("div")({
-  height: "100%",
+  height: "100vh",
   display: "flex",
   flexDirection: "column",
   outline: "none",
