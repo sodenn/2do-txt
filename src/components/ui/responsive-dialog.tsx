@@ -19,11 +19,30 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 
-export function ResponsiveDialog({ children }: PropsWithChildren) {
-  const [open, setOpen] = useState(false);
+interface ResponsiveDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function ResponsiveDialog({
+  children,
+  ...props
+}: PropsWithChildren<ResponsiveDialogProps>) {
+  const [open, setOpen] = useState(!!props.open);
   const { isBreakpointActive } = useBreakpoint();
+
+  const handleOpenChange = (open: boolean) => {
+    setOpen(open);
+    props.onOpenChange?.(open);
+  };
+
+  useEffect(() => {
+    if (typeof props.open === "boolean") {
+      setOpen(props.open);
+    }
+  }, [props.open]);
 
   if (isBreakpointActive("lg")) {
     return (
@@ -34,7 +53,7 @@ export function ResponsiveDialog({ children }: PropsWithChildren) {
   }
 
   return (
-    <Drawer shouldScaleBackground open={open} onOpenChange={setOpen}>
+    <Drawer shouldScaleBackground open={open} onOpenChange={handleOpenChange}>
       {children}
     </Drawer>
   );

@@ -1,14 +1,22 @@
+import { TaskBody } from "@/components/TaskBody";
+import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog,
+  ResponsiveDialogBody,
   ResponsiveDialogContent,
+  ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-} from "@/components/ResponsiveDialog";
-import { TaskBody } from "@/components/TaskBody";
+} from "@/components/ui/responsive-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { Task } from "@/utils/task";
 import { useTask } from "@/utils/useTask";
-import RestoreIcon from "@mui/icons-material/Restore";
-import { IconButton, List, ListItem, Tooltip } from "@mui/joy";
+import { List, ListItem } from "@mui/joy";
+import { ArchiveRestoreIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,9 +25,6 @@ export function ArchivedTasksDialog() {
   const filePath = useArchivedTasksDialogStore((state) => state.filePath);
   const closeArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.closeArchivedTasksDialog,
-  );
-  const cleanupArchivedTasksDialog = useArchivedTasksDialogStore(
-    (state) => state.cleanupArchivedTasksDialog,
   );
   const { t } = useTranslation();
   const { loadDoneFile, restoreTask } = useTask();
@@ -38,6 +43,12 @@ export function ArchivedTasksDialog() {
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      closeArchivedTasksDialog();
+    }
+  };
+
   useEffect(() => {
     if (filePath) {
       loadDoneFile(filePath).then((result) => {
@@ -49,33 +60,32 @@ export function ArchivedTasksDialog() {
   }, [filePath, loadDoneFile]);
 
   return (
-    <ResponsiveDialog
-      fullWidth
-      open={open}
-      onClose={closeArchivedTasksDialog}
-      onExited={cleanupArchivedTasksDialog}
-    >
-      <ResponsiveDialogTitle>{t("Archived tasks")}</ResponsiveDialogTitle>
+    <ResponsiveDialog open={open} onOpenChange={handleOpenChange}>
       <ResponsiveDialogContent>
-        <List size="sm">
-          {tasks.map((task) => (
-            <ListItem
-              key={task.id}
-              endAction={
-                <Tooltip title={t("Restore task")}>
-                  <IconButton
-                    onClick={() => handleRestore(task)}
-                    aria-label="restore"
-                  >
-                    <RestoreIcon />
-                  </IconButton>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>{t("Archived tasks")}</ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogBody>
+          <List size="sm">
+            {tasks.map((task) => (
+              <ListItem key={task.id}>
+                <TaskBody task={task} />
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Button
+                      size="icon"
+                      onClick={() => handleRestore(task)}
+                      aria-label="restore"
+                    >
+                      <ArchiveRestoreIcon className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("Restore task")}</TooltipContent>
                 </Tooltip>
-              }
-            >
-              <TaskBody task={task} />
-            </ListItem>
-          ))}
-        </List>
+              </ListItem>
+            ))}
+          </List>
+        </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

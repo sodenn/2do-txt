@@ -22,10 +22,10 @@ const Root = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   (props, ref) => (
     <div
       ref={ref}
-      className="flex max-h-screen flex-col outline-none"
       data-testid="dropzone"
       {...props}
       data-hotkeys-keep-enabled
+      className="flex h-screen flex-col outline-none"
     />
   ),
 );

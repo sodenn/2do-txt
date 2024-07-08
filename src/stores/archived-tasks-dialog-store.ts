@@ -12,7 +12,6 @@ interface ArchivedTasksDialogStoreInterface
   extends ArchivedTasksDialogStoreData {
   openArchivedTasksDialog: (opt?: ArchivedTasksDialogOptions) => void;
   closeArchivedTasksDialog: () => void;
-  cleanupArchivedTasksDialog: () => void;
 }
 
 export const useArchivedTasksDialogStore =
@@ -21,6 +20,10 @@ export const useArchivedTasksDialogStore =
     filePath: undefined,
     openArchivedTasksDialog: (opt: ArchivedTasksDialogOptions = {}) =>
       set({ ...opt, open: true }),
-    closeArchivedTasksDialog: () => set({ open: false }),
-    cleanupArchivedTasksDialog: () => set({ open: false, filePath: undefined }),
+    closeArchivedTasksDialog: () => {
+      setTimeout(() => {
+        set({ open: false, filePath: undefined });
+      }, 200);
+      return set({ open: false });
+    },
   }));
