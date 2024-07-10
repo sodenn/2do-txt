@@ -39,14 +39,15 @@ export function ResponsiveDialog({
   };
 
   useEffect(() => {
-    if (typeof props.open === "boolean") {
+    if (typeof props.open === "boolean" && open !== props.open) {
       setOpen(props.open);
+      props.onOpenChange?.(props.open);
     }
-  }, [props.open]);
+  }, [open, props]);
 
   if (isBreakpointActive("lg")) {
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         {children}
       </Dialog>
     );
@@ -112,9 +113,9 @@ export function ResponsiveDialogContent({ children }: PropsWithChildren) {
 export function ResponsiveDialogBody({ children }: PropsWithChildren) {
   const { isBreakpointActive } = useBreakpoint();
   if (isBreakpointActive("lg")) {
-    return <div className="flex-1 overflow-y-auto">{children}</div>;
+    return <div className="flex-1 overflow-y-auto px-6">{children}</div>;
   }
-  return <div className="flex-1 overflow-y-auto">{children}</div>;
+  return <div className="flex-1 overflow-y-auto px-4">{children}</div>;
 }
 
 export function ResponsiveDialogFooter({ children }: PropsWithChildren) {

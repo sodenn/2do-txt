@@ -1,23 +1,16 @@
+import { Label } from "@/components/ui/label";
 import { hasTouchScreen } from "@/native-api/platform";
 import { usePlatformStore } from "@/stores/platform-store";
+import { cn } from "@/utils/tw-utils";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { mergeRegister } from "@lexical/utils";
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  MenuItem,
-  MenuList,
-  styled,
-  Typography,
-} from "@mui/joy";
 import {
   $createParagraphNode,
   $getRoot,
@@ -39,21 +32,21 @@ import {
   BeautifulMentionsMenuItemProps,
   BeautifulMentionsMenuProps,
   BeautifulMentionsPlugin,
+  BeautifulMentionsTheme,
   ZERO_WIDTH_CHARACTER,
   ZeroWidthNode,
   ZeroWidthPlugin,
 } from "lexical-beautiful-mentions";
 import React, {
   ComponentProps,
-  forwardRef,
   ReactNode,
+  forwardRef,
   useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
   useState,
 } from "react";
-import "./Editor.css";
 
 interface EditorContextProps {
   initialValue: string;
@@ -70,36 +63,22 @@ interface EditorProps
   placeholder?: string;
 }
 
-type Trigger = "@" | "\\+" | "due:" | "\\w+:";
+const mentionsStyle =
+  "px-1 mx-2/3 mx-px align-baseline inline-block rounded break-words cursor-pointer leading-5 border";
+const mentionsStyleFocused = "shadow";
 
-const styleMap: Record<Trigger, string> = {
-  "@": "Editor-mention Editor-context",
-  "\\+": "Editor-mention Editor-project",
-  "due:": "Editor-mention Editor-due",
-  "\\w+:": "Editor-mention Editor-tag",
-} as const;
-
-function getMentionStyle(trigger: Trigger) {
-  return {
-    [trigger]: styleMap[trigger],
-    [trigger + "Focused"]: "Editor-focused",
-  };
-}
-
-function useMentionStyles(): Record<string, string> {
-  return useMemo(
-    () => ({
-      ...getMentionStyle("@"),
-      ...getMentionStyle("\\+"),
-      ...getMentionStyle("due:"),
-      ...getMentionStyle("\\w+:"),
-    }),
-    [],
-  );
-}
+const beautifulMentionsTheme: BeautifulMentionsTheme = {
+  "@": `${mentionsStyle} bg-success/5 dark:bg-success/15 text-success border-success`,
+  "@Focused": `${mentionsStyleFocused} shadow-success/30 dark:shadow-success/60`,
+  "\\+": `${mentionsStyle} bg-info/5 dark:bg-info/15 text-info border-info`,
+  "\\+Focused": `${mentionsStyleFocused} shadow-info/30 dark:shadow-info/60`,
+  "due:": `${mentionsStyle} bg-warning/5 dark:bg-warning/15 text-warning border-warning`,
+  "due:Focused": `${mentionsStyleFocused} shadow-warning/30 dark:warning-info/60`,
+  "\\w+:": `${mentionsStyle} bg-gray-500/5 dark:bg-gray-400/15 text-gray-500 dark:text-gray-400 border-gray-500 dark:border-gray-400`,
+  "\\w+:Focused": `${mentionsStyleFocused} shadow-gray-500/30 dark:shadow-gray-400/60`,
+};
 
 function useEditorConfig(triggers: string[], initialValue: string) {
-  const styles = useMentionStyles();
   return useMemo(
     () => ({
       onError(error: any) {
@@ -110,10 +89,10 @@ function useEditorConfig(triggers: string[], initialValue: string) {
       nodes: [BeautifulMentionNode, ZeroWidthNode],
       namespace: "",
       theme: {
-        beautifulMentions: styles,
+        beautifulMentions: beautifulMentionsTheme,
       },
     }),
-    [initialValue, styles, triggers],
+    [initialValue, triggers],
   );
 }
 
@@ -190,85 +169,31 @@ function setEditorState(initialValue: string, triggers: string[]) {
   };
 }
 
-const Textbox = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "focused",
-})<{ focused?: boolean }>(({ theme, focused }) => ({
-  "--Input-focused": "0",
-  "--Input-focusedThickness": theme.vars.focus.thickness,
-  "--Input-focusedHighlight": theme.vars.palette.primary["500"],
-  p: {
-    margin: 0,
-  },
-  position: "relative",
-  borderRadius: theme.vars.radius.sm,
-  border: `1px solid ${theme.vars.palette.neutral.outlinedBorder}`,
-  padding: `7px 12px`,
-  "&.focused": {
-    "--Input-focused": 1,
-  },
-  ...(focused && {
-    "&::before": {
-      boxSizing: "border-box",
-      content: "''",
-      display: "block",
-      position: "absolute",
-      pointerEvents: "none",
-      inset: 0,
-      zIndex: 1,
-      margin: "calc(var(--variant-borderWidth, 0px) * -1)",
-      borderRadius: theme.vars.radius.sm,
-      boxShadow:
-        "var(--Input-focusedInset, inset) 0 0 0 calc(var(--Input-focused) * var(--Input-focusedThickness)) var(--Input-focusedHighlight)",
-    },
-  }),
-}));
-
-const Placeholder = styled(Typography)({
-  "--Textarea-placeholderColor": "inherit",
-  "--Textarea-placeholderOpacity": 0.64,
-  color: "var(--Textarea-placeholderColor)",
-  opacity: "var(--Textarea-placeholderOpacity)",
-  position: "absolute",
-  pointerEvents: "none",
-  left: 12,
-  top: 7,
-  display: "inline-block",
-  userSelect: "none",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-});
-
-const MenuComponent = forwardRef<HTMLUListElement, BeautifulMentionsMenuProps>(
-  (props, ref) => {
-    const { loading, children, ...other } = props;
-    return (
-      <MenuList
-        sx={{
-          position: "absolute",
-          top: 2,
-          m: 0,
-          minWidth: "7rem",
-          overflow: "hidden",
-        }}
-        ref={ref}
-        variant="outlined"
-        {...other}
-      >
-        {children}
-      </MenuList>
-    );
-  },
-);
+function MenuComponent({ loading, ...other }: BeautifulMentionsMenuProps) {
+  return (
+    <ul
+      style={{
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
+      className="absolute top-[2px] z-[1400] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+      {...other}
+    />
+  );
+}
 
 const MenuItemComponent = forwardRef<
-  HTMLDivElement,
+  HTMLLIElement,
   BeautifulMentionsMenuItemProps
->(({ item: { value }, itemValue, ...other }, ref) => {
+>(({ selected, item: { value }, itemValue, ...props }, ref) => {
   return (
-    <MenuItem
-      sx={{ whiteSpace: "nowrap" }}
+    <li
       ref={ref}
-      {...other}
+      className={cn(
+        "relative flex cursor-pointer select-none items-center whitespace-nowrap rounded-sm px-2 py-1.5 text-sm outline-none",
+        selected && "bg-accent text-accent-foreground",
+      )}
+      {...props}
       aria-label={`Choose "${value}"`}
     />
   );
@@ -305,6 +230,7 @@ export function Editor(props: EditorProps) {
     items,
     onChange,
     onEnter,
+    children,
     ...contentEditableProps
   } = props;
   const focused = useIsFocused();
@@ -328,24 +254,28 @@ export function Editor(props: EditorProps) {
   }, [editor]);
 
   return (
-    <FormControl>
-      {label && <FormLabel onClick={handleClick}>{label}</FormLabel>}
-      <Textbox focused={focused} className={focused ? "focused" : undefined}>
+    <div className="space-y-2">
+      {label && <Label onClick={handleClick}>{label}</Label>}
+      <div
+        className={cn(
+          "text-smx relative mx-auto flex flex-col rounded-md border shadow-sm",
+          focused && "ring-1 ring-ring",
+        )}
+      >
         <RichTextPlugin
           contentEditable={
             <ContentEditable
-              style={{
-                tabSize: 1,
-                position: "relative",
-                resize: "none",
-                outline: "none",
-              }}
+              className="relative overflow-auto px-3 py-2 focus:outline-none"
               // needed because the cursor keeps blinking in Safari when clicking outside the editor
               onBlur={() => editor.blur()}
               {...contentEditableProps}
             />
           }
-          placeholder={<Placeholder>{placeholder}</Placeholder>}
+          placeholder={
+            <div className="pointer-events-none absolute top-0 w-full px-3 py-2 text-muted-foreground">
+              {placeholder}
+            </div>
+          }
           ErrorBoundary={LexicalErrorBoundary}
         />
         <OnChangePlugin onChange={handleChange} />
@@ -362,9 +292,10 @@ export function Editor(props: EditorProps) {
           creatable
           insertOnBlur
           allowSpaces={false}
-          menuAnchorClassName="Editor-mention-anchor"
+          menuAnchorClassName="z-[1300]"
         />
-      </Textbox>
-    </FormControl>
+        <div className="flex gap-2 px-3 py-3">{children}</div>
+      </div>
+    </div>
   );
 }

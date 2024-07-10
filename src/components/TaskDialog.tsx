@@ -1,22 +1,22 @@
 import { Fade } from "@/components/Fade";
+import { TaskForm } from "@/components/TaskForm";
+import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog,
-  ResponsiveDialogActions,
-  ResponsiveDialogButton,
+  ResponsiveDialogBody,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
-  ResponsiveDialogSecondaryActions,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-} from "@/components/ResponsiveDialog";
-import { TaskForm } from "@/components/TaskForm";
+} from "@/components/ui/responsive-dialog";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { formatDate, todayDate } from "@/utils/date";
 import { Task } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { Button, Stack } from "@mui/joy";
-import { ModalProps } from "@mui/joy/Modal";
+import { DeleteIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -47,9 +47,9 @@ function DeleteTaskButton() {
         unmountOnExit
         onExited={() => setShowDeleteButton(true)}
       >
-        <Stack spacing={1} direction="row">
+        <div className="flex gap-1">
           <Button
-            variant="soft"
+            variant="secondary"
             color="neutral"
             aria-label="Cancel delete task"
             onClick={() => setShowDeleteConfirmButton(false)}
@@ -57,15 +57,15 @@ function DeleteTaskButton() {
             {t("Cancel")}
           </Button>
           <Button
-            variant="soft"
+            variant="secondary"
             color="danger"
-            startDecorator={<DeleteForeverIcon />}
             aria-label="Confirm delete"
             onClick={handleDelete}
           >
+            <DeleteIcon className="mr-2 h-4 w-4" />
             {t("Confirm")}
           </Button>
-        </Stack>
+        </div>
       </Fade>
       <Fade
         duration={150}
@@ -74,7 +74,7 @@ function DeleteTaskButton() {
         onExited={() => setShowDeleteConfirmButton(true)}
       >
         <Button
-          variant="soft"
+          variant="secondary"
           color="danger"
           aria-label="Delete task"
           onClick={() => setShowDeleteButton(false)}
@@ -158,73 +158,73 @@ export function TaskDialog() {
     setEmptyBody(emptyBody);
   }, []);
 
-  const handleClose = useCallback<NonNullable<ModalProps["onClose"]>>(
-    (_, reason) => {
-      return reason !== "backdropClick" ? closeTaskDialog() : undefined;
-    },
-    [closeTaskDialog],
-  );
-
-  const handleEnter = () => {
-    const value = getValue(createCreationDate, task);
-    setValue(value);
-    setEmptyBody(!!task && !!task.body);
-    setSelectedTaskList(() => {
-      if (task) {
-        return findTaskListByTaskId(task.id);
-      } else if (activeTaskList) {
-        return activeTaskList;
-      }
-    });
-  };
-
-  const handleExited = () => {
-    cleanupTaskDialog();
-    setValue(undefined);
-    setEmptyBody(true);
-    setSelectedTaskList(undefined);
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      const value = getValue(createCreationDate, task);
+      setValue(value);
+      setEmptyBody(!!task && !!task.body);
+      setSelectedTaskList(() => {
+        if (task) {
+          return findTaskListByTaskId(task.id);
+        } else if (activeTaskList) {
+          return activeTaskList;
+        }
+      });
+    } else {
+      closeTaskDialog();
+      setTimeout(() => {
+        cleanupTaskDialog();
+        setValue(undefined);
+        setEmptyBody(true);
+        setSelectedTaskList(undefined);
+      }, 200);
+    }
   };
 
   return (
     <ResponsiveDialog
       data-testid="task-dialog"
-      fullWidth
       open={open}
-      onClose={handleClose}
-      onEnter={handleEnter}
-      onExited={handleExited}
+      onOpenChange={handleOpenChange}
     >
-      <ResponsiveDialogTitle>
-        {task?.id ? t("Edit Task") : t("Create Task")}
-      </ResponsiveDialogTitle>
       <ResponsiveDialogContent>
-        <TaskForm
-          value={value}
-          newTask={isNewTask}
-          contexts={contexts}
-          projects={projects}
-          tags={tags}
-          taskLists={taskLists}
-          onChange={handleChanged}
-          onFileSelect={setSelectedTaskList}
-          onEnterPress={handleSave}
-        />
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>
+            {task?.id ? t("Edit Task") : t("Create Task")}
+          </ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogBody>
+          <TaskForm
+            value={value}
+            newTask={isNewTask}
+            contexts={contexts}
+            projects={projects}
+            tags={tags}
+            taskLists={taskLists}
+            onChange={handleChanged}
+            onFileSelect={setSelectedTaskList}
+            onEnterPress={handleSave}
+          />
+        </ResponsiveDialogBody>
+        <ResponsiveDialogFooter>
+          {isNewTask && (
+            <div className="flex-1">
+              <DeleteTaskButton />
+            </div>
+          )}
+          <ResponsiveDialogClose aria-label="Cancel">
+            {t("Cancel")}
+          </ResponsiveDialogClose>
+          <Button
+            aria-label="Save task"
+            aria-disabled={formDisabled}
+            disabled={formDisabled}
+            onClick={handleSave}
+          >
+            {t("Save")}
+          </Button>
+        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
-      <ResponsiveDialogActions>
-        <ResponsiveDialogButton
-          aria-label="Save task"
-          aria-disabled={formDisabled}
-          disabled={formDisabled}
-          onClick={handleSave}
-        >
-          {t("Save")}
-        </ResponsiveDialogButton>
-      </ResponsiveDialogActions>
-      {isNewTask && (
-        <ResponsiveDialogSecondaryActions>
-          <DeleteTaskButton />
-        </ResponsiveDialogSecondaryActions>
-      )}
     </ResponsiveDialog>
   );
 }

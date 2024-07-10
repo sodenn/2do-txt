@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/utils/tw-utils";
+import { useTooltip } from "@/utils/useTooltip";
 import { CheckIcon, OctagonAlertIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -52,18 +53,19 @@ const options = [
 ];
 
 interface PriorityPickerProps {
-  value?: string | null;
-  onChange?: (value: string | null) => void;
+  value?: string;
+  onChange?: (value?: string) => void;
 }
 
 export function PriorityPicker(props: PriorityPickerProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(props.value || null);
+  const { showTooltip, ...triggerProps } = useTooltip();
   const { t } = useTranslation();
 
   const handleSelect = (selectedValue: string | null) => {
     const newValue = selectedValue === value ? null : selectedValue;
-    props.onChange?.(newValue);
+    props.onChange?.(newValue || undefined);
     setValue(newValue);
     setOpen(false);
   };
@@ -73,8 +75,8 @@ export function PriorityPicker(props: PriorityPickerProps) {
   }, [props.value]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <Tooltip>
+    <Popover modal open={open} onOpenChange={setOpen}>
+      <Tooltip open={showTooltip}>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
             <Button
@@ -83,6 +85,7 @@ export function PriorityPicker(props: PriorityPickerProps) {
               role="combobox"
               aria-expanded={open}
               className={cn(value && "justify-between gap-2")}
+              {...triggerProps}
             >
               <OctagonAlertIcon className="h-4 w-4" />
               {value && options.find((opt) => opt === value)}

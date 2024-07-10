@@ -1,8 +1,9 @@
 import { Editor, EditorContext } from "@/components/Editor";
 import { FileSelect } from "@/components/FileSelect";
 import { LocalizationDatePicker } from "@/components/LocalizationDatePicker";
-import { PrioritySelect } from "@/components/PrioritySelect";
-import { RecurrenceSelect } from "@/components/RecurrenceSelect";
+import { PriorityPicker } from "@/components/PriorityPicker";
+import { RecurrencePicker } from "@/components/RecurrencePicker";
+import { Button } from "@/components/ui/button";
 import { hasTouchScreen } from "@/native-api/platform";
 import { usePlatformStore } from "@/stores/platform-store";
 import { formatDate, isDateEqual } from "@/utils/date";
@@ -14,7 +15,7 @@ import {
   stringifyTask,
 } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
-import { Button, Grid } from "@mui/joy";
+import { cn } from "@/utils/tw-utils";
 import { isValid } from "date-fns";
 import { useBeautifulMentions } from "lexical-beautiful-mentions";
 import { useMemo } from "react";
@@ -94,10 +95,6 @@ function TaskGrid(props: TaskGridProps) {
   const showCreationDate = isNewTask;
   const showCompletionDate = isNewTask && formModel.completed;
   const showTaskList = taskLists.length > 0;
-  const trueCount = [showCreationDate, showCompletionDate, showTaskList].filter(
-    Boolean,
-  ).length;
-  const recurrenceSelectGridNumber = trueCount % 2 === 0 ? 12 : 6;
 
   const {
     openMentionMenu,
@@ -159,8 +156,8 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   return (
-    <Grid spacing={touchScreen ? 1 : 2} container>
-      <Grid xs={12}>
+    <div className={cn("grid grid-cols-2", touchScreen ? "gap-1" : "gap-3")}>
+      <div className="col-span-2 [&_p]:min-h-[22px]">
         <Editor
           label={t("Description")}
           placeholder={t("Enter text and tags")}
@@ -171,47 +168,51 @@ function TaskGrid(props: TaskGridProps) {
           onChange={(value) => handleChange({ body: value })}
           onEnter={onEnterPress}
           items={items}
-        />
-      </Grid>
+        >
+          <PriorityPicker
+            value={formModel.priority}
+            onChange={(priority) => handleChange({ priority })}
+          />
+          <RecurrencePicker value={rec} onChange={handleRecChange} />
+        </Editor>
+      </div>
       {(touchScreen || platform === "ios" || platform === "android") && (
         <>
-          <Grid xs={6}>
+          <div>
             <Button
-              fullWidth
               size="sm"
-              variant="outlined"
+              variant="outline"
               color="primary"
               onClick={() => openMentionMenu({ trigger: "@" })}
             >
               {t("@Context")}
             </Button>
-          </Grid>
-          <Grid xs={6}>
+          </div>
+          <div>
             <Button
-              fullWidth
               size="sm"
-              variant="outlined"
+              variant="outline"
               color="primary"
               onClick={() => openMentionMenu({ trigger: "+" })}
             >
               {t("+Project")}
             </Button>
-          </Grid>
+          </div>
         </>
       )}
       {showTaskList && (
-        <Grid xs={12} sm={6}>
+        <div className="col-span-2 lg:col-span-1">
           <FileSelect options={taskLists} onSelect={onFileSelect} />
-        </Grid>
+        </div>
       )}
-      <Grid xs={12} sm={6}>
-        <PrioritySelect
-          value={formModel.priority}
-          onChange={(priority) => handleChange({ priority })}
-        />
-      </Grid>
+      {/*<div className="col-span-2 lg:col-span-1">*/}
+      {/*  <PriorityPicker*/}
+      {/*    value={formModel.priority}*/}
+      {/*    onChange={(priority) => handleChange({ priority })}*/}
+      {/*  />*/}
+      {/*</div>*/}
       {showCreationDate && (
-        <Grid xs={12} sm={6}>
+        <div className="col-span-2 lg:col-span-1">
           <LocalizationDatePicker
             ariaLabel="Creation date"
             label={t("Creation Date")}
@@ -220,10 +221,10 @@ function TaskGrid(props: TaskGridProps) {
               handleChange({ creationDate: value ?? undefined });
             }}
           />
-        </Grid>
+        </div>
       )}
       {showCompletionDate && (
-        <Grid xs={12} sm={6}>
+        <div className="col-span-2 lg:col-span-1">
           <LocalizationDatePicker
             ariaLabel="Completion date"
             label={t("Completion Date")}
@@ -232,19 +233,24 @@ function TaskGrid(props: TaskGridProps) {
               handleChange({ completionDate: value ?? undefined });
             }}
           />
-        </Grid>
+        </div>
       )}
-      <Grid xs={12} sm={6}>
+      <div className="col-span-2 lg:col-span-1">
         <LocalizationDatePicker
           ariaLabel="Due date"
           label={t("Due Date")}
           value={dueDate}
           onChange={handleDueDateChange}
         />
-      </Grid>
-      <Grid xs={12} sm={recurrenceSelectGridNumber}>
-        <RecurrenceSelect value={rec} onChange={handleRecChange} />
-      </Grid>
-    </Grid>
+      </div>
+      {/*<div*/}
+      {/*  className={cn(*/}
+      {/*    "col-span-2 lg:col-span-1",*/}
+      {/*    trueCount % 2 === 0 && "col-span-2",*/}
+      {/*  )}*/}
+      {/*>*/}
+      {/*  <RecurrencePicker value={rec} onChange={handleRecChange} />*/}
+      {/*</div>*/}
+    </div>
   );
 }

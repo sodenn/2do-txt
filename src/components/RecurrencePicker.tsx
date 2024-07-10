@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 import { getRecValueMatch } from "@/utils/task";
 import { cn } from "@/utils/tw-utils";
+import { useTooltip } from "@/utils/useTooltip";
 import { CalendarCogIcon, CheckIcon, CircleHelpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -88,6 +89,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
   const [amount, setAmount] = useState(initialValues.amount);
   const [unitSelected, setUnitSelected] = useState(false);
   const { t } = useTranslation();
+  const { showTooltip, ...triggerProps } = useTooltip();
   const unitLabel = options.find((option) => option.value === unit)?.label;
 
   useEffect(() => {
@@ -140,8 +142,8 @@ export function RecurrencePicker(props: PriorityPickerProps) {
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <Tooltip>
+    <Popover open={open} onOpenChange={setOpen} modal>
+      <Tooltip open={showTooltip}>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
             <Button
@@ -150,6 +152,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               role="combobox"
               aria-expanded={open}
               className={cn(value && "justify-between gap-2")}
+              {...triggerProps}
             >
               <CalendarCogIcon className="h-4 w-4" />
               {unitLabel &&
