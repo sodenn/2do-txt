@@ -16,7 +16,7 @@ import { formatDate, todayDate } from "@/utils/date";
 import { Task } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
-import { DeleteIcon } from "lucide-react";
+import { TrashIcon, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -50,19 +50,18 @@ function DeleteTaskButton() {
         <div className="flex gap-1">
           <Button
             variant="secondary"
-            color="neutral"
+            size="icon"
             aria-label="Cancel delete task"
             onClick={() => setShowDeleteConfirmButton(false)}
           >
-            {t("Cancel")}
+            <X className="h-4 w-4" />
           </Button>
           <Button
-            variant="secondary"
-            color="danger"
+            variant="destructive"
             aria-label="Confirm delete"
             onClick={handleDelete}
           >
-            <DeleteIcon className="mr-2 h-4 w-4" />
+            <TrashIcon className="mr-2 h-4 w-4" />
             {t("Confirm")}
           </Button>
         </div>
@@ -74,8 +73,7 @@ function DeleteTaskButton() {
         onExited={() => setShowDeleteConfirmButton(true)}
       >
         <Button
-          variant="secondary"
-          color="danger"
+          variant="destructive"
           aria-label="Delete task"
           onClick={() => setShowDeleteButton(false)}
         >

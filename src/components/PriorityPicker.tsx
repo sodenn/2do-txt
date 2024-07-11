@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/utils/tw-utils";
 import { useTooltip } from "@/utils/useTooltip";
-import { CheckIcon, OctagonAlertIcon } from "lucide-react";
+import { ArrowUpNarrowWideIcon, CheckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -87,7 +87,7 @@ export function PriorityPicker(props: PriorityPickerProps) {
               className={cn(value && "justify-between gap-2")}
               {...triggerProps}
             >
-              <OctagonAlertIcon className="h-4 w-4" />
+              <ArrowUpNarrowWideIcon className="h-4 w-4" />
               {value && options.find((opt) => opt === value)}
             </Button>
           </PopoverTrigger>

@@ -69,13 +69,13 @@ const mentionsStyleFocused = "shadow";
 
 const beautifulMentionsTheme: BeautifulMentionsTheme = {
   "@": `${mentionsStyle} bg-success/5 dark:bg-success/15 text-success border-success`,
-  "@Focused": `${mentionsStyleFocused} shadow-success/30 dark:shadow-success/60`,
+  "@Focused": `${mentionsStyleFocused} shadow-success/30 dark:shadow-success/70`,
   "\\+": `${mentionsStyle} bg-info/5 dark:bg-info/15 text-info border-info`,
-  "\\+Focused": `${mentionsStyleFocused} shadow-info/30 dark:shadow-info/60`,
+  "\\+Focused": `${mentionsStyleFocused} shadow-info/30 dark:shadow-info/70`,
   "due:": `${mentionsStyle} bg-warning/5 dark:bg-warning/15 text-warning border-warning`,
-  "due:Focused": `${mentionsStyleFocused} shadow-warning/30 dark:warning-info/60`,
+  "due:Focused": `${mentionsStyleFocused} shadow-warning/30 dark:shadow-warning/70`,
   "\\w+:": `${mentionsStyle} bg-gray-500/5 dark:bg-gray-400/15 text-gray-500 dark:text-gray-400 border-gray-500 dark:border-gray-400`,
-  "\\w+:Focused": `${mentionsStyleFocused} shadow-gray-500/30 dark:shadow-gray-400/60`,
+  "\\w+:Focused": `${mentionsStyleFocused} shadow-gray-500/30 dark:shadow-gray-400/70`,
 };
 
 function useEditorConfig(triggers: string[], initialValue: string) {
@@ -176,7 +176,7 @@ function MenuComponent({ loading, ...other }: BeautifulMentionsMenuProps) {
         scrollbarWidth: "none",
         msOverflowStyle: "none",
       }}
-      className="absolute top-[2px] z-[1400] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+      className="absolute top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
       {...other}
     />
   );
@@ -254,7 +254,7 @@ export function Editor(props: EditorProps) {
   }, [editor]);
 
   return (
-    <div className="space-y-2">
+    <div className="my-1 space-y-2">
       {label && <Label onClick={handleClick}>{label}</Label>}
       <div
         className={cn(
@@ -294,7 +294,7 @@ export function Editor(props: EditorProps) {
           allowSpaces={false}
           menuAnchorClassName="z-[1300]"
         />
-        <div className="flex gap-2 px-3 py-3">{children}</div>
+        <div className="flex gap-1 px-3 py-3 sm:gap-2">{children}</div>
       </div>
     </div>
   );

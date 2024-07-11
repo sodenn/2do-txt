@@ -21,7 +21,7 @@ import {
 import { getRecValueMatch } from "@/utils/task";
 import { cn } from "@/utils/tw-utils";
 import { useTooltip } from "@/utils/useTooltip";
-import { CalendarCogIcon, CheckIcon, CircleHelpIcon } from "lucide-react";
+import { CheckIcon, CircleHelpIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -125,6 +125,10 @@ export function RecurrencePicker(props: PriorityPickerProps) {
     handleChange(unit, amount || 1, strict);
   };
 
+  const handleBlurAmount: InputProps["onBlur"] = () => {
+    setOpen(false);
+  };
+
   const handleChangeStrict = (strict: boolean) => {
     setStrict(strict);
     handleChange(unit, amount, strict);
@@ -154,7 +158,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               className={cn(value && "justify-between gap-2")}
               {...triggerProps}
             >
-              <CalendarCogIcon className="h-4 w-4" />
+              <RefreshCwIcon className="h-4 w-4" />
               {unitLabel &&
                 unitLabel !== "No recurrence" &&
                 t(`Every ${unitLabel}`, { count: amount })}
@@ -198,6 +202,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
                 min={1}
                 value={amount}
                 onChange={handleChangeAmount}
+                onBlur={handleBlurAmount}
                 className="w-full"
               />
             </div>

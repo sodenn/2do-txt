@@ -1,11 +1,12 @@
 import { Editor, EditorContext } from "@/components/Editor";
 import { FileSelect } from "@/components/FileSelect";
-import { LocalizationDatePicker } from "@/components/LocalizationDatePicker";
 import { PriorityPicker } from "@/components/PriorityPicker";
 import { RecurrencePicker } from "@/components/RecurrencePicker";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { hasTouchScreen } from "@/native-api/platform";
 import { usePlatformStore } from "@/stores/platform-store";
+import { useSettingsStore } from "@/stores/settings-store";
 import { formatDate, isDateEqual } from "@/utils/date";
 import {
   Task,
@@ -80,6 +81,7 @@ export function TaskForm(props: TaskFormProps) {
 function TaskGrid(props: TaskGridProps) {
   const touchScreen = hasTouchScreen();
   const platform = usePlatformStore((state) => state.platform);
+  const language = useSettingsStore((state) => state.language);
   const {
     formModel,
     newTask: isNewTask,
@@ -104,7 +106,7 @@ function TaskGrid(props: TaskGridProps) {
     hasMentions,
   } = useBeautifulMentions();
 
-  const handleDueDateChange = (value: Date | null) => {
+  const handleDueDateChange = (value?: Date) => {
     if ((value && !isValid(value)) || isDateEqual(value, dueDate)) {
       return;
     }
@@ -156,10 +158,9 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   return (
-    <div className={cn("grid grid-cols-2", touchScreen ? "gap-1" : "gap-3")}>
+    <div className={cn("grid grid-cols-2", touchScreen ? "gap-1" : "gap-2")}>
       <div className="col-span-2 [&_p]:min-h-[22px]">
         <Editor
-          label={t("Description")}
           placeholder={t("Enter text and tags")}
           ariaLabel="Text editor"
           autoCorrect="off"
@@ -174,6 +175,13 @@ function TaskGrid(props: TaskGridProps) {
             onChange={(priority) => handleChange({ priority })}
           />
           <RecurrencePicker value={rec} onChange={handleRecChange} />
+          <DatePicker
+            ariaLabel="Due date"
+            tooltip={t("Due Date")}
+            value={dueDate}
+            onChange={handleDueDateChange}
+            locale={language}
+          />
         </Editor>
       </div>
       {(touchScreen || platform === "ios" || platform === "android") && (
@@ -182,7 +190,6 @@ function TaskGrid(props: TaskGridProps) {
             <Button
               size="sm"
               variant="outline"
-              color="primary"
               onClick={() => openMentionMenu({ trigger: "@" })}
             >
               {t("@Context")}
@@ -192,7 +199,6 @@ function TaskGrid(props: TaskGridProps) {
             <Button
               size="sm"
               variant="outline"
-              color="primary"
               onClick={() => openMentionMenu({ trigger: "+" })}
             >
               {t("+Project")}
@@ -205,17 +211,17 @@ function TaskGrid(props: TaskGridProps) {
           <FileSelect options={taskLists} onSelect={onFileSelect} />
         </div>
       )}
-      {/*<div className="col-span-2 lg:col-span-1">*/}
-      {/*  <PriorityPicker*/}
-      {/*    value={formModel.priority}*/}
-      {/*    onChange={(priority) => handleChange({ priority })}*/}
-      {/*  />*/}
-      {/*</div>*/}
       {showCreationDate && (
         <div className="col-span-2 lg:col-span-1">
-          <LocalizationDatePicker
-            ariaLabel="Creation date"
-            label={t("Creation Date")}
+          {/*<DatePicker*/}
+          {/*  ariaLabel="Creation date"*/}
+          {/*  label={t("Creation Date")}*/}
+          {/*  value={formModel.creationDate}*/}
+          {/*  onChange={(value) => {*/}
+          {/*    handleChange({ creationDate: value ?? undefined });*/}
+          {/*  }}*/}
+          {/*/>*/}
+          <DatePicker
             value={formModel.creationDate}
             onChange={(value) => {
               handleChange({ creationDate: value ?? undefined });
@@ -225,7 +231,7 @@ function TaskGrid(props: TaskGridProps) {
       )}
       {showCompletionDate && (
         <div className="col-span-2 lg:col-span-1">
-          <LocalizationDatePicker
+          <DatePicker
             ariaLabel="Completion date"
             label={t("Completion Date")}
             value={formModel.completionDate}
@@ -235,22 +241,6 @@ function TaskGrid(props: TaskGridProps) {
           />
         </div>
       )}
-      <div className="col-span-2 lg:col-span-1">
-        <LocalizationDatePicker
-          ariaLabel="Due date"
-          label={t("Due Date")}
-          value={dueDate}
-          onChange={handleDueDateChange}
-        />
-      </div>
-      {/*<div*/}
-      {/*  className={cn(*/}
-      {/*    "col-span-2 lg:col-span-1",*/}
-      {/*    trueCount % 2 === 0 && "col-span-2",*/}
-      {/*  )}*/}
-      {/*>*/}
-      {/*  <RecurrencePicker value={rec} onChange={handleRecChange} />*/}
-      {/*</div>*/}
     </div>
   );
 }

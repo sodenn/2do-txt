@@ -1,73 +1,102 @@
+import { useBreakpoint } from "@/components/Breakpoint";
+import { Button, ButtonProps } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { DateInput } from "@/components/ui/date-input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { formatLocaleDate, isDateEqual } from "@/utils/date";
+import { cn } from "@/utils/tw-utils";
+import { useTooltip } from "@/utils/useTooltip";
+import { CalendarIcon } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
 import { DayPickerSingleProps } from "react-day-picker";
 
 interface DatePickerProps {
   value?: Date;
   onChange?: (date?: Date) => void;
-  icon?: ReactNode;
+  ariaLabel?: string;
+  label?: ReactNode;
+  tooltip?: ReactNode;
+  locale?: string;
+}
+
+function formatDate(date?: Date, short?: boolean, locale?: string) {
+  if (!date) {
+    return null;
+  }
+  if (short) {
+    return formatLocaleDate(date, locale);
+  }
+  return date.toLocaleString(locale, {
+    day: "numeric",
+    weekday: "short",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export function DatePicker(props: DatePickerProps) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(props.value);
-  const [month, setMonth] = useState(value);
+  const [date, setDate] = useState(props.value);
+  const { showTooltip, ...tooltipProps } = useTooltip();
+  const { isBreakpointActive } = useBreakpoint();
+  const formatedDate = formatDate(date, isBreakpointActive("sm"), props.locale);
 
-  const handleClick: DateInput["onClick"] = (event) => {
-    event.preventDefault();
-    setOpen(true);
-  };
-
-  const handleChange: DateInput["onValueChange"] = (newDate) => {
-    // @ts-ignore
-    if (isNaN(newDate)) {
-      setValue(undefined);
-      setMonth(new Date());
-    } else {
-      setValue(newDate);
-      props.onChange?.(newDate);
-      setMonth(newDate);
-    }
-  };
-
-  const handleSelect: DayPickerSingleProps["onSelect"] = (newDate) => {
-    setValue(newDate);
-    props.onChange?.(newDate);
+  const handleSelect: DayPickerSingleProps["onSelect"] = (date) => {
+    setDate(date);
+    props.onChange?.(date);
     setOpen(false);
   };
 
+  const handleClick: ButtonProps["onClick"] = () => {
+    setOpen(true);
+  };
+
   useEffect(() => {
-    setValue(value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value?.toLocaleDateString("en-US")]);
+    if (!isDateEqual(date, props.value)) {
+      setDate(props.value);
+    }
+  }, [date, props.value]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <DateInput
-          onClick={handleClick}
-          onValueChange={handleChange}
-          value={value}
-          icon={props.icon}
-        />
-      </PopoverTrigger>
-      <PopoverContent
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        className="w-auto p-0"
-        align="start"
-      >
+      <Tooltip open={showTooltip && !!props.tooltip && !open}>
+        <PopoverTrigger asChild>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size={date ? "default" : "icon"}
+              aria-label={props.ariaLabel}
+              onClick={handleClick}
+              className={cn(
+                "space-x-2",
+                !date && "text-muted-foreground",
+                !!date && "justify-start text-left font-normal",
+              )}
+              {...tooltipProps}
+            >
+              <CalendarIcon className="h-4 w-4" />
+              {props.label && <span>{props.label}</span>}
+              {formatedDate && <span>{formatedDate}</span>}
+            </Button>
+          </TooltipTrigger>
+        </PopoverTrigger>
+        <TooltipContent>{props.tooltip}</TooltipContent>
+      </Tooltip>
+      <PopoverContent className="w-auto p-0" align="start">
         <Calendar
-          month={month}
-          onMonthChange={setMonth}
           mode="single"
-          selected={value}
+          month={date}
+          selected={date}
           onSelect={handleSelect}
+          initialFocus
         />
       </PopoverContent>
     </Popover>
