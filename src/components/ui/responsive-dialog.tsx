@@ -123,7 +123,7 @@ export function ResponsiveDialogFooter({ children }: PropsWithChildren) {
   if (isBreakpointActive("lg")) {
     return <DialogFooter className="px-6">{children}</DialogFooter>;
   }
-  return <DrawerFooter>{children}</DrawerFooter>;
+  return <DrawerFooter className="flex-row">{children}</DrawerFooter>;
 }
 
 export function ResponsiveDialogClose({ children }: PropsWithChildren) {

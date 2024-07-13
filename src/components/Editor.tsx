@@ -176,7 +176,7 @@ function MenuComponent({ loading, ...other }: BeautifulMentionsMenuProps) {
         scrollbarWidth: "none",
         msOverflowStyle: "none",
       }}
-      className="absolute top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+      className="pointer-events-auto absolute top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
       {...other}
     />
   );
@@ -265,7 +265,7 @@ export function Editor(props: EditorProps) {
         <RichTextPlugin
           contentEditable={
             <ContentEditable
-              className="relative overflow-auto px-3 py-2 focus:outline-none"
+              className="relative overflow-auto px-3 py-2 focus:outline-none [&_p]:min-h-[22px]"
               // needed because the cursor keeps blinking in Safari when clicking outside the editor
               onBlur={() => editor.blur()}
               {...contentEditableProps}
@@ -290,7 +290,7 @@ export function Editor(props: EditorProps) {
           menuComponent={MenuComponent}
           menuItemComponent={MenuItemComponent}
           creatable
-          insertOnBlur
+          insertOnBlur={false}
           allowSpaces={false}
           menuAnchorClassName="z-[1300]"
         />

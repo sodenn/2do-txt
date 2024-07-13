@@ -155,7 +155,10 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               size={value ? "default" : "icon"}
               role="combobox"
               aria-expanded={open}
-              className={cn(value && "justify-between gap-2")}
+              className={cn(
+                value && "justify-between gap-2",
+                !value && "flex-shrink-0 text-muted-foreground",
+              )}
               {...triggerProps}
             >
               <RefreshCwIcon className="h-4 w-4" />

@@ -25,6 +25,7 @@ interface DatePickerProps {
   label?: ReactNode;
   tooltip?: ReactNode;
   locale?: string;
+  icon?: ReactNode;
 }
 
 function formatDate(date?: Date, short?: boolean, locale?: string) {
@@ -77,12 +78,12 @@ export function DatePicker(props: DatePickerProps) {
               onClick={handleClick}
               className={cn(
                 "space-x-2",
-                !date && "text-muted-foreground",
+                !date && "flex-shrink-0 text-muted-foreground",
                 !!date && "justify-start text-left font-normal",
               )}
               {...tooltipProps}
             >
-              <CalendarIcon className="h-4 w-4" />
+              {props.icon ? props.icon : <CalendarIcon className="h-4 w-4" />}
               {props.label && <span>{props.label}</span>}
               {formatedDate && <span>{formatedDate}</span>}
             </Button>

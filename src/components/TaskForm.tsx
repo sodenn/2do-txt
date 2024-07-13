@@ -2,6 +2,12 @@ import { Editor, EditorContext } from "@/components/Editor";
 import { FileSelect } from "@/components/FileSelect";
 import { PriorityPicker } from "@/components/PriorityPicker";
 import { RecurrencePicker } from "@/components/RecurrencePicker";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { hasTouchScreen } from "@/native-api/platform";
@@ -19,6 +25,7 @@ import { TaskList } from "@/utils/task-list";
 import { cn } from "@/utils/tw-utils";
 import { isValid } from "date-fns";
 import { useBeautifulMentions } from "lexical-beautiful-mentions";
+import { CalendarCheckIcon, CalendarPlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -97,6 +104,9 @@ function TaskGrid(props: TaskGridProps) {
   const showCreationDate = isNewTask;
   const showCompletionDate = isNewTask && formModel.completed;
   const showTaskList = taskLists.length > 0;
+  const mobile = touchScreen || platform === "ios" || platform === "android";
+  const showMoreOptions =
+    showTaskList || showCreationDate || showCompletionDate || !mobile;
 
   const {
     openMentionMenu,
@@ -158,88 +168,92 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   return (
-    <div className={cn("grid grid-cols-2", touchScreen ? "gap-1" : "gap-2")}>
-      <div className="col-span-2 [&_p]:min-h-[22px]">
-        <Editor
-          placeholder={t("Enter text and tags")}
-          ariaLabel="Text editor"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          onChange={(value) => handleChange({ body: value })}
-          onEnter={onEnterPress}
-          items={items}
-        >
+    <div className={cn("flex flex-col", touchScreen ? "gap-1" : "gap-2")}>
+      <Editor
+        placeholder={t("Enter text and tags")}
+        ariaLabel="Text editor"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
+        onChange={(value) => handleChange({ body: value })}
+        onEnter={onEnterPress}
+        items={items}
+      >
+        <DatePicker
+          ariaLabel="Due date"
+          tooltip={t("Due Date")}
+          value={dueDate}
+          onChange={handleDueDateChange}
+          locale={language}
+        />
+        <RecurrencePicker value={rec} onChange={handleRecChange} />
+      </Editor>
+      {mobile && (
+        <div className="flex gap-1">
           <PriorityPicker
             value={formModel.priority}
             onChange={(priority) => handleChange({ priority })}
           />
-          <RecurrencePicker value={rec} onChange={handleRecChange} />
-          <DatePicker
-            ariaLabel="Due date"
-            tooltip={t("Due Date")}
-            value={dueDate}
-            onChange={handleDueDateChange}
-            locale={language}
-          />
-        </Editor>
-      </div>
-      {(touchScreen || platform === "ios" || platform === "android") && (
-        <>
-          <div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => openMentionMenu({ trigger: "@" })}
-            >
-              {t("@Context")}
-            </Button>
-          </div>
-          <div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => openMentionMenu({ trigger: "+" })}
-            >
-              {t("+Project")}
-            </Button>
-          </div>
-        </>
-      )}
-      {showTaskList && (
-        <div className="col-span-2 lg:col-span-1">
-          <FileSelect options={taskLists} onSelect={onFileSelect} />
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => openMentionMenu({ trigger: "@" })}
+          >
+            {t("@Context")}
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => openMentionMenu({ trigger: "+" })}
+          >
+            {t("+Project")}
+          </Button>
         </div>
       )}
-      {showCreationDate && (
-        <div className="col-span-2 lg:col-span-1">
-          {/*<DatePicker*/}
-          {/*  ariaLabel="Creation date"*/}
-          {/*  label={t("Creation Date")}*/}
-          {/*  value={formModel.creationDate}*/}
-          {/*  onChange={(value) => {*/}
-          {/*    handleChange({ creationDate: value ?? undefined });*/}
-          {/*  }}*/}
-          {/*/>*/}
-          <DatePicker
-            value={formModel.creationDate}
-            onChange={(value) => {
-              handleChange({ creationDate: value ?? undefined });
-            }}
-          />
-        </div>
-      )}
-      {showCompletionDate && (
-        <div className="col-span-2 lg:col-span-1">
-          <DatePicker
-            ariaLabel="Completion date"
-            label={t("Completion Date")}
-            value={formModel.completionDate}
-            onChange={(value) => {
-              handleChange({ completionDate: value ?? undefined });
-            }}
-          />
-        </div>
+      {showMoreOptions && (
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1" className="border-none">
+            <AccordionTrigger className="py-1">More options</AccordionTrigger>
+            <AccordionContent className="px-[1px] pt-1">
+              {!mobile && (
+                <PriorityPicker
+                  value={formModel.priority}
+                  onChange={(priority) => handleChange({ priority })}
+                />
+              )}
+              {showTaskList && (
+                <FileSelect options={taskLists} onSelect={onFileSelect} />
+              )}
+              {(showCreationDate || showCompletionDate) && (
+                <div className="flex gap-1 sm:gap-2">
+                  {showCreationDate && (
+                    <DatePicker
+                      ariaLabel="Creation date"
+                      tooltip={t("Creation Date")}
+                      icon={<CalendarPlusIcon className="h-4 w-4" />}
+                      locale={language}
+                      value={formModel.creationDate}
+                      onChange={(value) => {
+                        handleChange({ creationDate: value ?? undefined });
+                      }}
+                    />
+                  )}
+                  {showCompletionDate && (
+                    <DatePicker
+                      ariaLabel="Completion date"
+                      tooltip={t("Completion Date")}
+                      icon={<CalendarCheckIcon className="h-4 w-4" />}
+                      value={formModel.completionDate}
+                      onChange={(value) => {
+                        handleChange({ completionDate: value ?? undefined });
+                      }}
+                    />
+                  )}
+                </div>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       )}
     </div>
   );

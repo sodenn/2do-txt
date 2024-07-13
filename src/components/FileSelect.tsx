@@ -1,6 +1,12 @@
 import { StartEllipsis } from "@/components/StartEllipsis";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TaskList } from "@/utils/task-list";
-import { FormControl, FormLabel, Option, Select, SelectProps } from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -14,7 +20,7 @@ export function FileSelect(props: FileSelectProps) {
   const { t } = useTranslation();
   const [filePath, setFilePath] = useState("");
 
-  const handleChange: SelectProps<string, false>["onChange"] = (_, value) => {
+  const handleChange = (value: string) => {
     const filePath = value as string;
     const item = options.find((l) => l.filePath === filePath);
     onSelect(item);
@@ -22,22 +28,19 @@ export function FileSelect(props: FileSelectProps) {
   };
 
   return (
-    <FormControl>
-      <FormLabel required>{t("File")}</FormLabel>
-      <Select
-        placeholder={t("Select todo.txt")}
-        required
-        value={filePath}
-        onChange={handleChange}
-      >
+    <Select required value={filePath} onValueChange={handleChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder={t("Select todo.txt")} />
+      </SelectTrigger>
+      <SelectContent>
         {options.map((item) => (
-          <Option key={item.filePath} value={item.filePath}>
-            <StartEllipsis sx={{ maxWidth: 300 }}>
+          <SelectItem key={item.filePath} value={item.filePath}>
+            <StartEllipsis className="max-w-[300px]">
               {item.filePath}
             </StartEllipsis>
-          </Option>
+          </SelectItem>
         ))}
-      </Select>
-    </FormControl>
+      </SelectContent>
+    </Select>
   );
 }

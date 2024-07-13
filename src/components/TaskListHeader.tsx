@@ -44,7 +44,9 @@ export function TaskListHeader(props: TaskListHeaderProps) {
       onClick={() => setActiveTaskListPath(filePath)}
     >
       <Container>
-        <StartEllipsis level="title-lg">{fileName}</StartEllipsis>
+        <StartEllipsis className="font-semibold leading-none tracking-tight">
+          {fileName}
+        </StartEllipsis>
         <LaunchIcon />
       </Container>
     </StyledListItemButton>
