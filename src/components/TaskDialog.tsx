@@ -73,7 +73,8 @@ function DeleteTaskButton() {
         onExited={() => setShowDeleteConfirmButton(true)}
       >
         <Button
-          variant="destructive"
+          tabIndex={-1}
+          variant="secondary"
           aria-label="Delete task"
           onClick={() => setShowDeleteButton(false)}
         >

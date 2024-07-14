@@ -76,7 +76,9 @@ export function LayoutSidebar({
       open={open}
       onOpenChange={handleOpenChange}
     >
-      <SheetContent side="left">{children}</SheetContent>
+      <SheetContent className="p-0" side="left">
+        {children}
+      </SheetContent>
     </Sheet>
   );
 }

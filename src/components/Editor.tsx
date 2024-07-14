@@ -294,7 +294,7 @@ export function Editor(props: EditorProps) {
           allowSpaces={false}
           menuAnchorClassName="z-[1300]"
         />
-        <div className="flex gap-1 px-3 py-3 sm:gap-2">{children}</div>
+        <div className="flex flex-wrap gap-1 px-3 py-3">{children}</div>
       </div>
     </div>
   );

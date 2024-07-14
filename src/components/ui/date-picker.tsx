@@ -72,7 +72,7 @@ export function DatePicker(props: DatePickerProps) {
         <PopoverTrigger asChild>
           <TooltipTrigger asChild>
             <Button
-              variant="outline"
+              variant={date ? "secondary" : "ghost"}
               size={date ? "default" : "icon"}
               aria-label={props.ariaLabel}
               onClick={handleClick}

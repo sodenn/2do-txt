@@ -80,7 +80,7 @@ export function PriorityPicker(props: PriorityPickerProps) {
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
+              variant={value ? "secondary" : "ghost"}
               size={value ? "default" : "icon"}
               role="combobox"
               aria-expanded={open}

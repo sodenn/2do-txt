@@ -2,12 +2,6 @@ import { Editor, EditorContext } from "@/components/Editor";
 import { FileSelect } from "@/components/FileSelect";
 import { PriorityPicker } from "@/components/PriorityPicker";
 import { RecurrencePicker } from "@/components/RecurrencePicker";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { hasTouchScreen } from "@/native-api/platform";
@@ -105,9 +99,6 @@ function TaskGrid(props: TaskGridProps) {
   const showCompletionDate = isNewTask && formModel.completed;
   const showTaskList = taskLists.length > 0;
   const mobile = touchScreen || platform === "ios" || platform === "android";
-  const showMoreOptions =
-    showTaskList || showCreationDate || showCompletionDate || !mobile;
-
   const {
     openMentionMenu,
     removeMentions,
@@ -179,6 +170,11 @@ function TaskGrid(props: TaskGridProps) {
         onEnter={onEnterPress}
         items={items}
       >
+        <PriorityPicker
+          value={formModel.priority}
+          onChange={(priority) => handleChange({ priority })}
+        />
+        <RecurrencePicker value={rec} onChange={handleRecChange} />
         <DatePicker
           ariaLabel="Due date"
           tooltip={t("Due Date")}
@@ -186,14 +182,32 @@ function TaskGrid(props: TaskGridProps) {
           onChange={handleDueDateChange}
           locale={language}
         />
-        <RecurrencePicker value={rec} onChange={handleRecChange} />
+        {showCreationDate && (
+          <DatePicker
+            ariaLabel="Creation date"
+            tooltip={t("Creation Date")}
+            icon={<CalendarPlusIcon className="h-4 w-4" />}
+            locale={language}
+            value={formModel.creationDate}
+            onChange={(value) => {
+              handleChange({ creationDate: value ?? undefined });
+            }}
+          />
+        )}
+        {showCompletionDate && (
+          <DatePicker
+            ariaLabel="Completion date"
+            tooltip={t("Completion Date")}
+            icon={<CalendarCheckIcon className="h-4 w-4" />}
+            value={formModel.completionDate}
+            onChange={(value) => {
+              handleChange({ completionDate: value ?? undefined });
+            }}
+          />
+        )}
       </Editor>
       {mobile && (
-        <div className="flex gap-1">
-          <PriorityPicker
-            value={formModel.priority}
-            onChange={(priority) => handleChange({ priority })}
-          />
+        <div className="my-1 flex gap-1">
           <Button
             variant="outline"
             className="w-full"
@@ -210,50 +224,8 @@ function TaskGrid(props: TaskGridProps) {
           </Button>
         </div>
       )}
-      {showMoreOptions && (
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="item-1" className="border-none">
-            <AccordionTrigger className="py-1">More options</AccordionTrigger>
-            <AccordionContent className="px-[1px] pt-1">
-              {!mobile && (
-                <PriorityPicker
-                  value={formModel.priority}
-                  onChange={(priority) => handleChange({ priority })}
-                />
-              )}
-              {showTaskList && (
-                <FileSelect options={taskLists} onSelect={onFileSelect} />
-              )}
-              {(showCreationDate || showCompletionDate) && (
-                <div className="flex gap-1 sm:gap-2">
-                  {showCreationDate && (
-                    <DatePicker
-                      ariaLabel="Creation date"
-                      tooltip={t("Creation Date")}
-                      icon={<CalendarPlusIcon className="h-4 w-4" />}
-                      locale={language}
-                      value={formModel.creationDate}
-                      onChange={(value) => {
-                        handleChange({ creationDate: value ?? undefined });
-                      }}
-                    />
-                  )}
-                  {showCompletionDate && (
-                    <DatePicker
-                      ariaLabel="Completion date"
-                      tooltip={t("Completion Date")}
-                      icon={<CalendarCheckIcon className="h-4 w-4" />}
-                      value={formModel.completionDate}
-                      onChange={(value) => {
-                        handleChange({ completionDate: value ?? undefined });
-                      }}
-                    />
-                  )}
-                </div>
-              )}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+      {showTaskList && (
+        <FileSelect options={taskLists} onSelect={onFileSelect} />
       )}
     </div>
   );
