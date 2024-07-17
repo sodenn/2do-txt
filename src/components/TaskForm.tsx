@@ -207,7 +207,7 @@ function TaskGrid(props: TaskGridProps) {
         )}
       </Editor>
       {mobile && (
-        <div className="my-1 flex gap-1">
+        <div className="mb-1 flex gap-1">
           <Button
             variant="outline"
             className="w-full"

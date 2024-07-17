@@ -1,10 +1,13 @@
+import { useSnackbar } from "@/components/Snackbar";
+import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog,
-  ResponsiveDialogActions,
+  ResponsiveDialogBody,
   ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-} from "@/components/ResponsiveDialog";
-import { useSnackbar } from "@/components/Snackbar";
+} from "@/components/ui/responsive-dialog";
 import { getDirname, join, selectFolder } from "@/native-api/filesystem";
 import { useCloudFileDialogStore } from "@/stores/cloud-file-dialog-store";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
@@ -22,23 +25,16 @@ import {
   useCloudStorage,
 } from "@/utils/CloudStorage";
 import { getDoneFilePath } from "@/utils/todo-files";
+import { cn } from "@/utils/tw-utils";
 import { useTask } from "@/utils/useTask";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import FolderIcon from "@mui/icons-material/Folder";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
-import SyncIcon from "@mui/icons-material/Sync";
 import {
-  Box,
-  Button,
-  CircularProgress,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemContent,
-  ListItemDecorator,
-  Typography,
-} from "@mui/joy";
+  CornerDownLeftIcon,
+  FileTextIcon,
+  FolderIcon,
+  LoaderCircleIcon,
+  RefreshCwIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -90,15 +86,20 @@ export function CloudFileDialog() {
   const [files, setFiles] = useState<ListResult | undefined>();
   const { openSnackbar } = useSnackbar();
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      handleClose();
+    }
+  };
+
   const handleClose = () => {
     setLoading(false);
     setSelectedFile(undefined);
     closeCloudFileDialog();
-  };
-
-  const handleExited = () => {
-    cleanupCloudFileDialog();
-    setFiles(undefined);
+    setTimeout(() => {
+      cleanupCloudFileDialog();
+      setFiles(undefined);
+    }, 200);
   };
 
   const handleSelect = async () => {
@@ -155,40 +156,39 @@ export function CloudFileDialog() {
   };
 
   return (
-    <ResponsiveDialog
-      fullWidth
-      open={open}
-      onClose={handleClose}
-      onExited={handleExited}
-    >
-      <ResponsiveDialogTitle>
-        {t(`Import from cloud storage`, {
-          provider,
-        })}
-      </ResponsiveDialogTitle>
+    <ResponsiveDialog open={open} onOpenChange={handleOpenChange}>
       <ResponsiveDialogContent>
-        <CloudFileDialogContent
-          provider={provider}
-          onSelect={setSelectedFile}
-          onFilesChange={setFiles}
-          onClose={handleClose}
-        />
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>
+            {t(`Import from cloud storage`, {
+              provider,
+            })}
+          </ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogBody>
+          <CloudFileDialogContent
+            provider={provider}
+            onSelect={setSelectedFile}
+            onFilesChange={setFiles}
+            onClose={handleClose}
+          />
+        </ResponsiveDialogBody>
+        <ResponsiveDialogFooter>
+          {files && files.items.length > 0 && (
+            <Button
+              onClick={handleSelect}
+              disabled={!selectedFile}
+              loading={loading}
+              aria-label="Import"
+            >
+              {t("Import")}
+            </Button>
+          )}
+          {files && files.items.length === 0 && taskLists.length === 0 && (
+            <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
+          )}
+        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
-      <ResponsiveDialogActions>
-        {files && files.items.length > 0 && (
-          <Button
-            onClick={handleSelect}
-            disabled={!selectedFile}
-            loading={loading}
-            aria-label="Import"
-          >
-            {t("Import")}
-          </Button>
-        )}
-        {files && files.items.length === 0 && taskLists.length === 0 && (
-          <Button onClick={handleCreateFile}>{t("Create todo.txt")}</Button>
-        )}
-      </ResponsiveDialogActions>
     </ResponsiveDialog>
   );
 }
@@ -293,23 +293,29 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
   return (
     <>
       {!files && (
-        <Box sx={{ textAlign: "center", my: 3 }}>
-          <CircularProgress size="sm" color="neutral" />
-        </Box>
+        <div className="text-center, my-3">
+          <LoadingSpinner />
+        </div>
       )}
       {((files && files.items.length > 0) || previousPaths.length > 0) && (
-        <List variant="outlined" size="sm" sx={{ borderRadius: "sm" }}>
+        <ul className="my-1 flex flex-col">
           {previousPaths.length > 0 && (
-            <ListItemButton onClick={() => handleNavBack()}>
-              <ListItemDecorator>
-                {loading === true ? (
-                  <CircularProgress size="sm" color="neutral" />
-                ) : (
-                  <KeyboardReturnIcon />
-                )}
-              </ListItemDecorator>{" "}
+            <button
+              className={cn(
+                "flex items-center gap-4 rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+              )}
+              onClick={() => handleNavBack()}
+            >
+              {loading === true ? (
+                <LoadingSpinner />
+              ) : (
+                <CornerDownLeftIcon className="h-5 w-5 shrink-0" />
+              )}
               {previousPaths.at(-1) || t("Back")}
-            </ListItemButton>
+              <div className="text-sm font-medium leading-none">
+                {previousPaths.at(-1) || t("Back")}
+              </div>
+            </button>
           )}
           {files &&
             files.items
@@ -340,20 +346,14 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
                 />
               ))}
           {files && files.hasMore && (
-            <ListItemButton onClick={() => handleLoadMoreItems()}>
-              <ListItemDecorator /> {t("Load more")}
-            </ListItemButton>
+            <li className="pl-4" onClick={() => handleLoadMoreItems()}>
+              {t("Load more")}
+            </li>
           )}
           {files && files.items.length === 0 && (
-            <ListItem>
-              <ListItemContent>
-                <Typography level="body-sm">
-                  {t("No todo.txt files found")}
-                </Typography>
-              </ListItemContent>
-            </ListItem>
+            <li>{t("No todo.txt files found")}</li>
           )}
-        </List>
+        </ul>
       )}
     </>
   );
@@ -367,49 +367,60 @@ function CloudFileButton(props: CloudFileButtonProps) {
   };
 
   return (
-    <ListItemButton
+    <button
       disabled={disableItem(cloudFile) || disabled}
       onClick={onClick}
-      selected={selectedFile && cloudFile.path === selectedFile.path}
-    >
-      <ListItemDecorator>
-        <InsertDriveFileIcon />
-      </ListItemDecorator>
-      <ListItemContent>
-        <Typography level="title-sm">{cloudFile.name}</Typography>
-        <Typography level="body-sm" noWrap>
-          {cloudFile.path}
-        </Typography>
-      </ListItemContent>
-      {disableItem(cloudFile) && (
-        <ListItemDecorator>
-          <SyncIcon color="disabled" fontSize="small" />
-        </ListItemDecorator>
+      className={cn(
+        "flex items-center gap-4 rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+        selectedFile &&
+          cloudFile.path === selectedFile.path &&
+          "bg-accent text-accent-foreground",
       )}
-    </ListItemButton>
+    >
+      <FileTextIcon className="h-4 w-4 shrink-0" />
+      <div className="flex-1 text-left">
+        <div className="text-sm font-medium leading-none">{cloudFile.name}</div>
+        <div className="truncate text-sm text-muted-foreground">
+          {cloudFile.path}
+        </div>
+      </div>
+      {disableItem(cloudFile) && (
+        <RefreshCwIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+      )}
+    </button>
   );
 }
 
 function CloudFolderButton(props: CloudFolderButtonProps) {
   const { cloudDirectory, loading, disabled, onClick } = props;
   return (
-    <ListItemButton onClick={onClick} disabled={disabled}>
-      <ListItemDecorator>
-        <FolderIcon />
-      </ListItemDecorator>
-      <ListItemContent>
-        <Typography level="title-sm">{cloudDirectory.name}</Typography>
-        <Typography level="body-sm" noWrap>
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "flex items-center gap-4 rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+      )}
+    >
+      <FolderIcon className="h-5 w-5 shrink-0" />
+      <div className="flex-1 text-left">
+        <div className="text-sm font-medium leading-none">
+          {cloudDirectory.name}
+        </div>
+        <div className="truncate text-sm text-muted-foreground">
           {cloudDirectory.path}
-        </Typography>
-      </ListItemContent>
-      <ListItemDecorator>
-        {loading ? (
-          <CircularProgress size="sm" color="neutral" />
-        ) : (
-          <ArrowForwardIosIcon color="disabled" fontSize="small" />
-        )}
-      </ListItemDecorator>
-    </ListItemButton>
+        </div>
+      </div>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <ArrowForwardIosIcon color="disabled" fontSize="small" />
+      )}
+    </button>
+  );
+}
+
+function LoadingSpinner() {
+  return (
+    <LoaderCircleIcon className="h-5 w-5 shrink-0 animate-spin text-muted-foreground" />
   );
 }
