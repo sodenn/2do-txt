@@ -1,6 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
-import LightbulbIcon from "@mui/icons-material/Lightbulb";
-import Button from "@mui/joy/Button";
+import { LightbulbIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function ExampleFileButton() {
@@ -16,13 +16,11 @@ export function ExampleFileButton() {
   return (
     <Button
       tabIndex={0}
-      color="neutral"
-      variant="outlined"
-      fullWidth
+      variant="outline"
       aria-label="Create example file"
       onClick={handleClick}
-      startDecorator={<LightbulbIcon />}
     >
+      <LightbulbIcon className="mr-2 h-4 w-4" />
       {t("Create example file")}
     </Button>
   );

@@ -1,10 +1,9 @@
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useTask } from "@/utils/useTask";
-import IosShareIcon from "@mui/icons-material/IosShare";
-import ShareIcon from "@mui/icons-material/Share";
+import { Share2Icon, ShareIcon } from "lucide-react";
 
-export function ShareButton(props: ButtonProps) {
+export function ShareButton() {
   const { downloadTodoFile, shareTodoFile } = useTask();
   const platform = usePlatformStore((state) => state.platform);
 
@@ -21,12 +20,12 @@ export function ShareButton(props: ButtonProps) {
     <Button
       tabIndex={-1}
       aria-label="Share todo.txt"
+      size="icon"
       variant="outline"
       onClick={handleClick}
-      {...props}
     >
-      {platform === "ios" && <IosShareIcon />}
-      {platform === "android" && <ShareIcon />}
+      {platform === "ios" && <ShareIcon className="h-4 w-4" />}
+      {platform === "android" && <Share2Icon className="h-4 w-4" />}
     </Button>
   );
 }

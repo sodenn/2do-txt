@@ -1,6 +1,13 @@
 import { useSnackbar } from "@/components/Snackbar";
 import { Button } from "@/components/ui/button";
 import {
+  List,
+  ListItem,
+  ListItemPrimaryText,
+  ListItemSecondaryText,
+  ListItemText,
+} from "@/components/ui/list";
+import {
   ResponsiveDialog,
   ResponsiveDialogBody,
   ResponsiveDialogContent,
@@ -25,10 +32,9 @@ import {
   useCloudStorage,
 } from "@/utils/CloudStorage";
 import { getDoneFilePath } from "@/utils/todo-files";
-import { cn } from "@/utils/tw-utils";
 import { useTask } from "@/utils/useTask";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import {
+  ChevronRightIcon,
   CornerDownLeftIcon,
   FileTextIcon,
   FolderIcon,
@@ -298,24 +304,20 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
         </div>
       )}
       {((files && files.items.length > 0) || previousPaths.length > 0) && (
-        <ul className="my-1 flex flex-col">
+        <List>
           {previousPaths.length > 0 && (
-            <button
-              className={cn(
-                "flex items-center gap-4 rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-              )}
-              onClick={() => handleNavBack()}
-            >
+            <ListItem onClick={() => handleNavBack()}>
               {loading === true ? (
                 <LoadingSpinner />
               ) : (
                 <CornerDownLeftIcon className="h-5 w-5 shrink-0" />
               )}
-              {previousPaths.at(-1) || t("Back")}
-              <div className="text-sm font-medium leading-none">
-                {previousPaths.at(-1) || t("Back")}
-              </div>
-            </button>
+              <ListItemText>
+                <ListItemPrimaryText>
+                  {previousPaths.at(-1) || t("Back")}
+                </ListItemPrimaryText>
+              </ListItemText>
+            </ListItem>
           )}
           {files &&
             files.items
@@ -346,14 +348,15 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
                 />
               ))}
           {files && files.hasMore && (
-            <li className="pl-4" onClick={() => handleLoadMoreItems()}>
+            <ListItem onClick={() => handleLoadMoreItems()}>
+              <div className="w-5" />
               {t("Load more")}
-            </li>
+            </ListItem>
           )}
           {files && files.items.length === 0 && (
             <li>{t("No todo.txt files found")}</li>
           )}
-        </ul>
+        </List>
       )}
     </>
   );
@@ -367,55 +370,38 @@ function CloudFileButton(props: CloudFileButtonProps) {
   };
 
   return (
-    <button
+    <ListItem
       disabled={disableItem(cloudFile) || disabled}
+      selected={selectedFile && cloudFile.path === selectedFile.path}
       onClick={onClick}
-      className={cn(
-        "flex items-center gap-4 rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-        selectedFile &&
-          cloudFile.path === selectedFile.path &&
-          "bg-accent text-accent-foreground",
-      )}
     >
-      <FileTextIcon className="h-4 w-4 shrink-0" />
-      <div className="flex-1 text-left">
-        <div className="text-sm font-medium leading-none">{cloudFile.name}</div>
-        <div className="truncate text-sm text-muted-foreground">
-          {cloudFile.path}
-        </div>
-      </div>
+      <FileTextIcon className="h-5 w-5 shrink-0" />
+      <ListItemText>
+        <ListItemPrimaryText>{cloudFile.name}</ListItemPrimaryText>
+        <ListItemSecondaryText>{cloudFile.path}</ListItemSecondaryText>
+      </ListItemText>
       {disableItem(cloudFile) && (
-        <RefreshCwIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <RefreshCwIcon className="h-5 w-5 shrink-0 text-muted-foreground" />
       )}
-    </button>
+    </ListItem>
   );
 }
 
 function CloudFolderButton(props: CloudFolderButtonProps) {
   const { cloudDirectory, loading, disabled, onClick } = props;
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        "flex items-center gap-4 rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-      )}
-    >
+    <ListItem onClick={onClick} disabled={disabled}>
       <FolderIcon className="h-5 w-5 shrink-0" />
-      <div className="flex-1 text-left">
-        <div className="text-sm font-medium leading-none">
-          {cloudDirectory.name}
-        </div>
-        <div className="truncate text-sm text-muted-foreground">
-          {cloudDirectory.path}
-        </div>
-      </div>
+      <ListItemText>
+        <ListItemPrimaryText>{cloudDirectory.name}</ListItemPrimaryText>
+        <ListItemSecondaryText>{cloudDirectory.path}</ListItemSecondaryText>
+      </ListItemText>
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <ArrowForwardIosIcon color="disabled" fontSize="small" />
+        <ChevronRightIcon className="h-5 w-5 shrink-0 text-muted-foreground" />
       )}
-    </button>
+    </ListItem>
   );
 }
 

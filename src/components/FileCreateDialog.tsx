@@ -1,10 +1,15 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   ResponsiveDialog,
-  ResponsiveDialogActions,
-  ResponsiveDialogButton,
+  ResponsiveDialogBody,
   ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-} from "@/components/ResponsiveDialog";
+} from "@/components/ui/responsive-dialog";
 import {
   fileExists,
   getUniqueFilePath,
@@ -19,14 +24,6 @@ import { Provider, useCloudStorage } from "@/utils/CloudStorage";
 import { addTodoFilePath } from "@/utils/settings";
 import { defaultTodoFilePath } from "@/utils/todo-files";
 import { useTask } from "@/utils/useTask";
-import {
-  FormControl,
-  FormLabel,
-  Input,
-  Radio,
-  RadioGroup,
-  Stack,
-} from "@mui/joy";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -152,21 +149,6 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     ? t("Create example file")
     : t("Create todo.txt");
 
-  const createTodoFileAndSync = useCallback(
-    async (fileName: string) => {
-      onClose();
-      await onCreateFile(fileName);
-      if (
-        selectedProvider &&
-        selectedProvider !== "no-sync" &&
-        cloudStorages.some((c) => c.provider === selectedProvider)
-      ) {
-        await uploadFile(selectedProvider, fileName, "");
-      }
-    },
-    [onClose, onCreateFile, selectedProvider, cloudStorages, uploadFile],
-  );
-
   const handleSave = async () => {
     if (!fileName) {
       return;
@@ -204,6 +186,35 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     setSelectedProvider("no-sync");
   }, [cleanupFileCreateDialog]);
 
+  const handleClose = useCallback(() => {
+    onClose();
+    setTimeout(reset, 200);
+  }, [reset, onClose]);
+
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        handleClose();
+      }
+    },
+    [handleClose],
+  );
+
+  const createTodoFileAndSync = useCallback(
+    async (fileName: string) => {
+      handleClose();
+      await onCreateFile(fileName);
+      if (
+        selectedProvider &&
+        selectedProvider !== "no-sync" &&
+        cloudStorages.some((c) => c.provider === selectedProvider)
+      ) {
+        await uploadFile(selectedProvider, fileName, "");
+      }
+    },
+    [handleClose, onCreateFile, selectedProvider, cloudStorages, uploadFile],
+  );
+
   const init = useCallback(async () => {
     if (!open || fileName) {
       return;
@@ -221,7 +232,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     const exists = await fileExists(defaultTodoFilePath);
     if (!exists) {
       await createTodoFileAndSync(uniqueFileName);
-      onClose();
+      handleClose();
       reset();
       setSkip(true);
     } else {
@@ -232,7 +243,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     fileName,
     cloudStorages.length,
     createTodoFileAndSync,
-    onClose,
+    handleClose,
     reset,
   ]);
 
@@ -242,60 +253,68 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
 
   return (
     <ResponsiveDialog
-      fullWidth
       open={open && typeof skip !== "undefined" && !skip}
-      onClose={onClose}
-      onExited={reset}
+      onOpenChange={handleOpenChange}
     >
-      <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
       <ResponsiveDialogContent>
-        <Stack spacing={2}>
-          <FormControl>
-            <FormLabel>{t("File Name")}</FormLabel>
-            <Input
-              autoFocus
-              value={fileName}
-              onChange={(event) => setFileName(event.target.value)}
-              fullWidth
-              variant="outlined"
-              slotProps={{
-                input: {
-                  "aria-label": "File name",
-                },
-              }}
-            />
-          </FormControl>
-          {cloudStorages.length > 0 && (
-            <FormControl>
-              <FormLabel>
-                {t("Sync with cloud storage", { provider: t("cloud storage") })}
-              </FormLabel>
-              <RadioGroup
-                sx={{ mt: 0 }}
-                aria-label="Sync with cloud storage"
-                value={selectedProvider}
-                onChange={handleCloudStorageChange}
-              >
-                <Radio value="no-sync" label={t("Not sync")} />
-                {cloudStorages
-                  .map((c) => c.provider)
-                  .map((provider) => (
-                    <Radio key={provider} value={provider} label={provider} />
-                  ))}
-              </RadioGroup>
-            </FormControl>
-          )}
-        </Stack>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogBody>
+          <div className="space-y-2">
+            <div className="mb-1 space-y-1">
+              <Label htmlFor="file-name">{t("File Name")}</Label>
+              <Input
+                id="file-name"
+                autoFocus
+                value={fileName}
+                onChange={(event) => setFileName(event.target.value)}
+                aria-label="File name"
+                className="w-full"
+              />
+            </div>
+            {cloudStorages.length > 0 && (
+              <div className="space-y-1">
+                <Label htmlFor="file-name">
+                  {t("Sync with cloud storage", {
+                    provider: t("cloud storage"),
+                  })}
+                </Label>
+                <RadioGroup
+                  aria-label="Sync with cloud storage"
+                  value={selectedProvider}
+                  onChange={handleCloudStorageChange}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="no-sync" id="no-sync" />
+                    <Label htmlFor="no-sync">{t("Not sync")}</Label>
+                  </div>
+                  {cloudStorages
+                    .map((c) => c.provider)
+                    .map((provider) => (
+                      <div
+                        key={provider}
+                        className="flex items-center space-x-2"
+                      >
+                        <RadioGroupItem value={provider} id={provider} />
+                        <Label htmlFor={provider}>{provider}</Label>
+                      </div>
+                    ))}
+                </RadioGroup>
+              </div>
+            )}
+          </div>
+        </ResponsiveDialogBody>
+        <ResponsiveDialogFooter>
+          <Button
+            aria-label="Create file"
+            disabled={!fileName}
+            onClick={handleSave}
+          >
+            {t("Create")}
+          </Button>
+        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
-      <ResponsiveDialogActions>
-        <ResponsiveDialogButton
-          aria-label="Create file"
-          disabled={!fileName}
-          onClick={handleSave}
-        >
-          {t("Create")}
-        </ResponsiveDialogButton>
-      </ResponsiveDialogActions>
     </ResponsiveDialog>
   );
 };
