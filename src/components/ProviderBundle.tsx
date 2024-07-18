@@ -1,7 +1,7 @@
 import { AppThemeProvider } from "@/components/AppThemeProvider";
 import { BreakpointProvider } from "@/components/Breakpoint";
-import { SnackbarProvider } from "@/components/Snackbar";
 import { LoaderData, StoreProvider } from "@/components/StoreProvider";
+import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { NonIndexRouteObject, Outlet, useLoaderData } from "react-router-dom";
 
@@ -22,9 +22,8 @@ export function Component() {
       <BreakpointProvider>
         <AppThemeProvider>
           <TooltipProvider delayDuration={500}>
-            <SnackbarProvider>
-              <Outlet />
-            </SnackbarProvider>
+            <Outlet />
+            <Toaster />
           </TooltipProvider>
         </AppThemeProvider>
       </BreakpointProvider>

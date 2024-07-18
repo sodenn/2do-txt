@@ -1,4 +1,4 @@
-import { useSnackbar } from "@/components/Snackbar";
+import { useToast } from "@/components/ui/use-toast";
 import { useNetworkStore } from "@/stores/network-store";
 import { differenceInSeconds } from "date-fns";
 import { useCallback } from "react";
@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 export function useNetwork() {
   const { t } = useTranslation();
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const { connected, displayDate, setConnected, setDisplayDate } =
     useNetworkStore();
 
@@ -17,14 +17,14 @@ export function useNetwork() {
       const showAlert =
         !displayDate || differenceInSeconds(new Date(), displayDate) > 60;
       if (!connected && showAlert) {
-        openSnackbar({
-          color: "warning",
-          message: t("Unable to connect. Check network connection"),
+        toast({
+          variant: "warning",
+          description: t("Unable to connect. Check network connection"),
         });
         setDisplayDate(new Date());
       }
     },
-    [displayDate, openSnackbar, setConnected, setDisplayDate, t],
+    [displayDate, toast, setConnected, setDisplayDate, t],
   );
 
   return { connected, handleDisconnected };

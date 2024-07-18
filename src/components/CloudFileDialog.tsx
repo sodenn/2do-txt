@@ -1,4 +1,3 @@
-import { useSnackbar } from "@/components/Snackbar";
 import { Button } from "@/components/ui/button";
 import {
   List,
@@ -15,6 +14,7 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
+import { useToast } from "@/components/ui/use-toast";
 import { getDirname, join, selectFolder } from "@/native-api/filesystem";
 import { useCloudFileDialogStore } from "@/stores/cloud-file-dialog-store";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
@@ -90,7 +90,7 @@ export function CloudFileDialog() {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListResult | undefined>();
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
@@ -144,9 +144,8 @@ export function CloudFileDialog() {
       await saveDoneFile(localDoneFilePath, doneFileContent);
       if (archiveMode === "no-archiving") {
         setArchiveMode("manual");
-        openSnackbar({
-          color: "primary",
-          message: t(
+        toast({
+          description: t(
             "Task archiving was turned on because a done.txt file was found",
           ),
         });
@@ -203,7 +202,7 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
   const { provider, onSelect, onFilesChange, onClose } = props;
   const { t } = useTranslation();
   const { taskLists } = useTask();
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const { list, getCloudFileRefs } = useCloudStorage();
   const [selectedFile, setSelectedFile] = useState<CloudFile | undefined>();
   const [files, setFiles] = useState<ListResult | undefined>();
@@ -251,9 +250,9 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
           })
           .catch((e: any) => {
             onClose();
-            openSnackbar({
-              color: "warning",
-              message: (
+            toast({
+              variant: "warning",
+              description: (
                 <Trans
                   i18nKey="Error connecting with cloud storage"
                   values={{ provider, message: e.message }}
@@ -265,7 +264,7 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
           .finally(() => setLoading(false));
       }
     },
-    [provider, currentPath, openSnackbar, list, onClose, onFilesChange],
+    [provider, currentPath, toast, list, onClose, onFilesChange],
   );
 
   const handleLoadMoreItems = (path = currentPath) => {

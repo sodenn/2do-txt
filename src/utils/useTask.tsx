@@ -1,4 +1,4 @@
-import { useSnackbar } from "@/components/Snackbar";
+import { useToast } from "@/components/ui/use-toast";
 import {
   deleteFile,
   fileExists,
@@ -79,7 +79,7 @@ function areTaskListsEqual(a: TaskList[], b: TaskList[]) {
 
 export function useTask() {
   const { t } = useTranslation();
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const platform = usePlatformStore((state) => state.platform);
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog,
@@ -581,13 +581,13 @@ export function useTask() {
 
   const handleFileNotFound = useCallback(
     async (filePath: string) => {
-      openSnackbar({
-        color: "danger",
-        message: t("File not found", { filePath }),
+      toast({
+        variant: "danger",
+        description: t("File not found", { filePath }),
       });
       await closeTodoFile(filePath);
     },
-    [openSnackbar, closeTodoFile, t],
+    [toast, closeTodoFile, t],
   );
 
   const loadTodoFilesFromDisk = useCallback(async () => {

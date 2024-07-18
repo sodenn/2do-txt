@@ -1,72 +1,92 @@
 import { Kbd } from "@/components/Kbd";
 import {
   ResponsiveDialog,
+  ResponsiveDialogBody,
   ResponsiveDialogContent,
+  ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-} from "@/components/ResponsiveDialog";
+} from "@/components/ui/responsive-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
-import { Table } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 
 export function ShortcutsDialog() {
   const { t } = useTranslation();
   const { open: shortcutsDialogOpen, closeShortcutsDialog } =
     useShortcutsDialogStore();
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      closeShortcutsDialog();
+    }
+  };
+
   return (
     <ResponsiveDialog
-      fullWidth
-      disableFullscreen
       open={shortcutsDialogOpen}
-      onClose={closeShortcutsDialog}
+      onOpenChange={handleOpenChange}
     >
-      <ResponsiveDialogTitle>{t("Keyboard Shortcuts")}</ResponsiveDialogTitle>
       <ResponsiveDialogContent>
-        <Table>
-          <thead>
-            <tr>
-              <td>{t("Key")}</td>
-              <td>{t("Description")}</td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <Kbd>F</Kbd>
-              </td>
-              <td>{t("F")}</td>
-            </tr>
-            <tr>
-              <td>
-                <Kbd>X</Kbd>
-              </td>
-              <td>{t("X")}</td>
-            </tr>
-            <tr>
-              <td>
-                <Kbd>M</Kbd>
-              </td>
-              <td>{t("M")}</td>
-            </tr>
-            <tr>
-              <td>
-                <Kbd>N</Kbd>
-              </td>
-              <td>{t("N")}</td>
-            </tr>
-            <tr>
-              <td>
-                <Kbd>E</Kbd>
-              </td>
-              <td>{t("E")}</td>
-            </tr>
-            <tr>
-              <td>
-                <Kbd>D</Kbd>
-              </td>
-              <td>{t("D")}</td>
-            </tr>
-          </tbody>
-        </Table>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>
+            {t("Keyboard Shortcuts")}
+          </ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogBody>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("Key")}</TableHead>
+                <TableHead>{t("Description")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>
+                  <Kbd>F</Kbd>
+                </TableCell>
+                <TableCell>{t("F")}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Kbd>X</Kbd>
+                </TableCell>
+                <TableCell>{t("X")}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Kbd>M</Kbd>
+                </TableCell>
+                <TableCell>{t("M")}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Kbd>N</Kbd>
+                </TableCell>
+                <TableCell>{t("N")}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Kbd>E</Kbd>
+                </TableCell>
+                <TableCell>{t("E")}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Kbd>D</Kbd>
+                </TableCell>
+                <TableCell>{t("D")}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </ResponsiveDialogBody>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   );

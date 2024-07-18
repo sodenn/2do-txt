@@ -4,8 +4,8 @@ import {
   ResponsiveDialogContent,
   ResponsiveDialogTitle,
 } from "@/components/ResponsiveDialog";
-import { useSnackbar } from "@/components/Snackbar";
 import { StartEllipsis } from "@/components/StartEllipsis";
+import { useToast } from "@/components/ui/use-toast";
 import { writeToClipboard } from "@/native-api/clipboard";
 import { fileExists, getFilename, readFile } from "@/native-api/filesystem";
 import { hasTouchScreen } from "@/native-api/platform";
@@ -474,7 +474,7 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
   const { t } = useTranslation();
   const { cloudStorages, cloudStorageEnabled, uploadFile, unlinkCloudFile } =
     useCloudStorage();
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const enableCloudSync = async () => {
@@ -503,9 +503,9 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
     } catch (e: any) {
       if (!(e instanceof CloudStorageError && e.type === "Unauthorized")) {
         console.debug(e);
-        openSnackbar({
-          color: "warning",
-          message: (
+        toast({
+          variant: "warning",
+          description: (
             <Trans
               i18nKey="Error syncing file to cloud storage"
               values={{ provider, message: e.message }}
@@ -559,7 +559,7 @@ function FileMenu(props: FileMenuProps) {
   const touchScreen = hasTouchScreen();
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
   const deleteFile = useShouldDeleteFile();
   const providers = useMemo(() => {
@@ -582,13 +582,11 @@ function FileMenu(props: FileMenuProps) {
   const handleCopyToClipboard = () => {
     const promise = readFile(filePath);
     writeToClipboard(promise)
-      .then(() =>
-        openSnackbar({ color: "primary", message: t("Copied to clipboard") }),
-      )
+      .then(() => toast({ description: t("Copied to clipboard") }))
       .catch(() =>
-        openSnackbar({
-          color: "danger",
-          message: t("Copy to clipboard failed"),
+        toast({
+          variant: "danger",
+          description: t("Copy to clipboard failed"),
         }),
       )
       .finally();

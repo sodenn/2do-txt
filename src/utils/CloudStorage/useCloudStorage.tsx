@@ -1,5 +1,6 @@
 import { DropboxIcon } from "@/components/DropboxIcon";
-import { SnackbarActionButton, useSnackbar } from "@/components/Snackbar";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import { fileExists, getFilename, writeFile } from "@/native-api/filesystem";
 import { oauth } from "@/native-api/oath";
 import {
@@ -41,7 +42,7 @@ export function useCloudStorage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { openSnackbar, closeSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const platform = usePlatformStore((state) => state.platform);
   const addWebDAVStorage = useCloudStore((state) => state.addWebDAVStorage);
   const addDropboxStorage = useCloudStore((state) => state.addDropboxStorage);
@@ -91,10 +92,9 @@ export function useCloudStorage() {
 
   const showConnectionErrorSnackbar = useCallback(
     (error: any) => {
-      return openSnackbar({
-        color: "warning",
-        preventDuplicate: true,
-        message: (
+      return toast({
+        variant: "warning",
+        description: (
           <Trans
             i18nKey="Error connecting with cloud storage"
             values={{
@@ -108,7 +108,7 @@ export function useCloudStorage() {
         ),
       });
     },
-    [openSnackbar, t],
+    [toast, t],
   );
 
   const showSessionExpiredSnackbar = useCallback(
@@ -116,39 +116,37 @@ export function useCloudStorage() {
       // Don't annoy the user, so only show the message once
       if (!authError) {
         setAuthError(true);
-        return openSnackbar({
-          color: "warning",
-          preventDuplicate: true,
-          message: t("Session has expired. Please login again", { provider }),
-          renderAction: (closeSnackbar) => (
-            <>
-              <SnackbarActionButton
-                onClick={async () => {
-                  closeSnackbar();
-                  await authenticate(provider);
-                  setAuthError(false);
-                }}
-              >
-                {t("Login")}
-              </SnackbarActionButton>
-            </>
+        return toast({
+          variant: "warning",
+          description: t("Session has expired. Please login again", {
+            provider,
+          }),
+          action: (
+            <ToastAction
+              altText="Login"
+              onClick={async () => {
+                await authenticate(provider);
+                setAuthError(false);
+              }}
+            >
+              {t("Login")}
+            </ToastAction>
           ),
         });
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [authError, closeSnackbar, openSnackbar, setAuthError, t],
+    [authError, toast, setAuthError, t],
   );
 
   const showConnectedSnackbar = useCallback(
     (provider: Provider) => {
-      return openSnackbar({
-        color: "success",
-        preventDuplicate: true,
-        message: t("Connected to cloud storage", { provider }),
+      return toast({
+        variant: "success",
+        description: t("Connected to cloud storage", { provider }),
       });
     },
-    [openSnackbar, t],
+    [toast, t],
   );
 
   const handleError = useCallback(
@@ -246,19 +244,18 @@ export function useCloudStorage() {
   );
 
   const showProgressSnackbar = useCallback(() => {
-    const snackbar = openSnackbar({
-      color: "primary",
-      persistent: true,
-      loading: true,
-      close: false,
-      message: t("Sync with cloud storage", {
+    const snackbar = toast({
+      // persistent: true,
+      // loading: true,
+      // close: false,
+      description: t("Sync with cloud storage", {
         provider: t("cloud storage"),
       }),
     });
     return () => {
-      closeSnackbar(snackbar);
+      snackbar.dismiss();
     };
-  }, [closeSnackbar, openSnackbar, t]);
+  }, [toast, t]);
 
   const downloadFile = useCallback(
     async (provider: Provider, localPath: string, remotePath: string) => {

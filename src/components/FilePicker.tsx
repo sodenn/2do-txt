@@ -1,6 +1,6 @@
 import { Fade } from "@/components/Fade";
-import { useSnackbar } from "@/components/Snackbar";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 import { useFilterStore } from "@/stores/filter-store";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useFilePicker } from "@/utils/useFilePicker";
@@ -69,7 +69,7 @@ function WebFilePicker({ children }: PropsWithChildren) {
   const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath,
   );
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const { createNewTodoFile, taskLists } = useTask();
   const platform = usePlatformStore((state) => state.platform);
 
@@ -110,9 +110,9 @@ function WebFilePicker({ children }: PropsWithChildren) {
 
         const filePath = await createNewTodoFile(file.name, content).catch(
           () => {
-            openSnackbar({
-              color: "danger",
-              message: t("The file could not be opened"),
+            toast({
+              variant: "danger",
+              description: t("The file could not be opened"),
             });
           },
         );
@@ -123,21 +123,15 @@ function WebFilePicker({ children }: PropsWithChildren) {
       };
 
       fileReader.onerror = () => {
-        openSnackbar({
-          color: "danger",
-          message: t("The file could not be opened"),
+        toast({
+          variant: "danger",
+          description: t("The file could not be opened"),
         });
       };
 
       fileReader.readAsText(file);
     },
-    [
-      createNewTodoFile,
-      openSnackbar,
-      setActiveTaskListPath,
-      taskLists.length,
-      t,
-    ],
+    [createNewTodoFile, toast, setActiveTaskListPath, taskLists.length, t],
   );
 
   const handleClick = (event: any) => {
