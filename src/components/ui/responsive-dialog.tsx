@@ -19,6 +19,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { PropsWithChildren, useCallback, useEffect, useState } from "react";
 
 interface ResponsiveDialogProps {
@@ -113,6 +114,16 @@ export function ResponsiveDialogDescription({ children }: PropsWithChildren) {
     return <DialogDescription>{children}</DialogDescription>;
   }
   return <DrawerDescription>{children}</DrawerDescription>;
+}
+
+export function ResponsiveDialogHiddenDescription({
+  children,
+}: PropsWithChildren) {
+  return (
+    <ResponsiveDialogDescription>
+      <VisuallyHidden.Root>{children}</VisuallyHidden.Root>
+    </ResponsiveDialogDescription>
+  );
 }
 
 export function ResponsiveDialogContent({ children }: PropsWithChildren) {

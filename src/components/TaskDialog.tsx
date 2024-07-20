@@ -8,6 +8,7 @@ import {
   ResponsiveDialogContent,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
+  ResponsiveDialogHiddenDescription,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { useSettingsStore } from "@/stores/settings-store";
@@ -190,6 +191,9 @@ export function TaskDialog() {
           <ResponsiveDialogTitle>
             {task?.id ? t("Edit Task") : t("Create Task")}
           </ResponsiveDialogTitle>
+          <ResponsiveDialogHiddenDescription>
+            {task?.id ? t("Edit Task") : t("Create Task")}
+          </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
           <TaskForm

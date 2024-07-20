@@ -28,7 +28,7 @@ export function Header() {
       <SafeArea top left right>
         <div
           className={cn(
-            "flex items-center gap-1 p-2 sm:gap-2 sm:p-3",
+            "flex items-center gap-1 p-2 sm:gap-2 sm:px-5 sm:py-3",
             divider && "border-b",
           )}
         >

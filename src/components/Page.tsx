@@ -25,11 +25,13 @@ export function Component() {
           right
           bottom
           left
-          className="container mx-auto sm:pt-1 lg:pt-2"
+          className="container mx-auto"
           id="ptr-container"
         >
-          <TaskView />
-          <Onboarding />
+          <div className="px-2 pt-1 sm:px-4 sm:pt-2">
+            <TaskView />
+            <Onboarding />
+          </div>
         </SafeArea>
       </LayoutContent>
       <TaskDialog />

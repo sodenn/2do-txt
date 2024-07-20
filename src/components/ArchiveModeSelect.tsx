@@ -35,8 +35,8 @@ export function ArchiveModeSelect() {
   return (
     <div className="space-y-1">
       <div className="space-y-2">
-        <div className="flex items-center gap-1 font-semibold">
-          {t("Archiving")}
+        <div className="flex items-center gap-1">
+          <div className="font-semibold">{t("Archiving")}</div>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <CircleHelpIcon className="h-4 w-4" />

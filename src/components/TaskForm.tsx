@@ -159,7 +159,7 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   return (
-    <div className={cn("flex flex-col", touchScreen ? "gap-1" : "gap-2")}>
+    <div className={cn("flex flex-col")}>
       <Editor
         placeholder={t("Enter text and tags")}
         ariaLabel="Text editor"

@@ -17,6 +17,7 @@ const chipVariants = cva(
         info: "",
         warning: "",
         danger: "",
+        secondary: "",
       },
       size: {
         default: "px-2.5 py-[1px]",
@@ -162,6 +163,34 @@ const chipVariants = cva(
         variant: "outline",
         clickable: false,
         className: "text-danger border-danger bg-danger/5 dark:bg-danger/15",
+      },
+      {
+        color: "secondary",
+        variant: "default",
+        clickable: true,
+        className:
+          "bg-danger border-danger text-danger-foreground hover:brightness-90",
+      },
+      {
+        color: "secondary",
+        variant: "outline",
+        clickable: true,
+        className:
+          "text-secondary-foreground/75 border-secondary-foreground/75 hover:bg-secondary/50 hover:dark:bg-secondary",
+      },
+      {
+        color: "secondary",
+        variant: "default",
+        clickable: false,
+        className:
+          "bg-secondary border-secondary text-secondary-foreground brightness-90",
+      },
+      {
+        color: "secondary",
+        variant: "outline",
+        clickable: false,
+        className:
+          "text-secondary-foreground/75 border-secondary-foreground/75 bg-secondary/50 dark:bg-secondary",
       },
     ],
     defaultVariants: {

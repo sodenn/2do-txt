@@ -13,7 +13,7 @@ export function TaskListSubheader({ title }: TaskListSubheaderProps) {
         variant="outline"
         size="sm"
         aria-label="Task group"
-        color={sortBy === "dueDate" ? "warning" : "primary"}
+        color={sortBy === "dueDate" ? "warning" : "secondary"}
       >
         {title}
       </Chip>

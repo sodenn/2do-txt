@@ -73,7 +73,6 @@ export const TaskList = memo((props: TaskListProps) => {
                       onCheckedChange={() => toggleCompleteTask(task)}
                       onFocus={() => {
                         onFocus(index);
-                        console.log(index);
                       }}
                       onBlur={onBlur}
                     />
