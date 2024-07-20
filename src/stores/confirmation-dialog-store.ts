@@ -1,4 +1,4 @@
-import { ButtonProps } from "@mui/joy";
+import { ButtonProps } from "@/components/ui/button";
 import { ReactNode } from "react";
 import { create } from "zustand";
 

@@ -74,8 +74,8 @@ const beautifulMentionsTheme: BeautifulMentionsTheme = {
   "\\+Focused": `${mentionsStyleFocused} shadow-info/30 dark:shadow-info/70`,
   "due:": `${mentionsStyle} bg-warning/5 dark:bg-warning/15 text-warning border-warning`,
   "due:Focused": `${mentionsStyleFocused} shadow-warning/30 dark:shadow-warning/70`,
-  "\\w+:": `${mentionsStyle} bg-gray-500/5 dark:bg-gray-400/15 text-gray-500 dark:text-gray-400 border-gray-500 dark:border-gray-400`,
-  "\\w+:Focused": `${mentionsStyleFocused} shadow-gray-500/30 dark:shadow-gray-400/70`,
+  "\\w+:": `${mentionsStyle} bg-primary/5 text-primary/65 border-primary/65`,
+  "\\w+:Focused": `${mentionsStyleFocused} shadow-primary/30 dark:shadow-primary/70`,
 };
 
 function useEditorConfig(triggers: string[], initialValue: string) {

@@ -9,7 +9,7 @@ const tagBoxVariants = cva("inline rounded-sm whitespace-nowrap", {
       outline: "px-1 border",
     },
     color: {
-      primary: "text-primary",
+      primary: "text-primary/65",
       success: "text-success",
       info: "text-info",
       warning: "text-warning",
@@ -21,7 +21,7 @@ const tagBoxVariants = cva("inline rounded-sm whitespace-nowrap", {
     {
       color: "primary",
       variant: "outline",
-      className: "border-primary bg-primary/5",
+      className: "border-primary/65 bg-primary/5",
     },
     {
       color: "success",

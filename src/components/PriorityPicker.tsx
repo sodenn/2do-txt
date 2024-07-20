@@ -85,6 +85,7 @@ export function PriorityPicker(props: PriorityPickerProps) {
               role="combobox"
               aria-expanded={open}
               className={cn(
+                "h-8",
                 value && "justify-between gap-2",
                 !value && "flex-shrink-0 text-muted-foreground",
               )}

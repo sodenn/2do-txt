@@ -1,7 +1,6 @@
-import { useMediaQuery } from "@/utils/useMediaQuery";
-import { useTheme } from "@mui/joy";
+import { useBreakpoint } from "@/components/Breakpoint";
 
 export function useMobileScreen() {
-  const theme = useTheme();
-  return useMediaQuery(theme.breakpoints.down("sm"));
+  const { currentBreakpoint } = useBreakpoint();
+  return !currentBreakpoint;
 }

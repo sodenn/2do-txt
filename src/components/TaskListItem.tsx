@@ -1,26 +1,13 @@
 import { TaskBody } from "@/components/TaskBody";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox, CheckboxProps } from "@/components/ui/checkbox";
 import { ListItem } from "@/components/ui/list";
 import { Task } from "@/utils/task";
-import { ListItemButton, Stack, styled } from "@mui/joy";
 import { forwardRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
-  borderRadius: theme.radius.sm,
-  "@media (pointer: coarse)": {
-    '&:not(.Mui-selected, [aria-selected="true"]):active': {
-      backgroundColor: "inherit",
-    },
-    ':not(.Mui-selected, [aria-selected="true"]):hover': {
-      backgroundColor: "inherit",
-    },
-  },
-}));
-
 interface TaskListItemProps {
   task: Task;
-  onCheckboxClick: () => void;
+  onCheckedChange: () => void;
   onButtonClick: () => void;
   onFocus: () => void;
   onBlur: () => void;
@@ -28,47 +15,52 @@ interface TaskListItemProps {
 
 export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
   (props, ref) => {
-    const { task, onButtonClick, onCheckboxClick, onBlur, onFocus } = props;
+    const { task, onButtonClick, onCheckedChange, onBlur, onFocus } = props;
     const checkboxRef = useRef<HTMLButtonElement>(null);
     const { t } = useTranslation();
 
+    const handleCheckedClick: CheckboxProps["onClick"] = (event) => {
+      event.stopPropagation();
+    };
+
     const handleButtonClick = (event: any) => {
       if (event.code === "Space") {
-        onCheckboxClick();
+        onCheckedChange();
       } else {
         onButtonClick();
       }
     };
 
     return (
-      <ListItem data-testid="task" onFocus={onFocus} onBlur={onBlur}>
+      <ListItem
+        buttonRef={ref}
+        data-testid="task"
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onClick={handleButtonClick}
+      >
         <Checkbox
           ref={checkboxRef}
-          onClick={onCheckboxClick}
+          onClick={handleCheckedClick}
+          onCheckedChange={onCheckedChange}
           checked={task.completed}
           tabIndex={-1}
           aria-label="Complete task"
           aria-checked={task.completed}
         />
-        <StyledListItemButton
-          ref={ref}
-          onClick={handleButtonClick}
-          data-testid="task-button"
-        >
-          <Stack direction="column" sx={{ py: 1 }}>
-            <TaskBody task={task} />
-            {task.completionDate && (
-              <div className="text-xs text-muted-foreground">
-                {t("Completed", { completionDate: task.completionDate })}
-              </div>
-            )}
-            {task.creationDate && !task.completed && (
-              <div className="text-xs text-muted-foreground">
-                {t("Created", { creationDate: task.creationDate })}
-              </div>
-            )}
-          </Stack>
-        </StyledListItemButton>
+        <div className="flex flex-col py-1" data-testid="task-button">
+          <TaskBody task={task} />
+          {task.completionDate && (
+            <div className="text-xs text-muted-foreground">
+              {t("Completed", { completionDate: task.completionDate })}
+            </div>
+          )}
+          {task.creationDate && !task.completed && (
+            <div className="text-xs text-muted-foreground">
+              {t("Created", { creationDate: task.creationDate })}
+            </div>
+          )}
+        </div>
       </ListItem>
     );
   },

@@ -8,7 +8,7 @@ interface TaskListSubheaderProps {
 export function TaskListSubheader({ title }: TaskListSubheaderProps) {
   const sortBy = useFilterStore((state) => state.sortBy);
   return (
-    <div className="sticky top-2 z-10 my-2">
+    <div className="sticky top-2 z-10 my-2 px-2">
       <Chip
         variant="outline"
         size="sm"

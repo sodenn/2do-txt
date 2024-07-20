@@ -3,9 +3,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
+import { cn } from "@/utils/tw-utils";
 import { ScrollAreaProps } from "@radix-ui/react-scroll-area";
 import clsx from "clsx";
-import { HTMLAttributes, ReactNode } from "react";
+import { HTMLAttributes, ReactNode, useEffect, useRef, useState } from "react";
 
 interface HeaderContainerProps {
   open: boolean;
@@ -43,6 +44,8 @@ export function LayoutSidebar({
   children,
 }: LayoutSidebarProps) {
   const persistent = usePersistentSidebar();
+  const [hidden, setHidden] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   const handleOpenChange = (open: boolean) => {
     if (!open && onClose) {
@@ -50,21 +53,43 @@ export function LayoutSidebar({
     }
   };
 
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    const element = ref.current;
+    const handleTransitionStart = () => {
+      setHidden(false);
+    };
+    const handleTransitionEnd = () => {
+      setHidden(!open && true);
+    };
+    element.addEventListener("transitionstart", handleTransitionStart);
+    element.addEventListener("transitionend", handleTransitionEnd);
+    return () => {
+      element.removeEventListener("transitionstart", handleTransitionStart);
+      element.removeEventListener("transitionend", handleTransitionEnd);
+    };
+  }, [open]);
+
   if (persistent) {
     return (
       <div
+        ref={ref}
         aria-label="Side Menu"
         role="presentation"
         aria-hidden={open ? "false" : "true"}
         data-hotkeys-keep-enabled={persistent ? "true" : "m"}
-        className={clsx(
-          "fixed bottom-0 left-0 top-0 hidden w-[320px] overflow-y-auto overflow-x-hidden border-r bg-background transition-all duration-225 ease-out xl:block",
+        className={cn(
+          "fixed bottom-0 left-0 top-0 hidden w-[320px] border-r bg-background transition-all duration-225 ease-out xl:block",
           open && "translate-x-0",
           !open && "-translate-x-320",
           className,
         )}
       >
-        {children}
+        <div className={cn("h-screen", hidden && "hidden xl:hidden")}>
+          {children}
+        </div>
       </div>
     );
   }

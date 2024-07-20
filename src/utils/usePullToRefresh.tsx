@@ -1,5 +1,4 @@
 import { hasTouchScreen } from "@/native-api/platform";
-import { useTheme } from "@mui/joy";
 import PullToRefresh from "pulltorefreshjs";
 import { useEffect } from "react";
 import ReactDOMServer from "react-dom/server";
@@ -19,7 +18,6 @@ export function usePullToRefresh(options: UsePullToRefreshOptions) {
     scrollContainerSelector = "body",
     disable = false,
   } = options;
-  const theme = useTheme();
   const { t } = useTranslation();
   useEffect(() => {
     const touchScreen = hasTouchScreen();
@@ -32,14 +30,8 @@ export function usePullToRefresh(options: UsePullToRefreshOptions) {
         return ReactDOMServer.renderToString(
           <div className="__PREFIX__box">
             <div className="__PREFIX__content">
-              <div
-                className="__PREFIX__icon"
-                style={{ color: theme.palette.neutral.plainDisabledColor }}
-              ></div>
-              <div
-                className="__PREFIX__text"
-                style={{ color: theme.palette.neutral.plainDisabledColor }}
-              ></div>
+              <div className="__PREFIX__icon bg-muted"></div>
+              <div className="__PREFIX__text bg-muted"></div>
             </div>
           </div>,
         );
@@ -64,12 +56,5 @@ export function usePullToRefresh(options: UsePullToRefreshOptions) {
     return () => {
       instance.destroy();
     };
-  }, [
-    t,
-    disable,
-    pullToRefreshSelector,
-    scrollContainerSelector,
-    onRefresh,
-    theme.palette.neutral.plainDisabledColor,
-  ]);
+  }, [t, disable, pullToRefreshSelector, scrollContainerSelector, onRefresh]);
 }

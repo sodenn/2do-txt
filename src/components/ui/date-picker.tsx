@@ -77,7 +77,7 @@ export function DatePicker(props: DatePickerProps) {
               aria-label={props.ariaLabel}
               onClick={handleClick}
               className={cn(
-                "space-x-2",
+                "h-8 space-x-2",
                 !date && "flex-shrink-0 text-muted-foreground",
                 !!date && "justify-start text-left font-normal",
               )}

@@ -34,7 +34,8 @@ export function TaskView() {
         );
 
   const focusNextListItem = useCallback(
-    (direction: "up" | "down") => {
+    (ev: KeyboardEvent, direction: "up" | "down") => {
+      ev.preventDefault();
       let index = 0;
       let length = tasks.length;
       const task = tasks.find((t) => t.id === focusedTaskId);
@@ -92,8 +93,9 @@ export function TaskView() {
     taskLists.length === 0
       ? {}
       : {
-          ArrowUp: () => focusNextListItem("up"),
-          ArrowDown: () => focusNextListItem("down"),
+          ArrowUp: (ev) => focusNextListItem(ev, "up"),
+          ArrowDown: (ev) => focusNextListItem(ev, "down"),
+          Escape: (ev) => (ev.target as HTMLElement)?.blur(),
           e: openTaskDialog,
           d: openDeleteTaskDialog,
         },

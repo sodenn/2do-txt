@@ -231,11 +231,13 @@ export function useFormatBody() {
               key={index}
               variant={outline && !task.completed ? "outline" : undefined}
               color={
-                key === "due"
-                  ? "warning"
-                  : key === "pri"
-                    ? "priority"
-                    : undefined
+                task.completed
+                  ? "muted"
+                  : key === "due"
+                    ? "warning"
+                    : key === "pri"
+                      ? "priority"
+                      : undefined
               }
             >
               {text}
@@ -251,7 +253,7 @@ export function useFormatBody() {
       const priorityElement = (
         <TagBox
           variant={outline && !task.completed ? "outline" : undefined}
-          color={!task.completed ? "priority" : undefined}
+          color={!task.completed ? "priority" : "muted"}
           key={task.id}
         >
           {task.priority}

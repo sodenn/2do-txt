@@ -4,9 +4,13 @@ import { ComponentPropsWithoutRef, ElementRef, forwardRef } from "react";
 import { cn } from "@/utils/tw-utils";
 import { CheckIcon } from "lucide-react";
 
+export type CheckboxProps = ComponentPropsWithoutRef<
+  typeof CheckboxPrimitive.Root
+>;
+
 const Checkbox = forwardRef<
   ElementRef<typeof CheckboxPrimitive.Root>,
-  ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
+  CheckboxProps
 >(({ className, ...props }, ref) => (
   <CheckboxPrimitive.Root
     ref={ref}

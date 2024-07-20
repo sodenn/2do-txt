@@ -299,7 +299,7 @@ function CloudFileDialogContent(props: CloudFileDialogContentProps) {
       {((files && files.items.length > 0) || previousPaths.length > 0) && (
         <List>
           {previousPaths.length > 0 && (
-            <ListItem onClick={() => handleNavBack()}>
+            <ListItem onClick={handleNavBack}>
               {loading === true ? (
                 <LoadingSpinner />
               ) : (
@@ -383,7 +383,7 @@ function CloudFileButton(props: CloudFileButtonProps) {
 function CloudFolderButton(props: CloudFolderButtonProps) {
   const { cloudDirectory, loading, disabled, onClick } = props;
   return (
-    <ListItem className="cursor-pointer" onClick={onClick} disabled={disabled}>
+    <ListItem onClick={onClick} disabled={disabled}>
       <FolderIcon className="h-5 w-5 shrink-0" />
       <ListItemText>
         <ListItemPrimaryText>{cloudDirectory.name}</ListItemPrimaryText>
