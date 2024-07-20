@@ -92,12 +92,6 @@ export function CloudFileDialog() {
   const [files, setFiles] = useState<ListResult | undefined>();
   const { toast } = useToast();
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      handleClose();
-    }
-  };
-
   const handleClose = () => {
     setLoading(false);
     setSelectedFile(undefined);
@@ -161,7 +155,7 @@ export function CloudFileDialog() {
   };
 
   return (
-    <ResponsiveDialog open={open} onOpenChange={handleOpenChange}>
+    <ResponsiveDialog open={open} onClose={handleClose}>
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
@@ -389,7 +383,7 @@ function CloudFileButton(props: CloudFileButtonProps) {
 function CloudFolderButton(props: CloudFolderButtonProps) {
   const { cloudDirectory, loading, disabled, onClick } = props;
   return (
-    <ListItem onClick={onClick} disabled={disabled}>
+    <ListItem className="cursor-pointer" onClick={onClick} disabled={disabled}>
       <FolderIcon className="h-5 w-5 shrink-0" />
       <ListItemText>
         <ListItemPrimaryText>{cloudDirectory.name}</ListItemPrimaryText>

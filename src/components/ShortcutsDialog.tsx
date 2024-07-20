@@ -22,17 +22,8 @@ export function ShortcutsDialog() {
   const { open: shortcutsDialogOpen, closeShortcutsDialog } =
     useShortcutsDialogStore();
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      closeShortcutsDialog();
-    }
-  };
-
   return (
-    <ResponsiveDialog
-      open={shortcutsDialogOpen}
-      onOpenChange={handleOpenChange}
-    >
+    <ResponsiveDialog open={shortcutsDialogOpen} onClose={closeShortcutsDialog}>
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>

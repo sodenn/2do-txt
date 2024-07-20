@@ -19,31 +19,54 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useCallback, useEffect, useState } from "react";
 
 interface ResponsiveDialogProps {
   open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpen?: () => void;
+  onClose?: () => void;
+  onExit?: () => void;
 }
 
 export function ResponsiveDialog({
   children,
+  onOpen,
+  onClose,
+  onExit,
   ...props
 }: PropsWithChildren<ResponsiveDialogProps>) {
   const [open, setOpen] = useState(!!props.open);
   const { isBreakpointActive } = useBreakpoint();
 
+  const handleOpen = useCallback(() => {
+    setOpen(true);
+    onOpen?.();
+  }, [onOpen]);
+
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    onClose?.();
+    setTimeout(() => {
+      onExit?.();
+    }, 200);
+  }, [onClose, onExit]);
+
   const handleOpenChange = (open: boolean) => {
-    setOpen(open);
-    props.onOpenChange?.(open);
+    if (open) {
+      handleOpen();
+    } else {
+      handleClose();
+    }
   };
 
   useEffect(() => {
-    if (typeof props.open === "boolean" && open !== props.open) {
-      setOpen(props.open);
-      props.onOpenChange?.(props.open);
+    if (props.open === true && open !== props.open) {
+      handleOpen();
     }
-  }, [open, props]);
+    if (props.open === false && open !== props.open) {
+      handleClose();
+    }
+  }, [open, handleOpen, handleClose, props.open]);
 
   if (isBreakpointActive("lg")) {
     return (

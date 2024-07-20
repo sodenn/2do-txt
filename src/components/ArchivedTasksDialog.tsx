@@ -1,5 +1,6 @@
 import { TaskBody } from "@/components/TaskBody";
 import { Button } from "@/components/ui/button";
+import { List, ListItem } from "@/components/ui/list";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -15,7 +16,6 @@ import {
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { Task } from "@/utils/task";
 import { useTask } from "@/utils/useTask";
-import { List, ListItem } from "@mui/joy";
 import { ArchiveRestoreIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -43,12 +43,6 @@ export function ArchivedTasksDialog() {
     }
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      closeArchivedTasksDialog();
-    }
-  };
-
   useEffect(() => {
     if (filePath) {
       loadDoneFile(filePath).then((result) => {
@@ -60,13 +54,13 @@ export function ArchivedTasksDialog() {
   }, [filePath, loadDoneFile]);
 
   return (
-    <ResponsiveDialog open={open} onOpenChange={handleOpenChange}>
+    <ResponsiveDialog open={open} onClose={closeArchivedTasksDialog}>
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("Archived tasks")}</ResponsiveDialogTitle>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
-          <List size="sm">
+          <List>
             {tasks.map((task) => (
               <ListItem key={task.id}>
                 <TaskBody task={task} />

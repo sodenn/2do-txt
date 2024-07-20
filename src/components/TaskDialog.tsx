@@ -157,34 +157,33 @@ export function TaskDialog() {
     setEmptyBody(emptyBody);
   }, []);
 
-  const handleOpenChange = (open: boolean) => {
-    if (open) {
-      const value = getValue(createCreationDate, task);
-      setValue(value);
-      setEmptyBody(!!task && !!task.body);
-      setSelectedTaskList(() => {
-        if (task) {
-          return findTaskListByTaskId(task.id);
-        } else if (activeTaskList) {
-          return activeTaskList;
-        }
-      });
-    } else {
-      closeTaskDialog();
-      setTimeout(() => {
-        cleanupTaskDialog();
-        setValue(undefined);
-        setEmptyBody(true);
-        setSelectedTaskList(undefined);
-      }, 200);
-    }
+  const handleOpen = () => {
+    const value = getValue(createCreationDate, task);
+    setValue(value);
+    setEmptyBody(!!task && !!task.body);
+    setSelectedTaskList(() => {
+      if (task) {
+        return findTaskListByTaskId(task.id);
+      } else if (activeTaskList) {
+        return activeTaskList;
+      }
+    });
+  };
+
+  const handleExit = () => {
+    cleanupTaskDialog();
+    setValue(undefined);
+    setEmptyBody(true);
+    setSelectedTaskList(undefined);
   };
 
   return (
     <ResponsiveDialog
       data-testid="task-dialog"
       open={open}
-      onOpenChange={handleOpenChange}
+      onOpen={handleOpen}
+      onClose={closeTaskDialog}
+      onExit={handleExit}
     >
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>

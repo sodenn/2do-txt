@@ -245,9 +245,9 @@ export function useCloudStorage() {
 
   const showProgressSnackbar = useCallback(() => {
     const snackbar = toast({
-      // persistent: true,
-      // loading: true,
-      // close: false,
+      persistent: true,
+      loading: true,
+      showCloseButton: false,
       description: t("Sync with cloud storage", {
         provider: t("cloud storage"),
       }),

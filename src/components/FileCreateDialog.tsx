@@ -191,15 +191,6 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
     setTimeout(reset, 200);
   }, [reset, onClose]);
 
-  const handleOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        handleClose();
-      }
-    },
-    [handleClose],
-  );
-
   const createTodoFileAndSync = useCallback(
     async (fileName: string) => {
       handleClose();
@@ -254,7 +245,7 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
   return (
     <ResponsiveDialog
       open={open && typeof skip !== "undefined" && !skip}
-      onOpenChange={handleOpenChange}
+      onClose={handleClose}
     >
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>

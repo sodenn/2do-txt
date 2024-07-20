@@ -43,27 +43,33 @@ export function WebDAVDialog() {
     }
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (open) {
-      setUrl(import.meta.env.VITE_WEBDAV_URL);
-      setUsername(import.meta.env.VITE_WEBDAV_USERNAME);
-      setPassword(import.meta.env.VITE_WEBDAV_PASSWORD);
-    } else {
-      closeWebDAVDialog();
-      setTimeout(() => {
-        setUrl("");
-        setUsername("");
-        setPassword("");
-        setError(undefined);
-        setLoading(false);
-      }, 200);
-    }
+  const handleOpen = () => {
+    setUrl(import.meta.env.VITE_WEBDAV_URL);
+    setUsername(import.meta.env.VITE_WEBDAV_USERNAME);
+    setPassword(import.meta.env.VITE_WEBDAV_PASSWORD);
+  };
+
+  const handleClose = () => {
+    closeWebDAVDialog();
+  };
+
+  const handleExit = () => {
+    setUrl("");
+    setUsername("");
+    setPassword("");
+    setError(undefined);
+    setLoading(false);
   };
 
   const disabled = !username || !password || !url;
 
   return (
-    <ResponsiveDialog open={webDAVDialogOpen} onOpenChange={handleOpenChange}>
+    <ResponsiveDialog
+      open={webDAVDialogOpen}
+      onOpen={handleOpen}
+      onClose={handleClose}
+      onExit={handleExit}
+    >
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("WebDAV Server")}</ResponsiveDialogTitle>
