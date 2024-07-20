@@ -1,14 +1,18 @@
 import { HTMLAttributes, ReactNode } from "react";
 
-export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
+export interface NotificationBadgeProps extends HTMLAttributes<HTMLDivElement> {
   label?: ReactNode;
 }
 
-function NotificationBadge({ children, label, ...rest }: BadgeProps) {
+function NotificationBadge({
+  children,
+  label,
+  ...rest
+}: NotificationBadgeProps) {
   return (
     <div className="relative inline-block" {...rest}>
       {children}
-      <div className="absolute inline-flex items-center justify-center w-[1.23rem] h-[1.23rem] text-xs font-bold bg-primary text-primary-foreground border-2 border-input rounded-full -top-2 -end-2 z-[1]">
+      <div className="absolute -end-2 -top-2 z-[1] inline-flex h-[1.23rem] w-[1.23rem] items-center justify-center rounded-full border-2 border-input bg-primary text-xs font-bold text-primary-foreground">
         {label}
       </div>
     </div>

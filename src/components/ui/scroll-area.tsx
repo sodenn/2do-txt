@@ -14,7 +14,7 @@ const ScrollArea = forwardRef<
   >
     <ScrollAreaPrimitive.Viewport
       onScroll={onScroll}
-      className="h-full w-full rounded-[inherit]"
+      className="h-full w-full rounded-[inherit] [&>div]:!block"
     >
       {children}
     </ScrollAreaPrimitive.Viewport>

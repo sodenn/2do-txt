@@ -1,5 +1,5 @@
+import { Chip } from "@/components/ui/chip";
 import { useFilterStore } from "@/stores/filter-store";
-import { Chip, ListSubheader } from "@mui/joy";
 
 interface TaskListSubheaderProps {
   title: string;
@@ -8,22 +8,16 @@ interface TaskListSubheaderProps {
 export function TaskListSubheader({ title }: TaskListSubheaderProps) {
   const sortBy = useFilterStore((state) => state.sortBy);
   return (
-    <ListSubheader
-      sticky
-      sx={{
-        px: 1,
-        zIndex: 2, // prevent subheader from being covered by the task checkbox
-      }}
-    >
+    // prevent subheader from being covered by the task checkbox (TODO check if needed)
+    <div className="sticky top-0 z-10">
       <Chip
-        sx={{ px: 1 }}
+        variant="outline"
         size="sm"
-        variant="outlined"
         aria-label="Task group"
         color={sortBy === "dueDate" ? "warning" : "primary"}
       >
         {title}
       </Chip>
-    </ListSubheader>
+    </div>
   );
 }

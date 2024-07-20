@@ -1,12 +1,13 @@
 import { TaskListHeader } from "@/components/TaskListHeader";
 import { TaskListItem } from "@/components/TaskListItem";
 import { TaskListSubheader } from "@/components/TaskListSubheader";
+import { List } from "@/components/ui/list";
 import { Task } from "@/utils/task";
 import { TaskGroup } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
-import { List, ListItem, Typography, styled } from "@mui/joy";
+import { ListItem } from "@mui/joy";
 import { isEqual } from "lodash";
-import { MutableRefObject, memo } from "react";
+import { memo, MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 interface TaskListProps {
@@ -31,15 +32,6 @@ function propsAreEqual(prev: TaskListProps, next: TaskListProps) {
   );
 }
 
-const StyledList = styled(List)(({ theme }) => ({
-  paddingLeft: theme.spacing(1.5),
-  paddingRight: theme.spacing(1.5),
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: theme.spacing(0.5),
-    paddingRight: theme.spacing(0.5),
-  },
-}));
-
 export const TaskList = memo((props: TaskListProps) => {
   const {
     fileName,
@@ -59,7 +51,7 @@ export const TaskList = memo((props: TaskListProps) => {
   return (
     <>
       {(hasItems || showHeader) && (
-        <StyledList data-testid="task-list">
+        <List data-testid="task-list">
           {showHeader && (
             <TaskListHeader fileName={fileName} filePath={filePath} />
           )}
@@ -88,16 +80,10 @@ export const TaskList = memo((props: TaskListProps) => {
               </List>
             </ListItem>
           ))}
-        </StyledList>
+        </List>
       )}
       {!hasItems && (
-        <Typography
-          sx={{ px: { xs: 2, sm: 3 }, pb: 3 }}
-          level="body-md"
-          color="neutral"
-        >
-          {t("No tasks")}
-        </Typography>
+        <div className="px-5 pb-3 text-muted-foreground">{t("No tasks")}</div>
       )}
     </>
   );

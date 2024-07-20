@@ -7,7 +7,6 @@ import { usePlatformStore } from "@/stores/platform-store";
 import { cn } from "@/utils/tw-utils";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
-import { Typography } from "@mui/joy";
 import { FolderIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -34,16 +33,13 @@ export function Onboarding() {
             className="h-24 w-24"
           />
         </div>
-        <Typography
-          sx={{ textAlign: "center" }}
-          gutterBottom
-          component="h1"
-          level="h4"
+        <h1
+          className="mb-3 text-center text-xl font-semibold tracking-tight"
           role="heading"
           aria-label="Onboarding"
         >
           {t("Get Started")}
-        </Typography>
+        </h1>
         <NewFileButton />
         <ExampleFileButton />
         <Button

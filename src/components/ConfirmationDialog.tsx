@@ -1,4 +1,4 @@
-import { ResponsiveDialogTitle } from "@/components/ResponsiveDialog";
+import { AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -40,7 +40,7 @@ export function ConfirmationDialog() {
     >
       <AlertDialogContent>
         <AlertDialogHeader>
-          {title && <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>}
+          {title && <AlertTitle>{title}</AlertTitle>}
           <AlertDialogDescription>{content}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

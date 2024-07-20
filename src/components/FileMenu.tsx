@@ -17,10 +17,8 @@ import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
 import { useTask } from "@/utils/useTask";
 import {
   ChevronDownIcon,
-  FileIcon,
   InboxIcon,
   KeyboardIcon,
-  LayoutDashboardIcon,
   PlusIcon,
 } from "lucide-react";
 import { ReactNode } from "react";
@@ -68,7 +66,6 @@ export function FileMenu() {
         checked={!activeTaskList}
         onClick={() => handleSetActiveList("")}
       >
-        <LayoutDashboardIcon className="h-4 w-4 mr-2" />
         {t("All")}
       </DropdownMenuCheckboxItem>,
     );
@@ -82,7 +79,6 @@ export function FileMenu() {
           onClick={() => handleSetActiveList(filePath)}
           key={filePath}
         >
-          <FileIcon className="h-4 w-4 mr-2" />
           <StartEllipsis>{filePath}</StartEllipsis>
         </DropdownMenuCheckboxItem>,
       );
@@ -92,7 +88,7 @@ export function FileMenu() {
   if (taskLists.length > 0) {
     menuItems.push(
       <DropdownMenuItem onClick={handleManageFile} key="Files…">
-        <InboxIcon className="h-4 w-4 mr-2" />
+        <InboxIcon className="mr-2 h-4 w-4" />
         {t("Files…")}
       </DropdownMenuItem>,
     );
@@ -108,7 +104,7 @@ export function FileMenu() {
         onClick={handleKeyboardShortcutsClick}
         key="Keyboard Shortcuts"
       >
-        <KeyboardIcon className="h-4 w-4 mr-2" />
+        <KeyboardIcon className="mr-2 h-4 w-4" />
         {t("Keyboard Shortcuts")}
       </DropdownMenuItem>,
     );
@@ -117,7 +113,7 @@ export function FileMenu() {
   if (menuItems.length === 1) {
     menuItems.push(
       <DropdownMenuItem onClick={handleCreateFile} key="Create file">
-        <PlusIcon className="h-4 w-4 mr-2" />
+        <PlusIcon className="mr-2 h-4 w-4" />
         {t("Create")}
       </DropdownMenuItem>,
     );
@@ -132,11 +128,11 @@ export function FileMenu() {
           variant="outline"
           aria-label="File menu"
         >
-          <img src={logo} className="h-6 w-6 mr-2" alt="Logo" height={22} />
+          <img src={logo} className="mr-2 h-6 w-6" alt="Logo" height={22} />
           <StartEllipsis>
             {activeTaskList ? activeTaskList.fileName : "2do.txt"}
           </StartEllipsis>
-          <ChevronDownIcon className="h-4 w-4 ml-2" />
+          <ChevronDownIcon className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">{menuItems}</DropdownMenuContent>

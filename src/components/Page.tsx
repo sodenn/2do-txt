@@ -8,24 +8,12 @@ import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
 import { PageEffect } from "@/components/PageEffect";
+import { SafeArea } from "@/components/SafeArea";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { SideSheet } from "@/components/SideSheet";
 import { TaskDialog } from "@/components/TaskDialog";
 import { TaskView } from "@/components/TaskView";
 import { WebDAVDialog } from "@/components/WebDAVDialog";
-import { Container, styled } from "@mui/joy";
-
-const SafeAreaContainer = styled(Container)(({ theme }) => ({
-  paddingRight: "env(safe-area-inset-right)",
-  paddingLeft: "env(safe-area-inset-left)",
-  paddingBottom: "env(safe-area-inset-bottom)",
-  [theme.breakpoints.up("sm")]: {
-    paddingTop: theme.spacing(1),
-  },
-  [theme.breakpoints.up("lg")]: {
-    paddingTop: theme.spacing(2),
-  },
-}));
 
 export function Component() {
   return (
@@ -33,10 +21,16 @@ export function Component() {
       <Header />
       <SideSheet />
       <LayoutContent>
-        <SafeAreaContainer disableGutters id="ptr-container">
+        <SafeArea
+          right
+          bottom
+          left
+          className="container mx-auto sm:pt-1 lg:pt-2"
+          id="ptr-container"
+        >
           <TaskView />
           <Onboarding />
-        </SafeAreaContainer>
+        </SafeArea>
       </LayoutContent>
       <TaskDialog />
       <FileCreateDialog />
