@@ -14,14 +14,14 @@ const tagBoxVariants = cva("inline rounded-sm whitespace-nowrap", {
       info: "text-info",
       warning: "text-warning",
       priority: "text-pink-800 dark:text-pink-500",
-      completed: "gray-700 dark:gray-600",
+      muted: "text-muted-foreground",
     },
   },
   compoundVariants: [
     {
       color: "primary",
       variant: "outline",
-      className: "border-primary bg-primary/20",
+      className: "border-primary bg-primary/5",
     },
     {
       color: "success",

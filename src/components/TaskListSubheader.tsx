@@ -8,8 +8,7 @@ interface TaskListSubheaderProps {
 export function TaskListSubheader({ title }: TaskListSubheaderProps) {
   const sortBy = useFilterStore((state) => state.sortBy);
   return (
-    // prevent subheader from being covered by the task checkbox (TODO check if needed)
-    <div className="sticky top-0 z-10">
+    <div className="sticky top-2 z-10 my-2">
       <Chip
         variant="outline"
         size="sm"

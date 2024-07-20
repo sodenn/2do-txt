@@ -1,7 +1,16 @@
 import { cn } from "@/utils/tw-utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
-import { HTMLAttributes } from "react";
+import {
+  Dispatch,
+  HTMLAttributes,
+  PropsWithChildren,
+  SetStateAction,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 const listVariants = cva("my-1 flex flex-col", {
   variants: {
@@ -15,17 +24,71 @@ const listVariants = cva("my-1 flex flex-col", {
   },
 });
 
+const listItemVariants = cva(
+  "flex w-full items-center gap-4 px-3 py-1 hover:bg-muted/50 focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&:has(button[role='checkbox']:hover)]:bg-transparent",
+  {
+    variants: {
+      variant: {
+        default: "rounded-md",
+        outline: "",
+      },
+      selected: {
+        true: "bg-accent text-accent-foreground",
+        false: "",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  },
+);
+
 export interface ListProps
   extends HTMLAttributes<HTMLUListElement>,
     VariantProps<typeof listVariants> {}
 
+const ListContext = createContext<{
+  variant: ListProps["variant"];
+  setVariant: Dispatch<SetStateAction<ListProps["variant"]>>;
+  // @ts-expect-error
+}>(undefined);
+
+function ListProvider({
+  children,
+  variant: variantProp,
+}: PropsWithChildren<{ variant: ListProps["variant"] }>) {
+  const [variant, setVariant] = useState<typeof variantProp>(
+    variantProp || "default",
+  );
+
+  useEffect(() => {
+    setVariant(variantProp);
+  }, [variantProp]);
+
+  return (
+    <ListContext.Provider value={{ variant, setVariant }}>
+      {children}
+    </ListContext.Provider>
+  );
+}
+
+function useList() {
+  const context = useContext(ListContext);
+  if (!context) {
+    throw new Error("useList must be used within a ListProvider");
+  }
+  return context;
+}
+
 export const List = React.forwardRef<HTMLUListElement, ListProps>(
   ({ className, variant, ...props }, ref) => (
-    <ul
-      ref={ref}
-      className={cn(listVariants({ variant, className }))}
-      {...props}
-    />
+    <ListProvider variant={variant}>
+      <ul
+        ref={ref}
+        className={cn(listVariants({ variant, className }))}
+        {...props}
+      />
+    </ListProvider>
   ),
 );
 List.displayName = "List";
@@ -35,22 +98,20 @@ interface ListItemProps extends React.HTMLAttributes<HTMLDivElement> {
   disabled?: boolean;
 }
 
-export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
-  ({ selected, className, ...props }, ref) => (
-    <li className="list-none">
-      <div
-        ref={ref}
-        role="button"
-        tabIndex={selected ? 0 : -1}
-        className={cn(
-          "flex w-full items-center gap-4 rounded-md px-3 py-1 hover:bg-muted/50 focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-          selected && "bg-accent text-accent-foreground",
-          className,
-        )}
-        {...props}
-      />
-    </li>
-  ),
+export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(
+  ({ selected, className, ...props }, ref) => {
+    const { variant } = useList();
+    return (
+      <li className="list-none" ref={ref}>
+        <div
+          role="button"
+          tabIndex={selected ? 0 : -1}
+          className={cn(listItemVariants({ variant, className, selected }))}
+          {...props}
+        />
+      </li>
+    );
+  },
 );
 ListItem.displayName = "ListItem";
 

@@ -1,16 +1,10 @@
 import { TaskBody } from "@/components/TaskBody";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ListItem } from "@/components/ui/list";
 import { Task } from "@/utils/task";
-import { Checkbox, ListItem, ListItemButton, Stack, styled } from "@mui/joy";
+import { ListItemButton, Stack, styled } from "@mui/joy";
 import { forwardRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
-
-const StyledListItem = styled(ListItem, {
-  shouldForwardProp: (prop) => prop !== "menuOpen",
-})(({ theme }) => ({
-  ".MuiListItem-startAction": {
-    left: theme.spacing(0.5), // align checkbox with list
-  },
-}));
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   borderRadius: theme.radius.sm,
@@ -23,11 +17,6 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
     },
   },
 }));
-
-const DateContainer = styled("div")({
-  opacity: 0.5,
-  fontSize: "0.75em",
-});
 
 interface TaskListItemProps {
   task: Task;
@@ -52,30 +41,15 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
     };
 
     return (
-      <StyledListItem
-        data-testid="task"
-        onFocus={onFocus}
-        onBlur={onBlur}
-        startAction={
-          <Checkbox
-            ref={checkboxRef}
-            onClick={onCheckboxClick}
-            checked={task.completed}
-            sx={(theme) => ({
-              [theme.breakpoints.only("xs")]: {
-                "--Checkbox-size": "1.4rem", // increase size for mobile for easier tapping
-              },
-            })}
-            slotProps={{
-              input: {
-                tabIndex: -1,
-                "aria-label": "Complete task",
-                "aria-checked": task.completed,
-              },
-            }}
-          />
-        }
-      >
+      <ListItem data-testid="task" onFocus={onFocus} onBlur={onBlur}>
+        <Checkbox
+          ref={checkboxRef}
+          onClick={onCheckboxClick}
+          checked={task.completed}
+          tabIndex={-1}
+          aria-label="Complete task"
+          aria-checked={task.completed}
+        />
         <StyledListItemButton
           ref={ref}
           onClick={handleButtonClick}
@@ -84,18 +58,18 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
           <Stack direction="column" sx={{ py: 1 }}>
             <TaskBody task={task} />
             {task.completionDate && (
-              <DateContainer>
+              <div className="text-xs text-muted-foreground">
                 {t("Completed", { completionDate: task.completionDate })}
-              </DateContainer>
+              </div>
             )}
             {task.creationDate && !task.completed && (
-              <DateContainer>
+              <div className="text-xs text-muted-foreground">
                 {t("Created", { creationDate: task.creationDate })}
-              </DateContainer>
+              </div>
             )}
           </Stack>
         </StyledListItemButton>
-      </StyledListItem>
+      </ListItem>
     );
   },
 );

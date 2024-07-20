@@ -5,7 +5,6 @@ import { List } from "@/components/ui/list";
 import { Task } from "@/utils/task";
 import { TaskGroup } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
-import { ListItem } from "@mui/joy";
 import { isEqual } from "lodash";
 import { memo, MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
@@ -56,7 +55,7 @@ export const TaskList = memo((props: TaskListProps) => {
             <TaskListHeader fileName={fileName} filePath={filePath} />
           )}
           {taskGroups.map((group) => (
-            <ListItem nested key={group.label}>
+            <li className="list-none" key={group.label}>
               {group.label && <TaskListSubheader title={group.label} />}
               <List>
                 {group.items.map((task) => {
@@ -78,7 +77,7 @@ export const TaskList = memo((props: TaskListProps) => {
                   );
                 })}
               </List>
-            </ListItem>
+            </li>
           ))}
         </List>
       )}

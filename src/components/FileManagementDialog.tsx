@@ -1,5 +1,4 @@
 import { Fade } from "@/components/Fade";
-import { StartEllipsis } from "@/components/StartEllipsis";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { List, ListItem, ListItemText } from "@/components/ui/list";
+import { List, ListItem } from "@/components/ui/list";
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -350,26 +349,14 @@ function FileListItem(props: FileListItemProps) {
       role="listitem"
       data-testid="draggable-file"
     >
-      <div
-        {...listeners}
-        {...attributes}
-        className={cn(
-          "flex-shrink-0 cursor-pointer p-1",
-          showCloseConfirmButton || disableDrag ? "hidden" : "inline-flex",
-        )}
-        aria-label={`Draggable file ${filePath}`}
-        tabIndex={-1}
-      >
-        <GripVerticalIcon className="h-4 w-4" />
-      </div>
       <Fade
         duration={150}
         in={showCloseConfirmButton}
         unmountOnExit
         onExited={() => setShowCloseButton(true)}
       >
-        <ListItemText className="flex gap-1">
-          <div className="flex flex-1 items-center truncate whitespace-pre">
+        <div className="flex flex-1 items-center gap-1 overflow-hidden">
+          <div className="flex-1 truncate whitespace-pre">
             {deleteFile ? (
               <Trans
                 i18nKey="Delete file"
@@ -388,7 +375,7 @@ function FileListItem(props: FileListItemProps) {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="flex-shrink-0"
+                  className="m-[1px] flex-shrink-0"
                   tabIndex={-1}
                   onClick={() => {
                     setShowCloseConfirmButton(false);
@@ -404,7 +391,7 @@ function FileListItem(props: FileListItemProps) {
                 <Button
                   size="icon"
                   variant="destructive"
-                  className="flex-shrink-0"
+                  className="m-[1px] flex-shrink-0"
                   tabIndex={-1}
                   onClick={() => {
                     onClose(filePath);
@@ -420,7 +407,7 @@ function FileListItem(props: FileListItemProps) {
               </TooltipContent>
             </Tooltip>
           </div>
-        </ListItemText>
+        </div>
       </Fade>
       <Fade
         duration={150}
@@ -428,9 +415,21 @@ function FileListItem(props: FileListItemProps) {
         unmountOnExit
         onExited={() => setShowCloseConfirmButton(true)}
       >
-        <ListItemText className="flex gap-1">
-          <div className="flex flex-1 items-center overflow-hidden">
-            <StartEllipsis>{filePath}</StartEllipsis>
+        <div className="flex flex-1 items-center gap-1 overflow-hidden">
+          <div
+            {...listeners}
+            {...attributes}
+            className={cn(
+              "flex-shrink-0 cursor-pointer p-1",
+              showCloseConfirmButton || disableDrag ? "hidden" : "inline-flex",
+            )}
+            aria-label={`Draggable file ${filePath}`}
+            tabIndex={-1}
+          >
+            <GripVerticalIcon className="h-4 w-4" />
+          </div>
+          <div className="flex flex-1 items-center overflow-auto">
+            <div className="truncate">{filePath}</div>
             {cloudFileRef && (
               <div className="flex items-center gap-1">
                 <RefreshCcwIcon className="mr-2 h-4 w-4" />
@@ -452,7 +451,7 @@ function FileListItem(props: FileListItemProps) {
               onDownload={() => onDownload(filePath)}
             />
           </div>
-        </ListItemText>
+        </div>
       </Fade>
     </ListItem>
   );
@@ -622,6 +621,7 @@ function FileMenu(props: FileMenuProps) {
           aria-label="File actions"
           aria-haspopup="true"
           disabled={cloudSyncLoading}
+          className="m-[1px]"
         >
           {!cloudSyncLoading && <EllipsisVertical className="h-4 w-4" />}
           {cloudSyncLoading && (

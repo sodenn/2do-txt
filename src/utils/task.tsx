@@ -10,8 +10,8 @@ import {
   parseDate,
   todayDate,
 } from "@/utils/date";
+import { cn } from "@/utils/tw-utils";
 import { generateId } from "@/utils/uuid";
-import { Typography } from "@mui/joy";
 import {
   addBusinessDays,
   addDays,
@@ -196,7 +196,7 @@ export function useFormatBody() {
           return (
             <TagBox
               variant={outline && !task.completed ? "outline" : undefined}
-              color={task.completed ? "completed" : "success"}
+              color={task.completed ? "muted" : "success"}
               key={index}
             >
               {token}
@@ -206,7 +206,7 @@ export function useFormatBody() {
           return (
             <TagBox
               variant={outline && !task.completed ? "outline" : undefined}
-              color={task.completed ? "completed" : "info"}
+              color={task.completed ? "muted" : "info"}
               key={index}
             >
               {token}
@@ -261,19 +261,14 @@ export function useFormatBody() {
     }
 
     return (
-      <Typography
-        component="span"
-        variant="plain"
-        color={task.completed ? "completed" : undefined}
-        sx={{
-          ...(task.completed && {
-            textDecoration: "line-through",
-          }),
-          fontSize: "inherit",
-        }}
+      <span
+        className={cn(
+          "text-[length:inherit]",
+          task.completed && "text-muted-foreground line-through",
+        )}
       >
         {elements.reduce((prev, curr) => [prev, " ", curr])}
-      </Typography>
+      </span>
     );
   };
 }
