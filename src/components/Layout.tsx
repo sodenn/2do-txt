@@ -1,6 +1,12 @@
 import { useBreakpoint } from "@/components/Breakpoint";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import {
+  HiddenSheetHeader,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { cn } from "@/utils/tw-utils";
@@ -102,6 +108,10 @@ export function LayoutSidebar({
       onOpenChange={handleOpenChange}
     >
       <SheetContent className="p-0" side="left">
+        <HiddenSheetHeader>
+          <SheetTitle>Side Sheet</SheetTitle>
+          <SheetDescription></SheetDescription>
+        </HiddenSheetHeader>
         {children}
       </SheetContent>
     </Sheet>

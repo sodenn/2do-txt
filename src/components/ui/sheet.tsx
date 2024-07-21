@@ -8,6 +8,10 @@ import {
 } from "react";
 
 import { cn } from "@/utils/tw-utils";
+import {
+  VisuallyHidden,
+  VisuallyHiddenProps,
+} from "@radix-ui/react-visually-hidden";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -23,7 +27,7 @@ const SheetOverlay = forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className,
     )}
     {...props}
@@ -85,6 +89,11 @@ const SheetHeader = ({
   />
 );
 SheetHeader.displayName = "SheetHeader";
+
+export function HiddenSheetHeader(props: VisuallyHiddenProps) {
+  return <VisuallyHidden {...props} />;
+}
+HiddenSheetHeader.displayName = "HiddenSheetHeader";
 
 const SheetFooter = ({
   className,

@@ -163,16 +163,25 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
             gridArea: "action",
           }}
         >
-          <Button ref={ref} onClick={handleClick} variant="ghost" size="icon">
+          <Button
+            tabIndex={-1}
+            ref={ref}
+            onClick={handleClick}
+            className="text-primary"
+            variant="ghost"
+            size="icon"
+          >
             <PlusIcon className="h-4 w-4" />
           </Button>
           <TimelineConnector
-            className={cn("", !flags.lastOfToday && "border-primary")}
+            className={cn("mt-1", !flags.lastOfToday && "border-primary")}
           />
         </div>
-        <Button variant="ghost" tabIndex={-1} onClick={handleClick}>
-          {t("Add new task")}
-        </Button>
+        <div className="self-start" style={{ gridArea: "content" }}>
+          <Button variant="ghost" tabIndex={-1} onClick={handleClick}>
+            {t("Add new task")}
+          </Button>
+        </div>
         <TimelineDate className="text-primary">{t("Today")}</TimelineDate>
       </TimelineItem>
     );
@@ -190,7 +199,7 @@ const TaskItem = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
       {!flags.first && (
         <TimelineConnector
           className={cn(
-            "justify-self-center",
+            "-mt-[2px] mb-1 justify-self-center",
             flags.today && !flags.firstOfToday && "border-primary",
           )}
           style={{
@@ -230,10 +239,11 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
 
   return (
     <div
+      tabIndex={0}
       className={cn(
         listItemVariants({
           variant: "default",
-          className: "w-full self-start",
+          className: "w-full cursor-pointer self-start",
           selected: false,
         }),
       )}
@@ -303,6 +313,7 @@ function TaskCheckbox({
       </Button>
       <TimelineConnector
         className={cn(
+          "mt-1",
           flags.today && !flags.lastOfToday && "border-primary",
           flags.last ? "invisible" : "visible",
         )}
@@ -314,7 +325,7 @@ function TaskCheckbox({
 function YearChip({ date }: YearChipProps) {
   return (
     <div style={{ gridArea: "chip" }}>
-      <Chip className="mt-0.5" size="sm">
+      <Chip className="my-1" size="sm">
         {date}
       </Chip>
     </div>
@@ -360,26 +371,29 @@ function TimelineDate(props: HTMLAttributes<HTMLDivElement>) {
   );
 }
 
-function TimelineItem(props: TimelineItemProps) {
-  const { className, chip, ...other } = props;
+const TimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
+  (props, ref) => {
+    const { className, chip, ...other } = props;
 
-  const gridTemplateAreas = [
-    `". connector ."`,
-    ...(chip ? [`". chip ."`] : []),
-    `"date action content"`,
-  ].join("\n");
+    const gridTemplateAreas = [
+      `". connector ."`,
+      ...(chip ? [`". chip ."`] : []),
+      `"date action content"`,
+    ].join("\n");
 
-  return (
-    <div
-      className={cn("-mb-1 -mt-1 grid items-center gap-0.5", className)}
-      style={{
-        gridTemplateColumns: "auto 50px 1fr",
-        gridTemplateAreas: gridTemplateAreas,
-      }}
-      {...other}
-    />
-  );
-}
+    return (
+      <div
+        ref={ref}
+        className={cn("-mb-1 -mt-1 grid items-center gap-0.5", className)}
+        style={{
+          gridTemplateColumns: "auto 50px 1fr",
+          gridTemplateAreas: gridTemplateAreas,
+        }}
+        {...other}
+      />
+    );
+  },
+);
 
 function TimelineConnector({
   className,
@@ -388,7 +402,7 @@ function TimelineConnector({
   return (
     <div
       className={cn(
-        "flex min-h-[12px] rounded border-2 border-solid border-secondary",
+        "flex min-h-[12px] rounded border-2 border-solid",
         className,
       )}
       {...props}

@@ -82,7 +82,7 @@ export function Filter() {
   });
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 text-sm">
       {Object.keys(priorities).length > 0 && (
         <div className="space-y-2">
           <div className="font-semibold">{t("Priorities")}</div>
@@ -166,14 +166,14 @@ export function Filter() {
       )}
       {showSortBy && (
         <div className="space-y-2">
-          <div className="font-semibold flex gap-1 items-center">
+          <div className="flex items-center gap-1 font-semibold">
             {t("Sort by")}
             {taskView === "timeline" && (
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
-                  <HelpCircleIcon fontSize="small" />
+                  <HelpCircleIcon className="h-4 w-4" />
                 </TooltipTrigger>
-                <TooltipContent asChild>
+                <TooltipContent>
                   <Trans i18nKey="Disabled when timeline view is active" />
                 </TooltipContent>
               </Tooltip>
