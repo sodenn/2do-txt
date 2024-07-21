@@ -32,6 +32,7 @@ body,
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
 
+    --font-sans: 'Inter var';
     --success: 145.2 100% 31.7%;
     --success-foreground: 0 0% 98%;
     --info: 221.2 83.2% 53.3%;
@@ -79,31 +80,6 @@ body,
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
-}
-
-/* hide calender icon */
-input[type="date"]::-webkit-inner-spin-button,
-input[type="date"]::-webkit-calendar-picker-indicator {
-  display: none;
-  -webkit-appearance: none;
-}
-
-input[type="date"]::-webkit-datetime-edit-day-field,
-input[type="date"]::-webkit-datetime-edit-month-field,
-input[type="date"]::-webkit-datetime-edit-year-field,
-input[type="date"]::-webkit-datetime-edit-text {
-  color: hsla(var(--primary));
-  -webkit-text-fill-color: hsla(var(--primary));
-  border-radius: 4px;
-}
-
-input[type="date"]::-webkit-datetime-edit-day-field:focus,
-input[type="date"]::-webkit-datetime-edit-month-field:focus,
-input[type="date"]::-webkit-datetime-edit-year-field:focus,
-input[type="date"]::-webkit-datetime-edit-text:focus {
-  background-color: hsla(var(--primary));
-  color: hsla(var(--primary-foreground));
-  -webkit-text-fill-color: hsla(var(--primary-foreground));
 }

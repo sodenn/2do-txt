@@ -41,8 +41,8 @@ export function SideSheet() {
 
   return (
     <LayoutSidebar open={sideSheetOpen} onClose={closeSideSheet}>
-      <Tabs value={tab} onValueChange={setTab} className="h-full flex flex-col">
-        <div className="pt-3 px-3">
+      <Tabs value={tab} onValueChange={setTab} className="flex h-full flex-col">
+        <div className="px-3 pt-3">
           <SafeArea top left asChild>
             <TabsList className="grid w-full grid-cols-2">
               {!hideFilter && (
@@ -58,10 +58,10 @@ export function SideSheet() {
         </div>
         <SafeArea asChild bottom left>
           <ScrollArea>
-            <TabsContent className="px-3 pb-3" value="filter">
+            <TabsContent className="px-3 pb-3 sm:px-5" value="filter">
               <Filter />
             </TabsContent>
-            <TabsContent className="px-3 pb-3" value="settings">
+            <TabsContent className="px-3 pb-3 sm:px-5" value="settings">
               <Settings />
             </TabsContent>
           </ScrollArea>

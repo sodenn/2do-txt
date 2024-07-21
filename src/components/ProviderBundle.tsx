@@ -1,4 +1,3 @@
-import { AppThemeProvider } from "@/components/AppThemeProvider";
 import { BreakpointProvider } from "@/components/Breakpoint";
 import { LoaderData, StoreProvider } from "@/components/StoreProvider";
 import { Toaster } from "@/components/ui/toaster";
@@ -20,12 +19,10 @@ export function Component() {
       network={loaderData.network}
     >
       <BreakpointProvider>
-        <AppThemeProvider>
-          <TooltipProvider delayDuration={500}>
-            <Outlet />
-            <Toaster />
-          </TooltipProvider>
-        </AppThemeProvider>
+        <TooltipProvider delayDuration={500}>
+          <Outlet />
+          <Toaster />
+        </TooltipProvider>
       </BreakpointProvider>
     </StoreProvider>
   );

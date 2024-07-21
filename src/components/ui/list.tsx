@@ -24,7 +24,7 @@ const listVariants = cva("my-1 flex flex-col", {
   },
 });
 
-const listItemVariants = cva(
+export const listItemVariants = cva(
   "flex w-full items-center gap-3 sm:gap-4 px-3 py-1.5 hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&:has(button[role='checkbox']:hover)]:bg-transparent",
   {
     variants: {

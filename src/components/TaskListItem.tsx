@@ -38,6 +38,7 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
         onFocus={onFocus}
         onBlur={onBlur}
         onClick={handleButtonClick}
+        className="items-start py-2.5"
       >
         <Checkbox
           ref={checkboxRef}
@@ -47,8 +48,9 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
           tabIndex={-1}
           aria-label="Complete task"
           aria-checked={task.completed}
+          className="my-1"
         />
-        <div className="flex flex-col py-1" data-testid="task-button">
+        <div className="flex flex-col">
           <TaskBody task={task} />
           {task.completionDate && (
             <div className="text-xs text-muted-foreground">
