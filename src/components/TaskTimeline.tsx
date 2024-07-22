@@ -271,13 +271,13 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
             </div>
           )}
           {task.completionDate && (
-            <div className="flex gap-0.5 text-[0.9em] text-muted sm:hidden">
+            <div className="flex gap-0.5 text-[0.9em] text-muted-foreground sm:hidden">
               <CheckCircleIcon className="mr-2 h-4 w-4" />
               {formatLocaleDate(task.completionDate, language)}
             </div>
           )}
           {task.creationDate && !task.dueDate && !task.completionDate && (
-            <div className="flex items-center gap-0.5 text-[0.9em] text-muted sm:hidden">
+            <div className="flex items-center gap-0.5 text-[0.9em] text-muted-foreground sm:hidden">
               <ClockIcon className="mr-2 h-4 w-4" />
               {formatLocaleDate(task.creationDate, language)}
             </div>
