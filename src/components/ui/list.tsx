@@ -43,7 +43,7 @@ export const listItemVariants = cva(
   },
 );
 
-export interface ListProps
+interface ListProps
   extends HTMLAttributes<HTMLUListElement>,
     VariantProps<typeof listVariants> {}
 

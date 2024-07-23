@@ -5,7 +5,7 @@ import { cn } from "@/utils/tw-utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { ComponentProps } from "react";
 
-export type CalendarProps = ComponentProps<typeof DayPicker>;
+type CalendarProps = ComponentProps<typeof DayPicker>;
 
 function Calendar({
   className,

@@ -5,7 +5,7 @@ import React, {
   ReactNode,
 } from "react";
 
-export interface SafeAreaProps extends HTMLAttributes<HTMLDivElement> {
+interface SafeAreaProps extends HTMLAttributes<HTMLDivElement> {
   top?: boolean;
   right?: boolean;
   bottom?: boolean;

@@ -19,7 +19,7 @@ interface HeaderContainerProps {
   children: ReactNode;
 }
 
-export interface LayoutSidebarProps extends HTMLAttributes<HTMLDivElement> {
+interface LayoutSidebarProps extends HTMLAttributes<HTMLDivElement> {
   open: boolean;
   onClose?: () => void;
 }
