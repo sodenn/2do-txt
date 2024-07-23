@@ -1,4 +1,5 @@
 import { useBreakpoint } from "@/components/Breakpoint";
+import { SafeArea } from "@/components/SafeArea";
 import {
   Dialog,
   DialogClose,
@@ -97,7 +98,13 @@ export function ResponsiveDialogHeader({ children }: PropsWithChildren) {
   if (isBreakpointActive("lg")) {
     return <DialogHeader className="px-6">{children}</DialogHeader>;
   }
-  return <DrawerHeader className="text-left">{children}</DrawerHeader>;
+  return (
+    <DrawerHeader className="text-left">
+      <SafeArea left right>
+        {children}
+      </SafeArea>
+    </DrawerHeader>
+  );
 }
 
 export function ResponsiveDialogTitle({ children }: PropsWithChildren) {
@@ -149,7 +156,11 @@ export function ResponsiveDialogBody({ children }: PropsWithChildren) {
   if (isBreakpointActive("lg")) {
     return <div className="flex-1 overflow-y-auto px-6">{children}</div>;
   }
-  return <div className="flex-1 overflow-y-auto px-4">{children}</div>;
+  return (
+    <SafeArea left right className="flex-1 overflow-y-auto">
+      <div className="px-4">{children}</div>
+    </SafeArea>
+  );
 }
 
 export function ResponsiveDialogFooter({ children }: PropsWithChildren) {
@@ -157,7 +168,11 @@ export function ResponsiveDialogFooter({ children }: PropsWithChildren) {
   if (isBreakpointActive("lg")) {
     return <DialogFooter className="px-6">{children}</DialogFooter>;
   }
-  return <DrawerFooter className="flex-row">{children}</DrawerFooter>;
+  return (
+    <SafeArea left right>
+      <DrawerFooter className="flex-row">{children}</DrawerFooter>
+    </SafeArea>
+  );
 }
 
 export function ResponsiveDialogClose({ children }: PropsWithChildren) {

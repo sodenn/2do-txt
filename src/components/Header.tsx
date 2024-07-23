@@ -25,13 +25,8 @@ export function Header() {
 
   return (
     <LayoutHeader open={sideSheetOpen}>
-      <SafeArea top left right>
-        <div
-          className={cn(
-            "flex items-center gap-1 p-2 sm:gap-2 sm:px-5 sm:py-3",
-            divider && "border-b",
-          )}
-        >
+      <SafeArea className={cn(divider && "border-b")} top left right>
+        <div className="flex items-center gap-1 p-2 sm:gap-2 sm:px-5 sm:py-3">
           <SideSheetButton />
           <Fade in={!searchBarExpanded} unmountOnExit>
             <div>{taskLists.length > 0 && <FileMenu />}</div>

@@ -1,9 +1,5 @@
-import React, {
-  CSSProperties,
-  forwardRef,
-  HTMLAttributes,
-  ReactNode,
-} from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { CSSProperties, forwardRef, HTMLAttributes } from "react";
 
 interface SafeAreaProps extends HTMLAttributes<HTMLDivElement> {
   top?: boolean;
@@ -42,13 +38,3 @@ export const SafeArea = forwardRef<HTMLDivElement, SafeAreaProps>(
     return <Comp style={{ ...style, ...safeAreaStyle }} {...rest} ref={ref} />;
   },
 );
-
-function Slot({ children }: { children?: ReactNode }) {
-  if (React.Children.count(children) > 1) {
-    throw new Error("Only one child allowed");
-  }
-  if (React.isValidElement(children)) {
-    return React.cloneElement(children);
-  }
-  return null;
-}
