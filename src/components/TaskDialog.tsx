@@ -185,6 +185,7 @@ export function TaskDialog() {
       onOpen={handleOpen}
       onClose={closeTaskDialog}
       onExit={handleExit}
+      disablePreventScroll
     >
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>

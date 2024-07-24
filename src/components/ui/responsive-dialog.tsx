@@ -28,6 +28,7 @@ interface ResponsiveDialogProps {
   onOpen?: () => void;
   onClose?: () => void;
   onExit?: () => void;
+  disablePreventScroll?: boolean;
 }
 
 export function ResponsiveDialog({
@@ -35,6 +36,7 @@ export function ResponsiveDialog({
   onOpen,
   onClose,
   onExit,
+  disablePreventScroll,
   ...props
 }: PropsWithChildren<ResponsiveDialogProps>) {
   const [open, setOpen] = useState(!!props.open);
@@ -79,7 +81,12 @@ export function ResponsiveDialog({
   }
 
   return (
-    <Drawer shouldScaleBackground open={open} onOpenChange={handleOpenChange}>
+    <Drawer
+      disablePreventScroll={disablePreventScroll}
+      shouldScaleBackground
+      open={open}
+      onOpenChange={handleOpenChange}
+    >
       {children}
     </Drawer>
   );

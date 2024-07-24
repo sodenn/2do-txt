@@ -7,9 +7,16 @@ body,
 #root {
   height: 100%;
   user-select: none;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
   @media screen(sm) {
     height: 100vh;
   }
+}
+
+body {
+  /* Disable pull-to-refresh in iOS 15 Safari */
+  overflow: hidden;
 }
 
 @layer base {
