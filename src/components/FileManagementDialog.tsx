@@ -13,6 +13,7 @@ import {
   ResponsiveDialogContent,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
+  ResponsiveDialogHiddenDescription,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import {
@@ -145,6 +146,9 @@ export function FileManagementDialog() {
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("Files")}</ResponsiveDialogTitle>
+          <ResponsiveDialogHiddenDescription>
+            Files
+          </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
           <FileList onClose={handleCloseFile} />

@@ -8,6 +8,7 @@ import {
   ResponsiveDialogContent,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
+  ResponsiveDialogHiddenDescription,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { useWebDAVDialogStore } from "@/stores/webdav-dialog-store";
@@ -73,6 +74,9 @@ export function WebDAVDialog() {
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("WebDAV Server")}</ResponsiveDialogTitle>
+          <ResponsiveDialogHiddenDescription>
+            Connect to WebDAV Server
+          </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
           <div className="mb-1 flex flex-col gap-2">

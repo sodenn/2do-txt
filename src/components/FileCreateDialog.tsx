@@ -8,6 +8,7 @@ import {
   ResponsiveDialogContent,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
+  ResponsiveDialogHiddenDescription,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import {
@@ -250,6 +251,9 @@ const WebFileCreateDialog = (props: FileCreateDialogProps) => {
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
+          <ResponsiveDialogHiddenDescription>
+            Create a new file
+          </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
           <div className="space-y-2">

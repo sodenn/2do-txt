@@ -6,6 +6,7 @@ import {
   ResponsiveDialogBody,
   ResponsiveDialogContent,
   ResponsiveDialogHeader,
+  ResponsiveDialogHiddenDescription,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import {
@@ -58,18 +59,24 @@ export function ArchivedTasksDialog() {
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("Archived tasks")}</ResponsiveDialogTitle>
+          <ResponsiveDialogHiddenDescription>
+            Archived tasks
+          </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
-          <List>
+          <List className="text-sm">
             {tasks.map((task) => (
-              <ListItem key={task.id}>
+              <ListItem key={task.id} className="cursor-auto">
                 <TaskBody task={task} />
+                <div className="flex-1" />
                 <Tooltip>
                   <TooltipTrigger>
                     <Button
                       size="icon"
+                      variant="ghost"
                       onClick={() => handleRestore(task)}
                       aria-label="restore"
+                      className="shrink-0"
                     >
                       <ArchiveRestoreIcon className="h-4 w-4" />
                     </Button>

@@ -4,6 +4,7 @@ import {
   ResponsiveDialogBody,
   ResponsiveDialogContent,
   ResponsiveDialogHeader,
+  ResponsiveDialogHiddenDescription,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import {
@@ -29,6 +30,9 @@ export function ShortcutsDialog() {
           <ResponsiveDialogTitle>
             {t("Keyboard Shortcuts")}
           </ResponsiveDialogTitle>
+          <ResponsiveDialogHiddenDescription>
+            Available keyboard shortcuts
+          </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
           <Table>

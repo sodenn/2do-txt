@@ -12,6 +12,7 @@ import {
   ResponsiveDialogContent,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
+  ResponsiveDialogHiddenDescription,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { useToast } from "@/components/ui/use-toast";
@@ -163,6 +164,9 @@ export function CloudFileDialog() {
               provider,
             })}
           </ResponsiveDialogTitle>
+          <ResponsiveDialogHiddenDescription>
+            Import from cloud storage
+          </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
           <CloudFileDialogContent

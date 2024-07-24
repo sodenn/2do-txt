@@ -5,12 +5,12 @@
 html,
 body,
 #root {
-  height: 100%;
   user-select: none;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
-  @media screen(sm) {
-    height: 100vh;
+  height: 100vh;
+  @supports (height: 100dvh) {
+    height: 100dvh;
   }
 }
 
