@@ -25,7 +25,7 @@ const Root = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
       data-testid="dropzone"
       {...props}
       data-hotkeys-keep-enabled
-      className="flex h-screen flex-col outline-none"
+      className="sh:h-screen flex h-full flex-col outline-none"
     />
   ),
 );

@@ -5,8 +5,11 @@
 html,
 body,
 #root {
-  height: 100vh;
+  height: 100%;
   user-select: none;
+  @media screen(sm) {
+    height: 100vh;
+  }
 }
 
 @layer base {

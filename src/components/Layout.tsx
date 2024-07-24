@@ -93,7 +93,7 @@ export function LayoutSidebar({
           className,
         )}
       >
-        <div className={cn("h-screen", hidden && "hidden xl:hidden")}>
+        <div className={cn("h-full", hidden && "hidden xl:hidden")}>
           {children}
         </div>
       </div>

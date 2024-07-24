@@ -15,7 +15,7 @@ export function ErrorBoundary() {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen items-center justify-center">
+    <div className="flex h-full w-screen items-center justify-center sm:h-screen">
       <div className="flex max-w-lg items-start gap-4">
         <TriangleAlertIcon className="mt-1 h-8 w-8 flex-shrink-0" />
         <div className="flex flex-col gap-4">
