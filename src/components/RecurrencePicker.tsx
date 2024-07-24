@@ -1,3 +1,4 @@
+import { Fade } from "@/components/Fade";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -78,6 +79,8 @@ function parseValue(value?: string | null) {
 
 export function RecurrencePicker(props: PriorityPickerProps) {
   const [open, setOpen] = useState(false);
+  const [showUnit, setShowUnit] = useState(true);
+  const [showAmount, setShowAmount] = useState(false);
   const [value, setValue] = useState(props.value || null);
   const initialValues = useMemo(
     () => parseValue(props.value),
@@ -87,7 +90,6 @@ export function RecurrencePicker(props: PriorityPickerProps) {
   const [strict, setStrict] = useState(initialValues.strict);
   const [unit, setUnit] = useState(initialValues.unit);
   const [amount, setAmount] = useState(initialValues.amount);
-  const [unitSelected, setUnitSelected] = useState(false);
   const { t } = useTranslation();
   const { showTooltip, ...triggerProps } = useTooltip();
   const unitLabel = options.find((option) => option.value === unit)?.label;
@@ -100,10 +102,13 @@ export function RecurrencePicker(props: PriorityPickerProps) {
   }, [props.value]);
 
   useEffect(() => {
-    if (!open && unitSelected) {
-      setTimeout(() => setUnitSelected(false), 150);
+    if (!open) {
+      setTimeout(() => {
+        setShowUnit(true);
+        setShowAmount(false);
+      }, 200);
     }
-  }, [open, unitSelected]);
+  }, [open]);
 
   const handleSelectUnit = (value: string) => {
     const unit = value as Unit;
@@ -115,7 +120,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
       setOpen(false);
     } else {
       handleChange(unit, amount, strict);
-      setUnitSelected(true);
+      setShowUnit(false);
     }
   };
 
@@ -123,10 +128,6 @@ export function RecurrencePicker(props: PriorityPickerProps) {
     const amount = parseInt(event.target.value); // safe parse
     setAmount(amount);
     handleChange(unit, amount || 1, strict);
-  };
-
-  const handleBlurAmount: InputProps["onBlur"] = () => {
-    setOpen(false);
   };
 
   const handleChangeStrict = (strict: boolean) => {
@@ -143,6 +144,10 @@ export function RecurrencePicker(props: PriorityPickerProps) {
       props.onChange?.(value);
       setValue(value);
     }
+  };
+
+  const handleExitedUnit = () => {
+    setShowAmount(true);
   };
 
   return (
@@ -172,7 +177,12 @@ export function RecurrencePicker(props: PriorityPickerProps) {
         <TooltipContent>{t("Recurrence")}</TooltipContent>
       </Tooltip>
       <PopoverContent align="start" className="w-[240px] p-0">
-        {!unitSelected && (
+        <Fade
+          duration={100}
+          in={showUnit}
+          unmountOnExit
+          onExited={handleExitedUnit}
+        >
           <Command className="outline-none" tabIndex={0}>
             <CommandList>
               <CommandGroup>
@@ -194,11 +204,13 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               </CommandGroup>
             </CommandList>
           </Command>
-        )}
-        {unitSelected && unitLabel && unitLabel !== "No recurrence" && (
+        </Fade>
+        <Fade duration={100} in={showAmount} unmountOnExit>
           <div className="flex flex-col gap-3 p-3">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="unit">{t(`Number of ${unitLabel}`)}</Label>
+              {unitLabel && unitLabel !== "No recurrence" && (
+                <Label htmlFor="unit">{t(`Number of ${unitLabel}`)}</Label>
+              )}
               <Input
                 autoFocus
                 id="unit"
@@ -206,7 +218,6 @@ export function RecurrencePicker(props: PriorityPickerProps) {
                 min={1}
                 value={amount}
                 onChange={handleChangeAmount}
-                onBlur={handleBlurAmount}
                 className="w-full"
               />
             </div>
@@ -232,7 +243,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               </label>
             </div>
           </div>
-        )}
+        </Fade>
       </PopoverContent>
     </Popover>
   );

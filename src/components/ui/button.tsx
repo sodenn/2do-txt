@@ -6,7 +6,7 @@ import { cn } from "@/utils/tw-utils";
 import { LoaderCircleIcon } from "lucide-react";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none sm:focus-visible:ring-1 sm:focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none sm:focus-visible:ring-1 sm:focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-70",
   {
     variants: {
       variant: {
