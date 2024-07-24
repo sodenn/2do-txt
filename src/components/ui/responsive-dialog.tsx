@@ -115,6 +115,14 @@ export function ResponsiveDialogTitle({ children }: PropsWithChildren) {
   return <DrawerTitle>{children}</DrawerTitle>;
 }
 
+export function ResponsiveDialogHiddenTitle({ children }: PropsWithChildren) {
+  return (
+    <VisuallyHidden.Root>
+      <ResponsiveDialogTitle>{children}</ResponsiveDialogTitle>
+    </VisuallyHidden.Root>
+  );
+}
+
 export function ResponsiveDialogDescription({ children }: PropsWithChildren) {
   const { isBreakpointActive } = useBreakpoint();
   if (isBreakpointActive("lg")) {
@@ -127,9 +135,9 @@ export function ResponsiveDialogHiddenDescription({
   children,
 }: PropsWithChildren) {
   return (
-    <ResponsiveDialogDescription>
-      <VisuallyHidden.Root>{children}</VisuallyHidden.Root>
-    </ResponsiveDialogDescription>
+    <VisuallyHidden.Root>
+      <ResponsiveDialogDescription>{children}</ResponsiveDialogDescription>
+    </VisuallyHidden.Root>
   );
 }
 
@@ -157,7 +165,7 @@ export function ResponsiveDialogBody({ children }: PropsWithChildren) {
     return <div className="flex-1 overflow-y-auto px-6">{children}</div>;
   }
   return (
-    <SafeArea left right className="flex-1 overflow-y-auto">
+    <SafeArea left right>
       <div className="px-4">{children}</div>
     </SafeArea>
   );
@@ -170,7 +178,7 @@ export function ResponsiveDialogFooter({ children }: PropsWithChildren) {
   }
   return (
     <SafeArea left right>
-      <DrawerFooter className="flex-row">{children}</DrawerFooter>
+      <DrawerFooter className="flex-row justify-end">{children}</DrawerFooter>
     </SafeArea>
   );
 }
