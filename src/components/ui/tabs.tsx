@@ -1,12 +1,11 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
-import * as React from "react";
 import { ComponentPropsWithoutRef, ElementRef, forwardRef } from "react";
 
 import { cn } from "@/utils/tw-utils";
 
 const Tabs = TabsPrimitive.Root;
 
-const TabsList = React.forwardRef<
+const TabsList = forwardRef<
   ElementRef<typeof TabsPrimitive.List>,
   ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => (

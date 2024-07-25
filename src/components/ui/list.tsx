@@ -1,12 +1,13 @@
 import { cn } from "@/utils/tw-utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
 import {
   Dispatch,
   HTMLAttributes,
   PropsWithChildren,
+  Ref,
   SetStateAction,
   createContext,
+  forwardRef,
   useContext,
   useEffect,
   useState,
@@ -80,7 +81,7 @@ function useList() {
   return context;
 }
 
-export const List = React.forwardRef<HTMLUListElement, ListProps>(
+export const List = forwardRef<HTMLUListElement, ListProps>(
   ({ className, variant, ...props }, ref) => (
     <ListProvider variant={variant}>
       <ul
@@ -93,13 +94,13 @@ export const List = React.forwardRef<HTMLUListElement, ListProps>(
 );
 List.displayName = "List";
 
-interface ListItemProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ListItemProps extends HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
   disabled?: boolean;
-  buttonRef?: React.Ref<HTMLDivElement>;
+  buttonRef?: Ref<HTMLDivElement>;
 }
 
-export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(
+export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
   ({ selected, buttonRef, className, ...props }, ref) => {
     const { variant } = useList();
     return (
@@ -117,17 +118,17 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(
 );
 ListItem.displayName = "ListItem";
 
-export const ListItemText = React.forwardRef<
+export const ListItemText = forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div ref={ref} className={cn("flex-1 text-left", className)} {...props} />
 ));
 ListItemText.displayName = "ListItemText";
 
-export const ListItemPrimaryText = React.forwardRef<
+export const ListItemPrimaryText = forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -137,9 +138,9 @@ export const ListItemPrimaryText = React.forwardRef<
 ));
 ListItemPrimaryText.displayName = "ListItemPrimaryText";
 
-export const ListItemSecondaryText = React.forwardRef<
+export const ListItemSecondaryText = forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}

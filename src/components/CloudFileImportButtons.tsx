@@ -51,7 +51,7 @@ export function CloudFileImportButtons() {
           variant="outline"
           aria-label="Import todo.txt from cloud storage"
         >
-          <CloudIcon className="h-4 w-4 mr-2" />
+          <CloudIcon className="mr-2 h-4 w-4" />
           {t("Import from cloud storage", { provider: t("cloud storage") })}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 opacity-50" />
         </Button>

@@ -42,7 +42,7 @@ body {
     --ring: 207 47% 55%;
     --radius: 0.5rem;
 
-    --font-sans: 'Inter var';
+    --font-sans: "Inter var";
     --success: 145.2 100% 31.7%;
     --success-foreground: 0 0% 98%;
     --info: 221.2 83.2% 53.3%;
@@ -90,6 +90,6 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background font-sans text-foreground;
   }
 }

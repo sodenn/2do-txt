@@ -20,13 +20,13 @@ export function SideSheetButton() {
     >
       <MenuIcon
         className={cn(
-          "h-4 w-4 inline-block",
+          "inline-block h-4 w-4",
           sideSheetOpen ? "xl:hidden" : "xl:inline-block",
         )}
       />
       <ChevronLeftIcon
         className={cn(
-          "h-4 w-4 hidden",
+          "hidden h-4 w-4",
           sideSheetOpen ? "xl:inline-block" : "xl:hidden",
         )}
       />

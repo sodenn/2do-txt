@@ -68,7 +68,7 @@ export const ExpandableSearch = forwardRef<
   return (
     <>
       <div className="hidden sm:flex">{input}</div>
-      <div className="flex-1 flex sm:hidden items-center" ref={containerRef}>
+      <div className="flex flex-1 items-center sm:hidden" ref={containerRef}>
         <div className="flex-1">
           <Fade
             in={showInput}
@@ -93,7 +93,7 @@ export const ExpandableSearch = forwardRef<
               aria-label="Expand search bar"
               onClick={() => setShowButton(false)}
             >
-              <SearchIcon className="w-4 h-4" />
+              <SearchIcon className="h-4 w-4" />
             </Button>
           </Fade>
         </div>

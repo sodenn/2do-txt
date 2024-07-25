@@ -12,7 +12,7 @@ export function ChipList(props: ChipListProps) {
   const { items = {}, activeItems = [], onClick, color } = props;
 
   return (
-    <ul className="flex gap-2 flex-wrap">
+    <ul className="flex flex-wrap gap-2">
       {Object.entries(items).map(([item, usages]) => (
         <li key={item} className="inline-block">
           <NotificationBadge label={usages === 1 ? 0 : usages}>
