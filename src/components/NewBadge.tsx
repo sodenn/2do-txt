@@ -4,10 +4,10 @@ import {
 } from "@/components/ui/notification-badge";
 import { todayDate } from "@/utils/date";
 import { isAfter } from "date-fns";
-import { forwardRef } from "react";
+import { PropsWithChildren, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 
-interface NewBadgeProps extends NotificationBadgeProps {
+interface NewBadgeProps extends PropsWithChildren<NotificationBadgeProps> {
   till: Date;
 }
 

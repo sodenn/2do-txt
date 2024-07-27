@@ -1,6 +1,6 @@
 import { HTMLAttributes, ReactNode } from "react";
 
-interface NotificationBadgeProps extends HTMLAttributes<HTMLDivElement> {
+export interface NotificationBadgeProps extends HTMLAttributes<HTMLDivElement> {
   label?: ReactNode;
 }
 
