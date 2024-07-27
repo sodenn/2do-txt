@@ -50,7 +50,7 @@ export function LayoutSidebar({
   children,
 }: LayoutSidebarProps) {
   const persistent = usePersistentSidebar();
-  const [hidden, setHidden] = useState(false);
+  const [hidden, setHidden] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
 
   const handleOpenChange = (open: boolean) => {
@@ -102,14 +102,13 @@ export function LayoutSidebar({
 
   return (
     <Sheet
-      aria-label="Side Menu"
       data-hotkeys-keep-enabled={persistent ? "true" : "m"}
       open={open}
       onOpenChange={handleOpenChange}
     >
-      <SheetContent className="p-0" side="left">
+      <SheetContent className="p-0" side="left" aria-label="Side Menu">
         <HiddenSheetHeader>
-          <SheetTitle>Side Sheet</SheetTitle>
+          <SheetTitle>Side Menu</SheetTitle>
           <SheetDescription></SheetDescription>
         </HiddenSheetHeader>
         {children}

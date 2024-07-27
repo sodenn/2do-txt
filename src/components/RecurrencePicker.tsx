@@ -159,6 +159,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               variant={value ? "secondary" : "ghost"}
               size={value ? "default" : "icon"}
               role="combobox"
+              aria-label="Recurrence"
               aria-expanded={open}
               className={cn(
                 "h-8",
@@ -219,6 +220,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
                 value={amount}
                 onChange={handleChangeAmount}
                 className="w-full"
+                aria-label="Amount"
               />
             </div>
             <div className="flex items-center gap-2">

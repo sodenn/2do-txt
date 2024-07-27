@@ -70,6 +70,17 @@ export function PriorityPicker(props: PriorityPickerProps) {
     setOpen(false);
   };
 
+  const handleKeyUp = (event: any) => {
+    const value = options.includes(event.key.toUpperCase())
+      ? event.key.toUpperCase()
+      : undefined;
+    if (value) {
+      props.onChange?.(value);
+      setValue(value);
+      setOpen(false);
+    }
+  };
+
   useEffect(() => {
     setValue(props.value || null);
   }, [props.value]);
@@ -84,6 +95,7 @@ export function PriorityPicker(props: PriorityPickerProps) {
               size={value ? "default" : "icon"}
               role="combobox"
               aria-expanded={open}
+              aria-label="Priority"
               className={cn(
                 "h-8",
                 value && "justify-between gap-2",
@@ -104,6 +116,7 @@ export function PriorityPicker(props: PriorityPickerProps) {
             aria-label="Select task priority"
             placeholder={t("Select priority")}
             className="h-9"
+            onKeyUp={handleKeyUp}
           />
           <CommandList>
             <CommandEmpty>{t("No priority found")}</CommandEmpty>

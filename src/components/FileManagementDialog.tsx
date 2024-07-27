@@ -350,7 +350,7 @@ function FileListItem(props: FileListItemProps) {
     <ListItem
       ref={setNodeRef}
       style={style}
-      role="listitem"
+      // role="listitem"
       data-testid="draggable-file"
     >
       <Fade
@@ -396,6 +396,7 @@ function FileListItem(props: FileListItemProps) {
                   size="icon"
                   variant="destructive"
                   className="m-[1px] flex-shrink-0"
+                  aria-label={deleteFile ? "Delete file" : "Close file"}
                   tabIndex={-1}
                   onClick={() => {
                     onClose(filePath);
@@ -608,7 +609,11 @@ function FileMenu(props: FileMenuProps) {
     !showEnableCloudSyncMenuItem
   ) {
     return (
-      <Button size="icon" onClick={handleCloseFile} aria-label="Delete file">
+      <Button
+        size="icon"
+        onClick={handleCloseFile}
+        aria-label={deleteFile ? "Delete file" : "Close file"}
+      >
         {deleteFile && <TrashIcon />}
         {!deleteFile && <XIcon />}
       </Button>
@@ -665,7 +670,10 @@ function FileMenu(props: FileMenuProps) {
             {t("Download")}
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem onClick={handleCloseFile} aria-label="Delete file">
+        <DropdownMenuItem
+          onClick={handleCloseFile}
+          aria-label={deleteFile ? "Delete file" : "Close file"}
+        >
           {deleteFile && <TrashIcon className="mr-2 h-4 w-4" />}
           {!deleteFile && <TrashIcon className="mr-2 h-4 w-4" />}
           {deleteFile ? t("Delete") : t("Close")}

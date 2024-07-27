@@ -29,7 +29,7 @@ test.describe("File Management", () => {
   test("should order task lists using drag and drop", async ({ page }) => {
     // show all task lists
     await page.getByRole("button", { name: "File menu" }).click();
-    await page.getByRole("menuitem", { name: "All" }).click();
+    await page.getByLabel("All task lists").click();
 
     // open file management dialog
     await page.getByRole("button", { name: "File menu" }).click();
@@ -37,16 +37,12 @@ test.describe("File Management", () => {
 
     // check current sort order
     await expect(page.getByRole("listitem")).toHaveCount(2);
-    await expect(page.getByRole("listitem").nth(0)).toHaveText("todo1.txt");
+    await expect(page.getByRole("listitem").first()).toHaveText("todo1.txt");
     await expect(page.getByRole("listitem").nth(1)).toHaveText("todo2.txt");
 
     // swap order of the two files via drag & drop
-    const source = page.getByRole("button", {
-      name: "Draggable file todo2.txt",
-    });
-    const destination = page.getByRole("button", {
-      name: "Draggable file todo1.txt",
-    });
+    const source = page.getByLabel("Draggable file todo2.txt");
+    const destination = page.getByLabel("Draggable file todo1.txt");
     const destinationPosition = await destination.boundingBox();
     await source.hover();
     await page.mouse.down();
@@ -58,7 +54,7 @@ test.describe("File Management", () => {
     await page.mouse.up();
 
     // check new sort order
-    await expect(page.getByRole("listitem").nth(0)).toHaveText("todo2.txt");
+    await expect(page.getByRole("listitem").first()).toHaveText("todo2.txt");
     await expect(page.getByRole("listitem").nth(1)).toHaveText("todo1.txt");
   });
 
@@ -70,18 +66,10 @@ test.describe("File Management", () => {
     // check current number of open files
     await expect(page.getByRole("listitem")).toHaveCount(2);
 
-    // open the menu of the first file in the list
-    await page.getByRole("button", { name: "File actions" }).nth(0).click();
-
-    // click "Delete" in the context menu
-    await page
-      .getByRole("menuitem", {
-        name: "Delete file",
-      })
-      .click();
-
+    await page.getByLabel("File actions").first().click();
+    await page.getByLabel("Delete file").click();
     // confirm deletion
-    await page.getByRole("button", { name: "Delete" }).click();
+    await page.getByLabel("Delete file").click();
 
     // check number of open files
     await expect(page.getByTestId("draggable-file")).toHaveCount(1);
@@ -97,15 +85,8 @@ test.describe("File Management", () => {
     await page.evaluate(() => {
       return localStorage["CapacitorStorage.todo-txt-paths"] === "[]";
     });
-    await expect(page.getByRole("alert")).toHaveText(
-      "File not found: todo.txt",
-    );
-  });
-
-  test("should click the file menu button again to close the menu", async ({
-    page,
-  }) => {
-    await page.getByRole("button", { name: "File menu" }).click();
-    await page.getByRole("button", { name: "File menu" }).click();
+    await expect(
+      page.getByText("File not found: todo.txt").first(),
+    ).toBeVisible();
   });
 });

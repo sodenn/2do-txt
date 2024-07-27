@@ -31,9 +31,11 @@ test("should show an offline warning when connected to WebDAV", async ({
   // wait, because detecting the offline status takes a while
   await page.waitForTimeout(1000);
   await expect(
-    page.getByText(
-      "Unable to connect to cloud storage. Check network connection.",
-    ),
+    page
+      .getByText(
+        "Unable to connect to cloud storage. Check network connection.",
+      )
+      .first(),
   ).toBeVisible();
 });
 
@@ -41,7 +43,7 @@ test("should connect with WebDAV", async ({ page }) => {
   await replayFromHar(page);
   await connectToWebDAV(page);
   await openWebDAVImportDialog(page);
-  await expect(page.getByText("Connected to WebDAV")).toBeVisible();
+  await expect(page.getByText("Connected to WebDAV").first()).toBeVisible();
 });
 
 test("should not connect with WebDAV", async ({ page }) => {
@@ -76,10 +78,7 @@ test("should sync todo.txt with WebDAV", async ({ page }) => {
   expect(firstSyncDate).toBeDefined();
 
   // trigger sync
-  const taskCheckbox = page
-    .getByTestId("task")
-    .nth(0)
-    .locator('input[type="checkbox"]');
+  const taskCheckbox = page.getByLabel("Complete task").nth(0);
   await taskCheckbox.click();
   await page.waitForTimeout(300);
   const secondSyncDate = await getLastSyncDate(page);

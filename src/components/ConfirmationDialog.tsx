@@ -33,12 +33,8 @@ export function ConfirmationDialog() {
   };
 
   return (
-    <AlertDialog
-      data-testid="confirmation-dialog"
-      open={open}
-      onOpenChange={handleOpenChange}
-    >
-      <AlertDialogContent>
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
+      <AlertDialogContent data-testid="confirmation-dialog">
         <AlertDialogHeader>
           {title && <AlertTitle>{title}</AlertTitle>}
           <AlertDialogDescription>{content}</AlertDialogDescription>

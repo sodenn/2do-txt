@@ -44,16 +44,21 @@ export function SideSheet() {
       <Tabs value={tab} onValueChange={setTab} className="flex h-full flex-col">
         <div className="px-3 pt-3">
           <SafeArea top left>
-            <TabsList className="grid w-full grid-cols-2">
-              {!hideFilter && (
+            {!hideFilter && (
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="filter" aria-label="Filter">
                   {t("Filter")}
                 </TabsTrigger>
-              )}
-              <TabsTrigger value="settings" aria-label="Settings">
-                {t("Settings")}
-              </TabsTrigger>
-            </TabsList>
+                <TabsTrigger value="settings" aria-label="Settings">
+                  {t("Settings")}
+                </TabsTrigger>
+              </TabsList>
+            )}
+            {hideFilter && (
+              <div className="px-2 py-3 font-semibold leading-none tracking-tight">
+                {t("Filter")}
+              </div>
+            )}
           </SafeArea>
         </div>
         <ScrollArea>

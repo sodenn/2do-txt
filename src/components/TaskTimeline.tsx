@@ -193,8 +193,18 @@ const TaskItem = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
     task: { _timelineFlags: flags, _timelineDate: timelineDate },
     onCheckboxClick,
   } = props;
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.code === "Space") {
+      event.preventDefault();
+    }
+  };
+
   return (
-    <TimelineItem data-testid="task" chip={flags.firstOfYear && !!timelineDate}>
+    <TimelineItem
+      onKeyDown={handleKeyDown}
+      chip={flags.firstOfYear && !!timelineDate}
+    >
       {flags.first && <div className="pt-2" />}
       {!flags.first && (
         <TimelineConnector
@@ -227,12 +237,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
       event.stopPropagation();
       onCheckboxClick();
     }
-  };
-
-  const handleClick = (event: any) => {
-    if (event.code === "Space") {
-      onCheckboxClick();
-    } else {
+    if (event.code === "Enter") {
       onClick();
     }
   };
@@ -247,11 +252,11 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
           selected: false,
         }),
       )}
-      data-testid="task-button"
+      data-testid="task"
       ref={ref}
       onFocus={onFocus}
       onBlur={onBlur}
-      onClick={handleClick}
+      onClick={onClick}
       onKeyUp={handleKeyUp}
       aria-current={focused}
       style={{ gridArea: "content" }}

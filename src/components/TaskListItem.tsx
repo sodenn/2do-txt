@@ -2,7 +2,7 @@ import { TaskBody } from "@/components/TaskBody";
 import { Checkbox, CheckboxProps } from "@/components/ui/checkbox";
 import { ListItem } from "@/components/ui/list";
 import { Task } from "@/utils/task";
-import { forwardRef, useRef } from "react";
+import { KeyboardEvent, forwardRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 interface TaskListItemProps {
@@ -23,10 +23,12 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
       event.stopPropagation();
     };
 
-    const handleButtonClick = (event: any) => {
+    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.code === "Space") {
+        event.preventDefault();
         onCheckedChange();
-      } else {
+      }
+      if (event.code === "Enter") {
         onButtonClick();
       }
     };
@@ -37,7 +39,8 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
         data-testid="task"
         onFocus={onFocus}
         onBlur={onBlur}
-        onClick={handleButtonClick}
+        onClick={onButtonClick}
+        onKeyDown={handleKeyDown}
         className="items-start py-3 sm:py-4"
       >
         <Checkbox

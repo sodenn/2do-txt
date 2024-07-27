@@ -24,9 +24,8 @@ export function ThemeModeSelect() {
       <Select
         value={mode}
         onValueChange={(value) => handleClick(value as ThemeMode)}
-        aria-label="Select theme mode"
       >
-        <SelectTrigger>
+        <SelectTrigger aria-label="Select theme mode">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

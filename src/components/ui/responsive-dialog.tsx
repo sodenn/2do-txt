@@ -20,6 +20,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { DismissableLayerProps } from "@radix-ui/react-dismissable-layer";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { PropsWithChildren, useCallback, useEffect, useState } from "react";
 
@@ -148,19 +149,30 @@ export function ResponsiveDialogHiddenDescription({
   );
 }
 
-export function ResponsiveDialogContent({ children }: PropsWithChildren) {
+export function ResponsiveDialogContent({
+  children,
+  onEscapeKeyDown,
+  ...props
+}: PropsWithChildren<Pick<DismissableLayerProps, "onEscapeKeyDown">>) {
   const { isBreakpointActive } = useBreakpoint();
 
   if (isBreakpointActive("lg")) {
     return (
-      <DialogContent className="flex max-h-[95%] flex-col overflow-hidden px-0">
+      <DialogContent
+        onEscapeKeyDown={onEscapeKeyDown}
+        className="flex max-h-[95%] flex-col overflow-hidden px-0"
+        {...props}
+      >
         {children}
       </DialogContent>
     );
   }
 
   return (
-    <DrawerContent className="flex max-h-[95%] flex-col overflow-hidden px-0">
+    <DrawerContent
+      className="flex max-h-[95%] flex-col overflow-hidden px-0"
+      {...props}
+    >
       {children}
     </DrawerContent>
   );

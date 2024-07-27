@@ -28,19 +28,19 @@ interface DatePickerProps {
   icon?: ReactNode;
 }
 
-function formatDate(date?: Date, short?: boolean, locale?: string) {
+function formatDate(date?: Date, desktop?: boolean, locale?: string) {
   if (!date) {
     return null;
   }
-  if (short) {
-    return formatLocaleDate(date, locale);
+  if (desktop) {
+    return date.toLocaleString(locale, {
+      day: "numeric",
+      weekday: "short",
+      month: "short",
+      year: "numeric",
+    });
   }
-  return date.toLocaleString(locale, {
-    day: "numeric",
-    weekday: "short",
-    month: "short",
-    year: "numeric",
-  });
+  return formatLocaleDate(date, locale);
 }
 
 export function DatePicker(props: DatePickerProps) {

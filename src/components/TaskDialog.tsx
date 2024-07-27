@@ -178,16 +178,24 @@ export function TaskDialog() {
     setSelectedTaskList(undefined);
   };
 
+  const handleEscapeKeyDown = (event: KeyboardEvent) => {
+    if (document.querySelector(`[aria-label="Typeahead menu"]`)) {
+      event.preventDefault();
+    }
+  };
+
   return (
     <ResponsiveDialog
-      data-testid="task-dialog"
       open={open}
       onOpen={handleOpen}
       onClose={closeTaskDialog}
       onExit={handleExit}
       disablePreventScroll
     >
-      <ResponsiveDialogContent>
+      <ResponsiveDialogContent
+        onEscapeKeyDown={handleEscapeKeyDown}
+        data-testid="task-dialog"
+      >
         <ResponsiveDialogHeader>
           <ResponsiveDialogHiddenTitle>
             {task?.id ? t("Edit Task") : t("Create Task")}

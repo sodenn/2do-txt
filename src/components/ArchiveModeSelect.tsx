@@ -52,12 +52,8 @@ export function ArchiveModeSelect() {
             </TooltipContent>
           </Tooltip>
         </div>
-        <Select
-          value={archiveMode}
-          onValueChange={handleChange}
-          aria-label="Select archive mode"
-        >
-          <SelectTrigger>
+        <Select value={archiveMode} onValueChange={handleChange}>
+          <SelectTrigger aria-label="Select archive mode">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

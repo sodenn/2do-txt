@@ -18,9 +18,8 @@ export function LanguageSelect() {
       <Select
         value={language}
         onValueChange={(value) => changeLanguage(value as Language)}
-        aria-label="Select language"
       >
-        <SelectTrigger>
+        <SelectTrigger aria-label="Select language">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

@@ -10,7 +10,10 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
   }
   if (testInfo.title.startsWith("timeline:")) {
     await page.getByRole("button", { name: "Toggle menu" }).click();
-    await page.getByRole("tab", { name: "Settings" }).click();
+    await page.waitForTimeout(200);
+    if (await page.getByRole("tab", { name: "Settings" }).isVisible()) {
+      await page.getByRole("tab", { name: "Settings" }).click();
+    }
     await page.getByLabel("Select task view").click();
     await page.getByLabel("Timeline").click();
     await page.getByRole("button", { name: "Toggle menu" }).click();
@@ -41,12 +44,12 @@ test.describe("Task View", () => {
       page,
     }) => {
       await expect(page.getByTestId("task-list")).toBeVisible();
-      await expect(page.getByTestId("task-button").nth(0)).not.toBeFocused();
-      await page.getByTestId("task-button").nth(0).focus();
-      await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
+      await expect(page.getByTestId("task").first()).not.toBeFocused();
+      await page.getByTestId("task").first().focus();
+      await expect(page.getByTestId("task").first()).toBeFocused();
       await page.keyboard.press("Tab");
-      await expect(page.getByTestId("task-button").nth(0)).not.toBeFocused();
-      await expect(page.getByTestId("task-button").nth(1)).toBeFocused();
+      await expect(page.getByTestId("task").first()).not.toBeFocused();
+      await expect(page.getByTestId("task").nth(1)).toBeFocused();
     });
 
     test(`${taskView}: should navigate through task list by using the arrow keys`, async ({
@@ -55,32 +58,26 @@ test.describe("Task View", () => {
       await expect(page.getByTestId("task-list")).toBeVisible();
       await expect(page.getByTestId("task")).toHaveCount(8);
       await page.keyboard.press("ArrowDown");
-      await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
+      await expect(page.getByTestId("task").nth(0)).toBeFocused();
       await page.keyboard.press("ArrowDown");
-      await expect(page.getByTestId("task-button").nth(0)).not.toBeFocused();
-      await expect(page.getByTestId("task-button").nth(1)).toBeFocused();
+      await expect(page.getByTestId("task").nth(0)).not.toBeFocused();
+      await expect(page.getByTestId("task").nth(1)).toBeFocused();
       await page.keyboard.press("ArrowUp");
-      await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
-      await expect(page.getByTestId("task-button").nth(1)).not.toBeFocused();
+      await expect(page.getByTestId("task").nth(0)).toBeFocused();
+      await expect(page.getByTestId("task").nth(1)).not.toBeFocused();
     });
 
     test(`${taskView}: should complete a task by clicking the checkbox`, async ({
       page,
     }) => {
       await expect(page.getByTestId("task-list")).toBeVisible();
-      const taskCheckbox = page
-        .getByTestId("task")
-        .nth(0)
-        .getByLabel("Complete task");
+      const taskCheckbox = page.getByLabel("Complete task").nth(0);
       expect(await taskCheckbox.getAttribute("aria-checked")).toBe("false");
       await taskCheckbox.click();
       await page.waitForTimeout(300);
       expect(await taskCheckbox.getAttribute("aria-checked")).toBe("true");
       // make sure that the click does not open the task dialog
-      await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-        "aria-hidden",
-        "true",
-      );
+      await expect(page.getByTestId("task-dialog")).not.toBeVisible();
     });
 
     test(`${taskView}: should complete a task by pressing the space key`, async ({
@@ -88,19 +85,13 @@ test.describe("Task View", () => {
     }) => {
       await expect(page.getByTestId("task-list")).toBeVisible();
       await page.keyboard.press("ArrowDown");
-      await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
-      const taskCheckbox = page
-        .getByTestId("task")
-        .nth(0)
-        .getByLabel("Complete task");
+      await expect(page.getByTestId("task").nth(0)).toBeFocused();
+      const taskCheckbox = page.getByLabel("Complete task").nth(0);
       expect(await taskCheckbox.getAttribute("aria-checked")).toBe("false");
       await page.keyboard.press("Space");
       // make sure that the click does not open the task dialog
       await page.waitForTimeout(500);
-      await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-        "aria-hidden",
-        "true",
-      );
+      await expect(page.getByTestId("task-dialog")).not.toBeVisible();
       expect(await taskCheckbox.getAttribute("aria-checked")).toBe("true");
     });
 
@@ -108,24 +99,18 @@ test.describe("Task View", () => {
       page,
     }) => {
       await expect(page.getByTestId("task-list")).toBeVisible();
-      await page.getByTestId("task-button").nth(0).focus();
+      await page.getByTestId("task").nth(0).focus();
       await page.keyboard.press("e");
-      await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-        "aria-hidden",
-        "false",
-      );
+      await expect(page.getByTestId("task-dialog")).toBeVisible();
     });
 
     test(`${taskView}: should open the task dialog by pressing enter`, async ({
       page,
     }) => {
       await expect(page.getByTestId("task-list")).toBeVisible();
-      await page.getByTestId("task-button").nth(0).focus();
+      await page.getByTestId("task").nth(0).focus();
       await page.keyboard.press("Enter");
-      await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-        "aria-hidden",
-        "false",
-      );
+      await expect(page.getByTestId("task-dialog")).toBeVisible();
     });
 
     test(`${taskView}: should hide a completed task`, async ({
@@ -142,16 +127,12 @@ test.describe("Task View", () => {
         .click();
       await page.keyboard.press("Escape");
 
-      const taskItem = page.getByTestId("task-button").nth(0);
+      const taskItem = page.getByTestId("task").nth(0);
 
       await expect(taskItem).toHaveText(
         "Ask John for a jogging session @Private",
       );
-      await page
-        .getByTestId("task")
-        .nth(0)
-        .getByRole("checkbox", { name: "Complete task" })
-        .click();
+      await page.getByLabel("Complete task").nth(0).click();
       await expect(taskItem).not.toHaveText(
         "Ask John for a jogging session @Private",
       );
@@ -159,13 +140,10 @@ test.describe("Task View", () => {
 
     test(`${taskView}: should delete a task via shortcut`, async ({ page }) => {
       await expect(page.getByTestId("task")).toHaveCount(8);
-      await page.getByTestId("task-button").nth(0).focus();
-      await expect(page.getByTestId("task-button").nth(0)).toBeFocused();
+      await page.getByTestId("task").nth(0).focus();
+      await expect(page.getByTestId("task").nth(0)).toBeFocused();
       await page.keyboard.press("d");
-      await expect(page.getByTestId("confirmation-dialog")).toHaveAttribute(
-        "aria-hidden",
-        "false",
-      );
+      await expect(page.getByTestId("confirmation-dialog")).toBeVisible();
       await page.getByRole("button", { name: "Delete" }).click();
       await expect(page.getByTestId("task")).toHaveCount(7);
     });

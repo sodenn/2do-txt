@@ -9,6 +9,9 @@ function NotificationBadge({
   label,
   ...rest
 }: NotificationBadgeProps) {
+  if (!label) {
+    return children;
+  }
   return (
     <div className="relative inline-block" {...rest}>
       {children}

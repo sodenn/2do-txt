@@ -4,11 +4,14 @@ import { PropsWithChildren, useEffect, useState } from "react";
 
 export function ThemeProvider({ children }: PropsWithChildren) {
   const mode = useThemeStore((state) => state.mode);
+  const setMode = useThemeStore((state) => state.setMode);
   const [mounte, setMounte] = useState(false);
 
   useEffect(() => {
+    setMode(mode);
     setMounte(true);
     setStatusBarStyling(mode);
+
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
     if (mode === "system") {
@@ -20,7 +23,15 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     } else {
       root.classList.add(mode);
     }
-  }, [mode]);
+
+    const bodyBgColor = window.getComputedStyle(document.body).backgroundColor;
+    const themeColorMetaTag = document.querySelector(
+      'meta[name="theme-color"]',
+    );
+    if (themeColorMetaTag) {
+      themeColorMetaTag.setAttribute("content", bodyBgColor);
+    }
+  }, [mode, setMode]);
 
   if (!mounte) {
     return null;

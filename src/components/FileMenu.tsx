@@ -63,6 +63,7 @@ export function FileMenu() {
     menuItems.push(
       <DropdownMenuCheckboxItem
         key="All"
+        aria-label="All task lists"
         checked={!activeTaskList}
         onClick={() => handleSetActiveList("")}
       >

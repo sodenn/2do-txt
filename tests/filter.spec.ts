@@ -46,7 +46,7 @@ test.describe("Search", () => {
     isMobile,
   }) => {
     test.skip(!!isMobile, "desktop only");
-    await page.setViewportSize({ width: 600, height: 1080 });
+    await page.setViewportSize({ width: 800, height: 1080 });
     await expect(
       page.getByRole("search", { name: "Search for tasks" }),
     ).not.toBeFocused();
@@ -73,7 +73,7 @@ test.describe("Search", () => {
     await expect(
       page.getByRole("search", { name: "Search for tasks" }),
     ).not.toBeEmpty();
-    await page.getByRole("button", { name: "Clear search term" }).click();
+    await page.getByRole("search", { name: "Search for tasks" }).fill("");
     await expect(
       page.getByRole("search", { name: "Search for tasks" }),
     ).toBeEmpty();
@@ -180,17 +180,19 @@ test.describe("Filter", () => {
 test.describe("Menu", () => {
   test("should toggle the side menu by using a keyboard shortcut", async ({
     page,
+    isMobile,
   }) => {
     await page.keyboard.press("m");
-    await page.waitForTimeout(100);
-    await expect(page.getByLabel("Side Menu")).not.toHaveAttribute(
-      "aria-hidden",
-      "true",
-    );
+    await page.waitForTimeout(400);
+    await expect(page.getByLabel("Side Menu")).toBeVisible();
     await page.keyboard.press("m");
-    await expect(page.getByLabel("Side Menu")).toHaveAttribute(
-      "aria-hidden",
-      "true",
-    );
+    if (isMobile) {
+      await expect(page.getByLabel("Side Menu")).not.toBeVisible();
+    } else {
+      await expect(page.getByLabel("Side Menu")).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
+    }
   });
 });

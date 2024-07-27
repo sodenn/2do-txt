@@ -39,9 +39,8 @@ export function TaskViewSelect() {
       <Select
         value={taskView}
         onValueChange={(value) => handleChange(value as TaskView)}
-        aria-label="Select task view"
       >
-        <SelectTrigger>
+        <SelectTrigger aria-label="Select task view">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

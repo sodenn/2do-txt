@@ -15,8 +15,9 @@ export function ChipList(props: ChipListProps) {
     <ul className="flex flex-wrap gap-2">
       {Object.entries(items).map(([item, usages]) => (
         <li key={item} className="inline-block">
-          <NotificationBadge label={usages === 1 ? 0 : usages}>
+          <NotificationBadge label={usages === 1 ? undefined : usages}>
             <Chip
+              aria-label={item}
               color={color}
               variant={activeItems.includes(item) ? "default" : "outline"}
               onClick={() => onClick?.(item)}

@@ -152,9 +152,8 @@ export function Filter() {
             defaultValue="AND"
             value={filterType}
             onValueChange={(value) => setFilterType(value as FilterType)}
-            aria-label="Filter type"
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="Filter type">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -184,9 +183,8 @@ export function Filter() {
             defaultValue="unsorted"
             value={sortBy}
             onValueChange={(value) => setSortBy(value as SortKey)}
-            aria-label="Sort tasks"
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="Sort tasks">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
