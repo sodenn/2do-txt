@@ -24,6 +24,8 @@ jobs:
     name: 'E2E Tests - ${{ matrix.shard }}'
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.44.1-jammy
     strategy:
       fail-fast: false
       matrix:
