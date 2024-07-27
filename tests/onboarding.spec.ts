@@ -31,11 +31,9 @@ test.describe("New file", () => {
     await page.getByLabel("Create task").click();
     await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor on desktop
-    if (!isMobile) {
-      await expect(
-        page.getByRole("textbox", { name: "Text editor" }),
-      ).toBeFocused();
-    }
+    await expect(
+      page.getByRole("textbox", { name: "Text editor" }),
+    ).toBeFocused();
     // close the current file and create a new one and the same way
     await page.keyboard.press("Escape");
     await page.getByLabel("File menu").click();
