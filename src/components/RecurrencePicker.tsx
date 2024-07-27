@@ -1,12 +1,6 @@
-import { Fade } from "@/components/Fade";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+import { Chip } from "@/components/ui/chip";
 import { Input, InputProps } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -22,7 +16,7 @@ import {
 import { getRecValueMatch } from "@/utils/task";
 import { cn } from "@/utils/tw-utils";
 import { useTooltip } from "@/utils/useTooltip";
-import { CheckIcon, CircleHelpIcon, RefreshCwIcon } from "lucide-react";
+import { CircleHelpIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -79,8 +73,6 @@ function parseValue(value?: string | null) {
 
 export function RecurrencePicker(props: PriorityPickerProps) {
   const [open, setOpen] = useState(false);
-  const [showUnit, setShowUnit] = useState(true);
-  const [showAmount, setShowAmount] = useState(false);
   const [value, setValue] = useState(props.value || null);
   const initialValues = useMemo(
     () => parseValue(props.value),
@@ -101,15 +93,6 @@ export function RecurrencePicker(props: PriorityPickerProps) {
     setUnit(values.unit);
   }, [props.value]);
 
-  useEffect(() => {
-    if (!open) {
-      setTimeout(() => {
-        setShowUnit(true);
-        setShowAmount(false);
-      }, 200);
-    }
-  }, [open]);
-
   const handleSelectUnit = (value: string) => {
     const unit = value as Unit;
     setUnit(unit);
@@ -120,7 +103,6 @@ export function RecurrencePicker(props: PriorityPickerProps) {
       setOpen(false);
     } else {
       handleChange(unit, amount, strict);
-      setShowUnit(false);
     }
   };
 
@@ -144,10 +126,6 @@ export function RecurrencePicker(props: PriorityPickerProps) {
       props.onChange?.(value);
       setValue(value);
     }
-  };
-
-  const handleExitedUnit = () => {
-    setShowAmount(true);
   };
 
   return (
@@ -177,37 +155,22 @@ export function RecurrencePicker(props: PriorityPickerProps) {
         </TooltipTrigger>
         <TooltipContent>{t("Recurrence")}</TooltipContent>
       </Tooltip>
-      <PopoverContent align="start" className="w-[240px] p-0">
-        <Fade
-          duration={100}
-          in={showUnit}
-          unmountOnExit
-          onExited={handleExitedUnit}
-        >
-          <Command className="outline-none" tabIndex={0}>
-            <CommandList>
-              <CommandGroup>
-                {options.map((opt) => (
-                  <CommandItem
-                    key={opt.value}
-                    value={opt.value}
-                    onSelect={handleSelectUnit}
-                  >
-                    {t(opt.label)}
-                    <CheckIcon
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        unit === opt.value ? "opacity-100" : "opacity-0",
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </Fade>
-        <Fade duration={100} in={showAmount} unmountOnExit>
-          <div className="flex flex-col gap-3 p-3">
+      <PopoverContent align="start" className="max-w-sm space-y-3 sm:w-[320px]">
+        <ul className="flex flex-wrap gap-1">
+          {options.map((opt) => (
+            <li className="inline-block" key={opt.value}>
+              <Chip
+                size="sm"
+                onClick={() => handleSelectUnit(opt.value)}
+                variant={opt.value === unit ? "default" : "outline"}
+              >
+                {t(opt.label)}
+              </Chip>
+            </li>
+          ))}
+        </ul>
+        {unit !== "-" && (
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               {unitLabel && unitLabel !== "No recurrence" && (
                 <Label htmlFor="unit">{t(`Number of ${unitLabel}`)}</Label>
@@ -245,7 +208,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               </label>
             </div>
           </div>
-        </Fade>
+        )}
       </PopoverContent>
     </Popover>
   );

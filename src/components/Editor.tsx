@@ -74,7 +74,7 @@ const beautifulMentionsTheme: BeautifulMentionsTheme = {
   "\\+Focused": `${mentionsStyleFocused} shadow-info/30 dark:shadow-info/70`,
   "due:": `${mentionsStyle} bg-warning/5 dark:bg-warning/15 text-warning border-warning`,
   "due:Focused": `${mentionsStyleFocused} shadow-warning/30 dark:shadow-warning/70`,
-  "\\w+:": `${mentionsStyle} bg-primary/5 text-primary/65 border-primary/65`,
+  "\\w+:": `${mentionsStyle} bg-primary/5 text-primary border-primary`,
   "\\w+:Focused": `${mentionsStyleFocused} shadow-primary/30 dark:shadow-primary/70`,
 };
 

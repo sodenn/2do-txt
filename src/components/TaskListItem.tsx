@@ -41,7 +41,7 @@ export const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
         onBlur={onBlur}
         onClick={onButtonClick}
         onKeyDown={handleKeyDown}
-        className="items-start py-3 sm:py-4"
+        className="my-0.5 items-start py-3 sm:py-4"
       >
         <Checkbox
           ref={checkboxRef}
