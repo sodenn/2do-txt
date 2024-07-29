@@ -4,12 +4,12 @@ import { LanguageSelect } from "@/components/LanguageSelect";
 import { PriorityTransformationSelect } from "@/components/PriorityTransformationSelect";
 import { TaskViewSelect } from "@/components/TaskViewSelect";
 import { ThemeModeSelect } from "@/components/ThemeModeSelect";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useCloudStorage } from "@/utils/CloudStorage";
 import { useNotification } from "@/utils/useNotification";
-import { Checkbox, FormControl, FormLabel, Stack } from "@mui/joy";
-import { Box } from "@mui/system";
 import { useTranslation } from "react-i18next";
 
 export function Settings() {
@@ -48,45 +48,54 @@ export function Settings() {
   };
 
   return (
-    <Stack spacing={2}>
+    <div className="space-y-3 text-sm">
       <ThemeModeSelect />
       <TaskViewSelect />
       <LanguageSelect />
-      <Box>
-        <FormLabel sx={{ mb: "0.375rem" }} component="div">
-          {t("Dates")}
-        </FormLabel>
-        <Stack spacing={1} id="dates">
+      <div className="space-y-2">
+        <div className="font-semibold">{t("Dates")}</div>
+        <div className="space-y-2" id="dates">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="createCreationDate"
+              checked={createCreationDate}
+              onCheckedChange={() => toggleCreateCreationDate()}
+            />
+            <Label htmlFor="createCreationDate">{t("Set creation date")}</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="createCompletionDate"
+              checked={createCompletionDate}
+              onCheckedChange={() => toggleCreateCompletionDate()}
+            />
+            <Label htmlFor="createCompletionDate">
+              {t("Set completion date")}
+            </Label>
+          </div>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <div className="font-semibold">{t("Notifications")}</div>
+        <div className="flex items-center space-x-2">
           <Checkbox
-            checked={createCreationDate}
-            label={t("Set creation date")}
-            onChange={() => toggleCreateCreationDate()}
+            id="createCompletionDate"
+            checked={showNotifications}
+            onCheckedChange={() => handleShowNotifications()}
           />
-          <Checkbox
-            checked={createCompletionDate}
-            label={t("Set completion date")}
-            onChange={() => toggleCreateCompletionDate()}
-          />
-        </Stack>
-      </Box>
-      <FormControl>
-        <FormLabel>{t("Notifications")}</FormLabel>
-        <Checkbox
-          checked={showNotifications}
-          label={t("Due tasks")}
-          onChange={() => handleShowNotifications()}
-        />
-      </FormControl>
+          <Label htmlFor="createCompletionDate">{t("Due tasks")}</Label>
+        </div>
+      </div>
       <ArchiveModeSelect />
       <PriorityTransformationSelect />
       {cloudStorageEnabled && (
-        <FormControl>
-          <FormLabel>{t("Cloud storage")}</FormLabel>
+        <div className="space-y-2">
+          <div className="font-semibold">{t("Cloud storage")}</div>
           <CloudStorageConnectionButtons
             onMenuItemClick={() => closeSideSheet()}
           />
-        </FormControl>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }

@@ -1,6 +1,8 @@
-import { AppThemeProvider } from "@/components/AppThemeProvider";
-import { SnackbarProvider } from "@/components/Snackbar";
+import { BreakpointProvider } from "@/components/Breakpoint";
 import { LoaderData, StoreProvider } from "@/components/StoreProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { NonIndexRouteObject, Outlet, useLoaderData } from "react-router-dom";
 
 export { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -17,11 +19,14 @@ export function Component() {
       cloud={loaderData.cloud}
       network={loaderData.network}
     >
-      <AppThemeProvider>
-        <SnackbarProvider>
-          <Outlet />
-        </SnackbarProvider>
-      </AppThemeProvider>
+      <BreakpointProvider>
+        <ThemeProvider>
+          <TooltipProvider>
+            <Outlet />
+            <Toaster />
+          </TooltipProvider>
+        </ThemeProvider>
+      </BreakpointProvider>
     </StoreProvider>
   );
 }

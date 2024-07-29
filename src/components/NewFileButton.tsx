@@ -1,6 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
-import AddTaskIcon from "@mui/icons-material/AddTask";
-import Button from "@mui/joy/Button";
+import { SquareCheckIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function NewFileButton() {
@@ -10,8 +10,6 @@ export function NewFileButton() {
   );
   return (
     <Button
-      fullWidth
-      variant="solid"
       tabIndex={0}
       aria-label="Create task"
       onClick={() =>
@@ -20,8 +18,8 @@ export function NewFileButton() {
           createExampleFile: false,
         })
       }
-      startDecorator={<AddTaskIcon />}
     >
+      <SquareCheckIcon className="mr-2 h-4 w-4" />
       {t("Create Task")}
     </Button>
   );

@@ -1,18 +1,12 @@
 import { Fade } from "@/components/Fade";
+import { SafeArea } from "@/components/SafeArea";
+import { Button } from "@/components/ui/button";
 import { useIsInViewport } from "@/utils/useIsInViewport";
-import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { Box, IconButton, styled } from "@mui/joy";
+import { ChevronDownIcon, ChevronsUpIcon } from "lucide-react";
 
 interface ScrollTopProps {
   target: HTMLElement;
 }
-
-const StyledBox = styled(Box)({
-  position: "fixed",
-  paddingRight: "env(safe-area-inset-right)",
-  paddingBottom: "env(safe-area-inset-bottom)",
-});
 
 export function ScrollTo({ target }: ScrollTopProps) {
   const { visible, direction } = useIsInViewport(target);
@@ -26,30 +20,23 @@ export function ScrollTo({ target }: ScrollTopProps) {
 
   const icon =
     direction === "above" ? (
-      <KeyboardArrowDown />
+      <ChevronDownIcon className="h-4 w-4" />
     ) : direction === "below" ? (
-      <KeyboardArrowUpIcon />
+      <ChevronsUpIcon className="h-4 w-4" />
     ) : null;
 
   return (
     <Fade in={!visible}>
-      <StyledBox
+      <SafeArea
+        right
+        bottom
         onClick={handleClick}
-        sx={{
-          bottom: 16,
-          right: { xs: 16, sm: 32 },
-        }}
+        className="fixed bottom-[16px] right-[16px] sm:right-[32px]"
       >
-        <IconButton
-          tabIndex={-1}
-          variant="soft"
-          color="primary"
-          size="md"
-          aria-label="Scroll to"
-        >
+        <Button tabIndex={-1} size="icon" aria-label="Scroll to">
           {icon}
-        </IconButton>
-      </StyledBox>
+        </Button>
+      </SafeArea>
     </Fade>
   );
 }

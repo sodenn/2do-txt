@@ -1,4 +1,13 @@
 import { StartEllipsis } from "@/components/StartEllipsis";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import logo from "@/images/logo.png";
 import { hasTouchScreen } from "@/native-api/platform";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
@@ -6,20 +15,12 @@ import { useFileManagementDialogStore } from "@/stores/file-management-dialog-st
 import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
 import { useTask } from "@/utils/useTask";
-import AddIcon from "@mui/icons-material/Add";
-import AllInboxRoundedIcon from "@mui/icons-material/AllInboxRounded";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import KeyboardIcon from "@mui/icons-material/Keyboard";
 import {
-  Divider,
-  Dropdown,
-  ListItemDecorator,
-  Menu,
-  MenuButton,
-  MenuItem,
-} from "@mui/joy";
+  ChevronDownIcon,
+  InboxIcon,
+  KeyboardIcon,
+  PlusIcon,
+} from "lucide-react";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -60,92 +61,82 @@ export function FileMenu() {
 
   if (taskLists.length > 1) {
     menuItems.push(
-      <MenuItem
+      <DropdownMenuCheckboxItem
         key="All"
-        selected={!activeTaskList}
+        aria-label="All task lists"
+        checked={!activeTaskList}
         onClick={() => handleSetActiveList("")}
       >
-        <ListItemDecorator>
-          <DashboardIcon fontSize="small" />
-        </ListItemDecorator>{" "}
         {t("All")}
-      </MenuItem>,
+      </DropdownMenuCheckboxItem>,
     );
   }
 
   if (taskLists.length > 1) {
     taskLists.forEach(({ filePath }) => {
       menuItems.push(
-        <MenuItem
-          selected={activeTaskList?.filePath === filePath}
+        <DropdownMenuCheckboxItem
+          checked={activeTaskList?.filePath === filePath}
           onClick={() => handleSetActiveList(filePath)}
           key={filePath}
         >
-          <ListItemDecorator>
-            <InsertDriveFileIcon fontSize="small" />
-          </ListItemDecorator>
           <StartEllipsis>{filePath}</StartEllipsis>
-        </MenuItem>,
+        </DropdownMenuCheckboxItem>,
       );
     });
   }
 
   if (taskLists.length > 0) {
     menuItems.push(
-      <MenuItem onClick={handleManageFile} key="Files…">
-        <ListItemDecorator>
-          <AllInboxRoundedIcon fontSize="small" />
-        </ListItemDecorator>{" "}
+      <DropdownMenuItem onClick={handleManageFile} key="Files…">
+        <InboxIcon className="mr-2 h-4 w-4" />
         {t("Files…")}
-      </MenuItem>,
+      </DropdownMenuItem>,
     );
   }
 
   if (!touchScreen && taskLists.length > 1) {
-    menuItems.push(<Divider key="divider" />);
+    menuItems.push(<DropdownMenuSeparator key="divider" />);
   }
 
   if (!touchScreen) {
     menuItems.push(
-      <MenuItem onClick={handleKeyboardShortcutsClick} key="Keyboard Shortcuts">
-        <ListItemDecorator>
-          <KeyboardIcon fontSize="small" />
-        </ListItemDecorator>{" "}
+      <DropdownMenuItem
+        onClick={handleKeyboardShortcutsClick}
+        key="Keyboard Shortcuts"
+      >
+        <KeyboardIcon className="mr-2 h-4 w-4" />
         {t("Keyboard Shortcuts")}
-      </MenuItem>,
+      </DropdownMenuItem>,
     );
   }
 
   if (menuItems.length === 1) {
     menuItems.push(
-      <MenuItem onClick={handleCreateFile} key="Create file">
-        <ListItemDecorator>
-          <AddIcon fontSize="small" />
-        </ListItemDecorator>{" "}
+      <DropdownMenuItem onClick={handleCreateFile} key="Create file">
+        <PlusIcon className="mr-2 h-4 w-4" />
         {t("Create")}
-      </MenuItem>,
+      </DropdownMenuItem>,
     );
   }
 
   return (
-    <Dropdown>
-      <MenuButton
-        tabIndex={-1}
-        sx={{ maxWidth: { xs: 170, md: 300 }, pl: 2 }}
-        size="md"
-        color="primary"
-        variant="soft"
-        aria-label="File menu"
-        startDecorator={<img src={logo} alt="Logo" height={22} />}
-        endDecorator={<ArrowDropDownIcon />}
-      >
-        <StartEllipsis>
-          {activeTaskList ? activeTaskList.fileName : "2do.txt"}
-        </StartEllipsis>
-      </MenuButton>
-      <Menu sx={{ maxWidth: 350 }} placement="bottom-start">
-        {menuItems}
-      </Menu>
-    </Dropdown>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          tabIndex={-1}
+          className="max-w-[170px] lg:max-w-[300px]"
+          variant="outline"
+          aria-label="File menu"
+        >
+          <img src={logo} className="mr-2 h-6 w-6" alt="Logo" height={22} />
+          <StartEllipsis>
+            {activeTaskList ? activeTaskList.fileName : "2do.txt"}
+          </StartEllipsis>
+          <ChevronDownIcon className="ml-2 h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">{menuItems}</DropdownMenuContent>
+    </DropdownMenu>
   );
 }

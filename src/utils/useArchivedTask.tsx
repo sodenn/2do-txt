@@ -1,4 +1,5 @@
-import { SnackbarActionButton, useSnackbar } from "@/components/Snackbar";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
   deleteFile,
   getFilename,
@@ -25,7 +26,7 @@ interface ArchiveTaskOptions {
 }
 
 export function useArchivedTask() {
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const openArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.openArchivedTasksDialog,
   );
@@ -106,9 +107,9 @@ export function useArchivedTask() {
 
       if (updateArchiveMode.some((i) => i === "enable")) {
         setArchiveMode("manual");
-        openSnackbar({
+        toast({
           color: "primary",
-          message: t(
+          description: t(
             "Task archiving was turned on because a done.txt file was found",
           ),
         });
@@ -130,7 +131,7 @@ export function useArchivedTask() {
       archiveMode,
       downloadFile,
       setArchiveMode,
-      openSnackbar,
+      toast,
       syncFile,
       t,
     ],
@@ -224,26 +225,26 @@ export function useArchivedTask() {
 
       await saveDoneFile(filePath, text);
 
-      openSnackbar({
-        color: "success",
-        message: t("Task archived", {
+      toast({
+        variant: "success",
+        description: t("Task archived", {
           fileName: getFilename(filePath),
         }),
-        renderAction: (closeSnackbar) => (
-          <SnackbarActionButton
+        action: (
+          <ToastAction
+            altText="Archived tasks"
             onClick={() => {
               openArchivedTasksDialog({
                 filePath,
               });
-              closeSnackbar();
             }}
           >
             {t("Archived tasks")}
-          </SnackbarActionButton>
+          </ToastAction>
         ),
       });
     },
-    [openSnackbar, loadDoneFile, saveDoneFile, openArchivedTasksDialog, t],
+    [toast, loadDoneFile, saveDoneFile, openArchivedTasksDialog, t],
   );
 
   const archiveTasks = useCallback(
@@ -282,9 +283,9 @@ export function useArchivedTask() {
 
           const doneFilePath = getDoneFilePath(filePath);
           if (doneFilePath && newCompletedTasks.length > 0) {
-            openSnackbar({
-              color: "success",
-              message: t("All completed tasks have been archived", {
+            toast({
+              variant: "success",
+              description: t("All completed tasks have been archived", {
                 doneFilePath,
               }),
             });
@@ -294,7 +295,7 @@ export function useArchivedTask() {
         }),
       );
     },
-    [openSnackbar, loadDoneFile, saveDoneFile, t],
+    [toast, loadDoneFile, saveDoneFile, t],
   );
 
   const restoreArchivedTasks = useCallback(
@@ -323,9 +324,9 @@ export function useArchivedTask() {
 
           await deleteFile(doneFilePath);
 
-          openSnackbar({
-            color: "success",
-            message: t("All completed tasks have been restored", {
+          toast({
+            variant: "success",
+            description: t("All completed tasks have been restored", {
               doneFilePath,
             }),
           });
@@ -335,7 +336,7 @@ export function useArchivedTask() {
         }),
       );
     },
-    [deleteCloudFile, openSnackbar, loadDoneFile, t],
+    [deleteCloudFile, toast, loadDoneFile, t],
   );
 
   return {

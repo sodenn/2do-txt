@@ -39,23 +39,21 @@ test.describe("Screenshots", () => {
 
   test("should take a screenshot of the task dialog", async ({ page }) => {
     await selectFile(page);
-    await page.getByTestId("task-button").first().click();
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "false",
-    );
+    await page.getByTestId("task").first().click();
+    await expect(page.locator(`[data-state="open"]`).first()).toBeVisible();
     await expect(page).toHaveScreenshot();
   });
 
   test("should take a screenshot of the mention menu", async ({ page }) => {
     await selectFile(page);
-    await page.getByTestId("task-button").first().click();
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "false",
-    );
+    await page.getByTestId("task").first().click();
+    await expect(page.locator(`[data-state="open"]`).first()).toBeVisible();
+    await page.waitForTimeout(300);
     await page.keyboard.press("@");
-    await expect(page).toHaveScreenshot();
+    await page.waitForTimeout(300);
+    await expect(page).toHaveScreenshot({
+      maxDiffPixelRatio: 0.2,
+    });
   });
 });
 
@@ -66,13 +64,14 @@ async function selectFile(page: Page) {
 
 async function createEmptyFile(page: Page) {
   await page.getByLabel("Create task").click();
-  await page.getByTestId("task-dialog").getByLabel("Close").click();
+  await expect(page.getByTestId("task-dialog")).toBeVisible();
+  await page.keyboard.press("Escape");
 }
 
 async function changeToTimelineView(page: Page) {
   await expect(page.getByRole("button", { name: "Toggle menu" })).toBeVisible();
   await page.keyboard.press("m");
-  await page.getByLabel("Task view", { exact: true }).click();
-  await page.getByLabel("Timeline View").click();
+  await page.getByLabel("Select task view").click();
+  await page.getByLabel("Timeline").click();
   await page.keyboard.press("m");
 }

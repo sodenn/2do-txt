@@ -1,10 +1,11 @@
 import { Fade } from "@/components/Fade";
 import { SearchInput } from "@/components/SearchInput";
-import SearchIcon from "@mui/icons-material/Search";
-import { Box, IconButton, InputProps } from "@mui/joy";
-import { forwardRef, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { SearchIcon } from "lucide-react";
+import { forwardRef, InputHTMLAttributes, useRef, useState } from "react";
 
-interface ExpandableSearchProps extends InputProps {
+export interface ExpandableSearchProps
+  extends InputHTMLAttributes<HTMLInputElement> {
   onExpand?: (expanded: boolean) => void;
 }
 
@@ -15,7 +16,7 @@ export const ExpandableSearch = forwardRef<
   const { value, onChange, onExpand } = props;
   const [showButton, setShowButton] = useState(!value);
   const [showInput, setShowInput] = useState(!!value);
-  const containerRef = useRef<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleBlur = () => {
     if (!value) {
@@ -66,17 +67,9 @@ export const ExpandableSearch = forwardRef<
 
   return (
     <>
-      <Box sx={{ display: { xs: "none", sm: "flex" } }}>{input}</Box>
-      <Box
-        sx={{
-          flex: 1,
-          display: { xs: "flex", sm: "none" },
-          overflow: "hidden",
-          alignItems: "center",
-        }}
-        ref={containerRef}
-      >
-        <Box sx={{ flex: 1 }}>
+      <div className="hidden sm:flex">{input}</div>
+      <div className="flex flex-1 items-center sm:hidden" ref={containerRef}>
+        <div className="flex-1">
           <Fade
             in={showInput}
             unmountOnExit
@@ -85,26 +78,26 @@ export const ExpandableSearch = forwardRef<
           >
             <div>{input}</div>
           </Fade>
-        </Box>
-        <Box sx={{ flexShrink: 0 }}>
+        </div>
+        <div className="flex-shrink-0">
           <Fade
             in={showButton}
             unmountOnExit
             onExit={handleExitButton}
             onExited={handleExitedButton}
           >
-            <IconButton
+            <Button
               tabIndex={-1}
-              size="md"
-              variant="soft"
+              size="icon"
+              variant="secondary"
               aria-label="Expand search bar"
               onClick={() => setShowButton(false)}
             >
-              <SearchIcon />
-            </IconButton>
+              <SearchIcon className="h-4 w-4" />
+            </Button>
           </Fade>
-        </Box>
-      </Box>
+        </div>
+      </div>
     </>
   );
 });

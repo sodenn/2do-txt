@@ -1,4 +1,7 @@
-import { getPreferencesItem } from "@/native-api/preferences";
+import {
+  getPreferencesItem,
+  setPreferencesItem,
+} from "@/native-api/preferences";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";
 
@@ -35,6 +38,7 @@ export function initializeThemeStore(
     ...preloadedState,
     setMode: (mode: ThemeMode) => {
       set({ mode });
+      setPreferencesItem("theme-mode", mode);
     },
   }));
 }

@@ -1,6 +1,12 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useFilterStore } from "@/stores/filter-store";
 import { TaskView, useSettingsStore } from "@/stores/settings-store";
-import { FormControl, FormLabel, Option, Select, SelectProps } from "@mui/joy";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -19,7 +25,7 @@ export function TaskViewSelect() {
     [t],
   );
 
-  const handleChange: SelectProps<TaskView, false>["onChange"] = (_, value) => {
+  const handleChange = (value: TaskView) => {
     const newValue = value || "list";
     if (newValue === "timeline") {
       setSortBy("dueDate");
@@ -28,25 +34,24 @@ export function TaskViewSelect() {
   };
 
   return (
-    <FormControl>
-      <FormLabel>{t("Task view")}</FormLabel>
+    <div className="space-y-2">
+      <div className="font-semibold">{t("Task view")}</div>
       <Select
         value={taskView}
-        onChange={handleChange}
-        renderValue={(opt) => (opt ? labels[opt.value] : null)}
-        slotProps={{
-          root: {
-            "aria-label": "Select task view",
-          },
-        }}
+        onValueChange={(value) => handleChange(value as TaskView)}
       >
-        <Option value="list" aria-label="List View">
-          {labels.list}
-        </Option>
-        <Option value="timeline" aria-label="Timeline View">
-          {labels.timeline}
-        </Option>
+        <SelectTrigger aria-label="Select task view">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="list" aria-label="List View">
+            {labels.list}
+          </SelectItem>
+          <SelectItem value="timeline" aria-label="Timeline View">
+            {labels.timeline}
+          </SelectItem>
+        </SelectContent>
       </Select>
-    </FormControl>
+    </div>
   );
 }

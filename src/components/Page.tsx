@@ -5,45 +5,35 @@ import { FileCreateDialog } from "@/components/FileCreateDialog";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
 import { FilePicker } from "@/components/FilePicker";
 import { Header } from "@/components/Header";
+import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
 import { PageEffect } from "@/components/PageEffect";
+import { SafeArea } from "@/components/SafeArea";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
-import { MainContainer, SideSheet } from "@/components/SideSheet";
+import { SideSheet } from "@/components/SideSheet";
 import { TaskDialog } from "@/components/TaskDialog";
 import { TaskView } from "@/components/TaskView";
 import { WebDAVDialog } from "@/components/WebDAVDialog";
-import { useScrollingStore } from "@/stores/scrolling-store";
-import { Box, Container, styled } from "@mui/joy";
-
-const SafeAreaContainer = styled(Container)(({ theme }) => ({
-  paddingRight: "env(safe-area-inset-right)",
-  paddingLeft: "env(safe-area-inset-left)",
-  paddingBottom: "env(safe-area-inset-bottom)",
-  [theme.breakpoints.up("sm")]: {
-    paddingTop: theme.spacing(1),
-  },
-  [theme.breakpoints.up("lg")]: {
-    paddingTop: theme.spacing(2),
-  },
-}));
 
 export function Component() {
-  const top = useScrollingStore((state) => state.top);
   return (
     <FilePicker>
-      <Header divider={top > 10} />
-      <Box
-        data-testid="page"
-        sx={{ display: "flex", overflowY: "auto", flex: "auto" }}
-      >
-        <SideSheet />
-        <MainContainer>
-          <SafeAreaContainer disableGutters id="ptr-container">
+      <Header />
+      <SideSheet />
+      <LayoutContent>
+        <SafeArea
+          right
+          bottom
+          left
+          className="container mx-auto"
+          id="ptr-container"
+        >
+          <div className="px-2 pt-1 sm:px-4 sm:pt-2">
             <TaskView />
             <Onboarding />
-          </SafeAreaContainer>
-        </MainContainer>
-      </Box>
+          </div>
+        </SafeArea>
+      </LayoutContent>
       <TaskDialog />
       <FileCreateDialog />
       <CloudFileDialog />

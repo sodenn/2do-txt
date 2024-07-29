@@ -1,6 +1,6 @@
-import logo from "@/images/logo.png";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { hideSplashScreen } from "@/native-api/splash-screen";
-import { Alert, CssBaseline, Stack, Typography } from "@mui/joy";
+import { TriangleAlertIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouteError } from "react-router-dom";
@@ -15,29 +15,28 @@ export function ErrorBoundary() {
   }, []);
 
   return (
-    <>
-      <CssBaseline />
-      <Stack
-        spacing={1}
-        direction="row"
-        alignItems="center"
-        sx={{ py: 2, px: 3 }}
-      >
-        <img src={logo} alt="Logo" height={28} />
-        <Typography level="title-lg" component="div">
-          {t("Error")}
-        </Typography>
-      </Stack>
-      <Stack spacing={2} sx={{ my: 2, mx: 3 }}>
-        <Typography gutterBottom level="body-md">
-          {t("An error has occurred")}
-        </Typography>
-        {message && (
-          <Alert variant="outlined" color="danger" sx={{ userSelect: "text" }}>
-            {t("Error message")}: <code>{message}</code>
-          </Alert>
-        )}
-      </Stack>
-    </>
+    <div className="flex h-full w-screen items-center justify-center sm:h-screen">
+      <div className="flex max-w-lg items-start gap-4">
+        <TriangleAlertIcon className="mt-1 h-8 w-8 flex-shrink-0" />
+        <div className="flex flex-col gap-4">
+          <div>
+            <div className="text-2xl font-bold tracking-tight">
+              {t("Error")}
+            </div>
+            <div className="text-muted-foreground">
+              {t("An error has occurred")}
+            </div>
+          </div>
+          {message && (
+            <Alert variant="destructive">
+              <AlertTitle>{t("Error message")}</AlertTitle>
+              <AlertDescription>
+                <code className="select-text">{message}</code>
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

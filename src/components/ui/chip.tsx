@@ -1,0 +1,207 @@
+import { cva, type VariantProps } from "class-variance-authority";
+import { HTMLAttributes, KeyboardEvent } from "react";
+
+import { cn } from "@/utils/tw-utils";
+
+const chipVariants = cva(
+  "inline-flex items-center rounded-xl border transition-colors focus:outline-none focus-visible:outline-none",
+  {
+    variants: {
+      variant: {
+        default: "",
+        outline: "",
+      },
+      color: {
+        primary: "",
+        success: "",
+        info: "",
+        warning: "",
+        danger: "",
+        secondary: "",
+      },
+      size: {
+        default: "px-2.5 py-[1px]",
+        sm: "px-2 text-sm",
+      },
+      clickable: {
+        false: "",
+        true: "",
+      },
+    },
+    compoundVariants: [
+      {
+        color: "primary",
+        variant: "default",
+        clickable: true,
+        className:
+          "bg-primary border-primary text-primary-foreground hover:brightness-90 focus-visible:brightness-90",
+      },
+      {
+        color: "primary",
+        variant: "outline",
+        clickable: true,
+        className: "border hover:bg-accent focus-visible:bg-accent",
+      },
+      {
+        color: "primary",
+        variant: "default",
+        clickable: false,
+        className:
+          "bg-primary border-primary text-primary-foreground brightness-90",
+      },
+      {
+        color: "primary",
+        variant: "outline",
+        clickable: false,
+        className: "border",
+      },
+      {
+        color: "success",
+        variant: "default",
+        clickable: true,
+        className:
+          "bg-success border-success text-success-foreground hover:brightness-90 focus-visible:brightness-90",
+      },
+      {
+        color: "success",
+        variant: "outline",
+        clickable: true,
+        className:
+          "text-success border-success hover:bg-success/5 hover:dark:bg-success/15 focus-visible:bg-success/10 focus-visible:dark:bg-success/20",
+      },
+      {
+        color: "success",
+        variant: "default",
+        clickable: false,
+        className:
+          "bg-success border-success text-success-foreground brightness-90",
+      },
+      {
+        color: "success",
+        variant: "outline",
+        clickable: false,
+        className:
+          "text-success border-success bg-success/5 dark:bg-success/15",
+      },
+      {
+        color: "info",
+        variant: "default",
+        clickable: true,
+        className:
+          "bg-info border-info text-info-foreground hover:brightness-90 focus-visible:brightness-90",
+      },
+      {
+        color: "info",
+        variant: "outline",
+        clickable: true,
+        className:
+          "text-info border-info hover:bg-info/5 hover:dark:bg-info/15 focus-visible:bg-info/10 focus-visible:dark:bg-info/20",
+      },
+      {
+        color: "info",
+        variant: "default",
+        clickable: false,
+        className: "bg-info border-info text-info-foreground brightness-90",
+      },
+      {
+        color: "info",
+        variant: "outline",
+        clickable: false,
+        className: "text-info border-info bg-info/5 dark:bg-info/15",
+      },
+      {
+        color: "warning",
+        variant: "default",
+        clickable: true,
+        className:
+          "bg-warning border-warning text-warning-foreground hover:brightness-90 focus-visible:brightness-90",
+      },
+      {
+        color: "warning",
+        variant: "outline",
+        clickable: true,
+        className:
+          "text-warning border-warning hover:bg-warning/5 hover:dark:bg-warning/15 focus-visible:bg-warning/10 focus-visible:dark:bg-warning/20",
+      },
+      {
+        color: "warning",
+        variant: "default",
+        clickable: false,
+        className:
+          "bg-warning border-warning text-warning-foreground brightness-90",
+      },
+      {
+        color: "warning",
+        variant: "outline",
+        clickable: false,
+        className:
+          "text-warning border-warning bg-warning/5 dark:bg-warning/15",
+      },
+      {
+        color: "danger",
+        variant: "default",
+        clickable: true,
+        className:
+          "bg-danger border-danger text-danger-foreground hover:brightness-90 focus-visible:brightness-90",
+      },
+      {
+        color: "danger",
+        variant: "outline",
+        clickable: true,
+        className:
+          "text-danger border-danger hover:bg-danger/5 hover:dark:bg-danger/15 focus-visible:bg-danger/10 focus-visible:dark:bg-danger/20",
+      },
+      {
+        color: "danger",
+        variant: "default",
+        clickable: false,
+        className:
+          "bg-danger border-danger text-danger-foreground brightness-90",
+      },
+      {
+        color: "danger",
+        variant: "outline",
+        clickable: false,
+        className: "text-danger border-danger bg-danger/5 dark:bg-danger/15",
+      },
+    ],
+    defaultVariants: {
+      variant: "default",
+      color: "primary",
+      size: "default",
+      clickable: false,
+    },
+  },
+);
+
+export interface ChipProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "color">,
+    VariantProps<typeof chipVariants> {}
+
+function Chip({ className, color, size, variant, ...props }: ChipProps) {
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      // @ts-ignore
+      props.onClick?.(event);
+    }
+  };
+
+  return (
+    <div className="inline-flex rounded-xl bg-background">
+      <div
+        tabIndex={props.onClick ? 0 : undefined}
+        role={props.onClick ? "button" : undefined}
+        className={cn(
+          chipVariants({ variant, color, size, clickable: !!props.onClick }),
+          className,
+          props.onClick && "cursor-pointer",
+        )}
+        onKeyDown={handleKeyDown}
+        {...props}
+      />
+    </div>
+  );
+}
+
+export { Chip, chipVariants };

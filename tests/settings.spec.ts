@@ -26,7 +26,7 @@ test.describe("Appearance", () => {
     await page.getByLabel("Dark").click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
-      "rgb(0, 0, 0)",
+      "rgb(6, 13, 19)",
     );
     await checkInLocalStorage(page, "theme-mode", "dark");
   });

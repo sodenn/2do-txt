@@ -20,7 +20,7 @@ test.describe("Keyboard shortcuts", () => {
     );
     await page.keyboard.press("ArrowDown"); // ArrowDown = keyboard shortcuts for selecting a task
     await page.waitForTimeout(200);
-    await expect(page.getByTestId("task-button").first()).not.toBeFocused();
+    await expect(page.getByTestId("task").first()).not.toBeFocused();
   });
 
   test("should not trigger keyboard shortcuts when menu is open", async ({
@@ -29,18 +29,19 @@ test.describe("Keyboard shortcuts", () => {
     await page.getByLabel("File menu").click();
     await page.keyboard.press("ArrowDown");
     await page.waitForTimeout(200);
-    await expect(page.getByTestId("task-button").first()).not.toBeFocused();
+    await expect(page.getByTestId("task").first()).not.toBeFocused();
   });
 
   test("should not trigger keyboard shortcuts when select is open", async ({
     page,
   }) => {
     await page.keyboard.press("m");
+    await page.waitForTimeout(200);
     await page.getByLabel("Filter type").focus();
     await page.keyboard.press("Enter");
     await page.keyboard.press("ArrowDown");
     await page.waitForTimeout(200);
-    await expect(page.getByTestId("task-button").first()).not.toBeFocused();
+    await expect(page.getByTestId("task").first()).not.toBeFocused();
   });
 
   test("should not trigger keyboard shortcuts when backdrop is open", async ({
@@ -49,6 +50,6 @@ test.describe("Keyboard shortcuts", () => {
     await page.keyboard.press("n");
     await page.keyboard.press("ArrowDown");
     await page.waitForTimeout(200);
-    await expect(page.getByTestId("task-button").first()).not.toBeFocused();
+    await expect(page.getByTestId("task").first()).not.toBeFocused();
   });
 });

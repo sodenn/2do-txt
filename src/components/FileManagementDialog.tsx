@@ -1,11 +1,27 @@
+import { Fade } from "@/components/Fade";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { List, ListItem } from "@/components/ui/list";
 import {
   ResponsiveDialog,
-  ResponsiveDialogActions,
+  ResponsiveDialogBody,
   ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogHiddenDescription,
   ResponsiveDialogTitle,
-} from "@/components/ResponsiveDialog";
-import { useSnackbar } from "@/components/Snackbar";
-import { StartEllipsis } from "@/components/StartEllipsis";
+} from "@/components/ui/responsive-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
 import { writeToClipboard } from "@/native-api/clipboard";
 import { fileExists, getFilename, readFile } from "@/native-api/filesystem";
 import { hasTouchScreen } from "@/native-api/platform";
@@ -24,6 +40,7 @@ import {
 } from "@/utils/CloudStorage";
 import { formatLocalDateTime, parseDate } from "@/utils/date";
 import { getDoneFilePath } from "@/utils/todo-files";
+import { cn } from "@/utils/tw-utils";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
 import {
@@ -47,35 +64,21 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import AddIcon from "@mui/icons-material/Add";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import DownloadIcon from "@mui/icons-material/Download";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import SyncIcon from "@mui/icons-material/Sync";
 import {
-  Box,
-  Button,
-  CircularProgress,
-  Dropdown,
-  IconButton,
-  List,
-  ListItem,
-  ListItemContent,
-  ListItemDecorator,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/joy";
+  CheckIcon,
+  ChevronsUpDownIcon,
+  ClipboardIcon,
+  CloudOffIcon,
+  DownloadIcon,
+  EllipsisVertical,
+  FolderOpenIcon,
+  GripVerticalIcon,
+  LoaderCircleIcon,
+  PlusIcon,
+  RefreshCcwIcon,
+  TrashIcon,
+  XIcon,
+} from "lucide-react";
 import React, { memo, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -89,8 +92,6 @@ interface FileListItemProps {
   filePath: string;
   onClose: (filePath: string) => void;
   onDownload: (filePath: string) => void;
-  markedForClosing?: string;
-  onMarkedForClosing: (filePath?: string) => void;
   disableDrag: boolean;
 }
 
@@ -98,8 +99,8 @@ interface FileMenuProps {
   filePath: string;
   cloudFileRef?: CloudFileRefWithIdentifier;
   onChange: (cloudFileRef?: CloudFileRefWithIdentifier) => void;
-  onDownloadClick: () => void;
-  onMarkedForClosing: (filePath?: string) => void;
+  onDownload: () => void;
+  onClose: (filePath?: string) => void;
 }
 
 interface CloudSyncMenuItemProps {
@@ -139,18 +140,23 @@ export function FileManagementDialog() {
 
   return (
     <ResponsiveDialog
-      fullWidth
-      disableFullscreen
       open={fileManagementDialogOpen}
       onClose={closeFileManagementDialog}
     >
-      <ResponsiveDialogTitle>{t("Files")}</ResponsiveDialogTitle>
       <ResponsiveDialogContent>
-        <FileList onClose={handleCloseFile} />
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>{t("Files")}</ResponsiveDialogTitle>
+          <ResponsiveDialogHiddenDescription>
+            Files
+          </ResponsiveDialogHiddenDescription>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogBody>
+          <FileList onClose={handleCloseFile} />
+        </ResponsiveDialogBody>
+        <ResponsiveDialogFooter>
+          <FileManagementActions />
+        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
-      <ResponsiveDialogActions>
-        <FileManagementActions />
-      </ResponsiveDialogActions>
     </ResponsiveDialog>
   );
 }
@@ -200,7 +206,7 @@ function FileManagementActions() {
   if (cloudStorages.length === 0) {
     return (
       <>
-        <Button onClick={handleOpenFile}>
+        <Button tabIndex={-1} variant="secondary" onClick={handleOpenFile}>
           {platform === "desktop" ? t("Open") : t("Import")}
         </Button>
         <Button onClick={handleCreateFile}>{t("Create")}</Button>
@@ -209,52 +215,45 @@ function FileManagementActions() {
   }
 
   return (
-    <Dropdown>
-      <MenuButton
-        tabIndex={0}
-        color="primary"
-        variant="solid"
-        aria-label="Choose action"
-        endDecorator={<ArrowDropDownIcon />}
-      >
-        {t("Choose action")}
-      </MenuButton>
-      <Menu
-        sx={{ zIndex: (theme) => theme.vars.zIndex.modal }}
-        placement="bottom-end"
-      >
-        <MenuItem onClick={handleCreateFile}>
-          <ListItemDecorator>
-            <AddIcon />
-          </ListItemDecorator>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          tabIndex={0}
+          variant="outline"
+          className="w-full justify-start"
+          aria-label="Choose action"
+        >
+          {t("Choose action")}
+          <ChevronsUpDownIcon className="ml-2 h-4 w-4 opacity-50" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={handleCreateFile}>
+          <PlusIcon className="mr-2 h-4 w-4" />
           {t("Create")}
-        </MenuItem>
-        <MenuItem onClick={handleOpenFile}>
-          <ListItemDecorator>
-            <FolderOpenIcon />
-          </ListItemDecorator>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleOpenFile}>
+          <FolderOpenIcon className="mr-2 h-4 w-4" />
           {platform === "desktop" ? t("Open") : t("Import")}
-        </MenuItem>
+        </DropdownMenuItem>
         {cloudStorages
           .map((s) => s.provider)
           .map((provider) => (
-            <MenuItem
+            <DropdownMenuItem
               key={provider}
               onClick={() => handleImportFromStorage(provider)}
             >
-              <ListItemDecorator>
-                {renderCloudStorageIcon(provider)}
-              </ListItemDecorator>
+              {renderCloudStorageIcon(provider)}
               {t("Cloud storage")}
-            </MenuItem>
+            </DropdownMenuItem>
           ))}
-      </Menu>
-    </Dropdown>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
 const FileList = memo((props: FileListProps) => {
-  const { onClose, ...other } = props;
+  const { onClose } = props;
   const { taskLists, reorderTaskList, downloadTodoFile, closeTodoFile } =
     useTask();
   const { unlinkCloudFile } = useCloudStorage();
@@ -265,7 +264,6 @@ const FileList = memo((props: FileListProps) => {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
-  const [markedForClosing, setMarkedForClosing] = useState<string>();
 
   // update list items when a file was closed/deleted
   useEffect(() => {
@@ -300,7 +298,7 @@ const FileList = memo((props: FileListProps) => {
   }
 
   return (
-    <List variant="outlined" sx={{ borderRadius: "sm" }} {...other}>
+    <List variant="outline">
       <DndContext
         sensors={sensors}
         modifiers={[restrictToVerticalAxis, restrictToParentElement]}
@@ -314,8 +312,6 @@ const FileList = memo((props: FileListProps) => {
               filePath={filePath}
               onDownload={handleDownload}
               onClose={handleCloseFile}
-              markedForClosing={markedForClosing}
-              onMarkedForClosing={setMarkedForClosing}
               disableDrag={items.length === 1}
             />
           ))}
@@ -326,14 +322,9 @@ const FileList = memo((props: FileListProps) => {
 });
 
 function FileListItem(props: FileListItemProps) {
-  const {
-    filePath,
-    markedForClosing,
-    onClose,
-    onMarkedForClosing,
-    onDownload,
-    disableDrag,
-  } = props;
+  const { filePath, onClose, onDownload, disableDrag } = props;
+  const [showCloseButton, setShowCloseButton] = useState(true);
+  const [showCloseConfirmButton, setShowCloseConfirmButton] = useState(false);
   const language = useSettingsStore((state) => state.language);
   const { getCloudFileRef } = useCloudStorage();
   const [cloudFileRef, setCloudFileRef] =
@@ -345,7 +336,6 @@ function FileListItem(props: FileListItemProps) {
     useSortable({ disabled: disableDrag, id: filePath });
   const deleteFile = useShouldDeleteFile();
   const { t } = useTranslation();
-  const showClosePrompt = markedForClosing === filePath;
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -360,38 +350,17 @@ function FileListItem(props: FileListItemProps) {
     <ListItem
       ref={setNodeRef}
       style={style}
-      role="listitem"
+      // role="listitem"
       data-testid="draggable-file"
     >
-      <ListItemDecorator
-        {...listeners}
-        {...attributes}
-        sx={{
-          cursor: "pointer",
-          display: showClosePrompt || disableDrag ? "none" : "inline-flex",
-        }}
-        aria-label={`Draggable file ${filePath}`}
-        tabIndex={-1}
+      <Fade
+        duration={150}
+        in={showCloseConfirmButton}
+        unmountOnExit
+        onExited={() => setShowCloseButton(true)}
       >
-        <DragIndicatorIcon />
-      </ListItemDecorator>
-      <ListItemContent>
-        {!showClosePrompt && (
-          <Box sx={{ overflow: "hidden" }}>
-            <StartEllipsis>{filePath}</StartEllipsis>
-            {cloudFileRef && (
-              <Stack spacing={1} direction="row" alignItems="center">
-                <SyncIcon fontSize="inherit" />
-                <Typography level="body-sm">
-                  {cloudFileLastModified &&
-                    formatLocalDateTime(cloudFileLastModified, language)}
-                </Typography>
-              </Stack>
-            )}
-          </Box>
-        )}
-        {showClosePrompt && (
-          <Typography noWrap>
+        <div className="flex flex-1 items-center gap-1 overflow-hidden">
+          <div className="flex-1 truncate whitespace-pre">
             {deleteFile ? (
               <Trans
                 i18nKey="Delete file"
@@ -403,42 +372,92 @@ function FileListItem(props: FileListItemProps) {
                 values={{ fileName: getFilename(filePath) }}
               />
             )}
-          </Typography>
-        )}
-      </ListItemContent>
-      <ListItemDecorator>
-        {showClosePrompt ? (
-          <Stack spacing={1} direction="row" sx={{ pr: 1 }}>
-            <Tooltip title={t("Cancel")}>
-              <IconButton
-                size="sm"
-                color="neutral"
-                onClick={() => onMarkedForClosing(undefined)}
-              >
-                <CloseIcon />
-              </IconButton>
+          </div>
+          <div className="flex gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="m-[1px] flex-shrink-0"
+                  tabIndex={-1}
+                  onClick={() => {
+                    setShowCloseConfirmButton(false);
+                  }}
+                >
+                  <XIcon className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("Cancel")}</TooltipContent>
             </Tooltip>
-            <Tooltip title={deleteFile ? t("Delete") : t("Close")}>
-              <IconButton
-                size="sm"
-                color="danger"
-                onClick={() => onClose(filePath)}
-              >
-                {deleteFile && <DeleteForeverIcon />}
-                {!deleteFile && <CheckIcon />}
-              </IconButton>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  className="m-[1px] flex-shrink-0"
+                  aria-label={deleteFile ? "Delete file" : "Close file"}
+                  tabIndex={-1}
+                  onClick={() => {
+                    onClose(filePath);
+                    setShowCloseConfirmButton(false);
+                  }}
+                >
+                  {deleteFile && <TrashIcon className="h-4 w-4" />}
+                  {!deleteFile && <CheckIcon className="h-4 w-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {deleteFile ? t("Delete") : t("Close")}
+              </TooltipContent>
             </Tooltip>
-          </Stack>
-        ) : (
-          <FileMenu
-            filePath={filePath}
-            cloudFileRef={cloudFileRef}
-            onChange={setCloudFileRef}
-            onMarkedForClosing={onMarkedForClosing}
-            onDownloadClick={() => onDownload(filePath)}
-          />
-        )}
-      </ListItemDecorator>
+          </div>
+        </div>
+      </Fade>
+      <Fade
+        duration={150}
+        in={showCloseButton}
+        unmountOnExit
+        onExited={() => setShowCloseConfirmButton(true)}
+      >
+        <div className="flex flex-1 items-center gap-1 overflow-hidden">
+          <div
+            {...listeners}
+            {...attributes}
+            className={cn(
+              "flex-shrink-0 cursor-pointer p-1",
+              showCloseConfirmButton || disableDrag ? "hidden" : "inline-flex",
+            )}
+            aria-label={`Draggable file ${filePath}`}
+            tabIndex={-1}
+          >
+            <GripVerticalIcon className="h-4 w-4" />
+          </div>
+          <div className="flex flex-1 items-center overflow-auto">
+            <div className="truncate">{filePath}</div>
+            {cloudFileRef && (
+              <div className="flex items-center gap-1">
+                <RefreshCcwIcon className="mr-2 h-4 w-4" />
+                <div className="text-sm text-muted-foreground">
+                  {cloudFileLastModified &&
+                    formatLocalDateTime(cloudFileLastModified, language)}
+                </div>
+              </div>
+            )}
+          </div>
+          <div>
+            <FileMenu
+              filePath={filePath}
+              cloudFileRef={cloudFileRef}
+              onChange={setCloudFileRef}
+              onClose={() => {
+                setShowCloseButton(false);
+              }}
+              onDownload={() => onDownload(filePath)}
+            />
+          </div>
+        </div>
+      </Fade>
     </ListItem>
   );
 }
@@ -458,14 +477,12 @@ function CloudSyncMenuItem(opt: CloudSyncMenuItemProps) {
   };
 
   return (
-    <MenuItem onClick={handleClick}>
-      <ListItemDecorator>{cloudStorageIcons[provider]}</ListItemDecorator>
-      <Typography>
-        {t("Sync with cloud storage", {
-          provider: provider,
-        })}
-      </Typography>
-    </MenuItem>
+    <DropdownMenuItem onClick={handleClick}>
+      {cloudStorageIcons[provider]}
+      {t("Sync with cloud storage", {
+        provider: provider,
+      })}
+    </DropdownMenuItem>
   );
 }
 
@@ -474,7 +491,7 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
   const { t } = useTranslation();
   const { cloudStorages, cloudStorageEnabled, uploadFile, unlinkCloudFile } =
     useCloudStorage();
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const enableCloudSync = async () => {
@@ -503,9 +520,9 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
     } catch (e: any) {
       if (!(e instanceof CloudStorageError && e.type === "Unauthorized")) {
         console.debug(e);
-        openSnackbar({
-          color: "warning",
-          message: (
+        toast({
+          variant: "warning",
+          description: (
             <Trans
               i18nKey="Error syncing file to cloud storage"
               values={{ provider, message: e.message }}
@@ -536,30 +553,22 @@ function EnableCloudSyncMenuItem(props: EnableCloudSyncMenuItemProps) {
       });
 
   return (
-    <MenuItem onClick={enableCloudSync} disabled={loading}>
-      <ListItemDecorator>
-        {loading && <CircularProgress size="sm" />}
-        {!loading && !cloudFileRef && cloudStorageIcons[provider]}
-        {!loading && cloudFileRef && <CloudOffRoundedIcon />}
-      </ListItemDecorator>
-      <Typography>{buttonText}</Typography>
-    </MenuItem>
+    <DropdownMenuItem onClick={enableCloudSync} disabled={loading}>
+      {loading && <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />}
+      {!loading && !cloudFileRef && cloudStorageIcons[provider]}
+      {!loading && cloudFileRef && <CloudOffIcon className="mr-2 h-4 w-4" />}
+      {buttonText}
+    </DropdownMenuItem>
   );
 }
 
 function FileMenu(props: FileMenuProps) {
-  const {
-    filePath,
-    cloudFileRef,
-    onChange,
-    onMarkedForClosing,
-    onDownloadClick,
-  } = props;
+  const { filePath, cloudFileRef, onChange, onDownload, onClose } = props;
   const { cloudStorages } = useCloudStorage();
   const touchScreen = hasTouchScreen();
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const [cloudSyncLoading, setCloudSyncLoading] = useState(false);
   const deleteFile = useShouldDeleteFile();
   const providers = useMemo(() => {
@@ -576,21 +585,20 @@ function FileMenu(props: FileMenuProps) {
   const showEnableCloudSyncMenuItem = providers.length > 0;
 
   const handleCloseFile = () => {
-    onMarkedForClosing(filePath);
+    onClose(filePath);
   };
 
   const handleCopyToClipboard = () => {
     const promise = readFile(filePath);
     writeToClipboard(promise)
-      .then(() =>
-        openSnackbar({ color: "primary", message: t("Copied to clipboard") }),
-      )
-      .catch(() =>
-        openSnackbar({
-          color: "danger",
-          message: t("Copy to clipboard failed"),
-        }),
-      )
+      .then(() => toast({ description: t("Copied to clipboard") }))
+      .catch((e) => {
+        console.log(e);
+        toast({
+          variant: "danger",
+          description: t("Copy to clipboard failed"),
+        });
+      })
       .finally();
   };
 
@@ -601,29 +609,36 @@ function FileMenu(props: FileMenuProps) {
     !showEnableCloudSyncMenuItem
   ) {
     return (
-      <IconButton onClick={handleCloseFile} aria-label="Delete file">
-        {deleteFile && <DeleteForeverIcon />}
-        {!deleteFile && <CloseIcon />}
-      </IconButton>
+      <Button
+        size="icon"
+        onClick={handleCloseFile}
+        aria-label={deleteFile ? "Delete file" : "Close file"}
+      >
+        {deleteFile && <TrashIcon />}
+        {!deleteFile && <XIcon />}
+      </Button>
     );
   }
 
   return (
-    <Dropdown>
-      <MenuButton
-        tabIndex={0}
-        aria-label="File actions"
-        aria-haspopup="true"
-        slots={{ root: IconButton }}
-        slotProps={{ root: { variant: "plain", color: "neutral", size: "sm" } }}
-      >
-        {!cloudSyncLoading && <MoreVertIcon />}
-        {cloudSyncLoading && <CircularProgress size="sm" />}
-      </MenuButton>
-      <Menu
-        sx={{ zIndex: (theme) => theme.vars.zIndex.modal }}
-        placement="bottom-end"
-      >
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          tabIndex={-1}
+          size="icon"
+          variant="ghost"
+          aria-label="File actions"
+          aria-haspopup="true"
+          disabled={cloudSyncLoading}
+          className="m-[1px]"
+        >
+          {!cloudSyncLoading && <EllipsisVertical className="h-4 w-4" />}
+          {cloudSyncLoading && (
+            <LoaderCircleIcon className="h-4 w-4 animate-spin opacity-30" />
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
         {showCloudSyncMenuItem && (
           <CloudSyncMenuItem
             identifier={cloudFileRef.identifier}
@@ -644,29 +659,26 @@ function FileMenu(props: FileMenuProps) {
           />
         ))}
         {showCopyToClipboardMenuItem && (
-          <MenuItem onClick={handleCopyToClipboard}>
-            <ListItemDecorator>
-              <ContentCopyIcon />
-            </ListItemDecorator>{" "}
+          <DropdownMenuItem onClick={handleCopyToClipboard}>
+            <ClipboardIcon className="mr-2 h-4 w-4" />
             {t("Copy to clipboard")}
-          </MenuItem>
+          </DropdownMenuItem>
         )}
         {showDownloadMenuItem && (
-          <MenuItem aria-label="Download todo.txt" onClick={onDownloadClick}>
-            <ListItemDecorator>
-              <DownloadIcon />
-            </ListItemDecorator>{" "}
+          <DropdownMenuItem aria-label="Download todo.txt" onClick={onDownload}>
+            <DownloadIcon className="mr-2 h-4 w-4" />
             {t("Download")}
-          </MenuItem>
+          </DropdownMenuItem>
         )}
-        <MenuItem onClick={handleCloseFile} aria-label="Delete file">
-          <ListItemDecorator>
-            {deleteFile && <DeleteForeverIcon />}
-            {!deleteFile && <CloseIcon />}
-          </ListItemDecorator>{" "}
+        <DropdownMenuItem
+          onClick={handleCloseFile}
+          aria-label={deleteFile ? "Delete file" : "Close file"}
+        >
+          {deleteFile && <TrashIcon className="mr-2 h-4 w-4" />}
+          {!deleteFile && <TrashIcon className="mr-2 h-4 w-4" />}
           {deleteFile ? t("Delete") : t("Close")}
-        </MenuItem>
-      </Menu>
-    </Dropdown>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

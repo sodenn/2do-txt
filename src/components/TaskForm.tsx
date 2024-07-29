@@ -1,10 +1,12 @@
 import { Editor, EditorContext } from "@/components/Editor";
 import { FileSelect } from "@/components/FileSelect";
-import { LocalizationDatePicker } from "@/components/LocalizationDatePicker";
-import { PrioritySelect } from "@/components/PrioritySelect";
-import { RecurrenceSelect } from "@/components/RecurrenceSelect";
+import { PriorityPicker } from "@/components/PriorityPicker";
+import { RecurrencePicker } from "@/components/RecurrencePicker";
+import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { hasTouchScreen } from "@/native-api/platform";
 import { usePlatformStore } from "@/stores/platform-store";
+import { useSettingsStore } from "@/stores/settings-store";
 import { formatDate, isDateEqual } from "@/utils/date";
 import {
   Task,
@@ -14,9 +16,10 @@ import {
   stringifyTask,
 } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
-import { Button, Grid } from "@mui/joy";
+import { cn } from "@/utils/tw-utils";
 import { isValid } from "date-fns";
 import { useBeautifulMentions } from "lexical-beautiful-mentions";
+import { CalendarCheckIcon, CalendarPlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -79,6 +82,7 @@ export function TaskForm(props: TaskFormProps) {
 function TaskGrid(props: TaskGridProps) {
   const touchScreen = hasTouchScreen();
   const platform = usePlatformStore((state) => state.platform);
+  const language = useSettingsStore((state) => state.language);
   const {
     formModel,
     newTask: isNewTask,
@@ -94,11 +98,7 @@ function TaskGrid(props: TaskGridProps) {
   const showCreationDate = isNewTask;
   const showCompletionDate = isNewTask && formModel.completed;
   const showTaskList = taskLists.length > 0;
-  const trueCount = [showCreationDate, showCompletionDate, showTaskList].filter(
-    Boolean,
-  ).length;
-  const recurrenceSelectGridNumber = trueCount % 2 === 0 ? 12 : 6;
-
+  const mobile = touchScreen || platform === "ios" || platform === "android";
   const {
     openMentionMenu,
     removeMentions,
@@ -107,7 +107,7 @@ function TaskGrid(props: TaskGridProps) {
     hasMentions,
   } = useBeautifulMentions();
 
-  const handleDueDateChange = (value: Date | null) => {
+  const handleDueDateChange = (value?: Date) => {
     if ((value && !isValid(value)) || isDateEqual(value, dueDate)) {
       return;
     }
@@ -159,92 +159,74 @@ function TaskGrid(props: TaskGridProps) {
   };
 
   return (
-    <Grid spacing={touchScreen ? 1 : 2} container>
-      <Grid xs={12}>
-        <Editor
-          label={t("Description")}
-          placeholder={t("Enter text and tags")}
-          ariaLabel="Text editor"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          onChange={(value) => handleChange({ body: value })}
-          onEnter={onEnterPress}
-          items={items}
-        />
-      </Grid>
-      {(touchScreen || platform === "ios" || platform === "android") && (
-        <>
-          <Grid xs={6}>
-            <Button
-              fullWidth
-              size="sm"
-              variant="outlined"
-              color="primary"
-              onClick={() => openMentionMenu({ trigger: "@" })}
-            >
-              {t("@Context")}
-            </Button>
-          </Grid>
-          <Grid xs={6}>
-            <Button
-              fullWidth
-              size="sm"
-              variant="outlined"
-              color="primary"
-              onClick={() => openMentionMenu({ trigger: "+" })}
-            >
-              {t("+Project")}
-            </Button>
-          </Grid>
-        </>
-      )}
-      {showTaskList && (
-        <Grid xs={12} sm={6}>
-          <FileSelect options={taskLists} onSelect={onFileSelect} />
-        </Grid>
-      )}
-      <Grid xs={12} sm={6}>
-        <PrioritySelect
+    <div className={cn("flex flex-col")}>
+      <Editor
+        placeholder={t("Enter text and tags")}
+        ariaLabel="Text editor"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
+        onChange={(value) => handleChange({ body: value })}
+        onEnter={onEnterPress}
+        items={items}
+      >
+        <PriorityPicker
           value={formModel.priority}
           onChange={(priority) => handleChange({ priority })}
         />
-      </Grid>
-      {showCreationDate && (
-        <Grid xs={12} sm={6}>
-          <LocalizationDatePicker
+        <RecurrencePicker value={rec} onChange={handleRecChange} />
+        <DatePicker
+          ariaLabel="Due date"
+          tooltip={t("Due Date")}
+          value={dueDate}
+          onChange={handleDueDateChange}
+          locale={language}
+        />
+        {showCreationDate && (
+          <DatePicker
             ariaLabel="Creation date"
-            label={t("Creation Date")}
+            tooltip={t("Creation Date")}
+            icon={<CalendarPlusIcon className="h-4 w-4" />}
+            locale={language}
             value={formModel.creationDate}
             onChange={(value) => {
               handleChange({ creationDate: value ?? undefined });
             }}
           />
-        </Grid>
-      )}
-      {showCompletionDate && (
-        <Grid xs={12} sm={6}>
-          <LocalizationDatePicker
+        )}
+        {showCompletionDate && (
+          <DatePicker
             ariaLabel="Completion date"
-            label={t("Completion Date")}
+            tooltip={t("Completion Date")}
+            icon={<CalendarCheckIcon className="h-4 w-4" />}
             value={formModel.completionDate}
             onChange={(value) => {
               handleChange({ completionDate: value ?? undefined });
             }}
           />
-        </Grid>
+        )}
+      </Editor>
+      {mobile && (
+        <div className="mb-1 flex gap-1">
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => openMentionMenu({ trigger: "@" })}
+          >
+            {t("@Context")}
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => openMentionMenu({ trigger: "+" })}
+          >
+            {t("+Project")}
+          </Button>
+        </div>
       )}
-      <Grid xs={12} sm={6}>
-        <LocalizationDatePicker
-          ariaLabel="Due date"
-          label={t("Due Date")}
-          value={dueDate}
-          onChange={handleDueDateChange}
-        />
-      </Grid>
-      <Grid xs={12} sm={recurrenceSelectGridNumber}>
-        <RecurrenceSelect value={rec} onChange={handleRecChange} />
-      </Grid>
-    </Grid>
+      {showTaskList && (
+        <FileSelect options={taskLists} onSelect={onFileSelect} />
+      )}
+    </div>
   );
 }

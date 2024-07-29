@@ -20,15 +20,9 @@ test.describe("Task dialog", () => {
     test.skip(!!isMobile, "not relevant for mobile browser");
     await page.waitForTimeout(500);
     await page.keyboard.press("n");
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "false",
-    );
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
     await page.keyboard.press("Escape");
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "true",
-    );
+    await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
   test("should disable the save button when the task description is empty", async ({
@@ -36,10 +30,7 @@ test.describe("Task dialog", () => {
   }) => {
     await page.waitForTimeout(500);
     await page.keyboard.press("n");
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "false",
-    );
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Save task" }),
     ).toBeDisabled();
@@ -91,24 +82,20 @@ test.describe("Task dialog", () => {
     }
 
     // open the date picker
-    const pickerButton = isMobile
-      ? "Due date textfield"
-      : "Due date pickerbutton";
-    await page.getByTestId(pickerButton).click();
+    await page.getByLabel("Due date").click();
 
     const today = new Date();
-    const currentDateSelector = '[aria-current="date"]';
+    const currentDateSelector = today.getDate().toString();
     const dueDateTag = `due:${formatDate(today)}`;
 
     // choose date and confirm
-    await page.locator(currentDateSelector).click();
-    if (isMobile) {
-      await page.getByRole("button", { name: "OK" }).click();
-    }
+    await page.getByRole("gridcell", { name: currentDateSelector }).click();
 
-    // make sure the date picker contain a value
-    await expect(page.getByTestId("Due date textfield")).toHaveValue(
-      format(today, "MM/dd/yyyy"),
+    // make sure the date picker contains a value
+    await expect(page.getByLabel("Due date")).toHaveText(
+      isMobile
+        ? format(today, "MM/dd/yyyy")
+        : format(today, "EEE, MMM dd, yyyy"),
     );
 
     // make sure the text field contains the due date
@@ -120,33 +107,32 @@ test.describe("Task dialog", () => {
     await getEditor(page).press("Backspace");
 
     // make sure the date picker doesn't contain a value
-    await expect(page.getByTestId("Due date textfield")).toHaveValue("");
+    await expect(page.getByLabel("Due date")).toHaveText("");
 
     // make sure the text field doesn't contain the due date
     await expect(getEditor(page)).not.toHaveText(dueDateTag);
 
     // open the date picker
-    await page.getByTestId(pickerButton).click();
+    await page.getByLabel("Due date").click();
 
     // choose date and confirm
-    await page.locator(currentDateSelector).click();
-    if (isMobile) {
-      await page.getByRole("button", { name: "OK" }).click();
-    }
+    await page.getByRole("gridcell", { name: currentDateSelector }).click();
 
-    // make sure the date picker contain a value
-    await expect(page.getByTestId("Due date textfield")).toHaveValue(
-      format(today, "MM/dd/yyyy"),
+    // make sure the date picker contains a value
+    await expect(page.getByLabel("Due date")).toHaveText(
+      isMobile
+        ? format(today, "MM/dd/yyyy")
+        : format(today, "EEE, MMM dd, yyyy"),
     );
 
     // make sure the text field contains the due date
     await expect(getEditor(page)).toHaveText(dueDateTag);
 
     // open the date picker
-    await page.getByTestId(pickerButton).click();
+    await page.getByLabel("Due date").click();
 
     // clear date selection
-    await page.getByRole("button", { name: "Clear", exact: true }).click();
+    await page.getByRole("gridcell", { name: currentDateSelector }).click();
 
     // make sure the text field doesn't contain the due date
     await expect(getEditor(page)).not.toHaveText(dueDateTag);
@@ -154,8 +140,9 @@ test.describe("Task dialog", () => {
 
   test("should fill the task dialog with the selected task", async ({
     page,
+    isMobile,
   }) => {
-    // select task in list
+    // select a task in list
     await page.getByText("Pay the invoice").click();
 
     // make sure the task text is set
@@ -164,19 +151,17 @@ test.describe("Task dialog", () => {
     );
 
     // make sure the creation date is set
-    await expect(page.getByTestId("Creation date textfield")).toHaveValue(
-      "11/26/2021",
+    await expect(page.getByLabel("Creation date")).toHaveText(
+      isMobile ? "11/26/2021" : "Fri, Nov 26, 2021",
     );
 
     // make sure the due date is set
-    await expect(page.getByTestId("Due date textfield")).toHaveValue(
-      "12/15/2021",
+    await expect(page.getByLabel("Due date")).toHaveText(
+      isMobile ? "12/15/2021" : "Wed, Dec 15, 2021",
     );
 
     // make sure priority is set
-    await expect(
-      page.getByRole("combobox", { name: "Select task priority" }),
-    ).toHaveValue("A");
+    await expect(page.getByLabel("Priority")).toHaveText("A");
   });
 
   test("should add new contexts when blur from input", async ({
@@ -196,12 +181,11 @@ test.describe("Task dialog", () => {
       1,
     );
 
-    await expect(
-      page.getByRole("menuitem", { name: `Choose "pr"` }),
-    ).toHaveCount(1);
+    await expect(page.getByRole("menuitem", { name: "Private" })).toHaveCount(
+      1,
+    );
 
-    await getEditor(page).press("ArrowDown");
-    await getEditor(page).evaluate((e) => e.blur());
+    await getEditor(page).press("Enter");
 
     // make sure there is no open dropdown menu with suggestions
     await expect(page.getByRole("menuitem", { name: "Add pr" })).toHaveCount(0);
@@ -210,7 +194,9 @@ test.describe("Task dialog", () => {
     ).toHaveCount(0);
 
     // makes sure that the context was added
-    await expect(page.locator('[data-beautiful-mention="@pr"]')).toHaveCount(1);
+    await expect(
+      page.locator('[data-beautiful-mention="@Private"]'),
+    ).toHaveCount(1);
   });
 
   test("should fix a typo in a context before inserting it", async ({
@@ -286,57 +272,49 @@ test.describe("Task dialog", () => {
     // type task description
     await getEditor(page).pressSequentially("Play soccer with friends", delay);
 
-    // navigate to priority input
-    await page.keyboard.press("Tab");
-
     // select priority
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Enter");
     await page.keyboard.press("A");
 
     // make sure priority was selected
-    await expect(
-      page.locator('[aria-label="Select task priority"]'),
-    ).toHaveValue("A");
+    await expect(page.getByLabel("Priority")).toHaveText("A");
+    await page.waitForTimeout(500);
 
-    // navigate to due date input
+    // navigate to recurrence picker
     await page.keyboard.press("Tab");
 
-    // navigate to date picker button
+    // select due date
     await page.keyboard.press("Tab");
-
-    // open the date picker
     await page.keyboard.press("Enter");
-
-    // apply due date selection
-    await page.keyboard.press("Enter");
+    const today = new Date();
+    const currentDateSelector = today.getDate().toString();
+    await page.getByRole("gridcell", { name: currentDateSelector }).click();
 
     // make sure due date was selected
-    await expect(page.getByTestId("Due date textfield")).toHaveValue(
-      format(new Date(), "MM/dd/yyyy"),
+    await expect(page.getByLabel("Due date")).toHaveText(
+      format(today, "EEE, MMM dd, yyyy"),
     );
-
-    // navigate to save button
-    await page.keyboard.press("Tab");
   });
 
-  test("should consider pressing the escape key", async ({ page }) => {
+  test("should consider pressing the escape key", async ({
+    page,
+    isMobile,
+  }) => {
     await openTaskDialog(page);
 
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "false",
-    );
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
 
-    // open dropdown menu with suggestions
-    await getEditor(page).pressSequentially("@Private", delay);
+    if (!isMobile) {
+      // open dropdown menu with suggestions
+      await getEditor(page).pressSequentially("@Private", delay);
 
-    // close dropdown menu
-    await page.keyboard.press("Escape");
+      // close dropdown menu
+      await page.keyboard.press("Escape");
 
-    // make sure that the dialog is still open
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "false",
-    );
+      // make sure that the dialog is still open
+      await expect(page.getByTestId("task-dialog")).toBeVisible();
+    }
 
     // open recurrence selection
     await page.getByLabel("Recurrence").click();
@@ -344,21 +322,17 @@ test.describe("Task dialog", () => {
 
     // close selection
     await page.keyboard.press("Escape");
+    await page.waitForTimeout(200);
+    await page.keyboard.press("Tab");
 
     // make sure that the dialog is still open
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "false",
-    );
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
 
     // close the dialog by pressing the Escape key
     await page.keyboard.press("Escape");
 
     // make sure that the dialog is closed
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "true",
-    );
+    await expect(page.getByTestId("task-dialog")).not.toBeVisible();
   });
 
   test("should insert spaces when adding mentions", async ({ page }) => {
@@ -387,7 +361,6 @@ test.describe("Task dialog", () => {
 
   test("should insert a new mention", async ({ page }) => {
     await openTaskDialog(page);
-    await page.waitForTimeout(500);
     await getEditor(page).pressSequentially("@Test", delay);
     await page
       .getByRole("menuitem", { name: `Choose "Test"`, exact: true })
@@ -407,12 +380,13 @@ test.describe("Task dialog", () => {
     await expect(page.getByRole("spinbutton", { name: "Amount" })).toHaveValue(
       "2",
     );
+    await page.keyboard.press("Escape");
 
     // make sure rec-tag was added
     await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveText(
       "rec:2d",
     );
-    await page.getByLabel("Recurrence").click();
+    await page.getByLabel("Recurrence").first().click();
     await page.getByText("No recurrence").click();
     // make sure rec-tag was removed
     await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveCount(
@@ -422,19 +396,13 @@ test.describe("Task dialog", () => {
 
   test("should delete a task", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
-    await page.getByTestId("task-button").nth(0).click();
+    await page.getByTestId("task").first().click();
     // make sure that the dialog is open
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "false",
-    );
+    await expect(page.getByTestId("task-dialog")).toBeVisible();
     await page.getByRole("button", { name: "Delete task" }).click();
     await page.getByRole("button", { name: "Confirm delete" }).click();
     // make sure that the dialog is closed
-    await expect(page.getByTestId("task-dialog")).toHaveAttribute(
-      "aria-hidden",
-      "true",
-    );
+    await expect(page.getByTestId("task-dialog")).not.toBeVisible();
     await expect(page.getByTestId("task")).toHaveCount(7);
   });
 });

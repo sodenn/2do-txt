@@ -1,16 +1,19 @@
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ArchiveMode, useSettingsStore } from "@/stores/settings-store";
 import { useTask } from "@/utils/useTask";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Option,
-  Select,
-  SelectProps,
-  Stack,
-  Tooltip,
-} from "@mui/joy";
+import { CircleHelpIcon } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 
 export function ArchiveModeSelect() {
@@ -19,10 +22,7 @@ export function ArchiveModeSelect() {
   const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
   const { archiveTasks, restoreArchivedTasks } = useTask();
 
-  const handleChange: SelectProps<ArchiveMode, false>["onChange"] = (
-    _,
-    value,
-  ) => {
+  const handleChange = (value: ArchiveMode) => {
     const newValue = value || "no-archiving";
     setArchiveMode(newValue);
     if (newValue === "automatic") {
@@ -33,50 +33,51 @@ export function ArchiveModeSelect() {
   };
 
   return (
-    <Stack spacing={1}>
-      <FormControl>
-        <FormLabel>
-          {t("Archiving")}{" "}
-          <Tooltip
-            disableTouchListener={false}
-            enterTouchDelay={0}
-            leaveTouchDelay={2000}
-            title={
-              <Trans i18nKey="Completed tasks are archived in a second file called done.txt" />
-            }
-          >
-            <HelpOutlineIcon fontSize="small" />
+    <div className="space-y-1">
+      <div className="space-y-2">
+        <div className="flex items-center gap-1">
+          <div className="font-semibold">{t("Archiving")}</div>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <CircleHelpIcon className="h-4 w-4" />
+            </TooltipTrigger>
+            <TooltipContent
+              collisionPadding={10}
+              className="max-w-[250px]"
+              asChild
+            >
+              <div>
+                <Trans i18nKey="Completed tasks are archived in a second file called done.txt" />
+              </div>
+            </TooltipContent>
           </Tooltip>
-        </FormLabel>
-        <Select
-          value={archiveMode}
-          onChange={handleChange}
-          slotProps={{
-            root: {
-              "aria-label": "Select archive mode",
-            },
-          }}
-        >
-          <Option value="no-archiving" aria-label="No archiving">
-            {t("No archiving")}
-          </Option>
-          <Option value="manual" aria-label="Archive manually">
-            {t("Archive manually")}
-          </Option>
-          <Option value="automatic" aria-label="Archive automatically">
-            {t("Archive automatically")}
-          </Option>
+        </div>
+        <Select value={archiveMode} onValueChange={handleChange}>
+          <SelectTrigger aria-label="Select archive mode">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="no-archiving" aria-label="No archiving">
+              {t("No archiving")}
+            </SelectItem>
+            <SelectItem value="manual" aria-label="Archive manually">
+              {t("Archive manually")}
+            </SelectItem>
+            <SelectItem value="automatic" aria-label="Archive automatically">
+              {t("Archive automatically")}
+            </SelectItem>
+          </SelectContent>
         </Select>
-      </FormControl>
+      </div>
       {archiveMode === "manual" && (
         <Button
-          variant="outlined"
+          variant="outline"
           aria-label="Archive now"
           onClick={archiveTasks}
         >
           {t("Archive now")}
         </Button>
       )}
-    </Stack>
+    </div>
   );
 }

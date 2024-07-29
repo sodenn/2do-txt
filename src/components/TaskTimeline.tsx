@@ -1,33 +1,28 @@
 import { ScrollTo } from "@/components/ScrollTo";
 import { TaskBody } from "@/components/TaskBody";
+import { Button, ButtonProps } from "@/components/ui/button";
+import { Chip } from "@/components/ui/chip";
+import { listItemVariants } from "@/components/ui/list";
 import { useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { formatLocaleDate, todayDate } from "@/utils/date";
 import { Task } from "@/utils/task";
 import { TimelineTask } from "@/utils/task-list";
-import { useMobileScreen } from "@/utils/useMobileScreen";
+import { cn } from "@/utils/tw-utils";
 import { useTask } from "@/utils/useTask";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import AddIcon from "@mui/icons-material/Add";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import {
-  Box,
-  BoxProps,
-  Chip,
-  IconButton,
-  IconButtonProps,
-  ListItem,
-  ListItemButton,
-  Typography,
-  styled,
-} from "@mui/joy";
 import { format } from "date-fns";
 import {
+  BellIcon,
+  CheckCircleIcon,
+  CircleCheckBigIcon,
+  CircleIcon,
+  ClockIcon,
+  PlusIcon,
+} from "lucide-react";
+import {
+  HTMLAttributes,
   KeyboardEvent,
   MutableRefObject,
   forwardRef,
@@ -49,11 +44,11 @@ interface WithTimelineTask {
   task: TimelineTask;
 }
 
-interface TimelineItemProps extends BoxProps {
+interface TimelineItemProps extends HTMLAttributes<HTMLDivElement> {
   chip?: boolean;
 }
 
-type TaskCheckboxProps = WithTimelineTask & IconButtonProps;
+type TaskCheckboxProps = WithTimelineTask & Pick<ButtonProps, "onClick">;
 
 interface TaskItemProps extends WithTimelineTask {
   focused: boolean;
@@ -71,29 +66,6 @@ const locales = {
   de: "d. LLL.",
   en: "d LLL",
 };
-
-const Root = styled(Box)(({ theme }) => ({
-  paddingBottom: theme.spacing(4),
-  [theme.breakpoints.down("sm")]: {
-    "--IconButton-size": "2rem",
-    display: "block",
-    justifyContent: "unset",
-    paddingRight: theme.spacing(1.5),
-  },
-  [theme.breakpoints.up("sm")]: {
-    "--IconButton-size": "2.25rem",
-    display: "flex",
-    justifyContent: "center",
-  },
-}));
-
-const dateColumnWidth = 120;
-
-const TaskContainer = styled(Box)(({ theme }) => ({
-  [theme.breakpoints.up("md")]: {
-    left: -(dateColumnWidth / 3),
-  },
-}));
 
 export function TaskTimeline(props: TaskTimelineProps) {
   const {
@@ -123,52 +95,51 @@ export function TaskTimeline(props: TaskTimelineProps) {
     searchTerm
   ) {
     return (
-      <Typography sx={{ pt: 1, px: 2, pb: 3 }} level="body-md" color="neutral">
-        {t("No tasks found")}
-      </Typography>
+      <div className="px-5 pb-4 text-muted-foreground">{t("No tasks")}</div>
     );
   }
 
   return (
-    <Root>
-      <TaskContainer data-testid="task-list" ref={parent}>
-        {tasks.map((task, index) => (
-          <div key={task.id}>
-            {!task._timelineFlags.firstOfToday && (
-              <TaskItem
-                ref={(el) => {
-                  if (listItemsRef.current && el) {
-                    const notFocusablePredecessor = tasks.some(
-                      (t, idx) => t._timelineFlags.firstOfToday && idx < index,
-                    );
-                    listItemsRef.current[
-                      notFocusablePredecessor ? index - 1 : index
-                    ] = el;
-                  }
-                }}
-                task={task}
-                onClick={() => onListItemClick(task)}
-                onCheckboxClick={() => toggleCompleteTask(task)}
-                focused={focusedTaskId === task.id}
-                onFocus={() => onFocus(index)}
-                onBlur={onBlur}
-              />
-            )}
-            {task._timelineFlags.firstOfToday && (
-              <TodayItem ref={setAddButtonElem} task={task} />
-            )}
-          </div>
-        ))}
-        {addButtonElem && <ScrollTo target={addButtonElem} />}
-      </TaskContainer>
-    </Root>
+    <div
+      ref={parent}
+      className="flex flex-col pb-4 sm:justify-center"
+      data-testid="task-list"
+    >
+      {tasks.map((task, index) => (
+        <div key={task.id}>
+          {!task._timelineFlags.firstOfToday && (
+            <TaskItem
+              ref={(el) => {
+                if (listItemsRef.current && el) {
+                  const notFocusablePredecessor = tasks.some(
+                    (t, idx) => t._timelineFlags.firstOfToday && idx < index,
+                  );
+                  listItemsRef.current[
+                    notFocusablePredecessor ? index - 1 : index
+                  ] = el;
+                }
+              }}
+              task={task}
+              onClick={() => onListItemClick(task)}
+              onCheckboxClick={() => toggleCompleteTask(task)}
+              focused={focusedTaskId === task.id}
+              onFocus={() => onFocus(index)}
+              onBlur={onBlur}
+            />
+          )}
+          {task._timelineFlags.firstOfToday && (
+            <TodayItem ref={setAddButtonElem} task={task} />
+          )}
+        </div>
+      ))}
+      {addButtonElem && <ScrollTo target={addButtonElem} />}
+    </div>
   );
 }
 
 const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
   ({ task }, ref) => {
     const { _timelineFlags: flags } = task;
-    const mobileScreen = useMobileScreen();
     const { t } = useTranslation();
     const openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
     const today = todayDate();
@@ -178,50 +149,40 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
 
     return (
       <TimelineItem chip={flags.firstOfYear}>
-        {flags.first && <Box sx={{ pt: 2 }} />}
-        {!flags.first && <TimelineConnector sx={{ gridArea: "connector" }} />}
+        {flags.first && <div className="pt-2" />}
+        {!flags.first && (
+          <TimelineConnector
+            className="justify-self-center"
+            style={{ gridArea: "connector" }}
+          />
+        )}
         {flags.firstOfYear && <YearChip date={date} />}
-        <Box
-          sx={{
-            display: "flex",
-            gap: 0.5,
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+        <div
+          className="flex flex-col items-center justify-center gap-0.5"
+          style={{
             gridArea: "action",
           }}
         >
-          <IconButton
+          <Button
+            tabIndex={-1}
             ref={ref}
             onClick={handleClick}
-            color="primary"
-            variant="plain"
-            size={mobileScreen ? "sm" : "md"}
+            className="text-primary"
+            variant="ghost"
+            size="icon"
           >
-            <AddIcon />
-          </IconButton>
+            <PlusIcon className="h-4 w-4" />
+          </Button>
           <TimelineConnector
-            sx={{
-              ...(!flags.lastOfToday && {
-                borderColor: "primary.outlinedBorder",
-              }),
-            }}
+            className={cn("mt-1", !flags.lastOfToday && "border-primary")}
           />
-        </Box>
-        <TimelineContent
-          tabIndex={-1}
-          sx={{
-            height: "var(--IconButton-size)",
-          }}
-          onClick={handleClick}
-        >
-          <Typography color="primary" component="span" variant="plain">
+        </div>
+        <div className="self-start" style={{ gridArea: "content" }}>
+          <Button variant="ghost" tabIndex={-1} onClick={handleClick}>
             {t("Add new task")}
-          </Typography>
-        </TimelineContent>
-        <TimelineDate sx={{ color: "primary.plainColor" }}>
-          {t("Today")}
-        </TimelineDate>
+          </Button>
+        </div>
+        <TimelineDate className="text-primary">{t("Today")}</TimelineDate>
       </TimelineItem>
     );
   },
@@ -232,16 +193,26 @@ const TaskItem = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
     task: { _timelineFlags: flags, _timelineDate: timelineDate },
     onCheckboxClick,
   } = props;
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.code === "Space") {
+      event.preventDefault();
+    }
+  };
+
   return (
-    <TimelineItem data-testid="task" chip={flags.firstOfYear && !!timelineDate}>
-      {flags.first && <Box sx={{ pt: 2 }} />}
+    <TimelineItem
+      onKeyDown={handleKeyDown}
+      chip={flags.firstOfYear && !!timelineDate}
+    >
+      {flags.first && <div className="pt-2" />}
       {!flags.first && (
         <TimelineConnector
-          sx={{
-            ...(flags.today &&
-              !flags.firstOfToday && {
-                borderColor: "primary.outlinedBorder",
-              }),
+          className={cn(
+            "-mt-[2px] mb-1 justify-self-center",
+            flags.today && !flags.firstOfToday && "border-primary",
+          )}
+          style={{
             gridArea: "connector",
           }}
         />
@@ -266,133 +237,103 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
       event.stopPropagation();
       onCheckboxClick();
     }
-  };
-
-  const handleClick = (event: any) => {
-    if (event.code === "Space") {
-      onCheckboxClick();
-    } else {
+    if (event.code === "Enter") {
       onClick();
     }
   };
 
   return (
-    <StyledListItem>
-      <TimelineContent
-        data-testid="task-button"
-        ref={ref}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        onClick={handleClick}
-        onKeyUp={handleKeyUp}
-        aria-current={focused}
-        sx={{
-          alignSelf: "auto",
-          minHeight: "var(--IconButton-size)",
-        }}
-      >
-        <div>
-          <TaskBody task={task} />
-          <Box sx={{ display: "flex", gap: 1 }}>
-            {task.dueDate && !task.completionDate && (
-              <Typography
-                color="warning"
-                sx={{
-                  display: {
-                    xs: "flex",
-                    sm: task._timelineFlags.today ? "flex" : "none",
-                  },
-                  alignItems: "center",
-                  fontSize: "0.9em",
-                  gap: 0.5,
-                }}
-              >
-                <AccessAlarmIcon fontSize="small" />
-                {formatLocaleDate(task.dueDate, language)}
-              </Typography>
-            )}
-            {task.completionDate && (
-              <Typography
-                color="completed"
-                variant="plain"
-                sx={{
-                  display: { xs: "flex", sm: "none" },
-                  alignItems: "center",
-                  fontSize: "0.9em",
-                  gap: 0.5,
-                }}
-              >
-                <CheckCircleIcon fontSize="small" />
-                {formatLocaleDate(task.completionDate, language)}
-              </Typography>
-            )}
-            {task.creationDate && !task.dueDate && !task.completionDate && (
-              <Typography
-                color="neutral"
-                sx={{
-                  display: { xs: "flex", sm: "none" },
-                  alignItems: "center",
-                  fontSize: "0.9em",
-                  gap: 0.5,
-                }}
-              >
-                <AccessTimeIcon fontSize="small" />
-                {formatLocaleDate(task.creationDate, language)}
-              </Typography>
-            )}
-          </Box>
+    <div
+      tabIndex={0}
+      className={cn(
+        listItemVariants({
+          variant: "default",
+          className: "w-full cursor-pointer self-start",
+          selected: false,
+        }),
+      )}
+      data-testid="task"
+      ref={ref}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onClick={onClick}
+      onKeyUp={handleKeyUp}
+      aria-current={focused}
+      style={{ gridArea: "content" }}
+    >
+      <div>
+        <TaskBody task={task} />
+        <div className="flex gap-1">
+          {task.dueDate && !task.completionDate && (
+            <div
+              className={cn(
+                "flex items-center gap-0.5 text-[0.9em] text-warning",
+                !task._timelineFlags.today && "sm:hidden",
+              )}
+            >
+              <BellIcon className="mr-2 h-4 w-4" />
+              {formatLocaleDate(task.dueDate, language)}
+            </div>
+          )}
+          {task.completionDate && (
+            <div className="flex gap-0.5 text-[0.9em] text-muted-foreground sm:hidden">
+              <CheckCircleIcon className="mr-2 h-4 w-4" />
+              {formatLocaleDate(task.completionDate, language)}
+            </div>
+          )}
+          {task.creationDate && !task.dueDate && !task.completionDate && (
+            <div className="flex items-center gap-0.5 text-[0.9em] text-muted-foreground sm:hidden">
+              <ClockIcon className="mr-2 h-4 w-4" />
+              {formatLocaleDate(task.creationDate, language)}
+            </div>
+          )}
         </div>
-      </TimelineContent>
-    </StyledListItem>
+      </div>
+    </div>
   );
 });
 
 function TaskCheckbox({
   task: { completed, _timelineFlags: flags },
-  ...other
+  onClick,
 }: TaskCheckboxProps) {
-  const mobileScreen = useMobileScreen();
   return (
-    <Box
-      sx={{
-        display: "flex",
-        gap: 0.5,
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
+    <div
+      className="flex flex-col items-center justify-center gap-0.5 self-start"
+      style={{
         gridArea: "action",
       }}
     >
-      <IconButton
-        size={mobileScreen ? "sm" : "md"}
-        variant="plain"
+      <Button
+        variant="ghost"
+        size="icon"
         tabIndex={-1}
         color={flags.today ? "primary" : "neutral"}
         aria-label="Complete task"
         aria-checked={completed}
-        {...other}
+        onClick={onClick}
       >
-        {!completed && <RadioButtonUncheckedIcon />}
-        {completed && <TaskAltIcon />}
-      </IconButton>
+        {!completed && <CircleIcon className="h-4 w-4" />}
+        {completed && <CircleCheckBigIcon className="h-4 w-4" />}
+      </Button>
       <TimelineConnector
-        sx={{
-          visibility: flags.last ? "hidden" : "visible",
-          ...(flags.today &&
-            !flags.lastOfToday && {
-              borderColor: "primary.outlinedBorder",
-            }),
-        }}
+        className={cn(
+          "mt-1",
+          flags.today && !flags.lastOfToday && "border-primary",
+          flags.last ? "invisible" : "visible",
+        )}
       />
-    </Box>
+    </div>
   );
 }
 
 function YearChip({ date }: YearChipProps) {
   return (
-    <Chip sx={{ gridArea: "chip", mt: 0.5 }} size="sm">
-      {date}
-    </Chip>
+    <div style={{ gridArea: "chip" }}>
+      <Chip className="my-1" size="sm">
+        {date}
+      </Chip>
+    </div>
   );
 }
 
@@ -408,102 +349,68 @@ function TaskDate({ task }: WithTimelineTask) {
   return (
     <TimelineDate
       color="neutral"
-      sx={{
-        visibility:
-          flags.firstOfDay || flags.firstWithoutDate ? "visible" : "hidden",
-      }}
+      className={cn(
+        flags.firstOfDay || flags.firstWithoutDate ? "visible" : "invisible",
+      )}
     >
-      {!!dueDate && !completionDate && <AccessAlarmIcon fontSize="small" />}
+      {!!dueDate && !completionDate && <BellIcon className="mr-2 h-4 w-4" />}
       {timelineDate && format(timelineDate, locales[language])}
       {flags.firstWithoutDate && t("Without date")}
     </TimelineDate>
   );
 }
 
-const TimelineDate = styled(Typography)(({ theme }) => ({
-  width: dateColumnWidth,
-  justifyContent: "right",
-  alignItems: "center",
-  gap: theme.spacing(1),
-  [theme.breakpoints.down("sm")]: {
-    display: "none",
-  },
-  [theme.breakpoints.up("sm")]: {
-    display: "inline-flex",
-    height: "var(--IconButton-size)",
-  },
-  gridArea: "date",
-  fontSize: "0.9em",
-}));
-
-function TimelineItem(props: TimelineItemProps) {
-  const { sx, chip, ...other } = props;
-
-  const gridTemplateAreas = [
-    `". connector ."`,
-    ...(chip ? [`". chip ."`] : []),
-    `"date action content"`,
-  ].join("\n");
-
+function TimelineDate(props: HTMLAttributes<HTMLDivElement>) {
+  const { className, ...other } = props;
   return (
-    <Box
-      sx={{
-        display: "grid",
-        justifyItems: "center",
-        gap: 0.5,
-        gridTemplateColumns: "auto 50px 1fr",
-        gridTemplateAreas: gridTemplateAreas,
-        mt: -1,
-        mb: -1,
-        ...sx,
+    <div
+      className={cn(
+        "hidden h-[36px] w-[120px] items-center justify-end gap-1 self-start text-[0.9em] sm:inline-flex",
+        className,
+      )}
+      style={{
+        gridArea: "date",
       }}
       {...other}
     />
   );
 }
 
-const TimelineContent = styled(ListItemButton)(({ theme }) => ({
-  width: "100%",
-  borderRadius: theme.vars.radius.sm,
-  gridArea: "content",
-  "@media (pointer: coarse)": {
-    paddingLeft: 0,
-    paddingRight: 0,
-    '&:not(.Mui-selected, [aria-selected="true"]):active': {
-      backgroundColor: "inherit",
-    },
-    ':not(.Mui-selected, [aria-selected="true"]):hover': {
-      backgroundColor: "inherit",
-    },
-  },
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    paddingTop: 2,
-    paddingBottom: 2,
-  },
-  [theme.breakpoints.up("sm")]: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    paddingTop: 4,
-    paddingBottom: 4,
-  },
-}));
-TimelineContent.defaultProps = {
-  variant: "plain",
-};
+const TimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
+  (props, ref) => {
+    const { className, chip, ...other } = props;
 
-const TimelineConnector = styled(Box)(({ theme }) => ({
-  minHeight: 12,
-  borderWidth: 2,
-  borderColor: theme.vars.palette.neutral.outlinedBorder,
-  borderStyle: "solid",
-  borderRadius: theme.vars.radius.sm,
-  flex: 1,
-}));
+    const gridTemplateAreas = [
+      `". connector ."`,
+      ...(chip ? [`". chip ."`] : []),
+      `"date action content"`,
+    ].join("\n");
 
-const StyledListItem = styled(ListItem)({
-  width: "100%",
-  gridArea: "content",
-  alignSelf: "flex-start",
-});
+    return (
+      <div
+        ref={ref}
+        className={cn("-mb-1 -mt-1 grid items-center gap-0.5", className)}
+        style={{
+          gridTemplateColumns: "auto 50px 1fr",
+          gridTemplateAreas: gridTemplateAreas,
+        }}
+        {...other}
+      />
+    );
+  },
+);
+
+function TimelineConnector({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        "flex min-h-[12px] rounded border-2 border-solid",
+        className,
+      )}
+      {...props}
+    />
+  );
+}

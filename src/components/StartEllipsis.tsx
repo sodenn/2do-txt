@@ -1,16 +1,10 @@
-import { styled, Typography, TypographyProps } from "@mui/joy";
-import { PropsWithChildren } from "react";
+import { HTMLAttributes } from "react";
 
-const Root = styled(Typography)({
-  direction: "rtl",
-  textAlign: "left",
-});
-
-export function StartEllipsis(props: PropsWithChildren<TypographyProps>) {
+export function StartEllipsis(props: HTMLAttributes<HTMLDivElement>) {
   const { children, ...rest } = props;
   return (
-    <Root noWrap {...rest}>
+    <div style={{ direction: "rtl" }} className="truncate text-left" {...rest}>
       <span style={{ unicodeBidi: "plaintext" }}>{children}</span>
-    </Root>
+    </div>
   );
 }

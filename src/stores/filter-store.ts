@@ -12,7 +12,7 @@ export type SortKey =
   | "context"
   | "project"
   | "tag"
-  | "";
+  | "unsorted";
 
 export type FilterType = "AND" | "OR";
 
@@ -56,7 +56,7 @@ interface FilterStoreInterface extends FilterStoreData {
 function getDefaultInitialState(): FilterStoreData {
   return {
     searchTerm: "",
-    sortBy: "",
+    sortBy: "unsorted",
     filterType: "AND",
     activePriorities: [],
     activeProjects: [],
@@ -92,7 +92,7 @@ export async function filterLoader(): Promise<FilterStoreData> {
     activeProjects: projects ? projects.split(",") : [],
     activeContexts: contexts ? contexts.split(",") : [],
     activeTags: tags ? tags.split(",") : [],
-    sortBy: sortBy ?? "",
+    sortBy: sortBy ?? "unsorted",
     filterType: filterType || "AND",
     hideCompletedTasks: hideCompletedTasks === "true",
   };

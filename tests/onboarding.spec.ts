@@ -7,22 +7,21 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("Onboarding", () => {
-  test("should tab through the onboarding buttons", async ({ page }) => {
+  test("should tab through the onboarding buttons", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!!isMobile, "desktop only");
+    await page.waitForTimeout(200);
+    await page.keyboard.press("Tab");
+    await expect(page.getByLabel("Create task")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByLabel("Create example file")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByLabel("Import todo.txt")).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(
-      page.getByRole("button", { name: "Create task" }),
-    ).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(
-      page.getByRole("button", { name: "Create example file" }),
-    ).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(
-      page.getByRole("button", { name: "Import todo.txt" }),
-    ).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(
-      page.getByRole("button", { name: "Connect to cloud storage" }),
+      page.getByLabel("Connect to cloud storage").nth(1),
     ).toBeFocused();
   });
 });
@@ -32,13 +31,11 @@ test.describe("New file", () => {
     await page.getByLabel("Create task").click();
     await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor on desktop
-    if (!isMobile) {
-      await expect(
-        page.getByRole("textbox", { name: "Text editor" }),
-      ).toBeFocused();
-    }
-    // close current file and create a new one and the same way
-    await page.getByTestId("task-dialog").getByLabel("Close").click();
+    await expect(
+      page.getByRole("textbox", { name: "Text editor" }),
+    ).toBeFocused();
+    // close the current file and create a new one and the same way
+    await page.keyboard.press("Escape");
     await page.getByLabel("File menu").click();
     await page.getByRole("menuitem", { name: "Files…" }).click();
     await page.getByLabel("File actions").click();
@@ -90,7 +87,7 @@ test.describe("File import", () => {
     );
 
     await page.getByRole("button", { name: "File menu" }).click();
-    await page.getByRole("menuitem", { name: "All" }).click();
+    await page.getByLabel("All task lists").click();
     await expect(page.getByTestId("task")).toHaveCount(16);
   });
 

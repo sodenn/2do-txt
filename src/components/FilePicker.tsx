@@ -1,13 +1,15 @@
 import { Fade } from "@/components/Fade";
-import { useSnackbar } from "@/components/Snackbar";
+import { Card } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 import { useFilterStore } from "@/stores/filter-store";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
-import { Card, styled, Typography } from "@mui/joy";
 import { listen } from "@tauri-apps/api/event";
 import {
   ChangeEvent,
+  forwardRef,
+  HTMLAttributes,
   PropsWithChildren,
   useCallback,
   useEffect,
@@ -16,31 +18,41 @@ import {
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 
-const Root = styled("div")({
-  height: "100%",
-  display: "flex",
-  flexDirection: "column",
-  outline: "none",
-});
+const Root = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  (props, ref) => (
+    <div
+      ref={ref}
+      data-testid="dropzone"
+      {...props}
+      data-hotkeys-keep-enabled
+      className="sh:h-screen flex h-full flex-col outline-none"
+    />
+  ),
+);
 
-const Overlay = styled("div")(({ theme }) => ({
-  position: "fixed",
-  top: 0,
-  bottom: 0,
-  left: 0,
-  right: 0,
-  zIndex: `calc(${theme.vars.zIndex.modal} + 1)`,
-  padding: theme.spacing(2),
-  background: theme.vars.palette.background.body,
-}));
+const Overlay = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  (props, ref) => {
+    return (
+      <div
+        ref={ref}
+        className="fixed bottom-0 left-0 right-0 top-0 z-[51] bg-background p-2"
+        {...props}
+      />
+    );
+  },
+);
 
-const StyledCard = styled(Card)({
-  width: "100%",
-  height: "100%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-});
+const StyledCard = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  (props, ref) => {
+    return (
+      <Card
+        ref={ref}
+        className="flex h-full w-full items-center justify-center bg-success/5"
+        {...props}
+      />
+    );
+  },
+);
 
 export function FilePicker({ children }: PropsWithChildren) {
   const platform = usePlatformStore((state) => state.platform);
@@ -57,7 +69,7 @@ function WebFilePicker({ children }: PropsWithChildren) {
   const setActiveTaskListPath = useFilterStore(
     (state) => state.setActiveTaskListPath,
   );
-  const { openSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const { createNewTodoFile, taskLists } = useTask();
   const platform = usePlatformStore((state) => state.platform);
 
@@ -98,9 +110,9 @@ function WebFilePicker({ children }: PropsWithChildren) {
 
         const filePath = await createNewTodoFile(file.name, content).catch(
           () => {
-            openSnackbar({
-              color: "danger",
-              message: t("The file could not be opened"),
+            toast({
+              variant: "danger",
+              description: t("The file could not be opened"),
             });
           },
         );
@@ -111,21 +123,15 @@ function WebFilePicker({ children }: PropsWithChildren) {
       };
 
       fileReader.onerror = () => {
-        openSnackbar({
-          color: "danger",
-          message: t("The file could not be opened"),
+        toast({
+          variant: "danger",
+          description: t("The file could not be opened"),
         });
       };
 
       fileReader.readAsText(file);
     },
-    [
-      createNewTodoFile,
-      openSnackbar,
-      setActiveTaskListPath,
-      taskLists.length,
-      t,
-    ],
+    [createNewTodoFile, toast, setActiveTaskListPath, taskLists.length, t],
   );
 
   const handleClick = (event: any) => {
@@ -154,13 +160,13 @@ function WebFilePicker({ children }: PropsWithChildren) {
         onChange={handleChange}
         onClick={handleClick}
       />
-      <Root data-testid="dropzone" {...dropzoneProps} data-hotkeys-keep-enabled>
+      <Root {...dropzoneProps}>
         <Fade in={isDragActive} unmountOnExit mountOnEnter>
           <Overlay>
-            <StyledCard variant="soft">
-              <Typography level="h4" component="div">
+            <StyledCard>
+              <div className="text-xl font-bold tracking-tight">
                 {t("Drop todo.txt file here")}
-              </Typography>
+              </div>
             </StyledCard>
           </Overlay>
         </Fade>
@@ -194,13 +200,13 @@ function DesktopFilePicker({ children }: PropsWithChildren) {
   }, [openDesktopFile]);
 
   return (
-    <Root data-testid="dropzone" data-hotkeys-keep-enabled>
+    <Root>
       <Fade in={isDragActive} unmountOnExit mountOnEnter>
         <Overlay>
-          <StyledCard variant="soft">
-            <Typography level="h4" component="div">
+          <StyledCard>
+            <div className="text-xl font-bold tracking-tight">
               {t("Drop todo.txt file here")}
-            </Typography>
+            </div>
           </StyledCard>
         </Overlay>
       </Fade>

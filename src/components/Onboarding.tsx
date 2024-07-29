@@ -1,24 +1,14 @@
 import { CloudStorageOnboarding } from "@/components/CloudStorageOnboarding";
 import { ExampleFileButton } from "@/components/ExampleFileButton";
 import { NewFileButton } from "@/components/NewFileButton";
+import { Button } from "@/components/ui/button";
 import logo from "@/images/logo.png";
 import { usePlatformStore } from "@/stores/platform-store";
+import { cn } from "@/utils/tw-utils";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
-import { Box, Button, Stack, styled, Typography } from "@mui/joy";
+import { FolderIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
-const StyledBox = styled("div")(({ theme }) => ({
-  display: "flex",
-  justifyContent: "center",
-  paddingTop: theme.spacing(10),
-  paddingBottom: theme.spacing(5),
-  "@media screen and (max-height: 480px)": {
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-}));
 
 export function Onboarding() {
   const { t } = useTranslation();
@@ -27,44 +17,43 @@ export function Onboarding() {
   const { openFileDialog } = useFilePicker();
 
   return (
-    <StyledBox sx={{ display: taskLists.length === 0 ? "flex" : "none" }}>
-      <Stack spacing={1}>
-        <Box sx={{ py: 1, textAlign: "center" }}>
+    <div
+      className={cn(
+        "flex justify-center sm:pb-5 sm:pt-10",
+        taskLists.length > 0 && "hidden",
+      )}
+    >
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-center py-1">
           <img
             src={logo}
             draggable={false}
             alt="Logo"
-            height={96}
             style={{ opacity: 0.2 }}
+            className="h-24 w-24"
           />
-        </Box>
-        <Typography
-          sx={{ textAlign: "center" }}
-          gutterBottom
-          component="h1"
-          level="h4"
+        </div>
+        <h1
+          className="mb-3 text-center text-xl font-semibold tracking-tight"
           role="heading"
           aria-label="Onboarding"
         >
           {t("Get Started")}
-        </Typography>
+        </h1>
         <NewFileButton />
         <ExampleFileButton />
         <Button
-          color="neutral"
-          variant="outlined"
-          component="span"
-          fullWidth
+          variant="outline"
           onClick={openFileDialog}
           aria-label={
             platform === "desktop" ? "Open todo.txt" : "Import todo.txt"
           }
-          startDecorator={<FolderOpenIcon />}
         >
+          <FolderIcon className="mr-2 h-4 w-4" />
           {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
         </Button>
         <CloudStorageOnboarding />
-      </Stack>
-    </StyledBox>
+      </div>
+    </div>
   );
 }

@@ -1,51 +1,70 @@
-import { Typography, TypographyProps } from "@mui/joy";
+import { cn } from "@/utils/tw-utils";
+import { cva, type VariantProps } from "class-variance-authority";
+import { HTMLAttributes, PropsWithChildren } from "react";
 
-interface TagBoxProps extends TypographyProps {
-  outlined: boolean;
-  completed: boolean;
-  type?: "context" | "project" | "tag";
-  tagKey?: string;
-}
+const tagBoxVariants = cva("inline rounded-sm whitespace-nowrap", {
+  variants: {
+    variant: {
+      default: "",
+      outline: "px-1 border",
+    },
+    color: {
+      primary: "text-primary",
+      success: "text-success",
+      info: "text-info",
+      warning: "text-warning",
+      priority: "text-pink-800 dark:text-pink-500",
+      muted: "text-muted-foreground",
+    },
+  },
+  compoundVariants: [
+    {
+      color: "primary",
+      variant: "outline",
+      className: "border-primary bg-primary/5",
+    },
+    {
+      color: "success",
+      variant: "outline",
+      className: "border-success bg-success/5",
+    },
+    {
+      color: "info",
+      variant: "outline",
+      className: "border-info bg-info/5",
+    },
+    {
+      color: "warning",
+      variant: "outline",
+      className: "border-warning bg-warning/5",
+    },
+    {
+      color: "priority",
+      variant: "outline",
+      className:
+        "border-pink-800 bg-pink-800/5 dark:border-pink-600 dark:bg-pink-600/5",
+    },
+  ],
+  defaultVariants: {
+    variant: "default",
+    color: "primary",
+  },
+});
 
-function getColor(props: TagBoxProps) {
-  const { completed, type, tagKey } = props;
-  if (completed) {
-    return "completed";
-  }
-  if (type === "context") {
-    return "success";
-  }
-  if (type === "project") {
-    return "primary";
-  }
-  if (type === "tag") {
-    if (tagKey === "due") {
-      return "warning";
-    }
-    if (tagKey === "pri") {
-      return "priority";
-    }
-  }
-  return "neutral";
-}
+interface TagBoxProps
+  extends Omit<HTMLAttributes<HTMLSpanElement>, "color">,
+    VariantProps<typeof tagBoxVariants> {}
 
-export function TagBox(props: TagBoxProps) {
-  const { outlined, completed, tagKey, type, ...other } = props;
-  const color = getColor(props);
+export function TagBox({
+  variant,
+  color,
+  className,
+  ...props
+}: PropsWithChildren<TagBoxProps>) {
   return (
-    <Typography
-      component="span"
-      variant={!outlined || completed ? "plain" : "outlined"}
-      color={color}
-      sx={{
-        display: "inline",
-        borderRadius: "sm",
-        whiteSpace: "nowrap",
-        py: 0, // prevent overlapping of tags in case of multiline text
-        ...((completed || !outlined) && { p: 0 }), // prevent the interruption of strikethrough text
-        ...other.sx,
-      }}
-      {...other}
+    <span
+      className={cn(tagBoxVariants({ variant, color, className }))}
+      {...props}
     />
   );
 }

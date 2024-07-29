@@ -1,45 +1,9 @@
-import { transitions } from "@/utils/transitions";
-import { useForwardRef } from "@/utils/useForwardRef";
-import CloseIcon from "@mui/icons-material/Close";
-import SearchIcon from "@mui/icons-material/Search";
-import { IconButton, Input, InputProps, styled } from "@mui/joy";
-import { forwardRef } from "react";
+import { Input } from "@/components/ui/input";
+import { SearchIcon } from "lucide-react";
+import { forwardRef, InputHTMLAttributes } from "react";
 import { useTranslation } from "react-i18next";
 
-const Search = styled("div")(({ theme }) => {
-  return {
-    position: "relative",
-    borderRadius: theme.vars.radius.md,
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(1),
-      width: "auto",
-    },
-  };
-});
-
-const StyledInputBase = styled(Input)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInput-input": {
-    transition: transitions.create(["width"], {
-      duration: 300,
-      easing: transitions.easing.easeInOut,
-    }),
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      width: "12ch",
-      "&:focus": {
-        width: "20ch",
-      },
-    },
-  },
-  "& .MuiInput-endDecorator": {
-    cursor: "text",
-  },
-}));
-
-interface SearchInputProps extends InputProps {
+interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
   onReset?: () => void;
 }
 
@@ -47,7 +11,6 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   (props, ref) => {
     const { value, onReset, onChange, ...rest } = props;
     const { t } = useTranslation();
-    const forwardedRef = useForwardRef<HTMLInputElement>(ref);
 
     const handleKeyDown = (event: any) => {
       if (event.key === "Escape") {
@@ -55,49 +18,26 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       }
     };
 
-    const handleFocus = () => {
-      if (!value) {
-        forwardedRef.current?.focus();
-      }
-    };
-
     return (
-      <Search>
-        <StyledInputBase
-          variant="soft"
-          startDecorator={<SearchIcon />}
-          endDecorator={
-            <div onClick={handleFocus}>
-              <IconButton
-                variant="soft"
-                aria-label="Clear search term"
-                onClick={onReset}
-                sx={{
-                  visibility: value ? "visible" : "hidden",
-                }}
-              >
-                <CloseIcon fontSize="inherit" />
-              </IconButton>
-            </div>
-          }
+      <div className="relative ml-0 w-full rounded-md sm:ml-1 sm:w-auto">
+        <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
           value={value}
           onKeyDown={handleKeyDown}
           onChange={onChange}
+          className="w-full pl-8 transition-width duration-300 ease-in-out sm:w-56 sm:focus:w-72"
           placeholder={t("Search…")}
-          slotProps={{
-            input: {
-              "aria-label": "Search for tasks",
-              autoCorrect: "off",
-              autoCapitalize: "off",
-              spellCheck: "false",
-              tabIndex: -1,
-              role: "search",
-              ref: forwardedRef,
-            },
-          }}
+          aria-label="Search for tasks"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
+          tabIndex={-1}
+          role="search"
+          type="search"
+          ref={ref}
           {...rest}
         />
-      </Search>
+      </div>
     );
   },
 );
