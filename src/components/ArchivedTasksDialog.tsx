@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 
 export function ArchivedTasksDialog() {
   const open = useArchivedTasksDialogStore((state) => state.open);
-  const filePath = useArchivedTasksDialogStore((state) => state.filePath);
+  const filePath = useArchivedTasksDialogStore((state) => state.fileId);
   const closeArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.closeArchivedTasksDialog,
   );

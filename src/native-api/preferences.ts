@@ -5,7 +5,7 @@ export type PreferencesKeys =
   | "app-rate-date"
   | "language"
   | "theme-mode"
-  | "todo-txt-paths"
+  | "todo-files"
   | "create-creation-date"
   | "archive-mode"
   | "priority-transformation"

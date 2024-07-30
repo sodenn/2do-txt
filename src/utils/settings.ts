@@ -3,54 +3,93 @@ import {
   setPreferencesItem,
 } from "@/native-api/preferences";
 
-export async function getTodoFilePaths() {
-  const pathStr = await getPreferencesItem("todo-txt-paths");
+interface Item {
+  todoFileId: string;
+  doneFileId?: string;
+}
+
+export async function getTodoFileIds(): Promise<Item[]> {
+  const itemsStr = await getPreferencesItem("todo-files");
   try {
-    const paths: string[] = pathStr ? JSON.parse(pathStr) : [];
-    return paths;
+    return itemsStr ? JSON.parse(itemsStr) : [];
   } catch (e) {
-    await setPreferencesItem("todo-txt-paths", JSON.stringify([]));
+    await setPreferencesItem("todo-files", JSON.stringify([]));
     return [];
   }
 }
 
-export async function addTodoFilePath(filePath: string) {
-  const filePathsStr = await getPreferencesItem("todo-txt-paths");
+export async function getDoneFileId(
+  todoFileId: string,
+): Promise<string | undefined> {
+  const itemsStr = await getPreferencesItem("todo-files");
+  const items: Item[] = itemsStr ? JSON.parse(itemsStr) : [];
+  return items.find((i) => i.todoFileId === todoFileId)?.doneFileId;
+}
 
-  let filePaths: string[] = [];
+export async function addTodoFileId(id: string) {
+  const itemsStr = await getPreferencesItem("todo-files");
+  let items: Item[] = [];
   try {
-    if (filePathsStr) {
-      filePaths = JSON.parse(filePathsStr);
-    }
+    items = itemsStr ? JSON.parse(itemsStr) : [];
   } catch (e) {
     //
   }
-
-  const alreadyExists = filePaths.some((p) => p === filePath);
-
-  if (alreadyExists) {
-    return;
-  }
-
-  await setPreferencesItem(
-    "todo-txt-paths",
-    JSON.stringify([...filePaths, filePath]),
-  );
+  const newItems: Item[] = [...items, { todoFileId: id }];
+  await setPreferencesItem("todo-files", JSON.stringify(newItems));
 }
 
-export async function removeTodoFilePath(filePath: string) {
-  const filePathsStr = await getPreferencesItem("todo-txt-paths");
-  let updatedFilePathsStr = JSON.stringify([]);
-
-  if (filePathsStr) {
+export async function addDoneFileId(todoFileId: string, doneFileId: string) {
+  const itemsStr = await getPreferencesItem("todo-files");
+  if (itemsStr) {
     try {
-      const filePaths: string[] = JSON.parse(filePathsStr);
-      const updatedFilePaths = filePaths.filter((path) => path !== filePath);
-      updatedFilePathsStr = JSON.stringify(updatedFilePaths);
+      const items: Item[] = JSON.parse(itemsStr);
+      const newItems = items.map((i) => {
+        if (i.todoFileId !== todoFileId) {
+          return {
+            todoFileId: i.todoFileId,
+            doneFileId,
+          };
+        } else {
+          return i;
+        }
+      });
+      await setPreferencesItem("todo-files", JSON.stringify(newItems));
     } catch (e) {
       //
     }
   }
+}
 
-  await setPreferencesItem("todo-txt-paths", updatedFilePathsStr);
+export async function removeTodoFileId(id: string) {
+  const itemsStr = await getPreferencesItem("todo-files");
+  if (itemsStr) {
+    try {
+      const items: Item[] = JSON.parse(itemsStr);
+      const newItems = items.filter((i) => i.todoFileId !== id);
+      await setPreferencesItem("todo-files", JSON.stringify(newItems));
+    } catch (e) {
+      //
+    }
+  }
+}
+
+export async function removeDoneFileId(id: string) {
+  const itemsStr = await getPreferencesItem("todo-files");
+  if (itemsStr) {
+    try {
+      const items: Item[] = JSON.parse(itemsStr);
+      const newItems = items.map((i) => {
+        if (i.doneFileId !== id) {
+          return {
+            todoFileId: id,
+          };
+        } else {
+          return i;
+        }
+      });
+      await setPreferencesItem("todo-files", JSON.stringify(newItems));
+    } catch (e) {
+      //
+    }
+  }
 }

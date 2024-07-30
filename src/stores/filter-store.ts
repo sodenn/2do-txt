@@ -34,7 +34,7 @@ export interface FilterStoreData {
   sortBy: SortKey;
   filterType: FilterType;
   hideCompletedTasks: boolean;
-  activeTaskListPath?: string;
+  activeTaskListId?: string;
 }
 
 interface FilterStoreInterface extends FilterStoreData {
@@ -50,7 +50,7 @@ interface FilterStoreInterface extends FilterStoreData {
   toggleTag: (tag: string) => void;
   resetActiveTags: () => void;
   setHideCompletedTasks: (hideCompletedTasks: boolean) => void;
-  setActiveTaskListPath: (activeTaskListPath?: string) => void;
+  setActiveTaskListId: (activeTaskListId?: string) => void;
 }
 
 function getDefaultInitialState(): FilterStoreData {
@@ -63,7 +63,7 @@ function getDefaultInitialState(): FilterStoreData {
     activeContexts: [],
     activeTags: [],
     hideCompletedTasks: false,
-    activeTaskListPath: undefined,
+    activeTaskListId: undefined,
   };
 }
 
@@ -87,7 +87,7 @@ export async function filterLoader(): Promise<FilterStoreData> {
   const tags = searchParams.get("tags");
   return {
     searchTerm: searchParams.get("term") || "",
-    activeTaskListPath: active ? decodeURIComponent(active) : undefined,
+    activeTaskListId: active ? decodeURIComponent(active) : undefined,
     activePriorities: priorities ? priorities.split(",") : [],
     activeProjects: projects ? projects.split(",") : [],
     activeContexts: contexts ? contexts.split(",") : [],
@@ -159,8 +159,8 @@ export function initializeFilterStore(
       set({ hideCompletedTasks });
       setPreferencesItem("hide-completed-tasks", hideCompletedTasks.toString());
     },
-    setActiveTaskListPath: (activeTaskListPath?: string) =>
-      set({ activeTaskListPath }),
+    setActiveTaskListId: (activeTaskListId?: string) =>
+      set({ activeTaskListId }),
   }));
 }
 

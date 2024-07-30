@@ -6,7 +6,8 @@
       "dom",
       "dom.iterable",
       "ES2020.String",
-      "esnext"
+      "esnext",
+      "webworker"
     ],
     "allowJs": true,
     "skipLibCheck": true,

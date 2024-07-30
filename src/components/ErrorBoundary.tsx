@@ -1,7 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { hideSplashScreen } from "@/native-api/splash-screen";
 import { TriangleAlertIcon } from "lucide-react";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouteError } from "react-router-dom";
 
@@ -9,10 +7,6 @@ export function ErrorBoundary() {
   const { t } = useTranslation();
   const error = useRouteError() as any;
   const message = error.message;
-
-  useEffect(() => {
-    hideSplashScreen();
-  }, []);
 
   return (
     <div className="flex h-full w-screen items-center justify-center sm:h-screen">

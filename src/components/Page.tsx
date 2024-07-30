@@ -1,7 +1,5 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
-import { CloudFileDialog } from "@/components/CloudFileDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
-import { FileCreateDialog } from "@/components/FileCreateDialog";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
 import { FilePicker } from "@/components/FilePicker";
 import { Header } from "@/components/Header";
@@ -13,7 +11,6 @@ import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { SideSheet } from "@/components/SideSheet";
 import { TaskDialog } from "@/components/TaskDialog";
 import { TaskView } from "@/components/TaskView";
-import { WebDAVDialog } from "@/components/WebDAVDialog";
 
 export function Component() {
   return (
@@ -35,13 +32,10 @@ export function Component() {
         </SafeArea>
       </LayoutContent>
       <TaskDialog />
-      <FileCreateDialog />
-      <CloudFileDialog />
       <FileManagementDialog />
       <ConfirmationDialog />
       <ArchivedTasksDialog />
       <ShortcutsDialog />
-      <WebDAVDialog />
       <PageEffect />
     </FilePicker>
   );

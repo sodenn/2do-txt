@@ -1,4 +1,3 @@
-import { CloudStorageOnboarding } from "@/components/CloudStorageOnboarding";
 import { ExampleFileButton } from "@/components/ExampleFileButton";
 import { NewFileButton } from "@/components/NewFileButton";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ export function Onboarding() {
   const { t } = useTranslation();
   const platform = usePlatformStore((state) => state.platform);
   const { taskLists } = useTask();
-  const { openFileDialog } = useFilePicker();
+  const { showOpenFilePicker } = useFilePicker();
 
   return (
     <div
@@ -44,7 +43,7 @@ export function Onboarding() {
         <ExampleFileButton />
         <Button
           variant="outline"
-          onClick={openFileDialog}
+          onClick={showOpenFilePicker}
           aria-label={
             platform === "desktop" ? "Open todo.txt" : "Import todo.txt"
           }
@@ -52,7 +51,6 @@ export function Onboarding() {
           <FolderIcon className="mr-2 h-4 w-4" />
           {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
         </Button>
-        <CloudStorageOnboarding />
       </div>
     </div>
   );

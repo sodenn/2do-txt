@@ -1,24 +1,25 @@
-import { getFilename, readFile } from "@/native-api/filesystem";
-import { getTodoFilePaths } from "@/utils/settings";
-import { TaskList, parseTaskList } from "@/utils/task-list";
+import { getTodoFileIds } from "@/utils/settings";
+import { parseTaskList, TaskList } from "@/utils/task-list";
+import { readFile } from "@/utils/useFilePicker";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";
 
 interface TodoFileSuccess {
   type: "success";
-  filePath: string;
-  data: string;
+  id: string;
+  content: string;
+  filename: string;
 }
 
 interface TodoFileError {
   type: "error";
-  filePath: string;
+  id: string;
 }
 
 type TodoFile = TodoFileSuccess | TodoFileError;
 
 interface TodoFiles {
-  files: { taskList: TaskList; filePath: string; text: string }[];
+  files: { taskList: TaskList; content: string }[];
   errors: TodoFileError[];
 }
 
@@ -47,29 +48,32 @@ const zustandContext = createContext<TaskStoreType | null>(null);
 export const TaskStoreProvider = zustandContext.Provider;
 
 export async function taskLoader(): Promise<TaskStoreData> {
-  const filePaths = await getTodoFilePaths();
+  const ids = await getTodoFileIds();
   const result: TodoFile[] = await Promise.all(
-    filePaths.map((filePath) =>
-      readFile(filePath)
+    ids.map(({ todoFileId: id }) =>
+      readFile(id)
         .then(
-          (data) => ({ type: "success", filePath, data }) as TodoFileSuccess,
+          ({ filename, content }) =>
+            ({
+              type: "success",
+              id,
+              content,
+              filename,
+            }) as TodoFileSuccess,
         )
-        .catch(() => ({ type: "error", filePath }) as TodoFileError),
+        .catch(() => ({ type: "error", id }) as TodoFileError),
     ),
   );
   const files = result
     .filter((i): i is TodoFileSuccess => i.type === "success")
-    .map((i) => {
-      const text = i.data;
-      const filePath = i.filePath;
-      const parseResult = parseTaskList(text);
-      const fileName = getFilename(filePath);
+    .map(({ id, content, filename }) => {
+      const parseResult = parseTaskList(content);
       const taskList: TaskList = {
         ...parseResult,
-        filePath,
-        fileName,
+        id,
+        filename,
       };
-      return { taskList, filePath, text };
+      return { taskList, content };
     });
   const errors = result.filter((i): i is TodoFileError => i.type === "error");
   const taskLists = files.map((f) => f.taskList);
@@ -88,10 +92,8 @@ export function initializeTaskStore(
     setTaskLists: (taskLists: TaskList[]) => set({ taskLists }),
     addTaskList: (taskList: TaskList) => {
       set((state) => ({
-        taskLists: state.taskLists.some((t) => t.filePath === taskList.filePath)
-          ? state.taskLists.map((t) =>
-              t.filePath === taskList.filePath ? taskList : t,
-            )
+        taskLists: state.taskLists.some((t) => t.id === taskList.id)
+          ? state.taskLists.map((t) => (t.id === taskList.id ? taskList : t))
           : [...state.taskLists, taskList],
       }));
     },
@@ -100,9 +102,7 @@ export function initializeTaskStore(
         return;
       }
       set((state) => ({
-        taskLists: state.taskLists.filter(
-          (list) => list.filePath !== taskList.filePath,
-        ),
+        taskLists: state.taskLists.filter((list) => list.id !== taskList.id),
       }));
     },
   }));

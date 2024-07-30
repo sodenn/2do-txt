@@ -109,14 +109,12 @@ export function TaskView() {
     <>
       {taskView === "list" &&
         taskGroups
-          .filter((i) =>
-            activeTaskList ? i.filePath === activeTaskList.filePath : i,
-          )
+          .filter((i) => (activeTaskList ? i.id === activeTaskList.id : i))
           .map((i) => (
             <TaskList
-              key={i.filePath}
-              fileName={i.fileName}
-              filePath={i.filePath}
+              key={i.id}
+              id={i.id}
+              filename={i.filename}
               taskGroups={i.groups}
               tasks={tasks}
               listItemsRef={listItemsRef}

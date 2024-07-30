@@ -1,15 +1,15 @@
-import { defaultTodoFilePath, getDoneFilePath } from "@/utils/todo-files";
+import { defaultTodoFilename, getDoneFilePath } from "@/utils/todo-files";
 import { describe, expect, it } from "vitest";
 
 describe("todo-files", () => {
   it("should get done file path from long source path", async () => {
-    const filePath = `/Documents/${defaultTodoFilePath}`;
+    const filePath = `/Documents/${defaultTodoFilename}`;
     const doneFilePath = getDoneFilePath(filePath);
     expect(doneFilePath).toBe("/Documents/done.txt");
   });
 
   it("should get done file path from short source path", async () => {
-    const doneFilePath = getDoneFilePath(defaultTodoFilePath);
+    const doneFilePath = getDoneFilePath(defaultTodoFilename);
     expect(doneFilePath).toBe("done.txt");
   });
 

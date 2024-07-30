@@ -18,25 +18,25 @@ interface FileSelectProps {
 export function FileSelect(props: FileSelectProps) {
   const { options, onSelect } = props;
   const { t } = useTranslation();
-  const [filePath, setFilePath] = useState("");
+  const [id, setId] = useState("");
 
   const handleChange = (value: string) => {
-    const filePath = value as string;
-    const item = options.find((l) => l.filePath === filePath);
+    const id = value as string;
+    const item = options.find((l) => l.id === id);
     onSelect(item);
-    setFilePath(filePath);
+    setId(id);
   };
 
   return (
-    <Select required value={filePath} onValueChange={handleChange}>
+    <Select required value={id} onValueChange={handleChange}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder={t("Select todo.txt")} />
       </SelectTrigger>
       <SelectContent>
         {options.map((item) => (
-          <SelectItem key={item.filePath} value={item.filePath}>
+          <SelectItem key={item.id} value={item.id}>
             <StartEllipsis className="max-w-[300px]">
-              {item.filePath}
+              {item.filename}
             </StartEllipsis>
           </SelectItem>
         ))}

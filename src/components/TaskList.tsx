@@ -10,8 +10,8 @@ import { memo, MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 interface TaskListProps {
-  fileName: string;
-  filePath: string;
+  id: string;
+  filename: string;
   taskGroups: TaskGroup[];
   tasks: Task[];
   listItemsRef: MutableRefObject<HTMLDivElement[]>;
@@ -23,8 +23,8 @@ interface TaskListProps {
 
 function propsAreEqual(prev: TaskListProps, next: TaskListProps) {
   return (
-    prev.fileName === next.fileName &&
-    prev.filePath === next.filePath &&
+    prev.filename === next.filename &&
+    prev.id === next.id &&
     isEqual(prev.taskGroups, next.taskGroups) &&
     isEqual(prev.tasks, next.tasks) &&
     prev.showHeader === next.showHeader
@@ -33,8 +33,8 @@ function propsAreEqual(prev: TaskListProps, next: TaskListProps) {
 
 export const TaskList = memo((props: TaskListProps) => {
   const {
-    fileName,
-    filePath,
+    id,
+    filename,
     taskGroups,
     tasks,
     listItemsRef,
@@ -51,9 +51,7 @@ export const TaskList = memo((props: TaskListProps) => {
     <>
       {(hasItems || showHeader) && (
         <List data-testid="task-list">
-          {showHeader && (
-            <TaskListHeader fileName={fileName} filePath={filePath} />
-          )}
+          {showHeader && <TaskListHeader filename={filename} id={id} />}
           {taskGroups.map((group) => (
             <li className="list-none" key={group.label}>
               {group.label && <TaskListSubheader title={group.label} />}

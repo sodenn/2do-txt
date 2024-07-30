@@ -1,7 +1,7 @@
 import { getFilename, getFileNameWithoutExt } from "@/native-api/filesystem";
 
-export const defaultTodoFilePath = "todo.txt";
-const defaultDoneFilePath = "done.txt";
+export const defaultTodoFilename = "todo.txt";
+const defaultDoneFilename = "done.txt";
 
 export function getDoneFilePath(todoFilePath: string) {
   const fileName = getFilename(todoFilePath);
@@ -9,21 +9,21 @@ export function getDoneFilePath(todoFilePath: string) {
   if (!fileNameWithoutEnding) {
     return;
   }
-  return fileName === defaultTodoFilePath
-    ? todoFilePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath)
+  return fileName === defaultTodoFilename
+    ? todoFilePath.replace(new RegExp(`${fileName}$`), defaultDoneFilename)
     : todoFilePath.replace(
         new RegExp(`${fileName}$`),
-        `${fileNameWithoutEnding}_${defaultDoneFilePath}`,
+        `${fileNameWithoutEnding}_${defaultDoneFilename}`,
       );
 }
 
 export function getTodoFilePathFromDoneFilePath(doneFilePath: string) {
   const fileName = getFilename(doneFilePath);
-  return fileName === defaultDoneFilePath
-    ? doneFilePath.replace(new RegExp(`${fileName}$`), defaultTodoFilePath)
-    : doneFilePath.replace(new RegExp(`_${defaultDoneFilePath}$`), ".txt");
+  return fileName === defaultDoneFilename
+    ? doneFilePath.replace(new RegExp(`${fileName}$`), defaultTodoFilename)
+    : doneFilePath.replace(new RegExp(`_${defaultDoneFilename}$`), ".txt");
 }
 
 export function isDoneFilePath(filePath: string) {
-  return filePath.endsWith(defaultDoneFilePath);
+  return filePath.endsWith(defaultDoneFilename);
 }

@@ -15,7 +15,7 @@ export function useSearchParamsEffect() {
     (state: FilterStoreData) => {
       const {
         searchTerm,
-        activeTaskListPath,
+        activeTaskListId,
         activePriorities,
         activeProjects,
         activeContexts,
@@ -25,8 +25,8 @@ export function useSearchParamsEffect() {
       if (searchTerm) {
         params.term = searchTerm;
       }
-      if (activeTaskListPath) {
-        params.active = encodeURIComponent(activeTaskListPath);
+      if (activeTaskListId) {
+        params.active = encodeURIComponent(activeTaskListId);
       }
       if (activePriorities.length > 0) {
         params.priorities = activePriorities.join(",");

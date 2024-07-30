@@ -5,7 +5,6 @@ import { useFilterStore } from "@/stores/filter-store";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
-import { listen } from "@tauri-apps/api/event";
 import {
   ChangeEvent,
   forwardRef,
@@ -15,7 +14,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useDropzone } from "react-dropzone";
+import { DropEvent, FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 
 const Root = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
@@ -55,31 +54,43 @@ const StyledCard = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
 );
 
 export function FilePicker({ children }: PropsWithChildren) {
-  const platform = usePlatformStore((state) => state.platform);
-  if (platform === "desktop") {
-    return <DesktopFilePicker>{children}</DesktopFilePicker>;
-  }
-  return <WebFilePicker>{children}</WebFilePicker>;
-}
-
-function WebFilePicker({ children }: PropsWithChildren) {
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
   const { setFileInput } = useFilePicker();
-  const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath,
+  const setActiveTaskListId = useFilterStore(
+    (state) => state.setActiveTaskListId,
   );
   const { toast } = useToast();
   const { createNewTodoFile, taskLists } = useTask();
   const platform = usePlatformStore((state) => state.platform);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 1 && acceptedFiles[0].type === "text/plain") {
-      setFiles(acceptedFiles);
-    }
-  }, []);
-
-  const clearFiles = useCallback(() => setFiles([]), []);
+  const onDrop = useCallback(
+    (
+      acceptedFiles: File[],
+      _fileRejections: FileRejection[],
+      event: DropEvent,
+    ) => {
+      if (event.type) {
+        const fileHandlesPromises = Promise.all(
+          [
+            // @ts-expect-error
+            ...event.dataTransfer.items,
+          ]
+            .filter((item) => item.kind === "file")
+            .map(
+              (item) => item.getAsFileSystemHandle() as FileSystemFileHandle,
+            ),
+        );
+      }
+      if (
+        acceptedFiles.length === 1 &&
+        acceptedFiles[0].type === "text/plain"
+      ) {
+        setFiles(acceptedFiles);
+      }
+    },
+    [],
+  );
 
   const { getRootProps, isDragActive } = useDropzone({
     onDrop,
@@ -108,17 +119,15 @@ function WebFilePicker({ children }: PropsWithChildren) {
 
         const updateFilePath = taskLists.length > 0;
 
-        const filePath = await createNewTodoFile(file.name, content).catch(
-          () => {
-            toast({
-              variant: "danger",
-              description: t("The file could not be opened"),
-            });
-          },
-        );
+        const id = await createNewTodoFile(file.name, content).catch(() => {
+          toast({
+            variant: "danger",
+            description: t("The file could not be opened"),
+          });
+        });
 
-        if (updateFilePath && filePath) {
-          setActiveTaskListPath(filePath);
+        if (updateFilePath && id) {
+          setActiveTaskListId(id);
         }
       };
 
@@ -131,7 +140,7 @@ function WebFilePicker({ children }: PropsWithChildren) {
 
       fileReader.readAsText(file);
     },
-    [createNewTodoFile, toast, setActiveTaskListPath, taskLists.length, t],
+    [createNewTodoFile, toast, setActiveTaskListId, taskLists.length, t],
   );
 
   const handleClick = (event: any) => {
@@ -141,9 +150,9 @@ function WebFilePicker({ children }: PropsWithChildren) {
   useEffect(() => {
     if (files.length > 0) {
       processFiles(files);
-      clearFiles();
+      setFiles([]);
     }
-  }, [clearFiles, files, processFiles]);
+  }, [files, processFiles]);
 
   return (
     <>
@@ -173,44 +182,5 @@ function WebFilePicker({ children }: PropsWithChildren) {
         {children}
       </Root>
     </>
-  );
-}
-
-function DesktopFilePicker({ children }: PropsWithChildren) {
-  const { t } = useTranslation();
-  const [isDragActive, setIsDragActive] = useState(false);
-  const { openDesktopFile } = useFilePicker();
-
-  useEffect(() => {
-    const promise = Promise.all([
-      listen("tauri://file-drop", (event) => {
-        openDesktopFile(event.payload as string[]);
-        setIsDragActive(false);
-      }),
-      listen("tauri://file-drop-hover", () => {
-        setIsDragActive(true);
-      }),
-      listen("tauri://file-drop-cancelled", () => {
-        setIsDragActive(false);
-      }),
-    ]);
-    return () => {
-      promise.then((listeners) => listeners.forEach((l) => l()));
-    };
-  }, [openDesktopFile]);
-
-  return (
-    <Root>
-      <Fade in={isDragActive} unmountOnExit mountOnEnter>
-        <Overlay>
-          <StyledCard>
-            <div className="text-xl font-bold tracking-tight">
-              {t("Drop todo.txt file here")}
-            </div>
-          </StyledCard>
-        </Overlay>
-      </Fade>
-      {children}
-    </Root>
   );
 }

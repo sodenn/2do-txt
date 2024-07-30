@@ -1,46 +1,41 @@
 import { useToast } from "@/components/ui/use-toast";
-import {
-  deleteFile,
-  fileExists,
-  getFilename,
-  getFileNameWithoutExt,
-  getUri,
-  writeFile,
-} from "@/native-api/filesystem";
+import { getFileNameWithoutExt } from "@/native-api/filesystem";
 import { setPreferencesItem } from "@/native-api/preferences";
-import { share } from "@/native-api/share";
-import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { usePlatformStore } from "@/stores/platform-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { taskLoader, useTaskStore } from "@/stores/task-state";
 import { todayDate } from "@/utils/date";
 import { hashCode } from "@/utils/hashcode";
-import { addTodoFilePath, removeTodoFilePath } from "@/utils/settings";
 import {
+  addTodoFileId,
+  getDoneFileId,
+  removeTodoFileId,
+} from "@/utils/settings";
+import {
+  Task,
   createDueDateRegex,
   createNextRecurringTask,
   parseTask,
   stringifyTask,
-  Task,
   transformPriority,
 } from "@/utils/task";
 import {
+  TaskList,
   parseTaskList as _parseTaskList,
   getCommonTaskListAttributes,
   stringifyTaskList,
-  TaskList,
   updateTaskListAttributes,
 } from "@/utils/task-list";
-import { getDoneFilePath } from "@/utils/todo-files";
 import { useArchivedTask } from "@/utils/useArchivedTask";
+import { deleteFile, writeFile } from "@/utils/useFilePicker";
 import { useNotification } from "@/utils/useNotification";
 import { format, isBefore, subHours } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { isEqual, omit } from "lodash";
 import { useCallback } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 type SaveTodoFile = {
   (filePath: string, text: string): Promise<TaskList>;
@@ -81,9 +76,6 @@ export function useTask() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const platform = usePlatformStore((state) => state.platform);
-  const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog,
-  );
   const showNotifications = useSettingsStore(
     (state) => state.showNotifications,
   );
@@ -97,11 +89,9 @@ export function useTask() {
   const priorityTransformation = useSettingsStore(
     (state) => state.priorityTransformation,
   );
-  const activeTaskListPath = useFilterStore(
-    (state) => state.activeTaskListPath,
-  );
-  const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath,
+  const activeTaskListId = useFilterStore((state) => state.activeTaskListId);
+  const setActiveTaskListId = useFilterStore(
+    (state) => state.setActiveTaskListId,
   );
   const taskLists = useTaskStore((state) => state.taskLists);
   const todoFiles = useTaskStore((state) => state.todoFiles);
@@ -124,8 +114,8 @@ export function useTask() {
 
   const commonTaskListAttributes = getCommonTaskListAttributes(taskLists);
 
-  const activeTaskList = activeTaskListPath
-    ? taskLists.find((list) => list.filePath === activeTaskListPath)
+  const activeTaskList = activeTaskListId
+    ? taskLists.find((list) => list.id === activeTaskListId)
     : taskLists.length === 1
       ? taskLists[0]
       : undefined;
@@ -141,13 +131,12 @@ export function useTask() {
   );
 
   const parseTaskList = useCallback(
-    async (filePath: string, text: string) => {
+    async (id: string, filename: string, text: string) => {
       const result = _parseTaskList(text);
-      const fileName = getFilename(filePath);
       const taskList: TaskList = {
         ...result,
-        filePath,
-        fileName,
+        id,
+        filename,
       };
       addTaskList(taskList);
       return taskList;
@@ -156,33 +145,26 @@ export function useTask() {
   );
 
   const saveTodoFile = useCallback<SaveTodoFile>(
-    async (listOrPath: TaskList | string, text?: string) => {
-      let filePath: string;
-      let fileContent: string;
+    async (listOrId: TaskList | string, content?: string) => {
+      let id: string;
 
-      if (typeof listOrPath === "string") {
-        filePath = listOrPath;
-        fileContent = text || "";
+      if (typeof listOrId === "string") {
+        id = listOrId;
+        content = content || "";
       } else {
-        filePath = listOrPath.filePath;
-        fileContent = stringifyTaskList(
-          listOrPath.items,
-          listOrPath.lineEnding,
-        );
+        id = listOrId.id;
+        content = stringifyTaskList(listOrId.items, listOrId.lineEnding);
       }
 
-      await writeFile({
-        path: filePath,
-        data: fileContent,
-      });
+      const { filename } = await writeFile({ id, content });
 
-      if (typeof listOrPath === "string") {
-        return parseTaskList(filePath, fileContent);
+      if (typeof listOrId === "string") {
+        return parseTaskList(listOrId, filename, content);
       } else {
         // Update the existing task list to not lose the generated task IDs
-        const updatedTaskList = updateTaskListAttributes(listOrPath);
+        const updatedTaskList = updateTaskListAttributes(listOrId);
         addTaskList(updatedTaskList);
-        return listOrPath;
+        return listOrId;
       }
     },
     [addTaskList, parseTaskList],
@@ -355,44 +337,38 @@ export function useTask() {
     [findTaskListByTaskId, saveTodoFile, processTaskCompletion],
   );
 
-  const deleteTodoFile = useCallback(async (filePath: string) => {
-    await deleteFile(filePath).catch(() =>
-      console.debug(`${filePath} does not exist`),
-    );
-    const doneFilePath = getDoneFilePath(filePath);
-    if (doneFilePath) {
-      await deleteFile(doneFilePath).catch(() =>
-        console.debug(`${doneFilePath} does not exist`),
+  const deleteTodoFile = useCallback(async (id: string) => {
+    await deleteFile(id).catch(() => console.debug(`${id} does not exist`));
+    const doneFileId = await getDoneFileId(id);
+    if (doneFileId) {
+      await deleteFile(doneFileId).catch(() =>
+        console.debug(`${doneFileId} does not exist`),
       );
     }
   }, []);
 
   const closeTodoFile = useCallback(
-    async (filePath: string) => {
-      const taskList = taskLists.find((list) => list.filePath === filePath);
+    async (id: string) => {
+      const taskList = taskLists.find((list) => list.id === id);
       taskList?.items.forEach((task) =>
         cancelNotifications([hashCode(task.raw)]),
       );
 
-      await removeTodoFilePath(filePath);
+      await removeTodoFileId(id);
+      await deleteTodoFile(id);
 
-      if (platform === "web" || platform === "ios" || platform === "android") {
-        // delete IndexedDB (web) OR remove file from the app's document directory (ios, android)
-        await deleteTodoFile(filePath);
-      }
-
-      if (filePath === activeTaskListPath) {
+      if (id === activeTaskListId) {
         if (taskLists.length === 2) {
           const fallbackList = taskLists.find(
-            (list) => list.filePath !== activeTaskListPath,
+            (list) => list.id !== activeTaskListId,
           );
           if (fallbackList) {
-            setActiveTaskListPath(fallbackList.filePath);
+            setActiveTaskListId(fallbackList.id);
           } else {
-            setActiveTaskListPath("");
+            setActiveTaskListId("");
           }
         } else {
-          setActiveTaskListPath("");
+          setActiveTaskListId("");
         }
       }
 
@@ -401,37 +377,39 @@ export function useTask() {
     [
       taskLists,
       platform,
-      activeTaskListPath,
+      activeTaskListId,
       removeTaskList,
       cancelNotifications,
       deleteTodoFile,
-      setActiveTaskListPath,
+      setActiveTaskListId,
     ],
   );
 
   const generateZipFile = useCallback(
     async (taskList: TaskList, outputType: OutputType = "blob") => {
-      const { items, lineEnding, filePath, fileName } = taskList;
+      const { items, lineEnding, id, filename } = taskList;
+      const doneFileId = await getDoneFileId(id);
+      if (!doneFileId) {
+        return;
+      }
 
-      const doneFile = await loadDoneFile(filePath);
+      const doneFile = await loadDoneFile(doneFileId);
       if (!doneFile) {
         return;
       }
-      const fileNameWithoutEnding = getFileNameWithoutExt(fileName);
-      const todoFileText = stringifyTaskList(items, lineEnding);
 
-      if (doneFile) {
-        const doneFileText = stringifyTaskList(doneFile.items, lineEnding);
-        const zip = new JSZip();
-        zip.file(fileName, todoFileText);
-        zip.file(doneFile.doneFileName, doneFileText);
-        const blob = await zip.generateAsync({ type: outputType });
-        const date = format(new Date(), "yyyy-MM-dd_HH-mm-ss");
-        return {
-          zipContent: blob,
-          zipFilename: `${fileNameWithoutEnding}_${date}.zip`,
-        };
-      }
+      const fileNameWithoutEnding = getFileNameWithoutExt(filename);
+      const todoFileContent = stringifyTaskList(items, lineEnding);
+      const doneFileContent = stringifyTaskList(doneFile.items, lineEnding);
+      const zip = new JSZip();
+      zip.file(filename, todoFileContent);
+      zip.file(doneFile.filename, doneFileContent);
+      const blob = await zip.generateAsync({ type: outputType });
+      const date = format(new Date(), "yyyy-MM-dd_HH-mm-ss");
+      return {
+        zipContent: blob,
+        zipFilename: `${fileNameWithoutEnding}_${date}.zip`,
+      };
     },
     [loadDoneFile],
   );
@@ -439,7 +417,7 @@ export function useTask() {
   const downloadTodoFile = useCallback(
     async (taskList = activeTaskList) => {
       if (taskList) {
-        const { items, lineEnding, fileName } = taskList;
+        const { items, lineEnding, filename } = taskList;
         const zip = await generateZipFile(taskList);
         if (zip) {
           FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
@@ -448,7 +426,7 @@ export function useTask() {
           const blob = new Blob([content], {
             type: "text/plain;charset=utf-8",
           });
-          FileSaver.saveAs(blob, fileName);
+          FileSaver.saveAs(blob, filename);
         }
       }
     },
@@ -456,21 +434,21 @@ export function useTask() {
   );
 
   const shareTodoFile = useCallback(async () => {
-    if (activeTaskList) {
-      const zip = await generateZipFile(activeTaskList, "base64");
-      if (zip) {
-        const uri = await writeFile({
-          data: zip.zipContent as string,
-          path: zip.zipFilename,
-        });
-        await share(uri);
-        await deleteFile(zip.zipFilename);
-      } else {
-        const uri = await getUri(activeTaskList.filePath);
-        await share(uri);
-      }
-    }
-  }, [activeTaskList, generateZipFile]);
+    // if (activeTaskList) {
+    //   const zip = await generateZipFile(activeTaskList, "base64");
+    //   if (zip) {
+    //     const uri = await writeFile({
+    //       data: zip.zipContent as string,
+    //       path: zip.zipFilename,
+    //     });
+    //     await share(uri);
+    //     await deleteFile(zip.zipFilename);
+    //   } else {
+    //     const uri = await getUri(activeTaskList.filePath);
+    //     await share(uri);
+    //   }
+    // }
+  }, []);
 
   const scheduleDueTaskNotifications = useCallback(
     async (taskList: Task[]) => {
@@ -480,10 +458,10 @@ export function useTask() {
   );
 
   const reorderTaskList = useCallback(
-    async (filePaths: string[]) => {
-      await setPreferencesItem("todo-txt-paths", JSON.stringify(filePaths));
+    async (ids: string[]) => {
+      await setPreferencesItem("todo-files", JSON.stringify(ids));
       const reorderedList = [...taskLists].sort(
-        (a, b) => filePaths.indexOf(a.filePath) - filePaths.indexOf(b.filePath),
+        (a, b) => ids.indexOf(a.id) - ids.indexOf(b.id),
       );
       setTaskLists(reorderedList);
     },
@@ -491,58 +469,24 @@ export function useTask() {
   );
 
   const createNewTodoFile = useCallback(
-    async (filePath: string, text = "") => {
-      const exists = await fileExists(filePath);
-
-      const saveFile = async (filePath: string, text: string) => {
-        await addTodoFilePath(filePath);
-        const taskList = await saveTodoFile(filePath, text);
-        scheduleDueTaskNotifications(taskList.items).catch((e) => void e);
-        return filePath;
-      };
-
-      if (exists) {
-        return new Promise<string | undefined>((resolve, reject) => {
-          try {
-            openConfirmationDialog({
-              onClose: () => resolve(undefined),
-              title: t("File already exists"),
-              content: (
-                <Trans
-                  i18nKey="todo.txt already exists. Do you want to replace it"
-                  values={{ filePath }}
-                />
-              ),
-              buttons: [
-                {
-                  text: t("Replace"),
-                  handler: async () => {
-                    await saveFile(filePath, text);
-                    resolve(filePath);
-                  },
-                },
-              ],
-            });
-          } catch (error) {
-            reject();
-          }
-        });
-      } else {
-        return saveFile(filePath, text);
-      }
+    async (id: string, content = "") => {
+      await addTodoFileId(id);
+      const taskList = await saveTodoFile(id, content);
+      scheduleDueTaskNotifications(taskList.items).catch((e) => void e);
+      return id;
     },
-    [saveTodoFile, scheduleDueTaskNotifications, openConfirmationDialog, t],
+    [saveTodoFile, scheduleDueTaskNotifications],
   );
 
   const restoreTask = useCallback(
-    async (listOrPath: string | TaskList, task: Task) => {
+    async (listOrId: string | TaskList, task: Task) => {
       const taskList =
-        typeof listOrPath === "string"
-          ? taskLists.find((t) => t.filePath === listOrPath)
-          : listOrPath;
+        typeof listOrId === "string"
+          ? taskLists.find((t) => t.id === listOrId)
+          : listOrId;
 
       if (!taskList) {
-        throw new Error(`Cannot find task list by path "${listOrPath}"`);
+        throw new Error(`Cannot find task list by path "${listOrId}"`);
       }
 
       const newTaskList = await _restoreTask({
@@ -580,12 +524,12 @@ export function useTask() {
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
   const handleFileNotFound = useCallback(
-    async (filePath: string) => {
+    async (id: string) => {
       toast({
         variant: "danger",
-        description: t("File not found", { filePath }),
+        description: t("File not found"),
       });
-      await closeTodoFile(filePath);
+      await closeTodoFile(id);
     },
     [toast, closeTodoFile, t],
   );
@@ -607,12 +551,12 @@ export function useTask() {
     const { errors } = await loadTodoFilesFromDisk();
     // notify the user if a file cannot be found
     for (const error of errors) {
-      await handleFileNotFound(error.filePath);
+      await handleFileNotFound(error.id);
     }
   }, [loadTodoFilesFromDisk, handleFileNotFound]);
 
   const handleInit = useCallback(async () => {
-    todoFiles.errors.forEach((err) => handleFileNotFound(err.filePath));
+    todoFiles.errors.forEach((err) => handleFileNotFound(err.id));
     shouldNotificationsBeRescheduled().then(() => {
       taskLists.forEach((taskList) =>
         scheduleDueTaskNotifications(taskList.items),

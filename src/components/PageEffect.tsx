@@ -1,4 +1,3 @@
-import { useCloudStorageEffect } from "@/utils/CloudStorage";
 import { useNetworkEffect } from "@/utils/useNetworkEffect";
 import { useNotificationsEffect } from "@/utils/useNotificationsEffect";
 import { useSearchParamsEffect } from "@/utils/useSearchParamsEffect";
@@ -9,6 +8,5 @@ export function PageEffect() {
   useTaskEffect();
   useNetworkEffect();
   useNotificationsEffect();
-  useCloudStorageEffect();
   return null;
 }

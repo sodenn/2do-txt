@@ -1,54 +1,46 @@
 import {
-  CloudLoaderData,
-  CloudStoreProvider,
-  CloudStoreType,
-  cloudLoader,
-  initializeCloudStore,
-} from "@/stores/cloud-store";
-import {
+  filterLoader,
   FilterStoreData,
   FilterStoreProvider,
   FilterStoreType,
-  filterLoader,
   initializeFilterStore,
 } from "@/stores/filter-store";
 import {
+  initializeNetworkStore,
+  networkLoader,
   NetworkStoreData,
   NetworkStoreProvider,
   NetworkStoreType,
-  initializeNetworkStore,
-  networkLoader,
 } from "@/stores/network-store";
 import {
+  initializePlatformStore,
+  platformLoader,
   PlatformStoreData,
   PlatformStoreProvider,
   PlatformStoreType,
-  initializePlatformStore,
-  platformLoader,
 } from "@/stores/platform-store";
 import {
+  initializeSettingsStore,
+  settingsLoader,
   SettingsStoreData,
   SettingsStoreProvider,
   SettingsStoreType,
-  initializeSettingsStore,
-  settingsLoader,
 } from "@/stores/settings-store";
 import {
+  initializeTaskStore,
+  taskLoader,
   TaskStoreData,
   TaskStoreProvider,
   TaskStoreType,
-  initializeTaskStore,
-  taskLoader,
 } from "@/stores/task-state";
 import {
+  initializeThemeStore,
+  themeLoader,
   ThemeStoreData,
   ThemeStoreProvider,
   ThemeStoreType,
-  initializeThemeStore,
-  themeLoader,
 } from "@/stores/theme-store";
 import { preloadImages } from "@/utils/images";
-import { migrate } from "@/utils/migrations";
 import { useRef, type PropsWithChildren } from "react";
 
 export interface LoaderData {
@@ -57,31 +49,26 @@ export interface LoaderData {
   platform: PlatformStoreData;
   theme: ThemeStoreData;
   task: TaskStoreData;
-  cloud: CloudLoaderData;
   network: NetworkStoreData;
 }
 
 export async function loader(): Promise<LoaderData> {
-  await migrate();
-  const [filter, settings, platform, theme, task, cloud, network] =
-    await Promise.all([
-      filterLoader(),
-      settingsLoader(),
-      platformLoader(),
-      themeLoader(),
-      taskLoader(),
-      cloudLoader(),
-      networkLoader(),
-      preloadImages([new URL("@/images/logo.png", import.meta.url)]),
-    ]);
-  return { filter, settings, platform, theme, task, cloud, network };
+  const [filter, settings, platform, theme, task, network] = await Promise.all([
+    filterLoader(),
+    settingsLoader(),
+    platformLoader(),
+    themeLoader(),
+    taskLoader(),
+    networkLoader(),
+    preloadImages([new URL("@/images/logo.png", import.meta.url)]),
+  ]);
+  return { filter, settings, platform, theme, task, network };
 }
 
 export function StoreProvider({
   children,
   ...props
 }: PropsWithChildren<LoaderData>) {
-  const cloudStoreRef = useRef<CloudStoreType>();
   const filterStoreRef = useRef<FilterStoreType>();
   const networkStoreRef = useRef<NetworkStoreType>();
   const platformStoreRef = useRef<PlatformStoreType>();
@@ -89,9 +76,6 @@ export function StoreProvider({
   const taskStoreRef = useRef<TaskStoreType>();
   const themeStoreRef = useRef<ThemeStoreType>();
 
-  if (!cloudStoreRef.current) {
-    cloudStoreRef.current = initializeCloudStore(props.cloud);
-  }
   if (!filterStoreRef.current) {
     filterStoreRef.current = initializeFilterStore(props.filter);
   }
@@ -112,20 +96,18 @@ export function StoreProvider({
   }
 
   return (
-    <CloudStoreProvider value={cloudStoreRef.current}>
-      <FilterStoreProvider value={filterStoreRef.current}>
-        <NetworkStoreProvider value={networkStoreRef.current}>
-          <PlatformStoreProvider value={platformStoreRef.current}>
-            <SettingsStoreProvider value={settingsStoreRef.current}>
-              <TaskStoreProvider value={taskStoreRef.current}>
-                <ThemeStoreProvider value={themeStoreRef.current}>
-                  {children}
-                </ThemeStoreProvider>
-              </TaskStoreProvider>
-            </SettingsStoreProvider>
-          </PlatformStoreProvider>
-        </NetworkStoreProvider>
-      </FilterStoreProvider>
-    </CloudStoreProvider>
+    <FilterStoreProvider value={filterStoreRef.current}>
+      <NetworkStoreProvider value={networkStoreRef.current}>
+        <PlatformStoreProvider value={platformStoreRef.current}>
+          <SettingsStoreProvider value={settingsStoreRef.current}>
+            <TaskStoreProvider value={taskStoreRef.current}>
+              <ThemeStoreProvider value={themeStoreRef.current}>
+                {children}
+              </ThemeStoreProvider>
+            </TaskStoreProvider>
+          </SettingsStoreProvider>
+        </PlatformStoreProvider>
+      </NetworkStoreProvider>
+    </FilterStoreProvider>
   );
 }

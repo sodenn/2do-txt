@@ -16,7 +16,6 @@ export function Component() {
       platform={loaderData.platform}
       theme={loaderData.theme}
       task={loaderData.task}
-      cloud={loaderData.cloud}
       network={loaderData.network}
     >
       <BreakpointProvider>

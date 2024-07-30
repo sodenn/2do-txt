@@ -25,8 +25,8 @@ interface TaskListParseResult extends TaskListAttributes {
 }
 
 export interface TaskList extends TaskListParseResult {
-  filePath: string;
-  fileName: string;
+  id: string;
+  filename: string;
 }
 
 interface TaskListAttributes {

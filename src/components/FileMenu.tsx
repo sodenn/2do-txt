@@ -34,15 +34,15 @@ export function FileMenu() {
     (state) => state.openShortcutsDialog,
   );
   const { taskLists, activeTaskList } = useTask();
-  const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath,
+  const setActiveTaskListId = useFilterStore(
+    (state) => state.setActiveTaskListId,
   );
   const openFileCreateDialog = useFileCreateDialogStore(
     (state) => state.openFileCreateDialog,
   );
 
-  const handleSetActiveList = async (filePath: string) => {
-    setActiveTaskListPath(filePath);
+  const handleSetActiveList = async (id: string) => {
+    setActiveTaskListId(id);
   };
 
   const handleManageFile = () => {
@@ -73,14 +73,14 @@ export function FileMenu() {
   }
 
   if (taskLists.length > 1) {
-    taskLists.forEach(({ filePath }) => {
+    taskLists.forEach(({ id, filename }) => {
       menuItems.push(
         <DropdownMenuCheckboxItem
-          checked={activeTaskList?.filePath === filePath}
-          onClick={() => handleSetActiveList(filePath)}
-          key={filePath}
+          checked={activeTaskList?.id === id}
+          onClick={() => handleSetActiveList(id)}
+          key={id}
         >
-          <StartEllipsis>{filePath}</StartEllipsis>
+          <StartEllipsis>{filename}</StartEllipsis>
         </DropdownMenuCheckboxItem>,
       );
     });
@@ -131,7 +131,7 @@ export function FileMenu() {
         >
           <img src={logo} className="mr-2 h-6 w-6" alt="Logo" height={22} />
           <StartEllipsis>
-            {activeTaskList ? activeTaskList.fileName : "2do.txt"}
+            {activeTaskList ? activeTaskList.filename : "2do.txt"}
           </StartEllipsis>
           <ChevronDownIcon className="ml-2 h-4 w-4" />
         </Button>

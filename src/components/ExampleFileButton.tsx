@@ -1,16 +1,21 @@
 import { Button } from "@/components/ui/button";
-import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
+import { useFilePicker } from "@/utils/useFilePicker";
+import { useTask } from "@/utils/useTask";
 import { LightbulbIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function ExampleFileButton() {
   const { t } = useTranslation();
-  const openFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.openFileCreateDialog,
-  );
+  const { showSaveFilePicker } = useFilePicker();
+  const { createNewTodoFile } = useTask();
 
-  const handleClick = () => {
-    openFileCreateDialog({ createExampleFile: true, createFirstTask: false });
+  const handleClick = async () => {
+    const result = await showSaveFilePicker();
+    if (!result) {
+      return;
+    }
+    const content = await fetch("/todo.txt").then((r) => r.text());
+    await createNewTodoFile(result.id, content);
   };
 
   return (

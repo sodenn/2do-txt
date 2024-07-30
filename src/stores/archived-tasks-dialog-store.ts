@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface ArchivedTasksDialogOptions {
-  filePath?: string;
+  fileId?: string;
 }
 
 interface ArchivedTasksDialogStoreData extends ArchivedTasksDialogOptions {
@@ -17,12 +17,12 @@ interface ArchivedTasksDialogStoreInterface
 export const useArchivedTasksDialogStore =
   create<ArchivedTasksDialogStoreInterface>((set) => ({
     open: false,
-    filePath: undefined,
+    fileId: undefined,
     openArchivedTasksDialog: (opt: ArchivedTasksDialogOptions = {}) =>
       set({ ...opt, open: true }),
     closeArchivedTasksDialog: () => {
       setTimeout(() => {
-        set({ open: false, filePath: undefined });
+        set({ open: false, fileId: undefined });
       }, 200);
       return set({ open: false });
     },
