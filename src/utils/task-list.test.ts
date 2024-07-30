@@ -8,7 +8,6 @@ import {
   TaskList,
   TaskListFilter,
 } from "@/utils/task-list";
-import { defaultTodoFilename } from "@/utils/todo-files";
 import { generateId } from "@/utils/uuid";
 import { describe, expect, it } from "vitest";
 
@@ -147,7 +146,7 @@ x 2. task +ProjB
       {
         ...parseResult,
         id: generateId(),
-        filename: defaultTodoFilename,
+        filename: "todo.txt",
       },
     ];
 

@@ -1,4 +1,4 @@
-import { hasTouchScreen } from "@/native-api/platform";
+import { HAS_TOUCHSCREEN } from "@/native-api/platform";
 import PullToRefresh from "pulltorefreshjs";
 import { useEffect } from "react";
 import ReactDOMServer from "react-dom/server";
@@ -20,8 +20,7 @@ export function usePullToRefresh(options: UsePullToRefreshOptions) {
   } = options;
   const { t } = useTranslation();
   useEffect(() => {
-    const touchScreen = hasTouchScreen();
-    if (!touchScreen || disable) {
+    if (!HAS_TOUCHSCREEN || disable) {
       return;
     }
     const instance = PullToRefresh.init({

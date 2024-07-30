@@ -4,8 +4,7 @@ import { PriorityPicker } from "@/components/PriorityPicker";
 import { RecurrencePicker } from "@/components/RecurrencePicker";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
-import { hasTouchScreen } from "@/native-api/platform";
-import { usePlatformStore } from "@/stores/platform-store";
+import { HAS_TOUCHSCREEN } from "@/native-api/platform";
 import { useSettingsStore } from "@/stores/settings-store";
 import { formatDate, isDateEqual } from "@/utils/date";
 import {
@@ -80,8 +79,6 @@ export function TaskForm(props: TaskFormProps) {
 }
 
 function TaskGrid(props: TaskGridProps) {
-  const touchScreen = hasTouchScreen();
-  const platform = usePlatformStore((state) => state.platform);
   const language = useSettingsStore((state) => state.language);
   const {
     formModel,
@@ -98,7 +95,6 @@ function TaskGrid(props: TaskGridProps) {
   const showCreationDate = isNewTask;
   const showCompletionDate = isNewTask && formModel.completed;
   const showTaskList = taskLists.length > 0;
-  const mobile = touchScreen || platform === "ios" || platform === "android";
   const {
     openMentionMenu,
     removeMentions,
@@ -206,7 +202,7 @@ function TaskGrid(props: TaskGridProps) {
           />
         )}
       </Editor>
-      {mobile && (
+      {HAS_TOUCHSCREEN && (
         <div className="mb-1 flex gap-1">
           <Button
             variant="outline"

@@ -1,11 +1,9 @@
 import logo from "@/images/logo.png";
-import { getPlatform } from "@/native-api/platform";
 import {
   getPreferencesItem,
   setPreferencesItem,
 } from "@/native-api/preferences";
 import { dateReviver } from "@/utils/date";
-import { LocalNotifications } from "@capacitor/local-notifications";
 import { differenceInHours, isAfter, subDays } from "date-fns";
 
 export interface Notification {
@@ -25,57 +23,19 @@ interface ReceivedNotification {
   receivingDate: Date;
 }
 
-interface NotificationMethods {
+interface WebNotification {
+  subscribe: () => () => void;
+  timeoutIds: TimeoutId[];
   isPermissionGranted(): Promise<boolean>;
   requestPermission(): Promise<boolean>;
   cancel(ids: number[]): Promise<void>;
   schedule(notifications: Notification[]): Promise<number[]>;
   shouldNotificationsBeRescheduled(): Promise<boolean>;
-  subscribe: () => () => void;
-}
-
-interface WebNotification extends NotificationMethods {
-  timeoutIds: TimeoutId[];
   getReceivedNotifications(): Promise<ReceivedNotification[]>;
   addReceivedNotification(notification: ReceivedNotification): Promise<void>;
   removeReceivedNotification(ids: number[]): Promise<void>;
   createNotification(options: Notification): number | undefined;
 }
-
-const mobileNotification: NotificationMethods = {
-  async isPermissionGranted() {
-    return LocalNotifications.checkPermissions().then(
-      (result) => result.display === "granted",
-    );
-  },
-  async requestPermission() {
-    return LocalNotifications.requestPermissions().then(
-      (result) => result.display === "granted",
-    );
-  },
-  async cancel(ids: number[]) {
-    await LocalNotifications.cancel({
-      notifications: ids.map((id) => ({ id })),
-    });
-  },
-  async schedule(notifications: Notification[]) {
-    return LocalNotifications.schedule({
-      notifications: notifications.map(({ id, title, body, scheduleAt }) => ({
-        id,
-        title,
-        body,
-        schedule: { at: scheduleAt },
-      })),
-    }).then((result) => result.notifications.map((n) => n.id));
-  },
-  async shouldNotificationsBeRescheduled() {
-    return false;
-  },
-  subscribe() {
-    // do nothing
-    return () => {};
-  },
-};
 
 const webNotification: WebNotification = {
   timeoutIds: [],
@@ -189,45 +149,27 @@ const webNotification: WebNotification = {
 };
 
 export async function subscribeNotifications(): Promise<() => void> {
-  const platform = getPlatform();
-  return ["ios", "android"].includes(platform)
-    ? mobileNotification.subscribe()
-    : webNotification.subscribe();
+  return webNotification.subscribe();
 }
 
 export async function cancelNotifications(ids: number[]): Promise<void> {
-  const platform = getPlatform();
-  return ["ios", "android"].includes(platform)
-    ? mobileNotification.cancel(ids)
-    : webNotification.cancel(ids);
+  return webNotification.cancel(ids);
 }
 
 export async function isNotificationPermissionGranted(): Promise<boolean> {
-  const platform = getPlatform();
-  return ["ios", "android"].includes(platform)
-    ? mobileNotification.isPermissionGranted()
-    : webNotification.isPermissionGranted();
+  return webNotification.isPermissionGranted();
 }
 
 export async function requestNotificationPermission(): Promise<boolean> {
-  const platform = getPlatform();
-  return ["ios", "android"].includes(platform)
-    ? mobileNotification.requestPermission()
-    : webNotification.requestPermission();
+  return webNotification.requestPermission();
 }
 
 export async function scheduleNotifications(
   notifications: Notification[],
 ): Promise<number[]> {
-  const platform = getPlatform();
-  return ["ios", "android"].includes(platform)
-    ? mobileNotification.schedule(notifications)
-    : webNotification.schedule(notifications);
+  return webNotification.schedule(notifications);
 }
 
 export async function shouldNotificationsBeRescheduled() {
-  const platform = getPlatform();
-  return ["ios", "android"].includes(platform)
-    ? mobileNotification.shouldNotificationsBeRescheduled()
-    : webNotification.shouldNotificationsBeRescheduled();
+  return webNotification.shouldNotificationsBeRescheduled();
 }

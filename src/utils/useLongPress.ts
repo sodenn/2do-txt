@@ -1,4 +1,4 @@
-import { hasTouchScreen } from "@/native-api/platform";
+import { HAS_TOUCHSCREEN } from "@/native-api/platform";
 import { TouchEvent, useCallback, useEffect, useRef } from "react";
 
 type LongPressOptions = {
@@ -20,7 +20,6 @@ export const useLongPress = ({
   delay = 500,
 }: LongPressOptions): LongPressResult => {
   const timeoutRef = useRef<number>();
-  const touchScreen = hasTouchScreen();
 
   const clear = useCallback(() => {
     if (timeoutRef.current) {
@@ -30,7 +29,7 @@ export const useLongPress = ({
 
   const onTouchStart = useCallback(
     (event: TouchEvent) => {
-      if (!touchScreen) {
+      if (!HAS_TOUCHSCREEN) {
         return;
       }
       touchStart?.(event);
@@ -38,18 +37,18 @@ export const useLongPress = ({
         callback();
       }, delay);
     },
-    [callback, delay, touchStart, touchScreen],
+    [callback, delay, touchStart],
   );
 
   const onTouchEnd = useCallback(
     (event: TouchEvent) => {
-      if (!touchScreen) {
+      if (!HAS_TOUCHSCREEN) {
         return;
       }
       touchEnd?.(event);
       clear();
     },
-    [clear, touchEnd, touchScreen],
+    [clear, touchEnd],
   );
 
   useEffect(() => {

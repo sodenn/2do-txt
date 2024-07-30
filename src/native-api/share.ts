@@ -1,5 +1,7 @@
-import { Share } from "@capacitor/share";
+export async function canShare(data: ShareData) {
+  return navigator.canShare(data);
+}
 
-export async function share(url: string) {
-  await Share.share({ url });
+export async function share(data: ShareData) {
+  await navigator.share(data);
 }

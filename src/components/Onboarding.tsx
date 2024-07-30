@@ -2,7 +2,7 @@ import { ExampleFileButton } from "@/components/ExampleFileButton";
 import { NewFileButton } from "@/components/NewFileButton";
 import { Button } from "@/components/ui/button";
 import logo from "@/images/logo.png";
-import { usePlatformStore } from "@/stores/platform-store";
+import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/native-api/platform";
 import { cn } from "@/utils/tw-utils";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
@@ -11,7 +11,6 @@ import { useTranslation } from "react-i18next";
 
 export function Onboarding() {
   const { t } = useTranslation();
-  const platform = usePlatformStore((state) => state.platform);
   const { taskLists } = useTask();
   const { showOpenFilePicker } = useFilePicker();
 
@@ -45,11 +44,13 @@ export function Onboarding() {
           variant="outline"
           onClick={showOpenFilePicker}
           aria-label={
-            platform === "desktop" ? "Open todo.txt" : "Import todo.txt"
+            SUPPORTS_SHOW_OPEN_FILE_PICKER ? "Open todo.txt" : "Import todo.txt"
           }
         >
           <FolderIcon className="mr-2 h-4 w-4" />
-          {platform === "desktop" ? t("Open todo.txt") : t("Import todo.txt")}
+          {SUPPORTS_SHOW_OPEN_FILE_PICKER
+            ? t("Open todo.txt")
+            : t("Import todo.txt")}
         </Button>
       </div>
     </div>

@@ -2,7 +2,6 @@ import { Fade } from "@/components/Fade";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { useFilterStore } from "@/stores/filter-store";
-import { usePlatformStore } from "@/stores/platform-store";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
 import {
@@ -62,7 +61,6 @@ export function FilePicker({ children }: PropsWithChildren) {
   );
   const { toast } = useToast();
   const { createNewTodoFile, taskLists } = useTask();
-  const platform = usePlatformStore((state) => state.platform);
 
   const onDrop = useCallback(
     (
@@ -160,11 +158,7 @@ export function FilePicker({ children }: PropsWithChildren) {
         data-testid="file-picker"
         style={{ display: "none" }}
         ref={setFileInput}
-        accept={
-          ["ios", "android"].some((p) => p === platform)
-            ? "text/plain"
-            : undefined
-        }
+        accept="text/plain"
         type="file"
         onChange={handleChange}
         onClick={handleClick}

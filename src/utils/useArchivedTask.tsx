@@ -33,14 +33,14 @@ export function useArchivedTask() {
   const { t } = useTranslation();
   const { showSaveFilePicker } = useFilePicker();
 
-  const saveDoneFile = useCallback(async (fileId: string, content: string) => {
+  const saveDoneFile = useCallback(async (fileId: string, text: string) => {
     const doneFileId = await getDoneFileId(fileId);
     if (!doneFileId) {
       return;
     }
     return writeFile({
       id: doneFileId,
-      content,
+      content: text,
     });
   }, []);
 
@@ -98,8 +98,8 @@ export function useArchivedTask() {
       if (completedTasks.length === 0) {
         await deleteFile(doneFile.id);
       } else {
-        const content = stringifyTaskList(completedTasks, lineEnding);
-        await saveDoneFile(id, content);
+        const text = stringifyTaskList(completedTasks, lineEnding);
+        await saveDoneFile(id, text);
       }
 
       return newTaskList;
@@ -114,12 +114,12 @@ export function useArchivedTask() {
 
       const result = await loadDoneFile(fileId);
 
-      const content = stringifyTaskList(
+      const text = stringifyTaskList(
         [...(result ? result.items : []), task],
         result ? result.lineEnding : taskList.lineEnding,
       );
 
-      await saveDoneFile(fileId, content);
+      await saveDoneFile(fileId, text);
 
       toast({
         variant: "success",
@@ -166,7 +166,7 @@ export function useArchivedTask() {
             ...newCompletedTasks,
           ];
 
-          const content = stringifyTaskList(
+          const text = stringifyTaskList(
             allCompletedTasks,
             doneFile ? doneFile.lineEnding : lineEnding,
           );
@@ -175,7 +175,7 @@ export function useArchivedTask() {
             return;
           }
 
-          const doneFilename = await saveDoneFile(id, content);
+          const doneFilename = await saveDoneFile(id, text);
 
           if (doneFilename && newCompletedTasks.length > 0) {
             toast({

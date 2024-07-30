@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import logo from "@/images/logo.png";
-import { hasTouchScreen } from "@/native-api/platform";
+import { HAS_TOUCHSCREEN } from "@/native-api/platform";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
@@ -26,7 +26,6 @@ import { useTranslation } from "react-i18next";
 
 export function FileMenu() {
   const { t } = useTranslation();
-  const touchScreen = hasTouchScreen();
   const openFileManagementDialog = useFileManagementDialogStore(
     (state) => state.openFileManagementDialog,
   );
@@ -95,11 +94,11 @@ export function FileMenu() {
     );
   }
 
-  if (!touchScreen && taskLists.length > 1) {
+  if (!HAS_TOUCHSCREEN && taskLists.length > 1) {
     menuItems.push(<DropdownMenuSeparator key="divider" />);
   }
 
-  if (!touchScreen) {
+  if (!HAS_TOUCHSCREEN) {
     menuItems.push(
       <DropdownMenuItem
         onClick={handleKeyboardShortcutsClick}

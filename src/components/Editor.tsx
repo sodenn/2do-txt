@@ -1,6 +1,5 @@
 import { Label } from "@/components/ui/label";
-import { hasTouchScreen } from "@/native-api/platform";
-import { usePlatformStore } from "@/stores/platform-store";
+import { HAS_TOUCHSCREEN } from "@/native-api/platform";
 import { cn } from "@/utils/tw-utils";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -235,8 +234,6 @@ export function Editor(props: EditorProps) {
   } = props;
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
-  const touchScreen = hasTouchScreen();
-  const platform = usePlatformStore((state) => state.platform);
 
   const handleChange = useCallback(
     (editorState: EditorState) => {
@@ -280,9 +277,7 @@ export function Editor(props: EditorProps) {
         />
         <OnChangePlugin onChange={handleChange} />
         <HistoryPlugin />
-        {!(touchScreen && platform === "web") && (
-          <AutoFocusPlugin defaultSelection="rootEnd" />
-        )}
+        {!HAS_TOUCHSCREEN && <AutoFocusPlugin defaultSelection="rootEnd" />}
         <ZeroWidthPlugin textContent={ZERO_WIDTH_CHARACTER} />
         <SingleLinePlugin onEnter={onEnter} />
         <BeautifulMentionsPlugin

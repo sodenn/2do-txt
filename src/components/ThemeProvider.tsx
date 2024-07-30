@@ -1,4 +1,3 @@
-import { setStatusBarStyling } from "@/native-api/status-bar";
 import { useThemeStore } from "@/stores/theme-store";
 import { PropsWithChildren, useEffect, useState } from "react";
 
@@ -10,7 +9,6 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     setMode(mode);
     setMounte(true);
-    setStatusBarStyling(mode);
 
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");

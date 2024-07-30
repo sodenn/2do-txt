@@ -1,8 +1,4 @@
-import { Preferences } from "@capacitor/preferences";
-
 export type PreferencesKeys =
-  | "app-rate-counter"
-  | "app-rate-date"
   | "language"
   | "theme-mode"
   | "todo-files"
@@ -15,16 +11,14 @@ export type PreferencesKeys =
   | "sort-by"
   | "filter-type"
   | "hide-completed-tasks"
-  | "cloud-file-refs"
-  | "task-view"
-  | "Dropbox-code-verifier";
+  | "task-view";
 
 export async function getPreferencesItem<T extends string>(
   key: PreferencesKeys,
 ) {
-  const result = await Preferences.get({ key });
-  if (result) {
-    return result.value as T;
+  const value = localStorage.getItem(key);
+  if (value) {
+    return value as T;
   }
   return null;
 }
@@ -33,11 +27,11 @@ export async function setPreferencesItem(
   key: PreferencesKeys,
   value: string,
 ): Promise<void> {
-  return Preferences.set({ key, value: value });
+  return localStorage.setItem(key, value);
 }
 
 export async function removePreferencesItem(
   key: PreferencesKeys,
 ): Promise<void> {
-  return Preferences.remove({ key });
+  return localStorage.removeItem(key);
 }
