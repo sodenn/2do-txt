@@ -291,7 +291,6 @@ function FileListItem(props: FileListItemProps) {
                   aria-label={
                     SUPPORTS_REMOVE_FILE ? "Delete file" : "Close file"
                   }
-                  tabIndex={-1}
                   onClick={() => {
                     onClose(id);
                     setShowCloseConfirmButton(false);
@@ -375,7 +374,6 @@ function FileMenu(props: FileMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          tabIndex={-1}
           size="icon"
           variant="ghost"
           aria-label="File actions"

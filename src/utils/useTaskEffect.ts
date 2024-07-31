@@ -10,6 +10,9 @@ export function useTaskEffect() {
   }, []);
 
   useEffect(() => {
+    if (import.meta.env.MODE !== "production") {
+      return;
+    }
     window.addEventListener("focus", handleActive);
     return () => {
       window.removeEventListener("focus", handleActive);

@@ -182,13 +182,13 @@ export function useArchivedTask() {
             return;
           }
 
-          const doneFilename = await saveDoneFile(id, text);
+          const result = await saveDoneFile(id, text);
 
-          if (doneFilename && newCompletedTasks.length > 0) {
+          if (result && newCompletedTasks.length > 0) {
             toast({
               variant: "success",
               description: t("All completed tasks have been archived", {
-                filename: doneFilename,
+                filename: result.filename,
               }),
             });
           }

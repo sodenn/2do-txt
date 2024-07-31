@@ -9,6 +9,7 @@ import { hashCode } from "@/utils/hashcode";
 import {
   addTodoFileId,
   getDoneFileId,
+  removeDoneFileId,
   removeTodoFileId,
 } from "@/utils/settings";
 import {
@@ -352,8 +353,15 @@ export function useTask() {
         cancelNotifications([hashCode(task.raw)]),
       );
 
+      const doneFileId = await getDoneFileId(id);
       await removeTodoFileId(id);
       await deleteTodoFile(id);
+      if (doneFileId) {
+        await Promise.all([
+          deleteFile(doneFileId),
+          removeDoneFileId(doneFileId),
+        ]);
+      }
 
       if (id === activeTaskListId) {
         if (taskLists.length === 2) {
