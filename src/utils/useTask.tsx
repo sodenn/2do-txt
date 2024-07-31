@@ -1,6 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
-import { setPreferencesItem } from "@/native-api/preferences";
 import { canShare, share } from "@/native-api/share";
+import { setPreferencesItem } from "@/native-api/storage";
 import { useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { taskLoader, useTaskStore } from "@/stores/task-state";

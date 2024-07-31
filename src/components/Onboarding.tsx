@@ -32,7 +32,7 @@ export function Onboarding() {
           />
         </div>
         <h1
-          className="mb-3 text-center text-xl font-semibold tracking-tight"
+          className="mb-3 text-center text-2xl font-bold tracking-tight"
           role="heading"
           aria-label="Onboarding"
         >

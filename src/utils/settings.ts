@@ -1,7 +1,4 @@
-import {
-  getPreferencesItem,
-  setPreferencesItem,
-} from "@/native-api/preferences";
+import { getPreferencesItem, setPreferencesItem } from "@/native-api/storage";
 
 interface Item {
   todoFileId: string;

@@ -248,7 +248,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
       className={cn(
         listItemVariants({
           variant: "default",
-          className: "w-full cursor-pointer self-start",
+          className: "w-full cursor-pointer self-start sm:px-5",
           selected: false,
         }),
       )}
@@ -313,8 +313,8 @@ function TaskCheckbox({
         aria-checked={completed}
         onClick={onClick}
       >
-        {!completed && <CircleIcon className="h-4 w-4" />}
-        {completed && <CircleCheckBigIcon className="h-4 w-4" />}
+        {!completed && <CircleIcon className="h-4 w-4 bg-background" />}
+        {completed && <CircleCheckBigIcon className="h-4 w-4 bg-background" />}
       </Button>
       <TimelineConnector
         className={cn(
@@ -407,7 +407,7 @@ function TimelineConnector({
   return (
     <div
       className={cn(
-        "flex min-h-[12px] rounded border-2 border-solid",
+        "flex min-h-[14px] rounded border-2 border-solid",
         className,
       )}
       {...props}
