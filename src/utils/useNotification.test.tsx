@@ -1,4 +1,4 @@
-import { subscribeNotifications } from "@/native-api/notification";
+import { subscribeNotifications } from "@/utils/notification";
 import { useNotification } from "@/utils/useNotification";
 import { renderHook } from "@testing-library/react";
 import { addHours, addMinutes } from "date-fns";

@@ -5,7 +5,7 @@ import {
   isNotificationPermissionGranted,
   requestNotificationPermission,
   shouldNotificationsBeRescheduled,
-} from "@/native-api/notification";
+} from "@/utils/notification";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 

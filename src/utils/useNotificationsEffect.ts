@@ -1,4 +1,4 @@
-import { subscribeNotifications } from "@/native-api/notification";
+import { subscribeNotifications } from "@/utils/notification";
 import { useEffect } from "react";
 
 export function useNotificationsEffect() {

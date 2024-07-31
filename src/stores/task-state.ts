@@ -1,5 +1,5 @@
-import { getTodoFileIds } from "@/utils/settings";
 import { parseTaskList, TaskList } from "@/utils/task-list";
+import { getTodoFileIds } from "@/utils/todo-files";
 import { readFile } from "@/utils/useFilePicker";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";

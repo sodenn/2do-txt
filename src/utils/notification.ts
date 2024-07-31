@@ -1,6 +1,6 @@
 import logo from "@/images/logo.png";
-import { getPreferencesItem, setPreferencesItem } from "@/native-api/storage";
 import { dateReviver } from "@/utils/date";
+import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
 import { differenceInHours, isAfter, subDays } from "date-fns";
 
 export interface Notification {

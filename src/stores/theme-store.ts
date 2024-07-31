@@ -1,4 +1,4 @@
-import { getPreferencesItem, setPreferencesItem } from "@/native-api/storage";
+import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";
 

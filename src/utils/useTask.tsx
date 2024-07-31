@@ -1,17 +1,11 @@
 import { useToast } from "@/components/ui/use-toast";
-import { canShare, share } from "@/native-api/share";
-import { setPreferencesItem } from "@/native-api/storage";
 import { useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { taskLoader, useTaskStore } from "@/stores/task-state";
 import { todayDate } from "@/utils/date";
 import { hashCode } from "@/utils/hashcode";
-import {
-  addTodoFileId,
-  getDoneFileId,
-  removeDoneFileId,
-  removeTodoFileId,
-} from "@/utils/settings";
+import { setPreferencesItem } from "@/utils/preferences";
+import { canShare, share } from "@/utils/share";
 import {
   Task,
   createDueDateRegex,
@@ -27,6 +21,12 @@ import {
   stringifyTaskList,
   updateTaskListAttributes,
 } from "@/utils/task-list";
+import {
+  addTodoFileId,
+  getDoneFileId,
+  removeDoneFileId,
+  removeTodoFileId,
+} from "@/utils/todo-files";
 import { useArchivedTask } from "@/utils/useArchivedTask";
 import { deleteFile, writeFile } from "@/utils/useFilePicker";
 import { useNotification } from "@/utils/useNotification";

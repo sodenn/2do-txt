@@ -2,13 +2,13 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { useSettingsStore } from "@/stores/settings-store";
+import { Task } from "@/utils/task";
+import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
 import {
   addDoneFileId,
   getDoneFileId,
   removeDoneFileId,
-} from "@/utils/settings";
-import { Task } from "@/utils/task";
-import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
+} from "@/utils/todo-files";
 import {
   deleteFile,
   readFile,

@@ -22,9 +22,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { writeToClipboard } from "@/native-api/clipboard";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
+import { writeToClipboard } from "@/utils/clipboard";
 import {
   SUPPORTS_REMOVE_FILE,
   SUPPORTS_SHOW_OPEN_FILE_PICKER,
