@@ -2,7 +2,11 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { useSettingsStore } from "@/stores/settings-store";
-import { addDoneFileId, getDoneFileId } from "@/utils/settings";
+import {
+  addDoneFileId,
+  getDoneFileId,
+  removeDoneFileId,
+} from "@/utils/settings";
 import { Task } from "@/utils/task";
 import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
 import {
@@ -33,8 +37,8 @@ export function useArchivedTask() {
   const { t } = useTranslation();
   const { showSaveFilePicker } = useFilePicker();
 
-  const saveDoneFile = useCallback(async (fileId: string, text: string) => {
-    const doneFileId = await getDoneFileId(fileId);
+  const saveDoneFile = useCallback(async (todoFileId: string, text: string) => {
+    const doneFileId = await getDoneFileId(todoFileId);
     if (!doneFileId) {
       return;
     }
@@ -48,7 +52,7 @@ export function useArchivedTask() {
     async (todoFileId: string) => {
       let doneFileId = await getDoneFileId(todoFileId);
       if (!doneFileId) {
-        const result = await showSaveFilePicker();
+        const result = await showSaveFilePicker("done.txt");
         if (!result) {
           return;
         }
@@ -96,7 +100,10 @@ export function useArchivedTask() {
       };
 
       if (completedTasks.length === 0) {
-        await deleteFile(doneFile.id);
+        await Promise.all([
+          deleteFile(doneFile.id),
+          removeDoneFileId(taskList.id),
+        ]);
       } else {
         const text = stringifyTaskList(completedTasks, lineEnding);
         await saveDoneFile(id, text);
@@ -110,16 +117,16 @@ export function useArchivedTask() {
   const archiveTask = useCallback(
     async (opt: ArchiveTaskOptions) => {
       const { task, taskList } = opt;
-      const fileId = taskList.id;
+      const todoFileId = taskList.id;
 
-      const result = await loadDoneFile(fileId);
+      const result = await loadDoneFile(todoFileId);
 
       const text = stringifyTaskList(
         [...(result ? result.items : []), task],
         result ? result.lineEnding : taskList.lineEnding,
       );
 
-      await saveDoneFile(fileId, text);
+      await saveDoneFile(todoFileId, text);
 
       toast({
         variant: "success",
@@ -131,7 +138,7 @@ export function useArchivedTask() {
             altText="Archived tasks"
             onClick={() => {
               openArchivedTasksDialog({
-                fileId,
+                todoFileId,
               });
             }}
           >
@@ -210,7 +217,10 @@ export function useArchivedTask() {
             })),
           };
 
-          await deleteFile(doneFile.id);
+          await Promise.all([
+            deleteFile(doneFile.id),
+            removeDoneFileId(taskList.id),
+          ]);
 
           toast({
             variant: "success",

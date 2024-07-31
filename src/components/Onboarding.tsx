@@ -2,7 +2,7 @@ import { ExampleFileButton } from "@/components/ExampleFileButton";
 import { NewFileButton } from "@/components/NewFileButton";
 import { Button } from "@/components/ui/button";
 import logo from "@/images/logo.png";
-import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/native-api/platform";
+import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
 import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";

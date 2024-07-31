@@ -6,13 +6,11 @@ import { ThemeModeSelect } from "@/components/ThemeModeSelect";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useSettingsStore } from "@/stores/settings-store";
-import { useSideSheetStore } from "@/stores/side-sheet-store";
 import { useNotification } from "@/utils/useNotification";
 import { useTranslation } from "react-i18next";
 
 export function Settings() {
   const { t } = useTranslation();
-  const closeSideSheet = useSideSheetStore((state) => state.closeSideSheet);
   const { isNotificationPermissionGranted, requestNotificationPermission } =
     useNotification();
   const showNotifications = useSettingsStore(

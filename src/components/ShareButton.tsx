@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { IS_IOS } from "@/native-api/platform";
+import { IS_IOS } from "@/utils/platform";
 import { useTask } from "@/utils/useTask";
 import { Share2Icon, ShareIcon } from "lucide-react";
 

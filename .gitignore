@@ -2,8 +2,6 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
 
 # testing
 /coverage
@@ -29,6 +27,3 @@ npm-debug.log*
 
 # vscode
 .history
-
-resources/ios/icon
-resources/ios/splash

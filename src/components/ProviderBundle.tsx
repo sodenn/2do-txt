@@ -13,10 +13,8 @@ export function Component() {
     <StoreProvider
       filter={loaderData.filter}
       settings={loaderData.settings}
-      platform={loaderData.platform}
       theme={loaderData.theme}
       task={loaderData.task}
-      network={loaderData.network}
     >
       <BreakpointProvider>
         <ThemeProvider>

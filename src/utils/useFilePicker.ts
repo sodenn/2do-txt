@@ -1,7 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
-import { SUPPORTS_REMOVE_FILE } from "@/native-api/platform";
 import { useFilePickerStore } from "@/stores/file-picker-store";
 import { useFilterStore } from "@/stores/filter-store";
+import { SUPPORTS_REMOVE_FILE } from "@/utils/platform";
 import { useTask } from "@/utils/useTask";
 import { generateId } from "@/utils/uuid";
 import { useCallback, useMemo } from "react";
@@ -40,11 +40,11 @@ export function useFilePicker() {
   //   };
   // }, []);
 
-  const showSaveFilePicker = useCallback(async () => {
+  const showSaveFilePicker = useCallback(async (suggestedName = "todo.txt") => {
     if ("showOpenFilePicker" in window) {
       // @ts-ignore
       const fileHandle = await window.showSaveFilePicker({
-        suggestedName: "todo.txt",
+        suggestedName,
         startIn: "documents",
         types: [
           {

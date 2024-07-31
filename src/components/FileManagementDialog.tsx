@@ -23,12 +23,12 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { writeToClipboard } from "@/native-api/clipboard";
+import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
+import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import {
   SUPPORTS_REMOVE_FILE,
   SUPPORTS_SHOW_OPEN_FILE_PICKER,
-} from "@/native-api/platform";
-import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
-import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
+} from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
 import { readFile, useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
@@ -68,7 +68,7 @@ import { memo, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 interface FileListProps {
-  onClose: (filePath: string) => void;
+  onClose: (id: string) => void;
 }
 
 interface FileListItemProps {
@@ -82,7 +82,7 @@ interface FileListItemProps {
 interface FileMenuProps {
   id: string;
   onDownload: () => void;
-  onClose: (filePath?: string) => void;
+  onClose: (id?: string) => void;
 }
 
 export function FileManagementDialog() {

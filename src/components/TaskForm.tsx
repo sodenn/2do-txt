@@ -4,9 +4,9 @@ import { PriorityPicker } from "@/components/PriorityPicker";
 import { RecurrencePicker } from "@/components/RecurrencePicker";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
-import { HAS_TOUCHSCREEN } from "@/native-api/platform";
 import { useSettingsStore } from "@/stores/settings-store";
 import { formatDate, isDateEqual } from "@/utils/date";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import {
   Task,
   getDueDateValue,

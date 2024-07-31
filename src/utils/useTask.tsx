@@ -488,7 +488,7 @@ export function useTask() {
           : listOrId;
 
       if (!taskList) {
-        throw new Error(`Cannot find task list by path "${listOrId}"`);
+        throw new Error(`Cannot find task list by id "${listOrId}"`);
       }
 
       const newTaskList = await _restoreTask({

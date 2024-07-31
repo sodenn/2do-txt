@@ -1,4 +1,4 @@
-import { HAS_TOUCHSCREEN } from "@/native-api/platform";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { useLongPress } from "@/utils/useLongPress";
 import { useEffect, useState } from "react";
 

@@ -1,4 +1,4 @@
-import { HAS_TOUCHSCREEN } from "@/native-api/platform";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { TouchEvent, useCallback, useEffect, useRef } from "react";
 
 type LongPressOptions = {

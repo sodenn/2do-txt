@@ -1,4 +1,4 @@
-import { IS_SAFARI } from "@/native-api/platform";
+import { IS_SAFARI } from "@/utils/platform";
 
 export async function writeToClipboard(promise: Promise<string>) {
   if (IS_SAFARI) {

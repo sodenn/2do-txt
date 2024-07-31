@@ -139,7 +139,7 @@ export function TaskDialog() {
     }
     closeTaskDialog();
     if (task) {
-      editTask({ content: value, id: task.id });
+      editTask({ text: value, id: task.id });
     } else if (selectedTaskList) {
       addTask(value, selectedTaskList);
     }

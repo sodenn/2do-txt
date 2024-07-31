@@ -1,4 +1,4 @@
-export const CAN_USE_DOM: boolean =
+const CAN_USE_DOM: boolean =
   typeof window !== "undefined" &&
   typeof window.document !== "undefined" &&
   typeof window.document.createElement !== "undefined";
@@ -6,12 +6,10 @@ export const CAN_USE_DOM: boolean =
 export const IS_ANDROID: boolean =
   CAN_USE_DOM && /Android/.test(navigator.userAgent);
 
-export const IS_CHROME: boolean =
+const IS_CHROME: boolean =
   CAN_USE_DOM && /^(?=.*Chrome).*/i.test(navigator.userAgent);
-// export const canUseTextInputEvent: boolean = CAN_USE_DOM && 'TextEvent' in window && !documentMode;
 
-export const IS_ANDROID_CHROME: boolean =
-  CAN_USE_DOM && IS_ANDROID && IS_CHROME;
+const IS_ANDROID_CHROME: boolean = CAN_USE_DOM && IS_ANDROID && IS_CHROME;
 
 export const IS_SAFARI: boolean =
   CAN_USE_DOM && /Version\/[\d.]+.*Safari/.test(navigator.userAgent);
@@ -28,7 +26,7 @@ export const SUPPORTS_REMOVE_FILE = IS_CHROME && !IS_ANDROID_CHROME;
 
 export const HAS_TOUCHSCREEN = hasTouchScreen();
 
-export function hasTouchScreen() {
+function hasTouchScreen() {
   if ("maxTouchPoints" in navigator) {
     return navigator.maxTouchPoints > 0;
   } else if ("msMaxTouchPoints" in navigator) {

@@ -1,5 +1,5 @@
 import { Label } from "@/components/ui/label";
-import { HAS_TOUCHSCREEN } from "@/native-api/platform";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";

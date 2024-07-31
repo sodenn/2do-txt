@@ -43,14 +43,14 @@ export async function addDoneFileId(todoFileId: string, doneFileId: string) {
   if (itemsStr) {
     try {
       const items: Item[] = JSON.parse(itemsStr);
-      const newItems = items.map((i) => {
-        if (i.todoFileId !== todoFileId) {
+      const newItems = items.map((item) => {
+        if (item.todoFileId === todoFileId) {
           return {
-            todoFileId: i.todoFileId,
+            ...item,
             doneFileId,
           };
         } else {
-          return i;
+          return item;
         }
       });
       await setPreferencesItem("todo-files", JSON.stringify(newItems));

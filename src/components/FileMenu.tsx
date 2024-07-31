@@ -9,11 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import logo from "@/images/logo.png";
-import { HAS_TOUCHSCREEN } from "@/native-api/platform";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { useTask } from "@/utils/useTask";
 import {
   ChevronDownIcon,

@@ -1,4 +1,4 @@
-export type PreferencesKeys =
+type PreferencesKeys =
   | "language"
   | "theme-mode"
   | "todo-files"
@@ -28,10 +28,4 @@ export async function setPreferencesItem(
   value: string,
 ): Promise<void> {
   return localStorage.setItem(key, value);
-}
-
-export async function removePreferencesItem(
-  key: PreferencesKeys,
-): Promise<void> {
-  return localStorage.removeItem(key);
 }

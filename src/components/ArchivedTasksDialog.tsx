@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 
 export function ArchivedTasksDialog() {
   const open = useArchivedTasksDialogStore((state) => state.open);
-  const filePath = useArchivedTasksDialogStore((state) => state.fileId);
+  const todoFileId = useArchivedTasksDialogStore((state) => state.todoFileId);
   const closeArchivedTasksDialog = useArchivedTasksDialogStore(
     (state) => state.closeArchivedTasksDialog,
   );
@@ -32,9 +32,9 @@ export function ArchivedTasksDialog() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const handleRestore = async (task: Task) => {
-    if (filePath) {
-      await restoreTask(filePath, task);
-      loadDoneFile(filePath).then((result) => {
+    if (todoFileId) {
+      await restoreTask(todoFileId, task);
+      loadDoneFile(todoFileId).then((result) => {
         if (result && result.items.length > 0) {
           setTasks(result.items);
         } else {
@@ -45,14 +45,14 @@ export function ArchivedTasksDialog() {
   };
 
   useEffect(() => {
-    if (filePath) {
-      loadDoneFile(filePath).then((result) => {
+    if (todoFileId) {
+      loadDoneFile(todoFileId).then((result) => {
         if (result) {
           setTasks(result.items);
         }
       });
     }
-  }, [filePath, loadDoneFile]);
+  }, [todoFileId, loadDoneFile]);
 
   return (
     <ResponsiveDialog open={open} onClose={closeArchivedTasksDialog}>
