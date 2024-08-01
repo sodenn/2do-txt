@@ -261,8 +261,12 @@ export async function deleteFile(id: string) {
     throw new Error("Cannot retrieve fileHandle");
   }
   if (SUPPORTS_REMOVE_FILE) {
-    // @ts-ignore
-    await fileHandle.remove();
+    try {
+      // @ts-ignore
+      await fileHandle.remove();
+    } catch (error) {
+      console.error(`Cannot delete file ${fileHandle.name}`, error);
+    }
   }
   await deleteFileHandleById(id);
 }

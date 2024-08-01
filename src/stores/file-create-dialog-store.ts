@@ -1,37 +1,22 @@
 import { create } from "zustand";
 
-interface FileCreateDialogOptions {
-  createFirstTask?: boolean;
-  createExampleFile?: boolean;
-}
-
-interface FileCreateDialogStoreData extends FileCreateDialogOptions {
+interface FileCreateDialogStoreData {
   open: boolean;
 }
 
 interface FileCreateDialogStoreInterface extends FileCreateDialogStoreData {
   open: boolean;
-  openFileCreateDialog: (opt?: FileCreateDialogOptions) => void;
+  openFileCreateDialog: () => void;
   closeFileCreateDialog: () => void;
-  cleanupFileCreateDialog: () => void;
 }
 
 export const useFileCreateDialogStore = create<FileCreateDialogStoreInterface>(
   (set) => ({
     open: false,
-    createFirstTask: false,
-    createExampleFile: false,
-    openFileCreateDialog: (opt: FileCreateDialogOptions = {}) =>
-      set({ ...opt, open: true }),
+    openFileCreateDialog: () => set({ open: true }),
     closeFileCreateDialog: () =>
       set({
         open: false,
-      }),
-    cleanupFileCreateDialog: () =>
-      set({
-        open: false,
-        createFirstTask: false,
-        createExampleFile: false,
       }),
   }),
 );

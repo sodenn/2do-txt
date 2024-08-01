@@ -1,4 +1,3 @@
-import { StartEllipsis } from "@/components/StartEllipsis";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -79,7 +78,7 @@ export function FileMenu() {
           onClick={() => handleSetActiveList(id)}
           key={id}
         >
-          <StartEllipsis>{filename}</StartEllipsis>
+          <div className="truncate">{filename}</div>
         </DropdownMenuCheckboxItem>,
       );
     });
@@ -129,9 +128,9 @@ export function FileMenu() {
           aria-label="File menu"
         >
           <img src={logo} className="mr-2 h-6 w-6" alt="Logo" height={22} />
-          <StartEllipsis>
+          <div className="truncate">
             {activeTaskList ? activeTaskList.filename : "2do.txt"}
-          </StartEllipsis>
+          </div>
           <ChevronDownIcon className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

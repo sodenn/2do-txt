@@ -561,10 +561,9 @@ export function useTask() {
     const { errors } = await loadTodoFilesFromDisk();
     // notify the user if a file cannot be found
     for (const error of errors) {
-      await handleFileNotFound(error.id);
-      closeTodoFile(error.id).catch((e) => void e);
+      await handleFileNotFound(error.id).catch((e) => void e);
     }
-  }, [loadTodoFilesFromDisk, handleFileNotFound, closeTodoFile]);
+  }, [loadTodoFilesFromDisk, handleFileNotFound]);
 
   const handleInit = useCallback(async () => {
     todoFiles.errors.forEach((err) => handleFileNotFound(err.id));

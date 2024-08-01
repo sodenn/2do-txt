@@ -1,4 +1,3 @@
-import { StartEllipsis } from "@/components/StartEllipsis";
 import {
   Select,
   SelectContent,
@@ -35,9 +34,7 @@ export function FileSelect(props: FileSelectProps) {
       <SelectContent>
         {options.map((item) => (
           <SelectItem key={item.id} value={item.id}>
-            <StartEllipsis className="max-w-[300px]">
-              {item.filename}
-            </StartEllipsis>
+            <div className="max-w-[300px] truncate">{item.filename}</div>
           </SelectItem>
         ))}
       </SelectContent>
