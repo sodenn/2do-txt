@@ -22,11 +22,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export function ArchivedTasksDialog() {
-  const open = useArchivedTasksDialogStore((state) => state.open);
-  const todoFileId = useArchivedTasksDialogStore((state) => state.todoFileId);
-  const closeArchivedTasksDialog = useArchivedTasksDialogStore(
-    (state) => state.closeArchivedTasksDialog,
-  );
+  const {
+    open,
+    todoFileId,
+    closeArchivedTasksDialog,
+    cleanupArchivedTasksDialog,
+  } = useArchivedTasksDialogStore();
   const { t } = useTranslation();
   const { loadDoneFile, restoreTask } = useTask();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -55,7 +56,11 @@ export function ArchivedTasksDialog() {
   }, [todoFileId, loadDoneFile]);
 
   return (
-    <ResponsiveDialog open={open} onClose={closeArchivedTasksDialog}>
+    <ResponsiveDialog
+      open={open}
+      onClose={closeArchivedTasksDialog}
+      onExit={cleanupArchivedTasksDialog}
+    >
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("Archived tasks")}</ResponsiveDialogTitle>

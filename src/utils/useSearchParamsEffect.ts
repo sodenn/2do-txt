@@ -1,5 +1,5 @@
 import {
-  FilterStoreData,
+  FilterFields,
   SearchParams,
   useFilterStore,
 } from "@/stores/filter-store";
@@ -12,7 +12,7 @@ export function useSearchParamsEffect() {
   const filterStore = useFilterStore((state) => state);
 
   const updateSearchParams = useCallback(
-    (state: FilterStoreData) => {
+    (state: FilterFields) => {
       const {
         searchTerm,
         activeTaskListId,

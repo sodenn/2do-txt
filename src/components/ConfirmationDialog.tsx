@@ -11,18 +11,32 @@ import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { cn } from "@/utils/tw-utils";
 
 export function ConfirmationDialog() {
-  const { open, title, content, buttons, onClose, closeConfirmationDialog } =
-    useConfirmationDialogStore();
+  const {
+    open,
+    title,
+    content,
+    buttons,
+    onClose,
+    closeConfirmationDialog,
+    cleanupConfirmationDialog,
+  } = useConfirmationDialogStore();
+
+  const handleClose = () => {
+    closeConfirmationDialog();
+    setTimeout(() => {
+      cleanupConfirmationDialog();
+    }, 200);
+  };
 
   const handleClick = (handler?: () => void) => {
     handler?.();
-    closeConfirmationDialog();
+    handleClose();
   };
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       onClose?.();
-      closeConfirmationDialog();
+      handleClose();
     }
   };
 

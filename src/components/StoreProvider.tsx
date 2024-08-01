@@ -1,39 +1,39 @@
 import {
+  FilterFields,
   filterLoader,
-  FilterStoreData,
+  FilterStore,
   FilterStoreProvider,
-  FilterStoreType,
   initializeFilterStore,
 } from "@/stores/filter-store";
 import {
   initializeSettingsStore,
+  SettingsFields,
   settingsLoader,
-  SettingsStoreData,
+  SettingsStore,
   SettingsStoreProvider,
-  SettingsStoreType,
 } from "@/stores/settings-store";
 import {
   initializeTaskStore,
+  TaskFields,
   taskLoader,
-  TaskStoreData,
+  TaskStore,
   TaskStoreProvider,
-  TaskStoreType,
 } from "@/stores/task-state";
 import {
   initializeThemeStore,
+  ThemeFields,
   themeLoader,
-  ThemeStoreData,
+  ThemeStore,
   ThemeStoreProvider,
-  ThemeStoreType,
 } from "@/stores/theme-store";
 import { preloadImages } from "@/utils/images";
 import { useRef, type PropsWithChildren } from "react";
 
 export interface LoaderData {
-  filter: FilterStoreData;
-  settings: SettingsStoreData;
-  theme: ThemeStoreData;
-  task: TaskStoreData;
+  filter: FilterFields;
+  settings: SettingsFields;
+  theme: ThemeFields;
+  task: TaskFields;
 }
 
 export async function loader(): Promise<LoaderData> {
@@ -51,10 +51,10 @@ export function StoreProvider({
   children,
   ...props
 }: PropsWithChildren<LoaderData>) {
-  const filterStoreRef = useRef<FilterStoreType>();
-  const settingsStoreRef = useRef<SettingsStoreType>();
-  const taskStoreRef = useRef<TaskStoreType>();
-  const themeStoreRef = useRef<ThemeStoreType>();
+  const filterStoreRef = useRef<FilterStore>();
+  const settingsStoreRef = useRef<SettingsStore>();
+  const taskStoreRef = useRef<TaskStore>();
+  const themeStoreRef = useRef<ThemeStore>();
 
   if (!filterStoreRef.current) {
     filterStoreRef.current = initializeFilterStore(props.filter);

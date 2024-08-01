@@ -22,7 +22,7 @@ export interface SearchParams {
   active: string;
 }
 
-export interface FilterStoreData {
+export interface FilterFields {
   searchTerm: string;
   activePriorities: string[];
   activeProjects: string[];
@@ -34,7 +34,7 @@ export interface FilterStoreData {
   activeTaskListId?: string;
 }
 
-interface FilterStoreInterface extends FilterStoreData {
+interface FilterState extends FilterFields {
   setSearchTerm: (searchTerm: string) => void;
   setSortBy: (sortBy: SortKey) => void;
   setFilterType: (filterType: FilterType) => void;
@@ -50,27 +50,13 @@ interface FilterStoreInterface extends FilterStoreData {
   setActiveTaskListId: (activeTaskListId?: string) => void;
 }
 
-function getDefaultInitialState(): FilterStoreData {
-  return {
-    searchTerm: "",
-    sortBy: "unsorted",
-    filterType: "AND",
-    activePriorities: [],
-    activeProjects: [],
-    activeContexts: [],
-    activeTags: [],
-    hideCompletedTasks: false,
-    activeTaskListId: undefined,
-  };
-}
+export type FilterStore = ReturnType<typeof initializeFilterStore>;
 
-export type FilterStoreType = ReturnType<typeof initializeFilterStore>;
-
-const zustandContext = createContext<FilterStoreType | null>(null);
+const zustandContext = createContext<FilterStore | null>(null);
 
 export const FilterStoreProvider = zustandContext.Provider;
 
-export async function filterLoader(): Promise<FilterStoreData> {
+export async function filterLoader(): Promise<FilterFields> {
   const searchParams = new URLSearchParams(window.location.search);
   const [sortBy, filterType, hideCompletedTasks] = await Promise.all([
     getPreferencesItem<SortKey>("sort-by"),
@@ -96,10 +82,18 @@ export async function filterLoader(): Promise<FilterStoreData> {
 }
 
 export function initializeFilterStore(
-  preloadedState: Partial<FilterStoreInterface> = {},
+  preloadedState: Partial<FilterState> = {},
 ) {
-  return createStore<FilterStoreInterface>((set) => ({
-    ...getDefaultInitialState(),
+  return createStore<FilterState>((set) => ({
+    searchTerm: "",
+    sortBy: "unsorted",
+    filterType: "AND",
+    activePriorities: [],
+    activeProjects: [],
+    activeContexts: [],
+    activeTags: [],
+    hideCompletedTasks: false,
+    activeTaskListId: undefined,
     ...preloadedState,
     setSearchTerm: (searchTerm: string) => set({ searchTerm }),
     setSortBy: (sortBy: SortKey) => {
@@ -161,8 +155,8 @@ export function initializeFilterStore(
   }));
 }
 
-export function useFilterStore<T = FilterStoreInterface>(
-  selector: (state: FilterStoreInterface) => T = (state) => state as T,
+export function useFilterStore<T = FilterState>(
+  selector: (state: FilterState) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

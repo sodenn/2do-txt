@@ -23,31 +23,24 @@ interface TodoFiles {
   errors: TodoFileError[];
 }
 
-export interface TaskStoreData {
+export interface TaskFields {
   taskLists: TaskList[];
   todoFiles: TodoFiles;
 }
 
-interface TaskStoreInterface extends TaskStoreData {
+interface TaskState extends TaskFields {
   setTaskLists: (taskLists: TaskList[]) => void;
   addTaskList: (taskList: TaskList) => void;
   removeTaskList: (taskList?: TaskList) => void;
 }
 
-function getDefaultInitialState(): TaskStoreData {
-  return {
-    taskLists: [],
-    todoFiles: { files: [], errors: [] },
-  };
-}
+export type TaskStore = ReturnType<typeof initializeTaskStore>;
 
-export type TaskStoreType = ReturnType<typeof initializeTaskStore>;
-
-const zustandContext = createContext<TaskStoreType | null>(null);
+const zustandContext = createContext<TaskStore | null>(null);
 
 export const TaskStoreProvider = zustandContext.Provider;
 
-export async function taskLoader(): Promise<TaskStoreData> {
+export async function taskLoader(): Promise<TaskFields> {
   const ids = await getTodoFileIds();
   const result: TodoFile[] = await Promise.all(
     ids.map(({ todoFileId: id }) =>
@@ -83,11 +76,10 @@ export async function taskLoader(): Promise<TaskStoreData> {
   };
 }
 
-export function initializeTaskStore(
-  preloadedState: Partial<TaskStoreInterface> = {},
-) {
-  return createStore<TaskStoreInterface>((set) => ({
-    ...getDefaultInitialState(),
+export function initializeTaskStore(preloadedState: Partial<TaskState> = {}) {
+  return createStore<TaskState>((set) => ({
+    taskLists: [],
+    todoFiles: { files: [], errors: [] },
     ...preloadedState,
     setTaskLists: (taskLists: TaskList[]) => set({ taskLists }),
     addTaskList: (taskList: TaskList) => {
@@ -108,7 +100,7 @@ export function initializeTaskStore(
   }));
 }
 
-export function useTaskStore<T>(selector: (state: TaskStoreInterface) => T) {
+export function useTaskStore<T>(selector: (state: TaskState) => T) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");
   return useZustandStore(store, selector);

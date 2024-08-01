@@ -16,17 +16,15 @@ interface ConfirmationDialogOptions {
   onClose?: () => void;
 }
 
-interface ConfirmationDialogStoreData extends ConfirmationDialogOptions {
+interface ConfirmationDialogState extends ConfirmationDialogOptions {
   open: boolean;
-}
-
-interface ConfirmationDialogStoreInterface extends ConfirmationDialogStoreData {
   openConfirmationDialog: (opt: ConfirmationDialogOptions) => void;
   closeConfirmationDialog: () => void;
+  cleanupConfirmationDialog: () => void;
 }
 
-export const useConfirmationDialogStore =
-  create<ConfirmationDialogStoreInterface>((set) => ({
+export const useConfirmationDialogStore = create<ConfirmationDialogState>(
+  (set) => ({
     open: false,
     title: undefined,
     content: undefined,
@@ -36,14 +34,14 @@ export const useConfirmationDialogStore =
       set({ ...opt, open: true }),
     closeConfirmationDialog: () => {
       set({ open: false });
-      setTimeout(() => {
-        set({
-          open: false,
-          title: undefined,
-          content: undefined,
-          buttons: undefined,
-          onClose: undefined,
-        });
-      }, 200);
     },
-  }));
+    cleanupConfirmationDialog: () =>
+      set({
+        open: false,
+        title: undefined,
+        content: undefined,
+        buttons: undefined,
+        onClose: undefined,
+      }),
+  }),
+);

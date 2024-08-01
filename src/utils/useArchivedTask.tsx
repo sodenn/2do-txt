@@ -3,7 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { Task } from "@/utils/task";
-import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
+import { parseTaskList, stringifyTaskList, TaskList } from "@/utils/task-list";
 import {
   addDoneFileId,
   getDoneFileId,
@@ -137,9 +137,7 @@ export function useArchivedTask() {
           <ToastAction
             altText="Archived tasks"
             onClick={() => {
-              openArchivedTasksDialog({
-                todoFileId,
-              });
+              openArchivedTasksDialog(todoFileId);
             }}
           >
             {t("Archived tasks")}
