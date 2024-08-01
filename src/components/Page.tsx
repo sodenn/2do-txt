@@ -1,7 +1,7 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
+import { DropZone } from "@/components/DropZone";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
-import { FilePicker } from "@/components/FilePicker";
 import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
@@ -14,7 +14,7 @@ import { TaskView } from "@/components/TaskView";
 
 export function Component() {
   return (
-    <FilePicker>
+    <DropZone>
       <Header />
       <SideSheet />
       <LayoutContent>
@@ -37,6 +37,6 @@ export function Component() {
       <ArchivedTasksDialog />
       <ShortcutsDialog />
       <PageEffect />
-    </FilePicker>
+    </DropZone>
   );
 }

@@ -22,6 +22,8 @@ export const IS_IOS: boolean =
 
 export const SUPPORTS_SHOW_OPEN_FILE_PICKER = IS_CHROME && !IS_ANDROID_CHROME;
 
+export const SUPPORTS_DATA_TRANSFER_HANDLER = IS_CHROME && !IS_ANDROID_CHROME;
+
 export const SUPPORTS_REMOVE_FILE = IS_CHROME && !IS_ANDROID_CHROME;
 
 export const HAS_TOUCHSCREEN = hasTouchScreen();

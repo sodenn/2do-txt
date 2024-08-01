@@ -25,12 +25,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { writeToClipboard } from "@/utils/clipboard";
+import { readFile } from "@/utils/file-system";
 import {
   SUPPORTS_REMOVE_FILE,
   SUPPORTS_SHOW_OPEN_FILE_PICKER,
 } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
-import { readFile, useFilePicker } from "@/utils/useFilePicker";
+import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
 import {
   DndContext,
