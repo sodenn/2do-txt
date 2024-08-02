@@ -1,10 +1,10 @@
-interface FileHandleEntry {
+interface Entry {
   id: string;
-  handle: FileSystemFileHandle;
+  filename: string;
 }
 
 interface WriteOperation {
-  content: Uint8Array;
+  content: string;
   id: string;
   operation: "write";
 }
@@ -16,6 +16,7 @@ interface ReadOperation {
 
 interface OpenOperation {
   operation: "open";
+  suggestedName: string;
 }
 
 interface DeleteOperation {
@@ -34,52 +35,67 @@ self.onmessage = async (event: MessageEvent<Operation>) => {
   const root = await navigator.storage.getDirectory();
 
   if (operation === "open") {
-    const fileHandle = await root.getFileHandle("todo.txt", { create: true });
+    const filename = event.data.suggestedName;
+    const fileHandle = await root.getFileHandle(filename, { create: true });
+    const id = await saveFilename(filename);
     const syncHandle = await fileHandle.createSyncAccessHandle();
-    const id = await storeFileHandle(fileHandle);
     const buffer = new ArrayBuffer(syncHandle.getSize());
     syncHandle.read(buffer, { at: 0 });
     syncHandle.close();
+    const decoder = new TextDecoder();
+    const content = decoder.decode(buffer);
     self.postMessage({
-      operation: "read",
+      operation: "open",
       success: true,
       id,
-      content: buffer,
+      content,
       filename: fileHandle.name,
     });
   }
 
   if (operation === "read") {
     const id = event.data.id;
-    const fileHandle = await getFileHandleById(id);
-    if (!fileHandle) {
-      console.log("Missing fileHandle");
+    const filename = await getFilename(id);
+    if (!filename) {
+      console.log("File not found.");
       self.postMessage({ operation: "read", success: false });
       return;
     }
+    const fileHandle = await root.getFileHandle(filename);
     const syncHandle = await fileHandle.createSyncAccessHandle();
     const buffer = new ArrayBuffer(syncHandle.getSize());
     syncHandle.read(buffer, { at: 0 });
     syncHandle.close();
+    const decoder = new TextDecoder();
+    const content = decoder.decode(buffer);
     self.postMessage({
       operation: "read",
       success: true,
       filename: fileHandle.name,
-      content: buffer,
+      content,
     });
   }
 
   if (operation === "write") {
     const id = event.data.id;
     const content = event.data.content;
-    const fileHandle = await getFileHandleById(id);
-    if (!fileHandle) {
-      console.log("Missing fileHandle");
+    const filename = await getFilename(id);
+    if (!filename) {
+      console.log("File not found.");
       self.postMessage({ operation: "write", success: false });
       return;
     }
+    const fileHandle = await root.getFileHandle(filename);
     const syncHandle = await fileHandle.createSyncAccessHandle();
-    syncHandle.write(content, { at: 0 });
+    try {
+      const encoder = new TextEncoder();
+      const writeBuffer = encoder.encode(content);
+      syncHandle.write(writeBuffer, { at: 0 });
+    } catch (err) {
+      debugger;
+      console.error(err);
+      throw err;
+    }
     syncHandle.close();
     self.postMessage({
       operation: "write",
@@ -90,24 +106,25 @@ self.onmessage = async (event: MessageEvent<Operation>) => {
 
   if (operation === "delete") {
     const id = event.data.id;
-    const fileHandle = await getFileHandleById(id);
-    if (!fileHandle) {
-      console.log("Missing fileHandle");
+    const filename = await getFilename(id);
+    if (!filename) {
+      console.log("File not found.");
       self.postMessage({ operation: "delete", success: false });
       return;
     }
-    await root.removeEntry(fileHandle.name);
+    await root.removeEntry(filename);
+    await removeFilename(id);
     self.postMessage({ operation: "delete", success: true });
   }
 };
 
 function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("fileHandlesDB", 1);
+    const request = indexedDB.open("filenameDB", 1);
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
-      db.createObjectStore("fileHandles", { keyPath: "id" });
+      db.createObjectStore("filenames", { keyPath: "id" });
     };
 
     request.onsuccess = (event) => {
@@ -120,20 +137,16 @@ function openDatabase(): Promise<IDBDatabase> {
   });
 }
 
-async function storeFileHandle(
-  fileHandle: FileSystemFileHandle,
-): Promise<string> {
+async function saveFilename(filename: string): Promise<string> {
   const db = await openDatabase();
   const id = generateId();
   return new Promise<string>((resolve, reject) => {
-    const transaction = db.transaction(["fileHandles"], "readwrite");
-    const store = transaction.objectStore("fileHandles");
-    debugger;
+    const transaction = db.transaction(["filenames"], "readwrite");
+    const store = transaction.objectStore("filenames");
     const request = store.put({
       id,
-      handle: fileHandle,
-    } as FileHandleEntry);
-    debugger;
+      filename,
+    } as Entry);
     request.onsuccess = () => {
       resolve(id);
     };
@@ -143,15 +156,25 @@ async function storeFileHandle(
   });
 }
 
-async function getFileHandleById(id: string) {
+async function getFilename(id: string) {
   const db = await openDatabase();
-  const transaction = db.transaction(["fileHandles"], "readonly");
-  const store = transaction.objectStore("fileHandles");
+  const transaction = db.transaction(["filenames"], "readonly");
+  const store = transaction.objectStore("filenames");
   const request = store.get(id);
-  return getFileHandle<FileHandleEntry>(request).then((e) => e?.handle);
+  return getFilenameFromRequest<Entry>(request).then((e) => e?.filename);
 }
 
-function getFileHandle<T>(request: IDBRequest): Promise<T | undefined> {
+async function removeFilename(id: string) {
+  const db = await openDatabase();
+  const transaction = db.transaction(["filenames"], "readonly");
+  const store = transaction.objectStore("filenames");
+  const request = store.delete(id);
+  return getFilenameFromRequest<Entry>(request);
+}
+
+function getFilenameFromRequest<T>(
+  request: IDBRequest,
+): Promise<T | undefined> {
   return new Promise((resolve, reject) => {
     request.onsuccess = (event) => {
       const result = (event.target as IDBRequest).result as T | undefined;

@@ -25,7 +25,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { writeToClipboard } from "@/utils/clipboard";
-import { readFile } from "@/utils/file-system";
+import { readFile } from "@/utils/filesystem";
 import {
   SUPPORTS_REMOVE_FILE,
   SUPPORTS_SHOW_OPEN_FILE_PICKER,

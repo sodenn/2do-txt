@@ -2,7 +2,7 @@ import { Fade } from "@/components/Fade";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { useFilterStore } from "@/stores/filter-store";
-import { storeFileHandle } from "@/utils/file-system";
+import { storeFileHandle } from "@/utils/filesystem";
 import { SUPPORTS_DATA_TRANSFER_HANDLER } from "@/utils/platform";
 import { useTask } from "@/utils/useTask";
 import {

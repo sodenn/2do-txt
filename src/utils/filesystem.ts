@@ -1,5 +1,9 @@
-import { SUPPORTS_REMOVE_FILE } from "@/utils/platform";
+import {
+  SUPPORTS_REMOVE_FILE,
+  SUPPORTS_SHOW_OPEN_FILE_PICKER,
+} from "@/utils/platform";
 import { generateId } from "@/utils/uuid";
+import * as fallback from "./fallback-filesystem";
 
 interface FileHandleEntry {
   id: string;
@@ -7,6 +11,9 @@ interface FileHandleEntry {
 }
 
 export async function readFile(id: string) {
+  if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
+    return fallback.readFile(id);
+  }
   const fileHandle = await getFileHandleById(id);
   if (!fileHandle) {
     throw new Error("Cannot retrieve fileHandle");
@@ -26,6 +33,9 @@ export async function writeFile({
   id: string;
   content: string;
 }) {
+  if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
+    return fallback.writeFile({ id, content });
+  }
   const fileHandle = await getFileHandleById(id);
   if (!fileHandle) {
     throw new Error("Cannot retrieve fileHandle");
@@ -39,6 +49,9 @@ export async function writeFile({
 }
 
 export async function deleteFile(id: string) {
+  if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
+    return fallback.deleteFile(id);
+  }
   const fileHandle = await getFileHandleById(id);
   if (!fileHandle) {
     throw new Error("Cannot retrieve fileHandle");
@@ -124,26 +137,4 @@ async function getFileHandleById(id: string) {
   const store = transaction.objectStore("fileHandles");
   const request = store.get(id);
   return getFileHandle<FileHandleEntry>(request).then((e) => e?.handle);
-}
-
-export async function verifyPermission(
-  fileHandle: FileSystemFileHandle,
-  readWrite = true,
-) {
-  const options: any = {};
-  if (readWrite) {
-    options.mode = "readwrite";
-  }
-  // Check if permission was already granted. If so, return true.
-  // @ts-ignore
-  if ((await fileHandle.queryPermission(options)) === "granted") {
-    return true;
-  }
-  // Request permission. If the user grants permission, return true.
-  // @ts-ignore
-  if ((await fileHandle.requestPermission(options)) === "granted") {
-    return true;
-  }
-  // The user didn't grant permission, so return false.
-  return false;
 }

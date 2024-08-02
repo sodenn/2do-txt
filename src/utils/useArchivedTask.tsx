@@ -2,9 +2,9 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { useSettingsStore } from "@/stores/settings-store";
-import { deleteFile, readFile, writeFile } from "@/utils/file-system";
+import { deleteFile, readFile, writeFile } from "@/utils/filesystem";
 import { Task } from "@/utils/task";
-import { parseTaskList, stringifyTaskList, TaskList } from "@/utils/task-list";
+import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
 import {
   addDoneFileId,
   getDoneFileId,

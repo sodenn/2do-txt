@@ -1,10 +1,10 @@
-import { AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
@@ -44,7 +44,7 @@ export function ConfirmationDialog() {
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogContent data-testid="confirmation-dialog">
         <AlertDialogHeader>
-          {title && <AlertTitle>{title}</AlertTitle>}
+          <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{content}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
