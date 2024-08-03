@@ -1,4 +1,6 @@
 import type {
+  DeleteNotInListOptions,
+  DeleteNotInListResult,
   DeleteOptions,
   DeleteResult,
   OpenOptions,
@@ -105,5 +107,26 @@ export async function deleteFile(id: string) {
       operation: "delete",
       id,
     } as DeleteOptions);
+  });
+}
+
+export async function deleteFilesNotInList(ids: string[]) {
+  return new Promise((resolve, reject) => {
+    worker.addEventListener(
+      "message",
+      (event: MessageEvent<DeleteNotInListResult>) => {
+        const { operation, success } = event.data;
+        if (operation === "delete-not-in-list" && success) {
+          resolve(undefined);
+        } else {
+          reject();
+        }
+      },
+      { once: true },
+    );
+    worker.postMessage({
+      operation: "delete-not-in-list",
+      ids,
+    } as DeleteNotInListOptions);
   });
 }

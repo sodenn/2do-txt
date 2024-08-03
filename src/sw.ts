@@ -71,14 +71,39 @@ interface DeleteResultError {
 
 export type DeleteResult = DeleteResultSuccess | DeleteResultError;
 
-export type Options = OpenOptions | WriteOptions | ReadOptions | DeleteOptions;
+export interface DeleteNotInListOptions {
+  ids: string[];
+  operation: "delete-not-in-list";
+}
+
+interface DeleteNotInListResultSuccess {
+  operation: "delete-not-in-list";
+  success: true;
+}
+
+interface DeleteNotInListResultError {
+  operation: "delete-not-in-list";
+  success: false;
+}
+
+export type DeleteNotInListResult =
+  | DeleteNotInListResultSuccess
+  | DeleteNotInListResultError;
+
+export type Options =
+  | OpenOptions
+  | WriteOptions
+  | ReadOptions
+  | DeleteOptions
+  | DeleteNotInListOptions;
 
 self.onmessage = async (event: MessageEvent<Options>) => {
   const operation = event.data.operation;
   const root = await navigator.storage.getDirectory();
 
   if (operation === "open") {
-    const filename = event.data.suggestedName;
+    const suggestedName = event.data.suggestedName;
+    const filename = await getNextFreeFileName(suggestedName);
     const fileHandle = await root.getFileHandle(filename, { create: true });
     const id = await saveFilename(filename);
     const syncHandle = await fileHandle.createSyncAccessHandle();
@@ -171,6 +196,15 @@ self.onmessage = async (event: MessageEvent<Options>) => {
       success: true,
     } as DeleteResultSuccess);
   }
+
+  if (operation === "delete-not-in-list") {
+    const ids = event.data.ids;
+    await removeFilenamesNotInList(ids);
+    self.postMessage({
+      operation: "delete-not-in-list",
+      success: true,
+    } as DeleteNotInListResultSuccess);
+  }
 };
 
 function openDatabase(): Promise<IDBDatabase> {
@@ -225,6 +259,76 @@ async function removeFilename(id: string) {
   const store = transaction.objectStore("filenames");
   const request = store.delete(id);
   return getFilenameFromRequest<Entry>(request);
+}
+
+async function removeFilenamesNotInList(ids: string[]) {
+  const db = await openDatabase();
+  const transaction = db.transaction(["filenames"], "readonly");
+  const store = transaction.objectStore("filenames");
+  const request = store.openCursor();
+  const idsNotInList = await new Promise<string[]>((resolve, reject) => {
+    const result: string[] = [];
+    request.onsuccess = (event: Event) => {
+      const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+      if (cursor) {
+        const document = cursor.value as { id: string };
+        if (!ids.includes(document.id)) {
+          result.push(document.id);
+        }
+        cursor.continue();
+      } else {
+        resolve(result);
+      }
+    };
+    request.onerror = (event: Event) => {
+      reject((event.target as IDBRequest).error);
+    };
+  });
+  await Promise.all(idsNotInList.map(removeFilename));
+}
+
+async function getNextFreeFileName(desiredFileName: string): Promise<string> {
+  const parts = desiredFileName.split(".");
+  const baseName = parts.slice(0, -1).join(".");
+  const extension = parts.length > 1 ? "." + parts[parts.length - 1] : "";
+
+  const db = await openDatabase();
+  const transaction = db.transaction(["filenames"], "readonly");
+  const store = transaction.objectStore("filenames");
+
+  // Get all filenames from the database
+  const filenames: string[] = [];
+  return new Promise<string>((resolve, reject) => {
+    store.openCursor().onsuccess = function (event) {
+      const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+      if (cursor) {
+        filenames.push(cursor.value.filename);
+        cursor.continue();
+      } else {
+        // Check if the original filename exists
+        if (!filenames.includes(desiredFileName)) {
+          resolve(desiredFileName);
+          return;
+        }
+
+        // Generate a new filename with a counter
+        let counter = 1;
+        let newFilename;
+        do {
+          newFilename = `${baseName}(${counter})${extension}`;
+          counter++;
+        } while (filenames.includes(newFilename));
+
+        // Return the new filename
+        resolve(newFilename);
+      }
+    };
+
+    transaction.onerror = function (event) {
+      console.error("Transaction failed", event);
+      reject();
+    };
+  });
 }
 
 function getFilenameFromRequest<T>(

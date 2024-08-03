@@ -3,7 +3,11 @@ import { useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { taskLoader, useTaskStore } from "@/stores/task-store";
 import { todayDate } from "@/utils/date";
-import { deleteFile, writeFile } from "@/utils/filesystem";
+import {
+  deleteFile,
+  deleteFilesNotInList,
+  writeFile,
+} from "@/utils/filesystem";
 import { hashCode } from "@/utils/hashcode";
 import { setPreferencesItem } from "@/utils/preferences";
 import { canShare, share } from "@/utils/share";
@@ -568,6 +572,10 @@ export function useTask() {
     for (const error of todoFiles.errors) {
       await handleFileNotFound(error.id).catch((e) => void e);
     }
+    const ids = todoFiles.files.map((f) => f.taskList.id);
+    deleteFilesNotInList(ids).catch((e) => {
+      console.debug("Unable to delete unused files", e);
+    });
     shouldNotificationsBeRescheduled().then(() => {
       taskLists.forEach((taskList) =>
         scheduleDueTaskNotifications(taskList.items),
