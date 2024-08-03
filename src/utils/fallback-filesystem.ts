@@ -1,3 +1,14 @@
+import type {
+  DeleteOptions,
+  DeleteResult,
+  OpenOptions,
+  OpenResult,
+  ReadOptions,
+  ReadResult,
+  WriteOptions,
+  WriteResult,
+} from "@/sw";
+
 const worker = new Worker(new URL("../sw.ts", import.meta.url));
 
 export async function showSaveFilePicker(suggestedName = "todo.txt") {
@@ -5,7 +16,7 @@ export async function showSaveFilePicker(suggestedName = "todo.txt") {
     (resolve, reject) => {
       worker.addEventListener(
         "message",
-        (event) => {
+        (event: MessageEvent<OpenResult>) => {
           const { operation, success, id, content, filename } = event.data;
           if (operation === "open" && success) {
             resolve({ id, filename, content });
@@ -18,7 +29,7 @@ export async function showSaveFilePicker(suggestedName = "todo.txt") {
       worker.postMessage({
         operation: "open",
         suggestedName,
-      });
+      } as OpenOptions);
     },
   );
 }
@@ -28,9 +39,10 @@ export async function readFile(id: string) {
     (resolve, reject) => {
       worker.addEventListener(
         "message",
-        (event) => {
-          const { operation, success, content, filename } = event.data;
+        (event: MessageEvent<ReadResult>) => {
+          const { operation, success } = event.data;
           if (operation === "read" && success) {
+            const { content, filename } = event.data;
             resolve({ filename, content });
           } else {
             reject();
@@ -41,7 +53,7 @@ export async function readFile(id: string) {
       worker.postMessage({
         operation: "read",
         id,
-      });
+      } as ReadOptions);
     },
   );
 }
@@ -56,9 +68,10 @@ export async function writeFile({
   return new Promise<{ filename: string }>((resolve, reject) => {
     worker.addEventListener(
       "message",
-      (event) => {
-        const { operation, success, filename } = event.data;
+      (event: MessageEvent<WriteResult>) => {
+        const { operation, success } = event.data;
         if (operation === "write" && success) {
+          const filename = event.data.filename;
           resolve({ filename });
         } else {
           reject();
@@ -70,7 +83,7 @@ export async function writeFile({
       operation: "write",
       id,
       content,
-    });
+    } as WriteOptions);
   });
 }
 
@@ -78,7 +91,7 @@ export async function deleteFile(id: string) {
   return new Promise((resolve, reject) => {
     worker.addEventListener(
       "message",
-      (event) => {
+      (event: MessageEvent<DeleteResult>) => {
         const { operation, success } = event.data;
         if (operation === "delete" && success) {
           resolve(undefined);
@@ -91,6 +104,6 @@ export async function deleteFile(id: string) {
     worker.postMessage({
       operation: "delete",
       id,
-    });
+    } as DeleteOptions);
   });
 }

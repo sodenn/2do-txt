@@ -1,6 +1,5 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
-import { DropZone } from "@/components/DropZone";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
 import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
@@ -14,7 +13,7 @@ import { TaskView } from "@/components/TaskView";
 
 export function Component() {
   return (
-    <DropZone>
+    <div className="sh:h-screen flex h-full flex-col outline-none">
       <Header />
       <SideSheet />
       <LayoutContent>
@@ -37,6 +36,6 @@ export function Component() {
       <ArchivedTasksDialog />
       <ShortcutsDialog />
       <PageEffect />
-    </DropZone>
+    </div>
   );
 }

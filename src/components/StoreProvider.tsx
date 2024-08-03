@@ -18,7 +18,7 @@ import {
   taskLoader,
   TaskStore,
   TaskStoreProvider,
-} from "@/stores/task-state";
+} from "@/stores/task-store";
 import {
   initializeThemeStore,
   ThemeFields,

@@ -221,7 +221,9 @@ function TaskGrid(props: TaskGridProps) {
         </div>
       )}
       {showTaskList && (
-        <FileSelect options={taskLists} onSelect={onFileSelect} />
+        <div className="my-1">
+          <FileSelect options={taskLists} onSelect={onFileSelect} />
+        </div>
       )}
     </div>
   );

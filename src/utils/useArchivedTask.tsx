@@ -2,7 +2,12 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { useSettingsStore } from "@/stores/settings-store";
-import { deleteFile, readFile, writeFile } from "@/utils/filesystem";
+import {
+  deleteFile,
+  readFile,
+  showSaveFilePicker,
+  writeFile,
+} from "@/utils/filesystem";
 import { Task } from "@/utils/task";
 import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
 import {
@@ -10,7 +15,6 @@ import {
   getDoneFileId,
   removeDoneFileId,
 } from "@/utils/todo-files";
-import { useFilePicker } from "@/utils/useFilePicker";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -31,7 +35,6 @@ export function useArchivedTask() {
   );
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const { t } = useTranslation();
-  const { showSaveFilePicker } = useFilePicker();
 
   const saveDoneFile = useCallback(async (todoFileId: string, text: string) => {
     const doneFileId = await getDoneFileId(todoFileId);
@@ -44,33 +47,30 @@ export function useArchivedTask() {
     });
   }, []);
 
-  const loadDoneFile = useCallback(
-    async (todoFileId: string) => {
-      let doneFileId = await getDoneFileId(todoFileId);
-      if (!doneFileId) {
-        const result = await showSaveFilePicker("done.txt");
-        if (!result) {
-          return;
-        }
-        doneFileId = result.id;
-        await addDoneFileId(todoFileId, doneFileId);
-      }
-
-      const data = await readFile(doneFileId).catch((e) => void e);
-      if (!data) {
+  const loadDoneFile = useCallback(async (todoFileId: string) => {
+    let doneFileId = await getDoneFileId(todoFileId);
+    if (!doneFileId) {
+      const result = await showSaveFilePicker("done.txt");
+      if (!result) {
         return;
       }
+      doneFileId = result.id;
+      await addDoneFileId(todoFileId, doneFileId);
+    }
 
-      const parseResult = parseTaskList(data.content);
-      return {
-        items: parseResult.items,
-        lineEnding: parseResult.lineEnding,
-        filename: data.filename,
-        id: doneFileId,
-      };
-    },
-    [showSaveFilePicker],
-  );
+    const data = await readFile(doneFileId).catch((e) => void e);
+    if (!data) {
+      return;
+    }
+
+    const parseResult = parseTaskList(data.content);
+    return {
+      items: parseResult.items,
+      lineEnding: parseResult.lineEnding,
+      filename: data.filename,
+      id: doneFileId,
+    };
+  }, []);
 
   const restoreTask = useCallback(
     async ({ taskList, task }: RestoreTaskOptions) => {

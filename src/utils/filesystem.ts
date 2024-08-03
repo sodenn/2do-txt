@@ -10,14 +10,77 @@ interface FileHandleEntry {
   handle: FileSystemFileHandle;
 }
 
+// TODO suggest next free file name instead of todo.txt
+export async function showSaveFilePicker(suggestedName = "todo.txt") {
+  if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
+    const { id, filename } = await fallback.showSaveFilePicker(suggestedName);
+    return {
+      id,
+      filename,
+    };
+  }
+
+  // @ts-ignore
+  const fileHandle = await window.showSaveFilePicker({
+    suggestedName,
+    startIn: "documents",
+    types: [
+      {
+        description: "Text file",
+        accept: { "text/plain": [".txt"] },
+      },
+    ],
+  });
+  if (!fileHandle) {
+    return;
+  }
+
+  const id = await storeFileHandle(fileHandle);
+  const filename = fileHandle.name;
+  return {
+    id,
+    filename,
+  };
+}
+
+export async function showOpenFilePicker() {
+  if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
+    const { id, filename } = await fallback.showSaveFilePicker();
+    return {
+      id,
+      filename,
+    };
+  }
+
+  // @ts-ignore
+  const [fileHandle] = await window.showOpenFilePicker();
+  if (!fileHandle) {
+    return;
+  }
+
+  const id = await storeFileHandle(fileHandle);
+  const filename = fileHandle.name;
+  const file: File = await fileHandle.getFile();
+  const content = await file.text();
+  return {
+    id,
+    filename,
+    content,
+  };
+}
+
 export async function readFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return fallback.readFile(id);
   }
+
   const fileHandle = await getFileHandleById(id);
   if (!fileHandle) {
     throw new Error("Cannot retrieve fileHandle");
   }
+  // if (!(await verifyPermission(fileHandle))) {
+  //   throw new Error("Missing permission");
+  // }
   const fileData = await fileHandle.getFile();
   const content = await fileData?.text();
   return {
@@ -36,10 +99,14 @@ export async function writeFile({
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return fallback.writeFile({ id, content });
   }
+
   const fileHandle = await getFileHandleById(id);
   if (!fileHandle) {
     throw new Error("Cannot retrieve fileHandle");
   }
+  // if (!(await verifyPermission(fileHandle))) {
+  //   throw new Error("Missing permission");
+  // }
   const writable = await fileHandle.createWritable();
   await writable.write(content);
   await writable.close();
@@ -52,6 +119,7 @@ export async function deleteFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return fallback.deleteFile(id);
   }
+
   const fileHandle = await getFileHandleById(id);
   if (!fileHandle) {
     throw new Error("Cannot retrieve fileHandle");
@@ -138,3 +206,28 @@ async function getFileHandleById(id: string) {
   const request = store.get(id);
   return getFileHandle<FileHandleEntry>(request).then((e) => e?.handle);
 }
+
+export async function verifyPermission(fileHandle: FileSystemFileHandle) {
+  const options = {
+    mode: "readwrite",
+  };
+  // Check if permission was already granted. If so, return true.
+  // @ts-ignore
+  if ((await fileHandle.queryPermission(options)) === "granted") {
+    return true;
+  }
+
+  // @ts-ignore
+  await fileHandle.requestPermission(options).then((result) => {
+    console.log(result);
+  });
+  // Request permission. If the user grants permission, return true.
+  // @ts-ignore
+  if ((await fileHandle.requestPermission(options)) === "granted") {
+    return true;
+  }
+  // The user didn't grant permission, so return false.
+  return false;
+}
+
+// TODO add cleanup function that deletes all files that are not in the id array

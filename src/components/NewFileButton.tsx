@@ -1,15 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { useFilePicker } from "@/utils/useFilePicker";
+import { showSaveFilePicker } from "@/utils/filesystem";
 import { useTask } from "@/utils/useTask";
 import { SquareCheckIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function NewFileButton() {
   const { t } = useTranslation();
-  // const openFileCreateDialog = useFileCreateDialogStore(
-  //   (state) => state.openFileCreateDialog,
-  // );
-  const { showSaveFilePicker } = useFilePicker();
   const { createNewTodoFile } = useTask();
 
   const handleClick = async () => {

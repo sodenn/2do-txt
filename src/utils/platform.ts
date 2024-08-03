@@ -20,9 +20,8 @@ export const IS_IOS: boolean =
   // @ts-ignore
   !window.MSStream;
 
-export const SUPPORTS_SHOW_OPEN_FILE_PICKER = IS_CHROME && !IS_ANDROID_CHROME;
-
-export const SUPPORTS_DATA_TRANSFER_HANDLER = IS_CHROME && !IS_ANDROID_CHROME;
+export const SUPPORTS_SHOW_OPEN_FILE_PICKER =
+  "showSaveFilePicker" in window && "showOpenFilePicker" in window;
 
 export const SUPPORTS_REMOVE_FILE = IS_CHROME && !IS_ANDROID_CHROME;
 

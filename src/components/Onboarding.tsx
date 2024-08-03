@@ -2,9 +2,9 @@ import { ExampleFileButton } from "@/components/ExampleFileButton";
 import { NewFileButton } from "@/components/NewFileButton";
 import { Button } from "@/components/ui/button";
 import logo from "@/images/logo.png";
+import { showOpenFilePicker } from "@/utils/filesystem";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
-import { useFilePicker } from "@/utils/useFilePicker";
 import { useTask } from "@/utils/useTask";
 import { FolderIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 export function Onboarding() {
   const { t } = useTranslation();
   const { taskLists } = useTask();
-  const { showOpenFilePicker } = useFilePicker();
 
   return (
     <div

@@ -1,36 +1,79 @@
-interface Entry {
+export interface Entry {
   id: string;
   filename: string;
 }
 
-interface WriteOperation {
+export interface OpenOptions {
+  operation: "open";
+  suggestedName: string;
+}
+
+export interface OpenResult {
+  operation: "open";
+  success: true;
+  id: string;
+  content: string;
+  filename: string;
+}
+
+export interface ReadOptions {
+  id: string;
+  operation: "read";
+}
+
+interface ReadResultSuccess {
+  operation: "read";
+  success: true;
+  content: string;
+  filename: string;
+}
+
+interface ReadResultError {
+  operation: "read";
+  success: false;
+}
+
+export type ReadResult = ReadResultSuccess | ReadResultError;
+
+export interface WriteOptions {
   content: string;
   id: string;
   operation: "write";
 }
 
-interface ReadOperation {
-  id: string;
-  operation: "read";
+interface WriteResultSuccess {
+  operation: "write";
+  success: true;
+  filename: string;
 }
 
-interface OpenOperation {
-  operation: "open";
-  suggestedName: string;
+interface WriteResultError {
+  operation: "write";
+  success: false;
 }
 
-interface DeleteOperation {
+export type WriteResult = WriteResultSuccess | WriteResultError;
+
+export interface DeleteOptions {
   id: string;
   operation: "delete";
 }
 
-type Operation =
-  | OpenOperation
-  | WriteOperation
-  | ReadOperation
-  | DeleteOperation;
+interface DeleteResultSuccess {
+  operation: "delete";
+  success: true;
+}
 
-self.onmessage = async (event: MessageEvent<Operation>) => {
+interface DeleteResultError {
+  operation: "delete";
+  success: false;
+}
+
+export type DeleteResult = DeleteResultSuccess | DeleteResultError;
+
+export type Options = OpenOptions | WriteOptions | ReadOptions | DeleteOptions;
+
+self.onmessage = async (event: MessageEvent<Options>) => {
   const operation = event.data.operation;
   const root = await navigator.storage.getDirectory();
 
@@ -50,7 +93,7 @@ self.onmessage = async (event: MessageEvent<Operation>) => {
       id,
       content,
       filename: fileHandle.name,
-    });
+    } as OpenResult);
   }
 
   if (operation === "read") {
@@ -58,7 +101,10 @@ self.onmessage = async (event: MessageEvent<Operation>) => {
     const filename = await getFilename(id);
     if (!filename) {
       console.log("File not found.");
-      self.postMessage({ operation: "read", success: false });
+      self.postMessage({
+        operation: "read",
+        success: false,
+      } as ReadResultError);
       return;
     }
     const fileHandle = await root.getFileHandle(filename);
@@ -73,7 +119,7 @@ self.onmessage = async (event: MessageEvent<Operation>) => {
       success: true,
       filename: fileHandle.name,
       content,
-    });
+    } as ReadResultSuccess);
   }
 
   if (operation === "write") {
@@ -82,7 +128,10 @@ self.onmessage = async (event: MessageEvent<Operation>) => {
     const filename = await getFilename(id);
     if (!filename) {
       console.log("File not found.");
-      self.postMessage({ operation: "write", success: false });
+      self.postMessage({
+        operation: "write",
+        success: false,
+      } as WriteResultError);
       return;
     }
     const fileHandle = await root.getFileHandle(filename);
@@ -101,7 +150,7 @@ self.onmessage = async (event: MessageEvent<Operation>) => {
       operation: "write",
       success: true,
       filename: fileHandle.name,
-    });
+    } as WriteResultSuccess);
   }
 
   if (operation === "delete") {
@@ -109,12 +158,18 @@ self.onmessage = async (event: MessageEvent<Operation>) => {
     const filename = await getFilename(id);
     if (!filename) {
       console.log("File not found.");
-      self.postMessage({ operation: "delete", success: false });
+      self.postMessage({
+        operation: "delete",
+        success: false,
+      } as DeleteResultError);
       return;
     }
     await root.removeEntry(filename);
     await removeFilename(id);
-    self.postMessage({ operation: "delete", success: true });
+    self.postMessage({
+      operation: "delete",
+      success: true,
+    } as DeleteResultSuccess);
   }
 };
 

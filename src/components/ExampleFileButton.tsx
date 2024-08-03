@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { useFilePicker } from "@/utils/useFilePicker";
+import { showSaveFilePicker } from "@/utils/filesystem";
 import { useTask } from "@/utils/useTask";
 import { LightbulbIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function ExampleFileButton() {
   const { t } = useTranslation();
-  const { showSaveFilePicker } = useFilePicker();
   const { createNewTodoFile } = useTask();
 
   const handleClick = async () => {

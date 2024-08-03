@@ -12,7 +12,11 @@ import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
-import { HAS_TOUCHSCREEN } from "@/utils/platform";
+import { showSaveFilePicker } from "@/utils/filesystem";
+import {
+  HAS_TOUCHSCREEN,
+  SUPPORTS_SHOW_OPEN_FILE_PICKER,
+} from "@/utils/platform";
 import { useTask } from "@/utils/useTask";
 import {
   ChevronDownIcon,
@@ -31,7 +35,7 @@ export function FileMenu() {
   const openShortcutsDialog = useShortcutsDialogStore(
     (state) => state.openShortcutsDialog,
   );
-  const { taskLists, activeTaskList } = useTask();
+  const { taskLists, activeTaskList, createNewTodoFile } = useTask();
   const setActiveTaskListId = useFilterStore(
     (state) => state.setActiveTaskListId,
   );
@@ -52,7 +56,15 @@ export function FileMenu() {
   };
 
   const handleCreateFile = () => {
-    openFileCreateDialog();
+    if (SUPPORTS_SHOW_OPEN_FILE_PICKER) {
+      showSaveFilePicker().then((result) => {
+        if (result) {
+          createNewTodoFile(result.id, "");
+        }
+      });
+    } else {
+      openFileCreateDialog();
+    }
   };
 
   const menuItems: ReactNode[] = [];
