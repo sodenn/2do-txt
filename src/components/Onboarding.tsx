@@ -2,16 +2,24 @@ import { ExampleFileButton } from "@/components/ExampleFileButton";
 import { NewFileButton } from "@/components/NewFileButton";
 import { Button } from "@/components/ui/button";
 import logo from "@/images/logo.png";
-import { showOpenFilePicker } from "@/utils/filesystem";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
+import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import { FolderIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function Onboarding() {
   const { t } = useTranslation();
-  const { taskLists } = useTask();
+  const { taskLists, addTodoFile } = useTask();
+  const { showOpenFilePicker } = useFilesystem();
+
+  const handleOpenClick = async () => {
+    const result = await showOpenFilePicker();
+    if (result) {
+      addTodoFile(result.id, result.filename, result.content);
+    }
+  };
 
   return (
     <div
@@ -41,7 +49,7 @@ export function Onboarding() {
         <ExampleFileButton />
         <Button
           variant="outline"
-          onClick={showOpenFilePicker}
+          onClick={handleOpenClick}
           aria-label={
             SUPPORTS_SHOW_OPEN_FILE_PICKER ? "Open todo.txt" : "Import todo.txt"
           }

@@ -126,7 +126,7 @@ export function FileManagementDialog() {
 
 function FileManagementActions() {
   const { t } = useTranslation();
-  const { createNewTodoFile } = useTask();
+  const { createNewTodoFile, addTodoFile } = useTask();
   const closeFileManagementDialog = useFileManagementDialogStore(
     (state) => state.closeFileManagementDialog,
   );
@@ -143,7 +143,7 @@ function FileManagementActions() {
   const handleOpenFile = async () => {
     const result = await showOpenFilePicker();
     if (result) {
-      createNewTodoFile(result.id, "");
+      addTodoFile(result.id, result.filename, result.content);
     }
     closeFileManagementDialog();
   };

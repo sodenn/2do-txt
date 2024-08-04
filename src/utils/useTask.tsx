@@ -492,6 +492,16 @@ export function useTask() {
     [saveTodoFile, scheduleDueTaskNotifications],
   );
 
+  const addTodoFile = useCallback(
+    async (id: string, filename: string, text: string) => {
+      await addTodoFileId(id);
+      const taskList = await parseTaskList(id, filename, text);
+      scheduleDueTaskNotifications(taskList.items).catch((e) => void e);
+      return id;
+    },
+    [parseTaskList, scheduleDueTaskNotifications],
+  );
+
   const restoreTask = useCallback(
     async (listOrId: string | TaskList, task: Task) => {
       const taskList =
@@ -607,6 +617,7 @@ export function useTask() {
     findTaskListByTaskId,
     reorderTaskList,
     createNewTodoFile,
+    addTodoFile,
     handleActive,
     handleInit,
   };
