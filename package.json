@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
+    "preview": "vite preview",
     "test": "vitest run",
     "e2e": "playwright test",
     "e2e-update": "playwright test screenshots.spec.ts --update-snapshots",
@@ -77,9 +78,7 @@
     "react": "18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "18.3.1",
-    "react-dropzone": "14.2.3",
     "react-i18next": "14.1.2",
-    "react-router-dom": "6.23.1",
     "react-transition-group": "4.4.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",

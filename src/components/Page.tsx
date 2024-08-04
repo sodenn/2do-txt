@@ -12,7 +12,7 @@ import { SideSheet } from "@/components/SideSheet";
 import { TaskDialog } from "@/components/TaskDialog";
 import { TaskView } from "@/components/TaskView";
 
-export function Component() {
+export function Page() {
   return (
     <div className="sh:h-screen flex h-full flex-col outline-none">
       <Header />
