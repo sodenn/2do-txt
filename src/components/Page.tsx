@@ -1,5 +1,6 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
+import { FileCreateDialog } from "@/components/FileCreateDialog";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
 import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
@@ -35,6 +36,7 @@ export function Component() {
       <ConfirmationDialog />
       <ArchivedTasksDialog />
       <ShortcutsDialog />
+      <FileCreateDialog />
       <PageEffect />
     </div>
   );

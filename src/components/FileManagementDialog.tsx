@@ -22,19 +22,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { writeToClipboard } from "@/utils/clipboard";
-import {
-  readFile,
-  showOpenFilePicker,
-  showSaveFilePicker,
-} from "@/utils/filesystem";
+import { readFile } from "@/utils/filesystem";
 import {
   SUPPORTS_REMOVE_FILE,
   SUPPORTS_SHOW_OPEN_FILE_PICKER,
 } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
+import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import {
   DndContext,
@@ -131,35 +127,23 @@ export function FileManagementDialog() {
 function FileManagementActions() {
   const { t } = useTranslation();
   const { createNewTodoFile } = useTask();
-  const openFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.openFileCreateDialog,
-  );
   const closeFileManagementDialog = useFileManagementDialogStore(
     (state) => state.closeFileManagementDialog,
   );
+  const { showOpenFilePicker, showSaveFilePicker } = useFilesystem();
 
-  const handleCreateFile = () => {
-    if (SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-      showSaveFilePicker().then((result) => {
-        if (result) {
-          createNewTodoFile(result.id, "");
-        }
-      });
-    } else {
-      openFileCreateDialog(); // TODO
+  const handleCreateFile = async () => {
+    const result = await showSaveFilePicker();
+    if (result) {
+      createNewTodoFile(result.id, "");
     }
     closeFileManagementDialog();
   };
 
-  const handleOpenFile = () => {
-    if (SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-      showOpenFilePicker().then((result) => {
-        if (result) {
-          createNewTodoFile(result.id, "");
-        }
-      });
-    } else {
-      openFileCreateDialog(); // TODO
+  const handleOpenFile = async () => {
+    const result = await showOpenFilePicker();
+    if (result) {
+      createNewTodoFile(result.id, "");
     }
     closeFileManagementDialog();
   };

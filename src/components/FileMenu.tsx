@@ -8,15 +8,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import logo from "@/images/logo.png";
-import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
-import { showSaveFilePicker } from "@/utils/filesystem";
-import {
-  HAS_TOUCHSCREEN,
-  SUPPORTS_SHOW_OPEN_FILE_PICKER,
-} from "@/utils/platform";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
+import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import {
   ChevronDownIcon,
@@ -39,9 +35,7 @@ export function FileMenu() {
   const setActiveTaskListId = useFilterStore(
     (state) => state.setActiveTaskListId,
   );
-  const openFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.openFileCreateDialog,
-  );
+  const { showSaveFilePicker } = useFilesystem();
 
   const handleSetActiveList = async (id: string) => {
     setActiveTaskListId(id);
@@ -55,15 +49,10 @@ export function FileMenu() {
     openShortcutsDialog();
   };
 
-  const handleCreateFile = () => {
-    if (SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-      showSaveFilePicker().then((result) => {
-        if (result) {
-          createNewTodoFile(result.id, "");
-        }
-      });
-    } else {
-      openFileCreateDialog();
+  const handleCreateFile = async () => {
+    const result = await showSaveFilePicker();
+    if (result) {
+      createNewTodoFile(result.id, "");
     }
   };
 

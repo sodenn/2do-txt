@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { showSaveFilePicker } from "@/utils/filesystem";
+import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import { SquareCheckIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 export function NewFileButton() {
   const { t } = useTranslation();
   const { createNewTodoFile } = useTask();
+  const { showSaveFilePicker } = useFilesystem();
 
   const handleClick = async () => {
     const result = await showSaveFilePicker();

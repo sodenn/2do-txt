@@ -1,225 +1,211 @@
-export interface Entry {
+interface Entry {
   id: string;
   filename: string;
 }
 
-export interface OpenOptions {
+interface OpenOptions {
   operation: "open";
+  operationId: string;
   suggestedName: string;
 }
 
-export interface OpenResult {
+interface OpenResult {
   operation: "open";
+  operationId: string;
   success: true;
   id: string;
   content: string;
   filename: string;
 }
 
-export interface ReadOptions {
+interface ReadOptions {
   id: string;
   operation: "read";
+  operationId: string;
 }
 
-interface ReadResultSuccess {
+interface ReadResult {
   operation: "read";
+  operationId: string;
   success: true;
   content: string;
   filename: string;
 }
 
-interface ReadResultError {
-  operation: "read";
-  success: false;
-}
-
-export type ReadResult = ReadResultSuccess | ReadResultError;
-
-export interface WriteOptions {
+interface WriteOptions {
+  operation: "write";
+  operationId: string;
   content: string;
   id: string;
-  operation: "write";
 }
 
-interface WriteResultSuccess {
+interface WriteResult {
   operation: "write";
+  operationId: string;
   success: true;
   filename: string;
 }
 
-interface WriteResultError {
-  operation: "write";
-  success: false;
-}
-
-export type WriteResult = WriteResultSuccess | WriteResultError;
-
-export interface DeleteOptions {
+interface DeleteOptions {
+  operation: "delete";
+  operationId: string;
   id: string;
-  operation: "delete";
 }
 
-interface DeleteResultSuccess {
+interface DeleteResult {
   operation: "delete";
+  operationId: string;
   success: true;
 }
 
-interface DeleteResultError {
-  operation: "delete";
-  success: false;
-}
-
-export type DeleteResult = DeleteResultSuccess | DeleteResultError;
-
-export interface DeleteNotInListOptions {
+interface DeleteNotInListOptions {
+  operation: "delete-not-in-list";
+  operationId: string;
   ids: string[];
-  operation: "delete-not-in-list";
 }
 
-interface DeleteNotInListResultSuccess {
+interface DeleteNotInListResult {
   operation: "delete-not-in-list";
+  operationId: string;
   success: true;
 }
 
-interface DeleteNotInListResultError {
-  operation: "delete-not-in-list";
-  success: false;
+interface GetNextFreeFilenameOptions {
+  operation: "get-next-free-filename";
+  operationId: string;
+  filename: string;
 }
 
-export type DeleteNotInListResult =
-  | DeleteNotInListResultSuccess
-  | DeleteNotInListResultError;
+interface GetNextFreeFilenameResult {
+  operation: "get-next-free-filename";
+  operationId: string;
+  success: true;
+  filename: string;
+}
 
-export type Options =
+type Options =
   | OpenOptions
   | WriteOptions
   | ReadOptions
   | DeleteOptions
-  | DeleteNotInListOptions;
+  | DeleteNotInListOptions
+  | GetNextFreeFilenameOptions;
 
 self.onmessage = async (event: MessageEvent<Options>) => {
   const operation = event.data.operation;
+  const operationId = event.data.operationId;
   const root = await navigator.storage.getDirectory();
 
-  if (operation === "open") {
-    const suggestedName = event.data.suggestedName;
-    const filename = await getNextFreeFileName(suggestedName);
-    const fileHandle = await root.getFileHandle(filename, { create: true });
-    const id = await saveFilename(filename);
-    const syncHandle = await fileHandle.createSyncAccessHandle();
-    const buffer = new ArrayBuffer(syncHandle.getSize());
-    syncHandle.read(buffer, { at: 0 });
-    syncHandle.close();
-    const decoder = new TextDecoder();
-    const content = decoder.decode(buffer);
-    self.postMessage({
-      operation: "open",
-      success: true,
-      id,
-      content,
-      filename: fileHandle.name,
-    } as OpenResult);
-  }
+  try {
+    if (operation === "open") {
+      const suggestedName = event.data.suggestedName;
+      const filename = await getNextFreeFileName(suggestedName);
+      const fileHandle = await root.getFileHandle(filename, { create: true });
+      const id = await saveFilename(filename);
+      const syncHandle = await fileHandle.createSyncAccessHandle();
+      const buffer = new ArrayBuffer(syncHandle.getSize());
+      syncHandle.read(buffer, { at: 0 });
+      syncHandle.close();
+      const decoder = new TextDecoder();
+      const content = decoder.decode(buffer);
+      self.postMessage({
+        operation: "open",
+        operationId,
+        success: true,
+        id,
+        content,
+        filename: fileHandle.name,
+      } as OpenResult);
+    }
 
-  if (operation === "read") {
-    const id = event.data.id;
-    const filename = await getFilename(id);
-    if (!filename) {
-      console.log("File not found.");
+    if (operation === "read") {
+      const id = event.data.id;
+      const filename = await getFilename(id);
+      const fileHandle = await root.getFileHandle(filename);
+      const syncHandle = await fileHandle.createSyncAccessHandle();
+      const buffer = new ArrayBuffer(syncHandle.getSize());
+      syncHandle.read(buffer, { at: 0 });
+      syncHandle.close();
+      const decoder = new TextDecoder();
+      const content = decoder.decode(buffer);
       self.postMessage({
         operation: "read",
-        success: false,
-      } as ReadResultError);
-      return;
+        operationId,
+        success: true,
+        filename: fileHandle.name,
+        content,
+      } as ReadResult);
     }
-    const fileHandle = await root.getFileHandle(filename);
-    const syncHandle = await fileHandle.createSyncAccessHandle();
-    const buffer = new ArrayBuffer(syncHandle.getSize());
-    syncHandle.read(buffer, { at: 0 });
-    syncHandle.close();
-    const decoder = new TextDecoder();
-    const content = decoder.decode(buffer);
-    self.postMessage({
-      operation: "read",
-      success: true,
-      filename: fileHandle.name,
-      content,
-    } as ReadResultSuccess);
-  }
 
-  if (operation === "write") {
-    const id = event.data.id;
-    const content = event.data.content;
-    const filename = await getFilename(id);
-    if (!filename) {
-      console.log("File not found.");
-      self.postMessage({
-        operation: "write",
-        success: false,
-      } as WriteResultError);
-      return;
-    }
-    const fileHandle = await root.getFileHandle(filename);
-    const syncHandle = await fileHandle.createSyncAccessHandle();
-    try {
+    if (operation === "write") {
+      const id = event.data.id;
+      const content = event.data.content;
+      const filename = await getFilename(id);
+      const fileHandle = await root.getFileHandle(filename);
+      const syncHandle = await fileHandle.createSyncAccessHandle();
       const encoder = new TextEncoder();
       const writeBuffer = encoder.encode(content);
       syncHandle.write(writeBuffer, { at: 0 });
-    } catch (err) {
-      debugger;
-      console.error(err);
-      throw err;
+      syncHandle.close();
+      self.postMessage({
+        operation: "write",
+        operationId,
+        success: true,
+        filename: fileHandle.name,
+      } as WriteResult);
     }
-    syncHandle.close();
-    self.postMessage({
-      operation: "write",
-      success: true,
-      filename: fileHandle.name,
-    } as WriteResultSuccess);
-  }
 
-  if (operation === "delete") {
-    const id = event.data.id;
-    const filename = await getFilename(id);
-    if (!filename) {
-      console.log("File not found.");
+    if (operation === "delete") {
+      const id = event.data.id;
+      const filename = await getFilename(id);
+      await root.removeEntry(filename);
+      await removeFilename(id);
       self.postMessage({
         operation: "delete",
-        success: false,
-      } as DeleteResultError);
-      return;
+        operationId,
+        success: true,
+      } as DeleteResult);
     }
-    await root.removeEntry(filename);
-    await removeFilename(id);
-    self.postMessage({
-      operation: "delete",
-      success: true,
-    } as DeleteResultSuccess);
-  }
 
-  if (operation === "delete-not-in-list") {
-    const ids = event.data.ids;
-    await removeFilenamesNotInList(ids);
+    if (operation === "delete-not-in-list") {
+      const ids = event.data.ids;
+      await removeFilenamesNotInList(ids);
+      self.postMessage({
+        operation: "delete-not-in-list",
+        operationId,
+        success: true,
+      } as DeleteNotInListResult);
+    }
+
+    if (operation === "get-next-free-filename") {
+      const filename = await getNextFreeFileName(event.data.filename);
+      self.postMessage({
+        operation: "get-next-free-filename",
+        operationId,
+        success: true,
+        filename,
+      } as GetNextFreeFilenameResult);
+    }
+  } catch (error) {
+    console.error(`${operation} failed: ${error}`);
     self.postMessage({
-      operation: "delete-not-in-list",
-      success: true,
-    } as DeleteNotInListResultSuccess);
+      operation,
+      operationId,
+      success: false,
+    });
   }
 };
 
 function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("filenameDB", 1);
-
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       db.createObjectStore("filenames", { keyPath: "id" });
     };
-
     request.onsuccess = (event) => {
       resolve((event.target as IDBOpenDBRequest).result);
     };
-
     request.onerror = (event) => {
       reject((event.target as IDBOpenDBRequest).error);
     };
@@ -250,12 +236,18 @@ async function getFilename(id: string) {
   const transaction = db.transaction(["filenames"], "readonly");
   const store = transaction.objectStore("filenames");
   const request = store.get(id);
-  return getFilenameFromRequest<Entry>(request).then((e) => e?.filename);
+  const filename = await getFilenameFromRequest<Entry>(request).then(
+    (e) => e?.filename,
+  );
+  if (!filename) {
+    throw new Error("Cannot find filename by ID");
+  }
+  return filename;
 }
 
 async function removeFilename(id: string) {
   const db = await openDatabase();
-  const transaction = db.transaction(["filenames"], "readonly");
+  const transaction = db.transaction(["filenames"], "readwrite");
   const store = transaction.objectStore("filenames");
   const request = store.delete(id);
   return getFilenameFromRequest<Entry>(request);

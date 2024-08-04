@@ -2,12 +2,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { useSettingsStore } from "@/stores/settings-store";
-import {
-  deleteFile,
-  readFile,
-  showSaveFilePicker,
-  writeFile,
-} from "@/utils/filesystem";
+import { deleteFile, readFile, writeFile } from "@/utils/filesystem";
 import { Task } from "@/utils/task";
 import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
 import {
@@ -15,6 +10,7 @@ import {
   getDoneFileId,
   removeDoneFileId,
 } from "@/utils/todo-files";
+import { useFilesystem } from "@/utils/useFilesystem";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -35,6 +31,7 @@ export function useArchivedTask() {
   );
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const { t } = useTranslation();
+  const { showSaveFilePicker } = useFilesystem();
 
   const saveDoneFile = useCallback(async (todoFileId: string, text: string) => {
     const doneFileId = await getDoneFileId(todoFileId);

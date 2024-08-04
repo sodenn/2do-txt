@@ -3,7 +3,7 @@ import {
   SUPPORTS_SHOW_OPEN_FILE_PICKER,
 } from "@/utils/platform";
 import { generateId } from "@/utils/uuid";
-import * as fallback from "./fallback-filesystem";
+import * as fallbackFilesystem from "./fallback-filesystem";
 
 interface FileHandleEntry {
   id: string;
@@ -12,17 +12,12 @@ interface FileHandleEntry {
 
 export async function showSaveFilePicker(suggestedName = "todo.txt") {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    const { id, filename } = await fallback.showSaveFilePicker(suggestedName);
-    return {
-      id,
-      filename,
-    };
+    return fallbackFilesystem.openOrCreateFile(suggestedName);
   }
 
-  const filename = await getNextFreeFileName(suggestedName);
   // @ts-ignore
   const fileHandle = await window.showSaveFilePicker({
-    suggestedName: filename,
+    suggestedName,
     startIn: "documents",
     types: [
       {
@@ -36,19 +31,18 @@ export async function showSaveFilePicker(suggestedName = "todo.txt") {
   }
 
   const id = await saveFileHandle(fileHandle);
+  const fileData = await fileHandle.getFile();
+  const content = await fileData.text();
   return {
     id,
     filename: fileHandle.name,
+    content,
   };
 }
 
 export async function showOpenFilePicker() {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    const { id, filename } = await fallback.showSaveFilePicker();
-    return {
-      id,
-      filename,
-    };
+    return await fallbackFilesystem.openOrCreateFile();
   }
 
   // @ts-ignore
@@ -70,7 +64,7 @@ export async function showOpenFilePicker() {
 
 export async function readFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    return fallback.readFile(id);
+    return fallbackFilesystem.readFile(id);
   }
 
   const fileHandle = await getFileHandle(id);
@@ -93,7 +87,7 @@ export async function writeFile({
   content: string;
 }) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    return fallback.writeFile({ id, content });
+    return fallbackFilesystem.writeFile({ id, content });
   }
 
   const fileHandle = await getFileHandle(id);
@@ -110,7 +104,7 @@ export async function writeFile({
 
 export async function deleteFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    return fallback.deleteFile(id);
+    return fallbackFilesystem.deleteFile(id);
   }
 
   const fileHandle = await getFileHandle(id);
@@ -126,73 +120,6 @@ export async function deleteFile(id: string) {
     }
   }
   await deleteFileHandle(id);
-}
-
-// export async function verifyPermission(fileHandle: FileSystemFileHandle) {
-//   const options = {
-//     mode: "readwrite",
-//   };
-//   // Check if permission was already granted. If so, return true.
-//   // @ts-ignore
-//   if ((await fileHandle.queryPermission(options)) === "granted") {
-//     return true;
-//   }
-//
-//   // @ts-ignore
-//   await fileHandle.requestPermission(options).then((result) => {
-//     console.log(result);
-//   });
-//   // Request permission. If the user grants permission, return true.
-//   // @ts-ignore
-//   if ((await fileHandle.requestPermission(options)) === "granted") {
-//     return true;
-//   }
-//   // The user didn't grant permission, so return false.
-//   return false;
-// }
-
-async function getNextFreeFileName(desiredFileName: string): Promise<string> {
-  const parts = desiredFileName.split(".");
-  const baseName = parts.slice(0, -1).join(".");
-  const extension = parts.length > 1 ? "." + parts[parts.length - 1] : "";
-
-  const db = await openDatabase();
-  const transaction = db.transaction(["fileHandles"], "readonly");
-  const store = transaction.objectStore("fileHandles");
-
-  // Get all filenames from the database
-  const filenames: string[] = [];
-  return new Promise<string>((resolve, reject) => {
-    store.openCursor().onsuccess = function (event) {
-      const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
-      if (cursor) {
-        filenames.push(cursor.value.handle.name);
-        cursor.continue();
-      } else {
-        // Check if the original filename exists
-        if (!filenames.includes(desiredFileName)) {
-          resolve(desiredFileName);
-          return;
-        }
-
-        // Generate a new filename with a counter
-        let counter = 1;
-        let newFilename;
-        do {
-          newFilename = `${baseName}(${counter})${extension}`;
-          counter++;
-        } while (filenames.includes(newFilename));
-
-        // Return the new filename
-        resolve(newFilename);
-      }
-    };
-
-    transaction.onerror = function (event) {
-      console.error("Transaction failed", event);
-      reject();
-    };
-  });
 }
 
 function openDatabase(): Promise<IDBDatabase> {
@@ -255,7 +182,7 @@ async function deleteFileHandle(id: string) {
 
 export async function deleteFilesNotInList(ids: string[]) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    return fallback.deleteFilesNotInList(ids);
+    return fallbackFilesystem.deleteFilesNotInList(ids);
   }
 
   const db = await openDatabase();
