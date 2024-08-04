@@ -141,6 +141,8 @@ function openDatabase(): Promise<IDBDatabase> {
   });
 }
 
+const fileHandleCache = new Map<string, FileSystemFileHandle>();
+
 async function saveFileHandle(
   fileHandle: FileSystemFileHandle,
 ): Promise<string> {
@@ -154,6 +156,7 @@ async function saveFileHandle(
       handle: fileHandle,
     } as FileHandleEntry);
     request.onsuccess = () => {
+      fileHandleCache.set(id, fileHandle);
       resolve(id);
     };
     request.onerror = (event) => {
@@ -163,6 +166,9 @@ async function saveFileHandle(
 }
 
 async function getFileHandle(id: string) {
+  if (fileHandleCache.has(id)) {
+    return fileHandleCache.get(id);
+  }
   const db = await openDatabase();
   const transaction = db.transaction(["fileHandles"], "readonly");
   const store = transaction.objectStore("fileHandles");
