@@ -42,7 +42,7 @@ export async function loader(): Promise<LoaderData> {
     settingsLoader(),
     themeLoader(),
     taskLoader(),
-    preloadImages([new URL("@/images/logo.png", import.meta.url)]),
+    preloadImages([new URL("/logo.png", import.meta.url)]),
   ]);
   return { filter, settings, theme, task };
 }

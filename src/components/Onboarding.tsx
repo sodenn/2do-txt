@@ -1,13 +1,13 @@
 import { ExampleFileButton } from "@/components/ExampleFileButton";
 import { NewFileButton } from "@/components/NewFileButton";
 import { Button } from "@/components/ui/button";
-import logo from "@/images/logo.png";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
 import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import { FolderIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import logo from "/logo.png";
 
 export function Onboarding() {
   const { t } = useTranslation();

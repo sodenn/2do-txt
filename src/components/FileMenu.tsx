@@ -7,7 +7,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import logo from "@/images/logo.png";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
@@ -22,6 +21,7 @@ import {
 } from "lucide-react";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import logo from "/logo.png";
 
 export function FileMenu() {
   const { t } = useTranslation();

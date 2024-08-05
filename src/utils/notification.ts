@@ -1,7 +1,7 @@
-import logo from "@/images/logo.png";
 import { dateReviver } from "@/utils/date";
 import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
 import { differenceInHours, isAfter, subDays } from "date-fns";
+import logo from "/logo.png";
 
 export interface Notification {
   id: number;

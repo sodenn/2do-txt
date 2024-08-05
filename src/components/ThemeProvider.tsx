@@ -10,23 +10,25 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     setMode(mode);
     setMounte(true);
 
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
+    const docEl = window.document.documentElement;
+    docEl.classList.remove("light", "dark");
     if (mode === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
         : "light";
-      root.classList.add(systemTheme);
+      docEl.classList.add(systemTheme);
     } else {
-      root.classList.add(mode);
+      docEl.classList.add(mode);
     }
 
-    const bodyBgColor = window.getComputedStyle(document.body).backgroundColor;
+    const rootEl = document.querySelector<HTMLDivElement>("#root");
+    const bodyBgColor =
+      rootEl && window.getComputedStyle(rootEl).backgroundColor;
     const themeColorMetaTag = document.querySelector(
       'meta[name="theme-color"]',
     );
-    if (themeColorMetaTag) {
+    if (themeColorMetaTag && bodyBgColor) {
       themeColorMetaTag.setAttribute("content", bodyBgColor);
     }
   }, [mode, setMode]);
