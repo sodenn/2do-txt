@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
 import { PageEffect } from "@/components/PageEffect";
+import { ReloadPrompt } from "@/components/ReloadPrompt";
 import { SafeArea } from "@/components/SafeArea";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { SideSheet } from "@/components/SideSheet";
@@ -38,6 +39,7 @@ export function Page() {
       <ShortcutsDialog />
       <FileCreateDialog />
       <PageEffect />
+      <ReloadPrompt />
     </div>
   );
 }
