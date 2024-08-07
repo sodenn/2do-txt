@@ -179,7 +179,17 @@ function TaskListSubheader({ title }: TaskListSubheaderProps) {
         variant="outline"
         size="sm"
         aria-label="Task group"
-        color={sortBy === "dueDate" ? "warning" : "secondary"}
+        color={
+          sortBy === "dueDate"
+            ? "warning"
+            : sortBy === "context"
+              ? "success"
+              : sortBy === "project"
+                ? "info"
+                : sortBy === "priority"
+                  ? "danger"
+                  : "secondary"
+        }
       >
         {title}
       </Chip>

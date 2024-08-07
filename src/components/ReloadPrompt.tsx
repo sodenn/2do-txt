@@ -14,7 +14,7 @@ export function ReloadPrompt() {
         buttons: [
           {
             text: "Close",
-            variant: "outline",
+            variant: "secondary",
           },
           {
             text: "Reload",
