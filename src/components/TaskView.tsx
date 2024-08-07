@@ -78,7 +78,7 @@ export function TaskView() {
           buttons: [
             {
               text: t("Delete"),
-              color: "danger",
+              variant: "destructive",
               handler: () => {
                 deleteTask(task);
               },

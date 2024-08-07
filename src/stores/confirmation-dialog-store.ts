@@ -4,9 +4,8 @@ import { create } from "zustand";
 
 interface ConfirmationButtonOptions {
   text: string;
-  color?: ButtonProps["color"];
+  variant?: ButtonProps["variant"];
   handler?: () => void;
-  cancel?: boolean;
 }
 
 interface ConfirmationDialogOptions {

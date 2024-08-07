@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
-import { cn } from "@/utils/tw-utils";
 
 export function ConfirmationDialog() {
   const {
@@ -51,10 +50,8 @@ export function ConfirmationDialog() {
           {buttons?.map((button) => (
             <Button
               key={button.text}
-              color={button.color}
               onClick={() => handleClick(button.handler)}
-              variant={button.cancel ? "outline" : undefined}
-              className={cn(button.cancel && "mt-2 sm:mt-0")}
+              variant={button.variant}
               aria-label={button.text}
             >
               {button.text}

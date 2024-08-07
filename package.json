@@ -27,7 +27,7 @@
     "knip": "knip",
     "i18n": "i18next --config i18next-parser.config.js \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/logo.svg"
+    "generate-pwa-assets": "pwa-assets-generator"
   },
   "browserslist": {
     "production": [
