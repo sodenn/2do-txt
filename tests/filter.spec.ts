@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { createExampleFile } from "./playwright-utils";
 
 const withoutFile = [
   "should not show the search bar when no files are open",
@@ -6,9 +7,8 @@ const withoutFile = [
 ];
 
 test.beforeEach(async ({ page }, testInfo) => {
-  await page.goto("http://localhost:5173");
   if (!withoutFile.includes(testInfo.title)) {
-    await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
+    await createExampleFile(page);
   }
 });
 

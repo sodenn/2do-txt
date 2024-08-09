@@ -49,7 +49,7 @@ export function FileCreateDialog() {
 
   return (
     <ResponsiveDialog open={open} onClose={handleClose} onExit={handleExit}>
-      <ResponsiveDialogContent>
+      <ResponsiveDialogContent data-testid="file-create-dialog">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("Create todo.txt")}</ResponsiveDialogTitle>
           <ResponsiveDialogHiddenDescription>
@@ -67,14 +67,14 @@ export function FileCreateDialog() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               className="w-full"
-              aria-label="Amount"
+              aria-label="Filename"
             />
           </div>
         </ResponsiveDialogBody>
         <ResponsiveDialogFooter>
           <Button
             onClick={handleCreate}
-            aria-label="Create new file"
+            aria-label="Create file"
             aria-disabled={!inputValue}
             disabled={!inputValue}
           >

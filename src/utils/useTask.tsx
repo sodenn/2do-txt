@@ -397,12 +397,7 @@ export function useTask() {
   const generateZipFile = useCallback(
     async (taskList: TaskList, outputType: OutputType = "blob") => {
       const { items, lineEnding, id, filename } = taskList;
-      const doneFileId = await getDoneFileId(id);
-      if (!doneFileId) {
-        return;
-      }
-
-      const doneFile = await loadDoneFile(doneFileId);
+      const doneFile = await loadDoneFile(id);
       if (!doneFile) {
         return;
       }

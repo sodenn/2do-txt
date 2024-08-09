@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import { SquareCheckIcon } from "lucide-react";
@@ -8,11 +9,13 @@ export function NewFileButton() {
   const { t } = useTranslation();
   const { createNewTodoFile } = useTask();
   const { showSaveFilePicker } = useFilesystem();
+  const { openTaskDialog } = useTaskDialogStore();
 
   const handleClick = async () => {
     const result = await showSaveFilePicker();
     if (result) {
       await createNewTodoFile(result.id, "");
+      openTaskDialog();
     }
   };
 

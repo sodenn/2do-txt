@@ -133,19 +133,19 @@ function FileManagementActions() {
   const { showOpenFilePicker, showSaveFilePicker } = useFilesystem();
 
   const handleCreateFile = async () => {
+    closeFileManagementDialog();
     const result = await showSaveFilePicker();
     if (result) {
       createNewTodoFile(result.id, "");
     }
-    closeFileManagementDialog();
   };
 
   const handleOpenFile = async () => {
+    closeFileManagementDialog();
     const result = await showOpenFilePicker();
     if (result) {
       addTodoFile(result.id, result.filename, result.content);
     }
-    closeFileManagementDialog();
   };
 
   return (

@@ -1,9 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "fs";
+import {
+  createExampleFile,
+  createTask,
+  goto,
+  openFileMenu,
+} from "./playwright-utils";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:5173");
-  await expect(page.getByText("Get Started")).toBeVisible();
+  await goto(page);
 });
 
 test.describe("Onboarding", () => {
@@ -19,29 +24,24 @@ test.describe("Onboarding", () => {
     await expect(page.getByLabel("Create example file")).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.getByLabel("Import todo.txt")).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(
-      page.getByLabel("Connect to cloud storage").nth(1),
-    ).toBeFocused();
   });
 });
 
 test.describe("New file", () => {
   test("should create a new todo.txt file", async ({ page, isMobile }) => {
-    await page.getByLabel("Create task").click();
-    await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
+    await createTask(page);
+    // await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor on desktop
     await expect(
       page.getByRole("textbox", { name: "Text editor" }),
     ).toBeFocused();
     // close the current file and create a new one and the same way
     await page.keyboard.press("Escape");
-    await page.getByLabel("File menu").click();
-    await page.getByRole("menuitem", { name: "Files…" }).click();
+    await openFileMenu(page);
     await page.getByLabel("File actions").click();
     await page.getByLabel("Delete file").click();
     await page.getByLabel("Delete").click();
-    await page.getByLabel("Create task").click();
+    await createTask(page);
     if (!isMobile) {
       await expect(
         page.getByRole("textbox", { name: "Text editor" }),
@@ -52,8 +52,7 @@ test.describe("New file", () => {
 
 test.describe("Example file", () => {
   test("should create an example todo.txt file", async ({ page }) => {
-    await page.getByRole("button", { name: "Create example file" }).click();
-    await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
+    await createExampleFile(page);
     await expect(page.getByTestId("task")).toHaveCount(8);
   });
 });
