@@ -1,22 +1,28 @@
 import { expect, test } from "@playwright/test";
+import {
+  createExampleFile,
+  createTask,
+  goto,
+  toggleMenu,
+} from "./playwright-utils";
 
 const withoutFile = ["should render an empty task list"];
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
   test.skip(!!isMobile, "desktop only");
-  await page.goto("http://localhost:5173");
+  await goto(page);
   if (withoutFile.every((f) => !testInfo.title.includes(f))) {
-    await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
+    await createExampleFile(page);
   }
   if (testInfo.title.startsWith("timeline:")) {
-    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await toggleMenu(page);
     await page.waitForTimeout(200);
     if (await page.getByRole("tab", { name: "Settings" }).isVisible()) {
       await page.getByRole("tab", { name: "Settings" }).click();
     }
     await page.getByLabel("Select task view").click();
     await page.getByLabel("Timeline").click();
-    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await toggleMenu(page);
     await page
       .getByRole("button", { name: "Toggle menu" })
       .evaluate((e) => e.blur());
@@ -26,7 +32,7 @@ test.beforeEach(async ({ page, isMobile }, testInfo) => {
 test.describe("Task View", () => {
   for (const taskView of ["list", "timeline"]) {
     test(`${taskView}: should render an empty task list`, async ({ page }) => {
-      await page.getByRole("button", { name: "Create Task" }).click();
+      await createTask(page);
       await page.getByRole("button", { name: "Close" }).click();
       if (taskView === "list") {
         await expect(page.getByText("No tasks")).toBeVisible();

@@ -204,6 +204,7 @@ function TaskListHeader(props: TaskListHeaderProps) {
   );
   return (
     <li
+      role="button"
       className="mb-2 flex cursor-pointer items-center overflow-hidden rounded p-3 hover:bg-muted/50"
       tabIndex={-1}
       onClick={() => setActiveTaskListId(id)}

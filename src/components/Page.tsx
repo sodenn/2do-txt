@@ -1,6 +1,6 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
-import { FileCreateDialog } from "@/components/FileCreateDialog";
+import { FallbackFilesystem } from "@/components/FallbackFilesystem";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
 import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
@@ -37,7 +37,7 @@ export function Page() {
       <ConfirmationDialog />
       <ArchivedTasksDialog />
       <ShortcutsDialog />
-      <FileCreateDialog />
+      <FallbackFilesystem />
       <PageEffect />
       <ReloadPrompt />
     </div>

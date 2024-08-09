@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { createExampleFile, openSettings } from "./playwright-utils";
+import { createExampleFile, goto, openSettings } from "./playwright-utils";
 
 test.beforeEach(async ({ page }) => {
+  await goto(page);
   await createExampleFile(page);
   await openSettings(page);
 });

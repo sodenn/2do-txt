@@ -1,21 +1,28 @@
-import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
+import { useFallbackFileDialogStore } from "@/stores/fallback-file-dialog-store";
 import { getNextFreeFilename } from "@/utils/fallback-filesystem";
 import * as filesystem from "@/utils/filesystem";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
 import { useCallback } from "react";
 
 export function useFilesystem() {
-  const openFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.openFileCreateDialog,
+  const openFallbackFileDialog = useFallbackFileDialogStore(
+    (state) => state.openFallbackFileDialog,
   );
 
   const openFallbackPicker = useCallback(
-    async (filename = "todo.txt") => {
+    async ({
+      filename = "todo.txt",
+      importFile = false,
+    }: {
+      filename?: string;
+      importFile?: boolean;
+    }) => {
       const suggestedFilename = await getNextFreeFilename(filename);
       return new Promise<
         Awaited<ReturnType<typeof filesystem.showSaveFilePicker>>
       >((resolve) => {
-        openFileCreateDialog({
+        openFallbackFileDialog({
+          importFile,
           suggestedFilename,
           callback: (result) => {
             resolve(result);
@@ -23,13 +30,13 @@ export function useFilesystem() {
         });
       });
     },
-    [openFileCreateDialog],
+    [openFallbackFileDialog],
   );
 
   const showSaveFilePicker = useCallback(
     async (suggestedName?: string) => {
       if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-        return openFallbackPicker(suggestedName);
+        return openFallbackPicker({ filename: suggestedName });
       }
       return filesystem.showSaveFilePicker(suggestedName);
     },
@@ -38,7 +45,7 @@ export function useFilesystem() {
 
   const showOpenFilePicker = useCallback(async () => {
     if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-      return openFallbackPicker();
+      return openFallbackPicker({ importFile: true });
     }
     return filesystem.showOpenFilePicker();
   }, [openFallbackPicker]);

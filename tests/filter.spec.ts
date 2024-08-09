@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { createExampleFile } from "./playwright-utils";
+import {
+  checkSearchParams,
+  createExampleFile,
+  goto,
+  toggleMenu,
+} from "./playwright-utils";
 
 const withoutFile = [
   "should not show the search bar when no files are open",
@@ -7,6 +12,7 @@ const withoutFile = [
 ];
 
 test.beforeEach(async ({ page }, testInfo) => {
+  await goto(page);
   if (!withoutFile.includes(testInfo.title)) {
     await createExampleFile(page);
   }
@@ -29,12 +35,12 @@ test.describe("Search", () => {
     if (isMobile) {
       await page.getByRole("button", { name: "Expand search bar" }).click();
       await Promise.all([
-        page.waitForURL("http://localhost:5173/?term=invoice"),
+        checkSearchParams(page, "/?term=invoice"),
         page.getByRole("search", { name: "Search for tasks" }).fill("invoice"),
       ]);
     } else {
       await Promise.all([
-        page.waitForURL("http://localhost:5173/?term=invoice"),
+        checkSearchParams(page, "/?term=invoice"),
         page.getByRole("search", { name: "Search for tasks" }).fill("invoice"),
       ]);
     }
@@ -97,37 +103,37 @@ test.describe("Search", () => {
 test.describe("Filter", () => {
   test("should filter tasks by priority", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
-    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await toggleMenu(page);
     await page.getByLabel("A", { exact: true }).click();
-    await expect(page).toHaveURL("http://localhost:5173/?priorities=A");
+    await checkSearchParams(page, "/?priorities=A");
     await expect(page.getByTestId("task")).toHaveCount(2);
     await page.getByLabel("A", { exact: true }).click();
-    await expect(page).toHaveURL("http://localhost:5173");
+    await checkSearchParams(page, "");
   });
 
   test("should filter tasks by project", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
-    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await toggleMenu(page);
     await page.getByLabel("CompanyA", { exact: true }).click();
-    await expect(page).toHaveURL("http://localhost:5173/?projects=CompanyA");
+    await checkSearchParams(page, "/?projects=CompanyA");
     await expect(page.getByTestId("task")).toHaveCount(1);
     await page.getByLabel("CompanyA", { exact: true }).click();
-    await expect(page).toHaveURL("http://localhost:5173");
+    await checkSearchParams(page, "");
   });
 
   test("should filter tasks by context", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
-    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await toggleMenu(page);
     await page.getByLabel("Private", { exact: true }).click();
-    await expect(page).toHaveURL("http://localhost:5173/?contexts=Private");
+    await checkSearchParams(page, "/?contexts=Private");
     await expect(page.getByTestId("task")).toHaveCount(4);
     await page.getByLabel("Private", { exact: true }).click();
-    await expect(page).toHaveURL("http://localhost:5173");
+    await checkSearchParams(page, "");
   });
 
   test("should hide completed tasks", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
-    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await toggleMenu(page);
     await expect(page.getByLabel("Holiday", { exact: true })).toBeVisible();
     await page.getByRole("checkbox", { name: "Hide completed tasks" }).click();
     await expect(page.getByLabel("Holiday", { exact: true })).toBeVisible();
@@ -135,7 +141,7 @@ test.describe("Filter", () => {
   });
 
   test("should sort tasks by priority", async ({ page }) => {
-    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await toggleMenu(page);
     await page.locator('[aria-label="Sort tasks"]').click();
     await page.locator('text="Priority"').click();
     await expect(
@@ -154,11 +160,11 @@ test.describe("Filter", () => {
     isMobile,
   }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
-    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await toggleMenu(page);
     await page.getByLabel("Private", { exact: true }).click();
     await page.getByLabel("CompanyA", { exact: true }).click();
     await page.keyboard.press("x");
-    await expect(page).toHaveURL("http://localhost:5173");
+    await checkSearchParams(page, "");
   });
 
   test("should clear active filter by clicking on the clear button", async ({
@@ -166,14 +172,14 @@ test.describe("Filter", () => {
     isMobile,
   }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
-    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await toggleMenu(page);
     await expect(page.getByText("Reset filters")).not.toBeVisible();
     await page.getByLabel("Private", { exact: true }).click();
     await page.getByLabel("CompanyA", { exact: true }).click();
     await expect(page.getByText("Reset filters")).toBeVisible();
     await page.getByText("Reset filters").click();
     await expect(page.getByText("Reset filters")).not.toBeVisible();
-    await expect(page).toHaveURL("http://localhost:5173");
+    await checkSearchParams(page, "");
   });
 });
 

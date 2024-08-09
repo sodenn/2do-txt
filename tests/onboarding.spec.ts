@@ -63,49 +63,36 @@ test.describe("File import", () => {
 
   test("should import a todo.txt file", async ({ page }) => {
     const content = readFileSync("public/todo.txt");
-    await expect(
-      page.getByRole("button", { name: "Import todo.txt" }),
-    ).toBeVisible();
-
+    await page.getByRole("button", { name: "Import todo.txt" }).click();
     await page.setInputFiles('[data-testid="file-picker"]', {
       name: "todo1.txt",
       mimeType: "text/plain",
       buffer: Buffer.from(content),
     });
-    await expect(page.getByRole("button", { name: "File menu" })).toHaveText(
-      "todo1.txt",
-    );
 
+    await expect(
+      page.getByRole("button", { name: "todo1.txt", exact: true }),
+    ).not.toBeVisible();
+
+    await openFileMenu(page);
+    await page.getByRole("button", { name: "Import todo.txt" }).click();
     await page.setInputFiles('[data-testid="file-picker"]', {
       name: "todo2.txt",
       mimeType: "text/plain",
       buffer: Buffer.from(content),
     });
-    await expect(page.getByRole("button", { name: "File menu" })).toHaveText(
-      "todo2.txt",
-    );
+
+    await expect(page.getByTestId("task")).toHaveCount(16);
+    await expect(
+      page.getByRole("button", { name: "todo1.txt", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "todo2.txt", exact: true }),
+    ).toBeVisible();
 
     await page.getByRole("button", { name: "File menu" }).click();
-    await page.getByLabel("All task lists").click();
-    await expect(page.getByTestId("task")).toHaveCount(16);
-  });
-
-  test("should import a todo.txt file via drag and drop", async ({ page }) => {
-    const content = readFileSync("public/todo.txt");
-    const dataTransfer = await page.evaluateHandle((text) => {
-      const dt = new DataTransfer();
-      const file = new File([text], "todo.txt", {
-        type: "text/plain",
-      });
-      dt.items.add(file);
-      return dt;
-    }, content.toString());
-
-    // dispatch drop event
-    await page.dispatchEvent('[data-testid="dropzone"]', "drop", {
-      dataTransfer,
-    });
-
-    await expect(page.getByTestId("task")).toHaveCount(8);
+    await expect(
+      page.getByRole("menuitemcheckbox", { name: "All task lists" }),
+    ).toBeChecked();
   });
 });

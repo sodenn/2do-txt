@@ -20,10 +20,12 @@ export const IS_IOS: boolean =
   // @ts-ignore
   !window.MSStream;
 
+export const TEST_MODE = import.meta.env.MODE === "test";
+
 export const SUPPORTS_SHOW_OPEN_FILE_PICKER =
   "showSaveFilePicker" in window &&
   "showOpenFilePicker" in window &&
-  import.meta.env.MODE !== "test";
+  !TEST_MODE;
 
 export const SUPPORTS_REMOVE_FILE = IS_CHROME && !IS_ANDROID_CHROME;
 

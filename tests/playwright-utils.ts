@@ -1,18 +1,32 @@
 import { expect, Page } from "@playwright/test";
+import { readFileSync } from "fs";
 
 export async function goto(page: Page) {
-  await page.goto("http://localhost:5173");
+  const host = process.env.HOST || "localhost";
+  await page.goto(`http://${host}:5173/`);
   await expect(page.getByText("Get Started")).toBeVisible();
 }
 
 export async function createExampleFile(page: Page, filename?: string) {
-  await goto(page);
-  await page.getByLabel("Create example file").click();
-  if (filename) {
-    await page.getByLabel("Filename").fill(filename);
+  const onboarding = await page.getByLabel("Create example file").isVisible();
+  if (onboarding) {
+    await page.getByLabel("Create example file").click();
+    if (filename) {
+      await page.getByLabel("Filename").fill(filename);
+    }
+    await createFile(page);
+    await expect(page.getByTestId("file-create-dialog")).not.toBeVisible();
   }
-  await createFile(page);
-  await expect(page.getByTestId("file-create-dialog")).not.toBeVisible();
+  if (!onboarding) {
+    await openFileMenu(page);
+    const content = readFileSync("public/todo.txt");
+    await page.getByRole("button", { name: "Import todo.txt" }).click();
+    await page.setInputFiles('[data-testid="file-picker"]', {
+      name: filename ?? "todo.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(content),
+    });
+  }
 }
 
 export async function createTask(page: Page) {
@@ -38,4 +52,8 @@ export async function openSettings(page: Page) {
 export async function openFileMenu(page: Page) {
   await page.getByLabel("File menu").click();
   await page.getByRole("menuitem", { name: "Files…" }).click();
+}
+
+export async function checkSearchParams(page: Page, searchParams = "") {
+  await expect(page).toHaveURL(`http://localhost:5173${searchParams}`);
 }

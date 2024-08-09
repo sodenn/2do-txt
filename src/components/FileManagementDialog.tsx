@@ -67,10 +67,6 @@ import {
 import { memo, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
-interface FileListProps {
-  onClose: (id: string) => void;
-}
-
 interface FileListItemProps {
   id: string;
   filename: string;
@@ -93,13 +89,6 @@ export function FileManagementDialog() {
     (state) => state.closeFileManagementDialog,
   );
   const { t } = useTranslation();
-  const { taskLists } = useTask();
-
-  const handleCloseFile = async () => {
-    if (taskLists.length === 1) {
-      closeFileManagementDialog();
-    }
-  };
 
   return (
     <ResponsiveDialog
@@ -114,7 +103,7 @@ export function FileManagementDialog() {
           </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
-          <FileList onClose={handleCloseFile} />
+          <FileList />
         </ResponsiveDialogBody>
         <ResponsiveDialogFooter>
           <FileManagementActions />
@@ -150,7 +139,14 @@ function FileManagementActions() {
 
   return (
     <>
-      <Button tabIndex={-1} variant="secondary" onClick={handleOpenFile}>
+      <Button
+        tabIndex={-1}
+        variant="secondary"
+        onClick={handleOpenFile}
+        aria-label={
+          SUPPORTS_SHOW_OPEN_FILE_PICKER ? "Open todo.txt" : "Import todo.txt"
+        }
+      >
         <FolderOpenIcon className="mr-2 h-4 w-4" />
         {SUPPORTS_SHOW_OPEN_FILE_PICKER ? t("Open") : t("Import")}
       </Button>
@@ -162,8 +158,7 @@ function FileManagementActions() {
   );
 }
 
-const FileList = memo((props: FileListProps) => {
-  const { onClose } = props;
+const FileList = memo(() => {
   const { taskLists, reorderTaskList, downloadTodoFile, closeTodoFile } =
     useTask();
   const [items, setItems] = useState(taskLists.map((t) => t.id));
@@ -172,6 +167,9 @@ const FileList = memo((props: FileListProps) => {
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
+  );
+  const closeFileManagementDialog = useFileManagementDialogStore(
+    (state) => state.closeFileManagementDialog,
   );
 
   // update list items when a file was closed/deleted
@@ -193,7 +191,9 @@ const FileList = memo((props: FileListProps) => {
   };
 
   const handleCloseFile = async (id: string) => {
-    onClose(id);
+    if (taskLists.length === 1) {
+      closeFileManagementDialog();
+    }
     closeTodoFile(id);
   };
 

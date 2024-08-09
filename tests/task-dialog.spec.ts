@@ -1,13 +1,14 @@
 import { expect, Page, test } from "@playwright/test";
 import { format } from "date-fns";
+import { createExampleFile, goto } from "./playwright-utils";
 
 function formatDate(date: Date): string {
   return format(date, "yyyy-MM-dd");
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:5173");
-  await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
+  await goto(page);
+  await createExampleFile(page);
 });
 
 const delay = { delay: 20 };
@@ -18,7 +19,6 @@ test.describe("Task dialog", () => {
     isMobile,
   }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
-    await page.waitForTimeout(500);
     await page.keyboard.press("n");
     await expect(page.getByTestId("task-dialog")).toBeVisible();
     await page.keyboard.press("Escape");
@@ -28,7 +28,6 @@ test.describe("Task dialog", () => {
   test("should disable the save button when the task description is empty", async ({
     page,
   }) => {
-    await page.waitForTimeout(500);
     await page.keyboard.press("n");
     await expect(page.getByTestId("task-dialog")).toBeVisible();
     await expect(
@@ -40,30 +39,22 @@ test.describe("Task dialog", () => {
 
   test("should select a context via enter key", async ({ page, isMobile }) => {
     test.skip(!!isMobile, "not relevant for mobile browser");
-
     await openTaskDialog(page);
-
     await expect(getEditor(page)).toBeFocused();
-
     await getEditor(page).pressSequentially(
       "Play soccer with friends @",
       delay,
     );
-
     await page.keyboard.press("Enter");
-
     // open the mention menu again
     await getEditor(page).press("@", delay);
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
-
     await expect(getEditor(page)).toHaveText(
       "Play soccer with friends @Private @Holiday",
     );
-
     // save the task
     await page.getByRole("button", { name: "Save task" }).click();
-
     // make sure the task is part of the list
     await expect(
       page
@@ -89,13 +80,15 @@ test.describe("Task dialog", () => {
     const dueDateTag = `due:${formatDate(today)}`;
 
     // choose date and confirm
-    await page.getByRole("gridcell", { name: currentDateSelector }).click();
+    await page
+      .getByRole("gridcell", { name: currentDateSelector, exact: true })
+      .click();
 
     // make sure the date picker contains a value
     await expect(page.getByLabel("Due date")).toHaveText(
       isMobile
         ? format(today, "MM/dd/yyyy")
-        : format(today, "EEE, MMM dd, yyyy"),
+        : format(today, "EEE, MMM d, yyyy"),
     );
 
     // make sure the text field contains the due date
@@ -116,13 +109,15 @@ test.describe("Task dialog", () => {
     await page.getByLabel("Due date").click();
 
     // choose date and confirm
-    await page.getByRole("gridcell", { name: currentDateSelector }).click();
+    await page
+      .getByRole("gridcell", { name: currentDateSelector, exact: true })
+      .click();
 
     // make sure the date picker contains a value
     await expect(page.getByLabel("Due date")).toHaveText(
       isMobile
         ? format(today, "MM/dd/yyyy")
-        : format(today, "EEE, MMM dd, yyyy"),
+        : format(today, "EEE, MMM d, yyyy"),
     );
 
     // make sure the text field contains the due date
@@ -132,7 +127,9 @@ test.describe("Task dialog", () => {
     await page.getByLabel("Due date").click();
 
     // clear date selection
-    await page.getByRole("gridcell", { name: currentDateSelector }).click();
+    await page
+      .getByRole("gridcell", { name: currentDateSelector, exact: true })
+      .click();
 
     // make sure the text field doesn't contain the due date
     await expect(getEditor(page)).not.toHaveText(dueDateTag);
@@ -289,11 +286,13 @@ test.describe("Task dialog", () => {
     await page.keyboard.press("Enter");
     const today = new Date();
     const currentDateSelector = today.getDate().toString();
-    await page.getByRole("gridcell", { name: currentDateSelector }).click();
+    await page
+      .getByRole("gridcell", { name: currentDateSelector, exact: true })
+      .click();
 
     // make sure due date was selected
     await expect(page.getByLabel("Due date")).toHaveText(
-      format(today, "EEE, MMM dd, yyyy"),
+      format(today, "EEE, MMM d, yyyy"),
     );
   });
 
