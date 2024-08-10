@@ -26,7 +26,7 @@ export async function showSaveFilePicker(suggestedName = "todo.txt") {
       },
     ],
   });
-  if (!fileHandle) {
+  if (!fileHandle || !(await verifyPermission(fileHandle))) {
     return;
   }
 
@@ -47,7 +47,7 @@ export async function showOpenFilePicker() {
 
   // @ts-ignore
   const [fileHandle] = await window.showOpenFilePicker();
-  if (!fileHandle) {
+  if (!fileHandle || !(await verifyPermission(fileHandle))) {
     return;
   }
 
@@ -68,7 +68,7 @@ export async function readFile(id: string) {
   }
 
   const fileHandle = await getFileHandle(id);
-  if (!fileHandle) {
+  if (!fileHandle || !(await verifyPermission(fileHandle))) {
     throw new Error("Cannot retrieve fileHandle");
   }
   const fileData = await fileHandle.getFile();
@@ -91,7 +91,7 @@ export async function writeFile({
   }
 
   const fileHandle = await getFileHandle(id);
-  if (!fileHandle) {
+  if (!fileHandle || !(await verifyPermission(fileHandle))) {
     throw new Error("Cannot retrieve fileHandle");
   }
   const writable = await fileHandle.createWritable();
@@ -108,7 +108,7 @@ export async function deleteFile(id: string) {
   }
 
   const fileHandle = await getFileHandle(id);
-  if (!fileHandle) {
+  if (!fileHandle || !(await verifyPermission(fileHandle))) {
     throw new Error("Cannot retrieve fileHandle");
   }
   if (SUPPORTS_REMOVE_FILE) {
@@ -232,4 +232,25 @@ async function getFileHandleFromRequest<T>(
       reject((event.target as IDBRequest).error);
     };
   });
+}
+
+export async function verifyPermission(fileHandle: FileSystemFileHandle) {
+  const options = {
+    mode: "readwrite",
+  };
+
+  // Check if permission was already granted. If so, return true.
+  // @ts-ignore
+  if ((await fileHandle.queryPermission(options)) === "granted") {
+    return true;
+  }
+
+  // Request permission. If the user grants permission, return true.
+  // @ts-ignore
+  if ((await fileHandle.requestPermission(options)) === "granted") {
+    return true;
+  }
+
+  // The user didn't grant permission, so return false.
+  return false;
 }

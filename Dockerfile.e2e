@@ -2,7 +2,7 @@
 # docker build -f Dockerfile.e2e -t playwright-2dotxt .
 # 2. Start the dev server on host machine
 # 3. Update playwright snapshots by running:
-# docker run -it --rm -v "$(pwd)/tests:/tests" playwright-2dotxt:latest
+# docker run -it --rm -v "$(pwd)/tests:/tests" -v "$(pwd)/test-results:/test-results" playwright-2dotxt:latest
 FROM mcr.microsoft.com/playwright:v1.45.3-jammy
 
 COPY package.json ./package.json
@@ -17,4 +17,4 @@ RUN npx playwright install
 
 ENV HOST=host.docker.internal
 
-CMD ["npx", "playwright", "test", "screenshots.spec.ts", "--reporter=line", "--update-snapshots"]
+CMD ["npx", "playwright", "test", "screenshots.spec.ts", "--reporter=html", "--update-snapshots"]
