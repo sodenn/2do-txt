@@ -24,5 +24,5 @@ export default defineConfig({
       },
     },
   },
-  images: ["public/logo-rounded.svg"],
+  images: ["public/logo.svg"],
 });

@@ -27,7 +27,9 @@
     "knip": "knip",
     "i18n": "i18next --config i18next-parser.config.js \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "generate-pwa-assets": "pwa-assets-generator"
+    "generate-icon-assets": "pwa-assets-generator",
+    "generate-splash-assets": "pwa-asset-generator ./public/splash.svg ./public --index ./index.html --splash-only --path-override --background #90CAF9",
+    "generate-pwa-assets": "run-p generate-icon-assets generate-splash-assets"
   },
   "browserslist": {
     "production": [
@@ -112,6 +114,7 @@
     "prettier": "3.3.2",
     "prettier-plugin-organize-imports": "4.0.0",
     "prettier-plugin-tailwindcss": "^0.6.5",
+    "pwa-asset-generator": "^6.3.1",
     "tailwindcss": "^3.4.4",
     "typescript": "5.4.5",
     "vite": "5.3.1",
