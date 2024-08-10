@@ -41,6 +41,7 @@ module.exports = {
   ],
   ignorePatterns: [
     "playwright.config.ts",
+    "pwa-assets.config.ts",
     "vite.config.ts",
     ".eslintrc.js",
   ],

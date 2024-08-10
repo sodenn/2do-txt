@@ -44,30 +44,33 @@ export function useArchivedTask() {
     });
   }, []);
 
-  const loadDoneFile = useCallback(async (todoFileId: string) => {
-    let doneFileId = await getDoneFileId(todoFileId);
-    if (!doneFileId) {
-      const result = await showSaveFilePicker("done.txt");
-      if (!result) {
+  const loadDoneFile = useCallback(
+    async (todoFileId: string) => {
+      let doneFileId = await getDoneFileId(todoFileId);
+      if (!doneFileId) {
+        const result = await showSaveFilePicker("done.txt");
+        if (!result) {
+          return;
+        }
+        doneFileId = result.id;
+        await addDoneFileId(todoFileId, doneFileId);
+      }
+
+      const data = await readFile(doneFileId).catch((e) => void e);
+      if (!data) {
         return;
       }
-      doneFileId = result.id;
-      await addDoneFileId(todoFileId, doneFileId);
-    }
 
-    const data = await readFile(doneFileId).catch((e) => void e);
-    if (!data) {
-      return;
-    }
-
-    const parseResult = parseTaskList(data.content);
-    return {
-      items: parseResult.items,
-      lineEnding: parseResult.lineEnding,
-      filename: data.filename,
-      id: doneFileId,
-    };
-  }, []);
+      const parseResult = parseTaskList(data.content);
+      return {
+        items: parseResult.items,
+        lineEnding: parseResult.lineEnding,
+        filename: data.filename,
+        id: doneFileId,
+      };
+    },
+    [showSaveFilePicker],
+  );
 
   const restoreTask = useCallback(
     async ({ taskList, task }: RestoreTaskOptions) => {

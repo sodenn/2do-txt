@@ -1,8 +1,12 @@
 {
   "$schema": "https://unpkg.com/knip@2/schema.json",
+  "ignoreDependencies": [
+    "virtual:pwa-register/react"
+  ],
   "ignore": [
     "**/lib/**",
     "**/target/**",
+    "pwa-assets.config.ts",
     "i18next-parser.config.js",
     "src/sw.ts",
     "src/utils/settings.ts",
