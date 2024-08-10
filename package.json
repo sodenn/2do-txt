@@ -28,7 +28,7 @@
     "i18n": "i18next --config i18next-parser.config.js \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "generate-icon-assets": "pwa-assets-generator",
-    "generate-splash-assets": "pwa-asset-generator ./public/splash.svg ./public --index ./index.html --splash-only --path-override --background #90CAF9",
+    "generate-splash-assets": "pwa-asset-generator ./public/splash.svg ./public --index ./index.html --splash-only --path-override --background '#90CAF9'",
     "generate-pwa-assets": "run-p generate-icon-assets generate-splash-assets"
   },
   "browserslist": {
