@@ -18,7 +18,7 @@ export function Header() {
   const { activeTaskList, taskLists } = useTask();
   const sideSheetOpen = useSideSheetStore((state) => state.open);
   const [searchBarExpanded, setSearchBarExpanded] = useState(false);
-  const showTodoFileDownloadButton =
+  const showTodoFileShareButton =
     (IS_IOS || IS_ANDROID) && (activeTaskList || taskLists.length === 1);
 
   return (
@@ -32,7 +32,7 @@ export function Header() {
           {taskLists.length > 0 && (
             <SearchBar onExpand={setSearchBarExpanded} />
           )}
-          {showTodoFileDownloadButton && <ShareButton />}
+          {showTodoFileShareButton && <ShareButton />}
           {taskLists.length > 0 && <AddTaskButton />}
         </div>
       </SafeArea>

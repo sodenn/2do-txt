@@ -71,6 +71,7 @@ export const ExpandableSearch = forwardRef<
       <div className="flex flex-1 items-center sm:hidden" ref={containerRef}>
         <div className="flex-1">
           <Fade
+            duration={150}
             in={showInput}
             unmountOnExit
             onEntered={handleEnteredInput}
@@ -89,7 +90,7 @@ export const ExpandableSearch = forwardRef<
             <Button
               tabIndex={-1}
               size="icon"
-              variant="secondary"
+              variant="outline"
               aria-label="Expand search bar"
               onClick={() => setShowButton(false)}
             >

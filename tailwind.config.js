@@ -18,6 +18,7 @@ export default {
       transitionDuration: {
         195: "195ms",
         225: "225ms",
+        400: "400ms",
       },
       translate: {
         320: "320px",
