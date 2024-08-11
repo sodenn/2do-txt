@@ -1,6 +1,11 @@
 import { useThemeStore } from "@/stores/theme-store";
 import { PropsWithChildren, useEffect, useState } from "react";
 
+const themeColors = {
+  light: "#f9fbfd",
+  dark: "#101823",
+} as const;
+
 export function ThemeProvider({ children }: PropsWithChildren) {
   const mode = useThemeStore((state) => state.mode);
   const setMode = useThemeStore((state) => state.setMode);
@@ -10,26 +15,26 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     setMode(mode);
     setMounte(true);
 
+    let themeColor: string;
     const docEl = window.document.documentElement;
     docEl.classList.remove("light", "dark");
     if (mode === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+      const colorShema = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
         : "light";
-      docEl.classList.add(systemTheme);
+      docEl.classList.add(colorShema);
+      themeColor = themeColors[colorShema];
     } else {
+      themeColor = themeColors[mode];
       docEl.classList.add(mode);
     }
 
-    const rootEl = document.querySelector<HTMLDivElement>("#root");
-    const bodyBgColor =
-      rootEl && window.getComputedStyle(rootEl).backgroundColor;
     const themeColorMetaTag = document.querySelector(
       'meta[name="theme-color"]',
     );
-    if (themeColorMetaTag && bodyBgColor) {
-      themeColorMetaTag.setAttribute("content", bodyBgColor);
+    if (themeColorMetaTag) {
+      themeColorMetaTag.setAttribute("content", themeColor);
     }
   }, [mode, setMode]);
 

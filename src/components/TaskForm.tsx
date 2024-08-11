@@ -161,6 +161,7 @@ function TaskGrid(props: TaskGridProps) {
         ariaLabel="Text editor"
         autoCorrect="off"
         autoCapitalize="off"
+        autoComplete="off"
         spellCheck={false}
         onChange={(value) => handleChange({ body: value })}
         onEnter={onEnterPress}

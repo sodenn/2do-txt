@@ -16,7 +16,10 @@ import {
   openOrCreateFile,
   writeFile,
 } from "@/utils/fallback-filesystem";
-import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
+import {
+  HAS_TOUCHSCREEN,
+  SUPPORTS_SHOW_OPEN_FILE_PICKER,
+} from "@/utils/platform";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -75,14 +78,14 @@ function FallbackFileDialog() {
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("Create todo.txt")}</ResponsiveDialogTitle>
           <ResponsiveDialogHiddenDescription>
-            Archived tasks
+            Create file
           </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
           <div className="my-1 space-y-2">
             <Label htmlFor="filename">{t(`File Name`)}</Label>
             <Input
-              autoFocus
+              autoFocus={!HAS_TOUCHSCREEN}
               id="filename"
               type="text"
               min={1}
