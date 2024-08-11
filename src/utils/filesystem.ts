@@ -213,7 +213,7 @@ export async function deleteFilesNotInList(ids: string[]) {
       reject((event.target as IDBRequest).error);
     };
   });
-  await Promise.all(idsNotInList.map(deleteFile));
+  await Promise.all(idsNotInList.map(deleteFileHandle));
 }
 
 async function getFileHandleFromRequest<T>(

@@ -20,6 +20,14 @@
   <img width="600" style="border-radius: 6px;" src="./resources/screenshot3.png" alt="Screenshot">
 </p>
 
+## Progressive Web App (PWA)
+
+While **2do.txt** is fully functional in any modern web browser, the user experience is significantly enhanced when installed as a Progressive Web App (PWA). This installation offers a more native-like experience, including offline capabilities and faster access.
+
+## Browser Compatibility
+
+It is important to note that not all browsers fully support the File System API. For example, Safari writes files to the Origin Private File System, which is isolated from the user’s local filesystem. As a result, files saved within this system may not be accessible in the same way as they would be on a traditional filesystem. For the best experience, it is recommended to use a browser that fully supports the File System API, such as Chrome.
+
 ## About todo.txt
 
 The **todo.txt** format is a simple set of rules that make todo.txt both human and machine-readable. The format supports priorities, creation and completion dates, projects and contexts. For more information please see http://todotxt.org/.
