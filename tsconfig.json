@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "types": ["vite/client", "vitest/globals", "vite-plugin-pwa/client"],
+    "types": ["vite/client", "vitest/globals", "vite-plugin-pwa/client", "@types/wicg-file-system-access"],
     "lib": [
       "dom",
       "dom.iterable",

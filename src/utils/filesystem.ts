@@ -1,7 +1,4 @@
-import {
-  SUPPORTS_REMOVE_FILE,
-  SUPPORTS_SHOW_OPEN_FILE_PICKER,
-} from "@/utils/platform";
+import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
 import { generateId } from "@/utils/uuid";
 import * as fallbackFilesystem from "./fallback-filesystem";
 
@@ -10,12 +7,32 @@ interface FileHandleEntry {
   handle: FileSystemFileHandle;
 }
 
+type FileErrorReason = "PICKER_CLOSED" | "RETRIEVAL_FAILED" | "ACCESS_DENIED";
+
+export class FileError extends Error {
+  reason: FileErrorReason;
+  filename?: string;
+  private static reasonMessages: Record<FileErrorReason, string> = {
+    PICKER_CLOSED: "File picker was closed without selecting a file",
+    RETRIEVAL_FAILED: "Failed to retrieve file handle from database",
+    ACCESS_DENIED: "Unable to access the file due to an unknown problem",
+  };
+  constructor(reason: FileErrorReason, filename?: string) {
+    const message =
+      FileError.reasonMessages[reason] || "An unknown file error occurred";
+    super(message);
+    this.name = "FileError";
+    this.reason = reason;
+    this.filename = filename;
+    Object.setPrototypeOf(this, FileError.prototype);
+  }
+}
+
 export async function showSaveFilePicker(suggestedName = "todo.txt") {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return fallbackFilesystem.openOrCreateFile(suggestedName);
   }
 
-  // @ts-ignore
   const fileHandle = await window.showSaveFilePicker({
     suggestedName,
     startIn: "documents",
@@ -26,8 +43,8 @@ export async function showSaveFilePicker(suggestedName = "todo.txt") {
       },
     ],
   });
-  if (!fileHandle || !(await verifyPermission(fileHandle))) {
-    return;
+  if (!fileHandle) {
+    throw new FileError("PICKER_CLOSED");
   }
 
   const id = await saveFileHandle(fileHandle);
@@ -45,10 +62,9 @@ export async function showOpenFilePicker() {
     return await fallbackFilesystem.openOrCreateFile();
   }
 
-  // @ts-ignore
   const [fileHandle] = await window.showOpenFilePicker();
-  if (!fileHandle || !(await verifyPermission(fileHandle))) {
-    return;
+  if (!fileHandle) {
+    throw new FileError("PICKER_CLOSED");
   }
 
   const id = await saveFileHandle(fileHandle);
@@ -62,21 +78,37 @@ export async function showOpenFilePicker() {
   };
 }
 
+export async function getFilename(id: string) {
+  if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
+    // return fallbackFilesystem.getFilename();
+  }
+  const fileHandle = await getFileHandle(id);
+  return fileHandle.name;
+}
+
 export async function readFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return fallbackFilesystem.readFile(id);
   }
 
   const fileHandle = await getFileHandle(id);
-  if (!fileHandle || !(await verifyPermission(fileHandle))) {
-    throw new Error("Cannot retrieve fileHandle");
+
+  const granted = await verifyPermission(fileHandle);
+  if (!granted) {
+    throw new FileError("ACCESS_DENIED", fileHandle.name);
   }
-  const fileData = await fileHandle.getFile();
-  const content = await fileData?.text();
-  return {
-    filename: fileHandle.name,
-    content,
-  };
+
+  try {
+    const fileData = await fileHandle.getFile();
+    const content = await fileData?.text();
+    return {
+      filename: fileHandle.name,
+      content,
+    };
+  } catch (e) {
+    console.error("Unable to read file", e);
+    throw new FileError("ACCESS_DENIED", fileHandle.name);
+  }
 }
 
 export async function writeFile({
@@ -91,57 +123,69 @@ export async function writeFile({
   }
 
   const fileHandle = await getFileHandle(id);
-  if (!fileHandle || !(await verifyPermission(fileHandle))) {
-    throw new Error("Cannot retrieve fileHandle");
+  try {
+    const writable = await fileHandle.createWritable();
+    await writable.write(content);
+    await writable.close();
+    return {
+      filename: fileHandle.name,
+    };
+  } catch (e) {
+    console.error("Unable to write file", e);
+    throw new FileError("ACCESS_DENIED", fileHandle.name);
   }
-  const writable = await fileHandle.createWritable();
-  await writable.write(content);
-  await writable.close();
-  return {
-    filename: fileHandle.name,
-  };
 }
 
 export async function deleteFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return fallbackFilesystem.deleteFile(id);
   }
-
-  const fileHandle = await getFileHandle(id);
-  if (!fileHandle || !(await verifyPermission(fileHandle))) {
-    throw new Error("Cannot retrieve fileHandle");
-  }
-  if (SUPPORTS_REMOVE_FILE) {
-    try {
-      // @ts-ignore
-      await fileHandle.remove();
-    } catch (error) {
-      console.error(`Cannot delete file ${fileHandle.name}`, error);
-    }
-  }
   await deleteFileHandle(id);
 }
+
+async function verifyPermission(fileHandle: FileSystemFileHandle) {
+  const options = {
+    mode: "readwrite",
+  };
+
+  // Check if permission was already granted. If so, return true.
+  // @ts-ignore
+  if ((await fileHandle.queryPermission(options)) === "granted") {
+    return true;
+  }
+
+  // Request permission. If the user grants permission, return true.
+  // @ts-ignore
+  if ((await fileHandle.requestPermission(options)) === "granted") {
+    return true;
+  }
+
+  // The user didn't grant permission, so return false.
+  return false;
+}
+
+const fileHandleCache = new Map<string, FileSystemFileHandle>();
 
 function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("fileHandlesDB", 1);
-
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       db.createObjectStore("fileHandles", { keyPath: "id" });
     };
-
     request.onsuccess = (event) => {
       resolve((event.target as IDBOpenDBRequest).result);
     };
-
     request.onerror = (event) => {
       reject((event.target as IDBOpenDBRequest).error);
     };
   });
 }
 
-const fileHandleCache = new Map<string, FileSystemFileHandle>();
+function getStore(db: IDBDatabase, mode: IDBTransactionMode = "readwrite") {
+  const transaction = db.transaction(["fileHandles"], mode);
+  return transaction.objectStore("fileHandles");
+}
 
 async function saveFileHandle(
   fileHandle: FileSystemFileHandle,
@@ -149,8 +193,7 @@ async function saveFileHandle(
   const db = await openDatabase();
   const id = generateId();
   return new Promise<string>((resolve, reject) => {
-    const transaction = db.transaction(["fileHandles"], "readwrite");
-    const store = transaction.objectStore("fileHandles");
+    const store = getStore(db, "readwrite");
     const request = store.put({
       id,
       handle: fileHandle,
@@ -167,22 +210,24 @@ async function saveFileHandle(
 
 async function getFileHandle(id: string) {
   if (fileHandleCache.has(id)) {
-    return fileHandleCache.get(id);
+    return fileHandleCache.get(id) as FileSystemFileHandle;
   }
   const db = await openDatabase();
-  const transaction = db.transaction(["fileHandles"], "readonly");
-  const store = transaction.objectStore("fileHandles");
+  const store = getStore(db);
   const request = store.get(id);
-  return getFileHandleFromRequest<FileHandleEntry>(request).then(
-    (e) => e?.handle,
-  );
+  const entry = await getFileHandleFromRequest<FileHandleEntry>(request);
+  if (!entry) {
+    throw new FileError("RETRIEVAL_FAILED");
+  }
+  fileHandleCache.set(id, entry.handle);
+  return entry.handle;
 }
 
 async function deleteFileHandle(id: string) {
   const db = await openDatabase();
-  const transaction = db.transaction(["fileHandles"], "readwrite");
-  const store = transaction.objectStore("fileHandles");
+  const store = getStore(db, "readwrite");
   const request = store.delete(id);
+  fileHandleCache.delete(id);
   return getFileHandleFromRequest<undefined>(request);
 }
 
@@ -190,10 +235,8 @@ export async function deleteFilesNotInList(ids: string[]) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return fallbackFilesystem.deleteFilesNotInList(ids);
   }
-
   const db = await openDatabase();
-  const transaction = db.transaction(["fileHandles"], "readonly");
-  const store = transaction.objectStore("fileHandles");
+  const store = getStore(db);
   const request = store.openCursor();
   const idsNotInList = await new Promise<string[]>((resolve, reject) => {
     const result: string[] = [];
@@ -232,25 +275,4 @@ async function getFileHandleFromRequest<T>(
       reject((event.target as IDBRequest).error);
     };
   });
-}
-
-export async function verifyPermission(fileHandle: FileSystemFileHandle) {
-  const options = {
-    mode: "readwrite",
-  };
-
-  // Check if permission was already granted. If so, return true.
-  // @ts-ignore
-  if ((await fileHandle.queryPermission(options)) === "granted") {
-    return true;
-  }
-
-  // Request permission. If the user grants permission, return true.
-  // @ts-ignore
-  if ((await fileHandle.requestPermission(options)) === "granted") {
-    return true;
-  }
-
-  // The user didn't grant permission, so return false.
-  return false;
 }

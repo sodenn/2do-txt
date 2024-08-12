@@ -27,8 +27,6 @@ export const SUPPORTS_SHOW_OPEN_FILE_PICKER =
   "showOpenFilePicker" in window &&
   !TEST_MODE;
 
-export const SUPPORTS_REMOVE_FILE = IS_CHROME && !IS_ANDROID_CHROME;
-
 export const HAS_TOUCHSCREEN = hasTouchScreen();
 
 function hasTouchScreen() {

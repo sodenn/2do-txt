@@ -25,10 +25,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { writeToClipboard } from "@/utils/clipboard";
 import { readFile } from "@/utils/filesystem";
-import {
-  SUPPORTS_REMOVE_FILE,
-  SUPPORTS_SHOW_OPEN_FILE_PICKER,
-} from "@/utils/platform";
+import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
 import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
@@ -61,7 +58,6 @@ import {
   FolderOpenIcon,
   GripVerticalIcon,
   PlusIcon,
-  TrashIcon,
   XIcon,
 } from "lucide-react";
 import { memo, useEffect, useState } from "react";
@@ -250,6 +246,7 @@ function FileListItem(props: FileListItemProps) {
 
   return (
     <ListItem
+      clickable={!disableDrag}
       tabIndex={-1}
       ref={setNodeRef}
       style={style}
@@ -263,11 +260,7 @@ function FileListItem(props: FileListItemProps) {
       >
         <div className="flex flex-1 items-center gap-1 overflow-hidden">
           <div className="flex-1 truncate whitespace-pre">
-            {SUPPORTS_REMOVE_FILE ? (
-              <Trans i18nKey="Delete file" values={{ filename }} />
-            ) : (
-              <Trans i18nKey="Close file" values={{ filename }} />
-            )}
+            <Trans i18nKey="Close file" values={{ filename }} />
           </div>
           <div className="flex gap-1">
             <Tooltip>
@@ -292,24 +285,16 @@ function FileListItem(props: FileListItemProps) {
                   size="icon"
                   variant="destructive"
                   className="m-[1px] flex-shrink-0"
-                  aria-label={
-                    SUPPORTS_REMOVE_FILE ? "Delete file" : "Close file"
-                  }
+                  aria-label="Close file"
                   onClick={() => {
                     onClose(id);
                     setShowCloseConfirmButton(false);
                   }}
                 >
-                  {SUPPORTS_REMOVE_FILE ? (
-                    <TrashIcon className="h-4 w-4" />
-                  ) : (
-                    <CheckIcon className="h-4 w-4" />
-                  )}
+                  <CheckIcon className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                {SUPPORTS_REMOVE_FILE ? t("Delete") : t("Close")}
-              </TooltipContent>
+              <TooltipContent>{t("Close")}</TooltipContent>
             </Tooltip>
           </div>
         </div>
@@ -396,16 +381,9 @@ function FileMenu(props: FileMenuProps) {
           <DownloadIcon className="mr-2 h-4 w-4" />
           {t("Download")}
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={handleCloseFile}
-          aria-label={SUPPORTS_REMOVE_FILE ? "Delete file" : "Close file"}
-        >
-          {SUPPORTS_REMOVE_FILE ? (
-            <TrashIcon className="mr-2 h-4 w-4" />
-          ) : (
-            <TrashIcon className="mr-2 h-4 w-4" />
-          )}
-          {SUPPORTS_REMOVE_FILE ? t("Delete") : t("Close")}
+        <DropdownMenuItem onClick={handleCloseFile} aria-label="Close file">
+          <XIcon className="mr-2 h-4 w-4" />
+          {t("Close")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
