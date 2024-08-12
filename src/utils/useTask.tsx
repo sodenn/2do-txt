@@ -1,3 +1,4 @@
+import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
@@ -12,23 +13,24 @@ import { hashCode } from "@/utils/hashcode";
 import { setPreferencesItem } from "@/utils/preferences";
 import { canShare, share } from "@/utils/share";
 import {
-  Task,
   createDueDateRegex,
   createNextRecurringTask,
   parseTask,
   stringifyTask,
+  Task,
   transformPriority,
 } from "@/utils/task";
 import {
-  TaskList,
   parseTaskList as _parseTaskList,
   getCommonTaskListAttributes,
   stringifyTaskList,
+  TaskList,
   updateTaskListAttributes,
 } from "@/utils/task-list";
 import {
   addTodoFileId,
   getDoneFileId,
+  loadTodoFileFromDisk,
   removeDoneFileId,
   removeTodoFileId,
 } from "@/utils/todo-files";
@@ -560,7 +562,9 @@ export function useTask() {
       todoFiles: { files, errors },
     } = await taskLoader();
     // apply external file changes by updating the state
-    const newTaskList = files.map((f) => f.taskList);
+    const newTaskList = await Promise.all(
+      files.map((f) => loadTodoFileFromDisk(f.id)),
+    );
     if (!areTaskListsEqual(taskLists, newTaskList)) {
       setTaskLists(newTaskList);
     }
@@ -578,14 +582,37 @@ export function useTask() {
     for (const error of todoFiles.errors) {
       await handleFileNotFound(error.id).catch((e) => void e);
     }
-    const ids = todoFiles.files.map((f) => f.taskList.id);
+
+    const files = todoFiles.files;
+    for (const file of files) {
+      await new Promise<void>((resolve) => {
+        const { dismiss } = toast({
+          title: `Load file ${file.filename}`,
+          description: "Description",
+          duration: 1000 * 10,
+          onOpenChange: () => {
+            resolve();
+          },
+          action: (
+            <ToastAction
+              altText="Load file"
+              onClick={async () => {
+                const taskList = await loadTodoFileFromDisk(file.id);
+                addTaskList(taskList);
+                await scheduleDueTaskNotifications(taskList.items);
+                dismiss();
+              }}
+            >
+              Load
+            </ToastAction>
+          ),
+        });
+      });
+    }
+
+    const ids = todoFiles.files.map((f) => f.id);
     deleteFilesNotInList(ids).catch((e) => {
       console.debug("Unable to delete unused files", e);
-    });
-    shouldNotificationsBeRescheduled().then(() => {
-      taskLists.forEach((taskList) =>
-        scheduleDueTaskNotifications(taskList.items),
-      );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

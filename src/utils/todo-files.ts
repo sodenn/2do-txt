@@ -1,4 +1,6 @@
+import { readFile } from "@/utils/filesystem";
 import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
+import { TaskList, parseTaskList } from "@/utils/task-list";
 
 interface Item {
   todoFileId: string;
@@ -89,4 +91,14 @@ export async function removeDoneFileId(id: string) {
       //
     }
   }
+}
+
+export async function loadTodoFileFromDisk(id: string): Promise<TaskList> {
+  const { content, filename } = await readFile(id);
+  const parseResult = parseTaskList(content);
+  return {
+    ...parseResult,
+    id,
+    filename,
+  };
 }

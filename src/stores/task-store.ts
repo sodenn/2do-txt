@@ -1,5 +1,5 @@
-import { readFile } from "@/utils/filesystem";
-import { parseTaskList, TaskList } from "@/utils/task-list";
+import { getFilename } from "@/utils/filesystem";
+import { TaskList } from "@/utils/task-list";
 import { getTodoFileIds } from "@/utils/todo-files";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";
@@ -7,7 +7,6 @@ import { createStore, useStore as useZustandStore } from "zustand";
 interface TodoFileSuccess {
   type: "success";
   id: string;
-  content: string;
   filename: string;
 }
 
@@ -16,19 +15,17 @@ interface TodoFileError {
   id: string;
 }
 
-type TodoFile = TodoFileSuccess | TodoFileError;
-
 interface TodoFiles {
-  files: { taskList: TaskList; content: string }[];
-  errors: TodoFileError[];
+  files: Omit<TodoFileSuccess, "type">[];
+  errors: Omit<TodoFileError, "type">[];
 }
 
 export interface TaskFields {
-  taskLists: TaskList[];
   todoFiles: TodoFiles;
 }
 
 interface TaskState extends TaskFields {
+  taskLists: TaskList[];
   setTaskLists: (taskLists: TaskList[]) => void;
   addTaskList: (taskList: TaskList) => void;
   removeTaskList: (taskList?: TaskList) => void;
@@ -42,37 +39,24 @@ export const TaskStoreProvider = zustandContext.Provider;
 
 export async function taskLoader(): Promise<TaskFields> {
   const ids = await getTodoFileIds();
-  const result: TodoFile[] = await Promise.all(
-    ids.map(({ todoFileId: id }) =>
-      readFile(id)
+  const result = await Promise.all(
+    ids.map(({ todoFileId }) =>
+      getFilename(todoFileId)
         .then(
-          ({ filename, content }) =>
-            ({
-              type: "success",
-              id,
-              content,
-              filename,
-            }) as TodoFileSuccess,
+          (filename) =>
+            ({ filename, id: todoFileId, type: "success" }) as TodoFileSuccess,
         )
-        .catch(() => ({ type: "error", id }) as TodoFileError),
+        .catch(() => ({ type: "error", id: todoFileId }) as TodoFileError),
     ),
   );
-  const files = result
-    .filter((i): i is TodoFileSuccess => i.type === "success")
-    .map(({ id, content, filename }) => {
-      const parseResult = parseTaskList(content);
-      const taskList: TaskList = {
-        ...parseResult,
-        id,
-        filename,
-      };
-      return { taskList, content };
-    });
-  const errors = result.filter((i): i is TodoFileError => i.type === "error");
-  const taskLists = files.map((f) => f.taskList);
+  const files = result.filter((i) => i.type === "success");
+  const errors = result.filter((i) => i.type === "error");
+  const todoFiles: TodoFiles = {
+    files,
+    errors,
+  };
   return {
-    taskLists,
-    todoFiles: { files, errors },
+    todoFiles,
   };
 }
 
