@@ -98,6 +98,8 @@
   "Number of Weeks": "Number of $t(Weeks)",
   "Number of Months": "Number of $t(Months)",
   "Number of Years": "Number of $t(Years)",
+  "Open File?": "Open File?",
+  "Would you like to open the file?": "Would you like to open the file \"{{filename}}\"?",
   "Open": "Open",
   "Open todo.txt": "Open todo.txt",
   "OR": "OR",

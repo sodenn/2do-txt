@@ -1,5 +1,5 @@
-import { getFilename } from "@/utils/filesystem";
-import { TaskList } from "@/utils/task-list";
+import { deleteFilesNotInList, FileError, readFile } from "@/utils/filesystem";
+import { parseTaskList, TaskList } from "@/utils/task-list";
 import { getTodoFileIds } from "@/utils/todo-files";
 import { createContext, useContext } from "react";
 import { createStore, useStore as useZustandStore } from "zustand";
@@ -8,11 +8,15 @@ interface TodoFileSuccess {
   type: "success";
   id: string;
   filename: string;
+  content: string;
+  taskList: TaskList;
 }
 
 interface TodoFileError {
   type: "error";
   id: string;
+  filename?: string;
+  permissionRequired: boolean;
 }
 
 interface TodoFiles {
@@ -21,6 +25,7 @@ interface TodoFiles {
 }
 
 export interface TaskFields {
+  taskLists: TaskList[];
   todoFiles: TodoFiles;
 }
 
@@ -41,22 +46,48 @@ export async function taskLoader(): Promise<TaskFields> {
   const ids = await getTodoFileIds();
   const result = await Promise.all(
     ids.map(({ todoFileId }) =>
-      getFilename(todoFileId)
-        .then(
-          (filename) =>
-            ({ filename, id: todoFileId, type: "success" }) as TodoFileSuccess,
-        )
-        .catch(() => ({ type: "error", id: todoFileId }) as TodoFileError),
+      readFile(todoFileId)
+        .then(({ filename, content }) => {
+          const parseResult = parseTaskList(content);
+          const taskList: TaskList = {
+            ...parseResult,
+            id: todoFileId,
+            filename,
+          };
+          return {
+            filename,
+            content,
+            taskList,
+            id: todoFileId,
+            type: "success",
+          } as TodoFileSuccess;
+        })
+        .catch((error) => {
+          if (error instanceof FileError) {
+            return {
+              type: "error",
+              id: todoFileId,
+              filename: error.filename,
+              permissionRequired: error.reason === "PERMISSION_DENIED",
+            } as TodoFileError;
+          }
+          return { type: "error", id: todoFileId } as TodoFileError;
+        }),
     ),
   );
+  await deleteFilesNotInList(ids.map((i) => i.todoFileId)).catch((e) => {
+    console.debug("Unable to delete unused files", e);
+  });
   const files = result.filter((i) => i.type === "success");
   const errors = result.filter((i) => i.type === "error");
+  const taskLists = files.map((f) => f.taskList);
   const todoFiles: TodoFiles = {
     files,
     errors,
   };
   return {
     todoFiles,
+    taskLists,
   };
 }
 

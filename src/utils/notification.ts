@@ -27,7 +27,6 @@ interface WebNotification {
   requestPermission(): Promise<boolean>;
   cancel(ids: number[]): Promise<void>;
   schedule(notifications: Notification[]): Promise<number[]>;
-  shouldNotificationsBeRescheduled(): Promise<boolean>;
   getReceivedNotifications(): Promise<ReceivedNotification[]>;
   addReceivedNotification(notification: ReceivedNotification): Promise<void>;
   removeReceivedNotification(ids: number[]): Promise<void>;
@@ -66,9 +65,6 @@ const webNotification: WebNotification = {
     return filteredNotifications
       .map(webNotification.createNotification)
       .filter((id): id is number => !!id);
-  },
-  async shouldNotificationsBeRescheduled() {
-    return true;
   },
   createNotification(options: Notification) {
     const { scheduleAt, title, body, id } = options;
@@ -165,8 +161,4 @@ export async function scheduleNotifications(
   notifications: Notification[],
 ): Promise<number[]> {
   return webNotification.schedule(notifications);
-}
-
-export async function shouldNotificationsBeRescheduled() {
-  return webNotification.shouldNotificationsBeRescheduled();
 }

@@ -1,10 +1,9 @@
 import {
-  Notification,
   scheduleNotifications as _scheduleNotifications,
   cancelNotifications,
   isNotificationPermissionGranted,
+  Notification,
   requestNotificationPermission,
-  shouldNotificationsBeRescheduled,
 } from "@/utils/notification";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,7 +34,6 @@ export function useNotification() {
     isNotificationPermissionGranted: isNotificationPermissionGranted,
     requestNotificationPermission: requestNotificationPermission,
     cancelNotifications: cancelNotifications,
-    shouldNotificationsBeRescheduled: shouldNotificationsBeRescheduled,
     scheduleNotifications,
   };
 }

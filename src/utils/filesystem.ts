@@ -7,7 +7,11 @@ interface FileHandleEntry {
   handle: FileSystemFileHandle;
 }
 
-type FileErrorReason = "PICKER_CLOSED" | "RETRIEVAL_FAILED" | "ACCESS_DENIED";
+type FileErrorReason =
+  | "PICKER_CLOSED"
+  | "RETRIEVAL_FAILED"
+  | "PERMISSION_DENIED"
+  | "UNKNOWN";
 
 export class FileError extends Error {
   reason: FileErrorReason;
@@ -15,7 +19,8 @@ export class FileError extends Error {
   private static reasonMessages: Record<FileErrorReason, string> = {
     PICKER_CLOSED: "File picker was closed without selecting a file",
     RETRIEVAL_FAILED: "Failed to retrieve file handle from database",
-    ACCESS_DENIED: "Unable to access the file due to an unknown problem",
+    PERMISSION_DENIED: "File access denied.",
+    UNKNOWN: "Unable to access the file due to an unknown problem",
   };
   constructor(reason: FileErrorReason, filename?: string) {
     const message =
@@ -78,14 +83,6 @@ export async function showOpenFilePicker() {
   };
 }
 
-export async function getFilename(id: string) {
-  if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    // return fallbackFilesystem.getFilename();
-  }
-  const fileHandle = await getFileHandle(id);
-  return fileHandle.name;
-}
-
 export async function readFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return fallbackFilesystem.readFile(id);
@@ -95,7 +92,7 @@ export async function readFile(id: string) {
 
   const granted = await verifyPermission(fileHandle);
   if (!granted) {
-    throw new FileError("ACCESS_DENIED", fileHandle.name);
+    throw new FileError("PERMISSION_DENIED", fileHandle.name);
   }
 
   try {
@@ -107,7 +104,7 @@ export async function readFile(id: string) {
     };
   } catch (e) {
     console.error("Unable to read file", e);
-    throw new FileError("ACCESS_DENIED", fileHandle.name);
+    throw new FileError("UNKNOWN", fileHandle.name);
   }
 }
 
@@ -132,7 +129,7 @@ export async function writeFile({
     };
   } catch (e) {
     console.error("Unable to write file", e);
-    throw new FileError("ACCESS_DENIED", fileHandle.name);
+    throw new FileError("UNKNOWN", fileHandle.name);
   }
 }
 

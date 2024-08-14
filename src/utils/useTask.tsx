@@ -4,11 +4,7 @@ import { useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { taskLoader, useTaskStore } from "@/stores/task-store";
 import { todayDate } from "@/utils/date";
-import {
-  deleteFile,
-  deleteFilesNotInList,
-  writeFile,
-} from "@/utils/filesystem";
+import { deleteFile, writeFile } from "@/utils/filesystem";
 import { hashCode } from "@/utils/hashcode";
 import { setPreferencesItem } from "@/utils/preferences";
 import { canShare, share } from "@/utils/share";
@@ -103,11 +99,7 @@ export function useTask() {
   const setTaskLists = useTaskStore((state) => state.setTaskLists);
   const addTaskList = useTaskStore((state) => state.addTaskList);
   const removeTaskList = useTaskStore((state) => state.removeTaskList);
-  const {
-    scheduleNotifications,
-    cancelNotifications,
-    shouldNotificationsBeRescheduled,
-  } = useNotification();
+  const { scheduleNotifications, cancelNotifications } = useNotification();
   const {
     saveDoneFile,
     loadDoneFile,
@@ -463,8 +455,8 @@ export function useTask() {
   }, [activeTaskList, downloadTodoFile, generateZipFile]);
 
   const scheduleDueTaskNotifications = useCallback(
-    async (taskList: Task[]) => {
-      taskList.forEach(scheduleDueTaskNotification);
+    async (tasks: Task[]) => {
+      tasks.forEach(scheduleDueTaskNotification);
     },
     [scheduleDueTaskNotification],
   );
@@ -546,80 +538,70 @@ export function useTask() {
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
   const handleFileNotFound = useCallback(
-    async (id: string) => {
+    async (id: string, filename?: string) => {
       toast({
         variant: "danger",
-        description: t("File not found"),
+        description: t("File not found", { filename }),
       });
       await closeTodoFile(id);
     },
     [toast, closeTodoFile, t],
   );
 
-  const loadTodoFilesFromDisk = useCallback(async () => {
-    // load files from disk
+  const handleActive = useCallback(async () => {
     const {
       todoFiles: { files, errors },
     } = await taskLoader();
     // apply external file changes by updating the state
-    const newTaskList = await Promise.all(
-      files.map((f) => loadTodoFileFromDisk(f.id)),
-    );
+    const newTaskList = files.map((f) => f.taskList);
     if (!areTaskListsEqual(taskLists, newTaskList)) {
       setTaskLists(newTaskList);
     }
-    return { files, errors };
-  }, [setTaskLists, taskLists]);
-
-  const handleActive = useCallback(async () => {
-    const { errors } = await loadTodoFilesFromDisk();
     for (const error of errors) {
       await handleFileNotFound(error.id).catch((e) => void e);
     }
-  }, [loadTodoFilesFromDisk, handleFileNotFound]);
+  }, [handleFileNotFound, setTaskLists, taskLists]);
 
   const handleInit = useCallback(async () => {
     for (const error of todoFiles.errors) {
-      await handleFileNotFound(error.id).catch((e) => void e);
-    }
-
-    const files = todoFiles.files;
-    for (const file of files) {
-      await new Promise<void>((resolve) => {
-        const { dismiss } = toast({
-          title: `Load file ${file.filename}`,
-          description: "Description",
-          duration: 1000 * 10,
-          onOpenChange: () => {
-            resolve();
-          },
-          action: (
-            <ToastAction
-              altText="Load file"
-              onClick={async () => {
-                const taskList = await loadTodoFileFromDisk(file.id);
-                addTaskList(taskList);
-                await scheduleDueTaskNotifications(taskList.items);
-                dismiss();
-              }}
-            >
-              Load
-            </ToastAction>
-          ),
+      if (error.permissionRequired) {
+        await new Promise<void>((resolve) => {
+          const { dismiss } = toast({
+            title: t("Open File?"),
+            description: t(`Would you like to open the file?`, {
+              filename: error.filename,
+            }),
+            duration: 1000 * 10,
+            onOpenChange: () => {
+              resolve();
+            },
+            action: (
+              <ToastAction
+                altText="Open File"
+                onClick={async () => {
+                  const taskList = await loadTodoFileFromDisk(error.id);
+                  addTaskList(taskList);
+                  await scheduleDueTaskNotifications(taskList.items);
+                  dismiss();
+                }}
+              >
+                {t("Open")}
+              </ToastAction>
+            ),
+          });
         });
-      });
+      } else {
+        await handleFileNotFound(error.id, error.filename).catch((e) => void e);
+      }
     }
-
-    const ids = todoFiles.files.map((f) => f.id);
-    deleteFilesNotInList(ids).catch((e) => {
-      console.debug("Unable to delete unused files", e);
-    });
+    taskLists.forEach((taskList) =>
+      scheduleDueTaskNotifications(taskList.items),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
     ...commonTaskListAttributes,
-    loadTodoFilesFromDisk,
     saveTodoFile,
     downloadTodoFile,
     shareTodoFile,
