@@ -3,162 +3,132 @@ import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
 import { differenceInHours, isAfter, subDays } from "date-fns";
 import logo from "/logo.png";
 
-export interface Notification {
+export interface NotificationOptions {
   id: number;
   title: string;
   body: string;
   scheduleAt: Date;
+  displayOffset?: number; // in milliseconds, optional
 }
 
 interface TimeoutId {
-  value: any;
+  timeoutId: ReturnType<typeof setTimeout>;
   notificationId: number;
 }
 
-interface ReceivedNotification {
+interface DeliveredNotification {
   notificationId: number;
   receivingDate: Date;
 }
 
-interface WebNotification {
-  subscribe: () => () => void;
-  timeoutIds: TimeoutId[];
-  isPermissionGranted(): Promise<boolean>;
-  requestPermission(): Promise<boolean>;
-  cancel(ids: number[]): Promise<void>;
-  schedule(notifications: Notification[]): Promise<number[]>;
-  getReceivedNotifications(): Promise<ReceivedNotification[]>;
-  addReceivedNotification(notification: ReceivedNotification): Promise<void>;
-  removeReceivedNotification(ids: number[]): Promise<void>;
-  createNotification(options: Notification): number | undefined;
-}
+export class WebNotification {
+  private timeoutIds: TimeoutId[] = [];
 
-const webNotification: WebNotification = {
-  timeoutIds: [],
   async isPermissionGranted() {
-    return Notification.requestPermission().then(
-      (result) => result === "granted",
-    );
-  },
-  async requestPermission() {
     return Notification.permission === "granted";
-  },
-  async cancel(ids: number[]) {
-    await webNotification.removeReceivedNotification(ids);
-    webNotification.timeoutIds = webNotification.timeoutIds.filter(
-      ({ value, notificationId }) => {
-        if (ids.includes(notificationId)) {
-          clearTimeout(value);
+  }
+
+  async requestPermission() {
+    const result = await Notification.requestPermission();
+    return result === "granted";
+  }
+
+  async cancel(notificationIds: number[]) {
+    await this.removeDeliveredNotification(notificationIds);
+    this.timeoutIds = this.timeoutIds.filter(
+      ({ timeoutId, notificationId }) => {
+        if (notificationIds.includes(notificationId)) {
+          clearTimeout(timeoutId);
           return false;
-        } else {
-          return true;
         }
+        return true;
       },
     );
-  },
-  async schedule(notifications: Notification[]) {
-    const receivedNotifications =
-      await webNotification.getReceivedNotifications();
-    const filteredNotifications = notifications.filter((opt) =>
-      receivedNotifications.every((sn) => sn.notificationId !== opt.id),
+  }
+
+  async schedule(options: NotificationOptions[]) {
+    const receivedNotifications = await this.getDeliveredNotifications();
+    const newNotifications = options.filter(
+      (opt) => !receivedNotifications.some((n) => n.notificationId === opt.id),
     );
-    return filteredNotifications
-      .map(webNotification.createNotification)
-      .filter((id): id is number => !!id);
-  },
-  createNotification(options: Notification) {
-    const { scheduleAt, title, body, id } = options;
+    return newNotifications
+      .map(this.create.bind(this))
+      .filter((id) => typeof id !== "undefined");
+  }
+
+  private create(options: NotificationOptions) {
+    const {
+      scheduleAt,
+      title,
+      body,
+      id: notificationId,
+      displayOffset = 0,
+    } = options;
     const now = new Date();
+    const displayTime = new Date(scheduleAt.getTime() - displayOffset);
     const diffInHours = differenceInHours(scheduleAt, now);
-    const ms = scheduleAt.getTime() - new Date().getTime();
+    const ms = displayTime.getTime() - now.getTime();
+
+    // only create a notification if it's scheduled within the last 24 hours or in the future
     if (diffInHours > -24) {
-      const timeoutId = setTimeout(
+      const timeoutId: ReturnType<typeof setTimeout> = setTimeout(
         () => {
-          new Notification(title, {
-            body: body,
-            icon: logo,
-          });
-          webNotification.addReceivedNotification({
-            notificationId: id,
+          new Notification(title, { body, icon: logo });
+          this.addDeliveredNotification({
+            notificationId,
             receivingDate: scheduleAt,
           });
+          this.timeoutIds = this.timeoutIds.filter(
+            (i) => i.timeoutId !== timeoutId,
+          );
         },
         Math.max(ms, 0),
       );
-      webNotification.timeoutIds = [
-        ...webNotification.timeoutIds,
-        { notificationId: id, value: timeoutId },
-      ];
-      return id;
+      this.timeoutIds.push({ notificationId, timeoutId });
+      return notificationId;
     }
-  },
-  async getReceivedNotifications() {
-    const value = await getPreferencesItem("received-notifications");
-    const receivedNotifications: ReceivedNotification[] = value
-      ? JSON.parse(value, dateReviver)
-      : [];
-    return receivedNotifications;
-  },
-  async addReceivedNotification(notification: ReceivedNotification) {
-    const receivedNotifications =
-      await webNotification.getReceivedNotifications();
-    const newReceivedNotifications: ReceivedNotification[] = [
-      ...receivedNotifications,
-      notification,
-    ];
+  }
+
+  private async getDeliveredNotifications(): Promise<DeliveredNotification[]> {
+    const value = await getPreferencesItem("delivered-notifications");
+    return value ? JSON.parse(value, dateReviver) : [];
+  }
+
+  private async addDeliveredNotification(notification: DeliveredNotification) {
+    const receivedNotifications = await this.getDeliveredNotifications();
+    const newDeliveredNotifications = [...receivedNotifications, notification];
+    await this.updateDeliveredNotifications(newDeliveredNotifications);
+  }
+
+  private async removeDeliveredNotification(notificationIds: number[]) {
+    const receivedNotifications = await this.getDeliveredNotifications();
+    const newDeliveredNotifications = receivedNotifications.filter(
+      (item) => !notificationIds.includes(item.notificationId),
+    );
+    await this.updateDeliveredNotifications(newDeliveredNotifications);
+  }
+
+  private async updateDeliveredNotifications(
+    notifications: DeliveredNotification[],
+  ) {
     await setPreferencesItem(
-      "received-notifications",
-      JSON.stringify(newReceivedNotifications),
+      "delivered-notifications",
+      JSON.stringify(notifications),
     );
-  },
-  async removeReceivedNotification(ids: number[]) {
-    const receivedNotifications =
-      await webNotification.getReceivedNotifications();
-    const newReceivedNotifications = receivedNotifications.filter(
-      (item) => !ids.includes(item.notificationId),
-    );
-    await setPreferencesItem(
-      "received-notifications",
-      JSON.stringify(newReceivedNotifications),
-    );
-  },
-  subscribe() {
-    const timer = window.setInterval(
+  }
+
+  startCleanup() {
+    const timer = setInterval(
       async () => {
-        const scheduledNotifications =
-          await webNotification.getReceivedNotifications();
+        const scheduledNotifications = await this.getDeliveredNotifications();
         const twoDaysAgo = subDays(new Date(), 2);
         const newValue = scheduledNotifications.filter((n) =>
           isAfter(n.receivingDate, twoDaysAgo),
         );
-        setPreferencesItem("received-notifications", JSON.stringify(newValue));
+        await this.updateDeliveredNotifications(newValue);
       },
       1000 * 60 * 60,
     );
-    return () => {
-      clearInterval(timer);
-    };
-  },
-};
-
-export async function subscribeNotifications(): Promise<() => void> {
-  return webNotification.subscribe();
-}
-
-export async function cancelNotifications(ids: number[]): Promise<void> {
-  return webNotification.cancel(ids);
-}
-
-export async function isNotificationPermissionGranted(): Promise<boolean> {
-  return webNotification.isPermissionGranted();
-}
-
-export async function requestNotificationPermission(): Promise<boolean> {
-  return webNotification.requestPermission();
-}
-
-export async function scheduleNotifications(
-  notifications: Notification[],
-): Promise<number[]> {
-  return webNotification.schedule(notifications);
+    return () => clearInterval(timer);
+  }
 }

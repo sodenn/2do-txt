@@ -7,7 +7,7 @@ type PreferencesKeys =
   | "priority-transformation"
   | "show-notifications"
   | "create-completion-date"
-  | "received-notifications"
+  | "delivered-notifications"
   | "sort-by"
   | "filter-type"
   | "hide-completed-tasks"

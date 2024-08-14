@@ -1,7 +1,6 @@
-import { subscribeNotifications } from "@/utils/notification";
 import { useNotification } from "@/utils/useNotification";
 import { renderHook } from "@testing-library/react";
-import { addHours, addMinutes } from "date-fns";
+import { addHours, addMinutes, addWeeks } from "date-fns";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -52,7 +51,6 @@ describe("useNotifications", () => {
     mockNotificationAPI();
     localStorage.clear();
     hook = renderNotificationsHook();
-    subscribeNotifications();
   });
 
   afterEach(() => {
@@ -64,7 +62,7 @@ describe("useNotifications", () => {
     const ids = await hook.scheduleNotifications([
       {
         id: 1,
-        body: "Body",
+        body: "This is a notification",
         scheduleAt: addHours(systemTime, 1),
       },
     ]);
@@ -72,11 +70,32 @@ describe("useNotifications", () => {
     expect(Notification).not.toHaveBeenCalled();
   });
 
+  it("should schedule a notification with display offset", async () => {
+    const ids = await hook.scheduleNotifications([
+      {
+        id: 1,
+        body: "This is a notification",
+        scheduleAt: addWeeks(systemTime, 1),
+        displayOffset: 1000 * 60 * 60 * 8, // +8h
+      },
+    ]);
+    expect(ids.length).toBe(1);
+    expect(Notification).not.toHaveBeenCalled();
+
+    // +6d
+    vi.advanceTimersByTime(1000 * 60 * 60 * 24 * 6);
+    expect(Notification).not.toHaveBeenCalled();
+
+    // +16h
+    vi.advanceTimersByTime(1000 * 60 * 60 * 16);
+    expect(Notification).toHaveBeenCalled();
+  });
+
   it("should display a scheduled notification", async () => {
     await hook.scheduleNotifications([
       {
         id: 1,
-        body: "Body",
+        body: "This is a notification",
         scheduleAt: addHours(systemTime, 1),
       },
     ]);
@@ -88,7 +107,7 @@ describe("useNotifications", () => {
     const ids = await hook.scheduleNotifications([
       {
         id: 1,
-        body: "Body",
+        body: "This is a notification",
         scheduleAt: addHours(systemTime, -23),
       },
     ]);
@@ -101,7 +120,7 @@ describe("useNotifications", () => {
     const ids = await hook.scheduleNotifications([
       {
         id: 1,
-        body: "Body",
+        body: "This is a notification",
         scheduleAt: addHours(systemTime, -25),
       },
     ]);
@@ -114,7 +133,7 @@ describe("useNotifications", () => {
     let ids = await hook.scheduleNotifications([
       {
         id: 1,
-        body: "Body",
+        body: "This is a notification",
         scheduleAt: addMinutes(systemTime, 30),
       },
     ]);
@@ -126,7 +145,7 @@ describe("useNotifications", () => {
     ids = await hook.scheduleNotifications([
       {
         id: 1,
-        body: "Body",
+        body: "This is a notification",
         scheduleAt: addMinutes(systemTime, 90),
       },
     ]);
@@ -140,7 +159,7 @@ describe("useNotifications", () => {
     let ids = await hook.scheduleNotifications([
       {
         id: 1,
-        body: "Body",
+        body: "This is a notification",
         scheduleAt: addMinutes(systemTime, 30),
       },
     ]);
@@ -153,7 +172,7 @@ describe("useNotifications", () => {
     ids = await hook.scheduleNotifications([
       {
         id: 1,
-        body: "Body",
+        body: "This is a notification",
         scheduleAt: addHours(systemTime, 25),
       },
     ]);
