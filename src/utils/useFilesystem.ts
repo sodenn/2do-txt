@@ -1,5 +1,5 @@
 import { useFallbackFileDialogStore } from "@/stores/fallback-file-dialog-store";
-import { getNextFreeFilename } from "@/utils/fallback-filesystem";
+import { fallbackFileSystemDb } from "@/utils/fallback-filesystem";
 import * as filesystem from "@/utils/filesystem";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
 import { useCallback } from "react";
@@ -17,15 +17,20 @@ export function useFilesystem() {
       filename?: string;
       importFile?: boolean;
     }) => {
-      const suggestedFilename = await getNextFreeFilename(filename);
+      const suggestedFilename =
+        await fallbackFileSystemDb.getNextFreeFilename(filename);
       return new Promise<
         Awaited<ReturnType<typeof filesystem.showSaveFilePicker>>
-      >((resolve) => {
+      >((resolve, reject) => {
         openFallbackFileDialog({
           importFile,
           suggestedFilename,
           callback: (result) => {
-            resolve(result);
+            if (result) {
+              resolve(result);
+            } else {
+              reject(new Error(`Failed to open file ${suggestedFilename}`));
+            }
           },
         });
       });

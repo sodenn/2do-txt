@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/responsive-dialog";
 import { useFallbackFileDialogStore } from "@/stores/fallback-file-dialog-store";
 import {
-  getNextFreeFilename,
-  openOrCreateFile,
+  createFile,
+  fallbackFileSystemDb,
   writeFile,
 } from "@/utils/fallback-filesystem";
 import {
@@ -48,7 +48,7 @@ function FallbackFileDialog() {
   const [inputValue, setInputValue] = useState(suggestedFilename);
 
   const handleCreate = () => {
-    openOrCreateFile(inputValue).then((result) => {
+    createFile(inputValue).then((result) => {
       callback?.(result);
       closeFallbackFileDialog();
     });
@@ -145,8 +145,10 @@ function FallbackFileInput() {
       if (typeof content !== "string") {
         return;
       }
-      const suggestedFilename = await getNextFreeFilename(file.name);
-      const createResult = await openOrCreateFile(suggestedFilename);
+      const suggestedFilename = await fallbackFileSystemDb.getNextFreeFilename(
+        file.name,
+      );
+      const createResult = await createFile(suggestedFilename);
       await writeFile({ id: createResult.id, content });
       close({
         id: createResult.id,
