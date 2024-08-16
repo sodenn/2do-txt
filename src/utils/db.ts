@@ -1,5 +1,12 @@
-export class Db<T extends { id: string }> {
+export interface DbEntry {
+  id: string;
+}
+
+const DB_NAME = "todo-web-db";
+
+export class Db<T extends DbEntry> {
   private readonly storageName;
+  private storageCreated = false;
 
   constructor(name: string) {
     this.storageName = name + "-store";
@@ -11,11 +18,20 @@ export class Db<T extends { id: string }> {
     return this.promiseForRequest<T>(request);
   }
 
-  async write(item: Omit<T, "id">) {
+  async create(item: Omit<T, "id">) {
     const id = this.generateId();
     const store = await this.getStore();
     const request = store.put({ id, ...item });
     return this.promiseForRequest<string>(request);
+  }
+
+  async update(item: Partial<T> & DbEntry) {
+    const currentValue = await this.read(item.id);
+    const store = await this.getStore();
+    const newValue = { ...currentValue, ...item };
+    const request = store.put({ ...currentValue, ...item });
+    await this.promiseForRequest<string>(request);
+    return newValue;
   }
 
   async delete(id: string) {
@@ -46,16 +62,10 @@ export class Db<T extends { id: string }> {
     });
   }
 
-  private openDatabase(): Promise<IDBDatabase> {
+  private async openDatabase(): Promise<IDBDatabase> {
+    await this.addObjectStore();
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open("todo-web-db", 1);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        const objectStore = db.createObjectStore(this.storageName, {
-          keyPath: "id",
-        });
-        objectStore.createIndex("id", "id", { unique: true });
-      };
+      const request = indexedDB.open(DB_NAME);
       request.onsuccess = () => {
         resolve(request.result);
       };
@@ -87,5 +97,54 @@ export class Db<T extends { id: string }> {
       .toString(36)
       .replace(/[^a-z]+/g, "")
       .substring(2, 10);
+  }
+
+  addObjectStore() {
+    if (this.storageCreated) {
+      return;
+    }
+    return new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME);
+      request.onsuccess = () => {
+        const db = request.result;
+        const currentVersion = db.version;
+        const containsStorage = db.objectStoreNames.contains(this.storageName);
+        db.close();
+        if (containsStorage) {
+          resolve();
+          return;
+        }
+
+        const upgradeRequest = indexedDB.open(DB_NAME, currentVersion + 1);
+
+        upgradeRequest.onupgradeneeded = () => {
+          const db = upgradeRequest.result;
+          const objectStore = db.createObjectStore(this.storageName, {
+            keyPath: "id",
+          });
+          objectStore.createIndex("id", "id", { unique: true });
+          console.log(
+            `Object store '${this.storageName}' created successfully`,
+          );
+        };
+
+        upgradeRequest.onsuccess = () => {
+          console.log("Database upgraded successfully");
+          upgradeRequest.result.close();
+          this.storageCreated = true;
+          resolve();
+        };
+
+        upgradeRequest.onerror = () => {
+          console.error("Error upgrading database:", upgradeRequest.error);
+          reject(upgradeRequest.error);
+        };
+      };
+
+      request.onerror = () => {
+        console.error("Error opening database:", request.error);
+        reject(request.error);
+      };
+    });
   }
 }

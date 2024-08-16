@@ -54,7 +54,7 @@ export async function showSaveFilePicker(suggestedName = "todo.txt") {
     throw new FileError("PICKER_CLOSED");
   }
 
-  const id = await db.write({ handle: handle });
+  const id = await db.create({ handle: handle });
   const fileData = await handle.getFile();
   const content = await fileData.text();
   return {
@@ -74,7 +74,7 @@ export async function showOpenFilePicker() {
     throw new FileError("PICKER_CLOSED");
   }
 
-  const id = await db.write({ handle });
+  const id = await db.create({ handle });
   const filename = handle.name;
   const file: File = await handle.getFile();
   const content = await file.text();

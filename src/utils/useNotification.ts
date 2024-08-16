@@ -26,14 +26,26 @@ export function useNotification() {
     [t],
   );
 
+  const isNotificationPermissionGranted = useCallback(() => {
+    return webNotification.isPermissionGranted();
+  }, []);
+
+  const requestNotificationPermission = useCallback(() => {
+    return webNotification.requestPermission();
+  }, []);
+
+  const cancelNotifications = useCallback((notificationIds: number[]) => {
+    return webNotification.cancel(notificationIds);
+  }, []);
+
   useEffect(() => {
     return webNotification.startCleanup();
   }, []);
 
   return {
-    isNotificationPermissionGranted: webNotification.isPermissionGranted,
-    requestNotificationPermission: webNotification.requestPermission,
-    cancelNotifications: webNotification.cancel,
+    isNotificationPermissionGranted,
+    requestNotificationPermission,
+    cancelNotifications,
     scheduleNotifications,
   };
 }

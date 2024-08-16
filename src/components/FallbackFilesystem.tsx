@@ -13,7 +13,7 @@ import {
 import { useFallbackFileDialogStore } from "@/stores/fallback-file-dialog-store";
 import {
   createFile,
-  fallbackFileSystemDb,
+  getFallbackFilesystemDb,
   writeFile,
 } from "@/utils/fallback-filesystem";
 import {
@@ -145,9 +145,8 @@ function FallbackFileInput() {
       if (typeof content !== "string") {
         return;
       }
-      const suggestedFilename = await fallbackFileSystemDb.getNextFreeFilename(
-        file.name,
-      );
+      const suggestedFilename =
+        await getFallbackFilesystemDb().getNextFreeFilename(file.name);
       const createResult = await createFile(suggestedFilename);
       await writeFile({ id: createResult.id, content });
       close({

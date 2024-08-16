@@ -1,4 +1,5 @@
-import { Db } from "@/utils/db";
+import { Db, DbEntry } from "@/utils/db";
+import { TEST_MODE } from "@/utils/platform";
 import { generateId } from "@/utils/uuid";
 
 interface WithOperationId {
@@ -92,16 +93,16 @@ type Result<T> = T extends CreateOptions
               ? ErrorResult
               : never;
 
-interface DbEntry {
-  id: string;
+interface FilenameEntry extends DbEntry {
   filename: string;
 }
 
-class FallbackFileSystem extends Db<DbEntry> {
-  constructor() {
-    super("fallback-filenames");
-  }
+interface FileEntry extends DbEntry {
+  filename: string;
+  content: string;
+}
 
+class FallbackFileSystemDb<T extends DbEntry> extends Db<T> {
   async getNextFreeFilename(desiredFileName: string): Promise<string> {
     const parts = desiredFileName.split(".");
     const baseName = parts.slice(0, -1).join(".");
@@ -142,7 +143,17 @@ class FallbackFileSystem extends Db<DbEntry> {
   }
 }
 
-export const fallbackFileSystemDb = new FallbackFileSystem();
+export const fallbackFilenamesDb = new FallbackFileSystemDb<FilenameEntry>(
+  "fallback-filenames",
+);
+
+export const fallbackFilesDb = new FallbackFileSystemDb<FileEntry>(
+  "fallback-files",
+);
+
+export function getFallbackFilesystemDb() {
+  return TEST_MODE ? fallbackFilesDb : fallbackFilenamesDb;
+}
 
 const worker = new Worker(
   new URL("./fallback-filesystem-sw.ts", import.meta.url),
@@ -171,22 +182,49 @@ function postMessage<T extends Options>(options: T): Promise<Result<T>> {
 }
 
 export async function createFile(suggestedName = "todo.txt") {
-  const filename =
-    await fallbackFileSystemDb.getNextFreeFilename(suggestedName);
+  if (TEST_MODE) {
+    return createTestFile(suggestedName);
+  }
+  const filename = await fallbackFilenamesDb.getNextFreeFilename(suggestedName);
   const { content } = await postMessage({
     operation: "create",
     filename,
   });
-  const id = await fallbackFileSystemDb.write({ filename });
+  const id = await fallbackFilenamesDb.create({ filename });
   return { id, filename, content };
 }
 
+async function createTestFile(suggestedName = "todo.txt") {
+  const filename = await fallbackFilesDb.getNextFreeFilename(suggestedName);
+  const content = "";
+  const id = await fallbackFilesDb.create({
+    filename,
+    content,
+  });
+  return {
+    id,
+    filename,
+    content,
+  };
+}
+
 export async function readFile(id: string) {
-  const { filename } = await fallbackFileSystemDb.read(id);
+  if (TEST_MODE) {
+    return readTestFile(id);
+  }
+  const { filename } = await fallbackFilenamesDb.read(id);
   const { content } = await postMessage({
     operation: "read",
     filename,
   });
+  return {
+    content,
+    filename,
+  };
+}
+
+async function readTestFile(id: string) {
+  const { filename, content } = await fallbackFilesDb.read(id);
   return {
     content,
     filename,
@@ -200,24 +238,46 @@ export async function writeFile({
   id: string;
   content: string;
 }) {
-  const { filename } = await fallbackFileSystemDb.read(id);
+  if (TEST_MODE) {
+    return writeTestFile({ id, content });
+  }
+  const { filename } = await fallbackFilenamesDb.read(id);
   await postMessage({
     operation: "write",
     filename,
     content,
   });
-  return filename;
+  return { filename };
+}
+
+async function writeTestFile({ id, content }: { id: string; content: string }) {
+  const { filename } = await fallbackFilesDb.update({ id, content });
+  return { filename };
 }
 
 export async function deleteFile(id: string) {
-  const { filename } = await fallbackFileSystemDb.read(id);
+  if (TEST_MODE) {
+    return deleteTestFile(id);
+  }
+  const { filename } = await fallbackFilenamesDb.read(id);
   await postMessage({
     operation: "delete",
     filename,
   });
-  await fallbackFileSystemDb.delete(id);
+  await fallbackFilenamesDb.delete(id);
+}
+
+async function deleteTestFile(id: string) {
+  await fallbackFilesDb.delete(id);
 }
 
 export async function deleteFilesNotInList(ids: string[]) {
-  await fallbackFileSystemDb.deleteNotInList(ids);
+  if (TEST_MODE) {
+    return deleteTestFilesNotInList(ids);
+  }
+  await fallbackFilenamesDb.deleteNotInList(ids);
+}
+
+async function deleteTestFilesNotInList(ids: string[]) {
+  await fallbackFilenamesDb.deleteNotInList(ids);
 }
