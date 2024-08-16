@@ -17,6 +17,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
+    "serve": "run-s build preview",
     "test": "vitest run",
     "e2e": "playwright test",
     "e2e-update": "playwright test screenshots.spec.ts --update-snapshots",

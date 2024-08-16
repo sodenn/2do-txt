@@ -76,27 +76,26 @@ type Options =
   | GetNextFreeFilenameOptions
   | ErrorOptions;
 
-type Result =
-  | CreateResult
-  | ReadResult
-  | WriteResult
-  | DeleteResult
-  | DeleteNotInListResult
-  | GetNextFreeFilenameResult
-  | ErrorResult;
-
-interface Callback {
-  success: (data: any) => void;
-  error: (error?: any) => void;
-  operationId: string;
-}
+type Result<T> = T extends CreateOptions
+  ? CreateResult
+  : T extends ReadOptions
+    ? ReadResult
+    : T extends WriteOptions
+      ? WriteResult
+      : T extends DeleteOptions
+        ? DeleteResult
+        : T extends DeleteNotInListOptions
+          ? DeleteNotInListResult
+          : T extends GetNextFreeFilenameOptions
+            ? GetNextFreeFilenameResult
+            : T extends ErrorOptions
+              ? ErrorResult
+              : never;
 
 interface DbEntry {
   id: string;
   filename: string;
 }
-
-type PostMessageOptions = Options & Omit<Callback, "operationId">;
 
 class FallbackFileSystem extends Db<DbEntry> {
   constructor() {
@@ -143,76 +142,55 @@ class FallbackFileSystem extends Db<DbEntry> {
   }
 }
 
-const callbacks: Callback[] = [];
-
 export const fallbackFileSystemDb = new FallbackFileSystem();
-
-function postMessage({ error, success, ...rest }: PostMessageOptions) {
-  const operationId = generateId();
-  callbacks.push({
-    operationId,
-    success,
-    error,
-  });
-  worker.postMessage({
-    operationId,
-    ...rest,
-  });
-}
 
 const worker = new Worker(
   new URL("./fallback-filesystem-sw.ts", import.meta.url),
 );
-worker.addEventListener("message", (event: MessageEvent<Result>) => {
-  const { operationId: oId, success, ...rest } = event.data;
-  const callbackIndex = callbacks.findIndex(
-    ({ operationId }) => operationId === oId,
-  );
-  const callback = callbackIndex >= 0 ? callbacks[callbackIndex] : undefined;
-  if (callback && success) {
-    callback.success(rest);
-    callbacks.splice(callbackIndex, 1);
-  }
-  if (callback && !success) {
-    callback.error(new Error());
-    callbacks.splice(callbackIndex, 1);
-  }
-});
+
+function postMessage<T extends Options>(options: T): Promise<Result<T>> {
+  return new Promise<Result<T>>((resolve, reject) => {
+    const messageId = generateId();
+    const channel = new MessageChannel();
+
+    channel.port1.onmessage = (event) => {
+      const { success, messageId: mId, ...other } = event.data;
+      if (messageId !== mId) {
+        return;
+      }
+      if (success) {
+        resolve(other);
+      } else {
+        reject(new Error());
+      }
+      channel.port1.close();
+    };
+
+    worker.postMessage({ ...options, messageId }, [channel.port2]);
+  });
+}
 
 export async function createFile(suggestedName = "todo.txt") {
   const filename =
     await fallbackFileSystemDb.getNextFreeFilename(suggestedName);
-  return new Promise<{ id: string; filename: string; content: string }>(
-    (resolve, reject) => {
-      postMessage({
-        operation: "create",
-        filename,
-        error: reject,
-        success: async ({ filename, content }: CreateResult) => {
-          fallbackFileSystemDb
-            .write({ filename })
-            .then((id) => resolve({ id, filename, content }))
-            .catch(reject);
-        },
-      });
-    },
-  );
+  const { content } = await postMessage({
+    operation: "create",
+    filename,
+  });
+  const id = await fallbackFileSystemDb.write({ filename });
+  return { id, filename, content };
 }
 
 export async function readFile(id: string) {
   const { filename } = await fallbackFileSystemDb.read(id);
-  return new Promise<{ filename: string; content: string }>(
-    (resolve, reject) => {
-      postMessage({
-        operation: "read",
-        filename,
-        error: reject,
-        success: async ({ content, filename }: ReadResult) => {
-          resolve({ content, filename });
-        },
-      });
-    },
-  );
+  const { content } = await postMessage({
+    operation: "read",
+    filename,
+  });
+  return {
+    content,
+    filename,
+  };
 }
 
 export async function writeFile({
@@ -223,31 +201,21 @@ export async function writeFile({
   content: string;
 }) {
   const { filename } = await fallbackFileSystemDb.read(id);
-  return new Promise<{ filename: string }>((resolve, reject) => {
-    postMessage({
-      operation: "write",
-      filename,
-      content,
-      error: reject,
-      success: async ({ filename }: WriteResult) => {
-        resolve({ filename });
-      },
-    });
+  await postMessage({
+    operation: "write",
+    filename,
+    content,
   });
+  return filename;
 }
 
 export async function deleteFile(id: string) {
   const { filename } = await fallbackFileSystemDb.read(id);
-  return new Promise<void>((resolve, reject) => {
-    postMessage({
-      operation: "delete",
-      filename,
-      error: reject,
-      success: () => {
-        fallbackFileSystemDb.delete(id).then(resolve).catch(reject);
-      },
-    });
+  await postMessage({
+    operation: "delete",
+    filename,
   });
+  await fallbackFileSystemDb.delete(id);
 }
 
 export async function deleteFilesNotInList(ids: string[]) {

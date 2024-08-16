@@ -1,12 +1,12 @@
 interface CreateOptions {
   operation: "create";
-  operationId: string;
+  messageId: string;
   filename: string;
 }
 
 interface CreateResult {
   operation: "create";
-  operationId: string;
+  messageId: string;
   success: true;
   content: string;
   filename: string;
@@ -15,12 +15,12 @@ interface CreateResult {
 interface ReadOptions {
   filename: string;
   operation: "read";
-  operationId: string;
+  messageId: string;
 }
 
 interface ReadResult {
   operation: "read";
-  operationId: string;
+  messageId: string;
   success: true;
   content: string;
   filename: string;
@@ -28,27 +28,27 @@ interface ReadResult {
 
 interface WriteOptions {
   operation: "write";
-  operationId: string;
+  messageId: string;
   content: string;
   filename: string;
 }
 
 interface WriteResult {
   operation: "write";
-  operationId: string;
+  messageId: string;
   success: true;
   filename: string;
 }
 
 interface DeleteOptions {
   operation: "delete";
-  operationId: string;
+  messageId: string;
   filename: string;
 }
 
 interface DeleteResult {
   operation: "delete";
-  operationId: string;
+  messageId: string;
   success: true;
 }
 
@@ -56,8 +56,9 @@ type Options = CreateOptions | WriteOptions | ReadOptions | DeleteOptions;
 
 self.onmessage = async (event: MessageEvent<Options>) => {
   const operation = event.data.operation;
-  const operationId = event.data.operationId;
+  const messageId = event.data.messageId;
   const root = await navigator.storage.getDirectory();
+  const communicationPort = event.ports[0];
 
   try {
     if (operation === "create") {
@@ -69,9 +70,9 @@ self.onmessage = async (event: MessageEvent<Options>) => {
       syncHandle.close();
       const decoder = new TextDecoder();
       const content = decoder.decode(buffer);
-      self.postMessage({
+      communicationPort.postMessage({
         operation: "create",
-        operationId,
+        messageId,
         success: true,
         content,
         filename: fileHandle.name,
@@ -87,9 +88,9 @@ self.onmessage = async (event: MessageEvent<Options>) => {
       syncHandle.close();
       const decoder = new TextDecoder();
       const content = decoder.decode(buffer);
-      self.postMessage({
+      communicationPort.postMessage({
         operation: "read",
-        operationId,
+        messageId,
         success: true,
         filename: fileHandle.name,
         content,
@@ -105,9 +106,9 @@ self.onmessage = async (event: MessageEvent<Options>) => {
       const writeBuffer = encoder.encode(content);
       syncHandle.write(writeBuffer, { at: 0 });
       syncHandle.close();
-      self.postMessage({
+      communicationPort.postMessage({
         operation: "write",
-        operationId,
+        messageId,
         success: true,
         filename: fileHandle.name,
       } as WriteResult);
@@ -116,17 +117,17 @@ self.onmessage = async (event: MessageEvent<Options>) => {
     if (operation === "delete") {
       const filename = event.data.filename;
       await root.removeEntry(filename);
-      self.postMessage({
+      communicationPort.postMessage({
         operation: "delete",
-        operationId,
+        messageId,
         success: true,
       } as DeleteResult);
     }
   } catch (error) {
     console.error(`${operation} failed`, error);
-    self.postMessage({
+    communicationPort.postMessage({
       operation,
-      operationId,
+      messageId,
       success: false,
     });
   }
