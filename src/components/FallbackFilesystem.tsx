@@ -40,7 +40,6 @@ function FallbackFileDialog() {
     open,
     importFile,
     closeFallbackFileDialog,
-    cleanupFallbackFileDialog,
     callback,
     suggestedFilename,
   } = useFallbackFileDialogStore();
@@ -59,21 +58,16 @@ function FallbackFileDialog() {
     closeFallbackFileDialog();
   }, [callback, closeFallbackFileDialog]);
 
-  const handleExit = useCallback(() => {
-    cleanupFallbackFileDialog();
-    setInputValue("");
-  }, [cleanupFallbackFileDialog]);
-
   useEffect(() => {
     setInputValue(suggestedFilename);
-  }, [suggestedFilename]);
+  }, [suggestedFilename, open]);
 
   if (importFile) {
     return null;
   }
 
   return (
-    <ResponsiveDialog open={open} onClose={handleClose} onExit={handleExit}>
+    <ResponsiveDialog open={open} onClose={handleClose}>
       <ResponsiveDialogContent data-testid="file-create-dialog">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("Create todo.txt")}</ResponsiveDialogTitle>
@@ -112,12 +106,8 @@ function FallbackFileDialog() {
 }
 
 function FallbackFileInput() {
-  const {
-    callback,
-    setFileInput,
-    closeFallbackFileDialog,
-    cleanupFallbackFileDialog,
-  } = useFallbackFileDialogStore();
+  const { callback, setFileInput, closeFallbackFileDialog } =
+    useFallbackFileDialogStore();
 
   const close = (result?: {
     id: string;
@@ -128,7 +118,6 @@ function FallbackFileInput() {
     callback?.(result);
     setTimeout(() => {
       closeFallbackFileDialog();
-      cleanupFallbackFileDialog();
     }, 0);
   };
 

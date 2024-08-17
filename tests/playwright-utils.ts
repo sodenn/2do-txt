@@ -30,18 +30,18 @@ export async function createExampleFile(page: Page, filename?: string) {
 }
 
 export async function createTask(page: Page) {
-  await goto(page);
   await page.getByLabel("Create task").click();
   await createFile(page);
-  await expect(page.getByTestId("file-create-dialog")).not.toBeVisible();
 }
 
 export async function createFile(page: Page) {
+  await expect(page.getByTestId("file-create-dialog")).toBeVisible();
   await page.getByLabel("Create file").click();
+  await expect(page.getByTestId("file-create-dialog")).not.toBeVisible();
 }
 
 export async function toggleMenu(page: Page) {
-  await page.getByRole("button", { name: "Toggle menu" }).click();
+  await page.keyboard.press("m");
 }
 
 export async function openSettings(page: Page) {

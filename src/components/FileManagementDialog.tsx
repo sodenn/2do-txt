@@ -30,11 +30,11 @@ import { cn } from "@/utils/tw-utils";
 import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import {
+  closestCenter,
   DndContext,
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -43,8 +43,8 @@ import {
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
 import {
-  SortableContext,
   arrayMove,
+  SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
@@ -269,6 +269,7 @@ function FileListItem(props: FileListItemProps) {
                   size="icon"
                   variant="ghost"
                   className="m-[1px] flex-shrink-0"
+                  aria-label="Cancel"
                   tabIndex={-1}
                   onClick={() => {
                     setShowCloseConfirmButton(false);
@@ -285,7 +286,7 @@ function FileListItem(props: FileListItemProps) {
                   size="icon"
                   variant="destructive"
                   className="m-[1px] flex-shrink-0"
-                  aria-label="Close file"
+                  aria-label="Close file confirmation"
                   onClick={() => {
                     onClose(id);
                     setShowCloseConfirmButton(false);

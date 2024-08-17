@@ -138,6 +138,7 @@ export async function writeFile({
 export async function deleteFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     await fallbackFilesystem.deleteFile(id);
+    return;
   }
   await db.delete(id);
 }
@@ -145,6 +146,7 @@ export async function deleteFile(id: string) {
 export async function deleteFilesNotInList(ids: string[]) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     await fallbackFilesystem.deleteFilesNotInList(ids);
+    return;
   }
   await db.deleteNotInList(ids);
 }

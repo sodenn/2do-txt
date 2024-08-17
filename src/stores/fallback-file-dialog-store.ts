@@ -18,7 +18,6 @@ interface FallbackFileDialogState extends Options {
   fileInput: HTMLInputElement | null;
   openFallbackFileDialog: (options: Options) => void;
   closeFallbackFileDialog: () => void;
-  cleanupFallbackFileDialog: () => void;
   setFileInput: (fileInput: HTMLInputElement | null) => void;
 }
 
@@ -41,10 +40,6 @@ export const useFallbackFileDialogStore = create<FallbackFileDialogState>(
         open: false,
         importFile: false,
         callback: undefined,
-      }),
-    cleanupFallbackFileDialog: () =>
-      set({
-        suggestedFilename: undefined,
       }),
     setFileInput: (fileInput: HTMLInputElement | null) => set({ fileInput }),
   }),

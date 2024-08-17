@@ -30,7 +30,6 @@ test.describe("Onboarding", () => {
 test.describe("New file", () => {
   test("should create a new todo.txt file", async ({ page, isMobile }) => {
     await createTask(page);
-    // await expect(page).toHaveURL("http://localhost:5173/?active=todo.txt");
     // The task dialog should open and the focus should be in the editor on desktop
     await expect(
       page.getByRole("textbox", { name: "Text editor" }),
@@ -39,14 +38,9 @@ test.describe("New file", () => {
     await page.keyboard.press("Escape");
     await openFileMenu(page);
     await page.getByLabel("File actions").click();
-    await page.getByLabel("Delete file").click();
-    await page.getByLabel("Delete").click();
-    await createTask(page);
-    if (!isMobile) {
-      await expect(
-        page.getByRole("textbox", { name: "Text editor" }),
-      ).toBeFocused();
-    }
+    await page.getByLabel("Close file").click();
+    await page.getByLabel("Close file confirmation").click();
+    await expect(page.getByText("Get Started")).toBeVisible();
   });
 });
 

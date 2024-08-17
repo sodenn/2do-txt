@@ -5,6 +5,7 @@ import {
   goto,
   openFileMenu,
   openSettings,
+  toggleMenu,
 } from "./playwright-utils";
 
 test.beforeEach(async ({ page }) => {
@@ -33,7 +34,7 @@ test.describe("Download", () => {
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive automatically").click();
     await createFile(page);
-    await page.keyboard.press("Escape");
+    await toggleMenu(page);
 
     await openFileMenu(page);
     await page.getByLabel("File actions").click();

@@ -19,7 +19,7 @@ test.describe("Appearance", () => {
     await page.getByLabel("Light").click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
-      "rgba(241, 245, 249, 0.4)",
+      "#f9fbfd",
     );
     await checkInLocalStorage(page, "theme-mode", "light");
 
@@ -27,7 +27,7 @@ test.describe("Appearance", () => {
     await page.getByLabel("Dark").click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
-      "rgba(30, 41, 59, 0.4)",
+      "#101823",
     );
     await checkInLocalStorage(page, "theme-mode", "dark");
   });

@@ -50,9 +50,9 @@ test.describe("File Management", () => {
     await expect(page.getByRole("listitem")).toHaveCount(2);
 
     await page.getByLabel("File actions").first().click();
-    await page.getByLabel("Delete file").click();
+    await page.getByLabel("Close file").click();
     // confirm deletion
-    await page.getByLabel("Delete file").click();
+    await page.getByLabel("Close file").click();
 
     // check the number of open files
     await expect(page.getByTestId("draggable-file")).toHaveCount(1);
