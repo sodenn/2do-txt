@@ -12,7 +12,7 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement;
   persistent?: boolean;
   loading?: boolean;
-  showCloseButton?: boolean;
+  hideCloseButton?: boolean;
 };
 
 const actionTypes = {

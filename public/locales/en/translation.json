@@ -87,6 +87,7 @@
   "Months": "Months",
   "N": "Create new task",
   "New": "New",
+  "No": "No",
   "No archiving": "No archiving",
   "No priority found": "No priority found",
   "No recurrence": "No recurrence",
@@ -98,8 +99,8 @@
   "Number of Weeks": "Number of $t(Weeks)",
   "Number of Months": "Number of $t(Months)",
   "Number of Years": "Number of $t(Years)",
-  "Open File?": "Open File?",
-  "Would you like to open the file?": "Would you like to open the file \"{{filename}}\"?",
+  "Open File": "Open File",
+  "Would you like to open the file?": "Would you like to open \"{{filename}}\"?",
   "Open": "Open",
   "Open todo.txt": "Open todo.txt",
   "OR": "OR",
@@ -138,5 +139,6 @@
   "Without project": "Without project",
   "Without tag": "Without tag",
   "X": "Reset filters",
-  "Years": "Years"
+  "Years": "Years",
+  "Yes": "Yes"
 }

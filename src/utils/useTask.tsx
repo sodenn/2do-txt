@@ -567,7 +567,8 @@ export function useTask() {
       if (error.permissionRequired) {
         await new Promise<void>((resolve) => {
           const { dismiss } = toast({
-            title: t("Open File?"),
+            hideCloseButton: true,
+            title: t("Open File"),
             description: t(`Would you like to open the file?`, {
               filename: error.filename,
             }),
@@ -576,17 +577,28 @@ export function useTask() {
               resolve();
             },
             action: (
-              <ToastAction
-                altText="Open File"
-                onClick={async () => {
-                  const taskList = await loadTodoFileFromDisk(error.id);
-                  addTaskList(taskList);
-                  await scheduleDueTaskNotifications(taskList.items);
-                  dismiss();
-                }}
-              >
-                {t("Open")}
-              </ToastAction>
+              <div className="space-x-1">
+                <ToastAction
+                  altText="Close File"
+                  onClick={async () => {
+                    closeTodoFile(error.id);
+                    dismiss();
+                  }}
+                >
+                  {t("No")}
+                </ToastAction>
+                <ToastAction
+                  altText="Open File"
+                  onClick={async () => {
+                    const taskList = await loadTodoFileFromDisk(error.id);
+                    addTaskList(taskList);
+                    await scheduleDueTaskNotifications(taskList.items);
+                    dismiss();
+                  }}
+                >
+                  {t("Yes")}
+                </ToastAction>
+              </div>
             ),
           });
         });

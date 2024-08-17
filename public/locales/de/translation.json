@@ -87,6 +87,7 @@
   "Months": "Monate",
   "N": "Neue Aufgabe erstellen",
   "New": "Neu",
+  "No": "Nein",
   "No archiving": "Keine archivierung",
   "No priority found": "Keine Priorität gefunden",
   "No recurrence": "Keine Wiederholung",
@@ -98,7 +99,7 @@
   "Number of Weeks": "Anzahl $t(Weeks)",
   "Number of Months": "Anzahl $t(Months)",
   "Number of Years": "Anzahl $t(Years)",
-  "Open File?": "Datei öffnen?",
+  "Open File": "Datei öffnen?",
   "Would you like to open the file?": "Möchten Sie die Datei \"{{filename}}\" öffnen?",
   "Open": "Öffnen",
   "Open todo.txt": "todo.txt öffnen",
@@ -138,5 +139,6 @@
   "Without project": "Ohne Projekt",
   "Without tag": "Ohne Tag",
   "X": "Filter zurücksetzen",
-  "Years": "Jahre"
+  "Years": "Jahre",
+  "Yes": "Ja"
 }
