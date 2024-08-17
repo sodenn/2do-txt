@@ -1,6 +1,6 @@
 import { expect, Page, test } from "@playwright/test";
 import { format } from "date-fns";
-import { createExampleFile, goto } from "./playwright-utils";
+import { createExampleFile, getEditor, goto } from "./playwright-utils";
 
 function formatDate(date: Date): string {
   return format(date, "yyyy-MM-dd");
@@ -408,9 +408,5 @@ test.describe("Task dialog", () => {
 
 async function openTaskDialog(page: Page) {
   await page.getByRole("button", { name: "Add task" }).click();
-  await page.waitForTimeout(400);
-}
-
-function getEditor(page: Page) {
-  return page.getByRole("textbox", { name: "Text editor" });
+  await page.waitForTimeout(300);
 }

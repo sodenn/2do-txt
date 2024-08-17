@@ -1,5 +1,10 @@
 import { expect, Page, test } from "@playwright/test";
-import { createExampleFile, createTask, goto } from "./playwright-utils";
+import {
+  createExampleFile,
+  createTask,
+  getEditor,
+  goto,
+} from "./playwright-utils";
 
 test.beforeEach(async ({ page }) => {
   await goto(page);
@@ -47,10 +52,9 @@ test.describe("Screenshots", () => {
   test("should take a screenshot of the mention menu", async ({ page }) => {
     await createExampleFile(page);
     await page.getByTestId("task").first().click();
-    await expect(page.locator(`[data-state="open"]`).first()).toBeVisible();
-    await page.waitForTimeout(300);
-    await page.keyboard.press("@");
-    await page.waitForTimeout(300);
+    await expect(getEditor(page)).toBeFocused();
+    await page.keyboard.press("End");
+    await getEditor(page).press("@", { delay: 20 });
     await expect(page).toHaveScreenshot({
       maxDiffPixelRatio: 0.2,
     });

@@ -189,7 +189,6 @@ test.describe("Menu", () => {
     isMobile,
   }) => {
     await page.keyboard.press("m");
-    await page.waitForTimeout(400);
     await expect(page.getByLabel("Side Menu")).toBeVisible();
     await page.keyboard.press("m");
     if (isMobile) {

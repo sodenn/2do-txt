@@ -57,3 +57,7 @@ export async function openFileMenu(page: Page) {
 export async function checkSearchParams(page: Page, searchParams = "") {
   await expect(page).toHaveURL(`http://localhost:5173${searchParams}`);
 }
+
+export function getEditor(page: Page) {
+  return page.getByRole("textbox", { name: "Text editor" });
+}
