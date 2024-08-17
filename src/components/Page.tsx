@@ -1,11 +1,11 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
-import { FallbackFilesystem } from "@/components/FallbackFilesystem";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
 import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
 import { PageEffect } from "@/components/PageEffect";
+import { PrivateFilesystem } from "@/components/PrivateFilesystem";
 import { ReloadPrompt } from "@/components/ReloadPrompt";
 import { SafeArea } from "@/components/SafeArea";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
@@ -37,7 +37,7 @@ export function Page() {
       <ConfirmationDialog />
       <ArchivedTasksDialog />
       <ShortcutsDialog />
-      <FallbackFilesystem />
+      <PrivateFilesystem />
       <PageEffect />
       <ReloadPrompt />
     </div>

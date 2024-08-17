@@ -10,53 +10,53 @@ import {
   ResponsiveDialogHiddenDescription,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { useFallbackFileDialogStore } from "@/stores/fallback-file-dialog-store";
-import {
-  createFile,
-  getFallbackFilesystemDb,
-  writeFile,
-} from "@/utils/fallback-filesystem";
+import { usePrivateFilesystemStore } from "@/stores/private-filesystem-store";
 import {
   HAS_TOUCHSCREEN,
   SUPPORTS_SHOW_OPEN_FILE_PICKER,
 } from "@/utils/platform";
+import {
+  createFile,
+  getPrivateFilesystemDb,
+  writeFile,
+} from "@/utils/private-filesystem";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export function FallbackFilesystem() {
+export function PrivateFilesystem() {
   if (SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return null;
   }
   return (
     <>
-      <FallbackFileDialog />
-      <FallbackFileInput />
+      <PrivateFilesystemDialog />
+      <PrivateFilesystemInput />
     </>
   );
 }
 
-function FallbackFileDialog() {
+function PrivateFilesystemDialog() {
   const {
     open,
     importFile,
-    closeFallbackFileDialog,
+    closePrivateFilesystemDialog,
     callback,
     suggestedFilename,
-  } = useFallbackFileDialogStore();
+  } = usePrivateFilesystemStore();
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState(suggestedFilename);
 
   const handleCreate = () => {
     createFile(inputValue).then((result) => {
       callback?.(result);
-      closeFallbackFileDialog();
+      closePrivateFilesystemDialog();
     });
   };
 
   const handleClose = useCallback(() => {
     callback?.();
-    closeFallbackFileDialog();
-  }, [callback, closeFallbackFileDialog]);
+    closePrivateFilesystemDialog();
+  }, [callback, closePrivateFilesystemDialog]);
 
   useEffect(() => {
     setInputValue(suggestedFilename);
@@ -105,9 +105,9 @@ function FallbackFileDialog() {
   );
 }
 
-function FallbackFileInput() {
-  const { callback, setFileInput, closeFallbackFileDialog } =
-    useFallbackFileDialogStore();
+function PrivateFilesystemInput() {
+  const { callback, setFileInput, closePrivateFilesystemDialog } =
+    usePrivateFilesystemStore();
 
   const close = (result?: {
     id: string;
@@ -117,7 +117,7 @@ function FallbackFileInput() {
     console.log(result);
     callback?.(result);
     setTimeout(() => {
-      closeFallbackFileDialog();
+      closePrivateFilesystemDialog();
     }, 0);
   };
 
@@ -135,7 +135,7 @@ function FallbackFileInput() {
         return;
       }
       const suggestedFilename =
-        await getFallbackFilesystemDb().getNextFreeFilename(file.name);
+        await getPrivateFilesystemDb().getNextFreeFilename(file.name);
       const createResult = await createFile(suggestedFilename);
       await writeFile({ id: createResult.id, content });
       close({

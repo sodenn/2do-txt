@@ -1,15 +1,15 @@
-import { useFallbackFileDialogStore } from "@/stores/fallback-file-dialog-store";
-import { getFallbackFilesystemDb } from "@/utils/fallback-filesystem";
+import { usePrivateFilesystemStore } from "@/stores/private-filesystem-store";
 import * as filesystem from "@/utils/filesystem";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
+import { getPrivateFilesystemDb } from "@/utils/private-filesystem";
 import { useCallback } from "react";
 
 export function useFilesystem() {
-  const openFallbackFileDialog = useFallbackFileDialogStore(
-    (state) => state.openFallbackFileDialog,
+  const openPrivateFilesystemDialog = usePrivateFilesystemStore(
+    (state) => state.openPrivateFilesystemDialog,
   );
 
-  const openFallbackPicker = useCallback(
+  const openPrivateFilesystemPicker = useCallback(
     async ({
       filename = "todo.txt",
       importFile = false,
@@ -18,11 +18,11 @@ export function useFilesystem() {
       importFile?: boolean;
     }) => {
       const suggestedFilename =
-        await getFallbackFilesystemDb().getNextFreeFilename(filename);
+        await getPrivateFilesystemDb().getNextFreeFilename(filename);
       return new Promise<
         Awaited<ReturnType<typeof filesystem.showSaveFilePicker>>
       >((resolve, reject) => {
-        openFallbackFileDialog({
+        openPrivateFilesystemDialog({
           importFile,
           suggestedFilename,
           callback: (result) => {
@@ -35,25 +35,25 @@ export function useFilesystem() {
         });
       });
     },
-    [openFallbackFileDialog],
+    [openPrivateFilesystemDialog],
   );
 
   const showSaveFilePicker = useCallback(
     async (suggestedName?: string) => {
       if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-        return openFallbackPicker({ filename: suggestedName });
+        return openPrivateFilesystemPicker({ filename: suggestedName });
       }
       return filesystem.showSaveFilePicker(suggestedName);
     },
-    [openFallbackPicker],
+    [openPrivateFilesystemPicker],
   );
 
   const showOpenFilePicker = useCallback(async () => {
     if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-      return openFallbackPicker({ importFile: true });
+      return openPrivateFilesystemPicker({ importFile: true });
     }
     return filesystem.showOpenFilePicker();
-  }, [openFallbackPicker]);
+  }, [openPrivateFilesystemPicker]);
 
   return {
     showSaveFilePicker,

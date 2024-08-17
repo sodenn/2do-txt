@@ -1,4 +1,3 @@
-import { TEST_MODE } from "@/utils/platform";
 import { create } from "zustand";
 
 type Callback = (result?: {
@@ -13,29 +12,29 @@ interface Options {
   callback?: Callback;
 }
 
-interface FallbackFileDialogState extends Options {
+interface PrivateFilesystemState extends Options {
   open: boolean;
   fileInput: HTMLInputElement | null;
-  openFallbackFileDialog: (options: Options) => void;
-  closeFallbackFileDialog: () => void;
+  openPrivateFilesystemDialog: (options: Options) => void;
+  closePrivateFilesystemDialog: () => void;
   setFileInput: (fileInput: HTMLInputElement | null) => void;
 }
 
-export const useFallbackFileDialogStore = create<FallbackFileDialogState>(
+export const usePrivateFilesystemStore = create<PrivateFilesystemState>(
   (set, getState) => ({
     open: false,
     importFile: false,
     suggestedFilename: undefined,
     callback: undefined,
     fileInput: null,
-    openFallbackFileDialog: (options) => {
+    openPrivateFilesystemDialog: (options) => {
       set({ ...options, open: true });
       const fileInput = getState().fileInput;
-      if (options.importFile && fileInput && !TEST_MODE) {
+      if (options.importFile && fileInput) {
         fileInput.click();
       }
     },
-    closeFallbackFileDialog: () =>
+    closePrivateFilesystemDialog: () =>
       set({
         open: false,
         importFile: false,

@@ -1,5 +1,5 @@
 import { Db, DbEntry } from "@/utils/db";
-import { TEST_MODE } from "@/utils/platform";
+import { SUPPORTS_GET_DIRECTORY } from "@/utils/platform";
 import { generateId } from "@/utils/uuid";
 
 interface WithOperationId {
@@ -102,7 +102,7 @@ interface FileEntry extends DbEntry {
   content: string;
 }
 
-class FallbackFileSystemDb<T extends DbEntry> extends Db<T> {
+class PrivateFilesystemDb<T extends DbEntry> extends Db<T> {
   async getNextFreeFilename(desiredFileName: string): Promise<string> {
     const parts = desiredFileName.split(".");
     const baseName = parts.slice(0, -1).join(".");
@@ -143,18 +143,20 @@ class FallbackFileSystemDb<T extends DbEntry> extends Db<T> {
   }
 }
 
-const fallbackFilenamesDb = new FallbackFileSystemDb<FilenameEntry>(
-  "fallback-filenames",
+const privateFilenamesDb = new PrivateFilesystemDb<FilenameEntry>(
+  "private-filesystem-filenames",
 );
 
-const fallbackFilesDb = new FallbackFileSystemDb<FileEntry>("fallback-files");
+const privateFilesDb = new PrivateFilesystemDb<FileEntry>(
+  "private-filesystem-files",
+);
 
-export function getFallbackFilesystemDb() {
-  return TEST_MODE ? fallbackFilesDb : fallbackFilenamesDb;
+export function getPrivateFilesystemDb() {
+  return SUPPORTS_GET_DIRECTORY ? privateFilenamesDb : privateFilesDb;
 }
 
 const worker = new Worker(
-  new URL("./fallback-filesystem-sw.ts", import.meta.url),
+  new URL("./private-filesystem-sw.ts", import.meta.url),
 );
 
 function postMessage<T extends Options>(options: T): Promise<Result<T>> {
@@ -180,22 +182,22 @@ function postMessage<T extends Options>(options: T): Promise<Result<T>> {
 }
 
 export async function createFile(suggestedName = "todo.txt") {
-  if (TEST_MODE) {
+  if (!SUPPORTS_GET_DIRECTORY) {
     return createTestFile(suggestedName);
   }
-  const filename = await fallbackFilenamesDb.getNextFreeFilename(suggestedName);
+  const filename = await privateFilenamesDb.getNextFreeFilename(suggestedName);
   const { content } = await postMessage({
     operation: "create",
     filename,
   });
-  const id = await fallbackFilenamesDb.create({ filename });
+  const id = await privateFilenamesDb.create({ filename });
   return { id, filename, content };
 }
 
 async function createTestFile(suggestedName = "todo.txt") {
-  const filename = await fallbackFilesDb.getNextFreeFilename(suggestedName);
+  const filename = await privateFilesDb.getNextFreeFilename(suggestedName);
   const content = "";
-  const id = await fallbackFilesDb.create({
+  const id = await privateFilesDb.create({
     filename,
     content,
   });
@@ -207,10 +209,10 @@ async function createTestFile(suggestedName = "todo.txt") {
 }
 
 export async function readFile(id: string) {
-  if (TEST_MODE) {
+  if (!SUPPORTS_GET_DIRECTORY) {
     return readTestFile(id);
   }
-  const { filename } = await fallbackFilenamesDb.read(id);
+  const { filename } = await privateFilenamesDb.read(id);
   const { content } = await postMessage({
     operation: "read",
     filename,
@@ -222,7 +224,7 @@ export async function readFile(id: string) {
 }
 
 async function readTestFile(id: string) {
-  const { filename, content } = await fallbackFilesDb.read(id);
+  const { filename, content } = await privateFilesDb.read(id);
   return {
     content,
     filename,
@@ -236,10 +238,10 @@ export async function writeFile({
   id: string;
   content: string;
 }) {
-  if (TEST_MODE) {
+  if (!SUPPORTS_GET_DIRECTORY) {
     return writeTestFile({ id, content });
   }
-  const { filename } = await fallbackFilenamesDb.read(id);
+  const { filename } = await privateFilenamesDb.read(id);
   await postMessage({
     operation: "write",
     filename,
@@ -249,33 +251,33 @@ export async function writeFile({
 }
 
 async function writeTestFile({ id, content }: { id: string; content: string }) {
-  const { filename } = await fallbackFilesDb.update({ id, content });
+  const { filename } = await privateFilesDb.update({ id, content });
   return { filename };
 }
 
 export async function deleteFile(id: string) {
-  if (TEST_MODE) {
+  if (!SUPPORTS_GET_DIRECTORY) {
     return deleteTestFile(id);
   }
-  const { filename } = await fallbackFilenamesDb.read(id);
+  const { filename } = await privateFilenamesDb.read(id);
   await postMessage({
     operation: "delete",
     filename,
   });
-  await fallbackFilenamesDb.delete(id);
+  await privateFilenamesDb.delete(id);
 }
 
 async function deleteTestFile(id: string) {
-  await fallbackFilesDb.delete(id);
+  await privateFilesDb.delete(id);
 }
 
 export async function deleteFilesNotInList(ids: string[]) {
-  if (TEST_MODE) {
+  if (!SUPPORTS_GET_DIRECTORY) {
     return deleteTestFilesNotInList(ids);
   }
-  await fallbackFilenamesDb.deleteNotInList(ids);
+  await privateFilenamesDb.deleteNotInList(ids);
 }
 
 async function deleteTestFilesNotInList(ids: string[]) {
-  await fallbackFilenamesDb.deleteNotInList(ids);
+  await privateFilenamesDb.deleteNotInList(ids);
 }

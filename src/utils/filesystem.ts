@@ -1,6 +1,6 @@
 import { Db } from "@/utils/db";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
-import * as fallbackFilesystem from "./fallback-filesystem";
+import * as privateFilesystem from "./private-filesystem";
 
 interface DbEntry {
   id: string;
@@ -37,7 +37,7 @@ const db = new Db<DbEntry>("filehandles");
 
 export async function showSaveFilePicker(suggestedName = "todo.txt") {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    return fallbackFilesystem.createFile(suggestedName);
+    return privateFilesystem.createFile(suggestedName);
   }
 
   const handle = await window.showSaveFilePicker({
@@ -66,7 +66,7 @@ export async function showSaveFilePicker(suggestedName = "todo.txt") {
 
 export async function showOpenFilePicker() {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    return await fallbackFilesystem.createFile();
+    return await privateFilesystem.createFile();
   }
 
   const [handle] = await window.showOpenFilePicker();
@@ -87,7 +87,7 @@ export async function showOpenFilePicker() {
 
 export async function readFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    return fallbackFilesystem.readFile(id);
+    return privateFilesystem.readFile(id);
   }
 
   const { handle } = await db.read(id);
@@ -118,7 +118,7 @@ export async function writeFile({
   content: string;
 }) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    return fallbackFilesystem.writeFile({ id, content });
+    return privateFilesystem.writeFile({ id, content });
   }
 
   const { handle } = await db.read(id);
@@ -137,7 +137,7 @@ export async function writeFile({
 
 export async function deleteFile(id: string) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    await fallbackFilesystem.deleteFile(id);
+    await privateFilesystem.deleteFile(id);
     return;
   }
   await db.delete(id);
@@ -145,7 +145,7 @@ export async function deleteFile(id: string) {
 
 export async function deleteFilesNotInList(ids: string[]) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
-    await fallbackFilesystem.deleteFilesNotInList(ids);
+    await privateFilesystem.deleteFilesNotInList(ids);
     return;
   }
   await db.deleteNotInList(ids);
