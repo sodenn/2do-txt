@@ -4,16 +4,10 @@
     "virtual:pwa-register/react"
   ],
   "ignore": [
-    "**/lib/**",
-    "**/target/**",
     "pwa-assets.config.ts",
     "i18next-parser.config.js",
-    "src/sw.ts",
-    "src/utils/settings.ts",
-    "src/components/ErrorBoundary.tsx",
+    "src/utils/fallback-filesystem-sw.ts",
     "src/components/NewBadge.tsx",
-    "src/components/Page.tsx",
-    "src/components/ProviderBundle.tsx",
     "src/components/ui/**"
   ]
 }

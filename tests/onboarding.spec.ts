@@ -27,7 +27,7 @@ test.describe("Onboarding", () => {
 });
 
 test.describe("New file", () => {
-  test("should create a new todo.txt file", async ({ page, isMobile }) => {
+  test("should create a new todo.txt file", async ({ page }) => {
     await createTask(page);
     // The task dialog should open and the focus should be in the editor on desktop
     await expect(

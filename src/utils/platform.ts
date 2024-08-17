@@ -6,10 +6,10 @@ const CAN_USE_DOM: boolean =
 export const IS_ANDROID: boolean =
   CAN_USE_DOM && /Android/.test(navigator.userAgent);
 
-const IS_CHROME: boolean =
-  CAN_USE_DOM && /^(?=.*Chrome).*/i.test(navigator.userAgent);
-
-const IS_ANDROID_CHROME: boolean = CAN_USE_DOM && IS_ANDROID && IS_CHROME;
+// const IS_CHROME: boolean =
+//   CAN_USE_DOM && /^(?=.*Chrome).*/i.test(navigator.userAgent);
+//
+// const IS_ANDROID_CHROME: boolean = CAN_USE_DOM && IS_ANDROID && IS_CHROME;
 
 export const IS_SAFARI: boolean =
   CAN_USE_DOM && /Version\/[\d.]+.*Safari/.test(navigator.userAgent);

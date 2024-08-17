@@ -143,13 +143,11 @@ class FallbackFileSystemDb<T extends DbEntry> extends Db<T> {
   }
 }
 
-export const fallbackFilenamesDb = new FallbackFileSystemDb<FilenameEntry>(
+const fallbackFilenamesDb = new FallbackFileSystemDb<FilenameEntry>(
   "fallback-filenames",
 );
 
-export const fallbackFilesDb = new FallbackFileSystemDb<FileEntry>(
-  "fallback-files",
-);
+const fallbackFilesDb = new FallbackFileSystemDb<FileEntry>("fallback-files");
 
 export function getFallbackFilesystemDb() {
   return TEST_MODE ? fallbackFilesDb : fallbackFilenamesDb;
