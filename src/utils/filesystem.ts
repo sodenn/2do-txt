@@ -92,11 +92,6 @@ export async function readFile(id: string) {
 
   const { handle } = await db.read(id);
 
-  const granted = await verifyPermission(handle);
-  if (!granted) {
-    throw new FileError("PERMISSION_DENIED", handle.name);
-  }
-
   try {
     const fileData = await handle.getFile();
     const content = await fileData?.text();
@@ -122,6 +117,8 @@ export async function writeFile({
   }
 
   const { handle } = await db.read(id);
+  await verifyPermission(handle);
+
   try {
     const writable = await handle.createWritable();
     await writable.write(content);
@@ -172,6 +169,7 @@ async function verifyPermission(fileHandle: FileSystemFileHandle) {
     // The user didn't grant permission, so return false.
     return false;
   } catch (e) {
-    throw new FileError("PERMISSION_DENIED", fileHandle.name);
+    console.error("Unable to verify permission", e);
+    return false;
   }
 }
