@@ -38,8 +38,8 @@ import {
 } from "lexical-beautiful-mentions";
 import React, {
   ComponentProps,
-  ReactNode,
   forwardRef,
+  ReactNode,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -55,11 +55,14 @@ interface EditorContextProps {
 
 interface EditorProps
   extends Pick<BeautifulMentionsItemsProps, "items">,
-    Omit<ComponentProps<typeof ContentEditable>, "onChange" | "label"> {
+    Omit<
+      ComponentProps<typeof ContentEditable>,
+      "onChange" | "label" | "placeholder"
+    > {
   onChange: (value: string) => void;
   onEnter: () => void;
   label?: ReactNode;
-  placeholder?: string;
+  placeholder: string;
 }
 
 const mentionsStyle =
@@ -265,13 +268,14 @@ export function Editor(props: EditorProps) {
               className="relative overflow-auto px-3 py-2 focus:outline-none [&_p]:min-h-[22px]"
               // needed because the cursor keeps blinking in Safari when clicking outside the editor
               onBlur={() => editor.blur()}
+              placeholder={
+                <div className="pointer-events-none absolute top-0 w-full px-3 py-2 text-muted-foreground">
+                  {placeholder}
+                </div>
+              }
+              aria-placeholder={placeholder}
               {...contentEditableProps}
             />
-          }
-          placeholder={
-            <div className="pointer-events-none absolute top-0 w-full px-3 py-2 text-muted-foreground">
-              {placeholder}
-            </div>
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
