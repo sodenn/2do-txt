@@ -16,6 +16,15 @@ i18n.use(initReactI18next).init({
   resources: { en: { Reminder: "Reminder" } },
 });
 
+vi.mock("../stores/settings-store", () => ({
+  useSettingsStore: (callback: any) => {
+    const data = {
+      reminderOffset: 0,
+    };
+    return callback(data);
+  },
+}));
+
 function mockNotificationAPI(permission: NotificationPermission = "granted") {
   const NotificationMock = vi.fn();
   const staticMembers = {

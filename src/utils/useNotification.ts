@@ -11,8 +11,8 @@ export function useNotification() {
   const scheduleNotifications = useCallback(
     async (options: Omit<NotificationOptions, "title">[]) => {
       const optionsWithTitle = options.map((o) => ({
-        ...o,
         displayOffset: reminderOffset,
+        ...o,
         title: t("Reminder"),
       }));
 
@@ -23,7 +23,7 @@ export function useNotification() {
 
       return webNotification.schedule(optionsWithTitle);
     },
-    [t, webNotification],
+    [reminderOffset, t, webNotification],
   );
 
   const isNotificationPermissionGranted = useCallback(() => {
