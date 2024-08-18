@@ -1,4 +1,4 @@
-export interface DbEntry {
+interface DbEntry {
   id: number;
 }
 

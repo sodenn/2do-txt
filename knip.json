@@ -6,7 +6,7 @@
   "ignore": [
     "pwa-assets.config.ts",
     "i18next-parser.config.js",
-    "src/utils/fallback-filesystem-sw.ts",
+    "src/utils/private-filesystem-sw.ts",
     "src/components/NewBadge.tsx",
     "src/components/ui/**"
   ]
