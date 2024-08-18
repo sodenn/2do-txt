@@ -6,7 +6,6 @@ import { taskLoader, useTaskStore } from "@/stores/task-store";
 import { todayDate } from "@/utils/date";
 import { deleteFile, writeFile } from "@/utils/filesystem";
 import { hashCode } from "@/utils/hashcode";
-import { setPreferencesItem } from "@/utils/preferences";
 import { canShare, share } from "@/utils/share";
 import {
   createDueDateRegex,
@@ -29,6 +28,7 @@ import {
   loadTodoFileFromDisk,
   removeDoneFileId,
   removeTodoFileId,
+  reorderTodoFileIds,
 } from "@/utils/todo-files";
 import { useArchivedTask } from "@/utils/useArchivedTask";
 import { useNotification } from "@/utils/useNotification";
@@ -40,7 +40,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 type SaveTodoFile = {
-  (id: string, text: string): Promise<TaskList>;
+  (id: number, text: string): Promise<TaskList>;
   (taskList: TaskList): Promise<TaskList>;
 };
 
@@ -128,7 +128,7 @@ export function useTask() {
   );
 
   const parseTaskList = useCallback(
-    async (id: string, filename: string, text: string) => {
+    async (id: number, filename: string, text: string) => {
       const result = _parseTaskList(text);
       const taskList: TaskList = {
         ...result,
@@ -142,10 +142,10 @@ export function useTask() {
   );
 
   const saveTodoFile = useCallback<SaveTodoFile>(
-    async (listOrId: TaskList | string, text?: string) => {
-      let id: string;
+    async (listOrId: TaskList | number, text?: string) => {
+      let id: number;
 
-      if (typeof listOrId === "string") {
+      if (typeof listOrId === "number") {
         id = listOrId;
         text = text || "";
       } else {
@@ -155,7 +155,7 @@ export function useTask() {
 
       const { filename } = await writeFile({ id, content: text });
 
-      if (typeof listOrId === "string") {
+      if (typeof listOrId === "number") {
         return parseTaskList(listOrId, filename, text);
       } else {
         // Update the existing task list to not lose the generated task IDs
@@ -334,7 +334,7 @@ export function useTask() {
     [findTaskListByTaskId, saveTodoFile, processTaskCompletion],
   );
 
-  const deleteTodoFile = useCallback(async (id: string) => {
+  const deleteTodoFile = useCallback(async (id: number) => {
     await deleteFile(id).catch(() => console.debug(`${id} does not exist`));
     const doneFileId = await getDoneFileId(id);
     if (doneFileId) {
@@ -345,7 +345,7 @@ export function useTask() {
   }, []);
 
   const closeTodoFile = useCallback(
-    async (id: string) => {
+    async (id: number) => {
       const taskList = taskLists.find((list) => list.id === id);
       taskList?.items.forEach((task) =>
         cancelNotifications([hashCode(task.raw)]),
@@ -369,10 +369,10 @@ export function useTask() {
           if (fallbackList) {
             setActiveTaskListId(fallbackList.id);
           } else {
-            setActiveTaskListId("");
+            setActiveTaskListId();
           }
         } else {
-          setActiveTaskListId("");
+          setActiveTaskListId();
         }
       }
 
@@ -462,8 +462,8 @@ export function useTask() {
   );
 
   const reorderTaskList = useCallback(
-    async (ids: string[]) => {
-      await setPreferencesItem("todo-files", JSON.stringify(ids));
+    async (ids: number[]) => {
+      await reorderTodoFileIds(ids);
       const reorderedList = [...taskLists].sort(
         (a, b) => ids.indexOf(a.id) - ids.indexOf(b.id),
       );
@@ -473,7 +473,7 @@ export function useTask() {
   );
 
   const createNewTodoFile = useCallback(
-    async (id: string, text = "") => {
+    async (id: number, text = "") => {
       await addTodoFileId(id);
       const taskList = await saveTodoFile(id, text);
       scheduleDueTaskNotifications(taskList.items).catch((e) => void e);
@@ -483,7 +483,7 @@ export function useTask() {
   );
 
   const addTodoFile = useCallback(
-    async (id: string, filename: string, text: string) => {
+    async (id: number, filename: string, text: string) => {
       await addTodoFileId(id);
       const taskList = await parseTaskList(id, filename, text);
       scheduleDueTaskNotifications(taskList.items).catch((e) => void e);
@@ -493,9 +493,9 @@ export function useTask() {
   );
 
   const restoreTask = useCallback(
-    async (listOrId: string | TaskList, task: Task) => {
+    async (listOrId: number | TaskList, task: Task) => {
       const taskList =
-        typeof listOrId === "string"
+        typeof listOrId === "number"
           ? taskLists.find((t) => t.id === listOrId)
           : listOrId;
 
@@ -538,7 +538,7 @@ export function useTask() {
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
   const handleFileNotFound = useCallback(
-    async (id: string, filename?: string) => {
+    async (id: number, filename?: string) => {
       toast({
         variant: "danger",
         description: t("File not found", { filename }),

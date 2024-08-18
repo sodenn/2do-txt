@@ -64,17 +64,17 @@ import { memo, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 interface FileListItemProps {
-  id: string;
+  id: number;
   filename: string;
-  onClose: (id: string) => void;
-  onDownload: (id: string) => void;
+  onClose: (id: number) => void;
+  onDownload: (id: number) => void;
   disableDrag: boolean;
 }
 
 interface FileMenuProps {
-  id: string;
+  id: number;
   onDownload: () => void;
-  onClose: (id?: string) => void;
+  onClose: (id?: number) => void;
 }
 
 export function FileManagementDialog() {
@@ -177,8 +177,8 @@ const FileList = memo(() => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       setItems((items) => {
-        const oldIndex = items.indexOf(active.id as string);
-        const newIndex = items.indexOf(over.id as string);
+        const oldIndex = items.indexOf(active.id as number);
+        const newIndex = items.indexOf(over.id as number);
         const newItems = arrayMove(items, oldIndex, newIndex);
         reorderTaskList(newItems);
         return newItems;
@@ -186,18 +186,18 @@ const FileList = memo(() => {
     }
   };
 
-  const handleCloseFile = async (id: string) => {
+  const handleCloseFile = async (id: number) => {
     if (taskLists.length === 1) {
       closeFileManagementDialog();
     }
     closeTodoFile(id);
   };
 
-  const handleDownload = (id: string) => {
+  const handleDownload = (id: number) => {
     downloadTodoFile(taskLists.find((t) => t.id === id));
   };
 
-  const getFilename = (id: string) => {
+  const getFilename = (id: number) => {
     const list = taskLists.find((t) => t.id === id);
     return list ? list.filename : "";
   };
@@ -347,7 +347,9 @@ function FileMenu(props: FileMenuProps) {
   };
 
   const handleCopyToClipboard = () => {
-    const promise = readFile(id).then(({ content }) => content);
+    const promise = readFile(id).then(
+      ({ content }) => content,
+    ) as Promise<string>;
     writeToClipboard(promise)
       .then(() => toast({ description: t("Copied to clipboard") }))
       .catch((e) => {

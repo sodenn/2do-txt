@@ -62,12 +62,31 @@ test.describe("File Management", () => {
     page,
   }) => {
     await page.evaluate(() => {
-      localStorage.setItem("todo-files", '[{"todoFileId":"xyz"}]');
+      return new Promise<void>((resolve, reject) => {
+        const dbRequest = indexedDB.open("todo-db");
+        dbRequest.onsuccess = () => {
+          const transaction = dbRequest.result.transaction(
+            ["file-ids-store"],
+            "readwrite",
+          );
+          const store = transaction.objectStore("file-ids-store");
+          const putRequest = store.put({
+            id: 1,
+            items: [{ todoFileId: 10 }],
+          });
+          putRequest.onsuccess = () => {
+            resolve();
+          };
+          putRequest.onerror = () => {
+            reject(putRequest.error);
+          };
+        };
+        dbRequest.onerror = () => {
+          reject(dbRequest.error);
+        };
+      });
     });
     await page.reload();
-    await page.evaluate(() => {
-      return localStorage["todo-files"] === "[]";
-    });
     await expect(page.getByText("File not found").first()).toBeVisible();
   });
 });

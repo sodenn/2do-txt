@@ -1,4 +1,4 @@
-import { Db, DbEntry } from "@/utils/db";
+import { db } from "@/utils/db";
 import { SUPPORTS_GET_DIRECTORY } from "@/utils/platform";
 import { generateId } from "@/utils/uuid";
 
@@ -93,68 +93,6 @@ type Result<T> = T extends CreateOptions
               ? ErrorResult
               : never;
 
-interface FilenameEntry extends DbEntry {
-  filename: string;
-}
-
-interface FileEntry extends DbEntry {
-  filename: string;
-  content: string;
-}
-
-class PrivateFilesystemDb<T extends DbEntry> extends Db<T> {
-  async getNextFreeFilename(desiredFileName: string): Promise<string> {
-    const parts = desiredFileName.split(".");
-    const baseName = parts.slice(0, -1).join(".");
-    const extension = parts.length > 1 ? "." + parts[parts.length - 1] : "";
-    const store = await this.getStore();
-
-    // Get all filenames from the database
-    const filenames: string[] = [];
-
-    return new Promise<string>((resolve, reject) => {
-      const request = store.openCursor();
-      request.onsuccess = () => {
-        const cursor = request.result;
-        if (cursor) {
-          filenames.push(cursor.value.filename);
-          cursor.continue();
-        } else {
-          // Check if the original filename exists
-          if (!filenames.includes(desiredFileName)) {
-            resolve(desiredFileName);
-            return;
-          }
-          // Generate a new filename with a counter
-          let counter = 1;
-          let newFilename;
-          do {
-            newFilename = `${baseName}(${counter})${extension}`;
-            counter++;
-          } while (filenames.includes(newFilename));
-          // Return the new filename
-          resolve(newFilename);
-        }
-      };
-      request.onerror = () => {
-        reject(request.error);
-      };
-    });
-  }
-}
-
-const privateFilenamesDb = new PrivateFilesystemDb<FilenameEntry>(
-  "private-filesystem-filenames",
-);
-
-const privateFilesDb = new PrivateFilesystemDb<FileEntry>(
-  "private-filesystem-files",
-);
-
-export function getPrivateFilesystemDb() {
-  return SUPPORTS_GET_DIRECTORY ? privateFilenamesDb : privateFilesDb;
-}
-
 const worker = new Worker(
   new URL("./private-filesystem-sw.ts", import.meta.url),
 );
@@ -185,19 +123,19 @@ export async function createFile(suggestedName = "todo.txt") {
   if (!SUPPORTS_GET_DIRECTORY) {
     return createTestFile(suggestedName);
   }
-  const filename = await privateFilenamesDb.getNextFreeFilename(suggestedName);
+  const filename = await db.files.getNextFreeFilename(suggestedName);
   const { content } = await postMessage({
     operation: "create",
     filename,
   });
-  const id = await privateFilenamesDb.create({ filename });
+  const { id } = await db.files.create({ filename });
   return { id, filename, content };
 }
 
 async function createTestFile(suggestedName = "todo.txt") {
-  const filename = await privateFilesDb.getNextFreeFilename(suggestedName);
+  const filename = await db.files.getNextFreeFilename(suggestedName);
   const content = "";
-  const id = await privateFilesDb.create({
+  const { id } = await db.files.create({
     filename,
     content,
   });
@@ -208,11 +146,11 @@ async function createTestFile(suggestedName = "todo.txt") {
   };
 }
 
-export async function readFile(id: string) {
+export async function readFile(id: number) {
   if (!SUPPORTS_GET_DIRECTORY) {
     return readTestFile(id);
   }
-  const { filename } = await privateFilenamesDb.read(id);
+  const { filename } = await db.files.read(id);
   const { content } = await postMessage({
     operation: "read",
     filename,
@@ -223,8 +161,8 @@ export async function readFile(id: string) {
   };
 }
 
-async function readTestFile(id: string) {
-  const { filename, content } = await privateFilesDb.read(id);
+async function readTestFile(id: number) {
+  const { filename, content } = await db.files.read(id);
   return {
     content,
     filename,
@@ -235,13 +173,13 @@ export async function writeFile({
   id,
   content,
 }: {
-  id: string;
+  id: number;
   content: string;
 }) {
   if (!SUPPORTS_GET_DIRECTORY) {
     return writeTestFile({ id, content });
   }
-  const { filename } = await privateFilenamesDb.read(id);
+  const { filename } = await db.files.read(id);
   await postMessage({
     operation: "write",
     filename,
@@ -250,34 +188,34 @@ export async function writeFile({
   return { filename };
 }
 
-async function writeTestFile({ id, content }: { id: string; content: string }) {
-  const { filename } = await privateFilesDb.update({ id, content });
+async function writeTestFile({ id, content }: { id: number; content: string }) {
+  const { filename } = await db.files.update({ id, content });
   return { filename };
 }
 
-export async function deleteFile(id: string) {
+export async function deleteFile(id: number) {
   if (!SUPPORTS_GET_DIRECTORY) {
     return deleteTestFile(id);
   }
-  const { filename } = await privateFilenamesDb.read(id);
+  const { filename } = await db.files.read(id);
   await postMessage({
     operation: "delete",
     filename,
   });
-  await privateFilenamesDb.delete(id);
+  await db.files.delete(id);
 }
 
-async function deleteTestFile(id: string) {
-  await privateFilesDb.delete(id);
+async function deleteTestFile(id: number) {
+  await db.files.delete(id);
 }
 
-export async function deleteFilesNotInList(ids: string[]) {
+export async function deleteFilesNotInList(ids: number[]) {
   if (!SUPPORTS_GET_DIRECTORY) {
     return deleteTestFilesNotInList(ids);
   }
-  await privateFilenamesDb.deleteNotInList(ids);
+  await db.files.deleteNotInList(ids);
 }
 
-async function deleteTestFilesNotInList(ids: string[]) {
-  await privateFilenamesDb.deleteNotInList(ids);
+async function deleteTestFilesNotInList(ids: number[]) {
+  await db.files.deleteNotInList(ids);
 }

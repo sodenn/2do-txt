@@ -20,10 +20,10 @@ export function FileSelect(props: FileSelectProps) {
   const [id, setId] = useState("");
 
   const handleChange = (value: string) => {
-    const id = value as string;
+    const id = parseInt(value);
     const item = options.find((l) => l.id === id);
     onSelect(item);
-    setId(id);
+    setId(value);
   };
 
   return (
@@ -33,7 +33,7 @@ export function FileSelect(props: FileSelectProps) {
       </SelectTrigger>
       <SelectContent>
         {options.map((item) => (
-          <SelectItem key={item.id} value={item.id}>
+          <SelectItem key={item.id} value={item.id.toString()}>
             <div className="max-w-[300px] truncate">{item.filename}</div>
           </SelectItem>
         ))}

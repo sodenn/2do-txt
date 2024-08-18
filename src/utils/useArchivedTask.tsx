@@ -4,7 +4,7 @@ import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-stor
 import { useSettingsStore } from "@/stores/settings-store";
 import { deleteFile, readFile, writeFile } from "@/utils/filesystem";
 import { Task } from "@/utils/task";
-import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
+import { parseTaskList, stringifyTaskList, TaskList } from "@/utils/task-list";
 import {
   addDoneFileId,
   getDoneFileId,
@@ -33,7 +33,7 @@ export function useArchivedTask() {
   const { t } = useTranslation();
   const { showSaveFilePicker } = useFilesystem();
 
-  const saveDoneFile = useCallback(async (todoFileId: string, text: string) => {
+  const saveDoneFile = useCallback(async (todoFileId: number, text: string) => {
     const doneFileId = await getDoneFileId(todoFileId);
     if (!doneFileId) {
       return;
@@ -45,7 +45,7 @@ export function useArchivedTask() {
   }, []);
 
   const loadDoneFile = useCallback(
-    async (todoFileId: string) => {
+    async (todoFileId: number) => {
       let doneFileId = await getDoneFileId(todoFileId);
       if (!doneFileId) {
         const result = await showSaveFilePicker("done.txt");

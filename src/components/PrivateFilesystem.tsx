@@ -11,15 +11,12 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { usePrivateFilesystemStore } from "@/stores/private-filesystem-store";
+import { db } from "@/utils/db";
 import {
   HAS_TOUCHSCREEN,
   SUPPORTS_SHOW_OPEN_FILE_PICKER,
 } from "@/utils/platform";
-import {
-  createFile,
-  getPrivateFilesystemDb,
-  writeFile,
-} from "@/utils/private-filesystem";
+import { createFile, writeFile } from "@/utils/private-filesystem";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -110,7 +107,7 @@ function PrivateFilesystemInput() {
     usePrivateFilesystemStore();
 
   const close = (result?: {
-    id: string;
+    id: number;
     filename: string;
     content: string;
   }) => {
@@ -134,8 +131,7 @@ function PrivateFilesystemInput() {
       if (typeof content !== "string") {
         return;
       }
-      const suggestedFilename =
-        await getPrivateFilesystemDb().getNextFreeFilename(file.name);
+      const suggestedFilename = await db.files.getNextFreeFilename(file.name);
       const createResult = await createFile(suggestedFilename);
       await writeFile({ id: createResult.id, content });
       close({

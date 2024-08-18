@@ -1,7 +1,6 @@
 type PreferencesKeys =
   | "language"
   | "theme-mode"
-  | "todo-files"
   | "create-creation-date"
   | "archive-mode"
   | "priority-transformation"

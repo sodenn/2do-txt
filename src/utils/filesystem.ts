@@ -1,11 +1,6 @@
-import { Db } from "@/utils/db";
+import { db } from "@/utils/db";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
 import * as privateFilesystem from "./private-filesystem";
-
-interface DbEntry {
-  id: string;
-  handle: FileSystemFileHandle;
-}
 
 type FileErrorReason =
   | "PICKER_CLOSED"
@@ -33,8 +28,6 @@ export class FileError extends Error {
   }
 }
 
-const db = new Db<DbEntry>("filehandles");
-
 export async function showSaveFilePicker(suggestedName = "todo.txt") {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return privateFilesystem.createFile(suggestedName);
@@ -54,7 +47,7 @@ export async function showSaveFilePicker(suggestedName = "todo.txt") {
     throw new FileError("PICKER_CLOSED");
   }
 
-  const id = await db.create({ handle: handle });
+  const { id } = await db.fileHandles.create({ handle: handle });
   const fileData = await handle.getFile();
   const content = await fileData.text();
   return {
@@ -74,7 +67,7 @@ export async function showOpenFilePicker() {
     throw new FileError("PICKER_CLOSED");
   }
 
-  const id = await db.create({ handle });
+  const { id } = await db.fileHandles.create({ handle });
   const filename = handle.name;
   const file: File = await handle.getFile();
   const content = await file.text();
@@ -85,12 +78,12 @@ export async function showOpenFilePicker() {
   };
 }
 
-export async function readFile(id: string) {
+export async function readFile(id: number) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return privateFilesystem.readFile(id);
   }
 
-  const { handle } = await db.read(id);
+  const { handle } = await db.fileHandles.read(id);
 
   try {
     const fileData = await handle.getFile();
@@ -109,14 +102,14 @@ export async function writeFile({
   id,
   content,
 }: {
-  id: string;
+  id: number;
   content: string;
 }) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return privateFilesystem.writeFile({ id, content });
   }
 
-  const { handle } = await db.read(id);
+  const { handle } = await db.fileHandles.read(id);
   await verifyPermission(handle);
 
   try {
@@ -132,20 +125,20 @@ export async function writeFile({
   }
 }
 
-export async function deleteFile(id: string) {
+export async function deleteFile(id: number) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     await privateFilesystem.deleteFile(id);
     return;
   }
-  await db.delete(id);
+  await db.fileHandles.delete(id);
 }
 
-export async function deleteFilesNotInList(ids: string[]) {
+export async function deleteFilesNotInList(ids: number[]) {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     await privateFilesystem.deleteFilesNotInList(ids);
     return;
   }
-  await db.deleteNotInList(ids);
+  await db.fileHandles.deleteNotInList(ids);
 }
 
 async function verifyPermission(fileHandle: FileSystemFileHandle) {
@@ -169,6 +162,7 @@ async function verifyPermission(fileHandle: FileSystemFileHandle) {
     // The user didn't grant permission, so return false.
     return false;
   } catch (e) {
+    // this can fail with a DOMException
     console.error("Unable to verify permission", e);
     return false;
   }

@@ -9,16 +9,16 @@ import { useTask } from "@/utils/useTask";
 import { isEqual } from "lodash";
 import { ExternalLinkIcon } from "lucide-react";
 import {
-  KeyboardEvent,
-  MutableRefObject,
   forwardRef,
+  KeyboardEvent,
   memo,
+  MutableRefObject,
   useRef,
 } from "react";
 import { useTranslation } from "react-i18next";
 
 interface TaskListProps {
-  id: string;
+  id: number;
   filename: string;
   taskGroups: TaskGroup[];
   tasks: Task[];
@@ -42,7 +42,7 @@ interface TaskListSubheaderProps {
 }
 
 interface TaskListHeaderProps {
-  id: string;
+  id: number;
   filename: string;
 }
 

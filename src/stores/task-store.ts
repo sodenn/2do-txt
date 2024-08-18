@@ -6,7 +6,7 @@ import { createStore, useStore as useZustandStore } from "zustand";
 
 interface TodoFileSuccess {
   type: "success";
-  id: string;
+  id: number;
   filename: string;
   content: string;
   taskList: TaskList;
@@ -14,7 +14,7 @@ interface TodoFileSuccess {
 
 interface TodoFileError {
   type: "error";
-  id: string;
+  id: number;
   filename?: string;
   permissionRequired: boolean;
 }

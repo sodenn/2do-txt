@@ -1,9 +1,9 @@
 import { create } from "zustand";
 
 interface ArchivedTasksDialogState {
-  todoFileId?: string;
+  todoFileId?: number;
   open: boolean;
-  openArchivedTasksDialog: (todoFileId?: string) => void;
+  openArchivedTasksDialog: (todoFileId?: number) => void;
   closeArchivedTasksDialog: () => void;
   cleanupArchivedTasksDialog: () => void;
 }
@@ -12,7 +12,7 @@ export const useArchivedTasksDialogStore = create<ArchivedTasksDialogState>(
   (set) => ({
     open: false,
     todoFileId: undefined,
-    openArchivedTasksDialog: (todoFileId?: string) =>
+    openArchivedTasksDialog: (todoFileId?: number) =>
       set({ todoFileId, open: true }),
     closeArchivedTasksDialog: () => {
       setTimeout(() => {

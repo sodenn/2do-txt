@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 type Callback = (result?: {
-  id: string;
+  id: number;
   filename: string;
   content: string;
 }) => void;

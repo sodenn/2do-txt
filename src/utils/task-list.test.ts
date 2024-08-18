@@ -8,7 +8,6 @@ import {
   TaskList,
   TaskListFilter,
 } from "@/utils/task-list";
-import { generateId } from "@/utils/uuid";
 import { describe, expect, it } from "vitest";
 
 describe("task-list", () => {
@@ -145,7 +144,7 @@ x 2. task +ProjB
     const taskLists: TaskList[] = [
       {
         ...parseResult,
-        id: generateId(),
+        id: 1,
         filename: "todo.txt",
       },
     ];
@@ -164,12 +163,12 @@ x 2. task +ProjB
     const taskLists: TaskList[] = [
       {
         ...parseResult,
-        id: generateId(),
+        id: 2,
         filename: "todo1.txt",
       },
       {
         ...parseResult,
-        id: generateId(),
+        id: 3,
         filename: "todo2.txt",
       },
     ];

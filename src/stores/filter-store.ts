@@ -31,7 +31,7 @@ export interface FilterFields {
   sortBy: SortKey;
   filterType: FilterType;
   hideCompletedTasks: boolean;
-  activeTaskListId?: string;
+  activeTaskListId?: number;
 }
 
 interface FilterState extends FilterFields {
@@ -47,7 +47,7 @@ interface FilterState extends FilterFields {
   toggleTag: (tag: string) => void;
   resetActiveTags: () => void;
   setHideCompletedTasks: (hideCompletedTasks: boolean) => void;
-  setActiveTaskListId: (activeTaskListId?: string) => void;
+  setActiveTaskListId: (activeTaskListId?: number) => void;
 }
 
 export type FilterStore = ReturnType<typeof initializeFilterStore>;
@@ -70,7 +70,7 @@ export async function filterLoader(): Promise<FilterFields> {
   const tags = searchParams.get("tags");
   return {
     searchTerm: searchParams.get("term") || "",
-    activeTaskListId: active ? decodeURIComponent(active) : undefined,
+    activeTaskListId: active ? parseInt(active) : undefined,
     activePriorities: priorities ? priorities.split(",") : [],
     activeProjects: projects ? projects.split(",") : [],
     activeContexts: contexts ? contexts.split(",") : [],
@@ -150,7 +150,7 @@ export function initializeFilterStore(
       set({ hideCompletedTasks });
       setPreferencesItem("hide-completed-tasks", hideCompletedTasks.toString());
     },
-    setActiveTaskListId: (activeTaskListId?: string) =>
+    setActiveTaskListId: (activeTaskListId?: number) =>
       set({ activeTaskListId }),
   }));
 }

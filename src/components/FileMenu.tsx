@@ -37,7 +37,7 @@ export function FileMenu() {
   );
   const { showSaveFilePicker } = useFilesystem();
 
-  const handleSetActiveList = async (id: string) => {
+  const handleSetActiveList = async (id?: number) => {
     setActiveTaskListId(id);
   };
 
@@ -64,7 +64,7 @@ export function FileMenu() {
         key="All"
         aria-label="All task lists"
         checked={!activeTaskList}
-        onClick={() => handleSetActiveList("")}
+        onClick={() => handleSetActiveList()}
       >
         {t("All")}
       </DropdownMenuCheckboxItem>,

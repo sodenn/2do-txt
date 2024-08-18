@@ -6,7 +6,7 @@ import {
   parseDate,
   todayDate,
 } from "@/utils/date";
-import { Task, parseTask, stringifyTask } from "@/utils/task";
+import { parseTask, stringifyTask, Task } from "@/utils/task";
 import {
   addDays,
   isAfter,
@@ -25,7 +25,7 @@ interface TaskListParseResult extends TaskListAttributes {
 }
 
 export interface TaskList extends TaskListParseResult {
-  id: string;
+  id: number;
   filename: string;
 }
 

@@ -1,7 +1,7 @@
 import { usePrivateFilesystemStore } from "@/stores/private-filesystem-store";
+import { db } from "@/utils/db";
 import * as filesystem from "@/utils/filesystem";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
-import { getPrivateFilesystemDb } from "@/utils/private-filesystem";
 import { useCallback } from "react";
 
 export function useFilesystem() {
@@ -17,8 +17,7 @@ export function useFilesystem() {
       filename?: string;
       importFile?: boolean;
     }) => {
-      const suggestedFilename =
-        await getPrivateFilesystemDb().getNextFreeFilename(filename);
+      const suggestedFilename = await db.files.getNextFreeFilename(filename);
       return new Promise<
         Awaited<ReturnType<typeof filesystem.showSaveFilePicker>>
       >((resolve, reject) => {
