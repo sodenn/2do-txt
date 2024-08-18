@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
-interface ScrollingStoreInterface {
+interface ScrollingState {
   divider: boolean;
   setDivider: (divider: boolean) => void;
 }
 
-export const useScrollingStore = create<ScrollingStoreInterface>((set) => ({
+export const useScrollingStore = create<ScrollingState>((set) => ({
   divider: false,
   setDivider: (divider: boolean) => set({ divider }),
 }));

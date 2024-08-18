@@ -1,15 +1,21 @@
 import { expect, test } from "@playwright/test";
+import {
+  createExampleFile,
+  createFile,
+  goto,
+  openFileMenu,
+  openSettings,
+  toggleMenu,
+} from "./playwright-utils";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:5173");
-  await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
-  await page.waitForTimeout(100);
+  await goto(page);
+  await createExampleFile(page);
 });
 
 test.describe("Download", () => {
   test("should download a todo.txt file", async ({ page }) => {
-    await page.getByLabel("File menu").click();
-    await page.getByRole("menuitem", { name: "Files…" }).click();
+    await openFileMenu(page);
     await page.getByLabel("File actions").click();
     const [download] = await Promise.all([
       // Start waiting for the download
@@ -24,14 +30,13 @@ test.describe("Download", () => {
 
   test("should download todo.txt and done.txt", async ({ page }) => {
     // activate archiving
-    await page.getByRole("button", { name: "Toggle menu" }).click();
-    await page.getByRole("tab", { name: "Settings" }).click();
+    await openSettings(page);
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive automatically").click();
-    await page.keyboard.press("Escape");
+    await createFile(page);
+    await toggleMenu(page);
 
-    await page.getByLabel("File menu").click();
-    await page.getByRole("menuitem", { name: "Files…" }).click();
+    await openFileMenu(page);
     await page.getByLabel("File actions").click();
     const [download] = await Promise.all([
       // Start waiting for the download

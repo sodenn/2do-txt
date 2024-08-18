@@ -1,23 +1,13 @@
 {
   "$schema": "https://unpkg.com/knip@2/schema.json",
-  "ignore": [
-    "**/lib/**",
-    "**/target/**",
-    "ios/**",
-    "tools/**",
-    "i18next-parser.config.js",
-    "src/components/ErrorBoundary.tsx",
-    "src/components/NewBadge.tsx",
-    "src/components/Page.tsx",
-    "src/components/ProviderBundle.tsx",
-    "src/components/ui/**",
-    "release.config.js"
-  ],
   "ignoreDependencies": [
-    "cordova-plugin-inappbrowser",
-    "cordova-plugin-ios-keychain",
-    "@semantic-release/changelog",
-    "@semantic-release/exec",
-    "@semantic-release/git"
+    "virtual:pwa-register/react"
+  ],
+  "ignore": [
+    "pwa-assets.config.ts",
+    "i18next-parser.config.js",
+    "src/utils/private-filesystem-sw.ts",
+    "src/components/NewBadge.tsx",
+    "src/components/ui/**"
   ]
 }

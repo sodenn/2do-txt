@@ -1,8 +1,13 @@
 import { expect, Page, test } from "@playwright/test";
+import {
+  createExampleFile,
+  createTask,
+  getEditor,
+  goto,
+} from "./playwright-utils";
 
 test.beforeEach(async ({ page }) => {
-  const host = process.env.HOST || "localhost";
-  await page.goto(`http://${host}:5173/`);
+  await goto(page);
 });
 
 test.describe("Screenshots", () => {
@@ -14,7 +19,7 @@ test.describe("Screenshots", () => {
   });
 
   test("should take a screenshot of the task list", async ({ page }) => {
-    await selectFile(page);
+    await createExampleFile(page);
     await expect(page).toHaveScreenshot();
   });
 
@@ -25,7 +30,7 @@ test.describe("Screenshots", () => {
 
   test("should take a screenshot of the task timeline", async ({ page }) => {
     await changeToTimelineView(page);
-    await selectFile(page);
+    await createExampleFile(page);
     await expect(page).toHaveScreenshot();
   });
 
@@ -38,33 +43,26 @@ test.describe("Screenshots", () => {
   });
 
   test("should take a screenshot of the task dialog", async ({ page }) => {
-    await selectFile(page);
+    await createExampleFile(page);
     await page.getByTestId("task").first().click();
     await expect(page.locator(`[data-state="open"]`).first()).toBeVisible();
     await expect(page).toHaveScreenshot();
   });
 
   test("should take a screenshot of the mention menu", async ({ page }) => {
-    await selectFile(page);
+    await createExampleFile(page);
     await page.getByTestId("task").first().click();
-    await expect(page.locator(`[data-state="open"]`).first()).toBeVisible();
-    await page.waitForTimeout(300);
-    await page.keyboard.press("@");
-    await page.waitForTimeout(300);
+    await expect(getEditor(page)).toBeFocused();
+    await page.keyboard.press("End");
+    await getEditor(page).press("@", { delay: 20 });
     await expect(page).toHaveScreenshot({
       maxDiffPixelRatio: 0.2,
     });
   });
 });
 
-async function selectFile(page: Page) {
-  await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
-  await expect(page.getByTestId("task-list")).toBeVisible();
-}
-
 async function createEmptyFile(page: Page) {
-  await page.getByLabel("Create task").click();
-  await expect(page.getByTestId("task-dialog")).toBeVisible();
+  await createTask(page);
   await page.keyboard.press("Escape");
 }
 

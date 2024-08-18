@@ -1,17 +1,16 @@
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  deleteFile,
-  getFilename,
-  readFile,
-  writeFile,
-} from "@/native-api/filesystem";
 import { useArchivedTasksDialogStore } from "@/stores/archived-tasks-dialog-store";
 import { useSettingsStore } from "@/stores/settings-store";
-import { useCloudStorage } from "@/utils/CloudStorage";
+import { deleteFile, readFile, writeFile } from "@/utils/filesystem";
 import { Task } from "@/utils/task";
-import { TaskList, parseTaskList, stringifyTaskList } from "@/utils/task-list";
-import { getDoneFilePath } from "@/utils/todo-files";
+import { parseTaskList, stringifyTaskList, TaskList } from "@/utils/task-list";
+import {
+  addDoneFileId,
+  getDoneFileId,
+  removeDoneFileId,
+} from "@/utils/todo-files";
+import { useFilesystem } from "@/utils/useFilesystem";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -31,160 +30,58 @@ export function useArchivedTask() {
     (state) => state.openArchivedTasksDialog,
   );
   const archiveMode = useSettingsStore((state) => state.archiveMode);
-  const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
-  const {
-    syncFile,
-    deleteFile: deleteCloudFile,
-    downloadFile,
-    getMetaData,
-    getCloudFileRef,
-  } = useCloudStorage();
   const { t } = useTranslation();
+  const { showSaveFilePicker } = useFilesystem();
 
-  const syncDoneFiles = useCallback(
-    async (filePaths: string[]) => {
-      const syncOptions: { localPath: string; content: string }[] = [];
-
-      const updateArchiveMode = await Promise.all(
-        filePaths.map(async (filePath) => {
-          const doneFilePath = getDoneFilePath(filePath);
-          if (!doneFilePath) {
-            return "do-nothing";
-          }
-
-          const ref = await getCloudFileRef(doneFilePath).catch((e) => void e);
-          const cloudFile = await getMetaData(doneFilePath).catch(
-            (e) => void e,
-          );
-
-          const addSyncOption = async () => {
-            const content = await readFile(doneFilePath).catch((e) => void e);
-            if (content) {
-              syncOptions.push({
-                localPath: doneFilePath,
-                content,
-              });
-            }
-          };
-
-          if (ref && !cloudFile) {
-            // done file was deleted in the cloud, so delete the local done file as well
-            await deleteFile(doneFilePath);
-            return archiveMode !== "no-archiving" ? "disable" : "do-nothing";
-          } else if (ref) {
-            // local done file and cloud done file exist, sync needed
-            await addSyncOption();
-            return archiveMode === "no-archiving" ? "enable" : "do-nothing";
-          } else if (!cloudFile) {
-            // local done file and cloud done file don't exist, do nothing
-            return "do-nothing";
-          }
-
-          // download cloud done file
-          if (archiveMode === "no-archiving") {
-            const todoFileRef = await getCloudFileRef(filePath).catch(
-              (e) => void e,
-            );
-            if (!todoFileRef) {
-              return "do-nothing";
-            }
-            const content = await downloadFile(
-              todoFileRef.provider,
-              doneFilePath,
-              cloudFile.path,
-            );
-            await writeFile({
-              path: doneFilePath,
-              data: content,
-            });
-            return "enable";
-          } else if (ref) {
-            await addSyncOption();
-            return "do-nothing";
-          }
-        }),
-      );
-
-      if (updateArchiveMode.some((i) => i === "enable")) {
-        setArchiveMode("manual");
-        toast({
-          color: "primary",
-          description: t(
-            "Task archiving was turned on because a done.txt file was found",
-          ),
-        });
-      }
-
-      if (updateArchiveMode.every((i) => i === "disable")) {
-        setArchiveMode("no-archiving");
-      }
-
-      await Promise.all(
-        syncOptions.map((options) =>
-          syncFile(options.localPath, options.content, false),
-        ),
-      );
-    },
-    [
-      getCloudFileRef,
-      getMetaData,
-      archiveMode,
-      downloadFile,
-      setArchiveMode,
-      toast,
-      syncFile,
-      t,
-    ],
-  );
-
-  const saveDoneFile = useCallback(async (filePath: string, text: string) => {
-    const doneFilePath = getDoneFilePath(filePath);
-    if (!doneFilePath) {
+  const saveDoneFile = useCallback(async (todoFileId: number, text: string) => {
+    const doneFileId = await getDoneFileId(todoFileId);
+    if (!doneFileId) {
       return;
     }
-    await writeFile({
-      path: doneFilePath,
-      data: text,
+    return writeFile({
+      id: doneFileId,
+      content: text,
     });
   }, []);
 
-  const loadDoneFile = useCallback(async (filePath: string) => {
-    const doneFilePath = getDoneFilePath(filePath);
-    if (!doneFilePath) {
-      return;
-    }
+  const loadDoneFile = useCallback(
+    async (todoFileId: number) => {
+      let doneFileId = await getDoneFileId(todoFileId);
+      if (!doneFileId) {
+        const result = await showSaveFilePicker("done.txt");
+        if (!result) {
+          return;
+        }
+        doneFileId = result.id;
+        await addDoneFileId(todoFileId, doneFileId);
+      }
 
-    const data = await readFile(doneFilePath).catch((e) => void e);
-    if (!data) {
-      return;
-    }
+      const data = await readFile(doneFileId).catch((e) => void e);
+      if (!data) {
+        return;
+      }
 
-    const parseResult = parseTaskList(data);
-    return {
-      items: parseResult.items,
-      lineEnding: parseResult.lineEnding,
-      doneFileName: getFilename(doneFilePath),
-      doneFilePath,
-    };
-  }, []);
+      const parseResult = parseTaskList(data.content);
+      return {
+        items: parseResult.items,
+        lineEnding: parseResult.lineEnding,
+        filename: data.filename,
+        id: doneFileId,
+      };
+    },
+    [showSaveFilePicker],
+  );
 
   const restoreTask = useCallback(
     async ({ taskList, task }: RestoreTaskOptions) => {
-      const { filePath, lineEnding, items } = taskList;
+      const { id, lineEnding, items } = taskList;
 
-      const doneFilePath = getDoneFilePath(filePath);
-      if (!doneFilePath) {
+      const doneFile = await loadDoneFile(id);
+      if (!doneFile) {
         return;
       }
 
-      const completedTaskList = await loadDoneFile(filePath);
-      if (!completedTaskList) {
-        return;
-      }
-
-      const completedTasks = completedTaskList.items.filter(
-        (i) => i.raw !== task.raw,
-      );
+      const completedTasks = doneFile.items.filter((i) => i.raw !== task.raw);
 
       const newItems =
         archiveMode === "automatic"
@@ -199,44 +96,44 @@ export function useArchivedTask() {
       };
 
       if (completedTasks.length === 0) {
-        await deleteFile(doneFilePath);
-        deleteCloudFile(doneFilePath).catch((e) => void e);
+        await Promise.all([
+          deleteFile(doneFile.id),
+          removeDoneFileId(taskList.id),
+        ]);
       } else {
-        const doneFileText = stringifyTaskList(completedTasks, lineEnding);
-        await saveDoneFile(filePath, doneFileText);
+        const text = stringifyTaskList(completedTasks, lineEnding);
+        await saveDoneFile(id, text);
       }
 
       return newTaskList;
     },
-    [archiveMode, deleteCloudFile, loadDoneFile, saveDoneFile],
+    [archiveMode, loadDoneFile, saveDoneFile],
   );
 
   const archiveTask = useCallback(
     async (opt: ArchiveTaskOptions) => {
       const { task, taskList } = opt;
-      const filePath = taskList.filePath;
+      const todoFileId = taskList.id;
 
-      const result = await loadDoneFile(filePath);
+      const result = await loadDoneFile(todoFileId);
 
       const text = stringifyTaskList(
         [...(result ? result.items : []), task],
         result ? result.lineEnding : taskList.lineEnding,
       );
 
-      await saveDoneFile(filePath, text);
+      await saveDoneFile(todoFileId, text);
 
       toast({
         variant: "success",
         description: t("Task archived", {
-          fileName: getFilename(filePath),
+          filename: result?.filename,
         }),
         action: (
           <ToastAction
             altText="Archived tasks"
             onClick={() => {
-              openArchivedTasksDialog({
-                filePath,
-              });
+              openArchivedTasksDialog(todoFileId);
             }}
           >
             {t("Archived tasks")}
@@ -251,7 +148,7 @@ export function useArchivedTask() {
     async (taskLists: TaskList[]) => {
       return Promise.all(
         taskLists.map(async (taskList) => {
-          const { filePath, items, lineEnding } = taskList;
+          const { id, items, lineEnding } = taskList;
 
           const newTaskList: TaskList = {
             ...taskList,
@@ -263,30 +160,29 @@ export function useArchivedTask() {
               })),
           };
 
-          const completedTasks = await loadDoneFile(filePath);
+          const doneFile = await loadDoneFile(id);
           const newCompletedTasks = items.filter((i) => i.completed);
           const allCompletedTasks = [
-            ...(completedTasks?.items || []),
+            ...(doneFile?.items || []),
             ...newCompletedTasks,
           ];
 
-          const doneFileText = stringifyTaskList(
+          const text = stringifyTaskList(
             allCompletedTasks,
-            completedTasks ? completedTasks.lineEnding : lineEnding,
+            doneFile ? doneFile.lineEnding : lineEnding,
           );
 
           if (allCompletedTasks.length === 0) {
             return;
           }
 
-          await saveDoneFile(filePath, doneFileText);
+          const result = await saveDoneFile(id, text);
 
-          const doneFilePath = getDoneFilePath(filePath);
-          if (doneFilePath && newCompletedTasks.length > 0) {
+          if (result && newCompletedTasks.length > 0) {
             toast({
               variant: "success",
               description: t("All completed tasks have been archived", {
-                doneFilePath,
+                filename: result.filename,
               }),
             });
           }
@@ -302,45 +198,39 @@ export function useArchivedTask() {
     (taskLists: TaskList[]) => {
       return Promise.all(
         taskLists.map(async (taskList) => {
-          const completedTaskList = await loadDoneFile(taskList.filePath);
-          if (!completedTaskList) {
-            return;
-          }
-
-          const doneFilePath = getDoneFilePath(taskList.filePath);
-          if (!doneFilePath) {
+          const doneFile = await loadDoneFile(taskList.id);
+          if (!doneFile) {
             return;
           }
 
           const newTaskList: TaskList = {
             ...taskList,
-            items: [...taskList.items, ...completedTaskList.items].map(
-              (i, index) => ({
-                ...i,
-                order: index,
-              }),
-            ),
+            items: [...taskList.items, ...doneFile.items].map((i, index) => ({
+              ...i,
+              order: index,
+            })),
           };
 
-          await deleteFile(doneFilePath);
+          await Promise.all([
+            deleteFile(doneFile.id),
+            removeDoneFileId(taskList.id),
+          ]);
 
           toast({
             variant: "success",
             description: t("All completed tasks have been restored", {
-              doneFilePath,
+              filename: doneFile.filename,
             }),
           });
 
-          deleteCloudFile(doneFilePath);
           return newTaskList;
         }),
       );
     },
-    [deleteCloudFile, toast, loadDoneFile, t],
+    [toast, loadDoneFile, t],
   );
 
   return {
-    syncDoneFiles,
     saveDoneFile,
     loadDoneFile,
     restoreTask,

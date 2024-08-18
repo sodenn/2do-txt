@@ -1,29 +1,120 @@
-import { getFilename, getFileNameWithoutExt } from "@/native-api/filesystem";
+import { db } from "@/utils/db";
+import { readFile } from "@/utils/filesystem";
+import { parseTaskList, TaskList } from "@/utils/task-list";
 
-export const defaultTodoFilePath = "todo.txt";
-const defaultDoneFilePath = "done.txt";
+interface Item {
+  todoFileId: number;
+  doneFileId?: number;
+}
 
-export function getDoneFilePath(todoFilePath: string) {
-  const fileName = getFilename(todoFilePath);
-  const fileNameWithoutEnding = getFileNameWithoutExt(fileName);
-  if (!fileNameWithoutEnding) {
+export async function getTodoFileIds(): Promise<Item[]> {
+  const list = await db.fileIds.list();
+  return list.length > 0 ? list[0].items : [];
+}
+
+export async function reorderTodoFileIds(todoFileIds: number[]): Promise<void> {
+  const list = await db.fileIds.list();
+  const firstEntry = list.length > 0 ? list[0] : null;
+  if (firstEntry) {
+    const itemMap = new Map<number, Item>();
+    firstEntry.items.forEach((item) => {
+      itemMap.set(item.todoFileId, item);
+    });
+
+    const reorderedItems: Item[] = todoFileIds
+      .map((todoFileId) => itemMap.get(todoFileId))
+      .filter((item) => item !== undefined);
+
+    const newEntry = { ...firstEntry, items: reorderedItems };
+    await db.fileIds.update(newEntry);
+  }
+}
+
+export async function getDoneFileId(
+  todoFileId: number,
+): Promise<number | undefined> {
+  const ids = await getTodoFileIds();
+  return ids.find((i) => i.todoFileId === todoFileId)?.doneFileId;
+}
+
+export async function addTodoFileId(id: number) {
+  const list = await db.fileIds.list();
+  const firstEntry = list.length > 0 ? list[0] : null;
+  if (firstEntry) {
+    const newIds = {
+      ...firstEntry,
+      items: [...firstEntry.items, { todoFileId: id }],
+    };
+    await db.fileIds.update(newIds);
+  } else {
+    const newIds = { items: [{ todoFileId: id }] };
+    await db.fileIds.create(newIds);
+  }
+}
+
+export async function addDoneFileId(todoFileId: number, doneFileId: number) {
+  const result = await db.fileIds.list();
+  const firstEntry = result.length > 0 ? result[0] : null;
+  if (!firstEntry) {
+    console.debug("Missing id list");
     return;
   }
-  return fileName === defaultTodoFilePath
-    ? todoFilePath.replace(new RegExp(`${fileName}$`), defaultDoneFilePath)
-    : todoFilePath.replace(
-        new RegExp(`${fileName}$`),
-        `${fileNameWithoutEnding}_${defaultDoneFilePath}`,
-      );
+
+  const newItems = firstEntry.items.map((item) => {
+    if (item.todoFileId === todoFileId) {
+      return {
+        ...item,
+        doneFileId,
+      };
+    } else {
+      return item;
+    }
+  });
+
+  const newEntry = { ...firstEntry, items: newItems };
+  await db.fileIds.update(newEntry);
 }
 
-export function getTodoFilePathFromDoneFilePath(doneFilePath: string) {
-  const fileName = getFilename(doneFilePath);
-  return fileName === defaultDoneFilePath
-    ? doneFilePath.replace(new RegExp(`${fileName}$`), defaultTodoFilePath)
-    : doneFilePath.replace(new RegExp(`_${defaultDoneFilePath}$`), ".txt");
+export async function removeDoneFileId(id: number) {
+  const result = await db.fileIds.list();
+  const firstEntry = result.length > 0 ? result[0] : null;
+  if (!firstEntry) {
+    console.debug("Missing id list");
+    return;
+  }
+
+  const newItems = firstEntry.items.map((item) => {
+    if (item.doneFileId !== id) {
+      return {
+        todoFileId: id,
+      };
+    } else {
+      return item;
+    }
+  });
+
+  const newEntry = { ...firstEntry, items: newItems };
+  await db.fileIds.update(newEntry);
 }
 
-export function isDoneFilePath(filePath: string) {
-  return filePath.endsWith(defaultDoneFilePath);
+export async function removeTodoFileId(id: number) {
+  const result = await db.fileIds.list();
+  const firstEntry = result.length > 0 ? result[0] : null;
+  if (!firstEntry) {
+    console.debug("Missing id list");
+    return;
+  }
+  const newItems = firstEntry.items.filter((i) => i.todoFileId !== id);
+  const newEntry = { ...firstEntry, items: newItems };
+  await db.fileIds.update(newEntry);
+}
+
+export async function loadTodoFileFromDisk(id: number): Promise<TaskList> {
+  const { content, filename } = await readFile(id);
+  const parseResult = parseTaskList(content);
+  return {
+    ...parseResult,
+    id,
+    filename,
+  };
 }

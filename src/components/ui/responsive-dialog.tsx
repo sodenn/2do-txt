@@ -196,7 +196,7 @@ export function ResponsiveDialogFooter({ children }: PropsWithChildren) {
     return <DialogFooter className="px-6">{children}</DialogFooter>;
   }
   return (
-    <SafeArea left right>
+    <SafeArea left right bottom>
       <DrawerFooter className="flex-row justify-end">{children}</DrawerFooter>
     </SafeArea>
   );

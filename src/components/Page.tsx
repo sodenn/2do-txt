@@ -1,23 +1,21 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
-import { CloudFileDialog } from "@/components/CloudFileDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
-import { FileCreateDialog } from "@/components/FileCreateDialog";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
-import { FilePicker } from "@/components/FilePicker";
 import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
 import { PageEffect } from "@/components/PageEffect";
+import { PrivateFilesystem } from "@/components/PrivateFilesystem";
+import { ReloadPrompt } from "@/components/ReloadPrompt";
 import { SafeArea } from "@/components/SafeArea";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { SideSheet } from "@/components/SideSheet";
 import { TaskDialog } from "@/components/TaskDialog";
 import { TaskView } from "@/components/TaskView";
-import { WebDAVDialog } from "@/components/WebDAVDialog";
 
-export function Component() {
+export function Page() {
   return (
-    <FilePicker>
+    <div className="sh:h-screen flex h-full flex-col outline-none">
       <Header />
       <SideSheet />
       <LayoutContent>
@@ -35,14 +33,13 @@ export function Component() {
         </SafeArea>
       </LayoutContent>
       <TaskDialog />
-      <FileCreateDialog />
-      <CloudFileDialog />
       <FileManagementDialog />
       <ConfirmationDialog />
       <ArchivedTasksDialog />
       <ShortcutsDialog />
-      <WebDAVDialog />
+      <PrivateFilesystem />
       <PageEffect />
-    </FilePicker>
+      <ReloadPrompt />
+    </div>
   );
 }

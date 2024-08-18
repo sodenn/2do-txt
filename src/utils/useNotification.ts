@@ -1,41 +1,51 @@
-import {
-  Notification,
-  scheduleNotifications as _scheduleNotifications,
-  cancelNotifications,
-  isNotificationPermissionGranted,
-  requestNotificationPermission,
-  shouldNotificationsBeRescheduled,
-} from "@/native-api/notification";
-import { useCallback } from "react";
+import { NotificationOptions, WebNotification } from "@/utils/notification";
+import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export function useNotification() {
   const { t } = useTranslation();
+  const webNotification = useMemo(() => new WebNotification(), []);
 
   const scheduleNotifications = useCallback(
-    async (options: Omit<Notification, "title">[]) => {
-      const opt = options.map((o) => {
-        return {
-          ...o,
-          title: t("Reminder"),
-        };
-      });
+    async (options: Omit<NotificationOptions, "title">[]) => {
+      const optionsWithTitle = options.map((o) => ({
+        ...o,
+        title: t("Reminder"),
+      }));
 
-      const granted = await isNotificationPermissionGranted();
+      const granted = await webNotification.isPermissionGranted();
       if (!granted) {
         return [];
       }
 
-      return _scheduleNotifications(opt);
+      return webNotification.schedule(optionsWithTitle);
     },
-    [t],
+    [t, webNotification],
   );
 
+  const isNotificationPermissionGranted = useCallback(() => {
+    return webNotification.isPermissionGranted();
+  }, [webNotification]);
+
+  const requestNotificationPermission = useCallback(() => {
+    return webNotification.requestPermission();
+  }, [webNotification]);
+
+  const cancelNotifications = useCallback(
+    (notificationIds: number[]) => {
+      return webNotification.cancel(notificationIds);
+    },
+    [webNotification],
+  );
+
+  useEffect(() => {
+    return webNotification.startCleanup();
+  }, [webNotification]);
+
   return {
-    isNotificationPermissionGranted: isNotificationPermissionGranted,
-    requestNotificationPermission: requestNotificationPermission,
-    cancelNotifications: cancelNotifications,
-    shouldNotificationsBeRescheduled: shouldNotificationsBeRescheduled,
+    isNotificationPermissionGranted,
+    requestNotificationPermission,
+    cancelNotifications,
     scheduleNotifications,
   };
 }

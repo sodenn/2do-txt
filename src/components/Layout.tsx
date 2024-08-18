@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
 import { ScrollAreaProps } from "@radix-ui/react-scroll-area";
 import clsx from "clsx";
@@ -120,6 +121,7 @@ export function LayoutSidebar({
 export function LayoutContent(props: ScrollAreaProps) {
   const setDivider = useScrollingStore((state) => state.setDivider);
   const sideSheetOpen = useSideSheetStore((state) => state.open);
+  const Component = HAS_TOUCHSCREEN ? "div" : ScrollArea;
 
   const handleScroll: ScrollAreaProps["onScroll"] = (event) => {
     const element = event.target as HTMLDivElement;
@@ -127,7 +129,7 @@ export function LayoutContent(props: ScrollAreaProps) {
   };
 
   return (
-    <ScrollArea
+    <Component
       onScroll={handleScroll}
       data-testid="page"
       id="scroll-container"

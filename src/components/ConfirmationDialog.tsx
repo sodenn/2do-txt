@@ -1,34 +1,41 @@
-import { AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
-import { cn } from "@/utils/tw-utils";
 
 export function ConfirmationDialog() {
-  const open = useConfirmationDialogStore((state) => state.open);
-  const title = useConfirmationDialogStore((state) => state.title);
-  const content = useConfirmationDialogStore((state) => state.content);
-  const buttons = useConfirmationDialogStore((state) => state.buttons);
-  const onClose = useConfirmationDialogStore((state) => state.onClose);
-  const closeConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.closeConfirmationDialog,
-  );
+  const {
+    open,
+    title,
+    content,
+    buttons,
+    onClose,
+    closeConfirmationDialog,
+    cleanupConfirmationDialog,
+  } = useConfirmationDialogStore();
+
+  const handleClose = () => {
+    closeConfirmationDialog();
+    setTimeout(() => {
+      cleanupConfirmationDialog();
+    }, 200);
+  };
 
   const handleClick = (handler?: () => void) => {
     handler?.();
-    closeConfirmationDialog();
+    handleClose();
   };
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       onClose?.();
-      closeConfirmationDialog();
+      handleClose();
     }
   };
 
@@ -36,17 +43,15 @@ export function ConfirmationDialog() {
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogContent data-testid="confirmation-dialog">
         <AlertDialogHeader>
-          {title && <AlertTitle>{title}</AlertTitle>}
+          <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{content}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           {buttons?.map((button) => (
             <Button
               key={button.text}
-              color={button.color}
               onClick={() => handleClick(button.handler)}
-              variant={button.cancel ? "outline" : undefined}
-              className={cn(button.cancel && "mt-2 sm:mt-0")}
+              variant={button.variant}
               aria-label={button.text}
             >
               {button.text}

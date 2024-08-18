@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { createExampleFile, goto, openSettings } from "./playwright-utils";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:5173");
-  await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
-  await page.getByRole("button", { name: "Toggle menu" }).click();
-  await page.getByRole("tab", { name: "Settings" }).click();
+  await goto(page);
+  await createExampleFile(page);
+  await openSettings(page);
 });
 
 test.describe("Archiving", () => {
@@ -12,6 +12,7 @@ test.describe("Archiving", () => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive automatically").click();
+    await page.getByLabel("Create file").click();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
@@ -20,12 +21,14 @@ test.describe("Archiving", () => {
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive manually").click();
     await page.getByLabel("Archive now").click();
+    await page.getByLabel("Create file").click();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
   test("should restore archived tasks", async ({ page }) => {
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive automatically").click();
+    await page.getByLabel("Create file").click();
     await expect(page.getByTestId("task")).toHaveCount(6);
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("No archiving").click();

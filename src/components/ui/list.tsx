@@ -26,7 +26,7 @@ const listVariants = cva("my-1 flex flex-col", {
 });
 
 export const listItemVariants = cva(
-  "flex w-full items-center gap-3 sm:gap-4 px-3 py-1 sm:py-1.5 sm:hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:[&:has(button[role='checkbox']:hover)]:bg-transparent",
+  "flex w-full items-center gap-3 sm:gap-4 px-3 py-1 sm:py-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:[&:has(button[role='checkbox']:hover)]:bg-transparent [&[role='button']]:sm:hover:bg-muted",
   {
     variants: {
       variant: {
@@ -97,16 +97,17 @@ List.displayName = "List";
 interface ListItemProps extends HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
   disabled?: boolean;
+  clickable?: boolean;
   buttonRef?: Ref<HTMLDivElement>;
 }
 
 export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
-  ({ selected, buttonRef, className, ...props }, ref) => {
+  ({ selected, clickable = true, buttonRef, className, ...props }, ref) => {
     const { variant } = useList();
     return (
       <li className="list-none" ref={ref}>
         <div
-          role="button"
+          role={clickable ? "button" : undefined}
           ref={buttonRef}
           tabIndex={0}
           className={cn(listItemVariants({ variant, className, selected }))}

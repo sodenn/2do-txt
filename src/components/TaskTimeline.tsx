@@ -22,10 +22,10 @@ import {
   PlusIcon,
 } from "lucide-react";
 import {
+  forwardRef,
   HTMLAttributes,
   KeyboardEvent,
   MutableRefObject,
-  forwardRef,
   useEffect,
   useState,
 } from "react";
@@ -174,7 +174,10 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
             <PlusIcon className="h-4 w-4" />
           </Button>
           <TimelineConnector
-            className={cn("mt-1", !flags.lastOfToday && "border-primary")}
+            className={cn(
+              "-mb-[3px] mt-2",
+              !flags.lastOfToday && "border-primary",
+            )}
           />
         </div>
         <div className="self-start" style={{ gridArea: "content" }}>
@@ -209,7 +212,7 @@ const TaskItem = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
       {!flags.first && (
         <TimelineConnector
           className={cn(
-            "-mt-[2px] mb-1 justify-self-center",
+            "mb-1 justify-self-center",
             flags.today && !flags.firstOfToday && "border-primary",
           )}
           style={{
@@ -248,7 +251,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
       className={cn(
         listItemVariants({
           variant: "default",
-          className: "w-full cursor-pointer self-start",
+          className: "w-full cursor-pointer self-start sm:px-5",
           selected: false,
         }),
       )}
@@ -299,7 +302,7 @@ function TaskCheckbox({
 }: TaskCheckboxProps) {
   return (
     <div
-      className="flex flex-col items-center justify-center gap-0.5 self-start"
+      className="flex h-full flex-col items-center justify-center gap-0.5 self-start"
       style={{
         gridArea: "action",
       }}
@@ -313,12 +316,12 @@ function TaskCheckbox({
         aria-checked={completed}
         onClick={onClick}
       >
-        {!completed && <CircleIcon className="h-4 w-4" />}
-        {completed && <CircleCheckBigIcon className="h-4 w-4" />}
+        {!completed && <CircleIcon className="h-4 w-4 bg-background" />}
+        {completed && <CircleCheckBigIcon className="h-4 w-4 bg-background" />}
       </Button>
       <TimelineConnector
         className={cn(
-          "mt-1",
+          "-mb-[3px] mt-1 flex-1",
           flags.today && !flags.lastOfToday && "border-primary",
           flags.last ? "invisible" : "visible",
         )}
@@ -389,7 +392,7 @@ const TimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(
     return (
       <div
         ref={ref}
-        className={cn("-mb-1 -mt-1 grid items-center gap-0.5", className)}
+        className={cn("grid items-center gap-0.5", className)}
         style={{
           gridTemplateColumns: "auto 50px 1fr",
           gridTemplateAreas: gridTemplateAreas,
@@ -407,7 +410,7 @@ function TimelineConnector({
   return (
     <div
       className={cn(
-        "flex min-h-[12px] rounded border-2 border-solid",
+        "flex min-h-[14px] rounded border-2 border-solid",
         className,
       )}
       {...props}

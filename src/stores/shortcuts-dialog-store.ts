@@ -1,15 +1,13 @@
 import { create } from "zustand";
 
-interface ShortcutsDialogStoreInterface {
+interface ShortcutsDialogState {
   open: boolean;
   openShortcutsDialog: () => void;
   closeShortcutsDialog: () => void;
 }
 
-export const useShortcutsDialogStore = create<ShortcutsDialogStoreInterface>(
-  (set) => ({
-    open: false,
-    openShortcutsDialog: () => set({ open: true }),
-    closeShortcutsDialog: () => set({ open: false }),
-  }),
-);
+export const useShortcutsDialogStore = create<ShortcutsDialogState>((set) => ({
+  open: false,
+  openShortcutsDialog: () => set({ open: true }),
+  closeShortcutsDialog: () => set({ open: false }),
+}));

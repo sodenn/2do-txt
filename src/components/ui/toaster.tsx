@@ -20,7 +20,7 @@ export function Toaster() {
         description,
         action,
         loading,
-        showCloseButton,
+        hideCloseButton,
         persistent,
         ...props
       }) {
@@ -38,7 +38,7 @@ export function Toaster() {
                 <LoaderCircleIcon className="h-7 w-7 shrink-0 animate-spin opacity-50" />
               </div>
             )}
-            {!showCloseButton && <ToastClose />}
+            {!hideCloseButton && <ToastClose />}
           </Toast>
         );
       })}

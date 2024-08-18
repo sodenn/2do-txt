@@ -6,22 +6,20 @@ import { SafeArea } from "@/components/SafeArea";
 import { SearchBar } from "@/components/SearchBar";
 import { ShareButton } from "@/components/ShareButton";
 import { SideSheetButton } from "@/components/SideSheetButton";
-import { usePlatformStore } from "@/stores/platform-store";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
+import { IS_ANDROID, IS_IOS } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
 import { useTask } from "@/utils/useTask";
 import { useState } from "react";
 
 export function Header() {
   const divider = useScrollingStore((state) => state.divider);
-  const platform = usePlatformStore((state) => state.platform);
   const { activeTaskList, taskLists } = useTask();
   const sideSheetOpen = useSideSheetStore((state) => state.open);
   const [searchBarExpanded, setSearchBarExpanded] = useState(false);
-  const showTodoFileDownloadButton =
-    (platform === "ios" || platform === "android") &&
-    (activeTaskList || taskLists.length === 1);
+  const showTodoFileShareButton =
+    (IS_IOS || IS_ANDROID) && (activeTaskList || taskLists.length === 1);
 
   return (
     <LayoutHeader open={sideSheetOpen}>
@@ -34,7 +32,7 @@ export function Header() {
           {taskLists.length > 0 && (
             <SearchBar onExpand={setSearchBarExpanded} />
           )}
-          {showTodoFileDownloadButton && <ShareButton />}
+          {showTodoFileShareButton && <ShareButton />}
           {taskLists.length > 0 && <AddTaskButton />}
         </div>
       </SafeArea>

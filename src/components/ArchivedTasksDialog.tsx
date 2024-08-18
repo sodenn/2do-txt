@@ -22,19 +22,20 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export function ArchivedTasksDialog() {
-  const open = useArchivedTasksDialogStore((state) => state.open);
-  const filePath = useArchivedTasksDialogStore((state) => state.filePath);
-  const closeArchivedTasksDialog = useArchivedTasksDialogStore(
-    (state) => state.closeArchivedTasksDialog,
-  );
+  const {
+    open,
+    todoFileId,
+    closeArchivedTasksDialog,
+    cleanupArchivedTasksDialog,
+  } = useArchivedTasksDialogStore();
   const { t } = useTranslation();
   const { loadDoneFile, restoreTask } = useTask();
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const handleRestore = async (task: Task) => {
-    if (filePath) {
-      await restoreTask(filePath, task);
-      loadDoneFile(filePath).then((result) => {
+    if (todoFileId) {
+      await restoreTask(todoFileId, task);
+      loadDoneFile(todoFileId).then((result) => {
         if (result && result.items.length > 0) {
           setTasks(result.items);
         } else {
@@ -45,17 +46,21 @@ export function ArchivedTasksDialog() {
   };
 
   useEffect(() => {
-    if (filePath) {
-      loadDoneFile(filePath).then((result) => {
+    if (todoFileId) {
+      loadDoneFile(todoFileId).then((result) => {
         if (result) {
           setTasks(result.items);
         }
       });
     }
-  }, [filePath, loadDoneFile]);
+  }, [todoFileId, loadDoneFile]);
 
   return (
-    <ResponsiveDialog open={open} onClose={closeArchivedTasksDialog}>
+    <ResponsiveDialog
+      open={open}
+      onClose={closeArchivedTasksDialog}
+      onExit={cleanupArchivedTasksDialog}
+    >
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("Archived tasks")}</ResponsiveDialogTitle>

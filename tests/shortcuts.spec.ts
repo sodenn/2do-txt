@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { createExampleFile, goto } from "./playwright-utils";
 
 test.beforeEach(async ({ page, isMobile }) => {
   test.skip(!!isMobile, "desktop only");
-  await page.goto("http://localhost:5173");
-  await page.setInputFiles('[data-testid="file-picker"]', "public/todo.txt");
-  await expect(page.getByTestId("task-list")).toBeVisible();
+  await goto(page);
+  await createExampleFile(page);
 });
 
 test.describe("Keyboard shortcuts", () => {

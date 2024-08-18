@@ -1,11 +1,10 @@
-import { hasTouchScreen } from "@/native-api/platform";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { useLongPress } from "@/utils/useLongPress";
 import { useEffect, useState } from "react";
 
 export function useTooltip(delay = 500) {
   const [showInstantTooltip, setShowInstantTooltip] = useState(false);
   const [showTooltip, setShowTooltip] = useState(showInstantTooltip);
-  const touchScreen = hasTouchScreen();
   const longPressProps = useLongPress({
     delay,
     callback: () => {
@@ -17,14 +16,14 @@ export function useTooltip(delay = 500) {
   });
 
   const openTooltip = () => {
-    if (touchScreen) {
+    if (HAS_TOUCHSCREEN) {
       return;
     }
     setShowInstantTooltip(true);
   };
 
   const closeTooltip = () => {
-    if (touchScreen) {
+    if (HAS_TOUCHSCREEN) {
       return;
     }
     setShowInstantTooltip(false);

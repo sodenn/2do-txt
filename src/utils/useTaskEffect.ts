@@ -1,7 +1,3 @@
-import {
-  addBecomeActiveListener,
-  removeAllBecomeActiveListeners,
-} from "@/native-api/platform";
 import { useTask } from "@/utils/useTask";
 import { useEffect } from "react";
 
@@ -14,9 +10,12 @@ export function useTaskEffect() {
   }, []);
 
   useEffect(() => {
-    addBecomeActiveListener(handleActive);
+    if (import.meta.env.MODE !== "production") {
+      return;
+    }
+    window.addEventListener("focus", handleActive);
     return () => {
-      removeAllBecomeActiveListeners([handleActive]);
+      window.removeEventListener("focus", handleActive);
     };
   }, [handleActive]);
 }

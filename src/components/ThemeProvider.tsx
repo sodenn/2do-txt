@@ -1,6 +1,10 @@
-import { setStatusBarStyling } from "@/native-api/status-bar";
 import { useThemeStore } from "@/stores/theme-store";
 import { PropsWithChildren, useEffect, useState } from "react";
+
+const themeColors = {
+  light: "#f9fbfd",
+  dark: "#101823",
+} as const;
 
 export function ThemeProvider({ children }: PropsWithChildren) {
   const mode = useThemeStore((state) => state.mode);
@@ -10,26 +14,27 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     setMode(mode);
     setMounte(true);
-    setStatusBarStyling(mode);
 
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
+    let themeColor: string;
+    const docEl = window.document.documentElement;
+    docEl.classList.remove("light", "dark");
     if (mode === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+      const colorShema = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
         : "light";
-      root.classList.add(systemTheme);
+      docEl.classList.add(colorShema);
+      themeColor = themeColors[colorShema];
     } else {
-      root.classList.add(mode);
+      themeColor = themeColors[mode];
+      docEl.classList.add(mode);
     }
 
-    const bodyBgColor = window.getComputedStyle(document.body).backgroundColor;
     const themeColorMetaTag = document.querySelector(
       'meta[name="theme-color"]',
     );
     if (themeColorMetaTag) {
-      themeColorMetaTag.setAttribute("content", bodyBgColor);
+      themeColorMetaTag.setAttribute("content", themeColor);
     }
   }, [mode, setMode]);
 

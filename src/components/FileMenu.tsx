@@ -1,4 +1,3 @@
-import { StartEllipsis } from "@/components/StartEllipsis";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,12 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import logo from "@/images/logo.png";
-import { hasTouchScreen } from "@/native-api/platform";
-import { useFileCreateDialogStore } from "@/stores/file-create-dialog-store";
 import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
+import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import {
   ChevronDownIcon,
@@ -23,26 +21,24 @@ import {
 } from "lucide-react";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import logo from "/logo.png";
 
 export function FileMenu() {
   const { t } = useTranslation();
-  const touchScreen = hasTouchScreen();
   const openFileManagementDialog = useFileManagementDialogStore(
     (state) => state.openFileManagementDialog,
   );
   const openShortcutsDialog = useShortcutsDialogStore(
     (state) => state.openShortcutsDialog,
   );
-  const { taskLists, activeTaskList } = useTask();
-  const setActiveTaskListPath = useFilterStore(
-    (state) => state.setActiveTaskListPath,
+  const { taskLists, activeTaskList, createNewTodoFile } = useTask();
+  const setActiveTaskListId = useFilterStore(
+    (state) => state.setActiveTaskListId,
   );
-  const openFileCreateDialog = useFileCreateDialogStore(
-    (state) => state.openFileCreateDialog,
-  );
+  const { showSaveFilePicker } = useFilesystem();
 
-  const handleSetActiveList = async (filePath: string) => {
-    setActiveTaskListPath(filePath);
+  const handleSetActiveList = async (id?: number) => {
+    setActiveTaskListId(id);
   };
 
   const handleManageFile = () => {
@@ -53,8 +49,11 @@ export function FileMenu() {
     openShortcutsDialog();
   };
 
-  const handleCreateFile = () => {
-    openFileCreateDialog();
+  const handleCreateFile = async () => {
+    const result = await showSaveFilePicker();
+    if (result) {
+      createNewTodoFile(result.id, "");
+    }
   };
 
   const menuItems: ReactNode[] = [];
@@ -65,7 +64,7 @@ export function FileMenu() {
         key="All"
         aria-label="All task lists"
         checked={!activeTaskList}
-        onClick={() => handleSetActiveList("")}
+        onClick={() => handleSetActiveList()}
       >
         {t("All")}
       </DropdownMenuCheckboxItem>,
@@ -73,14 +72,14 @@ export function FileMenu() {
   }
 
   if (taskLists.length > 1) {
-    taskLists.forEach(({ filePath }) => {
+    taskLists.forEach(({ id, filename }) => {
       menuItems.push(
         <DropdownMenuCheckboxItem
-          checked={activeTaskList?.filePath === filePath}
-          onClick={() => handleSetActiveList(filePath)}
-          key={filePath}
+          checked={activeTaskList?.id === id}
+          onClick={() => handleSetActiveList(id)}
+          key={id}
         >
-          <StartEllipsis>{filePath}</StartEllipsis>
+          <div className="truncate">{filename}</div>
         </DropdownMenuCheckboxItem>,
       );
     });
@@ -95,11 +94,11 @@ export function FileMenu() {
     );
   }
 
-  if (!touchScreen && taskLists.length > 1) {
+  if (!HAS_TOUCHSCREEN && taskLists.length > 1) {
     menuItems.push(<DropdownMenuSeparator key="divider" />);
   }
 
-  if (!touchScreen) {
+  if (!HAS_TOUCHSCREEN) {
     menuItems.push(
       <DropdownMenuItem
         onClick={handleKeyboardShortcutsClick}
@@ -130,9 +129,9 @@ export function FileMenu() {
           aria-label="File menu"
         >
           <img src={logo} className="mr-2 h-6 w-6" alt="Logo" height={22} />
-          <StartEllipsis>
-            {activeTaskList ? activeTaskList.fileName : "2do.txt"}
-          </StartEllipsis>
+          <div className="truncate">
+            {activeTaskList ? activeTaskList.filename : "2do.txt"}
+          </div>
           <ChevronDownIcon className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

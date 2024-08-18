@@ -1,0 +1,41 @@
+name: Update Playwright Screenshots
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  update-screenshots:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.45.3-jammy
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      - name: Update screenshots
+        run: npx playwright test screenshots.spec.ts --reporter=html --update-snapshots
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshots
+          path: tests/screenshots.spec.ts-snapshots
+          retention-days: 1
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report
+          path: playwright-report
+          retention-days: 1

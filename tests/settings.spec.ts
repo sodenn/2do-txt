@@ -1,8 +1,9 @@
 import { expect, Page, test } from "@playwright/test";
+import { goto, toggleMenu } from "./playwright-utils";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:5173");
-  await page.getByRole("button", { name: "Toggle menu" }).click();
+  await goto(page);
+  await toggleMenu(page);
 });
 
 test.describe("Appearance", () => {
@@ -18,7 +19,7 @@ test.describe("Appearance", () => {
     await page.getByLabel("Light").click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
-      "rgb(255, 255, 255)",
+      "#f9fbfd",
     );
     await checkInLocalStorage(page, "theme-mode", "light");
 
@@ -26,7 +27,7 @@ test.describe("Appearance", () => {
     await page.getByLabel("Dark").click();
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
       "content",
-      "rgb(6, 13, 19)",
+      "#101823",
     );
     await checkInLocalStorage(page, "theme-mode", "dark");
   });
@@ -55,7 +56,7 @@ async function checkInLocalStorage(page: Page, key: string, value: string) {
   const arg = JSON.stringify({ key, value });
   const result = await page.evaluate((_arg) => {
     const arg = JSON.parse(_arg);
-    return localStorage[`CapacitorStorage.${arg.key}`] === arg.value;
+    return localStorage[arg.key] === arg.value;
   }, arg);
   expect(result).toBe(true);
 }

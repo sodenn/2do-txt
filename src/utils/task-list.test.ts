@@ -1,14 +1,13 @@
 import { arrayMove } from "@/utils/array";
 import {
-  TaskList,
-  TaskListFilter,
   convertToTaskGroups,
   filterTasks,
   getCommonTaskListAttributes,
   parseTaskList,
   sortByOriginalOrder,
+  TaskList,
+  TaskListFilter,
 } from "@/utils/task-list";
-import { defaultTodoFilePath } from "@/utils/todo-files";
 import { describe, expect, it } from "vitest";
 
 describe("task-list", () => {
@@ -145,8 +144,8 @@ x 2. task +ProjB
     const taskLists: TaskList[] = [
       {
         ...parseResult,
-        filePath: defaultTodoFilePath,
-        fileName: defaultTodoFilePath,
+        id: 1,
+        filename: "todo.txt",
       },
     ];
 
@@ -164,13 +163,13 @@ x 2. task +ProjB
     const taskLists: TaskList[] = [
       {
         ...parseResult,
-        filePath: "todo1.txt",
-        fileName: "todo1.txt",
+        id: 2,
+        filename: "todo1.txt",
       },
       {
         ...parseResult,
-        filePath: "todo2.txt",
-        fileName: "todo2.txt",
+        id: 3,
+        filename: "todo2.txt",
       },
     ];
 

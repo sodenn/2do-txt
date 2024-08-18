@@ -1,4 +1,4 @@
-import { Routes } from "@/components/Routes";
+import { App } from "@/components/App";
 import { formatLocaleDate } from "@/utils/date";
 import "@fontsource/inter";
 import i18n from "i18next";
@@ -32,4 +32,4 @@ i18n
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
-root.render(<Routes />);
+root.render(<App />);

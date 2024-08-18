@@ -40,9 +40,8 @@ module.exports = {
     },
   ],
   ignorePatterns: [
-    "tools",
-    "capacitor.config.ts",
     "playwright.config.ts",
+    "pwa-assets.config.ts",
     "vite.config.ts",
     ".eslintrc.js",
   ],

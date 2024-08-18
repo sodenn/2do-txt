@@ -1,7 +1,4 @@
-import {
-  getPreferencesItem,
-  setPreferencesItem,
-} from "@/native-api/preferences";
+import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
 import { createContext, useContext } from "react";
 import { useStore as useZustandStore } from "zustand";
 import { createStore } from "zustand/vanilla";
@@ -25,7 +22,7 @@ export interface SearchParams {
   active: string;
 }
 
-export interface FilterStoreData {
+export interface FilterFields {
   searchTerm: string;
   activePriorities: string[];
   activeProjects: string[];
@@ -34,10 +31,10 @@ export interface FilterStoreData {
   sortBy: SortKey;
   filterType: FilterType;
   hideCompletedTasks: boolean;
-  activeTaskListPath?: string;
+  activeTaskListId?: number;
 }
 
-interface FilterStoreInterface extends FilterStoreData {
+interface FilterState extends FilterFields {
   setSearchTerm: (searchTerm: string) => void;
   setSortBy: (sortBy: SortKey) => void;
   setFilterType: (filterType: FilterType) => void;
@@ -50,30 +47,16 @@ interface FilterStoreInterface extends FilterStoreData {
   toggleTag: (tag: string) => void;
   resetActiveTags: () => void;
   setHideCompletedTasks: (hideCompletedTasks: boolean) => void;
-  setActiveTaskListPath: (activeTaskListPath?: string) => void;
+  setActiveTaskListId: (activeTaskListId?: number) => void;
 }
 
-function getDefaultInitialState(): FilterStoreData {
-  return {
-    searchTerm: "",
-    sortBy: "unsorted",
-    filterType: "AND",
-    activePriorities: [],
-    activeProjects: [],
-    activeContexts: [],
-    activeTags: [],
-    hideCompletedTasks: false,
-    activeTaskListPath: undefined,
-  };
-}
+export type FilterStore = ReturnType<typeof initializeFilterStore>;
 
-export type FilterStoreType = ReturnType<typeof initializeFilterStore>;
-
-const zustandContext = createContext<FilterStoreType | null>(null);
+const zustandContext = createContext<FilterStore | null>(null);
 
 export const FilterStoreProvider = zustandContext.Provider;
 
-export async function filterLoader(): Promise<FilterStoreData> {
+export async function filterLoader(): Promise<FilterFields> {
   const searchParams = new URLSearchParams(window.location.search);
   const [sortBy, filterType, hideCompletedTasks] = await Promise.all([
     getPreferencesItem<SortKey>("sort-by"),
@@ -87,7 +70,7 @@ export async function filterLoader(): Promise<FilterStoreData> {
   const tags = searchParams.get("tags");
   return {
     searchTerm: searchParams.get("term") || "",
-    activeTaskListPath: active ? decodeURIComponent(active) : undefined,
+    activeTaskListId: active ? parseInt(active) : undefined,
     activePriorities: priorities ? priorities.split(",") : [],
     activeProjects: projects ? projects.split(",") : [],
     activeContexts: contexts ? contexts.split(",") : [],
@@ -99,10 +82,18 @@ export async function filterLoader(): Promise<FilterStoreData> {
 }
 
 export function initializeFilterStore(
-  preloadedState: Partial<FilterStoreInterface> = {},
+  preloadedState: Partial<FilterState> = {},
 ) {
-  return createStore<FilterStoreInterface>((set) => ({
-    ...getDefaultInitialState(),
+  return createStore<FilterState>((set) => ({
+    searchTerm: "",
+    sortBy: "unsorted",
+    filterType: "AND",
+    activePriorities: [],
+    activeProjects: [],
+    activeContexts: [],
+    activeTags: [],
+    hideCompletedTasks: false,
+    activeTaskListId: undefined,
     ...preloadedState,
     setSearchTerm: (searchTerm: string) => set({ searchTerm }),
     setSortBy: (sortBy: SortKey) => {
@@ -159,13 +150,13 @@ export function initializeFilterStore(
       set({ hideCompletedTasks });
       setPreferencesItem("hide-completed-tasks", hideCompletedTasks.toString());
     },
-    setActiveTaskListPath: (activeTaskListPath?: string) =>
-      set({ activeTaskListPath }),
+    setActiveTaskListId: (activeTaskListId?: number) =>
+      set({ activeTaskListId }),
   }));
 }
 
-export function useFilterStore<T = FilterStoreInterface>(
-  selector: (state: FilterStoreInterface) => T = (state) => state as T,
+export function useFilterStore<T = FilterState>(
+  selector: (state: FilterState) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");

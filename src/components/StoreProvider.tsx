@@ -1,105 +1,63 @@
 import {
-  CloudLoaderData,
-  CloudStoreProvider,
-  CloudStoreType,
-  cloudLoader,
-  initializeCloudStore,
-} from "@/stores/cloud-store";
-import {
-  FilterStoreData,
-  FilterStoreProvider,
-  FilterStoreType,
+  FilterFields,
   filterLoader,
+  FilterStore,
+  FilterStoreProvider,
   initializeFilterStore,
 } from "@/stores/filter-store";
 import {
-  NetworkStoreData,
-  NetworkStoreProvider,
-  NetworkStoreType,
-  initializeNetworkStore,
-  networkLoader,
-} from "@/stores/network-store";
-import {
-  PlatformStoreData,
-  PlatformStoreProvider,
-  PlatformStoreType,
-  initializePlatformStore,
-  platformLoader,
-} from "@/stores/platform-store";
-import {
-  SettingsStoreData,
-  SettingsStoreProvider,
-  SettingsStoreType,
   initializeSettingsStore,
+  SettingsFields,
   settingsLoader,
+  SettingsStore,
+  SettingsStoreProvider,
 } from "@/stores/settings-store";
 import {
-  TaskStoreData,
-  TaskStoreProvider,
-  TaskStoreType,
   initializeTaskStore,
+  TaskFields,
   taskLoader,
-} from "@/stores/task-state";
+  TaskStore,
+  TaskStoreProvider,
+} from "@/stores/task-store";
 import {
-  ThemeStoreData,
-  ThemeStoreProvider,
-  ThemeStoreType,
   initializeThemeStore,
+  ThemeFields,
   themeLoader,
+  ThemeStore,
+  ThemeStoreProvider,
 } from "@/stores/theme-store";
 import { preloadImages } from "@/utils/images";
-import { migrate } from "@/utils/migrations";
 import { useRef, type PropsWithChildren } from "react";
 
 export interface LoaderData {
-  filter: FilterStoreData;
-  settings: SettingsStoreData;
-  platform: PlatformStoreData;
-  theme: ThemeStoreData;
-  task: TaskStoreData;
-  cloud: CloudLoaderData;
-  network: NetworkStoreData;
+  filter: FilterFields;
+  settings: SettingsFields;
+  theme: ThemeFields;
+  task: TaskFields;
 }
 
 export async function loader(): Promise<LoaderData> {
-  await migrate();
-  const [filter, settings, platform, theme, task, cloud, network] =
-    await Promise.all([
-      filterLoader(),
-      settingsLoader(),
-      platformLoader(),
-      themeLoader(),
-      taskLoader(),
-      cloudLoader(),
-      networkLoader(),
-      preloadImages([new URL("@/images/logo.png", import.meta.url)]),
-    ]);
-  return { filter, settings, platform, theme, task, cloud, network };
+  const [filter, settings, theme, task] = await Promise.all([
+    filterLoader(),
+    settingsLoader(),
+    themeLoader(),
+    taskLoader(),
+    preloadImages([new URL("/logo.png", import.meta.url)]),
+  ]);
+  return { filter, settings, theme, task };
 }
 
 export function StoreProvider({
   children,
   ...props
 }: PropsWithChildren<LoaderData>) {
-  const cloudStoreRef = useRef<CloudStoreType>();
-  const filterStoreRef = useRef<FilterStoreType>();
-  const networkStoreRef = useRef<NetworkStoreType>();
-  const platformStoreRef = useRef<PlatformStoreType>();
-  const settingsStoreRef = useRef<SettingsStoreType>();
-  const taskStoreRef = useRef<TaskStoreType>();
-  const themeStoreRef = useRef<ThemeStoreType>();
+  const filterStoreRef = useRef<FilterStore>();
+  const settingsStoreRef = useRef<SettingsStore>();
+  const taskStoreRef = useRef<TaskStore>();
+  const themeStoreRef = useRef<ThemeStore>();
 
-  if (!cloudStoreRef.current) {
-    cloudStoreRef.current = initializeCloudStore(props.cloud);
-  }
   if (!filterStoreRef.current) {
     filterStoreRef.current = initializeFilterStore(props.filter);
-  }
-  if (!networkStoreRef.current) {
-    networkStoreRef.current = initializeNetworkStore(props.network);
-  }
-  if (!platformStoreRef.current) {
-    platformStoreRef.current = initializePlatformStore(props.platform);
   }
   if (!settingsStoreRef.current) {
     settingsStoreRef.current = initializeSettingsStore(props.settings);
@@ -112,20 +70,14 @@ export function StoreProvider({
   }
 
   return (
-    <CloudStoreProvider value={cloudStoreRef.current}>
-      <FilterStoreProvider value={filterStoreRef.current}>
-        <NetworkStoreProvider value={networkStoreRef.current}>
-          <PlatformStoreProvider value={platformStoreRef.current}>
-            <SettingsStoreProvider value={settingsStoreRef.current}>
-              <TaskStoreProvider value={taskStoreRef.current}>
-                <ThemeStoreProvider value={themeStoreRef.current}>
-                  {children}
-                </ThemeStoreProvider>
-              </TaskStoreProvider>
-            </SettingsStoreProvider>
-          </PlatformStoreProvider>
-        </NetworkStoreProvider>
-      </FilterStoreProvider>
-    </CloudStoreProvider>
+    <FilterStoreProvider value={filterStoreRef.current}>
+      <SettingsStoreProvider value={settingsStoreRef.current}>
+        <TaskStoreProvider value={taskStoreRef.current}>
+          <ThemeStoreProvider value={themeStoreRef.current}>
+            {children}
+          </ThemeStoreProvider>
+        </TaskStoreProvider>
+      </SettingsStoreProvider>
+    </FilterStoreProvider>
   );
 }

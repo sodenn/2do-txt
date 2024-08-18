@@ -12,7 +12,7 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement;
   persistent?: boolean;
   loading?: boolean;
-  showCloseButton?: boolean;
+  hideCloseButton?: boolean;
 };
 
 const actionTypes = {
@@ -157,6 +157,7 @@ function toast({ ...props }: Toast) {
         id,
         open: true,
         onOpenChange: (open) => {
+          if (props.onOpenChange) props.onOpenChange(open);
           if (!open) dismiss();
         },
       },

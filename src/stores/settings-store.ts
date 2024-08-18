@@ -1,7 +1,4 @@
-import {
-  getPreferencesItem,
-  setPreferencesItem,
-} from "@/native-api/preferences";
+import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
 import { createContext, useContext } from "react";
 import { getI18n } from "react-i18next";
 import { useStore as useZustandStore } from "zustand";
@@ -15,7 +12,7 @@ export type TaskView = "list" | "timeline";
 
 export type PriorityTransformation = "keep" | "remove" | "archive";
 
-export interface SettingsStoreData {
+export interface SettingsFields {
   createCreationDate: boolean;
   createCompletionDate: boolean;
   showNotifications: boolean;
@@ -25,7 +22,7 @@ export interface SettingsStoreData {
   language: Language;
 }
 
-interface SettingsStoreInterface extends SettingsStoreData {
+interface SettingsState extends SettingsFields {
   toggleCreateCreationDate: () => void;
   toggleCreateCompletionDate: () => void;
   changeLanguage: (language: Language) => void;
@@ -37,25 +34,13 @@ interface SettingsStoreInterface extends SettingsStoreData {
   ) => void;
 }
 
-function getDefaultInitialState(): SettingsStoreData {
-  return {
-    createCreationDate: true,
-    createCompletionDate: true,
-    showNotifications: false,
-    archiveMode: "no-archiving",
-    taskView: "list",
-    priorityTransformation: "keep",
-    language: "en",
-  };
-}
+export type SettingsStore = ReturnType<typeof initializeSettingsStore>;
 
-export type SettingsStoreType = ReturnType<typeof initializeSettingsStore>;
-
-const zustandContext = createContext<SettingsStoreType | null>(null);
+const zustandContext = createContext<SettingsStore | null>(null);
 
 export const SettingsStoreProvider = zustandContext.Provider;
 
-export async function settingsLoader(): Promise<SettingsStoreData> {
+export async function settingsLoader(): Promise<SettingsFields> {
   const [
     createCreationDate,
     createCompletionDate,
@@ -87,10 +72,16 @@ export async function settingsLoader(): Promise<SettingsStoreData> {
 }
 
 export function initializeSettingsStore(
-  preloadedState: Partial<SettingsStoreInterface> = {},
+  preloadedState: Partial<SettingsState> = {},
 ) {
-  return createStore<SettingsStoreInterface>((set) => ({
-    ...getDefaultInitialState(),
+  return createStore<SettingsState>((set) => ({
+    createCreationDate: true,
+    createCompletionDate: true,
+    showNotifications: false,
+    archiveMode: "no-archiving",
+    taskView: "list",
+    priorityTransformation: "keep",
+    language: "en",
     ...preloadedState,
     toggleCreateCreationDate: () =>
       set((state) => {
@@ -140,8 +131,8 @@ export function initializeSettingsStore(
   }));
 }
 
-export function useSettingsStore<T = SettingsStoreInterface>(
-  selector: (state: SettingsStoreInterface) => T = (state) => state as T,
+export function useSettingsStore<T = SettingsState>(
+  selector: (state: SettingsState) => T = (state) => state as T,
 ) {
   const store = useContext(zustandContext);
   if (!store) throw new Error("Store is missing the provider");
