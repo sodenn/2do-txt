@@ -10,7 +10,8 @@ type PreferencesKeys =
   | "sort-by"
   | "filter-type"
   | "hide-completed-tasks"
-  | "task-view";
+  | "task-view"
+  | "reminder-offset";
 
 export async function getPreferencesItem<T extends string>(
   key: PreferencesKeys,

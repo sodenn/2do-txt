@@ -12,6 +12,8 @@ export type TaskView = "list" | "timeline";
 
 export type PriorityTransformation = "keep" | "remove" | "archive";
 
+const defaultReminderOffset = 1000 * 60 * 60 * 4; // 4h
+
 export interface SettingsFields {
   createCreationDate: boolean;
   createCompletionDate: boolean;
@@ -20,6 +22,7 @@ export interface SettingsFields {
   taskView: TaskView;
   priorityTransformation: PriorityTransformation;
   language: Language;
+  reminderOffset: number;
 }
 
 interface SettingsState extends SettingsFields {
@@ -32,6 +35,7 @@ interface SettingsState extends SettingsFields {
   setCompletedTaskPriority: (
     priorityTransformation: PriorityTransformation,
   ) => void;
+  setReminderOffset: (ms: number) => void;
 }
 
 export type SettingsStore = ReturnType<typeof initializeSettingsStore>;
@@ -49,6 +53,7 @@ export async function settingsLoader(): Promise<SettingsFields> {
     taskView,
     completedTaskPriority,
     language,
+    reminderOffset,
   ] = await Promise.all([
     getPreferencesItem("create-creation-date"),
     getPreferencesItem("create-completion-date"),
@@ -57,6 +62,7 @@ export async function settingsLoader(): Promise<SettingsFields> {
     getPreferencesItem<TaskView>("task-view"),
     getPreferencesItem<PriorityTransformation>("priority-transformation"),
     getPreferencesItem<Language>("language"),
+    getPreferencesItem("reminder-offset"),
   ]);
   return {
     showNotifications: showNotifications === "true",
@@ -68,6 +74,9 @@ export async function settingsLoader(): Promise<SettingsFields> {
     taskView: taskView || "list",
     priorityTransformation: completedTaskPriority || "keep",
     language: language || "en",
+    reminderOffset: reminderOffset
+      ? parseInt(reminderOffset)
+      : defaultReminderOffset,
   };
 }
 
@@ -82,6 +91,7 @@ export function initializeSettingsStore(
     taskView: "list",
     priorityTransformation: "keep",
     language: "en",
+    reminderOffset: defaultReminderOffset,
     ...preloadedState,
     toggleCreateCreationDate: () =>
       set((state) => {
@@ -127,6 +137,10 @@ export function initializeSettingsStore(
     ) => {
       set({ priorityTransformation });
       setPreferencesItem("priority-transformation", priorityTransformation);
+    },
+    setReminderOffset: (ms: number) => {
+      set({ reminderOffset: ms });
+      setPreferencesItem("reminder-offset", ms.toString());
     },
   }));
 }

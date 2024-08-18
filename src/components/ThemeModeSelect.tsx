@@ -1,3 +1,4 @@
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -20,7 +21,7 @@ export function ThemeModeSelect() {
 
   return (
     <div className="space-y-2">
-      <div className="font-semibold">{t("Appearance")}</div>
+      <Label>{t("Theme")}</Label>
       <Select
         value={mode}
         onValueChange={(value) => handleClick(value as ThemeMode)}

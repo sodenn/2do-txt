@@ -32,7 +32,7 @@ import {
 } from "@/utils/todo-files";
 import { useArchivedTask } from "@/utils/useArchivedTask";
 import { useNotification } from "@/utils/useNotification";
-import { format, isBefore, subHours } from "date-fns";
+import { format, isBefore } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { isEqual, omit } from "lodash";
@@ -180,13 +180,11 @@ export function useTask() {
         return;
       }
 
-      const scheduleAt = subHours(task.dueDate, 12);
-
       scheduleNotifications([
         {
           body: task.body.replace(createDueDateRegex(), "").trim(), // remove due date from notification text
           id: hashCode(task.raw),
-          scheduleAt: scheduleAt,
+          scheduleAt: task.dueDate,
         },
       ]);
     },

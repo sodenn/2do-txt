@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -35,7 +36,7 @@ export function ArchiveModeSelect() {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-1">
-        <div className="font-semibold">{t("Archiving")}</div>
+        <Label>{t("Archiving")}</Label>
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
             <CircleHelpIcon className="h-4 w-4" />
@@ -51,7 +52,7 @@ export function ArchiveModeSelect() {
           </TooltipContent>
         </Tooltip>
       </div>
-      <div className="flex gap-1">
+      <div className="flex gap-2">
         <Select value={archiveMode} onValueChange={handleChange}>
           <SelectTrigger aria-label="Select archive mode">
             <SelectValue />

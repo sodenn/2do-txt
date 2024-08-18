@@ -1,3 +1,4 @@
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -14,7 +15,7 @@ export function LanguageSelect() {
   const changeLanguage = useSettingsStore((state) => state.changeLanguage);
   return (
     <div className="space-y-2">
-      <div className="font-semibold">{t("Language")}</div>
+      <Label>{t("Language")}</Label>
       <Select
         value={language}
         onValueChange={(value) => changeLanguage(value as Language)}

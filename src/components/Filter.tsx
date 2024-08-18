@@ -82,10 +82,10 @@ export function Filter() {
   });
 
   return (
-    <div className="space-y-3 text-sm">
+    <div className="space-y-4 text-sm">
       {Object.keys(priorities).length > 0 && (
         <div className="space-y-2">
-          <div className="font-semibold">{t("Priorities")}</div>
+          <Label>{t("Priorities")}</Label>
           <ChipList
             items={priorities}
             activeItems={activePriorities}
@@ -96,7 +96,7 @@ export function Filter() {
       )}
       {Object.keys(projects).length > 0 && (
         <div className="space-y-2">
-          <div className="font-semibold">{t("Projects")}</div>
+          <Label>{t("Projects")}</Label>
           <ChipList
             items={projects}
             activeItems={activeProjects}
@@ -107,7 +107,7 @@ export function Filter() {
       )}
       {Object.keys(contexts).length > 0 && (
         <div className="space-y-2">
-          <div className="font-semibold">{t("Contexts")}</div>
+          <Label>{t("Contexts")}</Label>
           <ChipList
             items={contexts}
             activeItems={activeContexts}
@@ -118,7 +118,7 @@ export function Filter() {
       )}
       {Object.keys(tags).length > 0 && (
         <div className="space-y-2">
-          <div className="font-semibold">{t("Tags")}</div>
+          <Label>{t("Tags")}</Label>
           <ChipList
             items={Object.keys(tags).reduce<Record<string, number>>(
               (acc, key) => {
@@ -147,7 +147,7 @@ export function Filter() {
       )}
       {showSortBy && (
         <div className="space-y-2">
-          <div className="font-semibold">{t("Filter type")}</div>
+          <Label>{t("Filter type")}</Label>
           <Select
             defaultValue="AND"
             value={filterType}
@@ -164,27 +164,14 @@ export function Filter() {
         </div>
       )}
       {showSortBy && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-1 font-semibold">
-            {t("Sort by")}
-            {taskView === "timeline" && (
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <HelpCircleIcon className="h-4 w-4" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <Trans i18nKey="Disabled when timeline view is active" />
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </div>
+        <div className="flex flex-col-reverse gap-2">
           <Select
             disabled={taskView === "timeline"}
             defaultValue="unsorted"
             value={sortBy}
             onValueChange={(value) => setSortBy(value as SortKey)}
           >
-            <SelectTrigger aria-label="Sort tasks">
+            <SelectTrigger className="peer" aria-label="Sort tasks">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -196,10 +183,23 @@ export function Filter() {
               <SelectItem value="tag">{t("Tag")}</SelectItem>
             </SelectContent>
           </Select>
+          <Label className="flex items-center gap-2">
+            {t("Sort by")}
+            {taskView === "timeline" && (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <HelpCircleIcon className="h-4 w-4" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <Trans i18nKey="Disabled when timeline view is active" />
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </Label>
         </div>
       )}
       <div className="space-y-2">
-        <div className="font-semibold">{t("Status")}</div>
+        <Label>{t("Status")}</Label>
         <div className="flex items-center space-x-2">
           <Checkbox
             id="hideCompletedTasks"
