@@ -56,7 +56,7 @@ export function SideSheet() {
             )}
             {hideFilter && (
               <div className="px-2 py-3 font-semibold leading-none tracking-tight">
-                {t("Filter")}
+                {t("Settings")}
               </div>
             )}
           </SafeArea>
