@@ -28,13 +28,12 @@ jobs:
         run: npx playwright install --with-deps
       - name: Update screenshots
         run: npx playwright test screenshots.spec.ts --reporter=html --update-snapshots
-      - name: Upload HTML report
-        if: always()
+      - name: Upload Screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: html-report
-          path: playwright-report
-          retention-days: 14
+          name: snapshots
+          path: tests/screenshots.spec.ts-snapshots
+          retention-days: 1
       - name: Commit changes
         run: |
           git config --local user.email "playwright[bot]@users.noreply.github.com"
@@ -42,3 +41,10 @@ jobs:
           git add -A
           git commit -m "Update Playwright screenshots" -a || echo "No changes to commit"
           git push
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report
+          path: playwright-report
+          retention-days: 1
