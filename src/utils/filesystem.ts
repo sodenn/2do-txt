@@ -28,6 +28,8 @@ export class FileError extends Error {
   }
 }
 
+const fileHandlesCache = new Map<number, FileSystemFileHandle>();
+
 export async function showSaveFilePicker(suggestedName = "todo.txt") {
   if (!SUPPORTS_SHOW_OPEN_FILE_PICKER) {
     return privateFilesystem.createFile(suggestedName);
@@ -48,6 +50,8 @@ export async function showSaveFilePicker(suggestedName = "todo.txt") {
   }
 
   const { id } = await db.fileHandles.create({ handle: handle });
+  fileHandlesCache.set(id, handle);
+
   const fileData = await handle.getFile();
   const content = await fileData.text();
   return {
@@ -68,6 +72,8 @@ export async function showOpenFilePicker() {
   }
 
   const { id } = await db.fileHandles.create({ handle });
+  fileHandlesCache.set(id, handle);
+
   const filename = handle.name;
   const file: File = await handle.getFile();
   const content = await file.text();
@@ -83,7 +89,9 @@ export async function readFile(id: number) {
     return privateFilesystem.readFile(id);
   }
 
-  const { handle } = await db.fileHandles.read(id);
+  const { handle } = fileHandlesCache.has(id)
+    ? { handle: fileHandlesCache.get(id)! }
+    : await db.fileHandles.read(id);
 
   try {
     const fileData = await handle.getFile();
@@ -109,7 +117,9 @@ export async function writeFile({
     return privateFilesystem.writeFile({ id, content });
   }
 
-  const { handle } = await db.fileHandles.read(id);
+  const { handle } = fileHandlesCache.has(id)
+    ? { handle: fileHandlesCache.get(id)! }
+    : await db.fileHandles.read(id);
   await verifyPermission(handle);
 
   try {

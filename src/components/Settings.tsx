@@ -74,11 +74,11 @@ export function Settings() {
         <div className="font-semibold">{t("Notifications")}</div>
         <div className="flex items-center space-x-2">
           <Checkbox
-            id="createCompletionDate"
+            id="enableDueDateNotifications"
             checked={showNotifications}
             onCheckedChange={() => handleShowNotifications()}
           />
-          <Label htmlFor="createCompletionDate">{t("Due tasks")}</Label>
+          <Label htmlFor="enableDueDateNotifications">{t("Due tasks")}</Label>
         </div>
       </div>
       <ArchiveModeSelect />
