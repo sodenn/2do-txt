@@ -120,7 +120,12 @@ export async function writeFile({
   const { handle } = fileHandlesCache.has(id)
     ? { handle: fileHandlesCache.get(id)! }
     : await db.fileHandles.read(id);
-  await verifyPermission(handle);
+
+  const { update } = await verifyPermission(handle);
+  if (update) {
+    // update clone in indexDb
+    await db.fileHandles.update({ id, handle });
+  }
 
   try {
     const writable = await handle.createWritable();
@@ -160,20 +165,20 @@ async function verifyPermission(fileHandle: FileSystemFileHandle) {
     // Check if permission was already granted. If so, return true.
     // @ts-ignore
     if ((await fileHandle.queryPermission(options)) === "granted") {
-      return true;
+      return { granted: true, update: false };
     }
 
     // Request permission. If the user grants permission, return true.
     // @ts-ignore
     if ((await fileHandle.requestPermission(options)) === "granted") {
-      return true;
+      return { granted: true, update: true };
     }
 
     // The user didn't grant permission, so return false.
-    return false;
-  } catch (e) {
+    return { granted: false, update: false };
+  } catch (error) {
     // this can fail with a DOMException
-    console.error("Unable to verify permission", e);
-    return false;
+    console.error("Unable to verify permission", error);
+    return { granted: false, update: false, error };
   }
 }

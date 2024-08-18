@@ -20,7 +20,7 @@ export function ThemeModeSelect() {
 
   return (
     <div className="space-y-2">
-      <div className="font-semibold">{t("Appearance")}</div>
+      <div className="font-semibold">{t("Theme")}</div>
       <Select
         value={mode}
         onValueChange={(value) => handleClick(value as ThemeMode)}

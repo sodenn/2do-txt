@@ -82,7 +82,7 @@ export function Filter() {
   });
 
   return (
-    <div className="space-y-3 text-sm">
+    <div className="space-y-4 text-sm">
       {Object.keys(priorities).length > 0 && (
         <div className="space-y-2">
           <div className="font-semibold">{t("Priorities")}</div>

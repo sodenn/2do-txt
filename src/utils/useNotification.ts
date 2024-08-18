@@ -1,15 +1,18 @@
+import { useSettingsStore } from "@/stores/settings-store";
 import { NotificationOptions, WebNotification } from "@/utils/notification";
 import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export function useNotification() {
   const { t } = useTranslation();
+  const reminderOffset = useSettingsStore((store) => store.reminderOffset);
   const webNotification = useMemo(() => new WebNotification(), []);
 
   const scheduleNotifications = useCallback(
     async (options: Omit<NotificationOptions, "title">[]) => {
       const optionsWithTitle = options.map((o) => ({
         ...o,
+        displayOffset: reminderOffset,
         title: t("Reminder"),
       }));
 
