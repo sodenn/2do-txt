@@ -1,3 +1,4 @@
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -22,7 +23,7 @@ export function PriorityTransformationSelect() {
 
   return (
     <div className="space-y-2">
-      <div className="font-semibold">{t("Completed tasks")}</div>
+      <Label>{t("Completed tasks")}</Label>
       <Select
         value={priorityTransformation}
         onValueChange={(value) =>

@@ -56,14 +56,17 @@ export function ReminderSelect() {
           {t("Receive notifications")}
         </Label>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="reminderOffset">{t("Reminder")}</Label>
+      <div className="flex flex-col-reverse gap-2">
         <Select
           disabled={!showNotifications}
           value={reminderOffset.toString()}
           onValueChange={(value) => setReminderOffset(parseInt(value))}
         >
-          <SelectTrigger id="reminderOffset" aria-label="Reminder">
+          <SelectTrigger
+            className="peer"
+            id="reminderOffset"
+            aria-label="Reminder"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -75,6 +78,7 @@ export function ReminderSelect() {
             <SelectItem value="0">{t("When due")}</SelectItem>
           </SelectContent>
         </Select>
+        <Label htmlFor="reminderOffset">{t("Reminder")}</Label>
       </div>
     </div>
   );
