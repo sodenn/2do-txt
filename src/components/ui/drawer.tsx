@@ -1,6 +1,9 @@
-import { Drawer as DrawerPrimitive } from "vaul";
-
 import { cn } from "@/utils/tw-utils";
+import {
+  VisuallyHidden,
+  VisuallyHiddenProps,
+} from "@radix-ui/react-visually-hidden";
+import { cva } from "class-variance-authority";
 import {
   ComponentProps,
   ComponentPropsWithoutRef,
@@ -8,17 +11,23 @@ import {
   forwardRef,
   HTMLAttributes,
 } from "react";
+import { Drawer as DrawerPrimitive } from "vaul";
 
-const Drawer = ({
-  shouldScaleBackground = true,
-  ...props
-}: ComponentProps<typeof DrawerPrimitive.Root>) => (
-  <DrawerPrimitive.Root
-    shouldScaleBackground={shouldScaleBackground}
-    {...props}
-  />
-);
-Drawer.displayName = "Drawer";
+const drawerVariants = cva("fixed z-50 flex flex-col border bg-background", {
+  variants: {
+    direction: {
+      bottom: "inset-x-0 bottom-0 h-auto mt-24 rounded-t-[10px]",
+      left: "inset-y-0 left-0 w-80",
+      right: "",
+      top: "",
+    },
+  },
+  defaultVariants: {
+    direction: "bottom",
+  },
+});
+
+const Drawer = DrawerPrimitive.Root;
 
 const DrawerTrigger = DrawerPrimitive.Trigger;
 
@@ -40,19 +49,19 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
 const DrawerContent = forwardRef<
   ElementRef<typeof DrawerPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> &
+    Pick<ComponentProps<typeof DrawerPrimitive.Root>, "direction">
+>(({ className, direction, children, ...props }, ref) => (
   <DrawerPortal>
     <DrawerOverlay />
     <DrawerPrimitive.Content
       ref={ref}
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
-        className,
-      )}
+      className={cn(drawerVariants({ direction, className }))}
       {...props}
     >
-      <div className="mx-auto mt-4 h-2 w-[100px] flex-shrink-0 rounded-full bg-muted" />
+      {direction === "top" && (
+        <div className="mx-auto mt-4 h-2 w-[100px] flex-shrink-0 rounded-full bg-muted" />
+      )}
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
@@ -69,6 +78,11 @@ const DrawerHeader = ({
   />
 );
 DrawerHeader.displayName = "DrawerHeader";
+
+export function HiddenDrawerHeader(props: VisuallyHiddenProps) {
+  return <VisuallyHidden {...props} />;
+}
+HiddenDrawerHeader.displayName = "HiddenDrawerHeader";
 
 const DrawerFooter = ({
   className,

@@ -1,15 +1,14 @@
 import { useBreakpoint } from "@/components/Breakpoint";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  HiddenSheetHeader,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerTitle,
+  HiddenDrawerHeader,
+} from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useScrollingStore } from "@/stores/scrolling-store";
 import { useSideSheetStore } from "@/stores/side-sheet-store";
-import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
 import { ScrollAreaProps } from "@radix-ui/react-scroll-area";
 import clsx from "clsx";
@@ -102,26 +101,27 @@ export function LayoutSidebar({
   }
 
   return (
-    <Sheet
+    <Drawer
       data-hotkeys-keep-enabled={persistent ? "true" : "m"}
       open={open}
       onOpenChange={handleOpenChange}
+      direction="left"
+      shouldScaleBackground={false}
     >
-      <SheetContent className="p-0" side="left" aria-label="Side Menu">
-        <HiddenSheetHeader>
-          <SheetTitle>Side Menu</SheetTitle>
-          <SheetDescription></SheetDescription>
-        </HiddenSheetHeader>
+      <HiddenDrawerHeader>
+        <DrawerTitle>Side Menu</DrawerTitle>
+        <DrawerDescription></DrawerDescription>
+      </HiddenDrawerHeader>
+      <DrawerContent direction="left" aria-label="Side Menu">
         {children}
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 }
 
 export function LayoutContent(props: ScrollAreaProps) {
   const setDivider = useScrollingStore((state) => state.setDivider);
   const sideSheetOpen = useSideSheetStore((state) => state.open);
-  const Component = HAS_TOUCHSCREEN ? "div" : ScrollArea;
 
   const handleScroll: ScrollAreaProps["onScroll"] = (event) => {
     const element = event.target as HTMLDivElement;
@@ -129,7 +129,7 @@ export function LayoutContent(props: ScrollAreaProps) {
   };
 
   return (
-    <Component
+    <ScrollArea
       onScroll={handleScroll}
       data-testid="page"
       id="scroll-container"
