@@ -73,7 +73,7 @@
     "file-saver": "2.0.5",
     "i18next": "23.13.0",
     "i18next-browser-languagedetector": "8.0.0",
-    "i18next-http-backend": "2.5.2",
+    "i18next-http-backend": "2.6.0",
     "jszip": "3.10.1",
     "lexical": "0.17.0",
     "lexical-beautiful-mentions": "0.1.39",
