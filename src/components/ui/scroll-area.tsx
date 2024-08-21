@@ -1,27 +1,36 @@
+import { HAS_HIDDEN_SCROLLBAR, HAS_TOUCHSCREEN } from "@/utils/platform";
+import { cn } from "@/utils/tw-utils";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { ComponentPropsWithoutRef, ElementRef, forwardRef } from "react";
-
-import { cn } from "@/utils/tw-utils";
 
 const ScrollArea = forwardRef<
   ElementRef<typeof ScrollAreaPrimitive.Root>,
   ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
->(({ className, children, onScroll, ...props }, ref) => (
-  <ScrollAreaPrimitive.Root
-    ref={ref}
-    className={cn("relative overflow-hidden", className)}
-    {...props}
-  >
-    <ScrollAreaPrimitive.Viewport
-      onScroll={onScroll}
-      className="h-full w-full rounded-[inherit] [&>div]:!block"
+>(({ className, children, onScroll, ...props }, ref) => {
+  if (HAS_TOUCHSCREEN || HAS_HIDDEN_SCROLLBAR) {
+    return (
+      <div {...props} className={className} onScroll={onScroll}>
+        {children}
+      </div>
+    );
+  }
+  return (
+    <ScrollAreaPrimitive.Root
+      ref={ref}
+      className={cn("relative overflow-hidden", className)}
+      {...props}
     >
-      {children}
-    </ScrollAreaPrimitive.Viewport>
-    <ScrollBar />
-    <ScrollAreaPrimitive.Corner />
-  </ScrollAreaPrimitive.Root>
-));
+      <ScrollAreaPrimitive.Viewport
+        onScroll={onScroll}
+        className="h-full w-full rounded-[inherit] [&>div]:!block"
+      >
+        {children}
+      </ScrollAreaPrimitive.Viewport>
+      <ScrollBar />
+      <ScrollAreaPrimitive.Corner />
+    </ScrollAreaPrimitive.Root>
+  );
+});
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
 const ScrollBar = forwardRef<
