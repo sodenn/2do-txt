@@ -61,7 +61,7 @@ export function SideSheet() {
             )}
           </SafeArea>
         </div>
-        <ScrollArea>
+        <ScrollArea className="overflow-auto">
           <SafeArea bottom left>
             <TabsContent className="px-3 pb-3 sm:px-5" value="filter">
               <Filter />
