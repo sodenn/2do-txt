@@ -300,6 +300,8 @@ test.describe("Task dialog", () => {
     page,
     isMobile,
   }) => {
+    test.skip(!!isMobile, "not relevant for mobile browser");
+
     await openTaskDialog(page);
 
     await expect(page.getByTestId("task-dialog")).toBeVisible();
