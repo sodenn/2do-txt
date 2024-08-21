@@ -17,7 +17,9 @@ export function useFilesystem() {
       filename?: string;
       importFile?: boolean;
     }) => {
-      const suggestedFilename = await db.files.getNextFreeFilename(filename);
+      const suggestedFilename = importFile
+        ? undefined
+        : await db.files.getNextFreeFilename(filename);
       return new Promise<
         Awaited<ReturnType<typeof filesystem.showSaveFilePicker>>
       >((resolve, reject) => {
