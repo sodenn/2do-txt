@@ -8,23 +8,21 @@ import { useSettingsStore } from "@/stores/settings-store";
 import { formatDate, isDateEqual } from "@/utils/date";
 import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import {
-  Task,
   getDueDateValue,
   getRecValue,
   parseTask,
   stringifyTask,
+  Task,
 } from "@/utils/task";
 import { TaskList } from "@/utils/task-list";
 import { cn } from "@/utils/tw-utils";
 import { isValid } from "date-fns";
 import { useBeautifulMentions } from "lexical-beautiful-mentions";
-import { CalendarCheckIcon, CalendarPlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 interface TaskFormProps {
   value?: string;
-  newTask: boolean;
   taskLists: TaskList[];
   projects: string[];
   contexts: string[];
@@ -80,20 +78,11 @@ export function TaskForm(props: TaskFormProps) {
 
 function TaskGrid(props: TaskGridProps) {
   const language = useSettingsStore((state) => state.language);
-  const {
-    formModel,
-    newTask: isNewTask,
-    items,
-    taskLists,
-    onChange,
-    onFileSelect,
-    onEnterPress,
-  } = props;
+  const { formModel, items, taskLists, onChange, onFileSelect, onEnterPress } =
+    props;
   const { t } = useTranslation();
   const rec = getRecValue(formModel.body);
   const dueDate = getDueDateValue(formModel.body);
-  const showCreationDate = isNewTask;
-  const showCompletionDate = isNewTask && formModel.completed;
   const showTaskList = taskLists.length > 0;
   const {
     openMentionMenu,
@@ -171,7 +160,6 @@ function TaskGrid(props: TaskGridProps) {
           value={formModel.priority}
           onChange={(priority) => handleChange({ priority })}
         />
-        <RecurrencePicker value={rec} onChange={handleRecChange} />
         <DatePicker
           ariaLabel="Due date"
           tooltip={t("Due Date")}
@@ -179,29 +167,7 @@ function TaskGrid(props: TaskGridProps) {
           onChange={handleDueDateChange}
           locale={language}
         />
-        {showCreationDate && (
-          <DatePicker
-            ariaLabel="Creation date"
-            tooltip={t("Creation Date")}
-            icon={<CalendarPlusIcon className="h-4 w-4" />}
-            locale={language}
-            value={formModel.creationDate}
-            onChange={(value) => {
-              handleChange({ creationDate: value ?? undefined });
-            }}
-          />
-        )}
-        {showCompletionDate && (
-          <DatePicker
-            ariaLabel="Completion date"
-            tooltip={t("Completion Date")}
-            icon={<CalendarCheckIcon className="h-4 w-4" />}
-            value={formModel.completionDate}
-            onChange={(value) => {
-              handleChange({ completionDate: value ?? undefined });
-            }}
-          />
-        )}
+        <RecurrencePicker value={rec} onChange={handleRecChange} />
       </Editor>
       {HAS_TOUCHSCREEN && (
         <div className="mb-1 flex gap-1">

@@ -47,3 +47,4 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 - Task recurrence (`rec:` tag)
 - Dark mode
 - Two different views: list and timeline
+- Markdown support

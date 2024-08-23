@@ -207,7 +207,6 @@ export function TaskDialog() {
         <ResponsiveDialogBody>
           <TaskForm
             value={value}
-            newTask={isNewTask}
             contexts={contexts}
             projects={projects}
             tags={tags}
