@@ -1,9 +1,8 @@
+import { FloatingTextFormatToolbarPlugin } from "@/components/FloatingTextFormatToolbarPlugin";
 import { Label } from "@/components/ui/label";
 import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
 import { CodeNode } from "@lexical/code";
-import { LinkNode } from "@lexical/link";
-import { ListItemNode, ListNode } from "@lexical/list";
 import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
@@ -22,11 +21,9 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { mergeRegister } from "@lexical/utils";
 import {
   $createTextNode,
@@ -114,22 +111,13 @@ function useEditorConfig(triggers: string[], initialValue: string) {
         console.log(error);
       },
       editorState: setEditorState(initialValue, triggers),
-      nodes: [
-        BeautifulMentionNode,
-        ZeroWidthNode,
-        HorizontalRuleNode,
-        CodeNode,
-        HeadingNode,
-        LinkNode,
-        ListNode,
-        ListItemNode,
-        QuoteNode,
-      ],
+      nodes: [BeautifulMentionNode, ZeroWidthNode, CodeNode],
       namespace: "",
       theme: {
         beautifulMentions: beautifulMentionsTheme,
         text: {
           code: "rounded bg-accent px-1 mx-1",
+          strikethrough: "line-through",
         },
       },
     }),
@@ -338,6 +326,7 @@ export function Editor(props: EditorProps) {
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
+        <FloatingTextFormatToolbarPlugin />
         <OnChangePlugin onChange={handleChange} />
         <HistoryPlugin />
         {!HAS_TOUCHSCREEN && <AutoFocusPlugin defaultSelection="rootEnd" />}
