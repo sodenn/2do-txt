@@ -20,9 +20,7 @@ export const IS_IOS: boolean =
   // @ts-ignore
   !window.MSStream;
 
-const TEST_MODE = import.meta.env.MODE === "test";
-
-export const SUPPORTS_GET_DIRECTORY = !(IS_SAFARI && TEST_MODE);
+export const TEST_MODE = import.meta.env.MODE === "test";
 
 export const SUPPORTS_SHOW_OPEN_FILE_PICKER =
   "showSaveFilePicker" in window &&
