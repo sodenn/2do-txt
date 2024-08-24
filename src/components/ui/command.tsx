@@ -71,7 +71,7 @@ const CommandList = forwardRef<
   <ScrollArea>
     <CommandPrimitive.List
       ref={ref}
-      className={cn("max-h-[170px]", className)}
+      className={cn("touch:overflow-auto max-h-[170px]", className)}
       {...props}
     >
       {children}
