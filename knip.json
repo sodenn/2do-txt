@@ -1,7 +1,12 @@
 {
   "$schema": "https://unpkg.com/knip@2/schema.json",
   "ignoreDependencies": [
-    "virtual:pwa-register/react"
+    "virtual:pwa-register/react",
+    "@lexical/code",
+    "@lexical/link",
+    "@lexical/list",
+    "@lexical/markdown",
+    "@lexical/rich-text"
   ],
   "ignore": [
     "pwa-assets.config.ts",
