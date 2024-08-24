@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/utils/tw-utils";
 import { useTooltip } from "@/utils/useTooltip";
-import { ArrowUpNarrowWideIcon, CheckIcon } from "lucide-react";
+import { CheckIcon, FlagIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -103,7 +103,7 @@ export function PriorityPicker(props: PriorityPickerProps) {
               )}
               {...triggerProps}
             >
-              <ArrowUpNarrowWideIcon className="h-4 w-4" />
+              <FlagIcon className="h-4 w-4" />
               {value && options.find((opt) => opt === value)}
             </Button>
           </PopoverTrigger>
