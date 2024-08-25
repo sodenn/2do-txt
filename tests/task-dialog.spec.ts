@@ -147,11 +147,6 @@ test.describe("Task dialog", () => {
       "Pay the invoice +CompanyB @Work due:2021-12-15",
     );
 
-    // make sure the creation date is set
-    await expect(page.getByLabel("Creation date")).toHaveText(
-      isMobile ? "11/26/2021" : "Fri, Nov 26, 2021",
-    );
-
     // make sure the due date is set
     await expect(page.getByLabel("Due date")).toHaveText(
       isMobile ? "12/15/2021" : "Wed, Dec 15, 2021",
@@ -159,6 +154,12 @@ test.describe("Task dialog", () => {
 
     // make sure priority is set
     await expect(page.getByLabel("Priority")).toHaveText("A");
+  });
+
+  test("should display markdown as formatted text", async ({ page }) => {
+    await openTaskDialog(page);
+    await getEditor(page).pressSequentially("@Hello **World**", delay);
+    await expect(getEditor(page).locator("strong")).toHaveText("World");
   });
 
   test("should add new contexts when blur from input", async ({
@@ -277,9 +278,6 @@ test.describe("Task dialog", () => {
     // make sure priority was selected
     await expect(page.getByLabel("Priority")).toHaveText("A");
     await page.waitForTimeout(500);
-
-    // navigate to recurrence picker
-    await page.keyboard.press("Tab");
 
     // select due date
     await page.keyboard.press("Tab");

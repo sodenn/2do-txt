@@ -94,15 +94,15 @@ export function RecurrencePicker(props: PriorityPickerProps) {
   }, [props.value]);
 
   const handleSelectUnit = (value: string) => {
-    const unit = value as Unit;
-    setUnit(unit);
-    if (unit === "-") {
+    const newUnit = value as Unit;
+    setUnit(newUnit);
+    if (newUnit === "-" || unit === newUnit) {
       setAmount(1);
       setStrict(false);
       handleChange("-", 1, false);
       setOpen(false);
     } else {
-      handleChange(unit, amount, strict);
+      handleChange(newUnit, amount, strict);
     }
   };
 
@@ -169,46 +169,47 @@ export function RecurrencePicker(props: PriorityPickerProps) {
             </li>
           ))}
         </ul>
-        {unit !== "-" && (
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              {unitLabel && unitLabel !== "No recurrence" && (
-                <Label htmlFor="unit">{t(`Number of ${unitLabel}`)}</Label>
-              )}
-              <Input
-                autoFocus
-                id="unit"
-                type="number"
-                min={1}
-                value={amount}
-                onChange={handleChangeAmount}
-                className="w-full"
-                aria-label="Amount"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="strict"
-                checked={strict}
-                onCheckedChange={handleChangeStrict}
-              />
-              <label
-                htmlFor="strict"
-                className="flex items-center gap-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {t("Strict recurrence")}
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <CircleHelpIcon className="h-4 w-4" />
-                  </TooltipTrigger>
-                  <TooltipContent asChild>
-                    <div>{t("Repeat from due date")}</div>
-                  </TooltipContent>
-                </Tooltip>
-              </label>
-            </div>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col-reverse gap-1.5">
+            <Input
+              autoFocus
+              id="unit"
+              type="number"
+              min={1}
+              value={amount}
+              onChange={handleChangeAmount}
+              className="peer w-full"
+              aria-label="Amount"
+              disabled={!unitLabel || unitLabel === "No recurrence"}
+            />
+            {unitLabel && unitLabel !== "No recurrence" && (
+              <Label htmlFor="unit">{t(`Number of ${unitLabel}`)}</Label>
+            )}
+            {(!unitLabel || unitLabel === "No recurrence") && (
+              <Label htmlFor="unit">{t("Recurrence")}</Label>
+            )}
           </div>
-        )}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="strict"
+              checked={strict}
+              onCheckedChange={handleChangeStrict}
+              className="peer"
+              disabled={!unitLabel || unitLabel === "No recurrence"}
+            />
+            <Label htmlFor="strict" className="flex items-center gap-1">
+              {t("Strict recurrence")}
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <CircleHelpIcon className="h-4 w-4" />
+                </TooltipTrigger>
+                <TooltipContent asChild>
+                  <div>{t("Repeat from due date")}</div>
+                </TooltipContent>
+              </Tooltip>
+            </Label>
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   );

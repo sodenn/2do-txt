@@ -19,8 +19,14 @@ import {
   addWeeks,
   addYears,
 } from "date-fns";
+import reactParse from "html-react-parser";
+import { marked } from "marked";
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+
+marked.Renderer.prototype.paragraph = (text) => {
+  return text.raw;
+};
 
 type Priority = "A" | "B" | "C" | "D" | string;
 
@@ -244,7 +250,8 @@ export function useFormatBody() {
             </TagBox>
           );
         } else {
-          return <Fragment key={index}>{token}</Fragment>;
+          const markdown = marked.parseInline(token) as string;
+          return <Fragment key={index}>{reactParse(markdown)}</Fragment>;
         }
       })
       .filter((e) => !!e);

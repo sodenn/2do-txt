@@ -1,5 +1,5 @@
 import { db } from "@/utils/db";
-import { SUPPORTS_GET_DIRECTORY } from "@/utils/platform";
+import { TEST_MODE } from "@/utils/platform";
 import { generateId } from "@/utils/uuid";
 
 interface WithOperationId {
@@ -120,7 +120,7 @@ function postMessage<T extends Options>(options: T): Promise<Result<T>> {
 }
 
 export async function createFile(suggestedName = "todo.txt") {
-  if (!SUPPORTS_GET_DIRECTORY) {
+  if (TEST_MODE) {
     return createTestFile(suggestedName);
   }
   const filename = await db.files.getNextFreeFilename(suggestedName);
@@ -147,7 +147,7 @@ async function createTestFile(suggestedName = "todo.txt") {
 }
 
 export async function readFile(id: number) {
-  if (!SUPPORTS_GET_DIRECTORY) {
+  if (TEST_MODE) {
     return readTestFile(id);
   }
   const { filename } = await db.files.read(id);
@@ -176,7 +176,7 @@ export async function writeFile({
   id: number;
   content: string;
 }) {
-  if (!SUPPORTS_GET_DIRECTORY) {
+  if (TEST_MODE) {
     return writeTestFile({ id, content });
   }
   const { filename } = await db.files.read(id);
@@ -194,7 +194,7 @@ async function writeTestFile({ id, content }: { id: number; content: string }) {
 }
 
 export async function deleteFile(id: number) {
-  if (!SUPPORTS_GET_DIRECTORY) {
+  if (TEST_MODE) {
     return deleteTestFile(id);
   }
   const { filename } = await db.files.read(id);
@@ -210,7 +210,7 @@ async function deleteTestFile(id: number) {
 }
 
 export async function deleteFilesNotInList(ids: number[]) {
-  if (!SUPPORTS_GET_DIRECTORY) {
+  if (TEST_MODE) {
     return deleteTestFilesNotInList(ids);
   }
   await db.files.deleteNotInList(ids);

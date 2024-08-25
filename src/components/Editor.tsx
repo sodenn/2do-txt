@@ -1,31 +1,44 @@
+import { FloatingTextFormatToolbarPlugin } from "@/components/FloatingTextFormatToolbarPlugin";
 import { Label } from "@/components/ui/label";
 import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { cn } from "@/utils/tw-utils";
+import { CodeNode } from "@lexical/code";
+import {
+  $convertFromMarkdownString,
+  $convertToMarkdownString,
+  BOLD_ITALIC_STAR,
+  BOLD_ITALIC_UNDERSCORE,
+  BOLD_STAR,
+  BOLD_UNDERSCORE,
+  INLINE_CODE,
+  ITALIC_STAR,
+  ITALIC_UNDERSCORE,
+  STRIKETHROUGH,
+} from "@lexical/markdown";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
-  $createParagraphNode,
-  $getRoot,
-  $isElementNode,
+  $createTextNode,
+  $nodesOfType,
   BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
   COMMAND_PRIORITY_NORMAL,
   EditorState,
   FOCUS_COMMAND,
   KEY_ENTER_COMMAND,
-  LexicalNode,
   LineBreakNode,
+  ParagraphNode,
 } from "lexical";
 import {
-  $convertToMentionNodes,
-  $isZeroWidthNode,
+  $transformTextToMentionNodes,
   BeautifulMentionNode,
   BeautifulMentionsItemsProps,
   BeautifulMentionsMenuItemProps,
@@ -46,6 +59,17 @@ import React, {
   useMemo,
   useState,
 } from "react";
+
+const TRANSFORMERS = [
+  BOLD_ITALIC_STAR,
+  BOLD_ITALIC_UNDERSCORE,
+  BOLD_STAR,
+  BOLD_UNDERSCORE,
+  INLINE_CODE,
+  ITALIC_STAR,
+  ITALIC_UNDERSCORE,
+  STRIKETHROUGH,
+];
 
 interface EditorContextProps {
   initialValue: string;
@@ -87,11 +111,14 @@ function useEditorConfig(triggers: string[], initialValue: string) {
         console.log(error);
       },
       editorState: setEditorState(initialValue, triggers),
-      // @ts-ignore
-      nodes: [BeautifulMentionNode, ZeroWidthNode],
+      nodes: [BeautifulMentionNode, ZeroWidthNode, CodeNode],
       namespace: "",
       theme: {
         beautifulMentions: beautifulMentionsTheme,
+        text: {
+          code: "rounded bg-accent px-1 mx-1",
+          strikethrough: "line-through",
+        },
       },
     }),
     [initialValue, triggers],
@@ -123,8 +150,44 @@ function useIsFocused() {
       ),
     );
   }, [editor]);
-
   return hasFocus;
+}
+
+function FixTextFormatPlugin() {
+  const [editor] = useLexicalComposerContext();
+  useLayoutEffect(
+    () =>
+      editor.registerUpdateListener(() => {
+        editor.update(() => {
+          const paragraphs = $nodesOfType(ParagraphNode);
+          for (const paragraph of paragraphs) {
+            const children = paragraph.getChildren();
+            // reset the text formatting if the paragraph is empty
+            if (
+              children.length === 0 &&
+              (paragraph.hasTextFormat("bold") ||
+                paragraph.hasTextFormat("strikethrough") ||
+                paragraph.hasTextFormat("code") ||
+                paragraph.hasTextFormat("italic"))
+            ) {
+              // reset text formatting
+              paragraph.setTextFormat(0);
+              // add hack node and remove it again, otherwise the formatting
+              // will not be reset:
+              const textNode = $createTextNode(" ");
+              paragraph.append(textNode);
+              setTimeout(() => {
+                editor.update(() => {
+                  textNode.remove();
+                });
+              });
+            }
+          }
+        });
+      }),
+    [editor],
+  );
+  return null;
 }
 
 function SingleLinePlugin({ onEnter }: { onEnter?: () => void }) {
@@ -162,12 +225,8 @@ function SingleLinePlugin({ onEnter }: { onEnter?: () => void }) {
 
 function setEditorState(initialValue: string, triggers: string[]) {
   return () => {
-    const root = $getRoot();
-    if (root.getFirstChild() === null) {
-      const paragraph = $createParagraphNode();
-      paragraph.append(...$convertToMentionNodes(initialValue, triggers));
-      root.append(paragraph);
-    }
+    $convertFromMarkdownString(initialValue, TRANSFORMERS);
+    $transformTextToMentionNodes(triggers);
   };
 }
 
@@ -212,19 +271,6 @@ export function EditorContext({
   );
 }
 
-function getTextContent(node: LexicalNode): string {
-  let result = "";
-  if ($isElementNode(node)) {
-    const children = node.getChildren();
-    for (const child of children) {
-      result += getTextContent(child);
-    }
-  } else if (!$isZeroWidthNode(node)) {
-    result += node.getTextContent();
-  }
-  return result;
-}
-
 export function Editor(props: EditorProps) {
   const {
     label,
@@ -241,9 +287,8 @@ export function Editor(props: EditorProps) {
   const handleChange = useCallback(
     (editorState: EditorState) => {
       editorState.read(() => {
-        const root = $getRoot();
-        const text = getTextContent(root);
-        onChange(text);
+        const markdown = $convertToMarkdownString(TRANSFORMERS);
+        onChange(markdown.replaceAll(ZERO_WIDTH_CHARACTER, ""));
       });
     },
     [onChange],
@@ -262,6 +307,8 @@ export function Editor(props: EditorProps) {
           focused && "ring-1 ring-ring",
         )}
       >
+        <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        <FixTextFormatPlugin />
         <RichTextPlugin
           contentEditable={
             <ContentEditable
@@ -279,6 +326,7 @@ export function Editor(props: EditorProps) {
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
+        <FloatingTextFormatToolbarPlugin />
         <OnChangePlugin onChange={handleChange} />
         <HistoryPlugin />
         {!HAS_TOUCHSCREEN && <AutoFocusPlugin defaultSelection="rootEnd" />}
@@ -293,9 +341,7 @@ export function Editor(props: EditorProps) {
           allowSpaces={false}
           menuAnchorClassName="z-[1300]"
         />
-        <div className="flex flex-wrap gap-1 px-3 py-3 sm:gap-2">
-          {children}
-        </div>
+        <div className="flex flex-wrap gap-1 px-3 py-3">{children}</div>
       </div>
     </div>
   );
