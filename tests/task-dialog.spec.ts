@@ -156,6 +156,12 @@ test.describe("Task dialog", () => {
     await expect(page.getByLabel("Priority")).toHaveText("A");
   });
 
+  test("should display markdown as formatted text", async ({ page }) => {
+    await openTaskDialog(page);
+    await getEditor(page).pressSequentially("@Hello **World**", delay);
+    await expect(getEditor(page).locator("strong")).toHaveText("World");
+  });
+
   test("should add new contexts when blur from input", async ({
     page,
     browserName,
