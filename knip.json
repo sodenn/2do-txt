@@ -3,10 +3,8 @@
   "ignoreDependencies": [
     "virtual:pwa-register/react",
     "@lexical/code",
-    "@lexical/link",
-    "@lexical/list",
     "@lexical/markdown",
-    "@lexical/rich-text"
+    "@lexical/selection"
   ],
   "ignore": [
     "pwa-assets.config.ts",

@@ -28,7 +28,7 @@ import { createPortal } from "react-dom";
 const VERTICAL_GAP = 10;
 const HORIZONTAL_OFFSET = 5;
 
-export function setFloatingElemPosition(
+function setFloatingElemPosition(
   targetRect: DOMRect | null,
   floatingElem: HTMLElement,
   anchorElem: HTMLElement,
@@ -66,9 +66,7 @@ export function setFloatingElemPosition(
   floatingElem.style.transform = `translate(${left}px, ${top}px)`;
 }
 
-export function getSelectedNode(
-  selection: RangeSelection,
-): TextNode | ElementNode {
+function getSelectedNode(selection: RangeSelection): TextNode | ElementNode {
   const anchor = selection.anchor;
   const focus = selection.focus;
   const anchorNode = selection.anchor.getNode();
