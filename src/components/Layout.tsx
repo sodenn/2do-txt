@@ -79,8 +79,6 @@ export function LayoutSidebar({
     };
   }, [open]);
 
-  console.log(persistent);
-
   if (persistent) {
     return (
       <div
