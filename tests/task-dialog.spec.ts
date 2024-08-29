@@ -18,7 +18,7 @@ test.describe("Task dialog", () => {
     page,
     isMobile,
   }) => {
-    test.skip(!!isMobile, "not relevant for mobile browser");
+    test.skip(isMobile, "not relevant for mobile browser");
     await page.keyboard.press("n");
     await expect(page.getByTestId("task-dialog")).toBeVisible();
     await page.keyboard.press("Escape");
@@ -38,7 +38,7 @@ test.describe("Task dialog", () => {
   });
 
   test("should select a context via enter key", async ({ page, isMobile }) => {
-    test.skip(!!isMobile, "not relevant for mobile browser");
+    test.skip(isMobile, "not relevant for mobile browser");
     await openTaskDialog(page);
     await expect(getEditor(page)).toBeFocused();
     await getEditor(page).pressSequentially(
@@ -75,9 +75,10 @@ test.describe("Task dialog", () => {
     // open the date picker
     await page.getByLabel("Due date").click();
 
-    const today = new Date();
-    const currentDateSelector = today.getDate().toString();
-    const dueDateTag = `due:${formatDate(today)}`;
+    const date = new Date();
+    date.setDate(15);
+    const currentDateSelector = date.getDate().toString();
+    const dueDateTag = `due:${formatDate(date)}`;
 
     // choose date and confirm
     await page
@@ -86,9 +87,7 @@ test.describe("Task dialog", () => {
 
     // make sure the date picker contains a value
     await expect(page.getByLabel("Due date")).toHaveText(
-      isMobile
-        ? format(today, "MM/dd/yyyy")
-        : format(today, "EEE, MMM d, yyyy"),
+      isMobile ? format(date, "MM/dd/yyyy") : format(date, "EEE, MMM d, yyyy"),
     );
 
     // make sure the text field contains the due date
@@ -115,9 +114,7 @@ test.describe("Task dialog", () => {
 
     // make sure the date picker contains a value
     await expect(page.getByLabel("Due date")).toHaveText(
-      isMobile
-        ? format(today, "MM/dd/yyyy")
-        : format(today, "EEE, MMM d, yyyy"),
+      isMobile ? format(date, "MM/dd/yyyy") : format(date, "EEE, MMM d, yyyy"),
     );
 
     // make sure the text field contains the due date
@@ -263,7 +260,7 @@ test.describe("Task dialog", () => {
     page,
     isMobile,
   }) => {
-    test.skip(!!isMobile, "not relevant for mobile browser");
+    test.skip(isMobile, "not relevant for mobile browser");
 
     await openTaskDialog(page);
 
@@ -282,15 +279,17 @@ test.describe("Task dialog", () => {
     // select due date
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
-    const today = new Date();
-    const currentDateSelector = today.getDate().toString();
+    const date = new Date();
+    date.setDate(15);
+    const currentDateSelector = date.getDate().toString();
     await page
       .getByRole("gridcell", { name: currentDateSelector, exact: true })
+      .first()
       .click();
 
     // make sure due date was selected
     await expect(page.getByLabel("Due date")).toHaveText(
-      format(today, "EEE, MMM d, yyyy"),
+      format(date, "EEE, MMM d, yyyy"),
     );
   });
 
@@ -298,7 +297,7 @@ test.describe("Task dialog", () => {
     page,
     isMobile,
   }) => {
-    test.skip(!!isMobile, "not relevant for mobile browser");
+    test.skip(isMobile, "not relevant for mobile browser");
 
     await openTaskDialog(page);
 

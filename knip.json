@@ -1,7 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@2/schema.json",
   "ignoreDependencies": [
-    "virtual:pwa-register/react",
     "@lexical/code",
     "@lexical/markdown",
     "@lexical/selection"
@@ -11,6 +10,7 @@
     "i18next-parser.config.js",
     "src/utils/private-filesystem-sw.ts",
     "src/components/NewBadge.tsx",
+    "src/components/ReloadPrompt.tsx",
     "src/components/ui/**"
   ]
 }
