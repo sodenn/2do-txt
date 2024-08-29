@@ -9,7 +9,7 @@ import {
 const withoutFile = ["should render an empty task list"];
 
 test.beforeEach(async ({ page, isMobile }, testInfo) => {
-  test.skip(!!isMobile, "desktop only");
+  test.skip(isMobile, "desktop only");
   await goto(page);
   if (withoutFile.every((f) => !testInfo.title.includes(f))) {
     await createExampleFile(page);

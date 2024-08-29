@@ -16,7 +16,7 @@ test.describe("Onboarding", () => {
     page,
     isMobile,
   }) => {
-    test.skip(!!isMobile, "desktop only");
+    test.skip(isMobile, "desktop only");
     await page.keyboard.press("Tab");
     await expect(page.getByLabel("Create task")).toBeFocused();
     await page.keyboard.press("Tab");

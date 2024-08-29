@@ -51,7 +51,7 @@ test.describe("Search", () => {
     page,
     isMobile,
   }) => {
-    test.skip(!!isMobile, "desktop only");
+    test.skip(isMobile, "desktop only");
     await page.setViewportSize({ width: 800, height: 1080 });
     await expect(
       page.getByRole("search", { name: "Search for tasks" }),
@@ -159,7 +159,7 @@ test.describe("Filter", () => {
     page,
     isMobile,
   }) => {
-    test.skip(!!isMobile, "not relevant for mobile browser");
+    test.skip(isMobile, "not relevant for mobile browser");
     await toggleMenu(page);
     await page.getByLabel("Private", { exact: true }).click();
     await page.getByLabel("CompanyA", { exact: true }).click();
@@ -171,7 +171,7 @@ test.describe("Filter", () => {
     page,
     isMobile,
   }) => {
-    test.skip(!!isMobile, "not relevant for mobile browser");
+    test.skip(isMobile, "not relevant for mobile browser");
     await toggleMenu(page);
     await expect(page.getByText("Reset filters")).not.toBeVisible();
     await page.getByLabel("Private", { exact: true }).click();
