@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { createExampleFile, goto } from "./playwright-utils";
 
 test.beforeEach(async ({ page, isMobile }) => {
-  test.skip(!!isMobile, "desktop only");
+  test.skip(isMobile, "desktop only");
   await goto(page);
   await createExampleFile(page);
 });
