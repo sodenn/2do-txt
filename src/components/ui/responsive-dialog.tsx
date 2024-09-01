@@ -32,6 +32,11 @@ interface ResponsiveDialogProps {
   disablePreventScroll?: boolean;
 }
 
+function useDialog() {
+  const { isBreakpointActive } = useBreakpoint();
+  return isBreakpointActive("md");
+}
+
 export function ResponsiveDialog({
   children,
   onOpen,
@@ -41,7 +46,7 @@ export function ResponsiveDialog({
   ...props
 }: PropsWithChildren<ResponsiveDialogProps>) {
   const [open, setOpen] = useState(!!props.open);
-  const { isBreakpointActive } = useBreakpoint();
+  const dialog = useDialog();
 
   const handleOpen = useCallback(() => {
     setOpen(true);
@@ -73,7 +78,7 @@ export function ResponsiveDialog({
     }
   }, [open, handleOpen, handleClose, props.open]);
 
-  if (isBreakpointActive("lg")) {
+  if (dialog) {
     return (
       <Dialog open={open} onOpenChange={handleOpenChange}>
         {children}
@@ -94,18 +99,22 @@ export function ResponsiveDialog({
 }
 
 export function ResponsiveDialogTrigger({ children }: PropsWithChildren) {
-  const { isBreakpointActive } = useBreakpoint();
-  if (isBreakpointActive("lg")) {
+  const dialog = useDialog();
+
+  if (dialog) {
     return <DialogTrigger asChild>{children}</DialogTrigger>;
   }
+
   return <DrawerTrigger asChild>{children}</DrawerTrigger>;
 }
 
 export function ResponsiveDialogHeader({ children }: PropsWithChildren) {
-  const { isBreakpointActive } = useBreakpoint();
-  if (isBreakpointActive("lg")) {
+  const dialog = useDialog();
+
+  if (dialog) {
     return <DialogHeader className="px-6">{children}</DialogHeader>;
   }
+
   return (
     <DrawerHeader className="text-left">
       <SafeArea left right>
@@ -116,10 +125,12 @@ export function ResponsiveDialogHeader({ children }: PropsWithChildren) {
 }
 
 export function ResponsiveDialogTitle({ children }: PropsWithChildren) {
-  const { isBreakpointActive } = useBreakpoint();
-  if (isBreakpointActive("lg")) {
+  const dialog = useDialog();
+
+  if (dialog) {
     return <DialogTitle>{children}</DialogTitle>;
   }
+
   return <DrawerTitle>{children}</DrawerTitle>;
 }
 
@@ -132,10 +143,12 @@ export function ResponsiveDialogHiddenTitle({ children }: PropsWithChildren) {
 }
 
 export function ResponsiveDialogDescription({ children }: PropsWithChildren) {
-  const { isBreakpointActive } = useBreakpoint();
-  if (isBreakpointActive("lg")) {
+  const dialog = useDialog();
+
+  if (dialog) {
     return <DialogDescription>{children}</DialogDescription>;
   }
+
   return <DrawerDescription>{children}</DrawerDescription>;
 }
 
@@ -154,9 +167,9 @@ export function ResponsiveDialogContent({
   onEscapeKeyDown,
   ...props
 }: PropsWithChildren<Pick<DismissableLayerProps, "onEscapeKeyDown">>) {
-  const { isBreakpointActive } = useBreakpoint();
+  const dialog = useDialog();
 
-  if (isBreakpointActive("lg")) {
+  if (dialog) {
     return (
       <DialogContent
         onEscapeKeyDown={onEscapeKeyDown}
@@ -179,10 +192,12 @@ export function ResponsiveDialogContent({
 }
 
 export function ResponsiveDialogBody({ children }: PropsWithChildren) {
-  const { isBreakpointActive } = useBreakpoint();
-  if (isBreakpointActive("lg")) {
+  const dialog = useDialog();
+
+  if (dialog) {
     return <div className="flex-1 overflow-y-auto px-6">{children}</div>;
   }
+
   return (
     <SafeArea left right>
       <div className="px-4">{children}</div>
@@ -191,10 +206,12 @@ export function ResponsiveDialogBody({ children }: PropsWithChildren) {
 }
 
 export function ResponsiveDialogFooter({ children }: PropsWithChildren) {
-  const { isBreakpointActive } = useBreakpoint();
-  if (isBreakpointActive("lg")) {
+  const dialog = useDialog();
+
+  if (dialog) {
     return <DialogFooter className="px-6">{children}</DialogFooter>;
   }
+
   return (
     <SafeArea left right bottom>
       <DrawerFooter className="flex-row justify-end">{children}</DrawerFooter>
@@ -203,9 +220,11 @@ export function ResponsiveDialogFooter({ children }: PropsWithChildren) {
 }
 
 export function ResponsiveDialogClose({ children }: PropsWithChildren) {
-  const { isBreakpointActive } = useBreakpoint();
-  if (isBreakpointActive("lg")) {
+  const dialog = useDialog();
+
+  if (dialog) {
     return <DialogClose asChild>{children}</DialogClose>;
   }
+
   return <DrawerClose asChild>{children}</DrawerClose>;
 }

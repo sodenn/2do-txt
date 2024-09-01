@@ -27,16 +27,16 @@ interface LayoutSidebarProps extends HTMLAttributes<HTMLDivElement> {
 
 function usePersistentSidebar() {
   const { isBreakpointActive } = useBreakpoint();
-  return isBreakpointActive("xl");
+  return isBreakpointActive("lg");
 }
 
 export function LayoutHeader({ open, children }: HeaderContainerProps) {
   return (
     <div
       className={clsx(
-        "flex-shrink-0 flex-grow-0 basis-auto xl:transition-all",
-        open && `xl:ml-[320px] xl:duration-225 xl:ease-out`,
-        !open && "xl:duration-195 xl:ease-in",
+        "flex-shrink-0 flex-grow-0 basis-auto lg:transition-all",
+        open && `lg:ml-[320px] lg:duration-200 lg:ease-out`,
+        !open && "lg:duration-195 lg:ease-in",
       )}
     >
       {children}
@@ -88,13 +88,13 @@ export function LayoutSidebar({
         aria-hidden={open ? "false" : "true"}
         data-hotkeys-keep-enabled={persistent ? "true" : "m"}
         className={cn(
-          "fixed bottom-0 left-0 top-0 hidden w-[320px] border-r bg-background transition-all duration-225 ease-out xl:block",
+          "fixed bottom-0 left-0 top-0 hidden w-[320px] border-r bg-background transition-all duration-200 ease-out lg:block",
           open && "translate-x-0",
           !open && "-translate-x-320",
           className,
         )}
       >
-        <div className={cn("h-full", hidden && "hidden xl:hidden")}>
+        <div className={cn("h-full", hidden && "hidden lg:hidden")}>
           {children}
         </div>
       </div>
@@ -134,9 +134,9 @@ export function LayoutContent(props: ScrollAreaProps) {
       data-testid="page"
       id="scroll-container"
       className={clsx(
-        "flex-auto overflow-y-auto xl:flex-grow",
-        sideSheetOpen && `xl:ml-[320px] xl:duration-225 xl:ease-out`,
-        !sideSheetOpen && "xl:ml-0 xl:duration-195 xl:ease-in",
+        "flex-auto overflow-y-auto lg:flex-grow",
+        sideSheetOpen && `lg:ml-[320px] lg:duration-200 lg:ease-out`,
+        !sideSheetOpen && "lg:ml-0 lg:duration-195 lg:ease-in",
       )}
       {...props}
     />

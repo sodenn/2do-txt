@@ -229,12 +229,12 @@ function TextFormatFloatingToolbar({
   return (
     <div
       ref={popupCharStylesEditorRef}
-      className="absolute left-0 top-0 z-[9999] flex gap-1 rounded-lg border bg-background p-1 align-middle opacity-0 transition-opacity will-change-transform"
+      className="absolute left-0 top-0 z-[100] flex gap-1 rounded-lg border bg-popover p-1 align-middle text-popover-foreground opacity-0 shadow-md transition-opacity will-change-transform"
     >
       {editor.isEditable() && (
         <>
           <Button
-            onMouseDown={(e) => e.preventDefault()}
+            onPointerDown={(e) => e.preventDefault()}
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
             }}
@@ -245,7 +245,7 @@ function TextFormatFloatingToolbar({
             <BoldIcon className="h-4 w-4" />
           </Button>
           <Button
-            onMouseDown={(e) => e.preventDefault()}
+            onPointerDown={(e) => e.preventDefault()}
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
             }}
@@ -256,7 +256,7 @@ function TextFormatFloatingToolbar({
             <ItalicIcon className="h-4 w-4" />
           </Button>
           <Button
-            onMouseDown={(e) => e.preventDefault()}
+            onPointerDown={(e) => e.preventDefault()}
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
             }}
@@ -267,7 +267,7 @@ function TextFormatFloatingToolbar({
             <StrikethroughIcon className="h-4 w-4" />
           </Button>
           <Button
-            onMouseDown={(e) => e.preventDefault()}
+            onPointerDown={(e) => e.preventDefault()}
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
             }}
@@ -309,7 +309,6 @@ function useFloatingTextFormatToolbar(
           rootElement === null ||
           !rootElement.contains(nativeSelection.anchorNode))
       ) {
-        console.log("setIsText 1");
         setIsText(false);
         return;
       }
@@ -330,16 +329,13 @@ function useFloatingTextFormatToolbar(
         !$isCodeHighlightNode(selection.anchor.getNode()) &&
         selection.getTextContent() !== ""
       ) {
-        console.log("setIsText 2");
         setIsText($isTextNode(node) || $isParagraphNode(node));
       } else {
-        console.log("setIsText 3");
         setIsText(false);
       }
 
       const rawTextContent = selection.getTextContent().replace(/\n/g, "");
       if (!selection.isCollapsed() && rawTextContent === "") {
-        console.log("setIsText 4");
         setIsText(false);
         return;
       }
@@ -360,7 +356,6 @@ function useFloatingTextFormatToolbar(
       }),
       editor.registerRootListener(() => {
         if (editor.getRootElement() === null) {
-          console.log("setIsText 5");
           setIsText(false);
         }
       }),
