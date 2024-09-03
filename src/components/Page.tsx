@@ -1,6 +1,5 @@
 import { ArchivedTasksDialog } from "@/components/ArchivedTasksDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
-import { FileManagementDialog } from "@/components/FileManagementDialog";
 import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
@@ -33,7 +32,6 @@ export function Page() {
         </SafeArea>
       </LayoutContent>
       <TaskDialog />
-      <FileManagementDialog />
       <ConfirmationDialog />
       <ArchivedTasksDialog />
       <ShortcutsDialog />

@@ -7,15 +7,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useFileManagementDialogStore } from "@/stores/file-management-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
-import { HAS_TOUCHSCREEN } from "@/utils/platform";
+import {
+  HAS_TOUCHSCREEN,
+  SUPPORTS_SHOW_OPEN_FILE_PICKER,
+} from "@/utils/platform";
 import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import {
   ChevronDownIcon,
-  InboxIcon,
+  FolderOpenIcon,
   KeyboardIcon,
   PlusIcon,
 } from "lucide-react";
@@ -25,25 +27,15 @@ import logo from "/logo.png";
 
 export function FileMenu() {
   const { t } = useTranslation();
-  const openFileManagementDialog = useFileManagementDialogStore(
-    (state) => state.openFileManagementDialog,
-  );
   const openShortcutsDialog = useShortcutsDialogStore(
     (state) => state.openShortcutsDialog,
   );
-  const { taskLists, activeTaskList, createNewTodoFile } = useTask();
+  const { taskLists, activeTaskList, createNewTodoFile, addTodoFile } =
+    useTask();
   const setActiveTaskListId = useFilterStore(
     (state) => state.setActiveTaskListId,
   );
-  const { showSaveFilePicker } = useFilesystem();
-
-  const handleSetActiveList = async (id?: number) => {
-    setActiveTaskListId(id);
-  };
-
-  const handleManageFile = () => {
-    openFileManagementDialog();
-  };
+  const { showOpenFilePicker, showSaveFilePicker } = useFilesystem();
 
   const handleKeyboardShortcutsClick = () => {
     openShortcutsDialog();
@@ -56,49 +48,55 @@ export function FileMenu() {
     }
   };
 
+  const handleOpenFile = async () => {
+    const result = await showOpenFilePicker();
+    if (result) {
+      addTodoFile(result.id, result.filename, result.content);
+    }
+  };
+
+  const handleSetActiveList = async (id?: number) => {
+    setActiveTaskListId(id);
+  };
+
   const menuItems: ReactNode[] = [];
 
-  if (taskLists.length > 1) {
+  taskLists.forEach(({ id, filename }) => {
     menuItems.push(
       <DropdownMenuCheckboxItem
-        key="All"
-        aria-label="All task lists"
-        checked={!activeTaskList}
-        onClick={() => handleSetActiveList()}
+        checked={activeTaskList?.id === id}
+        onClick={() => handleSetActiveList(id)}
+        key={id}
       >
-        {t("All")}
+        <div className="truncate">{filename}</div>
       </DropdownMenuCheckboxItem>,
     );
-  }
+  });
 
-  if (taskLists.length > 1) {
-    taskLists.forEach(({ id, filename }) => {
-      menuItems.push(
-        <DropdownMenuCheckboxItem
-          checked={activeTaskList?.id === id}
-          onClick={() => handleSetActiveList(id)}
-          key={id}
-        >
-          <div className="truncate">{filename}</div>
-        </DropdownMenuCheckboxItem>,
-      );
-    });
-  }
+  menuItems.push(<DropdownMenuSeparator key="divider1" />);
 
-  if (taskLists.length > 0) {
-    menuItems.push(
-      <DropdownMenuItem onClick={handleManageFile} key="Files…">
-        <InboxIcon className="mr-2 h-4 w-4" />
-        {t("Files…")}
-      </DropdownMenuItem>,
-    );
-  }
+  menuItems.push(
+    <DropdownMenuItem onClick={handleCreateFile} key="Create file">
+      <PlusIcon className="mr-2 h-4 w-4" />
+      {t("Create")}
+    </DropdownMenuItem>,
+  );
 
-  if (!HAS_TOUCHSCREEN && taskLists.length > 1) {
-    menuItems.push(<DropdownMenuSeparator key="divider" />);
-  }
+  menuItems.push(
+    <DropdownMenuItem
+      onClick={handleOpenFile}
+      key="Open file"
+      aria-label={
+        SUPPORTS_SHOW_OPEN_FILE_PICKER ? "Open todo.txt" : "Import todo.txt"
+      }
+    >
+      <FolderOpenIcon className="mr-2 h-4 w-4" />
+      {SUPPORTS_SHOW_OPEN_FILE_PICKER ? t("Open") : t("Import")}
+    </DropdownMenuItem>,
+  );
 
   if (!HAS_TOUCHSCREEN) {
+    menuItems.push(<DropdownMenuSeparator key="divider2" />);
     menuItems.push(
       <DropdownMenuItem
         onClick={handleKeyboardShortcutsClick}
@@ -106,15 +104,6 @@ export function FileMenu() {
       >
         <KeyboardIcon className="mr-2 h-4 w-4" />
         {t("Keyboard Shortcuts")}
-      </DropdownMenuItem>,
-    );
-  }
-
-  if (menuItems.length === 1) {
-    menuItems.push(
-      <DropdownMenuItem onClick={handleCreateFile} key="Create file">
-        <PlusIcon className="mr-2 h-4 w-4" />
-        {t("Create")}
       </DropdownMenuItem>,
     );
   }

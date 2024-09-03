@@ -1,13 +1,14 @@
 import { cn } from "@/utils/tw-utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
+  createContext,
   Dispatch,
+  forwardRef,
   HTMLAttributes,
   PropsWithChildren,
+  ReactNode,
   Ref,
   SetStateAction,
-  createContext,
-  forwardRef,
   useContext,
   useEffect,
   useState,
@@ -17,7 +18,7 @@ const listVariants = cva("my-1 flex flex-col", {
   variants: {
     variant: {
       default: "",
-      outline: "border rounded-md",
+      outline: "border rounded-md shadow-sm",
     },
   },
   defaultVariants: {
@@ -26,7 +27,7 @@ const listVariants = cva("my-1 flex flex-col", {
 });
 
 export const listItemVariants = cva(
-  "flex w-full items-center gap-3 sm:gap-4 px-3 py-1 sm:py-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:[&:has(button[role='checkbox']:hover)]:bg-transparent [&[role='button']]:sm:hover:bg-muted",
+  "flex w-full items-center gap-3 sm:gap-4 px-3 py-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:[&:has(button[role='checkbox']:hover)]:bg-transparent sm:[&:has(button[role='button']:hover)]:bg-transparent [&[role='button']]:sm:hover:bg-muted relative",
   {
     variants: {
       variant: {
@@ -99,10 +100,24 @@ interface ListItemProps extends HTMLAttributes<HTMLDivElement> {
   disabled?: boolean;
   clickable?: boolean;
   buttonRef?: Ref<HTMLDivElement>;
+  startAdornment?: ReactNode;
+  endAdornment?: ReactNode;
 }
 
 export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
-  ({ selected, clickable = true, buttonRef, className, ...props }, ref) => {
+  (
+    {
+      selected,
+      clickable = true,
+      buttonRef,
+      className,
+      startAdornment,
+      endAdornment,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     const { variant } = useList();
     return (
       <li className="list-none" ref={ref}>
@@ -110,14 +125,52 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
           role={clickable ? "button" : undefined}
           ref={buttonRef}
           tabIndex={0}
-          className={cn(listItemVariants({ variant, className, selected }))}
+          className={cn(
+            listItemVariants({ variant, className, selected }),
+            startAdornment && "pl-8",
+            endAdornment && "pr-8",
+          )}
           {...props}
-        />
+        >
+          {startAdornment}
+          {children}
+          {endAdornment}
+        </div>
       </li>
     );
   },
 );
 ListItem.displayName = "ListItem";
+
+export const StartAdornment = forwardRef<
+  HTMLDivElement,
+  HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    className={cn(
+      "absolute bottom-0 left-1 top-0 inline-flex items-center",
+      className,
+    )}
+    {...props}
+    ref={ref}
+  />
+));
+StartAdornment.displayName = "StartAdornment";
+
+export const EndAdornment = forwardRef<
+  HTMLDivElement,
+  HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    className={cn(
+      "absolute bottom-0 right-1 top-0 inline-flex items-center",
+      className,
+    )}
+    {...props}
+    ref={ref}
+  />
+));
+EndAdornment.displayName = "EndAdornment";
 
 export const ListItemText = forwardRef<
   HTMLDivElement,
