@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
+import { getTaskListAttributes } from "@/utils/task-list";
 import { useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
 import { HelpCircleIcon } from "lucide-react";
@@ -25,31 +26,33 @@ import { Trans, useTranslation } from "react-i18next";
 
 export function Filter() {
   const { t } = useTranslation();
-  const { taskLists, activeTaskList, ...rest } = useTask();
+  const { taskLists, selectedTaskLists, ...rest } = useTask();
   const {
     sortBy,
     searchTerm,
     filterType,
-    activePriorities,
-    activeProjects,
-    activeContexts,
-    activeTags,
+    selectedPriorities,
+    selectedProjects,
+    selectedContexts,
+    selectedTags,
     hideCompletedTasks,
     setSortBy,
     setFilterType,
     togglePriority,
-    resetActivePriorities,
-    resetActiveProjects,
+    setSelectedPriorities,
+    setSelectedProjects,
     toggleProject,
-    resetActiveContexts,
+    setSelectedContexts,
     toggleContext,
-    resetActiveTags,
+    setSelectedTags,
     toggleTag,
     setHideCompletedTasks,
     setSearchTerm,
   } = useFilterStore();
   const taskView = useSettingsStore((state) => state.taskView);
-  const attributes = activeTaskList ? activeTaskList : rest;
+  const attributes = selectedTaskLists.length
+    ? getTaskListAttributes(selectedTaskLists)
+    : getTaskListAttributes(taskLists);
   const { priorities, projects, contexts, tags } = hideCompletedTasks
     ? attributes.incomplete
     : attributes;
@@ -57,24 +60,30 @@ export function Filter() {
   const defaultFilter = useMemo(
     () =>
       searchTerm === "" &&
-      activeContexts.length === 0 &&
-      activeProjects.length === 0 &&
-      activeTags.length === 0 &&
-      activePriorities.length === 0,
-    [activeContexts, activePriorities, activeProjects, activeTags, searchTerm],
+      selectedContexts.length === 0 &&
+      selectedProjects.length === 0 &&
+      selectedTags.length === 0 &&
+      selectedPriorities.length === 0,
+    [
+      selectedContexts,
+      selectedPriorities,
+      selectedProjects,
+      selectedTags,
+      searchTerm,
+    ],
   );
 
   const resetFilters = useCallback(() => {
-    resetActiveProjects();
-    resetActiveContexts();
-    resetActiveTags();
-    resetActivePriorities();
+    setSelectedProjects([]);
+    setSelectedContexts([]);
+    setSelectedTags([]);
+    setSelectedPriorities([]);
     setSearchTerm("");
   }, [
-    resetActiveContexts,
-    resetActivePriorities,
-    resetActiveProjects,
-    resetActiveTags,
+    setSelectedContexts,
+    setSelectedPriorities,
+    setSelectedProjects,
+    setSelectedTags,
     setSearchTerm,
   ]);
 
@@ -89,7 +98,7 @@ export function Filter() {
           <Label>{t("Priorities")}</Label>
           <ChipList
             items={priorities}
-            activeItems={activePriorities}
+            activeItems={selectedPriorities}
             onClick={togglePriority}
             color="danger"
           />
@@ -100,7 +109,7 @@ export function Filter() {
           <Label>{t("Projects")}</Label>
           <ChipList
             items={projects}
-            activeItems={activeProjects}
+            activeItems={selectedProjects}
             onClick={toggleProject}
             color="info"
           />
@@ -111,7 +120,7 @@ export function Filter() {
           <Label>{t("Contexts")}</Label>
           <ChipList
             items={contexts}
-            activeItems={activeContexts}
+            activeItems={selectedContexts}
             onClick={toggleContext}
             color="success"
           />
@@ -128,7 +137,7 @@ export function Filter() {
               },
               {},
             )}
-            activeItems={activeTags}
+            activeItems={selectedTags}
             onClick={toggleTag}
             color="warning"
           />

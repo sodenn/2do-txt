@@ -3,7 +3,6 @@ import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
-import { PageEffect } from "@/components/PageEffect";
 import { PrivateFilesystem } from "@/components/PrivateFilesystem";
 import { ReloadPrompt } from "@/components/ReloadPrompt";
 import { SafeArea } from "@/components/SafeArea";
@@ -11,8 +10,10 @@ import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { SideSheet } from "@/components/SideSheet";
 import { TaskDialog } from "@/components/TaskDialog";
 import { TaskView } from "@/components/TaskView";
+import { useTaskEffect } from "@/utils/useTaskEffect";
 
 export function Page() {
+  useTaskEffect();
   return (
     <div className="sh:h-screen flex h-full flex-col outline-none">
       <Header />
@@ -36,7 +37,6 @@ export function Page() {
       <ArchivedTasksDialog />
       <ShortcutsDialog />
       <PrivateFilesystem />
-      <PageEffect />
       <ReloadPrompt />
     </div>
   );

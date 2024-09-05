@@ -75,7 +75,7 @@ export const TaskList = memo((props: TaskListProps) => {
   return (
     <>
       {(hasItems || showHeader) && (
-        <List data-testid="task-list">
+        <List data-testid="task-list" className="mb-2">
           {showHeader && <TaskListHeader filename={filename} id={id} />}
           {taskGroups.map((group) => (
             <li className="list-none" key={group.label}>
@@ -107,7 +107,7 @@ export const TaskList = memo((props: TaskListProps) => {
         </List>
       )}
       {!hasItems && (
-        <div className="px-5 pb-3 text-muted-foreground">{t("No tasks")}</div>
+        <div className="px-10 pb-3 text-muted-foreground">{t("No tasks")}</div>
       )}
     </>
   );
@@ -199,15 +199,15 @@ function TaskListSubheader({ title }: TaskListSubheaderProps) {
 
 function TaskListHeader(props: TaskListHeaderProps) {
   const { id, filename } = props;
-  const setActiveTaskListId = useFilterStore(
-    (state) => state.setActiveTaskListId,
+  const setSelectedTaskListIds = useFilterStore(
+    (state) => state.setSelectedTaskListIds,
   );
   return (
     <li
       role="button"
-      className="mb-2 flex cursor-pointer items-center overflow-hidden rounded p-3 hover:bg-muted/50"
+      className="mb-1 flex cursor-pointer items-center overflow-hidden rounded px-10 py-3 hover:bg-muted/50"
       tabIndex={-1}
-      onClick={() => setActiveTaskListId(id)}
+      onClick={() => setSelectedTaskListIds([id])}
     >
       <h3 className="flex-1 truncate font-semibold leading-none tracking-tight">
         {filename}

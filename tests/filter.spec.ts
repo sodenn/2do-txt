@@ -105,30 +105,24 @@ test.describe("Filter", () => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await toggleMenu(page);
     await page.getByLabel("A", { exact: true }).click();
-    await checkSearchParams(page, "/?priorities=A");
     await expect(page.getByTestId("task")).toHaveCount(2);
     await page.getByLabel("A", { exact: true }).click();
-    await checkSearchParams(page, "");
   });
 
   test("should filter tasks by project", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await toggleMenu(page);
     await page.getByLabel("CompanyA", { exact: true }).click();
-    await checkSearchParams(page, "/?projects=CompanyA");
     await expect(page.getByTestId("task")).toHaveCount(1);
     await page.getByLabel("CompanyA", { exact: true }).click();
-    await checkSearchParams(page, "");
   });
 
   test("should filter tasks by context", async ({ page }) => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await toggleMenu(page);
     await page.getByLabel("Private", { exact: true }).click();
-    await checkSearchParams(page, "/?contexts=Private");
     await expect(page.getByTestId("task")).toHaveCount(4);
     await page.getByLabel("Private", { exact: true }).click();
-    await checkSearchParams(page, "");
   });
 
   test("should hide completed tasks", async ({ page }) => {
@@ -164,7 +158,6 @@ test.describe("Filter", () => {
     await page.getByLabel("Private", { exact: true }).click();
     await page.getByLabel("CompanyA", { exact: true }).click();
     await page.keyboard.press("x");
-    await checkSearchParams(page, "");
   });
 
   test("should clear active filter by clicking on the clear button", async ({
@@ -179,7 +172,6 @@ test.describe("Filter", () => {
     await expect(page.getByText("Reset filters")).toBeVisible();
     await page.getByText("Reset filters").click();
     await expect(page.getByText("Reset filters")).not.toBeVisible();
-    await checkSearchParams(page, "");
   });
 });
 

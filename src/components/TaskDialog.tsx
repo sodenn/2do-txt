@@ -15,7 +15,7 @@ import { useSettingsStore } from "@/stores/settings-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { formatDate, todayDate } from "@/utils/date";
 import { Task } from "@/utils/task";
-import { TaskList } from "@/utils/task-list";
+import { getTaskListAttributes, TaskList } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
 import { TrashIcon, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -91,13 +91,15 @@ export function TaskDialog() {
   const {
     findTaskListByTaskId,
     taskLists: _taskLists,
-    activeTaskList,
+    selectedTaskLists,
     addTask,
     editTask,
+  } = useTask();
+  const {
     contexts: commonContexts,
     projects: commonProjects,
     tags: commonTags,
-  } = useTask();
+  } = getTaskListAttributes(_taskLists);
   const closeTaskDialog = useTaskDialogStore((state) => state.closeTaskDialog);
   const cleanupTaskDialog = useTaskDialogStore(
     (state) => state.cleanupTaskDialog,
@@ -114,18 +116,46 @@ export function TaskDialog() {
   const [emptyBody, setEmptyBody] = useState(true);
   const contexts = useMemo(
     () =>
-      Object.keys(activeTaskList ? activeTaskList.contexts : commonContexts),
-    [activeTaskList, commonContexts],
+      Object.keys(
+        selectedTaskLists.length
+          ? selectedTaskLists.reduce(
+              (previousValue, currentValue) => ({
+                ...previousValue,
+                ...currentValue.contexts,
+              }),
+              {},
+            )
+          : commonContexts,
+      ),
+    [selectedTaskLists, commonContexts],
   );
   const projects = useMemo(
     () =>
-      Object.keys(activeTaskList ? activeTaskList.projects : commonProjects),
-    [activeTaskList, commonProjects],
+      Object.keys(
+        selectedTaskLists
+          ? selectedTaskLists.reduce(
+              (previousValue, currentValue) => ({
+                ...previousValue,
+                ...currentValue.projects,
+              }),
+              {},
+            )
+          : commonProjects,
+      ),
+    [selectedTaskLists, commonProjects],
   );
-  const tags = activeTaskList ? activeTaskList.tags : commonTags;
+  const tags = selectedTaskLists.length
+    ? selectedTaskLists.reduce(
+        (previousValue, currentValue) => ({
+          ...previousValue,
+          ...currentValue.tags,
+        }),
+        {},
+      )
+    : commonTags;
   const taskLists = useMemo(
-    () => (activeTaskList || task ? [] : _taskLists),
-    [_taskLists, activeTaskList, task],
+    () => (selectedTaskLists.length || task ? [] : _taskLists),
+    [_taskLists, selectedTaskLists.length, task],
   );
   const formDisabled = useMemo(
     () => (!task && !selectedTaskList) || !emptyBody,
@@ -165,9 +195,10 @@ export function TaskDialog() {
     setSelectedTaskList(() => {
       if (task) {
         return findTaskListByTaskId(task.id);
-      } else if (activeTaskList) {
-        return activeTaskList;
+      } else if (selectedTaskLists.length === 1) {
+        return selectedTaskLists[0];
       }
+      return undefined;
     });
   };
 

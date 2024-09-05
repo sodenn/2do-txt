@@ -44,10 +44,10 @@ export interface TaskGroup {
 export interface TaskListFilter {
   type: FilterType;
   searchTerm: string;
-  activePriorities: string[];
-  activeProjects: string[];
-  activeContexts: string[];
-  activeTags: string[];
+  selectedPriorities: string[];
+  selectedProjects: string[];
+  selectedContexts: string[];
+  selectedTags: string[];
   hideCompletedTasks: boolean;
 }
 
@@ -74,8 +74,8 @@ export function updateTaskListAttributes(taskList: TaskList): TaskList {
       id: item.id,
     };
   });
-  const attributes = getTaskListAttributes(items, false);
-  const incomplete = getTaskListAttributes(items, true);
+  const attributes = getAttributes(items, false);
+  const incomplete = getAttributes(items, true);
   return {
     ...taskList,
     ...attributes,
@@ -94,9 +94,9 @@ export function parseTaskList(text?: string): TaskListParseResult {
       .filter((t) => t.length > 0)
       .map((t, o) => ({ ...parseTask(t), order: o }));
 
-    const attributes = getTaskListAttributes(items, false);
+    const attributes = getAttributes(items, false);
 
-    const incompleteTasksAttributes = getTaskListAttributes(items, true);
+    const incompleteTasksAttributes = getAttributes(items, true);
 
     return {
       items,
@@ -131,27 +131,27 @@ export function stringifyTaskList(taskList: Task[], lineEnding: string) {
 
 export function useTimelineTasks(
   taskLists: TaskList[],
-  activeTaskList?: TaskList,
+  selectedTaskLists: TaskList[] = [],
 ): TimelineTask[] {
-  taskLists = activeTaskList ? [activeTaskList] : taskLists;
+  taskLists = selectedTaskLists.length ? selectedTaskLists : taskLists;
   const items = taskLists.flatMap((list) => list.items);
   const {
     filterType,
     searchTerm,
-    activePriorities,
-    activeProjects,
-    activeContexts,
-    activeTags,
+    selectedPriorities,
+    selectedProjects,
+    selectedContexts,
+    selectedTags,
     hideCompletedTasks,
   } = useFilterStore();
 
   const filteredTasks = filterTasks(items, {
     type: filterType,
     searchTerm,
-    activePriorities,
-    activeProjects,
-    activeContexts,
-    activeTags,
+    selectedPriorities,
+    selectedProjects,
+    selectedContexts,
+    selectedTags,
     hideCompletedTasks,
   });
 
@@ -271,18 +271,18 @@ export function useTimelineTasks(
 
 export function useTaskGroups(
   taskLists: TaskList[],
-  activeTaskList?: TaskList,
+  selectedTaskLists: TaskList[] = [],
 ) {
-  taskLists = activeTaskList ? [activeTaskList] : taskLists;
+  taskLists = selectedTaskLists.length ? selectedTaskLists : taskLists;
 
   const {
     sortBy,
     searchTerm,
     filterType,
-    activePriorities,
-    activeProjects,
-    activeContexts,
-    activeTags,
+    selectedPriorities,
+    selectedProjects,
+    selectedContexts,
+    selectedTags,
     hideCompletedTasks,
   } = useFilterStore();
 
@@ -291,10 +291,10 @@ export function useTaskGroups(
     items: filterTasks(taskList.items, {
       type: filterType,
       searchTerm,
-      activePriorities,
-      activeProjects,
-      activeContexts,
-      activeTags,
+      selectedPriorities,
+      selectedProjects,
+      selectedContexts,
+      selectedTags,
       hideCompletedTasks,
     }).sort(sortByOriginalOrder),
   }));
@@ -312,10 +312,10 @@ export function useTaskGroups(
 function andTypePredicate(
   hideCompletedTasks: boolean,
   searchTerm: string,
-  activePriorities: string[],
-  activeProjects: string[],
-  activeContexts: string[],
-  activeTags: string[],
+  selectedPriorities: string[],
+  selectedProjects: string[],
+  selectedContexts: string[],
+  selectedTags: string[],
 ) {
   return (task: Task) => {
     if (hideCompletedTasks && task.completed) {
@@ -327,26 +327,26 @@ function andTypePredicate(
       task.body.toLowerCase().includes(searchTerm.toLowerCase());
 
     const priorityCondition =
-      activePriorities.length === 0 ||
-      activePriorities.every(
+      selectedPriorities.length === 0 ||
+      selectedPriorities.every(
         (activePriority) => task.priority === activePriority,
       );
 
     const projectCondition =
-      activeProjects.length === 0 ||
-      activeProjects.every((activeProject) =>
+      selectedProjects.length === 0 ||
+      selectedProjects.every((activeProject) =>
         task.projects.includes(activeProject),
       );
 
     const contextCondition =
-      activeContexts.length === 0 ||
-      activeContexts.every((activeContext) =>
+      selectedContexts.length === 0 ||
+      selectedContexts.every((activeContext) =>
         task.contexts.includes(activeContext),
       );
 
     const tagsCondition =
-      activeTags.length === 0 ||
-      activeTags.every((activeTag) =>
+      selectedTags.length === 0 ||
+      selectedTags.every((activeTag) =>
         Object.keys(task.tags).includes(activeTag),
       );
 
@@ -363,18 +363,18 @@ function andTypePredicate(
 function orTypePredicate(
   hideCompletedTasks: boolean,
   searchTerm: string,
-  activePriorities: string[],
-  activeProjects: string[],
-  activeContexts: string[],
-  activeTags: string[],
+  selectedPriorities: string[],
+  selectedProjects: string[],
+  selectedContexts: string[],
+  selectedTags: string[],
 ) {
   return (task: Task) => {
     const filterDisabled =
       searchTerm.length === 0 &&
-      activePriorities.length === 0 &&
-      activeProjects.length === 0 &&
-      activeContexts.length === 0 &&
-      activeTags.length === 0;
+      selectedPriorities.length === 0 &&
+      selectedProjects.length === 0 &&
+      selectedContexts.length === 0 &&
+      selectedTags.length === 0;
 
     if (hideCompletedTasks && task.completed) {
       return false;
@@ -388,19 +388,19 @@ function orTypePredicate(
       searchTerm.length > 0 &&
       task.body.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const priorityCondition = activePriorities.some(
+    const priorityCondition = selectedPriorities.some(
       (activePriority) => task.priority === activePriority,
     );
 
-    const projectCondition = activeProjects.some((activeProject) =>
+    const projectCondition = selectedProjects.some((activeProject) =>
       task.projects.includes(activeProject),
     );
 
-    const contextCondition = activeContexts.some((activeContext) =>
+    const contextCondition = selectedContexts.some((activeContext) =>
       task.contexts.includes(activeContext),
     );
 
-    const tagsCondition = activeTags.some((activeTag) =>
+    const tagsCondition = selectedTags.some((activeTag) =>
       Object.keys(task.tags).includes(activeTag),
     );
 
@@ -421,10 +421,10 @@ export function filterTasks<T extends Task>(
   const {
     type,
     searchTerm,
-    activePriorities,
-    activeProjects,
-    activeContexts,
-    activeTags,
+    selectedPriorities,
+    selectedProjects,
+    selectedContexts,
+    selectedTags,
     hideCompletedTasks,
   } = filter;
   return tasks.filter(
@@ -432,18 +432,18 @@ export function filterTasks<T extends Task>(
       ? orTypePredicate(
           hideCompletedTasks,
           searchTerm,
-          activePriorities,
-          activeProjects,
-          activeContexts,
-          activeTags,
+          selectedPriorities,
+          selectedProjects,
+          selectedContexts,
+          selectedTags,
         )
       : andTypePredicate(
           hideCompletedTasks,
           searchTerm,
-          activePriorities,
-          activeProjects,
-          activeContexts,
-          activeTags,
+          selectedPriorities,
+          selectedProjects,
+          selectedContexts,
+          selectedTags,
         ),
   );
 }
@@ -457,7 +457,7 @@ export function convertToTaskGroups(taskList: Task[], sortBy: SortKey) {
     .sort((a, b) => sortGroups(a, b, sortBy));
 }
 
-function getTaskListAttributes(
+function getAttributes(
   tasks: Task[],
   incompleteTasksOnly: boolean,
 ): TaskListAttributes {
@@ -507,7 +507,7 @@ function getTaskListAttributes(
   };
 }
 
-export function getCommonTaskListAttributes(taskLists: TaskList[]) {
+export function getTaskListAttributes(taskLists: TaskList[]) {
   const projects = reduceDictionaries(taskLists.map((l) => l.projects));
   const tags = reduceDictionaries(taskLists.map((l) => l.tags));
   const contexts = reduceDictionaries(taskLists.map((l) => l.contexts));

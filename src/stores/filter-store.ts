@@ -13,25 +13,16 @@ export type SortKey =
 
 export type FilterType = "AND" | "OR";
 
-export interface SearchParams {
-  term: string;
-  projects: string;
-  contexts: string;
-  tags: string;
-  priorities: string;
-  active: string;
-}
-
 export interface FilterFields {
   searchTerm: string;
-  activePriorities: string[];
-  activeProjects: string[];
-  activeContexts: string[];
-  activeTags: string[];
+  selectedPriorities: string[];
+  selectedProjects: string[];
+  selectedContexts: string[];
+  selectedTags: string[];
   sortBy: SortKey;
   filterType: FilterType;
   hideCompletedTasks: boolean;
-  activeTaskListId?: number;
+  selectedTaskListIds: number[];
 }
 
 interface FilterState extends FilterFields {
@@ -39,15 +30,16 @@ interface FilterState extends FilterFields {
   setSortBy: (sortBy: SortKey) => void;
   setFilterType: (filterType: FilterType) => void;
   togglePriority: (priority: string) => void;
-  resetActivePriorities: () => void;
+  setSelectedPriorities: (priories: string[]) => void;
   toggleProject: (project: string) => void;
-  resetActiveProjects: () => void;
+  setSelectedProjects: (projects: string[]) => void;
   toggleContext: (context: string) => void;
-  resetActiveContexts: () => void;
+  setSelectedContexts: (contexts: string[]) => void;
   toggleTag: (tag: string) => void;
-  resetActiveTags: () => void;
+  setSelectedTags: (tags: string[]) => void;
   setHideCompletedTasks: (hideCompletedTasks: boolean) => void;
-  setActiveTaskListId: (activeTaskListId?: number) => void;
+  setSelectedTaskListIds: (selectedTaskListIds: number[]) => void;
+  toggleTaskListId: (id: number) => void;
 }
 
 export type FilterStore = ReturnType<typeof initializeFilterStore>;
@@ -58,23 +50,34 @@ export const FilterStoreProvider = zustandContext.Provider;
 
 export async function filterLoader(): Promise<FilterFields> {
   const searchParams = new URLSearchParams(window.location.search);
-  const [sortBy, filterType, hideCompletedTasks] = await Promise.all([
+  const [
+    selectedTaskListIds,
+    selectedPriorities,
+    selectedProjects,
+    selectedContexts,
+    selectedTags,
+    sortBy,
+    filterType,
+    hideCompletedTasks,
+  ] = await Promise.all([
+    getPreferencesItem<string>("selected-task-list-ids"),
+    getPreferencesItem<string>("selected-priorities"),
+    getPreferencesItem<string>("selected-projects"),
+    getPreferencesItem<string>("selected-contexts"),
+    getPreferencesItem<SortKey>("selected-tags"),
     getPreferencesItem<SortKey>("sort-by"),
     getPreferencesItem<FilterType>("filter-type"),
     getPreferencesItem<string>("hide-completed-tasks"),
   ]);
-  const active = searchParams.get("active");
-  const priorities = searchParams.get("priorities");
-  const projects = searchParams.get("projects");
-  const contexts = searchParams.get("contexts");
-  const tags = searchParams.get("tags");
   return {
     searchTerm: searchParams.get("term") || "",
-    activeTaskListId: active ? parseInt(active) : undefined,
-    activePriorities: priorities ? priorities.split(",") : [],
-    activeProjects: projects ? projects.split(",") : [],
-    activeContexts: contexts ? contexts.split(",") : [],
-    activeTags: tags ? tags.split(",") : [],
+    selectedTaskListIds: selectedTaskListIds
+      ? selectedTaskListIds.split(",").map(parseInt)
+      : [],
+    selectedPriorities: selectedPriorities ? selectedPriorities.split(",") : [],
+    selectedProjects: selectedProjects ? selectedProjects.split(",") : [],
+    selectedContexts: selectedContexts ? selectedContexts.split(",") : [],
+    selectedTags: selectedTags ? selectedTags.split(",") : [],
     sortBy: sortBy ?? "unsorted",
     filterType: filterType || "AND",
     hideCompletedTasks: hideCompletedTasks === "true",
@@ -88,12 +91,12 @@ export function initializeFilterStore(
     searchTerm: "",
     sortBy: "unsorted",
     filterType: "AND",
-    activePriorities: [],
-    activeProjects: [],
-    activeContexts: [],
-    activeTags: [],
+    selectedPriorities: [],
+    selectedProjects: [],
+    selectedContexts: [],
+    selectedTags: [],
     hideCompletedTasks: false,
-    activeTaskListId: undefined,
+    selectedTaskListIds: [],
     ...preloadedState,
     setSearchTerm: (searchTerm: string) => set({ searchTerm }),
     setSortBy: (sortBy: SortKey) => {
@@ -103,55 +106,99 @@ export function initializeFilterStore(
     setFilterType: (filterType: FilterType) => {
       set((state) => ({
         filterType,
-        ...(state.activePriorities.length > 1 &&
-          filterType === "AND" && { activePriorities: [] }),
+        ...(state.selectedPriorities.length > 1 &&
+          filterType === "AND" && { selectedPriorities: [] }),
       }));
       setPreferencesItem("filter-type", filterType);
     },
     togglePriority: (priority: string) =>
       set((state) => {
-        if (state.filterType === "AND" && state.activePriorities.length > 0) {
-          return {
-            activePriorities: state.activePriorities.includes(priority)
+        const newSelectedPriorities =
+          state.filterType === "AND" && state.selectedPriorities.length > 0
+            ? state.selectedPriorities.includes(priority)
               ? []
-              : [priority],
-          };
-        } else {
-          return {
-            activePriorities: state.activePriorities.includes(priority)
-              ? state.activePriorities.filter((i) => i !== priority)
-              : [...state.activePriorities, priority],
-          };
-        }
+              : [priority]
+            : state.selectedPriorities.includes(priority)
+              ? state.selectedPriorities.filter((i) => i !== priority)
+              : [...state.selectedPriorities, priority];
+        setPreferencesItem(
+          "selected-priorities",
+          newSelectedPriorities.join(","),
+        );
+        return {
+          selectedPriorities: newSelectedPriorities,
+        };
       }),
-    resetActivePriorities: () => set({ activePriorities: [] }),
+    setSelectedPriorities: (selectedPriorities: string[]) => {
+      set({ selectedPriorities });
+      setPreferencesItem("selected-priorities", selectedPriorities.join(","));
+    },
     toggleProject: (project: string) =>
-      set((state) => ({
-        activeProjects: state.activeProjects.includes(project)
-          ? state.activeProjects.filter((i) => i !== project)
-          : [...state.activeProjects, project],
-      })),
-    resetActiveProjects: () => set({ activeProjects: [] }),
+      set((state) => {
+        const newSelectedProjects = state.selectedProjects.includes(project)
+          ? state.selectedProjects.filter((i) => i !== project)
+          : [...state.selectedProjects, project];
+        setPreferencesItem("selected-projects", newSelectedProjects.join(","));
+        return {
+          selectedProjects: newSelectedProjects,
+        };
+      }),
+    setSelectedProjects: (selectedProjects: string[]) => {
+      set({ selectedProjects });
+      setPreferencesItem("selected-projects", selectedProjects.join(","));
+    },
     toggleContext: (context: string) =>
-      set((state) => ({
-        activeContexts: state.activeContexts.includes(context)
-          ? state.activeContexts.filter((i) => i !== context)
-          : [...state.activeContexts, context],
-      })),
-    resetActiveContexts: () => set({ activeContexts: [] }),
+      set((state) => {
+        const newSelectedContexts = state.selectedContexts.includes(context)
+          ? state.selectedContexts.filter((i) => i !== context)
+          : [...state.selectedContexts, context];
+        setPreferencesItem("selected-contexts", newSelectedContexts.join(","));
+        return {
+          selectedContexts: newSelectedContexts,
+        };
+      }),
+    setSelectedContexts: (selectedContexts: string[]) => {
+      set({ selectedContexts });
+      setPreferencesItem("selected-contexts", selectedContexts.join(","));
+    },
     toggleTag: (tag: string) =>
-      set((state) => ({
-        activeTags: state.activeTags.includes(tag)
-          ? state.activeTags.filter((i) => i !== tag)
-          : [...state.activeTags, tag],
-      })),
-    resetActiveTags: () => set({ activeTags: [] }),
+      set((state) => {
+        const newSelectedTags = state.selectedTags.includes(tag)
+          ? state.selectedTags.filter((i) => i !== tag)
+          : [...state.selectedTags, tag];
+        setPreferencesItem("selected-tags", newSelectedTags.join(","));
+        return {
+          selectedTags: newSelectedTags,
+        };
+      }),
+    setSelectedTags: (selectedTags: string[]) => {
+      set({ selectedTags });
+      setPreferencesItem("selected-tags", selectedTags.join(","));
+    },
     setHideCompletedTasks: (hideCompletedTasks: boolean) => {
       set({ hideCompletedTasks });
       setPreferencesItem("hide-completed-tasks", hideCompletedTasks.toString());
     },
-    setActiveTaskListId: (activeTaskListId?: number) =>
-      set({ activeTaskListId }),
+    setSelectedTaskListIds: (selectedTaskListIds: number[]) => {
+      set({ selectedTaskListIds });
+      setPreferencesItem(
+        "selected-task-list-ids",
+        selectedTaskListIds.join(","),
+      );
+    },
+    toggleTaskListId: (id: number) =>
+      set((state) => {
+        const newSelectedTaskListIds = state.selectedTaskListIds.includes(id)
+          ? state.selectedTaskListIds.filter((i) => i !== id)
+          : [...state.selectedTaskListIds, id];
+        setPreferencesItem(
+          "selected-task-list-ids",
+          newSelectedTaskListIds.join(","),
+        );
+        return {
+          selectedTaskListIds: newSelectedTaskListIds,
+        };
+      }),
   }));
 }
 

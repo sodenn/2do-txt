@@ -17,7 +17,6 @@ import {
 } from "@/utils/task";
 import {
   parseTaskList as _parseTaskList,
-  getCommonTaskListAttributes,
   stringifyTaskList,
   TaskList,
   updateTaskListAttributes,
@@ -36,7 +35,7 @@ import { format, isBefore } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { isEqual, omit } from "lodash";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 type SaveTodoFile = {
@@ -90,9 +89,11 @@ export function useTask() {
   const priorityTransformation = useSettingsStore(
     (state) => state.priorityTransformation,
   );
-  const activeTaskListId = useFilterStore((state) => state.activeTaskListId);
-  const setActiveTaskListId = useFilterStore(
-    (state) => state.setActiveTaskListId,
+  const selectedTaskListIds = useFilterStore(
+    (state) => state.selectedTaskListIds,
+  );
+  const setSelectedTaskListIds = useFilterStore(
+    (state) => state.setSelectedTaskListIds,
   );
   const taskLists = useTaskStore((state) => state.taskLists);
   const todoFiles = useTaskStore((state) => state.todoFiles);
@@ -109,13 +110,13 @@ export function useTask() {
     restoreArchivedTasks: _restoreArchivedTasks,
   } = useArchivedTask();
 
-  const commonTaskListAttributes = getCommonTaskListAttributes(taskLists);
-
-  const activeTaskList = activeTaskListId
-    ? taskLists.find((list) => list.id === activeTaskListId)
-    : taskLists.length === 1
-      ? taskLists[0]
-      : undefined;
+  const selectedTaskLists = useMemo(
+    () =>
+      selectedTaskListIds.length
+        ? taskLists.filter((list) => selectedTaskListIds.includes(list.id))
+        : [],
+    [selectedTaskListIds, taskLists],
+  );
 
   const findTaskListByTaskId = useCallback(
     (taskId?: string) => {
@@ -359,30 +360,28 @@ export function useTask() {
         ]);
       }
 
-      if (id === activeTaskListId) {
+      if (selectedTaskLists.some((list) => list.id === id)) {
+        const taskListIds = selectedTaskLists
+          .filter((t) => t.id !== id)
+          .map((list) => list.id);
         if (taskLists.length === 2) {
-          const fallbackList = taskLists.find(
-            (list) => list.id !== activeTaskListId,
-          );
+          const fallbackList = taskLists.find((list) => list.id !== id);
           if (fallbackList) {
-            setActiveTaskListId(fallbackList.id);
-          } else {
-            setActiveTaskListId();
+            taskListIds.push(fallbackList.id);
           }
-        } else {
-          setActiveTaskListId();
         }
+        setSelectedTaskListIds(taskListIds);
       }
 
       removeTaskList(taskList);
     },
     [
       taskLists,
-      activeTaskListId,
+      deleteTodoFile,
+      selectedTaskLists,
       removeTaskList,
       cancelNotifications,
-      deleteTodoFile,
-      setActiveTaskListId,
+      setSelectedTaskListIds,
     ],
   );
 
@@ -412,29 +411,27 @@ export function useTask() {
   );
 
   const downloadTodoFile = useCallback(
-    async (taskList = activeTaskList) => {
-      if (taskList) {
-        const { items, lineEnding, filename } = taskList;
-        const zip = await generateZipFile(taskList);
-        if (zip) {
-          FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
-        } else {
-          const text = stringifyTaskList(items, lineEnding);
-          const blob = new Blob([text], {
-            type: "text/plain;charset=utf-8",
-          });
-          FileSaver.saveAs(blob, filename);
-        }
+    async (taskList: TaskList) => {
+      const { items, lineEnding, filename } = taskList;
+      const zip = await generateZipFile(taskList);
+      if (zip) {
+        FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
+      } else {
+        const text = stringifyTaskList(items, lineEnding);
+        const blob = new Blob([text], {
+          type: "text/plain;charset=utf-8",
+        });
+        FileSaver.saveAs(blob, filename);
       }
     },
-    [activeTaskList, generateZipFile],
+    [generateZipFile],
   );
 
-  const shareTodoFile = useCallback(async () => {
-    if (activeTaskList) {
-      const zip = await generateZipFile(activeTaskList, "blob");
+  const shareTodoFile = useCallback(
+    async (taskList: TaskList) => {
+      const zip = await generateZipFile(taskList, "blob");
       if (!zip) {
-        return downloadTodoFile();
+        return downloadTodoFile(taskList);
       }
       const blob = zip.zipContent as Blob;
       const data = {
@@ -447,10 +444,11 @@ export function useTask() {
       if (await canShare(data)) {
         await share(data);
       } else {
-        await downloadTodoFile();
+        await downloadTodoFile(taskList);
       }
-    }
-  }, [activeTaskList, downloadTodoFile, generateZipFile]);
+    },
+    [downloadTodoFile, generateZipFile],
+  );
 
   const scheduleDueTaskNotifications = useCallback(
     async (tasks: Task[]) => {
@@ -514,7 +512,7 @@ export function useTask() {
   );
 
   const archiveTasks = useCallback(async () => {
-    const newTaskLists = await _archiveTasks(taskLists);
+    const newTaskLists = await _archiveTasks(selectedTaskLists);
     return Promise.all(
       newTaskLists.map((taskList) => {
         if (taskList) {
@@ -522,7 +520,7 @@ export function useTask() {
         }
       }),
     );
-  }, [_archiveTasks, saveTodoFile, taskLists]);
+  }, [_archiveTasks, saveTodoFile, selectedTaskLists]);
 
   const restoreArchivedTasks = useCallback(async () => {
     const newTaskLists = await _restoreArchivedTasks(taskLists);
@@ -611,7 +609,6 @@ export function useTask() {
   }, []);
 
   return {
-    ...commonTaskListAttributes,
     saveTodoFile,
     downloadTodoFile,
     shareTodoFile,
@@ -628,7 +625,7 @@ export function useTask() {
     loadDoneFile,
     taskLists,
     scheduleDueTaskNotifications,
-    activeTaskList,
+    selectedTaskLists,
     findTaskListByTaskId,
     reorderTaskList,
     createNewTodoFile,

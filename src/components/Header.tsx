@@ -15,11 +15,12 @@ import { useState } from "react";
 
 export function Header() {
   const divider = useScrollingStore((state) => state.divider);
-  const { activeTaskList, taskLists } = useTask();
+  const { selectedTaskLists, taskLists } = useTask();
   const sideSheetOpen = useSideSheetStore((state) => state.open);
   const [searchBarExpanded, setSearchBarExpanded] = useState(false);
   const showTodoFileShareButton =
-    (IS_IOS || IS_ANDROID) && (activeTaskList || taskLists.length === 1);
+    (IS_IOS || IS_ANDROID) &&
+    (selectedTaskLists.length < 2 || taskLists.length === 1);
 
   return (
     <LayoutHeader open={sideSheetOpen}>

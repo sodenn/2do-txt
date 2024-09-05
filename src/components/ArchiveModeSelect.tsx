@@ -21,7 +21,7 @@ export function ArchiveModeSelect() {
   const { t } = useTranslation();
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const setArchiveMode = useSettingsStore((state) => state.setArchiveMode);
-  const { archiveTasks, restoreArchivedTasks, activeTaskList } = useTask();
+  const { archiveTasks, selectedTaskLists, restoreArchivedTasks } = useTask();
 
   const handleChange = (value: ArchiveMode) => {
     const newValue = value || "no-archiving";
@@ -69,7 +69,7 @@ export function ArchiveModeSelect() {
             </SelectItem>
           </SelectContent>
         </Select>
-        {archiveMode === "manual" && activeTaskList && (
+        {archiveMode === "manual" && selectedTaskLists.length && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

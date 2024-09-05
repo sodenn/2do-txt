@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,9 +10,9 @@ import { Label } from "@/components/ui/label";
 import { EndAdornment, List, ListItem } from "@/components/ui/list";
 import { useToast } from "@/components/ui/use-toast";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
+import { useFilterStore } from "@/stores/filter-store";
 import { writeToClipboard } from "@/utils/clipboard";
 import { readFile } from "@/utils/filesystem";
-import { cn } from "@/utils/tw-utils";
 import { useTask } from "@/utils/useTask";
 import {
   closestCenter,
@@ -35,11 +36,11 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-  CheckIcon,
   ClipboardIcon,
   DownloadIcon,
   EllipsisVertical,
   FolderOpenIcon,
+  GripVerticalIcon,
   PlusIcon,
   XIcon,
 } from "lucide-react";
@@ -94,7 +95,10 @@ export const FileList = memo(() => {
   };
 
   const handleDownload = (id: number) => {
-    downloadTodoFile(taskLists.find((t) => t.id === id));
+    const list = taskLists.find((t) => t.id === id);
+    if (list) {
+      downloadTodoFile(list);
+    }
   };
 
   const getFilename = (id: number) => {
@@ -161,6 +165,10 @@ function FileListItem(props: FileListItemProps) {
     transition,
   } = useSortable({ disabled: disableDrag, id });
   const { openConfirmationDialog } = useConfirmationDialogStore();
+  const selectedTaskListIds = useFilterStore(
+    (state) => state.selectedTaskListIds,
+  );
+  const toggleTaskListId = useFilterStore((state) => state.toggleTaskListId);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -188,14 +196,12 @@ function FileListItem(props: FileListItemProps) {
 
   return (
     <ListItem
-      clickable={!disableDrag}
+      clickable={false}
       ref={setNodeRef}
       style={style}
       data-testid="draggable-file"
-      {...listeners}
-      {...attributes}
       tabIndex={-1}
-      className={cn("cursor-move")}
+      className="group"
       endAdornment={
         <FileMenu
           id={id}
@@ -204,9 +210,17 @@ function FileListItem(props: FileListItemProps) {
         />
       }
     >
-      <div className="flex items-center gap-2">
-        <CheckIcon className="h-4 w-4 opacity-50" />
-        <div className="truncate">{filename}</div>
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id={`list-${id}`}
+          checked={selectedTaskListIds.includes(id)}
+          onCheckedChange={() => toggleTaskListId(id)}
+        />
+        <Label htmlFor={`list-${id}`}>{filename}</Label>
+      </div>
+      <div className="flex-1" />
+      <div {...listeners} {...attributes}>
+        <GripVerticalIcon className="h-4 w-4 cursor-move opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-50" />
       </div>
     </ListItem>
   );

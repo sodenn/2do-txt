@@ -30,10 +30,13 @@ export function FileMenu() {
   const openShortcutsDialog = useShortcutsDialogStore(
     (state) => state.openShortcutsDialog,
   );
-  const { taskLists, activeTaskList, createNewTodoFile, addTodoFile } =
+  const { taskLists, selectedTaskLists, createNewTodoFile, addTodoFile } =
     useTask();
-  const setActiveTaskListId = useFilterStore(
-    (state) => state.setActiveTaskListId,
+  const setSelectedTaskListIds = useFilterStore(
+    (state) => state.setSelectedTaskListIds,
+  );
+  const selectedTaskListIds = useFilterStore(
+    (state) => state.selectedTaskListIds,
   );
   const { showOpenFilePicker, showSaveFilePicker } = useFilesystem();
 
@@ -55,8 +58,8 @@ export function FileMenu() {
     }
   };
 
-  const handleSetActiveList = async (id?: number) => {
-    setActiveTaskListId(id);
+  const handleSetActiveList = async (id: number) => {
+    setSelectedTaskListIds([id]);
   };
 
   const menuItems: ReactNode[] = [];
@@ -64,7 +67,7 @@ export function FileMenu() {
   taskLists.forEach(({ id, filename }) => {
     menuItems.push(
       <DropdownMenuCheckboxItem
-        checked={activeTaskList?.id === id}
+        checked={selectedTaskListIds.includes(id)}
         onClick={() => handleSetActiveList(id)}
         key={id}
       >
@@ -119,7 +122,9 @@ export function FileMenu() {
         >
           <img src={logo} className="mr-2 h-6 w-6" alt="Logo" height={22} />
           <div className="truncate">
-            {activeTaskList ? activeTaskList.filename : "2do.txt"}
+            {selectedTaskLists.length === 1
+              ? selectedTaskLists[0].filename
+              : "2do.txt"}
           </div>
           <ChevronDownIcon className="ml-2 h-4 w-4" />
         </Button>
