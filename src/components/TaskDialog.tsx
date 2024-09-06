@@ -88,18 +88,13 @@ function DeleteTaskButton() {
 
 export function TaskDialog() {
   const { t } = useTranslation();
-  const {
-    findTaskListByTaskId,
-    taskLists: _taskLists,
-    selectedTaskLists,
-    addTask,
-    editTask,
-  } = useTask();
+  const { findTaskListByTaskId, selectedTaskLists, addTask, editTask } =
+    useTask();
   const {
     contexts: commonContexts,
     projects: commonProjects,
     tags: commonTags,
-  } = getTaskListAttributes(_taskLists);
+  } = getTaskListAttributes(selectedTaskLists);
   const closeTaskDialog = useTaskDialogStore((state) => state.closeTaskDialog);
   const cleanupTaskDialog = useTaskDialogStore(
     (state) => state.cleanupTaskDialog,
@@ -153,10 +148,6 @@ export function TaskDialog() {
         {},
       )
     : commonTags;
-  const taskLists = useMemo(
-    () => (selectedTaskLists.length || task ? [] : _taskLists),
-    [_taskLists, selectedTaskLists.length, task],
-  );
   const formDisabled = useMemo(
     () => (!task && !selectedTaskList) || !emptyBody,
     [task, selectedTaskList, emptyBody],
@@ -241,7 +232,7 @@ export function TaskDialog() {
             contexts={contexts}
             projects={projects}
             tags={tags}
-            taskLists={taskLists}
+            taskLists={task ? [] : selectedTaskLists}
             onChange={handleChanged}
             onFileSelect={setSelectedTaskList}
             onEnterPress={handleSave}

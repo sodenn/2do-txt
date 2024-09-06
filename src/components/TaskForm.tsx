@@ -83,7 +83,7 @@ function TaskGrid(props: TaskGridProps) {
   const { t } = useTranslation();
   const rec = getRecValue(formModel.body);
   const dueDate = getDueDateValue(formModel.body);
-  const showTaskList = taskLists.length > 0;
+  const showTaskList = taskLists.length > 1;
   const {
     openMentionMenu,
     removeMentions,
