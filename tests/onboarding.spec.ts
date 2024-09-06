@@ -20,7 +20,7 @@ test.describe("Onboarding", () => {
     await page.keyboard.press("Tab");
     await expect(page.getByLabel("Create task")).toBeFocused();
     await page.keyboard.press("Tab");
-    await expect(page.getByLabel("Create example file")).toBeFocused();
+    await expect(page.getByLabel("Create example list")).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.getByLabel("Import todo.txt")).toBeFocused();
   });
@@ -37,8 +37,8 @@ test.describe("New file", () => {
     await page.keyboard.press("Escape");
     await openFileMenu(page);
     await page.getByLabel("File actions").click();
-    await page.getByLabel("Close file").click();
-    await page.getByLabel("Close file confirmation").click();
+    await page.getByLabel("Remove list").click();
+    await page.getByLabel("Remove list confirmation").click();
     await expect(page.getByText("Get Started")).toBeVisible();
   });
 });

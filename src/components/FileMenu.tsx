@@ -76,7 +76,7 @@ export function FileMenu() {
   menuItems.push(
     <DropdownMenuItem onClick={handleCreateFile} key="Create file">
       <PlusIcon className="mr-2 h-4 w-4" />
-      {t("Create")}
+      {t("Create list")}
     </DropdownMenuItem>,
   );
 
@@ -84,12 +84,10 @@ export function FileMenu() {
     <DropdownMenuItem
       onClick={handleOpenFile}
       key="Open file"
-      aria-label={
-        SUPPORTS_SHOW_OPEN_FILE_PICKER ? "Open todo.txt" : "Import todo.txt"
-      }
+      aria-label={SUPPORTS_SHOW_OPEN_FILE_PICKER ? "Open list" : "Import list"}
     >
       <FolderOpenIcon className="mr-2 h-4 w-4" />
-      {SUPPORTS_SHOW_OPEN_FILE_PICKER ? t("Open") : t("Import")}
+      {SUPPORTS_SHOW_OPEN_FILE_PICKER ? t("Open list") : t("Import list")}
     </DropdownMenuItem>,
   );
 

@@ -8,6 +8,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { EndAdornment, List, ListItem } from "@/components/ui/list";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { writeToClipboard } from "@/utils/clipboard";
@@ -71,6 +76,7 @@ export const FileList = memo(() => {
     createNewTodoFile,
     addTodoFile,
   } = useTask();
+  const { t } = useTranslation();
   const { showOpenFilePicker, showSaveFilePicker } = useFilesystem();
   const [items, setItems] = useState(taskLists.map((t) => t.id));
   const sensors = useSensors(
@@ -136,22 +142,34 @@ export const FileList = memo(() => {
     <div className="group space-y-2">
       <div className="relative">
         <Label>Lists</Label>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleOpenFile}
-          className="absolute bottom-0 right-8 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
-        >
-          <FolderOpenIcon className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleCreateFile}
-          className="absolute bottom-0 right-0 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
-        >
-          <PlusIcon className="h-4 w-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              tabIndex={-1}
+              variant="ghost"
+              size="icon"
+              onClick={handleOpenFile}
+              className="absolute bottom-0 right-8 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
+            >
+              <FolderOpenIcon className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("Open list")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              tabIndex={-1}
+              variant="ghost"
+              size="icon"
+              onClick={handleCreateFile}
+              className="absolute bottom-0 right-0 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
+            >
+              <PlusIcon className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t("Create list")}</TooltipContent>
+        </Tooltip>
       </div>
       <List variant="outline">
         <DndContext
@@ -200,7 +218,7 @@ function FileListItem(props: FileListItemProps) {
   const openDeleteConfirmationDialog = () => {
     openConfirmationDialog({
       title: t("Remove list"),
-      content: <Trans i18nKey="Remove list x" values={{ filename }} />,
+      content: <Trans i18nKey="Remove x" values={{ filename }} />,
       buttons: [
         {
           text: t("Cancel"),
@@ -248,7 +266,7 @@ function FileListItem(props: FileListItemProps) {
         {disabled && filename}
       </div>
       <div className="flex-1" />
-      <div {...listeners} {...attributes}>
+      <div {...listeners} {...attributes} tabIndex={-1}>
         <GripVerticalIcon
           className={cn(
             disabled && "hidden",
@@ -310,9 +328,9 @@ function FileMenu(props: FileMenuProps) {
           <DownloadIcon className="mr-2 h-4 w-4" />
           {t("Download")}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleCloseFile} aria-label="Close file">
+        <DropdownMenuItem onClick={handleCloseFile} aria-label="Remove list">
           <XIcon className="mr-2 h-4 w-4" />
-          {t("Close")}
+          {t("Remove")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

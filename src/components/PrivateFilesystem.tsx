@@ -67,7 +67,7 @@ function PrivateFilesystemDialog() {
     <ResponsiveDialog open={open} onClose={handleClose}>
       <ResponsiveDialogContent data-testid="file-create-dialog">
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>{t("Create todo.txt")}</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>{t("Create list")}</ResponsiveDialogTitle>
           <ResponsiveDialogHiddenDescription>
             Create file
           </ResponsiveDialogHiddenDescription>

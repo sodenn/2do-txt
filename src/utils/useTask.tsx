@@ -611,8 +611,8 @@ export function useTask() {
         await new Promise<void>((resolve) => {
           const { dismiss } = toast({
             hideCloseButton: true,
-            title: t("Open File"),
-            description: t(`Would you like to open the file?`, {
+            title: t("Open list"),
+            description: t(`Would you like to open the list?`, {
               filename: error.filename,
             }),
             duration: 1000 * 10,
@@ -631,7 +631,7 @@ export function useTask() {
                   {t("No")}
                 </ToastAction>
                 <ToastAction
-                  altText="Open File"
+                  altText="Open list"
                   onClick={async () => {
                     const taskList = await loadTodoFileFromDisk(error.id);
                     addTaskList(taskList);

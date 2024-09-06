@@ -8,9 +8,9 @@ export async function goto(page: Page) {
 }
 
 export async function createExampleFile(page: Page, filename?: string) {
-  const onboarding = await page.getByLabel("Create example file").isVisible();
+  const onboarding = await page.getByLabel("Create example list").isVisible();
   if (onboarding) {
-    await page.getByLabel("Create example file").click();
+    await page.getByLabel("Create example list").click();
     if (filename) {
       await page.getByLabel("Filename").fill(filename);
     }
