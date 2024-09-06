@@ -15,7 +15,16 @@ export default {
   indentation: 2,
   // Indentation of the catalog files
 
-  keepRemoved: false,
+  keepRemoved: [
+    /Business days/,
+    /Days/,
+    /^Every\s/,
+    /Months/,
+    /No recurrence/,
+    /^Number of/,
+    /Weeks/,
+    /Years/,
+  ],
   // Keep keys from the catalog that are no longer in code
   // You may either specify a boolean to keep or discard all removed keys.
   // You may also specify an array of patterns: the keys from the catalog that are no long in the code but match one of the patterns will be kept.
