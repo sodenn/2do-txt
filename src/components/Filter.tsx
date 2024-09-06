@@ -26,7 +26,7 @@ import { Trans, useTranslation } from "react-i18next";
 
 export function Filter() {
   const { t } = useTranslation();
-  const { taskLists, selectedTaskLists, ...rest } = useTask();
+  const { taskLists, selectedTaskLists } = useTask();
   const {
     sortBy,
     searchTerm,
@@ -48,6 +48,7 @@ export function Filter() {
     toggleTag,
     setHideCompletedTasks,
     setSearchTerm,
+    setSelectedTaskListIds,
   } = useFilterStore();
   const taskView = useSettingsStore((state) => state.taskView);
   const attributes = selectedTaskLists.length
@@ -63,13 +64,16 @@ export function Filter() {
       selectedContexts.length === 0 &&
       selectedProjects.length === 0 &&
       selectedTags.length === 0 &&
+      selectedTaskLists.length === taskLists.length &&
       selectedPriorities.length === 0,
     [
-      selectedContexts,
-      selectedPriorities,
-      selectedProjects,
-      selectedTags,
       searchTerm,
+      selectedContexts.length,
+      selectedProjects.length,
+      selectedTags.length,
+      selectedTaskLists.length,
+      taskLists.length,
+      selectedPriorities.length,
     ],
   );
 
@@ -78,10 +82,12 @@ export function Filter() {
     setSelectedContexts([]);
     setSelectedTags([]);
     setSelectedPriorities([]);
+    setSelectedTaskListIds([]);
     setSearchTerm("");
   }, [
     setSelectedContexts,
     setSelectedPriorities,
+    setSelectedTaskListIds,
     setSelectedProjects,
     setSelectedTags,
     setSearchTerm,
@@ -95,7 +101,19 @@ export function Filter() {
     <div className="space-y-4 text-sm">
       {Object.keys(priorities).length > 0 && (
         <div className="space-y-2">
-          <Label>{t("Priorities")}</Label>
+          <Label className="flex justify-between">
+            {t("Priorities")}
+            {!defaultFilter && (
+              <Button
+                className="h-auto px-0"
+                variant="link"
+                size="sm"
+                onClick={resetFilters}
+              >
+                {t("Reset filters")}
+              </Button>
+            )}
+          </Label>
           <ChipList
             items={priorities}
             activeItems={selectedPriorities}
@@ -103,6 +121,19 @@ export function Filter() {
             color="danger"
           />
         </div>
+      )}
+      {!defaultFilter && Object.keys(priorities).length === 0 && (
+        <Label className="flex justify-end">
+          &nbsp;
+          <Button
+            className="h-auto px-0"
+            variant="link"
+            size="sm"
+            onClick={resetFilters}
+          >
+            {t("Reset filters")}
+          </Button>
+        </Label>
       )}
       {Object.keys(projects).length > 0 && (
         <div className="space-y-2">
@@ -141,18 +172,6 @@ export function Filter() {
             onClick={toggleTag}
             color="warning"
           />
-        </div>
-      )}
-      {!defaultFilter && (
-        <div className="flex justify-end">
-          <Button
-            className="px-0"
-            variant="link"
-            size="sm"
-            onClick={resetFilters}
-          >
-            {t("Reset filters")}
-          </Button>
         </div>
       )}
       <FileList />

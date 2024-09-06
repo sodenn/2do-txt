@@ -17,6 +17,7 @@ import {
 } from "@/utils/task";
 import {
   parseTaskList as _parseTaskList,
+  getTaskListAttributes,
   stringifyTaskList,
   TaskList,
   updateTaskListAttributes,
@@ -89,12 +90,18 @@ export function useTask() {
   const priorityTransformation = useSettingsStore(
     (state) => state.priorityTransformation,
   );
-  const selectedTaskListIds = useFilterStore(
-    (state) => state.selectedTaskListIds,
-  );
-  const setSelectedTaskListIds = useFilterStore(
-    (state) => state.setSelectedTaskListIds,
-  );
+  const {
+    selectedPriorities,
+    setSelectedPriorities,
+    selectedProjects,
+    setSelectedProjects,
+    selectedContexts,
+    setSelectedContexts,
+    selectedTags,
+    setSelectedTags,
+    selectedTaskListIds,
+    setSelectedTaskListIds,
+  } = useFilterStore();
   const taskLists = useTaskStore((state) => state.taskLists);
   const todoFiles = useTaskStore((state) => state.todoFiles);
   const setTaskLists = useTaskStore((state) => state.setTaskLists);
@@ -114,8 +121,54 @@ export function useTask() {
     () =>
       selectedTaskListIds.length
         ? taskLists.filter((list) => selectedTaskListIds.includes(list.id))
-        : [],
+        : [...taskLists],
     [selectedTaskListIds, taskLists],
+  );
+
+  const toggleTaskList = useCallback(
+    (id: number) => {
+      const selectedTaskListIds = selectedTaskLists.map((list) => list.id);
+      const newSelectedTaskListIds = selectedTaskListIds.includes(id)
+        ? selectedTaskListIds.filter((i) => i !== id)
+        : [...selectedTaskListIds, id];
+      // reset filter if necessary
+      const newSelectedTaskLists = newSelectedTaskListIds.length
+        ? taskLists.filter((list) => newSelectedTaskListIds.includes(list.id))
+        : [...taskLists];
+      const attributes = getTaskListAttributes(newSelectedTaskLists);
+      const newSelectedPriority = selectedPriorities.filter(
+        (selectedPriority) =>
+          Object.keys(attributes.priorities).includes(selectedPriority),
+      );
+      const newSelectedProjects = selectedProjects.filter((selectedProject) =>
+        Object.keys(attributes.projects).includes(selectedProject),
+      );
+      const newSelectedContexts = selectedContexts.filter((selectedContext) =>
+        Object.keys(attributes.contexts).includes(selectedContext),
+      );
+      const newSelectedTags = selectedTags.filter((selectedTag) =>
+        Object.keys(attributes.tags).includes(selectedTag),
+      );
+
+      setSelectedTaskListIds(newSelectedTaskListIds);
+      setSelectedPriorities(newSelectedPriority);
+      setSelectedProjects(newSelectedProjects);
+      setSelectedContexts(newSelectedContexts);
+      setSelectedTags(newSelectedTags);
+    },
+    [
+      selectedContexts,
+      selectedPriorities,
+      selectedProjects,
+      selectedTags,
+      selectedTaskLists,
+      setSelectedContexts,
+      setSelectedPriorities,
+      setSelectedProjects,
+      setSelectedTags,
+      setSelectedTaskListIds,
+      taskLists,
+    ],
   );
 
   const findTaskListByTaskId = useCallback(
@@ -364,12 +417,6 @@ export function useTask() {
         const taskListIds = selectedTaskLists
           .filter((t) => t.id !== id)
           .map((list) => list.id);
-        if (taskLists.length === 2) {
-          const fallbackList = taskLists.find((list) => list.id !== id);
-          if (fallbackList) {
-            taskListIds.push(fallbackList.id);
-          }
-        }
         setSelectedTaskListIds(taskListIds);
       }
 
@@ -610,6 +657,7 @@ export function useTask() {
 
   return {
     saveTodoFile,
+    toggleTaskList,
     downloadTodoFile,
     shareTodoFile,
     closeTodoFile,

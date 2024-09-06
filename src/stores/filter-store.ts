@@ -39,7 +39,6 @@ interface FilterState extends FilterFields {
   setSelectedTags: (tags: string[]) => void;
   setHideCompletedTasks: (hideCompletedTasks: boolean) => void;
   setSelectedTaskListIds: (selectedTaskListIds: number[]) => void;
-  toggleTaskListId: (id: number) => void;
 }
 
 export type FilterStore = ReturnType<typeof initializeFilterStore>;
@@ -72,7 +71,7 @@ export async function filterLoader(): Promise<FilterFields> {
   return {
     searchTerm: searchParams.get("term") || "",
     selectedTaskListIds: selectedTaskListIds
-      ? selectedTaskListIds.split(",").map(parseInt)
+      ? selectedTaskListIds.split(",").map((i) => parseInt(i))
       : [],
     selectedPriorities: selectedPriorities ? selectedPriorities.split(",") : [],
     selectedProjects: selectedProjects ? selectedProjects.split(",") : [],
@@ -186,19 +185,6 @@ export function initializeFilterStore(
         selectedTaskListIds.join(","),
       );
     },
-    toggleTaskListId: (id: number) =>
-      set((state) => {
-        const newSelectedTaskListIds = state.selectedTaskListIds.includes(id)
-          ? state.selectedTaskListIds.filter((i) => i !== id)
-          : [...state.selectedTaskListIds, id];
-        setPreferencesItem(
-          "selected-task-list-ids",
-          newSelectedTaskListIds.join(","),
-        );
-        return {
-          selectedTaskListIds: newSelectedTaskListIds,
-        };
-      }),
   }));
 }
 

@@ -10,9 +10,9 @@ import { Label } from "@/components/ui/label";
 import { EndAdornment, List, ListItem } from "@/components/ui/list";
 import { useToast } from "@/components/ui/use-toast";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
-import { useFilterStore } from "@/stores/filter-store";
 import { writeToClipboard } from "@/utils/clipboard";
 import { readFile } from "@/utils/filesystem";
+import { cn } from "@/utils/tw-utils";
 import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import {
@@ -53,7 +53,7 @@ interface FileListItemProps {
   filename: string;
   onClose: (id: number) => void;
   onDownload: (id: number) => void;
-  disableDrag: boolean;
+  disabled: boolean;
 }
 
 interface FileMenuProps {
@@ -168,7 +168,7 @@ export const FileList = memo(() => {
                 filename={getFilename(id)}
                 onDownload={handleDownload}
                 onClose={handleCloseFile}
-                disableDrag={items.length === 1}
+                disabled={items.length < 2}
               />
             ))}
           </SortableContext>
@@ -179,7 +179,7 @@ export const FileList = memo(() => {
 });
 
 function FileListItem(props: FileListItemProps) {
-  const { id, filename, onClose, onDownload, disableDrag } = props;
+  const { id, filename, onClose, onDownload, disabled } = props;
   const { t } = useTranslation();
   const {
     attributes: { role, ...attributes },
@@ -187,12 +187,10 @@ function FileListItem(props: FileListItemProps) {
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ disabled: disableDrag, id });
+  } = useSortable({ disabled, id });
   const { openConfirmationDialog } = useConfirmationDialogStore();
-  const selectedTaskListIds = useFilterStore(
-    (state) => state.selectedTaskListIds,
-  );
-  const toggleTaskListId = useFilterStore((state) => state.toggleTaskListId);
+  const { selectedTaskLists, toggleTaskList } = useTask();
+  const selectedTaskListIds = selectedTaskLists.map((list) => list.id);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -234,19 +232,29 @@ function FileListItem(props: FileListItemProps) {
         />
       }
     >
-      <div className="flex min-w-0 items-center space-x-2">
-        <Checkbox
-          id={`list-${id}`}
-          checked={selectedTaskListIds.includes(id)}
-          onCheckedChange={() => toggleTaskListId(id)}
-        />
-        <Label htmlFor={`list-${id}`} className="mr-2 truncate">
-          {filename}
-        </Label>
+      <div className="flex min-w-0 items-center gap-4">
+        {!disabled && (
+          <>
+            <Checkbox
+              id={`list-${id}`}
+              checked={selectedTaskListIds.includes(id)}
+              onCheckedChange={() => toggleTaskList(id)}
+            />
+            <Label htmlFor={`list-${id}`} className="truncate">
+              {filename}
+            </Label>
+          </>
+        )}
+        {disabled && filename}
       </div>
       <div className="flex-1" />
       <div {...listeners} {...attributes}>
-        <GripVerticalIcon className="ml-2 mr-1 h-4 w-4 cursor-move opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-50" />
+        <GripVerticalIcon
+          className={cn(
+            disabled && "hidden",
+            "ml-2 mr-1 h-4 w-4 cursor-move opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-50",
+          )}
+        />
       </div>
     </ListItem>
   );

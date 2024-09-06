@@ -122,7 +122,7 @@ export function TaskView() {
               taskGroups={i.groups}
               tasks={tasks}
               listItemsRef={listItemsRef}
-              showHeader={selectedTaskLists.length !== 1}
+              showHeader={selectedTaskLists.length > 1}
               onFocus={(index) => setFocusedTaskId(tasks[index].id)}
               onBlur={() => setFocusedTaskId(undefined)}
               onClick={(task) => _openTaskDialog(task)}

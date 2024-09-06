@@ -7,7 +7,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useFilterStore } from "@/stores/filter-store";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
 import {
   HAS_TOUCHSCREEN,
@@ -30,14 +29,13 @@ export function FileMenu() {
   const openShortcutsDialog = useShortcutsDialogStore(
     (state) => state.openShortcutsDialog,
   );
-  const { taskLists, selectedTaskLists, createNewTodoFile, addTodoFile } =
-    useTask();
-  const setSelectedTaskListIds = useFilterStore(
-    (state) => state.setSelectedTaskListIds,
-  );
-  const selectedTaskListIds = useFilterStore(
-    (state) => state.selectedTaskListIds,
-  );
+  const {
+    taskLists,
+    selectedTaskLists,
+    createNewTodoFile,
+    addTodoFile,
+    toggleTaskList,
+  } = useTask();
   const { showOpenFilePicker, showSaveFilePicker } = useFilesystem();
 
   const handleKeyboardShortcutsClick = () => {
@@ -58,18 +56,14 @@ export function FileMenu() {
     }
   };
 
-  const handleSetActiveList = async (id: number) => {
-    setSelectedTaskListIds([id]);
-  };
-
   const menuItems: ReactNode[] = [];
 
   if (taskLists.length > 1) {
     taskLists.forEach(({ id, filename }) => {
       menuItems.push(
         <DropdownMenuCheckboxItem
-          checked={selectedTaskListIds.includes(id)}
-          onClick={() => handleSetActiveList(id)}
+          checked={selectedTaskLists.map((l) => l.id).includes(id)}
+          onClick={() => toggleTaskList(id)}
           key={id}
         >
           <div className="truncate">{filename}</div>
@@ -123,9 +117,9 @@ export function FileMenu() {
         >
           <img src={logo} className="mr-2 h-6 w-6" alt="Logo" height={22} />
           <div className="truncate">
-            {selectedTaskLists.length === 1
-              ? selectedTaskLists[0].filename
-              : "2do.txt"}
+            {selectedTaskLists.length === 0 || selectedTaskLists.length > 1
+              ? "2do.txt"
+              : selectedTaskLists[0].filename}
           </div>
           <ChevronDownIcon className="ml-2 h-4 w-4" />
         </Button>

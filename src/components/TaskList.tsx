@@ -174,7 +174,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
 function TaskListSubheader({ title }: TaskListSubheaderProps) {
   const sortBy = useFilterStore((state) => state.sortBy);
   return (
-    <div className="sticky top-2 z-10 my-2 px-2">
+    <div className="sticky top-2 z-10 my-2 pl-8">
       <Chip
         variant="outline"
         size="sm"
@@ -205,7 +205,7 @@ function TaskListHeader(props: TaskListHeaderProps) {
   return (
     <li
       role="button"
-      className="mb-1 flex cursor-pointer items-center overflow-hidden rounded px-10 py-3 hover:bg-muted/50"
+      className="mb-1 flex cursor-pointer items-center overflow-hidden rounded px-10 py-3 hover:bg-muted"
       tabIndex={-1}
       onClick={() => setSelectedTaskListIds([id])}
     >
