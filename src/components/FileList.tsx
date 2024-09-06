@@ -13,6 +13,7 @@ import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { writeToClipboard } from "@/utils/clipboard";
 import { readFile } from "@/utils/filesystem";
+import { useFilesystem } from "@/utils/useFilesystem";
 import { useTask } from "@/utils/useTask";
 import {
   closestCenter,
@@ -62,8 +63,15 @@ interface FileMenuProps {
 }
 
 export const FileList = memo(() => {
-  const { taskLists, reorderTaskList, downloadTodoFile, closeTodoFile } =
-    useTask();
+  const {
+    taskLists,
+    reorderTaskList,
+    downloadTodoFile,
+    closeTodoFile,
+    createNewTodoFile,
+    addTodoFile,
+  } = useTask();
+  const { showOpenFilePicker, showSaveFilePicker } = useFilesystem();
   const [items, setItems] = useState(taskLists.map((t) => t.id));
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -106,6 +114,20 @@ export const FileList = memo(() => {
     return list ? list.filename : "";
   };
 
+  const handleCreateFile = async () => {
+    const result = await showSaveFilePicker();
+    if (result) {
+      createNewTodoFile(result.id, "");
+    }
+  };
+
+  const handleOpenFile = async () => {
+    const result = await showOpenFilePicker();
+    if (result) {
+      addTodoFile(result.id, result.filename, result.content);
+    }
+  };
+
   if (items.length === 0) {
     return null;
   }
@@ -117,6 +139,7 @@ export const FileList = memo(() => {
         <Button
           variant="ghost"
           size="icon"
+          onClick={handleOpenFile}
           className="absolute bottom-0 right-8 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
         >
           <FolderOpenIcon className="h-4 w-4" />
@@ -124,6 +147,7 @@ export const FileList = memo(() => {
         <Button
           variant="ghost"
           size="icon"
+          onClick={handleCreateFile}
           className="absolute bottom-0 right-0 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
         >
           <PlusIcon className="h-4 w-4" />
@@ -201,7 +225,7 @@ function FileListItem(props: FileListItemProps) {
       style={style}
       data-testid="draggable-file"
       tabIndex={-1}
-      className="group"
+      className="group sm:gap-0"
       endAdornment={
         <FileMenu
           id={id}
@@ -210,17 +234,19 @@ function FileListItem(props: FileListItemProps) {
         />
       }
     >
-      <div className="flex items-center space-x-2">
+      <div className="flex min-w-0 items-center space-x-2">
         <Checkbox
           id={`list-${id}`}
           checked={selectedTaskListIds.includes(id)}
           onCheckedChange={() => toggleTaskListId(id)}
         />
-        <Label htmlFor={`list-${id}`}>{filename}</Label>
+        <Label htmlFor={`list-${id}`} className="mr-2 truncate">
+          {filename}
+        </Label>
       </div>
       <div className="flex-1" />
       <div {...listeners} {...attributes}>
-        <GripVerticalIcon className="h-4 w-4 cursor-move opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-50" />
+        <GripVerticalIcon className="ml-2 mr-1 h-4 w-4 cursor-move opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-50" />
       </div>
     </ListItem>
   );

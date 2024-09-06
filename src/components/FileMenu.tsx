@@ -64,19 +64,20 @@ export function FileMenu() {
 
   const menuItems: ReactNode[] = [];
 
-  taskLists.forEach(({ id, filename }) => {
-    menuItems.push(
-      <DropdownMenuCheckboxItem
-        checked={selectedTaskListIds.includes(id)}
-        onClick={() => handleSetActiveList(id)}
-        key={id}
-      >
-        <div className="truncate">{filename}</div>
-      </DropdownMenuCheckboxItem>,
-    );
-  });
-
-  menuItems.push(<DropdownMenuSeparator key="divider1" />);
+  if (taskLists.length > 1) {
+    taskLists.forEach(({ id, filename }) => {
+      menuItems.push(
+        <DropdownMenuCheckboxItem
+          checked={selectedTaskListIds.includes(id)}
+          onClick={() => handleSetActiveList(id)}
+          key={id}
+        >
+          <div className="truncate">{filename}</div>
+        </DropdownMenuCheckboxItem>,
+      );
+    });
+    menuItems.push(<DropdownMenuSeparator key="divider1" />);
+  }
 
   menuItems.push(
     <DropdownMenuItem onClick={handleCreateFile} key="Create file">
@@ -129,7 +130,9 @@ export function FileMenu() {
           <ChevronDownIcon className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">{menuItems}</DropdownMenuContent>
+      <DropdownMenuContent className="max-w-xs" align="start">
+        {menuItems}
+      </DropdownMenuContent>
     </DropdownMenu>
   );
 }
