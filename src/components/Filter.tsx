@@ -1,5 +1,5 @@
 import { ChipList } from "@/components/ChipList";
-import { FileList } from "@/components/FileList";
+import { TodoFileList } from "@/components/TodoFileList";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -174,7 +174,7 @@ export function Filter() {
           />
         </div>
       )}
-      <FileList />
+      <TodoFileList />
       {showSortBy && (
         <div className="space-y-2">
           <Label>{t("Filter type")}</Label>

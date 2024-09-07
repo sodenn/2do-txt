@@ -19,7 +19,7 @@ export async function createExampleFile(page: Page, filename?: string) {
       await page.getByLabel("Filename").fill(filename);
     }
     await createFile(page);
-    await expect(page.getByTestId("file-create-dialog")).not.toBeVisible();
+    await expect(page.getByTestId("create-list-dialog")).not.toBeVisible();
   }
   if (!onboarding) {
     await openFileMenu(page);
@@ -28,7 +28,7 @@ export async function createExampleFile(page: Page, filename?: string) {
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles(join(__dirname, "..", "public/todo.txt"));
     await expect(
-      page.getByRole("menu", { name: "File menu" }),
+      page.getByRole("menu", { name: "File list menu" }),
     ).not.toBeVisible();
   }
 }
@@ -39,9 +39,9 @@ export async function createTask(page: Page) {
 }
 
 export async function createFile(page: Page) {
-  await expect(page.getByTestId("file-create-dialog")).toBeVisible();
-  await page.getByLabel("Create file").click();
-  await expect(page.getByTestId("file-create-dialog")).not.toBeVisible();
+  await expect(page.getByTestId("create-list-dialog")).toBeVisible();
+  await page.getByLabel("Create list").click();
+  await expect(page.getByTestId("create-list-dialog")).not.toBeVisible();
 }
 
 export async function toggleMenu(page: Page) {
@@ -54,8 +54,10 @@ export async function openSettings(page: Page) {
 }
 
 export async function openFileMenu(page: Page) {
-  await page.getByLabel("Open file menu").click();
-  await expect(page.getByRole("menu", { name: "File menu" })).toBeVisible();
+  await page.getByLabel("Open file list menu").click();
+  await expect(
+    page.getByRole("menu", { name: "File list menu" }),
+  ).toBeVisible();
 }
 
 export async function checkSearchParams(page: Page, searchParams = "") {

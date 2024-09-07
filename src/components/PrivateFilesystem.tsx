@@ -65,11 +65,11 @@ function PrivateFilesystemDialog() {
 
   return (
     <ResponsiveDialog open={open} onClose={handleClose}>
-      <ResponsiveDialogContent data-testid="file-create-dialog">
+      <ResponsiveDialogContent data-testid="create-list-dialog">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{t("Create list")}</ResponsiveDialogTitle>
           <ResponsiveDialogHiddenDescription>
-            Create file
+            Create list
           </ResponsiveDialogHiddenDescription>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>
@@ -90,7 +90,7 @@ function PrivateFilesystemDialog() {
         <ResponsiveDialogFooter>
           <Button
             onClick={handleCreate}
-            aria-label="Create file"
+            aria-label="Create list"
             aria-disabled={!inputValue}
             disabled={!inputValue}
           >

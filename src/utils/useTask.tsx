@@ -433,20 +433,26 @@ export function useTask() {
   );
 
   const generateZipFile = useCallback(
-    async (taskList: TaskList, outputType: OutputType = "blob") => {
-      const { items, lineEnding, id, filename } = taskList;
-      const hasDoneFile = await getDoneFileId(id);
-      const doneFile = hasDoneFile ? await loadDoneFile(id) : undefined;
-      if (!doneFile) {
-        return;
+    async (taskLists: TaskList[], outputType: OutputType = "blob") => {
+      const zip = new JSZip();
+      const filenameWithoutEnding =
+        taskLists.length > 1
+          ? "todo"
+          : taskLists[0].filename.split(".").slice(0, -1).join(".");
+
+      for (const taskList of taskLists) {
+        const { items, lineEnding, id, filename } = taskList;
+        const doneFileId = await getDoneFileId(id);
+        const doneFile = doneFileId ? await loadDoneFile(id) : undefined;
+        const todoFileContent = stringifyTaskList(items, lineEnding);
+        const doneFileContent =
+          doneFile && stringifyTaskList(doneFile.items, lineEnding);
+        zip.file(filename, todoFileContent);
+        if (doneFile && doneFileContent) {
+          zip.file(doneFile.filename, doneFileContent);
+        }
       }
 
-      const filenameWithoutEnding = filename.split(".").slice(0, -1).join(".");
-      const todoFileContent = stringifyTaskList(items, lineEnding);
-      const doneFileContent = stringifyTaskList(doneFile.items, lineEnding);
-      const zip = new JSZip();
-      zip.file(filename, todoFileContent);
-      zip.file(doneFile.filename, doneFileContent);
       const blob = await zip.generateAsync({ type: outputType });
       const date = format(new Date(), "yyyy-MM-dd_HH-mm-ss");
       return {
@@ -458,44 +464,45 @@ export function useTask() {
   );
 
   const downloadTodoFile = useCallback(
-    async (taskList: TaskList) => {
-      const { items, lineEnding, filename } = taskList;
-      const zip = await generateZipFile(taskList);
-      if (zip) {
-        FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
-      } else {
+    async (taskLists: TaskList[]) => {
+      const singleList = taskLists.length === 1;
+      const hasDoneFile = singleList && (await getDoneFileId(taskLists[0].id));
+      if (singleList && !hasDoneFile) {
+        const { items, lineEnding, filename } = taskLists[0];
         const text = stringifyTaskList(items, lineEnding);
         const blob = new Blob([text], {
           type: "text/plain;charset=utf-8",
         });
         FileSaver.saveAs(blob, filename);
+      } else {
+        const zip = await generateZipFile(taskLists);
+        if (zip) {
+          FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
+        }
       }
     },
     [generateZipFile],
   );
 
-  const shareTodoFile = useCallback(
-    async (taskList: TaskList) => {
-      const zip = await generateZipFile(taskList, "blob");
-      if (!zip) {
-        return downloadTodoFile(taskList);
-      }
-      const blob = zip.zipContent as Blob;
-      const data = {
-        files: [
-          new File([blob], zip.zipFilename, {
-            type: blob.type,
-          }),
-        ],
-      };
-      if (await canShare(data)) {
-        await share(data);
-      } else {
-        await downloadTodoFile(taskList);
-      }
-    },
-    [downloadTodoFile, generateZipFile],
-  );
+  const shareTodoFile = useCallback(async () => {
+    const zip = await generateZipFile(selectedTaskLists, "blob");
+    if (!zip) {
+      return downloadTodoFile(selectedTaskLists);
+    }
+    const blob = zip.zipContent as Blob;
+    const data = {
+      files: [
+        new File([blob], zip.zipFilename, {
+          type: blob.type,
+        }),
+      ],
+    };
+    if (await canShare(data)) {
+      await share(data);
+    } else {
+      await downloadTodoFile(selectedTaskLists);
+    }
+  }, [selectedTaskLists, downloadTodoFile, generateZipFile]);
 
   const scheduleDueTaskNotifications = useCallback(
     async (tasks: Task[]) => {
@@ -622,7 +629,7 @@ export function useTask() {
             action: (
               <div className="space-x-1">
                 <ToastAction
-                  altText="Close File"
+                  altText="Close list"
                   onClick={async () => {
                     closeTodoFile(error.id);
                     dismiss();

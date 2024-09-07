@@ -67,7 +67,7 @@ interface FileMenuProps {
   onClose: (id?: number) => void;
 }
 
-export const FileList = memo(() => {
+export const TodoFileList = memo(() => {
   const {
     taskLists,
     reorderTaskList,
@@ -86,7 +86,7 @@ export const FileList = memo(() => {
     }),
   );
 
-  // update list items when a file was closed/deleted
+  // update items when a list was closed
   useEffect(() => {
     setItems(taskLists.map((t) => t.id));
   }, [taskLists]);
@@ -111,7 +111,7 @@ export const FileList = memo(() => {
   const handleDownload = (id: number) => {
     const list = taskLists.find((t) => t.id === id);
     if (list) {
-      downloadTodoFile(list);
+      downloadTodoFile([list]);
     }
   };
 

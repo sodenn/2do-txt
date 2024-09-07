@@ -24,7 +24,7 @@ import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "/logo.png";
 
-export function FileMenu() {
+export function TodoFileListMenu() {
   const { t } = useTranslation();
   const openShortcutsDialog = useShortcutsDialogStore(
     (state) => state.openShortcutsDialog,
@@ -74,7 +74,7 @@ export function FileMenu() {
   }
 
   menuItems.push(
-    <DropdownMenuItem onClick={handleCreateFile} key="Create file">
+    <DropdownMenuItem onClick={handleCreateFile} key="Create list">
       <PlusIcon className="mr-2 h-4 w-4" />
       {t("Create list")}
     </DropdownMenuItem>,
@@ -83,7 +83,7 @@ export function FileMenu() {
   menuItems.push(
     <DropdownMenuItem
       onClick={handleOpenFile}
-      key="Open file"
+      key="Open list"
       aria-label={SUPPORTS_SHOW_OPEN_FILE_PICKER ? "Open list" : "Import list"}
     >
       <FolderOpenIcon className="mr-2 h-4 w-4" />
@@ -111,7 +111,7 @@ export function FileMenu() {
           tabIndex={-1}
           className="max-w-[170px] lg:max-w-[300px]"
           variant="outline"
-          aria-label="Open file menu"
+          aria-label="Open file list menu"
         >
           <img src={logo} className="mr-2 h-6 w-6" alt="Logo" height={22} />
           <div className="truncate">
@@ -125,7 +125,7 @@ export function FileMenu() {
       <DropdownMenuContent
         className="max-w-xs"
         align="start"
-        aria-label="File menu"
+        aria-label="File list menu"
       >
         {menuItems}
       </DropdownMenuContent>
