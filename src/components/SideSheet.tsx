@@ -12,13 +12,9 @@ import { useTranslation } from "react-i18next";
 export function SideSheet() {
   const { t } = useTranslation();
   const { open: sideSheetOpen, closeSideSheet } = useSideSheetStore();
-  const { taskLists, selectedTaskLists } = useTask();
+  const { taskLists } = useTask();
 
-  const taskCount = selectedTaskLists.length
-    ? selectedTaskLists.flatMap((list) => list.items).length
-    : taskLists.flatMap((list) => list.items).length;
-
-  const hideFilter = taskCount === 0 && taskLists.length < 2;
+  const hideFilter = taskLists.length === 0;
 
   const [tab, setTab] = useState<string>(hideFilter ? "settings" : "filter");
 

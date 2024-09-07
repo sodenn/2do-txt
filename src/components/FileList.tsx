@@ -236,10 +236,11 @@ function FileListItem(props: FileListItemProps) {
 
   return (
     <ListItem
+      aria-label="Task list"
       clickable={false}
       ref={setNodeRef}
       style={style}
-      data-testid="draggable-file"
+      data-testid="draggable-list"
       tabIndex={-1}
       className="group sm:gap-0"
       endAdornment={
@@ -266,7 +267,12 @@ function FileListItem(props: FileListItemProps) {
         {disabled && filename}
       </div>
       <div className="flex-1" />
-      <div {...listeners} {...attributes} tabIndex={-1}>
+      <div
+        {...listeners}
+        {...attributes}
+        aria-label={`Draggable list ${filename}`}
+        tabIndex={-1}
+      >
         <GripVerticalIcon
           className={cn(
             disabled && "hidden",

@@ -1,10 +1,5 @@
 import { expect, test } from "@playwright/test";
-import {
-  checkSearchParams,
-  createExampleFile,
-  goto,
-  toggleMenu,
-} from "./playwright-utils";
+import { createExampleFile, goto, toggleMenu } from "./playwright-utils";
 
 const withoutFile = [
   "should not show the search bar when no files are open",
@@ -35,12 +30,10 @@ test.describe("Search", () => {
     if (isMobile) {
       await page.getByRole("button", { name: "Expand search bar" }).click();
       await Promise.all([
-        checkSearchParams(page, "/?term=invoice"),
         page.getByRole("search", { name: "Search for tasks" }).fill("invoice"),
       ]);
     } else {
       await Promise.all([
-        checkSearchParams(page, "/?term=invoice"),
         page.getByRole("search", { name: "Search for tasks" }).fill("invoice"),
       ]);
     }

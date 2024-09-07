@@ -1,5 +1,9 @@
 import { expect, Page } from "@playwright/test";
-import { readFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export async function goto(page: Page) {
   const host = process.env.HOST || "localhost";
@@ -19,13 +23,13 @@ export async function createExampleFile(page: Page, filename?: string) {
   }
   if (!onboarding) {
     await openFileMenu(page);
-    const content = readFileSync("public/todo.txt");
-    await page.getByRole("button", { name: "Import list" }).click();
-    await page.setInputFiles('[data-testid="file-picker"]', {
-      name: filename ?? "todo.txt",
-      mimeType: "text/plain",
-      buffer: Buffer.from(content),
-    });
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    await page.getByRole("menuitem", { name: "Import list" }).click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(join(__dirname, "..", "public/todo.txt"));
+    await expect(
+      page.getByRole("menu", { name: "File menu" }),
+    ).not.toBeVisible();
   }
 }
 
@@ -51,7 +55,7 @@ export async function openSettings(page: Page) {
 
 export async function openFileMenu(page: Page) {
   await page.getByLabel("Open file menu").click();
-  await page.getByRole("menu", { name: "File menu" }).click();
+  await expect(page.getByRole("menu", { name: "File menu" })).toBeVisible();
 }
 
 export async function checkSearchParams(page: Page, searchParams = "") {
