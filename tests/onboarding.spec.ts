@@ -36,7 +36,7 @@ test.describe("New file", () => {
     // close the current file and create a new one and the same way
     await page.keyboard.press("Escape");
     await openFileMenu(page);
-    await page.getByLabel("File actions").click();
+    await page.getByLabel("List actions").click();
     await page.getByLabel("Remove list").click();
     await page.getByLabel("Remove list confirmation").click();
     await expect(page.getByText("Get Started")).toBeVisible();
@@ -83,7 +83,7 @@ test.describe("File import", () => {
       page.getByRole("button", { name: "todo2.txt", exact: true }),
     ).toBeVisible();
 
-    await page.getByRole("button", { name: "File menu" }).click();
+    await openFileMenu(page);
     await expect(
       page.getByRole("menuitemcheckbox", { name: "All task lists" }),
     ).toBeChecked();

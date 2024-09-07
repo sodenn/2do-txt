@@ -311,7 +311,7 @@ function FileMenu(props: FileMenuProps) {
             role="button"
             size="icon"
             variant="ghost"
-            aria-label="File actions"
+            aria-label="List actions"
             aria-haspopup="true"
             className="h-7 w-7"
           >
@@ -324,7 +324,7 @@ function FileMenu(props: FileMenuProps) {
           <ClipboardIcon className="mr-2 h-4 w-4" />
           {t("Copy to clipboard")}
         </DropdownMenuItem>
-        <DropdownMenuItem aria-label="Download todo.txt" onClick={onDownload}>
+        <DropdownMenuItem aria-label="Download list" onClick={onDownload}>
           <DownloadIcon className="mr-2 h-4 w-4" />
           {t("Download")}
         </DropdownMenuItem>

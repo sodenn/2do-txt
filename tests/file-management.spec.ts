@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { createExampleFile, goto, openFileMenu } from "./playwright-utils";
+import { createExampleFile, goto, openSettings } from "./playwright-utils";
 
 const withoutFile = [
   "should display an error notification if a todo.txt file cannot be found",
@@ -18,7 +18,7 @@ test.describe("File Management", () => {
   test.skip(({ browserName }) => browserName === "webkit");
 
   test("should order task lists using drag and drop", async ({ page }) => {
-    await openFileMenu(page);
+    await openSettings(page);
 
     // check current sort order
     await expect(page.getByRole("listitem")).toHaveCount(2);
@@ -44,12 +44,12 @@ test.describe("File Management", () => {
   });
 
   test("should close a todo.txt file", async ({ page }) => {
-    await openFileMenu(page);
+    await openSettings(page);
 
     // check the current number of open files
     await expect(page.getByRole("listitem")).toHaveCount(2);
 
-    await page.getByLabel("File actions").first().click();
+    await page.getByLabel("List actions").first().click();
     await page.getByLabel("Remove list").click();
     // confirm deletion
     await page.getByLabel("Remove list").click();

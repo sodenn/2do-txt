@@ -20,7 +20,7 @@ export async function createExampleFile(page: Page, filename?: string) {
   if (!onboarding) {
     await openFileMenu(page);
     const content = readFileSync("public/todo.txt");
-    await page.getByRole("button", { name: "Import todo.txt" }).click();
+    await page.getByRole("button", { name: "Import list" }).click();
     await page.setInputFiles('[data-testid="file-picker"]', {
       name: filename ?? "todo.txt",
       mimeType: "text/plain",
@@ -50,8 +50,8 @@ export async function openSettings(page: Page) {
 }
 
 export async function openFileMenu(page: Page) {
-  await page.getByLabel("File menu").click();
-  await page.getByRole("menuitem", { name: "Files…" }).click();
+  await page.getByLabel("Open file menu").click();
+  await page.getByRole("menu", { name: "File menu" }).click();
 }
 
 export async function checkSearchParams(page: Page, searchParams = "") {

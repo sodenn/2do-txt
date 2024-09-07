@@ -111,7 +111,7 @@ export function FileMenu() {
           tabIndex={-1}
           className="max-w-[170px] lg:max-w-[300px]"
           variant="outline"
-          aria-label="File menu"
+          aria-label="Open file menu"
         >
           <img src={logo} className="mr-2 h-6 w-6" alt="Logo" height={22} />
           <div className="truncate">
@@ -122,7 +122,11 @@ export function FileMenu() {
           <ChevronDownIcon className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-w-xs" align="start">
+      <DropdownMenuContent
+        className="max-w-xs"
+        align="start"
+        aria-label="File menu"
+      >
         {menuItems}
       </DropdownMenuContent>
     </DropdownMenu>
