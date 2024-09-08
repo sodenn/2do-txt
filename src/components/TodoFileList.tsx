@@ -290,7 +290,11 @@ function FileMenu(props: FileMenuProps) {
   const { toast } = useToast();
 
   const handleCloseFile = () => {
-    onClose(id);
+    // prevent 'Blocked aria-hidden' warning by closing the menu before opening
+    // the confirmation dialog.
+    setTimeout(() => {
+      onClose(id);
+    }, 200);
   };
 
   const handleCopyToClipboard = () => {
