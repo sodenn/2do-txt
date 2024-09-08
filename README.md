@@ -34,7 +34,7 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 
 ## Features
 
-- Filter tasks by projects, contexts, and tags
+- Filter tasks by projects, contexts, tags, priority and lists
 - Sort tasks by due date or priority
 - Group tasks by context, projects or tags
 - Hide completed tasks
