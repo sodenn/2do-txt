@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useShortcutsDialogStore } from "@/stores/shortcuts-dialog-store";
+import { safeOpenDialog } from "@/utils/dialog";
 import {
   HAS_TOUCHSCREEN,
   SUPPORTS_SHOW_OPEN_FILE_PICKER,
@@ -43,10 +44,12 @@ export function TodoFileListMenu() {
   };
 
   const handleCreateFile = async () => {
-    const result = await showSaveFilePicker();
-    if (result) {
-      createNewTodoFile(result.id, "");
-    }
+    safeOpenDialog(async () => {
+      const result = await showSaveFilePicker();
+      if (result) {
+        createNewTodoFile(result.id, "");
+      }
+    });
   };
 
   const handleOpenFile = async () => {

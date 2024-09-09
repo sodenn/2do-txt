@@ -40,7 +40,7 @@ export async function createTask(page: Page) {
 
 export async function createFile(page: Page) {
   await expect(page.getByTestId("create-list-dialog")).toBeVisible();
-  await page.getByLabel("Create list").click();
+  await page.getByRole("button", { name: "Create list" }).click();
   await expect(page.getByTestId("create-list-dialog")).not.toBeVisible();
 }
 

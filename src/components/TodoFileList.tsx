@@ -16,6 +16,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { writeToClipboard } from "@/utils/clipboard";
+import { safeOpenDialog } from "@/utils/dialog";
 import { readFile } from "@/utils/filesystem";
 import { cn } from "@/utils/tw-utils";
 import { useFilesystem } from "@/utils/useFilesystem";
@@ -290,11 +291,9 @@ function FileMenu(props: FileMenuProps) {
   const { toast } = useToast();
 
   const handleCloseFile = () => {
-    // prevent 'Blocked aria-hidden' warning by closing the menu before opening
-    // the confirmation dialog.
-    setTimeout(() => {
+    safeOpenDialog(() => {
       onClose(id);
-    }, 200);
+    });
   };
 
   const handleCopyToClipboard = () => {

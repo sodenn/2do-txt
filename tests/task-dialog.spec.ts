@@ -1,3 +1,4 @@
+import { formatLocaleDate } from "@/utils/date";
 import { expect, Page, test } from "@playwright/test";
 import { format } from "date-fns";
 import { createExampleFile, getEditor, goto } from "./playwright-utils";
@@ -63,6 +64,28 @@ test.describe("Task dialog", () => {
     ).toHaveCount(1);
   });
 
+  test("should display due date as text in task list", async ({ page }) => {
+    await openTaskDialog(page);
+
+    await getEditor(page).pressSequentially("This is a test", delay);
+
+    // open the date picker
+    await page.getByLabel("Due date").click();
+    // choose date
+    const date = new Date();
+    date.setDate(15);
+    const currentDateSelector = date.getDate().toString();
+    await page
+      .getByRole("gridcell", { name: currentDateSelector, exact: true })
+      .click();
+
+    await page.getByRole("button", { name: "Save task" }).click();
+
+    await expect(page.getByTestId("task").last()).toContainText(
+      `This is a test Due: ${formatLocaleDate(date)}Created: ${formatLocaleDate(new Date())}`,
+    );
+  });
+
   test("should keep due date picker and text field in sync", async ({
     page,
     isMobile,
@@ -74,13 +97,10 @@ test.describe("Task dialog", () => {
 
     // open the date picker
     await page.getByLabel("Due date").click();
-
+    // choose date
     const date = new Date();
     date.setDate(15);
     const currentDateSelector = date.getDate().toString();
-    const dueDateTag = `due:${formatDate(date)}`;
-
-    // choose date and confirm
     await page
       .getByRole("gridcell", { name: currentDateSelector, exact: true })
       .click();
@@ -91,6 +111,7 @@ test.describe("Task dialog", () => {
     );
 
     // make sure the text field contains the due date
+    const dueDateTag = `due:${formatDate(date)}`;
     await expect(getEditor(page)).toHaveText(dueDateTag);
 
     // remove the due date from the text field
