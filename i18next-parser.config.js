@@ -24,6 +24,7 @@ export default {
     /^Number of/,
     /Weeks/,
     /Years/,
+    /^due$/,
   ],
   // Keep keys from the catalog that are no longer in code
   // You may either specify a boolean to keep or discard all removed keys.
