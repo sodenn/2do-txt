@@ -12,7 +12,7 @@ test.describe("Archiving", () => {
     await expect(page.getByTestId("task")).toHaveCount(8);
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive automatically").click();
-    await page.getByLabel("Create list").click();
+    await page.getByRole("button", { name: "Create list" }).click();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
@@ -21,14 +21,14 @@ test.describe("Archiving", () => {
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive manually").click();
     await page.getByLabel("Archive now").click();
-    await page.getByLabel("Create list").click();
+    await page.getByRole("button", { name: "Create list" }).click();
     await expect(page.getByTestId("task")).toHaveCount(6);
   });
 
   test("should restore archived tasks", async ({ page }) => {
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("Archive automatically").click();
-    await page.getByLabel("Create list").click();
+    await page.getByRole("button", { name: "Create list" }).click();
     await expect(page.getByTestId("task")).toHaveCount(6);
     await page.getByLabel("Select archive mode").click();
     await page.getByLabel("No archiving").click();
