@@ -107,7 +107,11 @@ export function LayoutSidebar({
       open={open}
       onOpenChange={handleOpenChange}
     >
-      <SheetContent className="p-0" side="left" aria-label="Side Menu">
+      <SheetContent
+        className="w-[310px] p-0"
+        side="left"
+        aria-label="Side Menu"
+      >
         <HiddenSheetHeader>
           <SheetTitle>Side Menu</SheetTitle>
           <SheetDescription></SheetDescription>
