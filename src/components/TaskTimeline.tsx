@@ -248,6 +248,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
   return (
     <div
       tabIndex={0}
+      role="button"
       className={cn(
         listItemVariants({
           variant: "default",
@@ -315,6 +316,7 @@ function TaskCheckbox({
         aria-label="Complete task"
         aria-checked={completed}
         onClick={onClick}
+        className="h-10 w-10"
       >
         {!completed && <CircleIcon className="h-4 w-4 bg-background" />}
         {completed && <CircleCheckBigIcon className="h-4 w-4 bg-background" />}
