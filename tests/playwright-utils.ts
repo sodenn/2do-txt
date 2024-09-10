@@ -1,5 +1,9 @@
 import { expect, Page } from "@playwright/test";
-import { readFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export async function goto(page: Page) {
   const host = process.env.HOST || "localhost";
@@ -8,24 +12,24 @@ export async function goto(page: Page) {
 }
 
 export async function createExampleFile(page: Page, filename?: string) {
-  const onboarding = await page.getByLabel("Create example file").isVisible();
+  const onboarding = await page.getByLabel("Create example list").isVisible();
   if (onboarding) {
-    await page.getByLabel("Create example file").click();
+    await page.getByLabel("Create example list").click();
     if (filename) {
       await page.getByLabel("Filename").fill(filename);
     }
     await createFile(page);
-    await expect(page.getByTestId("file-create-dialog")).not.toBeVisible();
+    await expect(page.getByTestId("create-list-dialog")).not.toBeVisible();
   }
   if (!onboarding) {
     await openFileMenu(page);
-    const content = readFileSync("public/todo.txt");
-    await page.getByRole("button", { name: "Import todo.txt" }).click();
-    await page.setInputFiles('[data-testid="file-picker"]', {
-      name: filename ?? "todo.txt",
-      mimeType: "text/plain",
-      buffer: Buffer.from(content),
-    });
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    await page.getByRole("menuitem", { name: "Import list" }).click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(join(__dirname, "..", "public/todo.txt"));
+    await expect(
+      page.getByRole("menu", { name: "File list menu" }),
+    ).not.toBeVisible();
   }
 }
 
@@ -35,9 +39,9 @@ export async function createTask(page: Page) {
 }
 
 export async function createFile(page: Page) {
-  await expect(page.getByTestId("file-create-dialog")).toBeVisible();
-  await page.getByLabel("Create file").click();
-  await expect(page.getByTestId("file-create-dialog")).not.toBeVisible();
+  await expect(page.getByTestId("create-list-dialog")).toBeVisible();
+  await page.getByRole("button", { name: "Create list" }).click();
+  await expect(page.getByTestId("create-list-dialog")).not.toBeVisible();
 }
 
 export async function toggleMenu(page: Page) {
@@ -50,12 +54,10 @@ export async function openSettings(page: Page) {
 }
 
 export async function openFileMenu(page: Page) {
-  await page.getByLabel("File menu").click();
-  await page.getByRole("menuitem", { name: "Files…" }).click();
-}
-
-export async function checkSearchParams(page: Page, searchParams = "") {
-  await expect(page).toHaveURL(`http://localhost:5173${searchParams}`);
+  await page.getByLabel("Open file list menu").click();
+  await expect(
+    page.getByRole("menu", { name: "File list menu" }),
+  ).toBeVisible();
 }
 
 export function getEditor(page: Page) {

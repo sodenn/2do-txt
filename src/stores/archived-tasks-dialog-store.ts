@@ -14,12 +14,7 @@ export const useArchivedTasksDialogStore = create<ArchivedTasksDialogState>(
     todoFileId: undefined,
     openArchivedTasksDialog: (todoFileId?: number) =>
       set({ todoFileId, open: true }),
-    closeArchivedTasksDialog: () => {
-      setTimeout(() => {
-        set({ open: false, todoFileId: undefined });
-      }, 200);
-      return set({ open: false });
-    },
+    closeArchivedTasksDialog: () => set({ open: false }),
     cleanupArchivedTasksDialog: () =>
       set({ open: false, todoFileId: undefined }),
   }),

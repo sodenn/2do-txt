@@ -1,4 +1,5 @@
 import { ChipList } from "@/components/ChipList";
+import { TodoFileList } from "@/components/TodoFileList";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
+import { getTaskListAttributes } from "@/utils/task-list";
 import { useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
 import { HelpCircleIcon } from "lucide-react";
@@ -24,31 +26,34 @@ import { Trans, useTranslation } from "react-i18next";
 
 export function Filter() {
   const { t } = useTranslation();
-  const { taskLists, activeTaskList, ...rest } = useTask();
+  const { taskLists, selectedTaskLists } = useTask();
   const {
     sortBy,
     searchTerm,
     filterType,
-    activePriorities,
-    activeProjects,
-    activeContexts,
-    activeTags,
+    selectedPriorities,
+    selectedProjects,
+    selectedContexts,
+    selectedTags,
     hideCompletedTasks,
     setSortBy,
     setFilterType,
     togglePriority,
-    resetActivePriorities,
-    resetActiveProjects,
+    setSelectedPriorities,
+    setSelectedProjects,
     toggleProject,
-    resetActiveContexts,
+    setSelectedContexts,
     toggleContext,
-    resetActiveTags,
+    setSelectedTags,
     toggleTag,
     setHideCompletedTasks,
     setSearchTerm,
+    setSelectedTaskListIds,
   } = useFilterStore();
   const taskView = useSettingsStore((state) => state.taskView);
-  const attributes = activeTaskList ? activeTaskList : rest;
+  const attributes = selectedTaskLists.length
+    ? getTaskListAttributes(selectedTaskLists)
+    : getTaskListAttributes(taskLists);
   const { priorities, projects, contexts, tags } = hideCompletedTasks
     ? attributes.incomplete
     : attributes;
@@ -56,24 +61,35 @@ export function Filter() {
   const defaultFilter = useMemo(
     () =>
       searchTerm === "" &&
-      activeContexts.length === 0 &&
-      activeProjects.length === 0 &&
-      activeTags.length === 0 &&
-      activePriorities.length === 0,
-    [activeContexts, activePriorities, activeProjects, activeTags, searchTerm],
+      selectedContexts.length === 0 &&
+      selectedProjects.length === 0 &&
+      selectedTags.length === 0 &&
+      selectedTaskLists.length === taskLists.length &&
+      selectedPriorities.length === 0,
+    [
+      searchTerm,
+      selectedContexts.length,
+      selectedProjects.length,
+      selectedTags.length,
+      selectedTaskLists.length,
+      taskLists.length,
+      selectedPriorities.length,
+    ],
   );
 
   const resetFilters = useCallback(() => {
-    resetActiveProjects();
-    resetActiveContexts();
-    resetActiveTags();
-    resetActivePriorities();
+    setSelectedProjects([]);
+    setSelectedContexts([]);
+    setSelectedTags([]);
+    setSelectedPriorities([]);
+    setSelectedTaskListIds([]);
     setSearchTerm("");
   }, [
-    resetActiveContexts,
-    resetActivePriorities,
-    resetActiveProjects,
-    resetActiveTags,
+    setSelectedContexts,
+    setSelectedPriorities,
+    setSelectedTaskListIds,
+    setSelectedProjects,
+    setSelectedTags,
     setSearchTerm,
   ]);
 
@@ -85,21 +101,46 @@ export function Filter() {
     <div className="space-y-4 text-sm">
       {Object.keys(priorities).length > 0 && (
         <div className="space-y-2">
-          <Label>{t("Priorities")}</Label>
+          <Label className="flex justify-between">
+            {t("Priorities")}
+            {!defaultFilter && (
+              <Button
+                className="h-auto px-0"
+                variant="link"
+                size="sm"
+                onClick={resetFilters}
+              >
+                {t("Reset filters")}
+              </Button>
+            )}
+          </Label>
           <ChipList
             items={priorities}
-            activeItems={activePriorities}
+            activeItems={selectedPriorities}
             onClick={togglePriority}
             color="danger"
           />
         </div>
+      )}
+      {!defaultFilter && Object.keys(priorities).length === 0 && (
+        <Label className="flex justify-end">
+          &nbsp;
+          <Button
+            className="h-auto px-0"
+            variant="link"
+            size="sm"
+            onClick={resetFilters}
+          >
+            {t("Reset filters")}
+          </Button>
+        </Label>
       )}
       {Object.keys(projects).length > 0 && (
         <div className="space-y-2">
           <Label>{t("Projects")}</Label>
           <ChipList
             items={projects}
-            activeItems={activeProjects}
+            activeItems={selectedProjects}
             onClick={toggleProject}
             color="info"
           />
@@ -110,7 +151,7 @@ export function Filter() {
           <Label>{t("Contexts")}</Label>
           <ChipList
             items={contexts}
-            activeItems={activeContexts}
+            activeItems={selectedContexts}
             onClick={toggleContext}
             color="success"
           />
@@ -127,24 +168,13 @@ export function Filter() {
               },
               {},
             )}
-            activeItems={activeTags}
+            activeItems={selectedTags}
             onClick={toggleTag}
             color="warning"
           />
         </div>
       )}
-      {!defaultFilter && (
-        <div className="flex justify-end">
-          <Button
-            className="px-0"
-            variant="link"
-            size="sm"
-            onClick={resetFilters}
-          >
-            {t("Reset filters")}
-          </Button>
-        </div>
-      )}
+      <TodoFileList />
       {showSortBy && (
         <div className="space-y-2">
           <Label>{t("Filter type")}</Label>

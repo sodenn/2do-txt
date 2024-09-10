@@ -75,7 +75,11 @@ export async function taskLoader(): Promise<TaskFields> {
         }),
     ),
   );
-  await deleteFilesNotInList(ids.map((i) => i.todoFileId)).catch((e) => {
+  await deleteFilesNotInList(
+    ids.flatMap((i) =>
+      [i.todoFileId, i.doneFileId].filter((id) => typeof id === "number"),
+    ),
+  ).catch((e) => {
     console.debug("Unable to delete unused files", e);
   });
   const files = result.filter((i) => i.type === "success");

@@ -1,4 +1,4 @@
-import { ExampleFileButton } from "@/components/ExampleFileButton";
+import { ExampleListButton } from "@/components/ExampleListButton";
 import { NewFileButton } from "@/components/NewFileButton";
 import { Button } from "@/components/ui/button";
 import { SUPPORTS_SHOW_OPEN_FILE_PICKER } from "@/utils/platform";
@@ -46,18 +46,16 @@ export function Onboarding() {
           {t("Get Started")}
         </h1>
         <NewFileButton />
-        <ExampleFileButton />
+        <ExampleListButton />
         <Button
           variant="outline"
           onClick={handleOpenClick}
           aria-label={
-            SUPPORTS_SHOW_OPEN_FILE_PICKER ? "Open todo.txt" : "Import todo.txt"
+            SUPPORTS_SHOW_OPEN_FILE_PICKER ? "Open list" : "Import list"
           }
         >
           <FolderIcon className="mr-2 h-4 w-4" />
-          {SUPPORTS_SHOW_OPEN_FILE_PICKER
-            ? t("Open todo.txt")
-            : t("Import todo.txt")}
+          {SUPPORTS_SHOW_OPEN_FILE_PICKER ? t("Open list") : t("Import list")}
         </Button>
       </div>
     </div>

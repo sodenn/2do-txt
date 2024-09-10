@@ -29,7 +29,7 @@ export function FileSelect(props: FileSelectProps) {
   return (
     <Select required value={id} onValueChange={handleChange}>
       <SelectTrigger className="w-full">
-        <SelectValue placeholder={t("Select todo.txt")} />
+        <SelectValue placeholder={t("Select list")} />
       </SelectTrigger>
       <SelectContent>
         {options.map((item) => (

@@ -2,7 +2,7 @@ import { arrayMove } from "@/utils/array";
 import {
   convertToTaskGroups,
   filterTasks,
-  getCommonTaskListAttributes,
+  getTaskListAttributes,
   parseTaskList,
   sortByOriginalOrder,
   TaskList,
@@ -149,7 +149,7 @@ x 2. task +ProjB
       },
     ];
 
-    const commonAttributes = getCommonTaskListAttributes(taskLists);
+    const commonAttributes = getTaskListAttributes(taskLists);
 
     expect(attributes).toEqual(commonAttributes);
   });
@@ -190,7 +190,7 @@ x 2. task +ProjB
       },
     };
 
-    const commonAttributes = getCommonTaskListAttributes(taskLists);
+    const commonAttributes = getTaskListAttributes(taskLists);
 
     expect(attributes).toEqual(commonAttributes);
   });
@@ -205,10 +205,10 @@ x 2. task +ProjB
     const filter: TaskListFilter = {
       type: "AND",
       searchTerm: "",
-      activeContexts: ["CtxA", "CtxD"],
-      activePriorities: [],
-      activeProjects: ["ProjA"],
-      activeTags: [],
+      selectedContexts: ["CtxA", "CtxD"],
+      selectedPriorities: [],
+      selectedProjects: ["ProjA"],
+      selectedTags: [],
       hideCompletedTasks: false,
     };
 
@@ -229,10 +229,10 @@ x 2. task +ProjB
     const filter: TaskListFilter = {
       type: "AND",
       searchTerm: "3. task",
-      activeContexts: [],
-      activePriorities: [],
-      activeProjects: ["ProjA"],
-      activeTags: [],
+      selectedContexts: [],
+      selectedPriorities: [],
+      selectedProjects: ["ProjA"],
+      selectedTags: [],
       hideCompletedTasks: false,
     };
 
@@ -253,10 +253,10 @@ x 2. task +ProjB
     const filter: TaskListFilter = {
       type: "OR",
       searchTerm: "",
-      activeContexts: ["CtxA", "CtxB"],
-      activePriorities: [],
-      activeProjects: ["ProjB"],
-      activeTags: [],
+      selectedContexts: ["CtxA", "CtxB"],
+      selectedPriorities: [],
+      selectedProjects: ["ProjB"],
+      selectedTags: [],
       hideCompletedTasks: false,
     };
 
@@ -275,10 +275,10 @@ x 2. task +ProjB
     const filter: TaskListFilter = {
       type: "AND",
       searchTerm: "",
-      activeContexts: [],
-      activePriorities: [],
-      activeProjects: [],
-      activeTags: [],
+      selectedContexts: [],
+      selectedPriorities: [],
+      selectedProjects: [],
+      selectedTags: [],
       hideCompletedTasks: true,
     };
 

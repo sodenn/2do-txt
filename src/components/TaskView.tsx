@@ -17,15 +17,15 @@ import { useTranslation } from "react-i18next";
 export function TaskView() {
   const { t } = useTranslation();
   const taskView = useSettingsStore((state) => state.taskView);
-  const { taskLists, activeTaskList, deleteTask } = useTask();
+  const { taskLists, selectedTaskLists, deleteTask } = useTask();
   const _openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog,
   );
   const [focusedTaskId, setFocusedTaskId] = useState<string>();
   const listItemsRef = useRef<HTMLDivElement[]>([]);
-  const taskGroups = useTaskGroups(taskLists, activeTaskList);
-  const timelineTasks = useTimelineTasks(taskLists, activeTaskList);
+  const taskGroups = useTaskGroups(taskLists, selectedTaskLists);
+  const timelineTasks = useTimelineTasks(taskLists, selectedTaskLists);
   const tasks =
     taskView === "timeline"
       ? timelineTasks
@@ -109,7 +109,11 @@ export function TaskView() {
     <>
       {taskView === "list" &&
         taskGroups
-          .filter((i) => (activeTaskList ? i.id === activeTaskList.id : i))
+          .filter((i) =>
+            selectedTaskLists.length
+              ? selectedTaskLists.some((list) => i.id === list.id)
+              : i,
+          )
           .map((i) => (
             <TaskList
               key={i.id}
@@ -118,7 +122,7 @@ export function TaskView() {
               taskGroups={i.groups}
               tasks={tasks}
               listItemsRef={listItemsRef}
-              showHeader={!activeTaskList}
+              showHeader={selectedTaskLists.length > 1}
               onFocus={(index) => setFocusedTaskId(tasks[index].id)}
               onBlur={() => setFocusedTaskId(undefined)}
               onClick={(task) => _openTaskDialog(task)}

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { createExampleFile, goto } from "./playwright-utils";
+import { createExampleFile, goto, openFileMenu } from "./playwright-utils";
 
 test.beforeEach(async ({ page, isMobile }) => {
   test.skip(isMobile, "desktop only");
@@ -26,7 +26,7 @@ test.describe("Keyboard shortcuts", () => {
   test("should not trigger keyboard shortcuts when menu is open", async ({
     page,
   }) => {
-    await page.getByLabel("File menu").click();
+    await openFileMenu(page);
     await page.keyboard.press("ArrowDown");
     await page.waitForTimeout(200);
     await expect(page.getByTestId("task").first()).not.toBeFocused();

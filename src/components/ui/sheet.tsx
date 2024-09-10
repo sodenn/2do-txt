@@ -3,8 +3,8 @@ import { cva, type VariantProps } from "class-variance-authority";
 import {
   ComponentPropsWithoutRef,
   ElementRef,
-  HTMLAttributes,
   forwardRef,
+  HTMLAttributes,
 } from "react";
 
 import { cn } from "@/utils/tw-utils";
@@ -37,7 +37,7 @@ const SheetOverlay = forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-400",
+  "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-200 data-[state=open]:duration-300",
   {
     variants: {
       side: {

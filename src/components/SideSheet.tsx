@@ -12,13 +12,9 @@ import { useTranslation } from "react-i18next";
 export function SideSheet() {
   const { t } = useTranslation();
   const { open: sideSheetOpen, closeSideSheet } = useSideSheetStore();
-  const { taskLists, activeTaskList } = useTask();
+  const { taskLists } = useTask();
 
-  const taskCount = activeTaskList
-    ? activeTaskList.items.length
-    : taskLists.flatMap((list) => list.items).length;
-
-  const hideFilter = taskCount === 0;
+  const hideFilter = taskLists.length === 0;
 
   const [tab, setTab] = useState<string>(hideFilter ? "settings" : "filter");
 
@@ -54,10 +50,18 @@ export function SideSheet() {
         </div>
         <ScrollArea className="overflow-auto">
           <SafeArea bottom left>
-            <TabsContent className="px-3 pb-3 sm:px-5" value="filter">
+            <TabsContent
+              tabIndex={-1}
+              className="px-3 pb-3 sm:px-4"
+              value="filter"
+            >
               <Filter />
             </TabsContent>
-            <TabsContent className="px-3 pb-3 sm:px-5" value="settings">
+            <TabsContent
+              tabIndex={-1}
+              className="px-3 pb-3 sm:px-4"
+              value="settings"
+            >
               <Settings />
             </TabsContent>
           </SafeArea>

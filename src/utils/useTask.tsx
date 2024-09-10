@@ -17,7 +17,7 @@ import {
 } from "@/utils/task";
 import {
   parseTaskList as _parseTaskList,
-  getCommonTaskListAttributes,
+  getTaskListAttributes,
   stringifyTaskList,
   TaskList,
   updateTaskListAttributes,
@@ -36,7 +36,7 @@ import { format, isBefore } from "date-fns";
 import FileSaver from "file-saver";
 import JSZip, { OutputType } from "jszip";
 import { isEqual, omit } from "lodash";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 type SaveTodoFile = {
@@ -90,10 +90,18 @@ export function useTask() {
   const priorityTransformation = useSettingsStore(
     (state) => state.priorityTransformation,
   );
-  const activeTaskListId = useFilterStore((state) => state.activeTaskListId);
-  const setActiveTaskListId = useFilterStore(
-    (state) => state.setActiveTaskListId,
-  );
+  const {
+    selectedPriorities,
+    setSelectedPriorities,
+    selectedProjects,
+    setSelectedProjects,
+    selectedContexts,
+    setSelectedContexts,
+    selectedTags,
+    setSelectedTags,
+    selectedTaskListIds,
+    setSelectedTaskListIds,
+  } = useFilterStore();
   const taskLists = useTaskStore((state) => state.taskLists);
   const todoFiles = useTaskStore((state) => state.todoFiles);
   const setTaskLists = useTaskStore((state) => state.setTaskLists);
@@ -109,13 +117,59 @@ export function useTask() {
     restoreArchivedTasks: _restoreArchivedTasks,
   } = useArchivedTask();
 
-  const commonTaskListAttributes = getCommonTaskListAttributes(taskLists);
+  const selectedTaskLists = useMemo(
+    () =>
+      selectedTaskListIds.length
+        ? taskLists.filter((list) => selectedTaskListIds.includes(list.id))
+        : [...taskLists],
+    [selectedTaskListIds, taskLists],
+  );
 
-  const activeTaskList = activeTaskListId
-    ? taskLists.find((list) => list.id === activeTaskListId)
-    : taskLists.length === 1
-      ? taskLists[0]
-      : undefined;
+  const toggleTaskList = useCallback(
+    (id: number) => {
+      const selectedTaskListIds = selectedTaskLists.map((list) => list.id);
+      const newSelectedTaskListIds = selectedTaskListIds.includes(id)
+        ? selectedTaskListIds.filter((i) => i !== id)
+        : [...selectedTaskListIds, id];
+      // reset filter if necessary
+      const newSelectedTaskLists = newSelectedTaskListIds.length
+        ? taskLists.filter((list) => newSelectedTaskListIds.includes(list.id))
+        : [...taskLists];
+      const attributes = getTaskListAttributes(newSelectedTaskLists);
+      const newSelectedPriority = selectedPriorities.filter(
+        (selectedPriority) =>
+          Object.keys(attributes.priorities).includes(selectedPriority),
+      );
+      const newSelectedProjects = selectedProjects.filter((selectedProject) =>
+        Object.keys(attributes.projects).includes(selectedProject),
+      );
+      const newSelectedContexts = selectedContexts.filter((selectedContext) =>
+        Object.keys(attributes.contexts).includes(selectedContext),
+      );
+      const newSelectedTags = selectedTags.filter((selectedTag) =>
+        Object.keys(attributes.tags).includes(selectedTag),
+      );
+
+      setSelectedTaskListIds(newSelectedTaskListIds);
+      setSelectedPriorities(newSelectedPriority);
+      setSelectedProjects(newSelectedProjects);
+      setSelectedContexts(newSelectedContexts);
+      setSelectedTags(newSelectedTags);
+    },
+    [
+      selectedContexts,
+      selectedPriorities,
+      selectedProjects,
+      selectedTags,
+      selectedTaskLists,
+      setSelectedContexts,
+      setSelectedPriorities,
+      setSelectedProjects,
+      setSelectedTags,
+      setSelectedTaskListIds,
+      taskLists,
+    ],
+  );
 
   const findTaskListByTaskId = useCallback(
     (taskId?: string) => {
@@ -359,48 +413,46 @@ export function useTask() {
         ]);
       }
 
-      if (id === activeTaskListId) {
-        if (taskLists.length === 2) {
-          const fallbackList = taskLists.find(
-            (list) => list.id !== activeTaskListId,
-          );
-          if (fallbackList) {
-            setActiveTaskListId(fallbackList.id);
-          } else {
-            setActiveTaskListId();
-          }
-        } else {
-          setActiveTaskListId();
-        }
+      if (selectedTaskLists.some((list) => list.id === id)) {
+        const taskListIds = selectedTaskLists
+          .filter((t) => t.id !== id)
+          .map((list) => list.id);
+        setSelectedTaskListIds(taskListIds);
       }
 
       removeTaskList(taskList);
     },
     [
       taskLists,
-      activeTaskListId,
+      deleteTodoFile,
+      selectedTaskLists,
       removeTaskList,
       cancelNotifications,
-      deleteTodoFile,
-      setActiveTaskListId,
+      setSelectedTaskListIds,
     ],
   );
 
   const generateZipFile = useCallback(
-    async (taskList: TaskList, outputType: OutputType = "blob") => {
-      const { items, lineEnding, id, filename } = taskList;
-      const hasDoneFile = await getDoneFileId(id);
-      const doneFile = hasDoneFile ? await loadDoneFile(id) : undefined;
-      if (!doneFile) {
-        return;
+    async (taskLists: TaskList[], outputType: OutputType = "blob") => {
+      const zip = new JSZip();
+      const filenameWithoutEnding =
+        taskLists.length > 1
+          ? "todo"
+          : taskLists[0].filename.split(".").slice(0, -1).join(".");
+
+      for (const taskList of taskLists) {
+        const { items, lineEnding, id, filename } = taskList;
+        const doneFileId = await getDoneFileId(id);
+        const doneFile = doneFileId ? await loadDoneFile(id) : undefined;
+        const todoFileContent = stringifyTaskList(items, lineEnding);
+        const doneFileContent =
+          doneFile && stringifyTaskList(doneFile.items, lineEnding);
+        zip.file(filename, todoFileContent);
+        if (doneFile && doneFileContent) {
+          zip.file(doneFile.filename, doneFileContent);
+        }
       }
 
-      const filenameWithoutEnding = filename.split(".").slice(0, -1).join(".");
-      const todoFileContent = stringifyTaskList(items, lineEnding);
-      const doneFileContent = stringifyTaskList(doneFile.items, lineEnding);
-      const zip = new JSZip();
-      zip.file(filename, todoFileContent);
-      zip.file(doneFile.filename, doneFileContent);
       const blob = await zip.generateAsync({ type: outputType });
       const date = format(new Date(), "yyyy-MM-dd_HH-mm-ss");
       return {
@@ -412,45 +464,45 @@ export function useTask() {
   );
 
   const downloadTodoFile = useCallback(
-    async (taskList = activeTaskList) => {
-      if (taskList) {
-        const { items, lineEnding, filename } = taskList;
-        const zip = await generateZipFile(taskList);
+    async (taskLists: TaskList[]) => {
+      const singleList = taskLists.length === 1;
+      const hasDoneFile = singleList && (await getDoneFileId(taskLists[0].id));
+      if (singleList && !hasDoneFile) {
+        const { items, lineEnding, filename } = taskLists[0];
+        const text = stringifyTaskList(items, lineEnding);
+        const blob = new Blob([text], {
+          type: "text/plain;charset=utf-8",
+        });
+        FileSaver.saveAs(blob, filename);
+      } else {
+        const zip = await generateZipFile(taskLists);
         if (zip) {
           FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
-        } else {
-          const text = stringifyTaskList(items, lineEnding);
-          const blob = new Blob([text], {
-            type: "text/plain;charset=utf-8",
-          });
-          FileSaver.saveAs(blob, filename);
         }
       }
     },
-    [activeTaskList, generateZipFile],
+    [generateZipFile],
   );
 
   const shareTodoFile = useCallback(async () => {
-    if (activeTaskList) {
-      const zip = await generateZipFile(activeTaskList, "blob");
-      if (!zip) {
-        return downloadTodoFile();
-      }
-      const blob = zip.zipContent as Blob;
-      const data = {
-        files: [
-          new File([blob], zip.zipFilename, {
-            type: blob.type,
-          }),
-        ],
-      };
-      if (await canShare(data)) {
-        await share(data);
-      } else {
-        await downloadTodoFile();
-      }
+    const zip = await generateZipFile(selectedTaskLists, "blob");
+    if (!zip) {
+      return downloadTodoFile(selectedTaskLists);
     }
-  }, [activeTaskList, downloadTodoFile, generateZipFile]);
+    const blob = zip.zipContent as Blob;
+    const data = {
+      files: [
+        new File([blob], zip.zipFilename, {
+          type: blob.type,
+        }),
+      ],
+    };
+    if (await canShare(data)) {
+      await share(data);
+    } else {
+      await downloadTodoFile(selectedTaskLists);
+    }
+  }, [selectedTaskLists, downloadTodoFile, generateZipFile]);
 
   const scheduleDueTaskNotifications = useCallback(
     async (tasks: Task[]) => {
@@ -514,7 +566,7 @@ export function useTask() {
   );
 
   const archiveTasks = useCallback(async () => {
-    const newTaskLists = await _archiveTasks(taskLists);
+    const newTaskLists = await _archiveTasks(selectedTaskLists);
     return Promise.all(
       newTaskLists.map((taskList) => {
         if (taskList) {
@@ -522,7 +574,7 @@ export function useTask() {
         }
       }),
     );
-  }, [_archiveTasks, saveTodoFile, taskLists]);
+  }, [_archiveTasks, saveTodoFile, selectedTaskLists]);
 
   const restoreArchivedTasks = useCallback(async () => {
     const newTaskLists = await _restoreArchivedTasks(taskLists);
@@ -566,8 +618,8 @@ export function useTask() {
         await new Promise<void>((resolve) => {
           const { dismiss } = toast({
             hideCloseButton: true,
-            title: t("Open File"),
-            description: t(`Would you like to open the file?`, {
+            title: t("Open list"),
+            description: t(`Would you like to open the list?`, {
               filename: error.filename,
             }),
             duration: 1000 * 10,
@@ -577,7 +629,7 @@ export function useTask() {
             action: (
               <div className="space-x-1">
                 <ToastAction
-                  altText="Close File"
+                  altText="Close list"
                   onClick={async () => {
                     closeTodoFile(error.id);
                     dismiss();
@@ -586,7 +638,7 @@ export function useTask() {
                   {t("No")}
                 </ToastAction>
                 <ToastAction
-                  altText="Open File"
+                  altText="Open list"
                   onClick={async () => {
                     const taskList = await loadTodoFileFromDisk(error.id);
                     addTaskList(taskList);
@@ -611,8 +663,8 @@ export function useTask() {
   }, []);
 
   return {
-    ...commonTaskListAttributes,
     saveTodoFile,
+    toggleTaskList,
     downloadTodoFile,
     shareTodoFile,
     closeTodoFile,
@@ -628,7 +680,7 @@ export function useTask() {
     loadDoneFile,
     taskLists,
     scheduleDueTaskNotifications,
-    activeTaskList,
+    selectedTaskLists,
     findTaskListByTaskId,
     reorderTaskList,
     createNewTodoFile,

@@ -4,7 +4,7 @@ import { useTask } from "@/utils/useTask";
 import { LightbulbIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export function ExampleFileButton() {
+export function ExampleListButton() {
   const { t } = useTranslation();
   const { createNewTodoFile } = useTask();
   const { showSaveFilePicker } = useFilesystem();
@@ -22,11 +22,11 @@ export function ExampleFileButton() {
     <Button
       tabIndex={0}
       variant="outline"
-      aria-label="Create example file"
+      aria-label="Create example list"
       onClick={handleClick}
     >
       <LightbulbIcon className="mr-2 h-4 w-4" />
-      {t("Create example file")}
+      {t("Create example list")}
     </Button>
   );
 }
