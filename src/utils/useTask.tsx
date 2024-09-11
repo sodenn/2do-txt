@@ -1,5 +1,6 @@
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
+import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { taskLoader, useTaskStore } from "@/stores/task-store";
@@ -89,6 +90,9 @@ export function useTask() {
   const archiveMode = useSettingsStore((state) => state.archiveMode);
   const priorityTransformation = useSettingsStore(
     (state) => state.priorityTransformation,
+  );
+  const openConfirmationDialog = useConfirmationDialogStore(
+    (state) => state.openConfirmationDialog,
   );
   const {
     selectedPriorities,
@@ -365,6 +369,25 @@ export function useTask() {
       await saveTodoFile({ ...taskList, items });
     },
     [cancelNotifications, findTaskListByTaskId, saveTodoFile],
+  );
+
+  const deleteTaskWithConfirmation = useCallback(
+    async (task: Task) => {
+      openConfirmationDialog({
+        title: t("Delete task"),
+        content: t("Are you sure you want to delete this task?"),
+        buttons: [
+          {
+            text: t("Delete"),
+            variant: "destructive",
+            handler: () => {
+              deleteTask(task);
+            },
+          },
+        ],
+      });
+    },
+    [openConfirmationDialog, deleteTask, t],
   );
 
   const toggleCompleteTask = useCallback(
@@ -672,6 +695,7 @@ export function useTask() {
     addTask,
     editTask,
     deleteTask,
+    deleteTaskWithConfirmation,
     toggleCompleteTask,
     archiveTasks,
     restoreArchivedTasks,

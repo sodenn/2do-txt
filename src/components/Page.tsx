@@ -19,13 +19,7 @@ export function Page() {
       <Header />
       <SideSheet />
       <LayoutContent>
-        <SafeArea
-          right
-          bottom
-          left
-          className="container mx-auto"
-          id="ptr-container"
-        >
+        <SafeArea right bottom left className="container" id="ptr-container">
           <div className="px-2 pt-1 sm:px-4 sm:pt-2">
             <TaskView />
             <Onboarding />

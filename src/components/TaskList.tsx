@@ -1,18 +1,23 @@
 import { TaskBody } from "@/components/TaskBody";
+import { Button } from "@/components/ui/button";
 import { Checkbox, CheckboxProps } from "@/components/ui/checkbox";
 import { Chip } from "@/components/ui/chip";
 import { List, ListItem } from "@/components/ui/list";
 import { useFilterStore } from "@/stores/filter-store";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { Task } from "@/utils/task";
 import { TaskGroup } from "@/utils/task-list";
+import { cn } from "@/utils/tw-utils";
 import { useTask } from "@/utils/useTask";
 import { isEqual } from "lodash";
-import { ExternalLinkIcon } from "lucide-react";
+import { ExternalLinkIcon, TrashIcon } from "lucide-react";
 import {
   forwardRef,
   KeyboardEvent,
   memo,
+  MouseEvent,
   MutableRefObject,
+  useCallback,
   useRef,
 } from "react";
 import { useTranslation } from "react-i18next";
@@ -117,6 +122,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
   (props, ref) => {
     const { task, onButtonClick, onCheckedChange, onBlur, onFocus } = props;
     const checkboxRef = useRef<HTMLButtonElement>(null);
+    const { deleteTaskWithConfirmation } = useTask();
     const { t } = useTranslation();
 
     const handleCheckedClick: CheckboxProps["onClick"] = (event) => {
@@ -133,6 +139,16 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
       }
     };
 
+    const handleDelete = useCallback(
+      (event: MouseEvent) => {
+        event.stopPropagation();
+        if (task) {
+          deleteTaskWithConfirmation(task);
+        }
+      },
+      [deleteTaskWithConfirmation, task],
+    );
+
     return (
       <ListItem
         buttonRef={ref}
@@ -141,7 +157,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
         onBlur={onBlur}
         onClick={onButtonClick}
         onKeyDown={handleKeyDown}
-        className="my-0.5 items-start py-3 sm:py-4"
+        className="group relative my-0.5 items-start py-2 sm:py-4"
       >
         <Checkbox
           ref={checkboxRef}
@@ -153,7 +169,9 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
           aria-checked={task.completed}
           className="my-1 bg-background"
         />
-        <div className="flex flex-col">
+        <div
+          className={cn("flex flex-1 flex-col", !HAS_TOUCHSCREEN && "pr-14")}
+        >
           <TaskBody task={task} />
           {task.completionDate && (
             <div className="text-xs text-muted-foreground">
@@ -166,6 +184,17 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
             </div>
           )}
         </div>
+        {!HAS_TOUCHSCREEN && (
+          <Button
+            onClick={handleDelete}
+            role="button"
+            size="icon"
+            variant="ghost"
+            className="absolute bottom-0 right-4 top-0 m-auto opacity-0 transition-opacity duration-100 ease-in-out focus-visible:opacity-50 group-hover:opacity-50 group-focus-visible:opacity-50"
+          >
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        )}
       </ListItem>
     );
   },

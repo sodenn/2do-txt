@@ -17,7 +17,8 @@ import { useTranslation } from "react-i18next";
 export function TaskView() {
   const { t } = useTranslation();
   const taskView = useSettingsStore((state) => state.taskView);
-  const { taskLists, selectedTaskLists, deleteTask } = useTask();
+  const { taskLists, selectedTaskLists, deleteTaskWithConfirmation } =
+    useTask();
   const _openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
   const openConfirmationDialog = useConfirmationDialogStore(
     (state) => state.openConfirmationDialog,
@@ -72,22 +73,16 @@ export function TaskView() {
     if (focusedTaskId) {
       const task = tasks.find((t) => t.id === focusedTaskId);
       if (task) {
-        openConfirmationDialog({
-          title: t("Delete task"),
-          content: t("Are you sure you want to delete this task?"),
-          buttons: [
-            {
-              text: t("Delete"),
-              variant: "destructive",
-              handler: () => {
-                deleteTask(task);
-              },
-            },
-          ],
-        });
+        deleteTaskWithConfirmation(task);
       }
     }
-  }, [deleteTask, focusedTaskId, openConfirmationDialog, t, tasks]);
+  }, [
+    deleteTaskWithConfirmation,
+    focusedTaskId,
+    openConfirmationDialog,
+    t,
+    tasks,
+  ]);
 
   useHotkeys(
     taskLists.length === 0
