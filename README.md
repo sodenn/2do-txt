@@ -48,3 +48,5 @@ The **todo.txt** format is a simple set of rules that make todo.txt both human a
 - Dark mode
 - Two different views: list and timeline
 - Markdown support
+- Progressive Web App (PWA) support for enhanced user experience
+- Offline capabilities when installed as a PWA
