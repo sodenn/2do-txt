@@ -51,11 +51,16 @@ test.describe("Task View", () => {
       page,
     }) => {
       await expect(page.getByTestId("task-list")).toBeVisible();
-      await expect(page.getByTestId("task").first()).not.toBeFocused();
-      await page.getByTestId("task").first().focus();
-      await expect(page.getByTestId("task").first()).toBeFocused();
+      const firstTask = page.getByTestId("task").first();
+      await expect(firstTask).not.toBeFocused();
+      await firstTask.focus();
+      await expect(firstTask).toBeFocused();
       await page.keyboard.press("Tab");
-      await expect(page.getByTestId("task").first()).not.toBeFocused();
+      await expect(firstTask).not.toBeFocused();
+      await expect(
+        firstTask.getByRole("button", { name: "Delete task" }),
+      ).toBeFocused();
+      await page.keyboard.press("Tab");
       await expect(page.getByTestId("task").nth(1)).toBeFocused();
     });
 

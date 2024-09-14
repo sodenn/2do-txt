@@ -311,6 +311,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
         </div>
         {!HAS_TOUCHSCREEN && (
           <Button
+            aria-label="Delete task"
             onClick={handleDelete}
             role="button"
             size="icon"

@@ -190,6 +190,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
             role="button"
             size="icon"
             variant="ghost"
+            aria-label="Delete task"
             className="absolute bottom-0 right-4 top-0 m-auto opacity-0 transition-opacity duration-100 ease-in-out focus-visible:opacity-50 group-hover:opacity-50 group-focus-visible:opacity-50"
           >
             <TrashIcon className="h-4 w-4" />

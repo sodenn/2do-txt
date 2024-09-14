@@ -413,15 +413,22 @@ test.describe("Task dialog", () => {
     );
   });
 
-  test("should delete a task", async ({ page }) => {
-    await expect(page.getByTestId("task")).toHaveCount(8);
-    await page.getByTestId("task").first().click();
-    // make sure that the dialog is open
-    await expect(page.getByTestId("task-dialog")).toBeVisible();
-    await page.getByRole("button", { name: "Delete task" }).click();
-    await page.getByRole("button", { name: "Confirm delete" }).click();
-    // make sure that the dialog is closed
-    await expect(page.getByTestId("task-dialog")).not.toBeVisible();
+  test("should delete a task", async ({ page, isMobile }) => {
+    if (isMobile) {
+      await expect(page.getByTestId("task")).toHaveCount(8);
+      await page.getByTestId("task").first().click();
+      // make sure that the dialog is open
+      await expect(page.getByTestId("task-dialog")).toBeVisible();
+      await page.getByRole("button", { name: "Delete task" }).click();
+      await page.getByRole("button", { name: "Confirm delete" }).click();
+      // make sure that the dialog is closed
+      await expect(page.getByTestId("task-dialog")).not.toBeVisible();
+    } else {
+      const firstTask = page.getByTestId("task").first();
+      await firstTask.hover();
+      await firstTask.getByRole("button", { name: "Delete task" }).click();
+      await page.getByRole("button", { name: "Delete" }).click();
+    }
     await expect(page.getByTestId("task")).toHaveCount(7);
   });
 });

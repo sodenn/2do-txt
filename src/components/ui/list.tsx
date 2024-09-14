@@ -127,8 +127,8 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
           tabIndex={0}
           className={cn(
             listItemVariants({ variant, className, selected }),
-            startAdornment && "pl-8",
-            endAdornment && "pr-8",
+            startAdornment && "pl-8 sm:pl-8",
+            endAdornment && "pr-8 sm:pr-8",
           )}
           {...props}
         >
