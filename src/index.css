@@ -95,5 +95,5 @@ body {
 }
 
 code {
-  @apply rounded bg-gray-200 dark:bg-accent px-1 mx-0.5
+  @apply mx-0.5 rounded bg-gray-200 px-1 dark:bg-accent;
 }

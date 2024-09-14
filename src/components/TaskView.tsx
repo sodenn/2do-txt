@@ -1,6 +1,5 @@
 import { TaskList } from "@/components/TaskList";
 import { TaskTimeline } from "@/components/TaskTimeline";
-import { useConfirmationDialogStore } from "@/stores/confirmation-dialog-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { Task } from "@/utils/task";
@@ -12,17 +11,12 @@ import {
 import { useHotkeys } from "@/utils/useHotkeys";
 import { useTask } from "@/utils/useTask";
 import { useCallback, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 
 export function TaskView() {
-  const { t } = useTranslation();
   const taskView = useSettingsStore((state) => state.taskView);
   const { taskLists, selectedTaskLists, deleteTaskWithConfirmation } =
     useTask();
   const _openTaskDialog = useTaskDialogStore((state) => state.openTaskDialog);
-  const openConfirmationDialog = useConfirmationDialogStore(
-    (state) => state.openConfirmationDialog,
-  );
   const [focusedTaskId, setFocusedTaskId] = useState<string>();
   const listItemsRef = useRef<HTMLDivElement[]>([]);
   const taskGroups = useTaskGroups(taskLists, selectedTaskLists);
@@ -76,13 +70,7 @@ export function TaskView() {
         deleteTaskWithConfirmation(task);
       }
     }
-  }, [
-    deleteTaskWithConfirmation,
-    focusedTaskId,
-    openConfirmationDialog,
-    t,
-    tasks,
-  ]);
+  }, [deleteTaskWithConfirmation, focusedTaskId, tasks]);
 
   useHotkeys(
     taskLists.length === 0
