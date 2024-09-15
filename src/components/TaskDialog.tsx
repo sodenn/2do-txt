@@ -213,7 +213,7 @@ export function TaskDialog() {
       onOpen={handleOpen}
       onClose={closeTaskDialog}
       onExit={handleExit}
-      disablePreventScroll
+      repositionInputs={false}
     >
       <ResponsiveDialogContent
         onEscapeKeyDown={handleEscapeKeyDown}
