@@ -16,11 +16,7 @@ const resolve = {
 export default defineConfig({
   build: {
     outDir: "./build",
-    sourcemap: false,
     chunkSizeWarningLimit: 2000,
-    rollupOptions: {
-      external: ["crypto"],
-    },
   },
   resolve,
   test: {
