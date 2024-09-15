@@ -160,16 +160,14 @@ async function verifyPermission(fileHandle: FileSystemFileHandle) {
   try {
     const options = {
       mode: "readwrite",
-    };
+    } as const;
 
     // Check if permission was already granted. If so, return true.
-    // @ts-ignore
     if ((await fileHandle.queryPermission(options)) === "granted") {
       return { granted: true, update: false };
     }
 
     // Request permission. If the user grants permission, return true.
-    // @ts-ignore
     if ((await fileHandle.requestPermission(options)) === "granted") {
       return { granted: true, update: true };
     }

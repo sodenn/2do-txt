@@ -19,8 +19,7 @@ export function Header() {
   const sideSheetOpen = useSideSheetStore((state) => state.open);
   const [searchBarExpanded, setSearchBarExpanded] = useState(false);
   const showTodoFileShareButton =
-    (IS_IOS || IS_ANDROID) &&
-    (selectedTaskLists.length < 2 || taskLists.length === 1);
+    (IS_IOS || IS_ANDROID) && selectedTaskLists.length > 0;
 
   return (
     <LayoutHeader open={sideSheetOpen}>

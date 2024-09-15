@@ -142,27 +142,28 @@ const chipVariants = cva(
         variant: "default",
         clickable: true,
         className:
-          "bg-danger border-danger text-danger-foreground hover:brightness-90 focus-visible:brightness-90",
+          "bg-pink-800 dark:bg-pink-600 border-pink-800 dark:border-pink-600 text-primary-foreground hover:brightness-90 focus-visible:brightness-90",
       },
       {
         color: "danger",
         variant: "outline",
         clickable: true,
         className:
-          "text-danger border-danger hover:bg-danger/5 hover:dark:bg-danger/15 focus-visible:bg-danger/10 focus-visible:dark:bg-danger/20",
+          "text-pink-800 dark:text-pink-500 border-pink-800 dark:border-pink-600 hover:bg-pink-800/5 hover:dark:bg-pink-600/15 focus-visible:bg-pink-800/10 focus-visible:dark:bg-pink-600/20",
       },
       {
         color: "danger",
         variant: "default",
         clickable: false,
         className:
-          "bg-danger border-danger text-danger-foreground brightness-90",
+          "bg-pink-800 dark:bg-pink-600 border-pink-800 dark:border-pink-600 text-primary-foreground brightness-90",
       },
       {
         color: "danger",
         variant: "outline",
         clickable: false,
-        className: "text-danger border-danger bg-danger/5 dark:bg-danger/15",
+        className:
+          "text-pink-800 dark:text-pink-500 border-pink-800 dark:border-pink-600 bg-pink-800/5 dark:bg-pink-600/15",
       },
     ],
     defaultVariants: {

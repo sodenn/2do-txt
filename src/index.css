@@ -93,3 +93,7 @@ body {
     @apply bg-background font-sans text-foreground;
   }
 }
+
+code {
+  @apply mx-0.5 rounded bg-gray-200 px-1 dark:bg-accent;
+}

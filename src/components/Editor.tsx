@@ -116,7 +116,6 @@ function useEditorConfig(triggers: string[], initialValue: string) {
       theme: {
         beautifulMentions: beautifulMentionsTheme,
         text: {
-          code: "rounded bg-accent px-1 mx-1",
           strikethrough: "line-through",
         },
       },

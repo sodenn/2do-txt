@@ -7,6 +7,7 @@ import { useFilterStore } from "@/stores/filter-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { formatLocaleDate, todayDate } from "@/utils/date";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { Task } from "@/utils/task";
 import { TimelineTask } from "@/utils/task-list";
 import { cn } from "@/utils/tw-utils";
@@ -20,12 +21,15 @@ import {
   CircleIcon,
   ClockIcon,
   PlusIcon,
+  TrashIcon,
 } from "lucide-react";
 import {
   forwardRef,
   HTMLAttributes,
   KeyboardEvent,
+  MouseEvent,
   MutableRefObject,
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -233,6 +237,7 @@ const TaskItem = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
 const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
   const { task, focused, onClick, onCheckboxClick, onFocus, onBlur } = props;
   const { language } = useSettingsStore();
+  const { deleteTaskWithConfirmation } = useTask();
 
   const handleKeyUp = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.code === "Space") {
@@ -245,6 +250,16 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
     }
   };
 
+  const handleDelete = useCallback(
+    (event: MouseEvent) => {
+      event.stopPropagation();
+      if (task) {
+        deleteTaskWithConfirmation(task);
+      }
+    },
+    [deleteTaskWithConfirmation, task],
+  );
+
   return (
     <div
       tabIndex={0}
@@ -252,7 +267,9 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
       className={cn(
         listItemVariants({
           variant: "default",
-          className: "w-full cursor-pointer self-start sm:px-5",
+          className:
+            "group relative w-full cursor-pointer self-start sm:px-5" +
+            (!HAS_TOUCHSCREEN ? " pr-14 sm:pr-14" : ""),
           selected: false,
         }),
       )}
@@ -292,6 +309,18 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
             </div>
           )}
         </div>
+        {!HAS_TOUCHSCREEN && (
+          <Button
+            aria-label="Delete task"
+            onClick={handleDelete}
+            role="button"
+            size="icon"
+            variant="ghost"
+            className="absolute bottom-0 right-4 top-0 m-auto opacity-0 transition-opacity duration-100 ease-in-out focus-visible:opacity-50 group-hover:opacity-50 group-focus-visible:opacity-50"
+          >
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   );

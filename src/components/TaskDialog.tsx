@@ -14,6 +14,7 @@ import {
 import { useSettingsStore } from "@/stores/settings-store";
 import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { formatDate, todayDate } from "@/utils/date";
+import { HAS_TOUCHSCREEN, IS_ANDROID, IS_IOS } from "@/utils/platform";
 import { Task } from "@/utils/task";
 import { getTaskListAttributes, TaskList } from "@/utils/task-list";
 import { useTask } from "@/utils/useTask";
@@ -239,7 +240,7 @@ export function TaskDialog() {
           />
         </ResponsiveDialogBody>
         <ResponsiveDialogFooter>
-          {isNewTask && (
+          {(HAS_TOUCHSCREEN || IS_IOS || IS_ANDROID) && isNewTask && (
             <div className="flex-1">
               <DeleteTaskButton />
             </div>
