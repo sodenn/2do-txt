@@ -69,7 +69,7 @@
     "class-variance-authority": "0.7.0",
     "clsx": "2.1.1",
     "cmdk": "1.0.0",
-    "date-fns": "3.6.0",
+    "date-fns": "4.1.0",
     "file-saver": "2.0.5",
     "html-react-parser": "^5.1.12",
     "i18next": "23.15.1",
