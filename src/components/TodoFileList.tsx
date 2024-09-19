@@ -142,7 +142,7 @@ export const TodoFileList = memo(() => {
   return (
     <div className="group space-y-2">
       <div className="relative">
-        <Label>Lists</Label>
+        <Label>{t("Lists")}</Label>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -150,7 +150,7 @@ export const TodoFileList = memo(() => {
               variant="ghost"
               size="icon"
               onClick={handleOpenFile}
-              className="absolute bottom-0 right-8 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
+              className="absolute bottom-0 right-8 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 touch:hidden"
             >
               <FolderOpenIcon className="h-4 w-4" />
             </Button>
@@ -164,7 +164,7 @@ export const TodoFileList = memo(() => {
               variant="ghost"
               size="icon"
               onClick={handleCreateFile}
-              className="absolute bottom-0 right-0 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
+              className="absolute bottom-0 right-0 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 touch:hidden"
             >
               <PlusIcon className="h-4 w-4" />
             </Button>

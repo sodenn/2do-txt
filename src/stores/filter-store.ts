@@ -1,4 +1,5 @@
 import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
+import { getTodoFileIds } from "@/utils/todo-files";
 import { createContext, useContext } from "react";
 import { useStore as useZustandStore } from "zustand";
 import { createStore } from "zustand/vanilla";
@@ -50,7 +51,7 @@ export const FilterStoreProvider = zustandContext.Provider;
 export async function filterLoader(): Promise<FilterFields> {
   const searchParams = new URLSearchParams(window.location.search);
   const [
-    selectedTaskListIds,
+    selectedTaskListIdsStr,
     selectedPriorities,
     selectedProjects,
     selectedContexts,
@@ -68,11 +69,25 @@ export async function filterLoader(): Promise<FilterFields> {
     getPreferencesItem<FilterType>("filter-type"),
     getPreferencesItem<string>("hide-completed-tasks"),
   ]);
+
+  // removes any selected task list ids that no longer exist
+  const todoListIds = await getTodoFileIds();
+  const selectedTaskListIds = selectedTaskListIdsStr
+    ? selectedTaskListIdsStr.split(",").map((i) => parseInt(i))
+    : [];
+  const filteredSelectedTaskListIds = todoListIds
+    .map(({ todoFileId }) => todoFileId)
+    .filter((id) => selectedTaskListIds.includes(id));
+  if (todoListIds.length !== filteredSelectedTaskListIds.length) {
+    await setPreferencesItem(
+      "selected-task-list-ids",
+      filteredSelectedTaskListIds.join(","),
+    );
+  }
+
   return {
     searchTerm: searchParams.get("term") || "",
-    selectedTaskListIds: selectedTaskListIds
-      ? selectedTaskListIds.split(",").map((i) => parseInt(i))
-      : [],
+    selectedTaskListIds: filteredSelectedTaskListIds,
     selectedPriorities: selectedPriorities ? selectedPriorities.split(",") : [],
     selectedProjects: selectedProjects ? selectedProjects.split(",") : [],
     selectedContexts: selectedContexts ? selectedContexts.split(",") : [],

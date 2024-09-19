@@ -436,10 +436,8 @@ export function useTask() {
         ]);
       }
 
-      if (selectedTaskLists.some((list) => list.id === id)) {
-        const taskListIds = selectedTaskLists
-          .filter((t) => t.id !== id)
-          .map((list) => list.id);
+      if (selectedTaskListIds.includes(id)) {
+        const taskListIds = selectedTaskListIds.filter((val) => val !== id);
         setSelectedTaskListIds(taskListIds);
       }
 
@@ -448,7 +446,7 @@ export function useTask() {
     [
       taskLists,
       deleteTodoFile,
-      selectedTaskLists,
+      selectedTaskListIds,
       removeTaskList,
       cancelNotifications,
       setSelectedTaskListIds,
