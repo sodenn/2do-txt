@@ -73,11 +73,7 @@ test.describe("Task dialog", () => {
     await page.getByLabel("Due date").click();
     // choose date
     const date = new Date();
-    date.setDate(15);
-    const currentDateSelector = date.getDate().toString();
-    await page
-      .getByRole("gridcell", { name: currentDateSelector, exact: true })
-      .click();
+    await page.locator(`[role="gridcell"] button[aria-label^="Today"]`).click();
 
     await page.getByRole("button", { name: "Save task" }).click();
 
@@ -99,11 +95,7 @@ test.describe("Task dialog", () => {
     await page.getByLabel("Due date").click();
     // choose date
     const date = new Date();
-    date.setDate(15);
-    const currentDateSelector = date.getDate().toString();
-    await page
-      .getByRole("gridcell", { name: currentDateSelector, exact: true })
-      .click();
+    await page.locator(`[role="gridcell"] button[aria-label^="Today"]`).click();
 
     // make sure the date picker contains a value
     await expect(page.getByLabel("Due date")).toHaveText(
@@ -129,9 +121,7 @@ test.describe("Task dialog", () => {
     await page.getByLabel("Due date").click();
 
     // choose date and confirm
-    await page
-      .getByRole("gridcell", { name: currentDateSelector, exact: true })
-      .click();
+    await page.locator(`[role="gridcell"] button[aria-label^="Today"]`).click();
 
     // make sure the date picker contains a value
     await expect(page.getByLabel("Due date")).toHaveText(
@@ -145,9 +135,7 @@ test.describe("Task dialog", () => {
     await page.getByLabel("Due date").click();
 
     // clear date selection
-    await page
-      .getByRole("gridcell", { name: currentDateSelector, exact: true })
-      .click();
+    await page.locator(`[role="gridcell"] button[aria-label^="Today"]`).click();
 
     // make sure the text field doesn't contain the due date
     await expect(getEditor(page)).not.toHaveText(dueDateTag);
@@ -301,12 +289,7 @@ test.describe("Task dialog", () => {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
     const date = new Date();
-    date.setDate(15);
-    const currentDateSelector = date.getDate().toString();
-    await page
-      .getByRole("gridcell", { name: currentDateSelector, exact: true })
-      .first()
-      .click();
+    await page.locator(`[role="gridcell"] button[aria-label^="Today"]`).click();
 
     // make sure due date was selected
     await expect(page.getByLabel("Due date")).toHaveText(
