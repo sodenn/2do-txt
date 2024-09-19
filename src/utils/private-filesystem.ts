@@ -93,9 +93,10 @@ type Result<T> = T extends CreateOptions
               ? ErrorResult
               : never;
 
-const worker = new Worker(
-  new URL("./private-filesystem-sw.ts", import.meta.url),
-);
+let worker: Worker;
+if (typeof Worker !== "undefined") {
+  worker = new Worker(new URL("./private-filesystem-sw.ts", import.meta.url));
+}
 
 function postMessage<T extends Options>(options: T): Promise<Result<T>> {
   return new Promise<Result<T>>((resolve, reject) => {

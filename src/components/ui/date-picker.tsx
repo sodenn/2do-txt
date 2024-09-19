@@ -97,7 +97,8 @@ export function DatePicker(props: DatePickerProps) {
           month={date}
           selected={date}
           onSelect={handleSelect}
-          initialFocus
+          autoFocus
+          showYearSwitcher
         />
       </PopoverContent>
     </Popover>
