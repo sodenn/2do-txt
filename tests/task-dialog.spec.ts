@@ -77,7 +77,7 @@ test.describe("Task dialog", () => {
     // choose date
     const date = new Date();
     await page
-      .locator(`[role="gridcell"] button[aria-label^="Today"]`)
+      .locator(`[data-today="true"] button`)
       .click({ clickCount: isMobile ? 2 : 1 });
 
     await page.getByRole("button", { name: "Save task" }).click();
@@ -101,7 +101,7 @@ test.describe("Task dialog", () => {
     // choose date
     const date = new Date();
     await page
-      .locator(`[role="gridcell"] button[aria-label^="Today"]`)
+      .locator(`[data-today="true"] button`)
       .click({ clickCount: isMobile ? 2 : 1 });
 
     // make sure the date picker contains a value
@@ -129,7 +129,7 @@ test.describe("Task dialog", () => {
 
     // choose date and confirm
     await page
-      .locator(`[role="gridcell"] button[aria-label^="Today"]`)
+      .locator(`[data-today="true"] button`)
       .click({ clickCount: isMobile ? 2 : 1 });
 
     // make sure the date picker contains a value
@@ -145,7 +145,7 @@ test.describe("Task dialog", () => {
 
     // clear date selection
     await page
-      .locator(`[role="gridcell"] button[aria-label^="Today"]`)
+      .locator(`[data-today="true"] button`)
       .click({ clickCount: isMobile ? 2 : 1 });
 
     // make sure the text field doesn't contain the due date
@@ -300,7 +300,7 @@ test.describe("Task dialog", () => {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
     const date = new Date();
-    await page.locator(`[role="gridcell"] button[aria-label^="Today"]`).click();
+    await page.locator(`[data-today="true"] button`).click();
 
     // make sure due date was selected
     await expect(page.getByLabel("Due date")).toHaveText(
