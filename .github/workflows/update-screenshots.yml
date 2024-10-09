@@ -7,7 +7,7 @@ jobs:
   update-screenshots:
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.47.2-jammy
+      image: mcr.microsoft.com/playwright:v1.48.0-jammy
     permissions:
       contents: write
     steps:
