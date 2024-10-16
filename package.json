@@ -92,7 +92,7 @@
     "zustand": "4.5.5"
   },
   "devDependencies": {
-    "@playwright/test": "1.48.0",
+    "@playwright/test": "1.48.1",
     "@testing-library/react": "16.0.1",
     "@types/file-saver": "2.0.7",
     "@types/lodash": "4.17.10",
