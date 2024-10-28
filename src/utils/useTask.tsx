@@ -40,10 +40,10 @@ import { isEqual, omit } from "lodash";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-type SaveTodoFile = {
+interface SaveTodoFile {
   (id: number, text: string): Promise<TaskList>;
   (taskList: TaskList): Promise<TaskList>;
-};
+}
 
 interface Order {
   id: any;
@@ -494,11 +494,15 @@ export function useTask() {
         const blob = new Blob([text], {
           type: "text/plain;charset=utf-8",
         });
-        FileSaver.saveAs(blob, filename);
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        FileSaver.saveAs(blob, filename, { autoBom: false });
       } else {
         const zip = await generateZipFile(taskLists);
         if (zip) {
-          FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename);
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
+          FileSaver.saveAs(zip.zipContent as Blob, zip.zipFilename, {
+            autoBom: false,
+          });
         }
       }
     },
@@ -547,7 +551,9 @@ export function useTask() {
     async (id: number, text = "") => {
       await addTodoFileId(id);
       const taskList = await saveTodoFile(id, text);
-      scheduleDueTaskNotifications(taskList.items).catch((e) => void e);
+      scheduleDueTaskNotifications(taskList.items).catch(
+        (e: unknown) => void e,
+      );
       return id;
     },
     [saveTodoFile, scheduleDueTaskNotifications],
@@ -557,7 +563,9 @@ export function useTask() {
     async (id: number, filename: string, text: string) => {
       await addTodoFileId(id);
       const taskList = await parseTaskList(id, filename, text);
-      scheduleDueTaskNotifications(taskList.items).catch((e) => void e);
+      scheduleDueTaskNotifications(taskList.items).catch(
+        (e: unknown) => void e,
+      );
       return id;
     },
     [parseTaskList, scheduleDueTaskNotifications],
@@ -571,7 +579,7 @@ export function useTask() {
           : listOrId;
 
       if (!taskList) {
-        throw new Error(`Cannot find task list by id "${listOrId}"`);
+        throw new Error("Cannot find task list");
       }
 
       const newTaskList = await _restoreTask({
@@ -629,7 +637,7 @@ export function useTask() {
       setTaskLists(newTaskList);
     }
     for (const error of errors) {
-      await handleFileNotFound(error.id).catch((e) => void e);
+      await handleFileNotFound(error.id).catch((e: unknown) => void e);
     }
   }, [handleFileNotFound, setTaskLists, taskLists]);
 
@@ -674,13 +682,15 @@ export function useTask() {
           });
         });
       } else {
-        await handleFileNotFound(error.id, error.filename).catch((e) => void e);
+        await handleFileNotFound(error.id, error.filename).catch(
+          (e: unknown) => void e,
+        );
       }
     }
     taskLists.forEach((taskList) =>
       scheduleDueTaskNotifications(taskList.items),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // x eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

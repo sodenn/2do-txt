@@ -140,7 +140,7 @@ class Db {
         }
       };
       request.onerror = () => {
-        reject(request.error);
+        reject(request.error as Error);
       };
     });
   }
@@ -181,7 +181,7 @@ class Db {
         }
       };
       request.onerror = () => {
-        reject(request.error);
+        reject(request.error as Error);
       };
     });
   }
@@ -211,7 +211,7 @@ class Db {
         resolve(request.result);
       };
       request.onerror = () => {
-        reject(request.error);
+        reject(request.error as Error);
       };
     });
   }
@@ -222,7 +222,7 @@ class Db {
         resolve(request.result);
       };
       request.onerror = () => {
-        reject(request.error);
+        reject(request.error as Error);
       };
     });
   }

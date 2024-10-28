@@ -302,7 +302,7 @@ function FileMenu(props: FileMenuProps) {
     ) as Promise<string>;
     writeToClipboard(promise)
       .then(() => toast({ description: t("Copied to clipboard") }))
-      .catch((e) => {
+      .catch((e: unknown) => {
         console.log(e);
         toast({
           variant: "danger",

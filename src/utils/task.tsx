@@ -28,8 +28,6 @@ marked.Renderer.prototype.paragraph = (text) => {
   return text.raw;
 };
 
-type Priority = "A" | "B" | "C" | "D" | string;
-
 export interface Task {
   readonly projects: string[];
   readonly contexts: string[];
@@ -40,7 +38,7 @@ export interface Task {
   completed: boolean;
   completionDate?: Date;
   creationDate?: Date;
-  priority?: Priority;
+  priority?: string;
   body: string;
   order: number;
 }
@@ -99,7 +97,7 @@ export function parseTask(text: string) {
   }
 
   let priority: string | null = null;
-  const priorityMatches = tokens[0].match(/\(([A-Z])\)/);
+  const priorityMatches = /\(([A-Z])\)/.exec(tokens[0]);
   if (priorityMatches) {
     priority = priorityMatches[1];
     tokens.shift();
@@ -169,9 +167,7 @@ function parseTaskBody(
   });
 
   const dueDate =
-    tags["due"]?.length > 0
-      ? parseDate(tags["due"][tags["due"].length - 1])
-      : undefined;
+    tags.due?.length > 0 ? parseDate(tags.due[tags.due.length - 1]) : undefined;
 
   return {
     contexts,
@@ -225,7 +221,7 @@ export function useFormatBody() {
             return undefined;
           }
           // @ts-expect-error
-          const translatedKey = t(key);
+          const translatedKey = t<string>(key);
           const keySuffix = translatedKey !== key ? ": " : ":";
           const value = substrings[1];
           const date = parseDate(value);
@@ -364,7 +360,7 @@ export function transformPriority(
     } else if (transformation === "archive" && updatedTask.priority) {
       updatedTask.body = removePriTag(updatedTask.body);
       updatedTask.body += ` pri:${updatedTask.priority}`;
-      updatedTask.tags["pri"] = [updatedTask.priority];
+      updatedTask.tags.pri = [updatedTask.priority];
       delete updatedTask.priority;
     }
   } else if (transformation === "archive") {

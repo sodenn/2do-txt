@@ -62,7 +62,7 @@ export async function taskLoader(): Promise<TaskFields> {
             type: "success",
           } as TodoFileSuccess;
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           if (error instanceof FileError) {
             return {
               type: "error",
@@ -79,7 +79,7 @@ export async function taskLoader(): Promise<TaskFields> {
     ids.flatMap((i) =>
       [i.todoFileId, i.doneFileId].filter((id) => typeof id === "number"),
     ),
-  ).catch((e) => {
+  ).catch((e: unknown) => {
     console.debug("Unable to delete unused files", e);
   });
   const files = result.filter((i) => i.type === "success");

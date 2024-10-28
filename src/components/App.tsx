@@ -16,7 +16,8 @@ export function App() {
       .then((data) => {
         setData(data);
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
+        // @ts-ignore
         setError(error.message);
       });
   }, []);

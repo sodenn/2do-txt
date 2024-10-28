@@ -36,7 +36,7 @@ export function Fade({
   return (
     <Transition nodeRef={nodeRef} in={inProp} timeout={duration} {...other}>
       {(state) =>
-        cloneElement(children as any, {
+        cloneElement(children, {
           style: {
             ...defaultStyle,
             ...transitionStyles[state],

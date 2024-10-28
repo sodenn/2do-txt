@@ -6,7 +6,7 @@ export function useTaskEffect() {
 
   useEffect(() => {
     handleInit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // x eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
