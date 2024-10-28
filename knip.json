@@ -3,7 +3,8 @@
   "ignoreDependencies": [
     "@lexical/code",
     "@lexical/markdown",
-    "@lexical/selection"
+    "@lexical/selection",
+    "eslint-plugin-react-hooks"
   ],
   "ignore": [
     "pwa-assets.config.ts",
