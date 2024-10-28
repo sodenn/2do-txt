@@ -22,7 +22,7 @@ import {
   ItalicIcon,
   StrikethroughIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const VERTICAL_GAP = 10;

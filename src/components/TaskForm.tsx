@@ -42,12 +42,12 @@ export function TaskForm(props: TaskFormProps) {
   const { value = "", projects, contexts, tags, ...other } = props;
 
   const _tags = useMemo(() => {
-    const tags = Object.keys(props.tags).reduce(
+    const tags = Object.keys(props.tags).reduce<Record<string, string[]>>(
       (acc, key) => {
         acc[key + ":"] = props.tags[key];
         return acc;
       },
-      {} as Record<string, string[]>,
+      {},
     );
     if (Object.keys(tags).every((k) => k !== "due:")) {
       tags["due:"] = [];

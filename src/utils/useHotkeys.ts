@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react";
 
-interface HotkeyListeners {
-  [key: string]: (ev: KeyboardEvent) => unknown;
-}
+type HotkeyListeners = Record<string, (ev: KeyboardEvent) => unknown>;
 
 const isInputTarget = (target: any) =>
   !!target && (target.nodeName === "INPUT" || target.isContentEditable);

@@ -1,5 +1,5 @@
 export function groupBy<T>(arr: T[], getKey: (item: T) => string | string[]) {
-  return arr.reduce<{ [key: string]: T[] }>((map, item) => {
+  return arr.reduce<Record<string, T[]>>((map, item) => {
     const key = getKey(item);
     let formattedKey: string;
     if (Array.isArray(key)) {

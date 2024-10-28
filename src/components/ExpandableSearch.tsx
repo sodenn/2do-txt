@@ -27,6 +27,7 @@ export const ExpandableSearch = forwardRef<
   const handleReset = () => {
     const input = (ref as any).current;
 
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
       window.HTMLInputElement.prototype,
       "value",

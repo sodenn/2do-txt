@@ -1,17 +1,17 @@
 import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { TouchEvent, useCallback, useEffect, useRef } from "react";
 
-type LongPressOptions = {
+interface LongPressOptions {
   callback: () => void;
   delay?: number;
   touchStart?: (event: TouchEvent) => void;
   touchEnd?: (event: TouchEvent) => void;
-};
+}
 
-type LongPressResult = {
+interface LongPressResult {
   onTouchStart: (event: TouchEvent) => void;
   onTouchEnd: (event: TouchEvent) => void;
-};
+}
 
 export const useLongPress = ({
   callback,

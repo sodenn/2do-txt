@@ -56,7 +56,7 @@ export function useArchivedTask() {
         await addDoneFileId(todoFileId, doneFileId);
       }
 
-      const data = await readFile(doneFileId).catch((e) => void e);
+      const data = await readFile(doneFileId).catch((e: unknown) => void e);
       if (!data) {
         return;
       }

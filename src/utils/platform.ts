@@ -1,6 +1,7 @@
 const CAN_USE_DOM: boolean =
   typeof window !== "undefined" &&
   typeof window.document !== "undefined" &&
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   typeof window.document.createElement !== "undefined";
 
 export const IS_ANDROID: boolean =

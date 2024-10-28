@@ -45,9 +45,8 @@ import {
   BeautifulMentionsMenuProps,
   BeautifulMentionsPlugin,
   BeautifulMentionsTheme,
-  ZERO_WIDTH_CHARACTER,
-  ZeroWidthNode,
-  ZeroWidthPlugin,
+  PlaceholderNode,
+  PlaceholderPlugin,
 } from "lexical-beautiful-mentions";
 import React, {
   ComponentProps,
@@ -111,7 +110,7 @@ function useEditorConfig(triggers: string[], initialValue: string) {
         console.log(error);
       },
       editorState: setEditorState(initialValue, triggers),
-      nodes: [BeautifulMentionNode, ZeroWidthNode, CodeNode],
+      nodes: [BeautifulMentionNode, PlaceholderNode, CodeNode],
       namespace: "",
       theme: {
         beautifulMentions: beautifulMentionsTheme,
@@ -287,7 +286,7 @@ export function Editor(props: EditorProps) {
     (editorState: EditorState) => {
       editorState.read(() => {
         const markdown = $convertToMarkdownString(TRANSFORMERS);
-        onChange(markdown.replaceAll(ZERO_WIDTH_CHARACTER, ""));
+        onChange(markdown);
       });
     },
     [onChange],
@@ -329,7 +328,7 @@ export function Editor(props: EditorProps) {
         <OnChangePlugin onChange={handleChange} />
         <HistoryPlugin />
         {!HAS_TOUCHSCREEN && <AutoFocusPlugin defaultSelection="rootEnd" />}
-        <ZeroWidthPlugin textContent={ZERO_WIDTH_CHARACTER} />
+        <PlaceholderPlugin />
         <SingleLinePlugin onEnter={onEnter} />
         <BeautifulMentionsPlugin
           items={items}

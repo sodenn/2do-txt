@@ -16,7 +16,7 @@ import { cn } from "@/utils/tw-utils";
 import { useTooltip } from "@/utils/useTooltip";
 import { CalendarIcon } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
-import { DayPickerSingleProps } from "react-day-picker";
+import { PropsSingle } from "react-day-picker";
 
 interface DatePickerProps {
   value?: Date;
@@ -50,7 +50,7 @@ export function DatePicker(props: DatePickerProps) {
   const { isBreakpointActive } = useBreakpoint();
   const formatedDate = formatDate(date, isBreakpointActive("sm"), props.locale);
 
-  const handleSelect: DayPickerSingleProps["onSelect"] = (date) => {
+  const handleSelect: PropsSingle["onSelect"] = (date) => {
     setDate(date);
     props.onChange?.(date);
     setOpen(false);

@@ -24,11 +24,9 @@ const BreakpointContext = createContext<BreakpointContextType | undefined>(
 
 function getCurrentBreakpoint() {
   const width = typeof window !== "undefined" ? window.innerWidth : 0;
-  return (Object.keys(screens) as Array<Breakpoint>)
-    .reverse()
-    .find((breakpoint) => {
-      return width >= parseInt(screens[breakpoint]);
-    });
+  return (Object.keys(screens) as Breakpoint[]).reverse().find((breakpoint) => {
+    return width >= parseInt(screens[breakpoint]);
+  });
 }
 
 export function BreakpointProvider({ children }: PropsWithChildren) {

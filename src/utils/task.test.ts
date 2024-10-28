@@ -48,7 +48,7 @@ describe("task priority", () => {
     task = transformPriority(task, "archive");
 
     expect(task.priority).toBeUndefined();
-    expect(task.tags["pri"]).toStrictEqual(["A"]);
+    expect(task.tags.pri).toStrictEqual(["A"]);
   });
 
   it("should restore the priority of an incomplete task", async () => {
