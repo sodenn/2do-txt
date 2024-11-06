@@ -17,6 +17,7 @@ i18n.use(initReactI18next).init({
 });
 
 vi.mock("../stores/settings-store", () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   useSettingsStore: (callback: any) => {
     const data = {
       reminderOffset: 0,

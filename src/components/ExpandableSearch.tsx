@@ -25,6 +25,7 @@ export const ExpandableSearch = forwardRef<
   };
 
   const handleReset = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const input = (ref as any).current;
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -41,6 +42,7 @@ export const ExpandableSearch = forwardRef<
   };
 
   const handleEnteredInput = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const input = (ref as any).current;
     input.focus();
   };

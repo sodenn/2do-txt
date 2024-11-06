@@ -46,6 +46,7 @@ interface SaveTodoFile {
 }
 
 interface Order {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   id: any;
   order: number;
 }
@@ -690,7 +691,7 @@ export function useTask() {
     taskLists.forEach((taskList) =>
       scheduleDueTaskNotifications(taskList.items),
     );
-    // x eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

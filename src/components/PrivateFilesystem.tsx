@@ -146,6 +146,7 @@ function PrivateFilesystemInput() {
     fileReader.readAsText(file);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleClick = (event: any) => {
     event.target.value = null;
   };

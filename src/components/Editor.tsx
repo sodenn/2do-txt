@@ -106,7 +106,7 @@ const beautifulMentionsTheme: BeautifulMentionsTheme = {
 function useEditorConfig(triggers: string[], initialValue: string) {
   return useMemo(
     () => ({
-      onError(error: any) {
+      onError(error: unknown) {
         console.log(error);
       },
       editorState: setEditorState(initialValue, triggers),

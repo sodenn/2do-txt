@@ -20,7 +20,7 @@ import {
 import { cn } from "@/utils/tw-utils";
 import { useTooltip } from "@/utils/useTooltip";
 import { CheckIcon, FlagIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const options = [
@@ -70,7 +70,7 @@ export function PriorityPicker(props: PriorityPickerProps) {
     setOpen(false);
   };
 
-  const handleKeyUp = (event: any) => {
+  const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
     const value = options.includes(event.key.toUpperCase())
       ? event.key.toUpperCase()
       : undefined;

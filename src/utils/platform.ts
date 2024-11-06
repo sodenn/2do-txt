@@ -36,6 +36,7 @@ function hasTouchScreen() {
   if ("maxTouchPoints" in navigator) {
     return navigator.maxTouchPoints > 0;
   } else if ("msMaxTouchPoints" in navigator) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (navigator as any).msMaxTouchPoints > 0;
   } else {
     const mediaQueryList = matchMedia("(pointer:coarse)");
