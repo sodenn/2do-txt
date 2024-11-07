@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "lucide-react";
-import { forwardRef, InputHTMLAttributes } from "react";
+import { forwardRef, InputHTMLAttributes, KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -12,9 +12,9 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     const { value, onReset, onChange, ...rest } = props;
     const { t } = useTranslation();
 
-    const handleKeyDown = (event: any) => {
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Escape") {
-        event.target.blur();
+        (event.target as HTMLInputElement).blur();
       }
     };
 

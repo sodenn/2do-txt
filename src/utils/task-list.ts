@@ -688,7 +688,7 @@ function reduceDictionaries<T extends number | string[]>(
       });
       return prev;
     }, {});
-    return result as any;
+    return result as Record<string, T>;
   }
 
   if (containsStringArrayDictionaries(dictionaries)) {
@@ -704,14 +704,14 @@ function reduceDictionaries<T extends number | string[]>(
       });
       return prev;
     }, {});
-    return result as any;
+    return result as Record<string, T>;
   }
 
   throw new Error("Unknown dictionary type");
 }
 
 function containsNumberDictionaries(
-  dictionary: Record<string, any>[],
+  dictionary: Record<string, unknown>[],
 ): dictionary is Record<string, number>[] {
   return dictionary.every((dictionary) =>
     Object.values(dictionary).every((v) => typeof v === "number"),
@@ -719,7 +719,7 @@ function containsNumberDictionaries(
 }
 
 function containsStringArrayDictionaries(
-  dictionary: Record<string, any>[],
+  dictionary: Record<string, unknown>[],
 ): dictionary is Record<string, string[]>[] {
   return dictionary.every((dictionary) =>
     Object.values(dictionary).every(

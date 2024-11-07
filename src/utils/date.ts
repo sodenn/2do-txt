@@ -12,7 +12,7 @@ export function formatDate(date: Date): string {
   return format(date, "yyyy-MM-dd");
 }
 
-export function parseDate(str: any): Date | undefined {
+export function parseDate(str: string): Date | undefined {
   if (typeof str !== "string") {
     return undefined;
   }
@@ -26,7 +26,7 @@ export function todayDate(): Date {
   return startOfDay(new Date());
 }
 
-export function dateReviver(key: string, value: any) {
+export function dateReviver(key: string, value: string) {
   const date = parseDate(value);
   if (date) {
     return date;

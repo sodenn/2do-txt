@@ -4,7 +4,7 @@ import {
 } from "@/components/ExpandableSearch";
 import { useFilterStore } from "@/stores/filter-store";
 import { useHotkeys } from "@/utils/useHotkeys";
-import { useRef } from "react";
+import { KeyboardEventHandler, useRef } from "react";
 
 interface SearchBarProps {
   onExpand?: (expanded: boolean) => void;
@@ -15,7 +15,7 @@ export function SearchBar({ onExpand }: SearchBarProps) {
   const setSearchTerm = useFilterStore((state) => state.setSearchTerm);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const handleKeyDown = (event: any) => {
+  const handleKeyDown: KeyboardEventHandler = (event) => {
     if (event.key === "Escape") {
       searchInputRef.current?.blur();
     }

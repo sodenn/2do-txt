@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 type HotkeyListeners = Record<string, (ev: KeyboardEvent) => unknown>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isInputTarget = (target: any) =>
   !!target && (target.nodeName === "INPUT" || target.isContentEditable);
 

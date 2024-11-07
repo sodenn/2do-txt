@@ -5,13 +5,14 @@ import {
   TransitionStatus,
 } from "react-transition-group/Transition";
 
-const transitionStyles: Partial<Record<TransitionStatus, Record<string, any>>> =
-  {
-    entering: { opacity: 1 },
-    entered: { opacity: 1 },
-    exiting: { opacity: 0 },
-    exited: { opacity: 0 },
-  };
+const transitionStyles: Partial<
+  Record<TransitionStatus, Record<string, number>>
+> = {
+  entering: { opacity: 1 },
+  entered: { opacity: 1 },
+  exiting: { opacity: 0 },
+  exited: { opacity: 0 },
+};
 
 type FadeProps = Omit<
   PropsWithChildren<TransitionProps<HTMLDivElement>>,

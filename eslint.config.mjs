@@ -1,8 +1,16 @@
-// @ts-check
+import { FlatCompat } from "@eslint/eslintrc";
 import eslint from "@eslint/js";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import eslintConfigPrettier from "eslint-config-prettier";
 import reactPlugin from "eslint-plugin-react";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import tseslint from "typescript-eslint";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -16,7 +24,10 @@ export default tseslint.config(
       },
     },
   },
-  eslintPluginPrettierRecommended,
+  {
+    ignores: ["eslint.config.mjs"],
+  },
+  eslintConfigPrettier,
   {
     ...reactPlugin.configs.flat.recommended,
     settings: { react: { version: "18.3" } },
@@ -26,10 +37,9 @@ export default tseslint.config(
     },
   },
   reactPlugin.configs.flat["jsx-runtime"],
+  ...compat.extends("plugin:react-hooks/recommended"),
   {
     rules: {
-      "@typescript-eslint/no-empty-function": "off",
-      "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
@@ -39,7 +49,6 @@ export default tseslint.config(
       "@typescript-eslint/no-floating-promises": "off",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/require-await": "off",
-      "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unnecessary-condition": "off",
