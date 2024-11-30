@@ -157,6 +157,7 @@ function FixTextFormatPlugin() {
     () =>
       editor.registerUpdateListener(() => {
         editor.update(() => {
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
           const paragraphs = $nodesOfType(ParagraphNode);
           for (const paragraph of paragraphs) {
             const children = paragraph.getChildren();
