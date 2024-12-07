@@ -19,7 +19,7 @@ export const useLongPress = ({
   touchEnd,
   delay = 500,
 }: LongPressOptions): LongPressResult => {
-  const timeoutRef = useRef<number>();
+  const timeoutRef = useRef<number>(undefined);
 
   const clear = useCallback(() => {
     if (timeoutRef.current) {

@@ -27,7 +27,7 @@ import {
   ThemeStoreProvider,
 } from "@/stores/theme-store";
 import { preloadImages } from "@/utils/images";
-import { useRef, type PropsWithChildren } from "react";
+import { type PropsWithChildren, useRef } from "react";
 
 export interface LoaderData {
   filter: FilterFields;
@@ -51,10 +51,10 @@ export function StoreProvider({
   children,
   ...props
 }: PropsWithChildren<LoaderData>) {
-  const filterStoreRef = useRef<FilterStore>();
-  const settingsStoreRef = useRef<SettingsStore>();
-  const taskStoreRef = useRef<TaskStore>();
-  const themeStoreRef = useRef<ThemeStore>();
+  const filterStoreRef = useRef<FilterStore>(undefined);
+  const settingsStoreRef = useRef<SettingsStore>(undefined);
+  const taskStoreRef = useRef<TaskStore>(undefined);
+  const themeStoreRef = useRef<ThemeStore>(undefined);
 
   if (!filterStoreRef.current) {
     filterStoreRef.current = initializeFilterStore(props.filter);

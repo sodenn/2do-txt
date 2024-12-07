@@ -16,7 +16,7 @@ import {
   KeyboardEvent,
   memo,
   MouseEvent,
-  MutableRefObject,
+  RefObject,
   useCallback,
   useRef,
 } from "react";
@@ -27,7 +27,7 @@ interface TaskListProps {
   filename: string;
   taskGroups: TaskGroup[];
   tasks: Task[];
-  listItemsRef: MutableRefObject<HTMLDivElement[]>;
+  listItemsRef: RefObject<HTMLDivElement[]>;
   showHeader?: boolean;
   onFocus: (index: number) => void;
   onBlur: () => void;
