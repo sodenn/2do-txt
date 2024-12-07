@@ -64,10 +64,7 @@ test.describe("Task dialog", () => {
     ).toHaveCount(1);
   });
 
-  test("should display due date as text in task list", async ({
-    page,
-    isMobile,
-  }) => {
+  test("should display due date as text in task list", async ({ page }) => {
     await openTaskDialog(page);
 
     await getEditor(page).pressSequentially("This is a test", delay);
@@ -76,9 +73,7 @@ test.describe("Task dialog", () => {
     await page.getByLabel("Due date").click();
     // choose date
     const date = new Date();
-    await page
-      .locator(`[data-today="true"] button`)
-      .click({ clickCount: isMobile ? 2 : 1 });
+    await chooseTodayDate(page);
 
     await page.getByRole("button", { name: "Save task" }).click();
 
@@ -98,11 +93,11 @@ test.describe("Task dialog", () => {
 
     // open the date picker
     await page.getByLabel("Due date").click();
+
     // choose date
+    await page.waitForTimeout(250);
     const date = new Date();
-    await page
-      .locator(`[data-today="true"] button`)
-      .click({ clickCount: isMobile ? 2 : 1 });
+    await chooseTodayDate(page);
 
     // make sure the date picker contains a value
     await expect(page.getByLabel("Due date")).toHaveText(
@@ -128,9 +123,8 @@ test.describe("Task dialog", () => {
     await page.getByLabel("Due date").click();
 
     // choose date and confirm
-    await page
-      .locator(`[data-today="true"] button`)
-      .click({ clickCount: isMobile ? 2 : 1 });
+    await page.waitForTimeout(250);
+    await chooseTodayDate(page);
 
     // make sure the date picker contains a value
     await expect(page.getByLabel("Due date")).toHaveText(
@@ -144,9 +138,7 @@ test.describe("Task dialog", () => {
     await page.getByLabel("Due date").click();
 
     // clear date selection
-    await page
-      .locator(`[data-today="true"] button`)
-      .click({ clickCount: isMobile ? 2 : 1 });
+    await chooseTodayDate(page);
 
     // make sure the text field doesn't contain the due date
     await expect(getEditor(page)).not.toHaveText(dueDateTag);
@@ -300,7 +292,7 @@ test.describe("Task dialog", () => {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
     const date = new Date();
-    await page.locator(`[data-today="true"] button`).click();
+    await chooseTodayDate(page);
 
     // make sure due date was selected
     await expect(page.getByLabel("Due date")).toHaveText(
@@ -430,4 +422,16 @@ test.describe("Task dialog", () => {
 async function openTaskDialog(page: Page) {
   await page.getByRole("button", { name: "Add task" }).click();
   await page.waitForTimeout(300);
+}
+
+async function chooseTodayDate(page: Page) {
+  const selector = `[data-today="true"] button`;
+  await page.waitForTimeout(250);
+  await page.locator(selector).click();
+
+  await page.waitForTimeout(250);
+  const stillVisible = await page.isVisible(selector);
+  if (stillVisible) {
+    await page.locator(selector).click();
+  }
 }

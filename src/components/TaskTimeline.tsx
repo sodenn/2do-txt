@@ -28,7 +28,7 @@ import {
   HTMLAttributes,
   KeyboardEvent,
   MouseEvent,
-  MutableRefObject,
+  RefObject,
   useCallback,
   useEffect,
   useState,
@@ -38,7 +38,7 @@ import { useTranslation } from "react-i18next";
 interface TaskTimelineProps {
   tasks: TimelineTask[];
   focusedTaskId?: string;
-  listItemsRef: MutableRefObject<HTMLDivElement[]>;
+  listItemsRef: RefObject<HTMLDivElement[]>;
   onFocus: (index: number) => void;
   onBlur: () => void;
   onListItemClick: (task: Task) => void;
