@@ -109,7 +109,7 @@
     "autoprefixer": "10.4.20",
     "eslint": "^9.13.0",
     "eslint-config-prettier": "9.1.0",
-    "eslint-plugin-react": "7.37.2",
+    "eslint-plugin-react": "7.37.3",
     "eslint-plugin-react-hooks": "5.1.0",
     "happy-dom": "15.11.7",
     "i18next-parser": "9.0.2",
