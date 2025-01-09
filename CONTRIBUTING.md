@@ -23,16 +23,3 @@ Here is a quick guide to doing code contributions to this app.
 8. Push your branch.
 9. Submit a pull request to the upstream [2do.txt repository](https://github.com/sodenn/2do-txt/pulls).<br>
 > Maintainers will merge the pull request by squashing all commits and editing the commit message if necessary.
-
-### Tauri (Desktop App)
-If you want to start the Desktop App, run the following command:
-```sh
-npm run tauri:dev
-```
-
-### iOS
-If you want to start the iOS App, run the following commands (⚠️ Hot Reload is not supported):
-```sh
-npm run build # Always necessary after code changes have been made
-npm run ios:dev
-```
