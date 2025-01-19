@@ -108,7 +108,7 @@
     "@vitejs/plugin-react-swc": "3.7.2",
     "autoprefixer": "10.4.20",
     "eslint": "^9.13.0",
-    "eslint-config-prettier": "9.1.0",
+    "eslint-config-prettier": "10.0.1",
     "eslint-plugin-react": "7.37.3",
     "eslint-plugin-react-hooks": "5.1.0",
     "happy-dom": "16.5.3",
