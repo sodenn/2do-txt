@@ -2,6 +2,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import unfonts from "unplugin-fonts/vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -27,6 +28,20 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    unfonts({
+      custom: {
+        families: [
+          {
+            name: "Geist Sans",
+            src: "node_modules/geist/dist/fonts/geist-sans/*.woff2",
+          },
+          {
+            name: "Geist Mono",
+            src: "node_modules/geist/dist/fonts/geist-mono/*.woff2",
+          },
+        ],
+      },
+    }),
     tailwindcss(),
     VitePWA({
       includeAssets: [

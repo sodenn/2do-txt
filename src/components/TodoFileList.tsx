@@ -150,7 +150,7 @@ export const TodoFileList = memo(() => {
               variant="ghost"
               size="icon"
               onClick={handleOpenFile}
-              className="touch:hidden absolute top-0 right-8 bottom-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
+              className="absolute top-0 right-8 bottom-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 supports-[pointer:coarse]:hidden"
             >
               <FolderOpenIcon className="h-4 w-4" />
             </Button>
@@ -164,7 +164,7 @@ export const TodoFileList = memo(() => {
               variant="ghost"
               size="icon"
               onClick={handleCreateFile}
-              className="touch:hidden absolute top-0 right-0 bottom-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
+              className="absolute top-0 right-0 bottom-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 supports-[pointer:coarse]:hidden"
             >
               <PlusIcon className="h-4 w-4" />
             </Button>
