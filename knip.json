@@ -4,7 +4,11 @@
     "@lexical/code",
     "@lexical/markdown",
     "@lexical/selection",
-    "eslint-plugin-react-hooks"
+    "eslint-plugin-react-hooks",
+    "geist",
+    "tailwindcss",
+    "tailwindcss-animate",
+    "unfonts.css"
   ],
   "ignore": [
     "pwa-assets.config.ts",
