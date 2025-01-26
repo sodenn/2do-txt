@@ -31,7 +31,7 @@ export function ScrollTo({ target }: ScrollTopProps) {
         right
         bottom
         onClick={handleClick}
-        className="fixed bottom-[16px] right-[16px] sm:right-[32px]"
+        className="fixed right-[16px] bottom-[16px] sm:right-[32px]"
       >
         <Button tabIndex={-1} size="icon" aria-label="Scroll to">
           {icon}

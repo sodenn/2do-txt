@@ -78,7 +78,7 @@ export function DatePicker(props: DatePickerProps) {
               onClick={handleClick}
               className={cn(
                 "h-8 space-x-2",
-                !date && "flex-shrink-0 text-muted-foreground",
+                !date && "text-muted-foreground shrink-0",
                 !!date && "justify-start text-left",
               )}
               {...tooltipProps}

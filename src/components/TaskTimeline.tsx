@@ -99,7 +99,7 @@ export function TaskTimeline(props: TaskTimelineProps) {
     searchTerm
   ) {
     return (
-      <div className="px-5 pb-4 text-muted-foreground">{t("No tasks")}</div>
+      <div className="text-muted-foreground px-5 pb-4">{t("No tasks")}</div>
     );
   }
 
@@ -179,7 +179,7 @@ const TodayItem = forwardRef<HTMLButtonElement, WithTimelineTask>(
           </Button>
           <TimelineConnector
             className={cn(
-              "-mb-[3px] mt-2",
+              "mt-2 -mb-[3px]",
               !flags.lastOfToday && "border-primary",
             )}
           />
@@ -288,7 +288,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
           {task.dueDate && !task.completionDate && (
             <div
               className={cn(
-                "flex items-center gap-0.5 text-[0.9em] text-warning",
+                "text-warning flex items-center gap-0.5 text-[0.9em]",
                 !task._timelineFlags.today && "sm:hidden",
               )}
             >
@@ -297,13 +297,13 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
             </div>
           )}
           {task.completionDate && (
-            <div className="flex gap-0.5 text-[0.9em] text-muted-foreground sm:hidden">
+            <div className="text-muted-foreground flex gap-0.5 text-[0.9em] sm:hidden">
               <CheckCircleIcon className="mr-2 h-4 w-4" />
               {formatLocaleDate(task.completionDate, language)}
             </div>
           )}
           {task.creationDate && !task.dueDate && !task.completionDate && (
-            <div className="flex items-center gap-0.5 text-[0.9em] text-muted-foreground sm:hidden">
+            <div className="text-muted-foreground flex items-center gap-0.5 text-[0.9em] sm:hidden">
               <ClockIcon className="mr-2 h-4 w-4" />
               {formatLocaleDate(task.creationDate, language)}
             </div>
@@ -316,7 +316,7 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
             role="button"
             size="icon"
             variant="ghost"
-            className="absolute bottom-0 right-4 top-0 m-auto opacity-0 transition-opacity duration-100 ease-in-out focus-visible:opacity-50 group-hover:opacity-50 group-focus-visible:opacity-50"
+            className="absolute top-0 right-4 bottom-0 m-auto opacity-0 transition-opacity duration-100 ease-in-out group-hover:opacity-50 group-focus-visible:opacity-50 focus-visible:opacity-50"
           >
             <TrashIcon className="h-4 w-4" />
           </Button>
@@ -347,12 +347,12 @@ function TaskCheckbox({
         onClick={onClick}
         className="h-10 w-10"
       >
-        {!completed && <CircleIcon className="h-4 w-4 bg-background" />}
-        {completed && <CircleCheckBigIcon className="h-4 w-4 bg-background" />}
+        {!completed && <CircleIcon className="bg-background h-4 w-4" />}
+        {completed && <CircleCheckBigIcon className="bg-background h-4 w-4" />}
       </Button>
       <TimelineConnector
         className={cn(
-          "-mb-[3px] mt-1 flex-1",
+          "mt-1 -mb-[3px] flex-1",
           flags.today && !flags.lastOfToday && "border-primary",
           flags.last ? "invisible" : "visible",
         )}

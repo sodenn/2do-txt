@@ -7,7 +7,7 @@ interface TaskBodyProps {
 export function TaskBody({ task }: TaskBodyProps) {
   const formatBody = useFormatBody();
   return (
-    <span className="hyphens-auto text-[0.9em] sm:text-[length:inherit]">
+    <span className="text-[0.9em] hyphens-auto sm:text-[length:inherit]">
       {formatBody(task)}
     </span>
   );

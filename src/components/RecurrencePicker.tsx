@@ -142,7 +142,7 @@ export function RecurrencePicker(props: PriorityPickerProps) {
               className={cn(
                 "h-8",
                 value && "justify-between gap-2",
-                !value && "flex-shrink-0 text-muted-foreground",
+                !value && "text-muted-foreground shrink-0",
               )}
               {...triggerProps}
             >
