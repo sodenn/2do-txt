@@ -229,7 +229,7 @@ function TextFormatFloatingToolbar({
   return (
     <div
       ref={popupCharStylesEditorRef}
-      className="absolute left-0 top-0 z-100 flex gap-1 rounded-lg border bg-popover p-1 align-middle text-popover-foreground opacity-0 shadow-md transition-opacity will-change-transform"
+      className="bg-popover text-popover-foreground absolute top-0 left-0 z-100 flex gap-1 rounded-lg border p-1 align-middle opacity-0 shadow-md transition-opacity will-change-transform"
     >
       {editor.isEditable() && (
         <>

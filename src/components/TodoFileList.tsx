@@ -150,7 +150,7 @@ export const TodoFileList = memo(() => {
               variant="ghost"
               size="icon"
               onClick={handleOpenFile}
-              className="absolute bottom-0 right-8 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 touch:hidden"
+              className="touch:hidden absolute top-0 right-8 bottom-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
             >
               <FolderOpenIcon className="h-4 w-4" />
             </Button>
@@ -164,7 +164,7 @@ export const TodoFileList = memo(() => {
               variant="ghost"
               size="icon"
               onClick={handleCreateFile}
-              className="absolute bottom-0 right-0 top-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 touch:hidden"
+              className="touch:hidden absolute top-0 right-0 bottom-0 m-auto h-7 w-7 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
             >
               <PlusIcon className="h-4 w-4" />
             </Button>
@@ -277,7 +277,7 @@ function FileListItem(props: FileListItemProps) {
         <GripVerticalIcon
           className={cn(
             disabled && "hidden",
-            "ml-2 mr-1 h-4 w-4 cursor-move opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-50",
+            "mr-1 ml-2 h-4 w-4 cursor-move opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-50",
           )}
         />
       </div>

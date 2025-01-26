@@ -189,7 +189,7 @@ function Chip({ className, color, size, variant, ...props }: ChipProps) {
   };
 
   return (
-    <div className="inline-flex rounded-xl bg-background">
+    <div className="bg-background inline-flex rounded-xl">
       <div
         tabIndex={props.onClick ? 0 : undefined}
         role={props.onClick ? "button" : undefined}

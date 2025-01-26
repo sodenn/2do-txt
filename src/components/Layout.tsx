@@ -88,7 +88,7 @@ export function LayoutSidebar({
         aria-hidden={open ? "false" : "true"}
         data-hotkeys-keep-enabled={persistent ? "true" : "m"}
         className={cn(
-          "fixed bottom-0 left-0 top-0 hidden w-[320px] border-r bg-background transition-all duration-200 ease-out lg:block",
+          "bg-background fixed top-0 bottom-0 left-0 hidden w-[320px] border-r transition-all duration-200 ease-out lg:block",
           open && "translate-x-0",
           !open && "-translate-x-320",
           className,

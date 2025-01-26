@@ -148,7 +148,7 @@ export const StartAdornment = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     className={cn(
-      "absolute bottom-0 left-1 top-0 inline-flex items-center",
+      "absolute top-0 bottom-0 left-1 inline-flex items-center",
       className,
     )}
     {...props}
@@ -163,7 +163,7 @@ export const EndAdornment = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     className={cn(
-      "absolute bottom-0 right-1 top-0 inline-flex items-center",
+      "absolute top-0 right-1 bottom-0 inline-flex items-center",
       className,
     )}
     {...props}
@@ -186,7 +186,7 @@ export const ListItemPrimaryText = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-sm font-medium leading-none", className)}
+    className={cn("text-sm leading-none font-medium", className)}
     {...props}
   />
 ));
@@ -198,7 +198,7 @@ export const ListItemSecondaryText = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("truncate text-sm text-muted-foreground", className)}
+    className={cn("text-muted-foreground truncate text-sm", className)}
     {...props}
   />
 ));

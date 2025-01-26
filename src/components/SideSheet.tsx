@@ -42,7 +42,7 @@ export function SideSheet() {
               </TabsList>
             )}
             {hideFilter && (
-              <div className="px-2 py-3 font-semibold leading-none tracking-tight">
+              <div className="px-2 py-3 leading-none font-semibold tracking-tight">
                 {t("Settings")}
               </div>
             )}

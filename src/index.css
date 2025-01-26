@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @config '../tailwind.config.js';
 
@@ -110,14 +110,15 @@
     @apply border-border;
   }
   body {
-    @apply bg-background font-sans text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }
 
 code {
-  @apply mx-0.5 rounded bg-gray-200 px-1 dark:bg-accent;
+  @apply dark:bg-accent mx-0.5 rounded bg-gray-200 px-1;
 }
 
-button,[role=button] {
-  cursor: pointer
+button,
+[role="button"] {
+  cursor: pointer;
 }

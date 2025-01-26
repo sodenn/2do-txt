@@ -236,7 +236,7 @@ function MenuComponent({ loading, ...other }: BeautifulMentionsMenuProps) {
         scrollbarWidth: "none",
         msOverflowStyle: "none",
       }}
-      className="pointer-events-auto absolute top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+      className="bg-popover text-popover-foreground pointer-events-auto absolute top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md"
       {...other}
     />
   );
@@ -250,7 +250,7 @@ const MenuItemComponent = forwardRef<
     <li
       ref={ref}
       className={cn(
-        "relative flex cursor-pointer select-none items-center whitespace-nowrap rounded-sm px-2 py-1.5 text-sm outline-hidden",
+        "relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm whitespace-nowrap outline-hidden select-none",
         selected && "bg-accent text-accent-foreground",
       )}
       {...props}
@@ -303,7 +303,7 @@ export function Editor(props: EditorProps) {
       <div
         className={cn(
           "text-smx relative mx-auto flex flex-col rounded-md border shadow-xs",
-          focused && "ring-1 ring-ring",
+          focused && "ring-ring ring-1",
         )}
       >
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
@@ -315,7 +315,7 @@ export function Editor(props: EditorProps) {
               // needed because the cursor keeps blinking in Safari when clicking outside the editor
               onBlur={() => editor.blur()}
               placeholder={
-                <div className="pointer-events-none absolute top-0 w-full px-3 py-2 text-muted-foreground">
+                <div className="text-muted-foreground pointer-events-none absolute top-0 w-full px-3 py-2">
                   {placeholder}
                 </div>
               }

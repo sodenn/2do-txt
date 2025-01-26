@@ -15,7 +15,7 @@ function NotificationBadge({
   return (
     <div className="relative inline-block" {...rest}>
       {children}
-      <div className="absolute -end-2 -top-2 z-1 inline-flex h-[1.23rem] w-[1.23rem] items-center justify-center rounded-full border border-accent-foreground/20 bg-accent text-xs font-bold text-secondary-foreground/70">
+      <div className="border-accent-foreground/20 bg-accent text-secondary-foreground/70 absolute -end-2 -top-2 z-1 inline-flex h-[1.23rem] w-[1.23rem] items-center justify-center rounded-full border text-xs font-bold">
         {label}
       </div>
     </div>

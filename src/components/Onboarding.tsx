@@ -24,7 +24,7 @@ export function Onboarding() {
   return (
     <div
       className={cn(
-        "flex justify-center sm:pb-5 sm:pt-10",
+        "flex justify-center sm:pt-10 sm:pb-5",
         taskLists.length > 0 && "hidden",
       )}
     >

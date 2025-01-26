@@ -20,12 +20,12 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
 
     return (
       <div className="relative ml-0 w-full rounded-md sm:ml-1 sm:w-auto">
-        <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
         <Input
           value={value}
           onKeyDown={handleKeyDown}
           onChange={onChange}
-          className="w-full bg-background pl-8 transition-width duration-300 ease-in-out sm:w-56 sm:focus:w-72"
+          className="bg-background transition-width w-full pl-8 duration-300 ease-in-out sm:w-56 sm:focus:w-72"
           placeholder={t("Search…")}
           aria-label="Search for tasks"
           autoCorrect="off"

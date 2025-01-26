@@ -112,7 +112,7 @@ export const TaskList = memo((props: TaskListProps) => {
         </List>
       )}
       {!hasItems && (
-        <div className="px-10 pb-3 text-muted-foreground">{t("No tasks")}</div>
+        <div className="text-muted-foreground px-10 pb-3">{t("No tasks")}</div>
       )}
     </>
   );
@@ -167,19 +167,19 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
           tabIndex={-1}
           aria-label="Complete task"
           aria-checked={task.completed}
-          className="my-1 bg-background"
+          className="bg-background my-1"
         />
         <div
           className={cn("flex flex-1 flex-col", !HAS_TOUCHSCREEN && "pr-14")}
         >
           <TaskBody task={task} />
           {task.completionDate && (
-            <div className="text-xs text-muted-foreground">
+            <div className="text-muted-foreground text-xs">
               {t("Completed", { completionDate: task.completionDate })}
             </div>
           )}
           {task.creationDate && !task.completed && (
-            <div className="text-xs text-muted-foreground">
+            <div className="text-muted-foreground text-xs">
               {t("Created", { creationDate: task.creationDate })}
             </div>
           )}
@@ -191,7 +191,7 @@ const TaskListItem = forwardRef<HTMLDivElement, TaskListItemProps>(
             size="icon"
             variant="ghost"
             aria-label="Delete task"
-            className="absolute bottom-0 right-4 top-0 m-auto opacity-0 transition-opacity duration-100 ease-in-out focus-visible:opacity-50 group-hover:opacity-50 group-focus-visible:opacity-50"
+            className="absolute top-0 right-4 bottom-0 m-auto opacity-0 transition-opacity duration-100 ease-in-out group-hover:opacity-50 group-focus-visible:opacity-50 focus-visible:opacity-50"
           >
             <TrashIcon className="h-4 w-4" />
           </Button>
@@ -235,11 +235,11 @@ function TaskListHeader(props: TaskListHeaderProps) {
   return (
     <li
       role="button"
-      className="mb-1 flex cursor-pointer items-center overflow-hidden rounded px-10 py-3 hover:bg-muted"
+      className="hover:bg-muted mb-1 flex cursor-pointer items-center overflow-hidden rounded px-10 py-3"
       tabIndex={-1}
       onClick={() => setSelectedTaskListIds([id])}
     >
-      <h3 className="flex-1 truncate font-semibold leading-none tracking-tight">
+      <h3 className="flex-1 truncate leading-none font-semibold tracking-tight">
         {filename}
       </h3>
       <ExternalLinkIcon className="h-4 w-4" />
