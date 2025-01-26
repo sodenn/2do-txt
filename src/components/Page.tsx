@@ -15,7 +15,7 @@ import { useTaskEffect } from "@/utils/useTaskEffect";
 export function Page() {
   useTaskEffect();
   return (
-    <div className="sh:h-screen flex h-full flex-col outline-none">
+    <div className="sh:h-screen flex h-full flex-col outline-hidden">
       <Header />
       <SideSheet />
       <LayoutContent>

@@ -18,7 +18,7 @@ const listVariants = cva("my-1 flex flex-col", {
   variants: {
     variant: {
       default: "",
-      outline: "border rounded-md shadow-sm",
+      outline: "border rounded-md shadow-xs",
     },
   },
   defaultVariants: {
@@ -27,7 +27,7 @@ const listVariants = cva("my-1 flex flex-col", {
 });
 
 export const listItemVariants = cva(
-  "flex w-full items-center gap-3 sm:gap-4 px-2 sm:px-3 py-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:[&:has(button[role='checkbox']:hover)]:bg-transparent sm:[&:has(button[role='button']:hover)]:bg-transparent [&[role='button']]:sm:hover:bg-muted relative",
+  "flex w-full items-center gap-3 sm:gap-4 px-2 sm:px-3 py-2 focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:[&:has(button[role='checkbox']:hover)]:bg-transparent sm:[&:has(button[role='button']:hover)]:bg-transparent sm:[&[role='button']]:hover:bg-muted relative",
   {
     variants: {
       variant: {

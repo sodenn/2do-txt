@@ -3,15 +3,28 @@ import {
   PropsWithChildren,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
-import resolveConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "../../tailwind.config";
 
-const config = resolveConfig(tailwindConfig);
-const screens = config.theme.screens;
+const breakpoints = ["sm", "md", "lg", "xl", "2xl"] as const;
 
-type Breakpoint = keyof typeof config.theme.screens;
+type Breakpoint = (typeof breakpoints)[number];
+
+interface BreakpointItem {
+  name: Breakpoint;
+  value: string;
+  numValue: number;
+}
+
+function getBreakpointItems(): BreakpointItem[] {
+  const styles = getComputedStyle(document.documentElement);
+  return breakpoints.map((bp) => ({
+    name: bp,
+    value: styles.getPropertyValue(`--breakpoint-${bp}`),
+    numValue: parseInt(styles.getPropertyValue(`--breakpoint-${bp}`)),
+  }));
+}
 
 interface BreakpointContextType {
   currentBreakpoint: Breakpoint | undefined;
@@ -22,30 +35,39 @@ const BreakpointContext = createContext<BreakpointContextType | undefined>(
   undefined,
 );
 
-function getCurrentBreakpoint() {
-  const width = typeof window !== "undefined" ? window.innerWidth : 0;
-  return (Object.keys(screens) as Breakpoint[]).reverse().find((breakpoint) => {
-    return width >= parseInt(screens[breakpoint]);
-  });
+function getCurrentBreakpoint(breakpoints: BreakpointItem[]) {
+  for (const breakpoint of breakpoints.toReversed()) {
+    if (window.matchMedia(`(width >= ${breakpoint.value})`).matches) {
+      return breakpoint.name;
+    }
+  }
 }
 
 export function BreakpointProvider({ children }: PropsWithChildren) {
+  const breakpointItems = useMemo(() => getBreakpointItems(), []);
   const [currentBreakpoint, setCurrentBreakpoint] = useState(
-    getCurrentBreakpoint(),
+    getCurrentBreakpoint(breakpointItems),
   );
 
   const isBreakpointActive = (breakpoint: Breakpoint): boolean => {
     if (!currentBreakpoint) {
       return false;
     }
-    const breakpointValue = screens[breakpoint];
-    const currentBreakpointValue = screens[currentBreakpoint];
-    return parseInt(breakpointValue) <= parseInt(currentBreakpointValue);
+
+    const breakpointItem = breakpointItems.find((i) => i.name === breakpoint);
+    const currentBreakpointItem = breakpointItems.find(
+      (i) => i.name === currentBreakpoint,
+    );
+    if (!breakpointItem || !currentBreakpointItem) {
+      return false;
+    }
+
+    return breakpointItem.numValue <= currentBreakpointItem.numValue;
   };
 
   useEffect(() => {
     const observer = new ResizeObserver(() => {
-      const newBreakpoint = getCurrentBreakpoint();
+      const newBreakpoint = getCurrentBreakpoint(breakpointItems);
       if (currentBreakpoint !== newBreakpoint) {
         setCurrentBreakpoint(newBreakpoint);
       }
@@ -54,7 +76,7 @@ export function BreakpointProvider({ children }: PropsWithChildren) {
     return () => {
       observer.disconnect();
     };
-  }, [currentBreakpoint]);
+  }, [breakpointItems, currentBreakpoint]);
 
   return (
     <BreakpointContext.Provider

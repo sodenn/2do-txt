@@ -99,7 +99,7 @@ export function PriorityPicker(props: PriorityPickerProps) {
               className={cn(
                 "h-8",
                 value && "justify-between gap-2",
-                !value && "flex-shrink-0 text-muted-foreground",
+                !value && "shrink-0 text-muted-foreground",
               )}
               {...triggerProps}
             >

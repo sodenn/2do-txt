@@ -8,7 +8,7 @@ export function ErrorBoundary({ message }: { message?: ReactNode }) {
   return (
     <div className="flex h-full w-screen items-center justify-center sm:h-screen">
       <div className="flex max-w-lg items-start gap-4">
-        <TriangleAlertIcon className="mt-1 h-8 w-8 flex-shrink-0" />
+        <TriangleAlertIcon className="mt-1 h-8 w-8 shrink-0" />
         <div className="flex flex-col gap-4">
           <div>
             <div className="text-2xl font-bold tracking-tight">

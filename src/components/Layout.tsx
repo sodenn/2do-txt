@@ -34,7 +34,7 @@ export function LayoutHeader({ open, children }: HeaderContainerProps) {
   return (
     <div
       className={clsx(
-        "flex-shrink-0 flex-grow-0 basis-auto lg:transition-all",
+        "shrink-0 grow-0 basis-auto lg:transition-all",
         open && `lg:ml-[320px] lg:duration-200 lg:ease-out`,
         !open && "lg:duration-195 lg:ease-in",
       )}
@@ -138,7 +138,7 @@ export function LayoutContent(props: ScrollAreaProps) {
       data-testid="page"
       id="scroll-container"
       className={clsx(
-        "flex-auto overflow-y-auto lg:flex-grow",
+        "flex-auto overflow-y-auto lg:grow",
         sideSheetOpen && `lg:ml-[320px] lg:duration-200 lg:ease-out`,
         !sideSheetOpen && "lg:ml-0 lg:duration-195 lg:ease-in",
       )}

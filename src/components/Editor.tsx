@@ -90,7 +90,7 @@ interface EditorProps
 
 const mentionsStyle =
   "px-1 mx-2/3 mx-px align-baseline inline-block rounded break-words cursor-pointer leading-5 border";
-const mentionsStyleFocused = "shadow";
+const mentionsStyleFocused = "shadow-sm";
 
 const beautifulMentionsTheme: BeautifulMentionsTheme = {
   "@": `${mentionsStyle} bg-success/5 dark:bg-success/15 text-success border-success`,
@@ -250,7 +250,7 @@ const MenuItemComponent = forwardRef<
     <li
       ref={ref}
       className={cn(
-        "relative flex cursor-pointer select-none items-center whitespace-nowrap rounded-sm px-2 py-1.5 text-sm outline-none",
+        "relative flex cursor-pointer select-none items-center whitespace-nowrap rounded-sm px-2 py-1.5 text-sm outline-hidden",
         selected && "bg-accent text-accent-foreground",
       )}
       {...props}
@@ -302,7 +302,7 @@ export function Editor(props: EditorProps) {
       {label && <Label onClick={handleClick}>{label}</Label>}
       <div
         className={cn(
-          "text-smx relative mx-auto flex flex-col rounded-md border shadow-sm",
+          "text-smx relative mx-auto flex flex-col rounded-md border shadow-xs",
           focused && "ring-1 ring-ring",
         )}
       >
@@ -311,7 +311,7 @@ export function Editor(props: EditorProps) {
         <RichTextPlugin
           contentEditable={
             <ContentEditable
-              className="relative overflow-auto px-3 py-2 focus:outline-none [&_p]:min-h-[22px]"
+              className="relative overflow-auto px-3 py-2 focus:outline-hidden [&_p]:min-h-[22px]"
               // needed because the cursor keeps blinking in Safari when clicking outside the editor
               onBlur={() => editor.blur()}
               placeholder={
@@ -338,7 +338,7 @@ export function Editor(props: EditorProps) {
           creatable
           insertOnBlur={false}
           allowSpaces={false}
-          menuAnchorClassName="z-[1300]"
+          menuAnchorClassName="z-1300"
         />
         <div className="flex flex-wrap gap-1 px-3 py-3">{children}</div>
       </div>

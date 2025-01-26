@@ -1,22 +1,42 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-html,
-body,
-#root {
-  user-select: none;
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  height: 100vh;
-  @supports (height: 100dvh) {
-    height: 100dvh;
+@config '../tailwind.config.js';
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
   }
 }
 
-body {
-  /* Disable pull-to-refresh in iOS 15 Safari */
-  overflow: hidden;
+@layer utilities {
+  html,
+  body,
+  #root {
+    user-select: none;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    height: 100vh;
+    @supports (height: 100dvh) {
+      height: 100dvh;
+    }
+  }
+
+  body {
+    /* Disable pull-to-refresh in iOS 15 Safari */
+    overflow: hidden;
+  }
 }
 
 @layer base {
@@ -96,4 +116,8 @@ body {
 
 code {
   @apply mx-0.5 rounded bg-gray-200 px-1 dark:bg-accent;
+}
+
+button,[role=button] {
+  cursor: pointer
 }

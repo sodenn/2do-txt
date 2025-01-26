@@ -4,7 +4,7 @@ import { HTMLAttributes, KeyboardEvent } from "react";
 import { cn } from "@/utils/tw-utils";
 
 const chipVariants = cva(
-  "inline-flex items-center rounded-xl border transition-colors focus:outline-none focus-visible:outline-none",
+  "inline-flex items-center rounded-xl border transition-colors focus:outline-hidden focus-visible:outline-hidden",
   {
     variants: {
       variant: {
@@ -67,7 +67,7 @@ const chipVariants = cva(
         variant: "outline",
         clickable: true,
         className:
-          "text-success border-success hover:bg-success/5 hover:dark:bg-success/15 focus-visible:bg-success/10 focus-visible:dark:bg-success/20",
+          "text-success border-success hover:bg-success/5 dark:hover:bg-success/15 focus-visible:bg-success/10 dark:focus-visible:bg-success/20",
       },
       {
         color: "success",
@@ -95,7 +95,7 @@ const chipVariants = cva(
         variant: "outline",
         clickable: true,
         className:
-          "text-info border-info hover:bg-info/5 hover:dark:bg-info/15 focus-visible:bg-info/10 focus-visible:dark:bg-info/20",
+          "text-info border-info hover:bg-info/5 dark:hover:bg-info/15 focus-visible:bg-info/10 dark:focus-visible:bg-info/20",
       },
       {
         color: "info",
@@ -121,7 +121,7 @@ const chipVariants = cva(
         variant: "outline",
         clickable: true,
         className:
-          "text-warning border-warning hover:bg-warning/5 hover:dark:bg-warning/15 focus-visible:bg-warning/10 focus-visible:dark:bg-warning/20",
+          "text-warning border-warning hover:bg-warning/5 dark:hover:bg-warning/15 focus-visible:bg-warning/10 dark:focus-visible:bg-warning/20",
       },
       {
         color: "warning",
@@ -149,7 +149,7 @@ const chipVariants = cva(
         variant: "outline",
         clickable: true,
         className:
-          "text-pink-800 dark:text-pink-500 border-pink-800 dark:border-pink-600 hover:bg-pink-800/5 hover:dark:bg-pink-600/15 focus-visible:bg-pink-800/10 focus-visible:dark:bg-pink-600/20",
+          "text-pink-800 dark:text-pink-500 border-pink-800 dark:border-pink-600 hover:bg-pink-800/5 dark:hover:bg-pink-600/15 focus-visible:bg-pink-800/10 dark:focus-visible:bg-pink-600/20",
       },
       {
         color: "danger",
