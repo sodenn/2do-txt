@@ -22,7 +22,6 @@ jobs:
         run: npm test
   e2e:
     name: 'E2E Tests - ${{ matrix.shard }}'
-    timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.50.1-jammy
