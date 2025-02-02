@@ -92,7 +92,7 @@ test.describe("Task dialog", () => {
     }
 
     // open the date picker
-    await page.getByLabel("Due date").click({ force: true });
+    await page.getByLabel("Due date").click();
 
     // choose date
     await page.waitForTimeout(250);
@@ -377,12 +377,9 @@ test.describe("Task dialog", () => {
 
   test("should add and remove recurrence", async ({ page }) => {
     await openTaskDialog(page);
-
-    // force click to bypass overlay
-    await page.getByLabel("Recurrence").click({ force: true });
-    await page.waitForTimeout(300);
-
+    await page.getByLabel("Recurrence").click();
     await page.getByText("Days", { exact: true }).click();
+
     await page.getByRole("spinbutton", { name: "Amount" }).focus();
     await page.keyboard.press("ArrowUp");
     await expect(page.getByRole("spinbutton", { name: "Amount" })).toHaveValue(
@@ -390,19 +387,13 @@ test.describe("Task dialog", () => {
     );
     await page.keyboard.press("Escape");
 
-    // wait for overlay to clear before continuing
-    await page.waitForTimeout(500);
-
+    // make sure rec-tag was added
     await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveText(
       "rec:2d",
     );
-    await page.getByLabel("Recurrence").first().click({ force: true });
-    await page.waitForTimeout(300);
+    await page.getByLabel("Recurrence").first().click();
     await page.getByText("No recurrence").click();
-
-    // wait for overlay again
-    await page.waitForTimeout(500);
-
+    // make sure rec-tag was removed
     await expect(page.locator('[data-beautiful-mention="rec:2d"]')).toHaveCount(
       0,
     );
@@ -434,18 +425,13 @@ async function openTaskDialog(page: Page) {
 }
 
 async function chooseTodayDate(page: Page) {
-  const selector = '[data-today="true"] button';
+  const selector = `[data-today="true"] button`;
   await page.waitForTimeout(250);
-
-  // force click to bypass any overlay issues
-  await page.locator(selector).click({ force: true });
+  await page.locator(selector).click();
 
   await page.waitForTimeout(250);
   const stillVisible = await page.isVisible(selector);
   if (stillVisible) {
-    await page.locator(selector).click({ force: true });
+    await page.locator(selector).click();
   }
-
-  // wait for any animations/overlays to finish
-  await page.waitForTimeout(500);
 }
