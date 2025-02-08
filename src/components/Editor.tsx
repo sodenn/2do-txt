@@ -24,10 +24,10 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { mergeRegister } from "@lexical/utils";
+import { $dfs, mergeRegister } from "@lexical/utils";
 import {
   $createTextNode,
-  $nodesOfType,
+  $isParagraphNode,
   BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
   COMMAND_PRIORITY_NORMAL,
@@ -35,7 +35,6 @@ import {
   FOCUS_COMMAND,
   KEY_ENTER_COMMAND,
   LineBreakNode,
-  ParagraphNode,
 } from "lexical";
 import {
   $transformTextToMentionNodes,
@@ -46,7 +45,6 @@ import {
   BeautifulMentionsPlugin,
   BeautifulMentionsTheme,
   PlaceholderNode,
-  PlaceholderPlugin,
 } from "lexical-beautiful-mentions";
 import React, {
   ComponentProps,
@@ -157,8 +155,9 @@ function FixTextFormatPlugin() {
     () =>
       editor.registerUpdateListener(() => {
         editor.update(() => {
-          // eslint-disable-next-line @typescript-eslint/no-deprecated
-          const paragraphs = $nodesOfType(ParagraphNode);
+          const paragraphs = $dfs()
+            .map(({ node }) => node)
+            .filter((node) => $isParagraphNode(node));
           for (const paragraph of paragraphs) {
             const children = paragraph.getChildren();
             // reset the text formatting if the paragraph is empty
@@ -329,7 +328,6 @@ export function Editor(props: EditorProps) {
         <OnChangePlugin onChange={handleChange} />
         <HistoryPlugin />
         {!HAS_TOUCHSCREEN && <AutoFocusPlugin defaultSelection="rootEnd" />}
-        <PlaceholderPlugin />
         <SingleLinePlugin onEnter={onEnter} />
         <BeautifulMentionsPlugin
           items={items}
