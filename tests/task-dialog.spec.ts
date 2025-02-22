@@ -184,13 +184,7 @@ test.describe("Task dialog", () => {
       delay,
     );
 
-    await expect(page.getByRole("menuitem", { name: "Private" })).toHaveCount(
-      1,
-    );
-
-    await expect(page.getByRole("menuitem", { name: "Private" })).toHaveCount(
-      1,
-    );
+    await expect(page.getByLabel('Choose "Private"')).toBeVisible();
 
     await getEditor(page).press("Enter");
 
@@ -244,9 +238,7 @@ test.describe("Task dialog", () => {
       delay,
     );
 
-    await expect(page.getByRole("menuitem", { name: "Private" })).toHaveCount(
-      1,
-    );
+    await expect(page.getByLabel('Choose "Private"')).toBeVisible();
   });
 
   test("should respect upper case and lower case when adding new contexts", async ({
@@ -260,12 +252,11 @@ test.describe("Task dialog", () => {
     );
 
     await expect(
-      page.getByRole("menuitem", { name: `Choose "private"`, exact: true }),
-    ).toHaveCount(1);
-
+      page.getByLabel('Choose "Private"', { exact: true }),
+    ).toBeVisible();
     await expect(
-      page.getByRole("menuitem", { name: `Choose "Private"`, exact: true }),
-    ).toHaveCount(1);
+      page.getByLabel('Choose "private"', { exact: true }),
+    ).toBeVisible();
   });
 
   test("should create a new task by using the keyboard only", async ({
@@ -345,11 +336,11 @@ test.describe("Task dialog", () => {
 
     await getEditor(page).pressSequentially("@Private", delay);
 
-    await page.getByRole("menuitem", { name: "Private" }).click();
+    await page.getByLabel('Choose "Private"').click();
 
     await getEditor(page).pressSequentially("@Private", delay);
 
-    await page.getByRole("menuitem", { name: "Private" }).click();
+    await page.getByLabel('Choose "Private"').click();
 
     await expect(
       page.locator('[data-beautiful-mention="@Private"]'),
@@ -367,9 +358,7 @@ test.describe("Task dialog", () => {
   test("should insert a new mention", async ({ page }) => {
     await openTaskDialog(page);
     await getEditor(page).pressSequentially("@Test", delay);
-    await page
-      .getByRole("menuitem", { name: `Choose "Test"`, exact: true })
-      .click();
+    await page.getByLabel('Choose "Test"', { exact: true }).click();
     await expect(page.locator('[data-beautiful-mention="@Test"]')).toHaveCount(
       1,
     );
