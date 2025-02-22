@@ -202,7 +202,9 @@ export function TaskDialog() {
   };
 
   const handleEscapeKeyDown = (event: KeyboardEvent) => {
-    if (document.querySelector(`[aria-label="Typeahead menu"]`)) {
+    const menu = document.querySelector("#typeahead-menu > ul");
+    const hasChildNodes = menu?.hasChildNodes();
+    if (hasChildNodes) {
       event.preventDefault();
     }
   };
