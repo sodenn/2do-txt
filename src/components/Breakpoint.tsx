@@ -7,9 +7,7 @@ import {
   useState,
 } from "react";
 
-const breakpoints = ["sm", "md", "lg", "xl", "2xl"] as const;
-
-type Breakpoint = (typeof breakpoints)[number];
+type Breakpoint = "sm" | "md" | "lg" | "xl" | "2xl";
 
 interface BreakpointItem {
   name: Breakpoint;
@@ -18,12 +16,33 @@ interface BreakpointItem {
 }
 
 function getBreakpointItems(): BreakpointItem[] {
-  const styles = getComputedStyle(document.documentElement);
-  return breakpoints.map((bp) => ({
-    name: bp,
-    value: styles.getPropertyValue(`--breakpoint-${bp}`),
-    numValue: parseInt(styles.getPropertyValue(`--breakpoint-${bp}`)),
-  }));
+  return [
+    {
+      name: "sm",
+      value: "40rem",
+      numValue: 40,
+    },
+    {
+      name: "md",
+      value: "48rem",
+      numValue: 48,
+    },
+    {
+      name: "lg",
+      value: "64rem",
+      numValue: 64,
+    },
+    {
+      name: "xl",
+      value: "80rem",
+      numValue: 80,
+    },
+    {
+      name: "2xl",
+      value: "96rem",
+      numValue: 96,
+    },
+  ];
 }
 
 interface BreakpointContextType {
