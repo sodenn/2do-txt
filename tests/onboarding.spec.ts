@@ -40,6 +40,7 @@ test.describe("New file", () => {
     ).toBeFocused();
     // close the current file and create a new one and the same way
     await page.keyboard.press("Escape");
+    await expect(page.getByTestId("task-dialog")).not.toBeVisible();
     await toggleMenu(page);
     await page.getByLabel("List actions").click();
     await page.getByLabel("Remove list").click();
