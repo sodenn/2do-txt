@@ -12,7 +12,7 @@ export function groupBy<T>(arr: T[], getKey: (item: T) => string | string[]) {
   }, {});
 }
 
-export function arrayMove<T>(arr: T[], fromIndex: number, toIndex: number) {
+export function arrayMove(arr: unknown[], fromIndex: number, toIndex: number) {
   const element = arr[fromIndex];
   arr.splice(fromIndex, 1);
   arr.splice(toIndex, 0, element);
