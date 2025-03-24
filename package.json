@@ -116,7 +116,7 @@
     "prettier": "3.5.3",
     "prettier-plugin-organize-imports": "4.1.0",
     "prettier-plugin-tailwindcss": "0.6.11",
-    "pwa-asset-generator": "7.0.0",
+    "pwa-asset-generator": "8.0.0",
     "tailwindcss": "4.0.15",
     "tailwindcss-animate": "1.0.7",
     "typescript": "^5.6.3",
