@@ -103,7 +103,7 @@
     "@types/react-dom": "19.1.1",
     "@types/react-transition-group": "4.4.12",
     "@types/wicg-file-system-access": "2023.10.6",
-    "@vite-pwa/assets-generator": "0.2.6",
+    "@vite-pwa/assets-generator": "1.0.0",
     "@vitejs/plugin-react-swc": "3.8.1",
     "eslint": "^9.13.0",
     "eslint-config-prettier": "10.1.1",
