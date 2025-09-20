@@ -598,22 +598,22 @@ export function useTask() {
   const archiveTasks = useCallback(async () => {
     const newTaskLists = await _archiveTasks(selectedTaskLists);
     return Promise.all(
-      newTaskLists.map((taskList) => {
-        if (taskList) {
-          return saveTodoFile(taskList);
-        }
-      }),
+      newTaskLists
+        .filter(
+          (taskList): taskList is NonNullable<typeof taskList> => !!taskList,
+        )
+        .map((taskList) => saveTodoFile(taskList)),
     );
   }, [_archiveTasks, saveTodoFile, selectedTaskLists]);
 
   const restoreArchivedTasks = useCallback(async () => {
     const newTaskLists = await _restoreArchivedTasks(taskLists);
     return Promise.all(
-      newTaskLists.map((taskList) => {
-        if (taskList) {
-          return saveTodoFile(taskList);
-        }
-      }),
+      newTaskLists
+        .filter(
+          (taskList): taskList is NonNullable<typeof taskList> => !!taskList,
+        )
+        .map((taskList) => saveTodoFile(taskList)),
     );
   }, [_restoreArchivedTasks, saveTodoFile, taskLists]);
 
