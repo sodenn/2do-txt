@@ -4,7 +4,6 @@
     "@lexical/code",
     "@lexical/markdown",
     "@lexical/selection",
-    "eslint-plugin-react-hooks",
     "geist",
     "tailwindcss",
     "tailwindcss-animate",

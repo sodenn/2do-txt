@@ -91,7 +91,6 @@
     "zustand": "5.0.8"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "3.3.1",
     "@eslint/js": "^9.13.0",
     "@playwright/test": "1.55.1",
     "@tailwindcss/vite": "4.1.14",
@@ -108,7 +107,7 @@
     "eslint": "^9.13.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "5.2.0",
+    "eslint-plugin-react-hooks": "6.1.1",
     "happy-dom": "19.0.2",
     "i18next-parser": "9.3.0",
     "knip": "5.64.1",
