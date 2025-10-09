@@ -107,7 +107,7 @@
     "eslint": "^9.13.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "6.1.1",
+    "eslint-plugin-react-hooks": "7.0.0",
     "happy-dom": "19.0.2",
     "i18next-parser": "9.3.0",
     "knip": "5.64.1",
