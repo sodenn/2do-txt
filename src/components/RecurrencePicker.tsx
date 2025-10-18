@@ -76,7 +76,6 @@ export function RecurrencePicker(props: PriorityPickerProps) {
   const [value, setValue] = useState(props.value || null);
   const initialValues = useMemo(
     () => parseValue(props.value),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
   const [strict, setStrict] = useState(initialValues.strict);
