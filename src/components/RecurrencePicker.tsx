@@ -74,10 +74,7 @@ function parseValue(value?: string | null) {
 export function RecurrencePicker(props: PriorityPickerProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(props.value || null);
-  const initialValues = useMemo(
-    () => parseValue(props.value),
-    [],
-  );
+  const initialValues = useMemo(() => parseValue(props.value), []);
   const [strict, setStrict] = useState(initialValues.strict);
   const [unit, setUnit] = useState(initialValues.unit);
   const [amount, setAmount] = useState(initialValues.amount);
