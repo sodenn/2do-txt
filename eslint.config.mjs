@@ -31,11 +31,9 @@ export default defineConfig(
   },
   reactPlugin.configs.flat["jsx-runtime"],
   {
-    files: ["src/**/*.{ts,tsx}"],
     plugins: {
       "react-hooks": reactHooks,
     },
-    extends: ["react-hooks/recommended"],
   },
   {
     rules: {

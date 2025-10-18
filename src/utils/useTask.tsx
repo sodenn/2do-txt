@@ -691,7 +691,6 @@ export function useTask() {
     taskLists.forEach((taskList) =>
       scheduleDueTaskNotifications(taskList.items),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
