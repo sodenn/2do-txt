@@ -23,14 +23,14 @@ jobs:
       - name: Update screenshots
         run: npx playwright test screenshots.spec.ts --reporter=html --update-snapshots
       - name: Upload Screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: snapshots
           path: tests/screenshots.spec.ts-snapshots
           retention-days: 1
       - name: Upload HTML report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: html-report
           path: playwright-report
