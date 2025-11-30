@@ -32,8 +32,10 @@ interface TaskFormProps {
   onEnterPress: () => void;
 }
 
-interface TaskGridProps
-  extends Omit<TaskFormProps, "value" | "projects" | "contexts" | "tags"> {
+interface TaskGridProps extends Omit<
+  TaskFormProps,
+  "value" | "projects" | "contexts" | "tags"
+> {
   items: Record<string, string[]>;
   formModel: Task;
 }

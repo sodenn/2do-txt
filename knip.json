@@ -5,8 +5,6 @@
     "@lexical/markdown",
     "@lexical/selection",
     "geist",
-    "tailwindcss",
-    "tailwindcss-animate",
     "unfonts.css"
   ],
   "ignore": [

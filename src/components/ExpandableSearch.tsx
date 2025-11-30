@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { SearchIcon } from "lucide-react";
 import { forwardRef, InputHTMLAttributes, useRef, useState } from "react";
 
-export interface ExpandableSearchProps
-  extends InputHTMLAttributes<HTMLInputElement> {
+export interface ExpandableSearchProps extends InputHTMLAttributes<HTMLInputElement> {
   onExpand?: (expanded: boolean) => void;
 }
 
