@@ -75,7 +75,8 @@ interface EditorContextProps {
 }
 
 interface EditorProps
-  extends Pick<BeautifulMentionsItemsProps, "items">,
+  extends
+    Pick<BeautifulMentionsItemsProps, "items">,
     Omit<
       ComponentProps<typeof ContentEditable>,
       "onChange" | "label" | "placeholder"

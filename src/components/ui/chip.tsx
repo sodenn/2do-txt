@@ -176,7 +176,8 @@ const chipVariants = cva(
 );
 
 export interface ChipProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "color">,
+  extends
+    Omit<HTMLAttributes<HTMLDivElement>, "color">,
     VariantProps<typeof chipVariants> {}
 
 function Chip({ className, color, size, variant, ...props }: ChipProps) {

@@ -46,8 +46,7 @@ export const listItemVariants = cva(
 );
 
 interface ListProps
-  extends HTMLAttributes<HTMLUListElement>,
-    VariantProps<typeof listVariants> {}
+  extends HTMLAttributes<HTMLUListElement>, VariantProps<typeof listVariants> {}
 
 const ListContext = createContext<{
   variant: ListProps["variant"];

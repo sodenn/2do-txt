@@ -52,7 +52,8 @@ const tagBoxVariants = cva("inline rounded-sm whitespace-nowrap", {
 });
 
 interface TagBoxProps
-  extends Omit<HTMLAttributes<HTMLSpanElement>, "color">,
+  extends
+    Omit<HTMLAttributes<HTMLSpanElement>, "color">,
     VariantProps<typeof tagBoxVariants> {}
 
 export function TagBox({
