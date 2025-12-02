@@ -693,6 +693,16 @@ export function useTask() {
     );
   }, []);
 
+  const resumeSession = useCallback(
+    async (id: number) => {
+      const taskList = await loadTodoFileFromDisk(id);
+      addTaskList(taskList);
+      await scheduleDueTaskNotifications(taskList.items);
+    },
+    [addTaskList, scheduleDueTaskNotifications],
+  );
+
+
   return {
     saveTodoFile,
     toggleTaskList,
@@ -719,5 +729,7 @@ export function useTask() {
     addTodoFile,
     handleActive,
     handleInit,
+    todoFiles,
+    resumeSession,
   };
 }
