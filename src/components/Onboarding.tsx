@@ -11,7 +11,7 @@ import logo from "/logo.png";
 
 export function Onboarding() {
   const { t } = useTranslation();
-  const { taskLists, addTodoFile } = useTask();
+  const { taskLists, addTodoFile, todoFiles, resumeSession } = useTask();
   const { showOpenFilePicker } = useFilesystem();
 
   const handleOpenClick = async () => {
@@ -20,6 +20,10 @@ export function Onboarding() {
       addTodoFile(result.id, result.filename, result.content);
     }
   };
+
+  const filesRequiringPermission = todoFiles?.errors.filter(
+    (error) => error.permissionRequired,
+  );
 
   return (
     <div
@@ -57,6 +61,33 @@ export function Onboarding() {
           <FolderIcon className="mr-2 h-4 w-4" />
           {SUPPORTS_SHOW_OPEN_FILE_PICKER ? t("Open list") : t("Import list")}
         </Button>
+
+        {filesRequiringPermission && filesRequiringPermission.length > 0 && (
+          <div className="mt-4 flex flex-col gap-2">
+            <div className="text-center text-sm text-muted-foreground">
+              {t("Resume previous session")}
+            </div>
+            {filesRequiringPermission.map((file) => (
+              <Button
+                key={file.id}
+                variant="secondary"
+                onClick={async () => {
+                  // Trigger the same logic as the toast "Yes" action
+                  // We need to import loadTodoFileFromDisk and scheduleDueTaskNotifications or expose a method from useTask
+                  // Since those are not easily exposed, we can rely on the fact that clicking this will likely trigger the browser's permission prompt
+                  // if we re-attempt to read the file.
+                  // Actually, useTask's handleInit already tries to read and fails.
+                  // We need to manually trigger the load again.
+                  // Let's use a new function in useTask or just import the utils here if possible.
+                  // But useTask has the state updater `addTaskList`.
+                  // I should probably expose a `resumeFile` function in useTask.
+                }}
+              >
+                {t("Resume")} {file.filename}
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

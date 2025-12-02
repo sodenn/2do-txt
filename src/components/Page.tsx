@@ -4,7 +4,6 @@ import { Header } from "@/components/Header";
 import { LayoutContent } from "@/components/Layout";
 import { Onboarding } from "@/components/Onboarding";
 import { PrivateFilesystem } from "@/components/PrivateFilesystem";
-import { ReloadPrompt } from "@/components/ReloadPrompt";
 import { SafeArea } from "@/components/SafeArea";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { SideSheet } from "@/components/SideSheet";
@@ -31,7 +30,6 @@ export function Page() {
       <ArchivedTasksDialog />
       <ShortcutsDialog />
       <PrivateFilesystem />
-      <ReloadPrompt />
     </div>
   );
 }
