@@ -59,6 +59,7 @@ export default defineConfig(
       "@typescript-eslint/no-misused-promises": "off",
       "@typescript-eslint/restrict-plus-operands": "off",
       "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-useless-default-assignment": "off"
     },
   },
 );
