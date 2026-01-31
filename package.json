@@ -71,7 +71,7 @@
     "date-fns": "4.1.0",
     "file-saver": "2.0.5",
     "geist": "1.5.1",
-    "html-react-parser": "5.2.14",
+    "html-react-parser": "5.2.15",
     "i18next": "25.8.0",
     "i18next-browser-languagedetector": "8.2.0",
     "i18next-http-backend": "3.0.2",
