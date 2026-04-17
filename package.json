@@ -118,7 +118,7 @@
     "pwa-asset-generator": "8.1.2",
     "tailwindcss": "4.1.18",
     "tailwindcss-animate": "1.0.7",
-    "typescript": "5.9.3",
+    "typescript": "6.0.3",
     "typescript-eslint": "8.54.0",
     "unplugin-fonts": "1.4.0",
     "vite": "7.3.1",
